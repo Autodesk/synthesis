@@ -1,7 +1,10 @@
-﻿using BulletUnity;
+﻿using BulletSharp;
+using BulletUnity;
 using Synthesis.DriverPractice;
+using Synthesis.FEA;
 using Synthesis.Field;
 using Synthesis.FSM;
+using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
 using System;
@@ -22,7 +25,7 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject dpmToolbar;
-        
+
         GameObject gamepieceDropdownButton;
         GameObject gamepieceDropdownArrow;
         GameObject gamepieceDropdownLabel;
@@ -67,13 +70,13 @@ namespace Assets.Scripts.GUI
 
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
 
-            gamepieceIndex = 0;
+            gamepieceIndex = FieldDataHandler.gamepieceIndex;
 
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
 
-            InitGamepieceDropdown();    
+            InitGamepieceDropdown();
         }
         public override void Update()
         {
@@ -91,7 +94,7 @@ namespace Assets.Scripts.GUI
                 {
                     buffer = true;
                 }
-        } 
+        }
         private void InitGamepieceDropdown()
         {
             SetGamepieceDropdownName();
@@ -114,7 +117,7 @@ namespace Assets.Scripts.GUI
                 dropdown = true;
                 for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
                 {
-                    int id = i; 
+                    int id = i;
 
                     if (id != gamepieceIndex)
                     {
@@ -126,7 +129,7 @@ namespace Assets.Scripts.GUI
 
                         Button change = Auxiliary.FindObject(gamepieceDropdownElement, "Change").GetComponent<Button>();
                         change.onClick.AddListener(delegate { gamepieceIndex = id; SetGamepieceDropdownName(); HideGamepieceDropdown(); dropdown = false; buffer = false; });
-                        
+
                         gamepieceDropdownElements.Add(gamepieceDropdownElement);
                     }
                 }
@@ -154,15 +157,15 @@ namespace Assets.Scripts.GUI
         }
         public void OnDefineIntakeButtonClicked()
         {
-            StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot));
+            StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot), true);
         }
         public void OnDefineReleaseButtonClicked()
         {
-            StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot));
+            StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot), true);
         }
         public void OnSetSpawnpointButtonClicked()
         {
-            StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex));
+            StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex), true);
         }
         public void OnSpawnButtonClicked()
         {
@@ -231,6 +234,10 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
+        }
+        public override void End()
+        {
+            FieldDataHandler.gamepieceIndex = gamepieceIndex;
         }
     }
 }

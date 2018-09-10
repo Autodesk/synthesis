@@ -66,24 +66,50 @@ namespace Synthesis.GUI
 
         private void Awake()
         {
-            WebClient client = new WebClient();
-            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-            var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
-            VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
-            updater = update.URL;
+            string CurrentVersion = "4.2.1.0";
 
-            string CurrentVersion = "4.2.0.1";
-            Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
-
-            var localVersion = new Version(CurrentVersion);
-            var globalVersion = new Version(update.Version);
-
-            var check = localVersion.CompareTo(globalVersion);
-
-            if (check < 0)
+            if (CheckConnection())
             {
-                Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+                updater = update.URL;
 
+               
+                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+
+                var localVersion = new Version(CurrentVersion);
+                var globalVersion = new Version(update.Version);
+
+                var check = localVersion.CompareTo(globalVersion);
+
+                if (check < 0)
+                {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
+            }
+            else
+            {
+                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+            }
+        }
+
+        public bool CheckConnection()
+        {
+            try
+            {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -130,23 +156,23 @@ namespace Synthesis.GUI
             UICallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
             //Creates the replay directory
-            FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\");
+            FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\");
             file.Directory.Create();
 
             //Assigns the currently store registry values or default file path to the proper variables if they exist.
-            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Robots"));
-            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\synthesis\\Fields"));
+            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Robots"));
+            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields"));
 
             //If the directory doesn't exist, create it.
             if (!Directory.Exists(robotDirectory))
             {
-                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Robots\\");
+                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Robots\");
                 file.Directory.Create();
                 robotDirectory = file.Directory.FullName;
             }
             if (!Directory.Exists(fieldDirectory))
             {
-                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Fields\\");
+                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields\");
                 file.Directory.Create();
                 fieldDirectory = file.Directory.FullName;
             }
@@ -269,6 +295,7 @@ namespace Synthesis.GUI
             {
                 Process.Start("http://bxd.autodesk.com");
                 Process.Start(updater);
+                Application.Quit();
             }
             else Auxiliary.FindObject("UpdatePrompt").SetActive(false);
         }

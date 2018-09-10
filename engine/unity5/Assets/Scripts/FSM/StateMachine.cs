@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BulletSharp;
+using BulletUnity;
+using Synthesis.FEA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +15,7 @@ namespace Synthesis.FSM
         private Stack<State> activeStates;
         private ObjectStateLinker<Behaviour> stateBehaviours;
         private ObjectStateLinker<GameObject> stateGameObjects;
+        private bool unfreeze = false;
 
         /// <summary>
         /// (Defined from the editor)
@@ -86,9 +90,9 @@ namespace Synthesis.FSM
         /// Adds a new state to the StateMachine and pauses the current one if it exists.
         /// </summary>
         /// <param name="state"></param>
-        public void PushState(State state)
+        public void PushState(State state, bool freezeRobot=false)
         {
-            PushState(state, true);
+            PushState(state, true, freezeRobot);
         }
 
         /// <summary>
@@ -97,7 +101,7 @@ namespace Synthesis.FSM
         /// </summary>
         /// <param name="state"></param>
         /// <param name="pausePrevious"></param>
-        private void PushState(State state, bool pausePrevious)
+        private void PushState(State state, bool pausePrevious, bool freezeRobot)
         {
             if (pausePrevious && CurrentState != null)
             {
@@ -116,6 +120,17 @@ namespace Synthesis.FSM
 
             CurrentState.Start();
             CurrentState.Resume();
+
+            if (freezeRobot)
+            {
+                unfreeze = true;
+                foreach (Tracker t in FindObjectsOfType<Tracker>().ToList())
+                {
+                    RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
+                    r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                    r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+                }
+            }
         }
 
         /// <summary>
@@ -156,7 +171,22 @@ namespace Synthesis.FSM
             {
                 CurrentState = null;
             }
+            
+            if (unfreeze)
+            {
+                unfreeze = false;
+                foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>().ToList())
+                {
+                    StateDescriptor currentState = t.States.First();
 
+                    RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
+                    r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+                    r.LinearVelocity = currentState.LinearVelocity;
+                    r.AngularVelocity = currentState.AngularVelocity;
+                    t.Clear();
+                }
+            }
+            
             return CurrentState;
         }
 
@@ -175,7 +205,7 @@ namespace Synthesis.FSM
             else
             {
                 PopState(false);
-                PushState(state, false);
+                PushState(state, false, false);
             }
         }
 

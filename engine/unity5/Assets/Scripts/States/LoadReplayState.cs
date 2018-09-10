@@ -42,7 +42,7 @@ namespace Synthesis.States
 
             if (entry != null)
             {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + entry + ".replay");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + entry + ".replay");
                 replayList.SetActive(false);
                 replayList.SetActive(true);
             }
