@@ -41,12 +41,10 @@ namespace Synthesis.States
             #endregion
 
             Gamepiece gamepiece = FieldDataHandler.gamepieces[gamepieceIndex];
-            //gamepiece indicator
             if (spawnIndicator != null) GameObject.Destroy(spawnIndicator);
             if (spawnIndicator == null)
             {
-                spawnIndicator = GameObject.Instantiate(Auxiliary.FindGameObject(gamepiece.name), new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
-                spawnIndicator.SetActive(true);
+                spawnIndicator = GameObject.Instantiate(Auxiliary.FindObject(gamepiece.name).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                 spawnIndicator.name = "SpawnIndicator";
                 GameObject.Destroy(spawnIndicator.GetComponent<BRigidBody>());
                 GameObject.Destroy(spawnIndicator.GetComponent<BCollisionShape>());
@@ -60,25 +58,21 @@ namespace Synthesis.States
             }
             spawnIndicator.transform.position = gamepiece.spawnpoint;
 
-            //move arrow attachment
             GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             moveArrows.name = "IndicatorMoveArrows";
             moveArrows.transform.parent = spawnIndicator.transform;
             moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
 
-            //IMPORTANT
             moveArrows.GetComponent<MoveArrows>().Translate = (translation) =>
                 spawnIndicator.transform.Translate(translation, Space.World);
 
             StateMachine.SceneGlobal.Link<GamepieceSpawnState>(moveArrows);
 
-            //camera stuff
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.ActiveState;
 
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, spawnIndicator));
 
-            //help menu
             Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(ResetSpawn);
