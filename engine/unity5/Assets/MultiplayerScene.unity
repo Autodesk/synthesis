@@ -69384,16 +69384,20 @@ MonoBehaviour:
     with other users in your lobby.
 
 
-    Synthesis online interactinos are client-hosted, so Autodesk does not monitor
-    interactions between users. Please be cautious and only join lobbies with people
-    you trust.
+    The Synthesis Network Multiplayer Beta is client hosted, so Autodesk does not
+    monitor interactions between users. Please be cautious and only join lobbies with
+    people you trust.
 
 
     If you are having trouble connecting to a lobby, make sure your firewall is not
     blocking Synthesis features.
 
 
-    Lobby codes are refreshed every day at 12:00 AM, UTC.'
+    Lobby codes are refreshed every day at 12:00 AM, UTC.
+
+
+    In the current beta version of Synthesis Network Multiplayer, only LAN multiplayer
+    is supported, so all users must be on the same network.'
 --- !u!222 &1623991107
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -92014,8 +92018,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 316, y: -137}
-  m_SizeDelta: {x: 356.87732, y: 37.6}
+  m_AnchoredPosition: {x: 356.1, y: -137}
+  m_SizeDelta: {x: 425, y: 37.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2141043793
 MonoBehaviour:
@@ -92050,7 +92054,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: NEWORK MULTIPLAYER BETA
+  m_Text: NEWORK MULTIPLAYER BETA (LAN)
 --- !u!222 &2141043794
 CanvasRenderer:
   m_ObjectHideFlags: 0
