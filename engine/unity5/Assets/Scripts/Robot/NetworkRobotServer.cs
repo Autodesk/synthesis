@@ -81,9 +81,19 @@ namespace Synthesis.Network
         /// </summary>
         /// <param name="robotID"></param>
         [Command]
-        void CmdSetRobotID(int robotID)
+        private void CmdSetRobotID(int robotID)
         {
             RobotID = robotID;
+        }
+
+        /// <summary>
+        /// Resets the robot to its start position.
+        /// </summary>
+        [Command]
+        public void CmdResetRobot()
+        {
+            BeginRobotReset();
+            EndRobotReset();
         }
     }
 }

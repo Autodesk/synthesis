@@ -109,7 +109,7 @@ namespace Assets.Scripts.GUI
         {
             gamepieceDropdownLabel.GetComponent<Text>().text = FieldDataHandler.gamepieces.Count() > 0 ? FieldDataHandler.gamepieces[gamepieceIndex].name : "No Gamepieces";
         }
-        public void OnGamepieceDropdownButtonPressed()
+        public void OnGamepieceDropdownButtonClicked()
         {
             HideGamepieceDropdown();
             if (FieldDataHandler.gamepieces.Count > 1)
@@ -155,19 +155,19 @@ namespace Assets.Scripts.GUI
             }
             gamepieceDropdownExtension.SetActive(false);
         }
-        public void OnDefineIntakeButtonPressed()
+        public void OnDefineIntakeButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot), true);
         }
-        public void OnDefineReleaseButtonPressed()
+        public void OnDefineReleaseButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot), true);
         }
-        public void OnSetSpawnpointButtonPressed()
+        public void OnSetSpawnpointButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex), true);
         }
-        public void OnSpawnButtonPressed()
+        public void OnSpawnButtonClicked()
         {
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
             GameObject gamepieceClone = GameObject.Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity);
@@ -183,7 +183,7 @@ namespace Assets.Scripts.GUI
             }
 
         }
-        public void OnClearButtonPressed()
+        public void OnClearButtonClicked()
         {
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
             GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>();
@@ -193,7 +193,7 @@ namespace Assets.Scripts.GUI
                 GameObject.Destroy(o);
             }
         }
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 

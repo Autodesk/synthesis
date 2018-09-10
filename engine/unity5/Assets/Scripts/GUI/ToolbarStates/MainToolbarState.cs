@@ -17,7 +17,7 @@ using Synthesis.Sensors;
 using Synthesis.Camera;
 using Synthesis.Field;
 
-namespace Assets.Scripts.GUI
+namespace Synthesis.GUI
 {
     /// <summary>
     /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
@@ -105,7 +105,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Change robot button callback. Note: Buttons register with "On...Pressed"
         /// </summary>
-        public void OnChangeRobotButtonPressed()
+        public void OnChangeRobotButtonClicked()
         {
             if (changePanel.activeSelf == true)
             {
@@ -123,7 +123,7 @@ namespace Assets.Scripts.GUI
         /// naming conventions.
         /// </summary>
         /// <param name="i"></param>
-        public void OnResetRobotDropdownClicked(int i)
+        public void OnResetRobotDropdownValueChanged(int i)
         {
             switch (i)
             {
@@ -148,10 +148,21 @@ namespace Assets.Scripts.GUI
         }
 
         /// <summary>
+        /// Resets the robot when the reset button is clicked.
+        /// </summary>
+        public void OnResetRobotButtonClicked()
+        {
+            MultiplayerState multiplayerState = StateMachine.SceneGlobal.CurrentState as MultiplayerState;
+
+            if (multiplayerState != null)
+                multiplayerState.ActiveRobot.CmdResetRobot();
+        }
+
+        /// <summary>
         /// Toggles between different dynamic camera states
         /// </summary>
         /// <param name="mode"></param>
-        public void OnCameraDropdownClicked(int mode)
+        public void OnCameraDropdownValueChanged(int mode)
         {
             switch (mode)
             {
@@ -177,7 +188,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Change field button callback
         /// </summary>
-        public void OnChangeFieldButtonPressed()
+        public void OnChangeFieldButtonClicked()
         {
             if (changeFieldPanel.activeSelf)
             {
@@ -194,7 +205,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Enters replay mode
         /// </summary>
-        public void OnReplayModeButtonPressed()
+        public void OnReplayModeButtonClicked()
         {
             State.EnterReplayState();
         }
@@ -202,7 +213,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggles the multiplayer window
         /// </summary>
-        public void OnMultiplayerButtonPressed()
+        public void OnMultiplayerButtonClicked()
         {
             if (multiplayerPanel.activeSelf)
             {
@@ -219,7 +230,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the stopwatch window on/off according to its current state
         /// </summary>
-        public void OnStopwatchPressed()
+        public void OnStopwatchClicked()
         {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
         }
@@ -227,7 +238,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the toolkit window on/off according to its current state
         /// </summary>
-        public void OnStatsPressed()
+        public void OnStatsClicked()
         {
             toolkit.ToggleStatsWindow(!statsWindow.activeSelf);
         }
@@ -235,7 +246,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the ruler window on/off according to its current state
         /// </summary>
-        public void OnRulerPressed()
+        public void OnRulerClicked()
         {
             toolkit.ToggleRulerWindow(!rulerWindow.activeSelf);
         }
@@ -243,25 +254,17 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state
         /// </summary>
-        public void OnInfoButtonPressed()
+        public void OnInfoButtonClicked()
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
         }
 
         /// <summary>
-        /// Help button and menu text
+        /// Help button and menu text.
         /// </summary>
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
-
-            // To change the help menu texts within the simulator, most are configured by calling the
-            // the following component. 
-            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: bxd.autodesk.com" +
-                "\n\nHome Tab: Main simulator functions" +
-                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
-                "\n\nScoring Tab: Match play" +
-                "\n\nSensors Tab: Robot camera and sensors";
 
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);

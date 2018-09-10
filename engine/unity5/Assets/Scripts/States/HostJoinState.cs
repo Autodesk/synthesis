@@ -19,7 +19,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="LobbyState"/> as the host.
         /// </summary>
-        public void OnHostLobbyButtonPressed()
+        public void OnHostLobbyButtonClicked()
         {
             StateMachine.PushState(new EnterTagState());
         }
@@ -27,7 +27,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="EnterInfoState"/>.
         /// </summary>
-        public void OnJoinLobbyButtonPressed()
+        public void OnJoinLobbyButtonClicked()
         {
             StateMachine.PushState(new EnterInfoState());
         }
@@ -35,7 +35,7 @@ namespace Synthesis.States
         /// <summary>
         /// Displays the disclaimer when the disclaimer button is pressed.
         /// </summary>
-        public void OnDisclaimerButtonPressed()
+        public void OnDisclaimerButtonClicked()
         {
             StateMachine.PushState(new DisclaimerState(false));
         }
@@ -43,7 +43,7 @@ namespace Synthesis.States
         /// <summary>
         /// Returns to the main menu when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
             SceneManager.LoadScene("MainMenu");

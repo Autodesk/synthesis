@@ -27,7 +27,7 @@ namespace Synthesis.States
         /// <summary>
         /// Returns to the lobby if the back button is pressed on the host instance.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             if (Host)
                 MatchManager.Instance.CancelSync();

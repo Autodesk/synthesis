@@ -100,7 +100,7 @@ namespace Synthesis.States
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
             //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
             BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.All;
-            BPhysicsWorld.Get().DoDebugDraw = true;
+            BPhysicsWorld.Get().DoDebugDraw = false;
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);

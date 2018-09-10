@@ -8,7 +8,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches the Sim Tab when the start button is pressed.
         /// </summary>
-        public void OnStartButtonPressed()
+        public void OnStartButtonClicked()
         {
             StateMachine.ChangeState(new SimTabState());
         }
@@ -16,7 +16,7 @@ namespace Synthesis.States
         /// <summary>
         /// Switches to the options tab and its respective UI elements.
         /// </summary>
-        public void OnSettingsButtonPressed()
+        public void OnSettingsButtonClicked()
         {
             StateMachine.SceneGlobal.ChangeState(new OptionsTabState());
         }
@@ -24,7 +24,7 @@ namespace Synthesis.States
         /// <summary>
         /// Opens the tutorials webpage in the browser when the tutorials button is presssed.
         /// </summary>
-        public void OnTutorialsButtonPressed()
+        public void OnTutorialsButtonClicked()
         {
             Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
         }
@@ -32,7 +32,7 @@ namespace Synthesis.States
         /// <summary>
         /// Opens the website in the browser when the website button is pressed.
         /// </summary>
-        public void OnWebsiteButtonPressed()
+        public void OnWebsiteButtonClicked()
         {
             Application.OpenURL("http://bxd.autodesk.com/");
         }
@@ -40,7 +40,7 @@ namespace Synthesis.States
         /// <summary>
         /// Exits the program.
         /// </summary>
-        public void OnExitButtonPressed()
+        public void OnExitButtonClicked()
         {
             if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
