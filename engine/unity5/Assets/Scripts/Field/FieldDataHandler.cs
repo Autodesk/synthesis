@@ -16,6 +16,7 @@ namespace Synthesis.Field
         public static List<List<GameObject>> redGoals = new List<List<GameObject>>();
         public static List<List<GameObject>> blueGoals = new List<List<GameObject>>();
         public static Vector3 robotSpawn = new Vector3(0f,3f,0f);
+        public static int gamepieceIndex = 0;
         #endregion
         #region fileWriting
         public static void WriteField()
@@ -93,18 +94,6 @@ namespace Synthesis.Field
         }
         #endregion
         #region getData
-        public static void Load()
-        {
-            if (File.Exists(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml"))
-            {
-                file = XDocument.Load(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
-                gamepieces = getGamepieces();
-                redGoals = getRedGoals();
-                blueGoals = getBlueGoals();
-                robotSpawn = getRobotSpawn();
-            } else WriteField();
-        }
-
         public static void Load(string fieldPath)
         {
             if (File.Exists(fieldPath + "\\" + "field_data.xml"))
@@ -114,6 +103,7 @@ namespace Synthesis.Field
                 redGoals = getRedGoals();
                 blueGoals = getBlueGoals();
                 robotSpawn = getRobotSpawn();
+                gamepieceIndex = 0;
             }
             else WriteField();
         }
