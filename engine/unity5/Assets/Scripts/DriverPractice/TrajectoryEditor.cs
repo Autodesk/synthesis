@@ -67,6 +67,7 @@ namespace Synthesis.DriverPractice
                     dpmRobot = mainState.ActiveRobot.GetDriverPractice();
                     FindElements();
                 }
+
                 if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) OnActiveRobotChange(); //update active robot
                 SetGamepieceIndex(); 
                 if (trajectory && !editing) UpdateTrajectoryValues(); //updates trajectory values
@@ -126,9 +127,23 @@ namespace Synthesis.DriverPractice
             DPMDataHandler.WriteRobot();
             moveArrows.SetActive(false);
         }
+
         /// <summary>
         /// Updates input field values of release position and velocity
         /// </summary>
+        public void HideEditor()
+        {
+            trajectoryPanel.SetActive(false);
+            dpmRobot.drawing = false;
+            moveArrows.SetActive(false);
+        }
+        public void ShowEditor()
+        {
+            trajectoryPanel.SetActive(true);
+            dpmRobot.drawing = true;
+            moveArrows.SetActive(true);
+        }
+
         private void UpdateTrajectoryValues()
         {
             dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
