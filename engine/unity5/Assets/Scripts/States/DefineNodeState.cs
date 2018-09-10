@@ -127,6 +127,9 @@ namespace Synthesis.States
             }
             if (EventSystem.current.currentSelectedGameObject == highlightButton.gameObject && UnityEngine.Input.GetMouseButton(0)) HighlightNode();
             else RevertHighlight();
+
+            //if (highlightTimer > 0) highlightTimer--;
+            //else if (highlightTimer == 0) RevertHighlight();
         }
         private void HighlightNode()
         {

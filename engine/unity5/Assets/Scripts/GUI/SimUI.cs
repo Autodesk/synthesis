@@ -28,8 +28,9 @@ namespace Synthesis.GUI
     /// </summary>
     public class SimUI : LinkedMonoBehaviour<MainState>
     {
-        new DynamicCamera camera;
+        RobotBase Robot;
 
+        new DynamicCamera camera;
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SensorManagerGUI sensorManagerGUI;
