@@ -28,15 +28,14 @@ namespace Synthesis.GUI
         {
             get
             {
-                return visible;
+                return canvas.enabled;
             }
             set
             {
-                visible = value;
-                canvas.enabled = visible;
-                tabCanvas.SetActive(!visible);
+                canvas.enabled = value;
+                tabCanvas.SetActive(!value);
 
-                if (visible)
+                if (value)
                 {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
                     while (tabStateMachine.PopState() != null) ;
@@ -54,7 +53,6 @@ namespace Synthesis.GUI
         /// </summary>
         public StateMachine UIStateMachine { get; private set; }
 
-        private bool visible;
         private Canvas canvas;
         private GameObject tabCanvas;
         private GameObject exitPanel;
