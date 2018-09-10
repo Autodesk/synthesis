@@ -25,7 +25,7 @@ namespace Synthesis.FEA
         public static void Write(string fileName, string fieldPath, List<Tracker> trackers, List<List<ContactDescriptor>> contacts)
         {
             using (XmlWriter writer = XmlWriter.Create(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Synthesis\\Replays\\" + fileName + ".replay",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + fileName + ".replay",
                 new XmlWriterSettings()))
             {
                 writer.WriteStartElement("replay");

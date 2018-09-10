@@ -58,7 +58,7 @@ namespace Synthesis.GUI
         Image startImage;
         Image stopImage;
 
-        public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Synthesis\Emulator\");
+        public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Autodesk\Synthesis\Emulator\");
 
         private void Start()
         {
