@@ -207,6 +207,10 @@ namespace Synthesis.Field
                 }
             }
 
+            if (!host)
+                foreach (NetworkElement ne in networkElements.Values)
+                    ne.gameObject.AddComponent<NetworkMesh>();
+
             #region Free mesh
             foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
             {

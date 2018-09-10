@@ -152,8 +152,8 @@ namespace Synthesis.GUI
             FindAllGameObjects();
             splashScreen.SetActive(true); //Turns on the loading screen while initializing
             LinkTabs();
-            ButtonCallbackManager.RegisterButtonCallbacks(StateMachine.SceneGlobal, gameObject);
-            ButtonCallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
+            UICallbackManager.RegisterButtonCallbacks(StateMachine.SceneGlobal, gameObject);
+            UICallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
             //Creates the replay directory
             FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\");

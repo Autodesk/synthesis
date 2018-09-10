@@ -174,9 +174,15 @@ namespace Synthesis.Utils
             return new GameObject("COULDNOTFIND" + name);
         }
 
+        /// <summary>
+        /// Finds the first <see cref="GameObject"/> with the given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static GameObject FindGameObject(string name)
         {
-            return Resources.FindObjectsOfTypeAll<GameObject>().First(o => o.name.Equals(name));
+            IEnumerable<GameObject> gameObjects = Resources.FindObjectsOfTypeAll<GameObject>().Where(o => o.name.Equals(name));
+            return gameObjects.Any() ? gameObjects.First() : null; ;
         }
 
         /// <summary>

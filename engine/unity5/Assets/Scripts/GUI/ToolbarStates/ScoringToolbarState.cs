@@ -41,8 +41,7 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
-        #region Help Button and Menu for Scoring
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 
@@ -84,6 +83,5 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
-        #endregion
     }
 }

@@ -249,6 +249,48 @@ namespace Synthesis.Robot
         }
 
         /// <summary>
+        /// Moves the robot to its start position and locks its movement.
+        /// </summary>
+        protected void BeginRobotReset()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+
+                BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+                newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
+                newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+                r.WorldTransform = newTransform;
+            }
+        }
+
+        /// <summary>
+        /// Unlocks the robot's movement.
+        /// </summary>
+        protected void EndRobotReset()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
+        /// <summary>
         /// Get the total weight of the robot
         /// </summary>
         /// <returns></returns>

@@ -12,7 +12,7 @@ namespace Synthesis.States
         /// <summary>
         /// Returns to the previous scene when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.PopState();
         }
@@ -20,7 +20,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches a new <see cref="LoadFieldState"/> when the next button is pressed.
         /// </summary>
-        public void OnNextButtonPressed()
+        public void OnNextButtonClicked()
         {
             StateMachine.PushState(new LoadFieldState());
         }

@@ -52,7 +52,7 @@ namespace Synthesis.States
         /// <summary>
         /// Pops this state when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.PopState();
         }
@@ -61,7 +61,7 @@ namespace Synthesis.States
         /// When the select field button is pressed, the selected field is saved and
         /// the current state is popped.
         /// </summary>
-        public void OnSelectFieldButtonPressed()
+        public void OnSelectFieldButtonClicked()
         {
             GameObject fieldList = GameObject.Find("SimLoadFieldList");
             string entry = (fieldList.GetComponent<SelectScrollable>().selectedEntry);
@@ -99,7 +99,7 @@ namespace Synthesis.States
         /// Launches the browser and opens the field tutorials webpage when the field exporter
         /// tutorial button is pressed.
         /// </summary>
-        public void OnFieldExportButtonPressed()
+        public void OnFieldExportButtonClicked()
         {
             Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-field.html");
         }
@@ -108,7 +108,7 @@ namespace Synthesis.States
         /// Pushes a new <see cref="BrowseFieldState"/> when the change field directory
         /// button is pressed.
         /// </summary>
-        public void OnChangeFieldButtonPressed()
+        public void OnChangeFieldButtonClicked()
         {
             StateMachine.PushState(new BrowseFieldState());
         }

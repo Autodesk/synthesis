@@ -3,6 +3,7 @@ using BulletSharp;
 using BulletUnity;
 using Synthesis.BUExtensions;
 using Synthesis.FSM;
+using Synthesis.Input;
 using Synthesis.Network;
 using Synthesis.Robot;
 using Synthesis.States;
@@ -23,7 +24,6 @@ namespace Synthesis.Network
 
         private BRigidBody[] rigidBodies;
         private NetworkMesh[] networkMeshes;
-        private bool correctionEnabled = true;
 
         private MultiplayerState state;
 
@@ -78,11 +78,6 @@ namespace Synthesis.Network
         {
             base.UpdateTransform();
 
-            if (UnityEngine.Input.GetKey(KeyCode.E))
-                correctionEnabled = true;
-            else if (UnityEngine.Input.GetKey(KeyCode.D))
-                correctionEnabled = false;
-
             BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
             if (rigidBody == null)
@@ -107,17 +102,26 @@ namespace Synthesis.Network
             {
                 float[] pwm = DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, false);
 
-                if (correctionEnabled)
-                {
-                    if (isServer)
-                        RpcUpdateRobotInfo(pwm);
-                    else
-                        CmdUpdateRobotInfo(pwm);
-                }
+                if (isServer)
+                    RpcUpdateRobotInfo(pwm);
+                else
+                    CmdUpdateRobotInfo(pwm);
+
+                if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot))
+                    CmdResetRobot();
             }
 
-            if (isServer && serverCanSendUpdate && correctionEnabled)
+            if (isServer && serverCanSendUpdate)
                 RemoteUpdateTransforms();
+        }
+
+        /// <summary>
+        /// Called when this instance is destroyed.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (state?.ActiveRobot == this)
+                state.ActiveRobot = null;
         }
     }
 }

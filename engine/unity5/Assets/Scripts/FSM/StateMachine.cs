@@ -136,7 +136,7 @@ namespace Synthesis.FSM
         /// <summary>
         /// Removes the current state from the StateMachine.
         /// </summary>
-        public bool PopState()
+        public State PopState()
         {
             return PopState(true);
         }
@@ -147,10 +147,10 @@ namespace Synthesis.FSM
         /// </summary>
         /// <param name="resumePrevious"></param>
         /// <returns></returns>
-        private bool PopState(bool resumePrevious)
+        private State PopState(bool resumePrevious)
         {
             if (CurrentState == null)
-                return false;
+                return null;
 
             CurrentState.Pause();
             CurrentState.End();
@@ -171,7 +171,7 @@ namespace Synthesis.FSM
             {
                 CurrentState = null;
             }
-
+            
             if (unfreeze)
             {
                 unfreeze = false;
@@ -186,8 +186,8 @@ namespace Synthesis.FSM
                     t.Clear();
                 }
             }
-
-            return true;
+            
+            return CurrentState;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Synthesis.FSM
         {
             if (hardReset)
             {
-                while (PopState()) ;
+                while (PopState() != null) ;
                 PushState(state);
             }
             else
