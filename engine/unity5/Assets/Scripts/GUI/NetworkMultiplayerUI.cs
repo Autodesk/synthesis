@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using Synthesis.Network;
 using Synthesis.States;
 using Synthesis.Utils;
 using System;
@@ -27,24 +28,35 @@ namespace Synthesis.GUI
         {
             get
             {
-                return visible;
+                return canvas.enabled;
             }
             set
             {
-                visible = value;
-                canvas.enabled = visible;
+                canvas.enabled = value;
+                tabCanvas.SetActive(!value);
 
-                if (visible)
+                if (value)
+                {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask &= ~(1 << LayerMask.NameToLayer("Default"));
+                    while (tabStateMachine.PopState() != null) ;
+                }
                 else
+                {
                     FindObjectOfType<UnityEngine.Camera>().cullingMask |= (1 << LayerMask.NameToLayer("Default"));
+                    tabStateMachine.PushState(new MainToolbarState());
+                }
             }
         }
 
-        private bool visible;
+        /// <summary>
+        /// The <see cref="StateMachine"/> controlling the user interface of the network multiplayer scene.
+        /// </summary>
+        public StateMachine UIStateMachine { get; private set; }
 
-        private StateMachine uiStateMachine;
         private Canvas canvas;
+        private GameObject tabCanvas;
+        private GameObject exitPanel;
+        private StateMachine tabStateMachine;
 
         /// <summary>
         /// Initializes the global instance reference.
@@ -60,16 +72,22 @@ namespace Synthesis.GUI
         /// </summary>
         private void Start()
         {
-            uiStateMachine = GetComponent<StateMachine>();
+            UIStateMachine = GetComponent<StateMachine>();
             canvas = GetComponent<Canvas>();
+            tabCanvas = Auxiliary.FindGameObject("Canvas");
+            exitPanel = Auxiliary.FindGameObject("ExitPanel");
+            tabStateMachine = tabCanvas.GetComponent<StateMachine>();
+            UICallbackManager.RegisterButtonCallbacks(tabStateMachine, tabCanvas);
+            UICallbackManager.RegisterDropdownCallbacks(tabStateMachine, tabCanvas);
 
             LinkPanels();
-            RegisterCallbacks();
+            UICallbackManager.RegisterButtonCallbacks(UIStateMachine, gameObject);
+            UICallbackManager.RegisterToggleCallbacks(UIStateMachine, gameObject);
 
             if (PlayerPrefs.GetInt("ShowDisclaimer", 1) == 1)
-                uiStateMachine.PushState(new DisclaimerState(true));
+                UIStateMachine.PushState(new DisclaimerState(true));
             else
-                uiStateMachine.PushState(new HostJoinState());
+                UIStateMachine.PushState(new HostJoinState());
         }
 
         /// <summary>
@@ -82,37 +100,46 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// Registers a click callback from the given <see cref="Button"/> to the active
-        /// <see cref="State"/>.
-        /// </summary>
-        /// <param name="button"></param>
-        public void RegisterButtonCallback(Button button)
-        {
-            button.onClick.AddListener(() => InvokeCallback("On" + button.name + "Pressed"));
-        }
-
-        /// <summary>
-        /// Registers a value changed callback from the given <see cref="Toggle"/> to the active
-        /// <see cref="State"/>.
-        /// </summary>
-        /// <param name="toggle"></param>
-        public void RegisterToggleCallback(Toggle toggle)
-        {
-            toggle.onValueChanged.AddListener(v => InvokeCallback("On" + toggle.name + "ValueChanged", v));
-        }
-
-        /// <summary>
         /// Pops the active UI <see cref="State"/>.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
-            uiStateMachine.PopState();
+            UIStateMachine.PopState();
 
-            if (uiStateMachine.CurrentState == null)
+            if (UIStateMachine.CurrentState == null)
             {
                 Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
                 SceneManager.LoadScene("MainMenu");
             }
+        }
+
+        /// <summary>
+        /// Opens the exit panel.
+        /// </summary>
+        public void OpenExitPanel()
+        {
+            exitPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Closes the exit panel.
+        /// </summary>
+        public void CloseExitPanel()
+        {
+            exitPanel.SetActive(false);
+        }
+
+        /// <summary>
+        /// Loads the main menu scene.
+        /// </summary>
+        public void ReturnToMainMenu()
+        {
+            if (MultiplayerNetwork.Instance.Host)
+                MultiplayerNetwork.Instance.StopHost();
+            else
+                MultiplayerNetwork.Instance.StopClient();
+
+            SceneManager.LoadScene("MainMenu");
         }
 
         /// <summary>
@@ -139,42 +166,12 @@ namespace Synthesis.GUI
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="panelName"></param>
-        private void LinkPanel<T>(string panelName, bool strict = true) where T : State
+        private void LinkPanel<T>(string panelName) where T : State
         {
-            GameObject tab = Auxiliary.FindGameObject(panelName);
+            GameObject panel = Auxiliary.FindGameObject(panelName);
 
-            if (tab != null)
-                uiStateMachine.Link<T>(tab, true, strict);
-        }
-
-        /// <summary>
-        /// Finds each Button component in the main menu that doesn't already have a
-        /// listener and registers it with a callback.
-        /// </summary>
-        private void RegisterCallbacks()
-        {
-            foreach (Button b in GetComponentsInChildren<Button>(true))
-                if (b.onClick.GetPersistentEventCount() == 0)
-                    RegisterButtonCallback(b);
-
-            foreach (Toggle t in GetComponentsInChildren<Toggle>(true))
-                if (t.onValueChanged.GetPersistentEventCount() == 0)
-                    RegisterToggleCallback(t);
-        }
-
-        /// <summary>
-        /// Invokes a method in the active <see cref="State"/> by the given method name.
-        /// </summary>
-        /// <param name="methodName"></param>
-        private void InvokeCallback(string methodName, params object[] args)
-        {
-            State currentState = uiStateMachine.CurrentState;
-            MethodInfo info = currentState.GetType().GetMethod(methodName);
-
-            if (info == null)
-                Debug.LogWarning("Method " + methodName + " does not have a listener in " + currentState.GetType().ToString());
-            else
-                info.Invoke(currentState, args);
+            if (panel != null)
+                UIStateMachine.Link<T>(panel);
         }
     }
 }

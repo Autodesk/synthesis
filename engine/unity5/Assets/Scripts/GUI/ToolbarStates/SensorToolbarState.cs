@@ -114,7 +114,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Toggles the state of the camera button in toolbar when clicked
         /// </summary>
-        public void OnRobotCameraButtonPressed()
+        public void OnRobotCameraButtonClicked()
         {
             robotCameraGUI.ToggleCameraWindow();
         }
@@ -123,7 +123,7 @@ namespace Assets.Scripts.GUI
         /// Open the configurations for an existing ultrasonic sensor or add a new ultrasonic sensor
         /// </summary>
         /// <param name="i"></param>
-        public void OnUltrasonicDropdownClicked(int i)
+        public void OnUltrasonicDropdownValueChanged(int i)
         {
             if (i == 0) return;
             if (i - 1 == numUltrasonics) //Add button
@@ -151,7 +151,7 @@ namespace Assets.Scripts.GUI
         /// Open the configurations for an existing beam break sensor or add a new beam break sensor
         /// </summary>
         /// <param name="i"></param>
-        public void OnBeamBreakDropdownClicked(int i)
+        public void OnBeamBreakDropdownValueChanged(int i)
         {
             if (i == 0) return;
             if (i - 1 == numBeamBreakers) //Add button
@@ -179,7 +179,7 @@ namespace Assets.Scripts.GUI
         /// Open the configurations for an existing gyro sensor or add a new gyro sensor
         /// </summary>
         /// <param name="i"></param>
-        public void OnGyroDropdownClicked(int i)
+        public void OnGyroDropdownValueChanged(int i)
         {
             if (i == 0) return;
             if (i - 1 == numGyros) //Add button
@@ -206,7 +206,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Show or hide the sensor outputs panel
         /// </summary>
-        public void OnShowOutputsButtonPressed()
+        public void OnShowOutputsButtonClicked()
         {
             sensorManagerGUI.ToggleSensorOutput();
         }
@@ -241,7 +241,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Open sensor toolbar help screen
         /// </summary>
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 

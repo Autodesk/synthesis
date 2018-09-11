@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.States
 {
@@ -26,7 +27,7 @@ namespace Synthesis.States
         /// <summary>
         /// Pops the current <see cref="State"/> when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.PopState();
         }
@@ -34,7 +35,7 @@ namespace Synthesis.States
         /// <summary>
         /// Deletes the selected replay when the delete button is pressed.
         /// </summary>
-        public void OnDeleteButtonPressed()
+        public void OnDeleteButtonClicked()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
@@ -50,7 +51,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches the selected replay when the launch replay button is pressed.
         /// </summary>
-        public void OnLaunchButtonPressed()
+        public void OnLaunchButtonClicked()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
@@ -60,7 +61,7 @@ namespace Synthesis.States
                 splashScreen.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", entry);
                 PlayerPrefs.Save();
-                Application.LoadLevel("Scene");
+                SceneManager.LoadScene("Scene");
             }
 
             replayList.SetActive(false);

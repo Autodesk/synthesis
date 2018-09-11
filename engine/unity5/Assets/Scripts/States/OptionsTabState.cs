@@ -28,7 +28,7 @@ namespace Synthesis.States
             graphics = Auxiliary.FindGameObject("Graphics");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
 
-            OnGraphicsButtonPressed();
+            OnGraphicsButtonClicked();
         }
 
         public override void Update()
@@ -39,13 +39,13 @@ namespace Synthesis.States
         /// <summary>
         /// Activates the input tab when the input button is pressed.
         /// </summary>
-        public void OnInputButtonPressed()
+        public void OnInputButtonClicked()
         {
             graphics.SetActive(false);
             inputPanelOn = true;
         }
 
-        public void OnOkButtonPressed()
+        public void OnOkButtonClicked()
         {
             graphics.SetActive(false);
             inputPanelOn = true;
@@ -54,7 +54,7 @@ namespace Synthesis.States
         /// <summary>
         /// Activates the graphics tab when the graphics button is pressed.
         /// </summary>
-        public void OnGraphicsButtonPressed()
+        public void OnGraphicsButtonClicked()
         {
             graphics.SetActive(true);
             //input.SetActive(false);
@@ -65,7 +65,7 @@ namespace Synthesis.States
         /// <summary>
         /// Changes the quality settings label when the quality settings button is pressed.
         /// </summary>
-        public void OnQualitySettingsPressed()
+        public void OnQualitySettingsClicked()
         {
             QualitySettings.SetQualityLevel((QualitySettings.GetQualityLevel() + 1) % QualitySettings.names.Length);
             GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
@@ -74,7 +74,7 @@ namespace Synthesis.States
         /// <summary>
         /// Applies the graphics settings.
         /// </summary>
-        public void OnApplySettingsButtonPressed()
+        public void OnApplySettingsButtonClicked()
         {
             PopupButton resPopup = GameObject.Find("ResolutionButton").GetComponent<PopupButton>();
             int xRes;
@@ -84,13 +84,13 @@ namespace Synthesis.States
 
             Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
 
-            OnBackButtonPressed();
+            OnBackButtonClicked();
         }
 
         /// <summary>
         /// Exits the state of changing the graphics settings.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.ChangeState(new HomeTabState());
         }

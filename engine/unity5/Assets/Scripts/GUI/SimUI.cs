@@ -28,8 +28,9 @@ namespace Synthesis.GUI
     /// </summary>
     public class SimUI : LinkedMonoBehaviour<MainState>
     {
-        new DynamicCamera camera;
+        RobotBase Robot;
 
+        new DynamicCamera camera;
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SensorManagerGUI sensorManagerGUI;
@@ -173,8 +174,8 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new MainToolbarState());
             currentTab = "HomeTab";
 
-            ButtonCallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
-            ButtonCallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
+            UICallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
+            UICallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
 
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");

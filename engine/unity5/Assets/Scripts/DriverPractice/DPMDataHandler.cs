@@ -13,32 +13,24 @@ namespace Synthesis.DriverPractice
     public class DPMDataHandler
     {
         #region values
-        private static XDocument file; //robot_data.xml in corresponding robot folder
-        public static List<DriverPractice> dpmodes = new List<DriverPractice>(); //List of available driver practice "modes"
-        public static List<Interactor> intakeInteractor = new List<Interactor>(); //List of interactors associated with an intake
+        private static XDocument file;
+        public static List<DriverPractice> dpmodes = new List<DriverPractice>();
+        public static List<Interactor> intakeInteractor = new List<Interactor>();
         #endregion
         #region fileWriting
-        /// <summary>
-        /// Writes to robot_data.xml file - does not append
-        /// </summary>
         public static void WriteRobot()
         {
-            //wrap all data
-            XElement robot = new XElement("RobotData", null); //parent
-            robot.Add(DriverPracticeData());
-            //save function - saves to active robot instead of SimSelectedRobot to support multiplayer
+            XElement robot = new XElement("RobotData", null);
+            robot.Add(DriverStationData());
             robot.Save(StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.FilePath + "\\" + "robot_data.xml");
         }
-        /// <summary>
-        /// Get Driver Practice "Mode" Data as an XElement - Split into Red and Blue Goals
-        /// </summary>
-        private static XElement DriverPracticeData()
+        private static XElement DriverStationData()
         {
-            XElement dps = new XElement("DriverPractice", null); //parent wrapper
+            XElement dps = new XElement("DriverPractice", null);
             for (int i = 0; i < dpmodes.Count(); i++)
             {
-                XElement dp = new XElement("Mode" + i.ToString(), //increments to create distinction doesn't really matter
-                                    new XElement("Gamepiece", //instead of incrementing could use gamepiece to define mode
+                XElement dp = new XElement("Mode" + i.ToString(),
+                                    new XElement("Gamepiece",
                                         new XAttribute("id", dpmodes[i].gamepiece)),
                                     new XElement("IntakeNode",
                                         new XAttribute("id", dpmodes[i].intakeNode)),
@@ -58,10 +50,16 @@ namespace Synthesis.DriverPractice
         }
         #endregion
         #region getData
-        /// <summary>
-        /// Assigns global variables values from robot_data.xml
-        /// </summary>
-        /// <param name="fieldPath">location to robot folder passed upon robot load</param>
+        public static void Load()
+        {
+            if (File.Exists(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml"))
+            {
+
+                file = XDocument.Load(PlayerPrefs.GetString("simSelectedRobot") + "\\" + "robot_data.xml");
+                dpmodes = getDriverPractice();
+            }
+            else WriteRobot();
+        }
         public static void Load(string filePath)
         {
             if (File.Exists(filePath + "\\" + "robot_data.xml"))
@@ -70,11 +68,8 @@ namespace Synthesis.DriverPractice
                 file = XDocument.Load(filePath + "\\" + "robot_data.xml");
                 dpmodes = getDriverPractice();
             }
-            else WriteRobot(); //creates dummy file w/ basic values ex: intake/release node = node_0.bxda
+            else WriteRobot();
         }
-        /// <summary>
-        /// Gets driver practice modes as list of DriverPractice objects from robot_data.xml
-        /// </summary>
         private static List<DriverPractice> getDriverPractice()
         {
             List<DriverPractice> dp = new List<DriverPractice>();

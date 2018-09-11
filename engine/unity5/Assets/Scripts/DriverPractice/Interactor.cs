@@ -40,13 +40,15 @@ namespace Synthesis.DriverPractice
         {
             for (int i = 0; i < gamepiece.Count; i++)
             {
-                if (other.UserObject.ToString().Contains(gamepiece[i]) && ((BRigidBody)other.UserObject).gameObject.GetComponent<BFixedConstraintEx>() == null) //make sure gamepiece isn't already held - NO STEAL
+                if (other.UserObject.ToString().Contains(gamepiece[i]))
                 {
                     collisionDetector[i] = true;
-                    collisionObject.Insert(i, ((BRigidBody)other.UserObject).gameObject); //insert at index coherent with index of gamepiece in FieldDataHandler.gamepieces
+                    collisionObject.Insert(i, ((BRigidBody)other.UserObject).gameObject);
                 }
             }
         }
+
+
 
         /// <summary>
         /// Method is called whenever interactor stops colliding with another object.
@@ -63,18 +65,13 @@ namespace Synthesis.DriverPractice
                 }
             }
         }
-        /// <summary>
-        /// add gamepiece to the interactor
-        /// </summary>
-        /// <param name="gamepiece">gamepiece name</param>
-        /// <param name="id">gamepiece index</param>
         public void AddGamepiece(string gamepiece, int id)
         {
-            while (this.gamepiece.Count < id) this.gamepiece.Add(""); //increase depth
+            while (this.gamepiece.Count < id) this.gamepiece.Add("");
             this.gamepiece.Insert(id, gamepiece);
-            while (collisionDetector.Count < id) collisionDetector.Add(false); //increase depth
+            while (collisionDetector.Count < id) collisionDetector.Add(false);
             collisionDetector.Insert(id, false);
-            while (collisionObject.Count <= id) collisionObject.Add(new GameObject()); //increase depth
+            while (collisionObject.Count <= id) collisionObject.Add(new GameObject());
         }
         public bool GetDetected(int id)
         {
