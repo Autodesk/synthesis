@@ -79,12 +79,10 @@ namespace Synthesis.Network
         /// <param name="conn"></param>
         public override void OnClientDisconnect(NetworkConnection conn)
         {
-            base.OnClientDisconnect(conn);
-
             if (!NetworkMultiplayerUI.Instance.Visible)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                UserMessageManager.Dispatch("Lost connection to the match!", 8f);
+                ClientConnectionChanged?.Invoke(this, ConnectionStatus.Disconnected);
             }
             else
             {

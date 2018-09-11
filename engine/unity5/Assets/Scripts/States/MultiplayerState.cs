@@ -20,6 +20,7 @@ using Synthesis.Input;
 using Synthesis.Network;
 using Synthesis.GUI;
 using Synthesis.Field;
+using Assets.Scripts.GUI;
 
 namespace Synthesis.States
 {
@@ -41,7 +42,7 @@ namespace Synthesis.States
         /// <summary>
         /// The active robot in this state.
         /// </summary>
-        public NetworkRobot ActiveRobot { get; private set; }
+        public NetworkRobot ActiveRobot { get; set; }
 
         /// <summary>
         /// Used for accessing the active robot in this state.
@@ -66,6 +67,10 @@ namespace Synthesis.States
 
         public List<NetworkRobot> SpawnedRobots { get; private set; }
         private const int MAX_ROBOTS = 6;
+
+        private GameObject tabCanvas;
+
+        private StateMachine homeTabStateMachine;
 
         public MultiplayerNetwork Network { get; private set; }
 
@@ -116,9 +121,6 @@ namespace Synthesis.States
             unityPacket.Start();
 
             SpawnedRobots = new List<NetworkRobot>();
-
-            //loads all the controls
-            Controls.Load();
 
             //initializes the dynamic camera
             DynamicCameraObject = GameObject.Find("Main Camera");
@@ -180,6 +182,9 @@ namespace Synthesis.States
 
             if (!File.Exists(directory + "\\definition.bxdf"))
                 return false;
+
+            FieldDataHandler.Load(fieldPath);
+            Controls.Init();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);

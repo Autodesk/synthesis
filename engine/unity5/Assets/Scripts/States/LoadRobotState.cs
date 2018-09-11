@@ -45,7 +45,7 @@ namespace Synthesis.States
         /// <summary>
         /// Pops the current state when the back button is pressed.
         /// </summary>
-        public void OnBackButtonPressed()
+        public void OnBackButtonClicked()
         {
             StateMachine.PopState();
         }
@@ -54,7 +54,7 @@ namespace Synthesis.States
         /// Saves the current selected robot and pops the current <see cref="State"/> when
         /// the select robot button is pressed.
         /// </summary>
-        public void OnSelectRobotButtonPressed()
+        public void OnSelectRobotButtonClicked()
         {
             GameObject robotList = GameObject.Find("SimLoadRobotList");
             string entry = (robotList.GetComponent<SelectScrollable>().selectedEntry);
@@ -79,7 +79,7 @@ namespace Synthesis.States
         /// <summary>
         /// Launches the browser and opens the robot export tutorials webpage.
         /// </summary>
-        public void OnRobotExportButtonPressed()
+        public void OnRobotExportButtonClicked()
         {
             Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
         }
@@ -88,7 +88,7 @@ namespace Synthesis.States
         /// Pushes a new <see cref="BrowseRobotState"/> when the change robot directory
         /// button is pressed.
         /// </summary>
-        public void OnChangeRobotButtonPressed()
+        public void OnChangeRobotButtonClicked()
         {
             StateMachine.PushState(new BrowseRobotState());
         }

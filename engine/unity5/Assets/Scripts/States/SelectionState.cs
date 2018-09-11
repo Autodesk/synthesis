@@ -1,4 +1,5 @@
 ﻿using Synthesis.FSM;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.States
 {
@@ -7,7 +8,7 @@ namespace Synthesis.States
         /// <summary>
         /// Opens the default simulator tab when the main simulator button is pressed.
         /// </summary>
-        public void OnMainSimulatorButtonPressed()
+        public void OnMainSimulatorButtonClicked()
         {
             StateMachine.PushState(new DefaultSimulatorState());
         }
@@ -15,11 +16,23 @@ namespace Synthesis.States
         /// <summary>
         /// Opens the mix and match tab when the mix and match button is pressed.
         /// </summary>
-        public void OnMixAndMatchButtonPressed()
+        public void OnMixAndMatchButtonClicked()
         {
             StateMachine.PushState(new MixAndMatchState());
         }
-        public void OnBackButtonPressed()
+
+        /// <summary>
+        /// Launches the multiplayer scene when the network multiplayer button is pressed.
+        /// </summary>
+        public void OnMultiplayerButtonClicked()
+        {
+            SceneManager.LoadScene("MultiplayerScene");
+        }
+
+        /// <summary>
+        /// Returns back to the <see cref="HomeTabState"/>.
+        /// </summary>
+        public void OnBackButtonClicked()
         {
             StateMachine.ChangeState(new HomeTabState());
         }

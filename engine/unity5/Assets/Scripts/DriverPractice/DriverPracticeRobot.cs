@@ -23,65 +23,79 @@ namespace Synthesis.DriverPractice
 {
     /// <summary>
     /// To be added to all robots, this class 'cheats physics' to overcome the limitations that our current simulation has to create a beter environment for drivers to practice and interact with game objects.
-    /// Specific to each robot
+    /// 
     /// </summary>
     public class DriverPracticeRobot : LinkedMonoBehaviour<MainState>
     {
-        private int controlIndex; //defines control index
-        public bool drawing = false; //trajectory drawing or not
-
+        private int controlIndex;
+        public int controlType = 0;
+        public GameObject[] moveArrows;
+        public bool drawing = false;
         private void Start()
         {
             controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
-            SetAllInteractors(); //sets intake interactors on load after data load
+            SetAllInteractors();
         }
         private void Update()
         {
-            controlIndex = GetComponent<SimulatorRobot>().ControlIndex; //updates control index continuously
+            controlIndex = GetComponent<SimulatorRobot>().ControlIndex;
             ProcessControls();
         }
-
         private void ProcessControls()
         {
-            for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++) //for each gamepiece
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 && //existence check
-                     InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) Intake(i);
-            for (int i = 0; i < Input.Controls.buttons[controlIndex].release.Count; i++)
+            for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++)
+            {
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                {
+                    if (InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) Intake(i);
+                    else HoldGamepiece(i);
+                }
+            }
+            for (int i = 0; i < Input.Controls.buttons[controlIndex].release.Count; i++)
+            {
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                {
                     if (InputControl.GetButton(Controls.buttons[controlIndex].release[i])) Release(i);
-                    else HoldGamepiece(i); //when not releasing hold
+                    else HoldGamepiece(i);
+                }
+            }
             for (int i = 0; i < Input.Controls.buttons[controlIndex].spawnPieces.Count; i++)
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
-                    InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
-            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = !drawing; //trajectory drawing toggle
+            {
+                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                {
+                    if (InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+                    else HoldGamepiece(i);
+                }
+            }
+            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = drawing ? false : true;
         }
-
         #region DriverPractice Creation Stuff
-        /// <summary>
-        /// Gets pre-existing driver practice mode or dummy mode
-        /// </summary>
-        /// <param name="g">Gamepiece name</param>
         public DriverPractice GetDriverPractice(Gamepiece g)
         {
-            DriverPractice dp = new DriverPractice(g.name, "node_0.bxda", "node_0.bxda", UnityEngine.Vector3.zero, UnityEngine.Vector3.zero); //dummy mode
+            DriverPractice dp = new DriverPractice(g.name, "node_0.bxda", "node_0.bxda", UnityEngine.Vector3.zero, UnityEngine.Vector3.zero);
             if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(g.name)).Count() > 0) dp = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(g.name)).ToArray()[0];
-            else //create basic mode
+            else
             {
                 DPMDataHandler.dpmodes.Add(dp);
                 DPMDataHandler.WriteRobot();
-                SetAllInteractors(); //updates intakes
+                SetAllInteractors();
             }
             return dp;
         }
         #endregion
         #region Intake Stuff
-        private List<Interactor> intakeInteractor = new List<Interactor>(); 
+        private List<Interactor> intakeInteractor = new List<Interactor>();
         private List<List<GameObject>> objectsHeld = new List<List<GameObject>>();
         private void Intake(int id)
         {
-            while (objectsHeld.Count <= id) objectsHeld.Add(new List<GameObject>()); //increase list depth to equal number of gamepieces
-            if (objectsHeld[id].Count() < FieldDataHandler.gamepieces[id].holdingLimit && intakeInteractor[id].GetDetected(id)) //make sure intake exists and holding limit isn't hit
+            while (objectsHeld.Count <= id) objectsHeld.Add(new List<GameObject>());
+            if (objectsHeld[id].Count() < FieldDataHandler.gamepieces[id].holdingLimit && intakeInteractor[id].GetDetected(id))
             {
+                #region disables intake functionality for already held gamepieces
+                for (int i = 0; i < objectsHeld[id].Count; i++)
+                    if (objectsHeld[id][i].Equals(intakeInteractor[id].GetObject(id)))
+                        return;
+                #endregion
                 GameObject collisionObject = intakeInteractor[id].GetObject(id);
                 #region move gamepiece to release node location
                 GameObject releaseNode = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[id].name)).ToArray()[0].releaseNode);
@@ -90,7 +104,7 @@ namespace Synthesis.DriverPractice
                 #endregion
                 #region changes colliders for gamepiece
                 BFixedConstraintEx fc = collisionObject.AddComponent<BFixedConstraintEx>();
-                fc.otherRigidBody = releaseNode.GetComponent<BRigidBody>();
+                fc.otherRigidBody = releaseNode.GetComponent<BRigidBody>();  
                 fc.localConstraintPoint = releasePosition;
                 fc.localRotationOffset = UnityEngine.Quaternion.Inverse(releaseNode.transform.rotation) * collisionObject.transform.rotation;
                 foreach (List<GameObject> l in objectsHeld)
@@ -123,9 +137,7 @@ namespace Synthesis.DriverPractice
                 }
             }
         }
-        /// <summary>
-        /// Initialize intake interactors based on defined nodes in robot_data.xml file
-        /// </summary>
+
         public void SetAllInteractors()
         {
             while (intakeInteractor.Count() < FieldDataHandler.gamepieces.Count) intakeInteractor.Add(new Interactor());
@@ -138,10 +150,10 @@ namespace Synthesis.DriverPractice
         private void SetInteractor(string n, int index)
         {
             GameObject node = Auxiliary.FindObject(gameObject, n);
-            if (node.GetComponent<Interactor>() == null) intakeInteractor.Insert(index, node.AddComponent<Interactor>()); //insert interactor to gamepiece location 
+            if (node.GetComponent<Interactor>() == null) intakeInteractor.Insert(index, node.AddComponent<Interactor>());
             else intakeInteractor.Insert(index, node.GetComponent<Interactor>());
 
-            intakeInteractor[index].AddGamepiece(FieldDataHandler.gamepieces[index].name, index); //add specific gamepiece to interactor
+            intakeInteractor[index].AddGamepiece(FieldDataHandler.gamepieces[index].name, index);
         }
         #endregion
         #region Release Functionality
@@ -151,7 +163,6 @@ namespace Synthesis.DriverPractice
             {
                 GameObject heldObject = objectsHeld[id][0];
                 objectsHeld[id].RemoveAt(0);
-                //enable physics
                 StartCoroutine(UnIgnoreCollision(heldObject));
                 BRigidBody intakeRigidBody = intakeInteractor[id].GetComponent<BRigidBody>();
                 if (intakeRigidBody != null && !intakeRigidBody.GetCollisionObject().IsActive)
@@ -201,30 +212,56 @@ namespace Synthesis.DriverPractice
         #endregion
         #endregion
         #region Gamepiece Spawn
-        /// <summary>
-        /// Spawn Gamepiece Clone
-        /// </summary>
-        /// <param name="g">Gamepiece class</param>
         private void Spawn(Gamepiece g)
         {
-            GameObject gamepieceClone = Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity); //game object creation
-            gamepieceClone.name = g.name + "(Clone)"; //add clone identifier to gamepiece name
-            //physics
+            GameObject gamepieceClone = Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity);
+            gamepieceClone.name = g.name + "(Clone)";
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
         }
         #endregion
-
         /// <summary>
-        /// destroy all held gamepieces
+        /// Refreshes the position of the move arrows with the position offsets.
         /// </summary>
-        /// <param name="clone">destroy only clones</param>
-        /// <param name="name">gamepiece name</param>
-        public void DestroyAllHeld(bool clone, string name)
+        public void RefreshMoveArrows()
         {
-            foreach (List<GameObject> gList in objectsHeld)
+            for (int i = 0; i < moveArrows.Length; i++)
             {
-                for (int i = 0; i < gList.Count; i++)
+                moveArrows[i].transform.parent = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes[i].releaseNode).transform;
+                moveArrows[i].transform.localPosition = DPMDataHandler.dpmodes[i].releasePosition;
+            }
+        }
+        
+        /// <summary>
+        /// Creates a <see cref="GameObject"/> instantiated from the MoveArrows prefab.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private GameObject CreateMoveArrows(int index)
+        {
+            GameObject arrows = Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
+            arrows.name = "ReleasePositionMoveArrows";
+            arrows.transform.parent = Auxiliary.FindObject(gameObject, DPMDataHandler.dpmodes[index].releaseNode).transform;
+            arrows.transform.localPosition = DPMDataHandler.dpmodes[index].releasePosition;
+
+            arrows.GetComponent<MoveArrows>().Translate = (translation) =>
+            {
+                arrows.transform.position += translation;
+                DPMDataHandler.dpmodes[index].releasePosition = arrows.transform.localPosition;
+            };
+            
+            arrows.GetComponent<MoveArrows>().OnClick = () => GetComponent<SimulatorRobot>().LockRobot();
+            arrows.GetComponent<MoveArrows>().OnRelease = () => GetComponent<SimulatorRobot>().UnlockRobot();
+
+            StateMachine.SceneGlobal.Link<MainState>(arrows, false);
+
+            return arrows;
+        }
+        public void DestroyAllHeld(bool clone = false, string name = "")
+        {
+            foreach(List<GameObject> gList in objectsHeld)
+            {
+                for(int i = 0; i < gList.Count; i++)
                 {
                     if (!clone || gList[i].name.Equals(name + "(Clone)"))
                     {

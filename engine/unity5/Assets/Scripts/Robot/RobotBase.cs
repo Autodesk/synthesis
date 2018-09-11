@@ -101,7 +101,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// The starting position of the robot.
         /// </summary>
-        public Vector3 robotStartPosition = new Vector3(0f, 3f, 0f); /*new Vector3(0f, 1f, 0f);*/ //default
+        protected Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
 
         /// <summary>
         /// The starting orientation of the robot.
@@ -148,7 +148,7 @@ namespace Synthesis.Robot
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition; //set to field_data.xml spawnpoint
+            robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
             if (!File.Exists(directory + "\\skeleton.bxdj"))
@@ -162,6 +162,8 @@ namespace Synthesis.Robot
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             RootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj") as RigidNode;
             RootNode.ListAllNodes(nodes);
+
+            Debug.Log(RootNode.driveTrainType.ToString());
 
             emuList = new List<EmuNetworkInfo>();
 
@@ -243,6 +245,48 @@ namespace Synthesis.Robot
                 currentTransform.Origin += origin.Value;
 
                 r.WorldTransform = currentTransform;
+            }
+        }
+
+        /// <summary>
+        /// Moves the robot to its start position and locks its movement.
+        /// </summary>
+        protected void BeginRobotReset()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+
+                BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+                newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
+                newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+                r.WorldTransform = newTransform;
+            }
+        }
+
+        /// <summary>
+        /// Unlocks the robot's movement.
+        /// </summary>
+        protected void EndRobotReset()
+        {
+            foreach (RigidNode n in RootNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
             }
         }
 
