@@ -452,6 +452,7 @@ public partial class SynthesisGUI : Form
                     joint.cDriver = new JointDriver((JointDriverType)Utilities.GetProperty(propertySet, "driver-type", (int)JointDriverType.MOTOR));
                 JointDriver driver = joint.cDriver;
 
+                joint.cDriver.motor = (MotorType)Utilities.GetProperty(propertySet, "motor-type", (int)MotorType.GENERIC);
                 joint.cDriver.port1 = Utilities.GetProperty(propertySet, "driver-port1", 0);
                 joint.cDriver.port2 = Utilities.GetProperty(propertySet, "driver-port2", -1);
                 joint.cDriver.isCan = Utilities.GetProperty(propertySet, "driver-isCan", false);
@@ -481,7 +482,7 @@ public partial class SynthesisGUI : Form
                         driver.AddInfo(new PneumaticDriverMeta());
                     PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
 
-                    pneumatic.widthEnum = (PneumaticDiameter)Utilities.GetProperty(propertySet, "pneumatic-diameter", (int)PneumaticDiameter.MEDIUM);
+                    pneumatic.width = Utilities.GetProperty(propertySet, "pneumatic-diameter", (double)0.5);
                     pneumatic.pressureEnum = (PneumaticPressure)Utilities.GetProperty(propertySet, "pneumatic-pressure", (int)PneumaticPressure.MEDIUM);
                 }
 
@@ -583,6 +584,7 @@ public partial class SynthesisGUI : Form
             if (driver != null)
             {
                 Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());
+                Utilities.SetProperty(propertySet, "motor-type", (int)driver.GetMotorType());
                 Utilities.SetProperty(propertySet, "driver-port1", driver.port1);
                 Utilities.SetProperty(propertySet, "driver-port2", driver.port2);
                 Utilities.SetProperty(propertySet, "driver-isCan", driver.isCan);
@@ -610,7 +612,7 @@ public partial class SynthesisGUI : Form
 
                 if (pneumatic != null)
                 {
-                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (int)pneumatic.widthEnum);
+                    Utilities.SetProperty(propertySet, "pneumatic-diameter", (double)pneumatic.width);
                     Utilities.SetProperty(propertySet, "pneumatic-pressure", (int)pneumatic.pressureEnum);
                 }
 
