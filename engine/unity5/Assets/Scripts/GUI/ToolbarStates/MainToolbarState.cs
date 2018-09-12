@@ -259,7 +259,7 @@ namespace Assets.Scripts.GUI
 
             // To change the help menu texts within the simulator, most are configured by calling the
             // the following component. 
-            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: bxd.autodesk.com" +
+            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: synthesis.autodesk.com" +
                 "\n\nHome Tab: Main simulator functions" +
                 "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
                 "\n\nScoring Tab: Match play" +
