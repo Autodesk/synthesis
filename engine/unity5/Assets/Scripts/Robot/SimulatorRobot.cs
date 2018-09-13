@@ -213,9 +213,9 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
+            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2) //check for robot below field
             {
-                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f; //increase height of robot start point to be higher to field
                 BeginReset();
                 EndReset();
             }
@@ -258,7 +258,8 @@ namespace Synthesis.Robot
         {
             //GetDriverPractice().DestroyAllGamepieces();
 
-            InputControl.freeze = true;
+            #region fake state UI
+            InputControl.freeze = true; //freeze controls during reset
             if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
             if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
             canvas.GetComponent<Canvas>().enabled = false;
@@ -271,6 +272,7 @@ namespace Synthesis.Robot
             if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
             #endregion
 
+            //button generation
             Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(BeginRevertSpawnpoint);
@@ -283,7 +285,9 @@ namespace Synthesis.Robot
             Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             closeHelp.onClick.RemoveAllListeners();
             closeHelp.onClick.AddListener(CloseHelpMenu);
+            #endregion
 
+            //switch to camera and set last camera state
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
@@ -343,7 +347,7 @@ namespace Synthesis.Robot
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 FieldDataHandler.robotSpawn = robotStartPosition;
-                FieldDataHandler.WriteField();
+                FieldDataHandler.WriteField();  //write robot spawn point
 
                 EndReset();
             }
@@ -389,7 +393,7 @@ namespace Synthesis.Robot
                 t.Clear();
 
             if (helpMenu.activeSelf) CloseHelpMenu();
-            InputControl.freeze = false;
+            InputControl.freeze = false; //un-freeze controls
             canvas.GetComponent<Canvas>().enabled = true;
             resetCanvas.SetActive(false);
         }
@@ -461,24 +465,26 @@ namespace Synthesis.Robot
             helpMenu.SetActive(true);
             overlay.SetActive(true);
 
+            //description
             helpBodyText.GetComponent<Text>().text = "Move Robot: WASD keys or drag navigation arrows. " +
                 "\nClick and drag a face of the navigation cube to move robot freely" +
                 "\n\nRotate Robot: Hold RIGHT MOUSE BUTTON, and use A and D keys to rotate" +
                 "\n\nSave: Press ENTER";
 
-            toolbar.transform.Translate(new Vector3(100, 0, 0));
-            foreach (Transform t in toolbar.transform)
+            toolbar.transform.Translate(new Vector3(100, 0, 0)); //move toolbar
+            foreach (Transform t in toolbar.transform) //move buttons and hide help button
             {
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
                 else t.gameObject.SetActive(false);
             }
         }
+
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
-            toolbar.transform.Translate(new Vector3(-100, 0, 0));
-            foreach (Transform t in toolbar.transform)
+            toolbar.transform.Translate(new Vector3(-100, 0, 0)); //move toolbar back
+            foreach (Transform t in toolbar.transform) //move buttons back and show help button
             {
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
                 else t.gameObject.SetActive(true);

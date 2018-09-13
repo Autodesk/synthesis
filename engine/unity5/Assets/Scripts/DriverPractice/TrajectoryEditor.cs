@@ -19,7 +19,7 @@ namespace Synthesis.DriverPractice
         MainState mainState;
 
         DriverPracticeRobot dpmRobot;
-        
+
         GameObject canvas;
         GameObject dpmToolbar;
         GameObject gamepieceDropdownButton;
@@ -50,7 +50,7 @@ namespace Synthesis.DriverPractice
         GameObject trajectoryLine;
         #endregion
 
-        int gamepieceIndex;
+        int gamepieceIndex; //IMPORTANT
 
         DriverPractice dp;
 
@@ -67,13 +67,12 @@ namespace Synthesis.DriverPractice
                     dpmRobot = mainState.ActiveRobot.GetDriverPractice();
                     FindElements();
                 }
-                if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) OnActiveRobotChange();
+
+                if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) OnActiveRobotChange(); //update active robot
                 SetGamepieceIndex();
-                if (trajectory && !editing) UpdateTrajectoryValues();
-                if (dpmRobot.drawing && DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray().Length > 0) DrawTrajectory();
-                else trajectoryLine.GetComponent<LineRenderer>().enabled = false;
-                if (mainState.ActiveRobot.IsResetting && trajectoryPanel.activeSelf) HideEditor();
-                else if (!mainState.ActiveRobot.IsResetting && !trajectoryPanel.activeSelf && trajectory) ShowEditor();
+                if (trajectory && !editing) UpdateTrajectoryValues(); //updates trajectory values
+                if (dpmRobot.drawing && DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray().Length > 0) DrawTrajectory(); //draws trajectory line
+                else trajectoryLine.GetComponent<LineRenderer>().enabled = false; //hides trajectory line
             }
         }
         void FindElements()
@@ -83,7 +82,6 @@ namespace Synthesis.DriverPractice
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
             gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
             gamepieceDropdownLabel = Auxiliary.FindObject(gamepieceDropdownButton, "GamepieceName");
-
             #region Trajectory Editor init
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
             xOffsetEntry = Auxiliary.FindObject(trajectoryPanel, "XOffsetEntry");
@@ -94,20 +92,20 @@ namespace Synthesis.DriverPractice
             releaseHorizontalEntry = Auxiliary.FindObject(trajectoryPanel, "ReleaseHorizontalEntry");
             showTrajectory = Auxiliary.FindObject(trajectoryPanel, "ShowHideTrajectory");
             #endregion
-
             #region Display Trajectory init
             trajectoryLine = new GameObject("DrawnTrajectory");
             StateMachine.SceneGlobal.Link<MainState>(trajectoryLine);
             trajectoryLine.transform.parent = dpmRobot.transform;
             trajectoryLine.AddComponent<LineRenderer>();
             #endregion
-
-            
         }
+        /// <summary>
+        /// Sets gamepiece index of FieldDataHandler.gamepieces
+        /// </summary>
         private void SetGamepieceIndex()
         {
             for (int i = 0; i < FieldDataHandler.gamepieces.Count(); i++)
-                if (gamepieceDropdownLabel.GetComponent<Text>().text.Equals(FieldDataHandler.gamepieces[i].name)) gamepieceIndex = i;    
+                if (gamepieceDropdownLabel.GetComponent<Text>().text.Equals(FieldDataHandler.gamepieces[i].name)) gamepieceIndex = i;
         }
         public void OpenEditor()
         {
@@ -129,6 +127,10 @@ namespace Synthesis.DriverPractice
             DPMDataHandler.WriteRobot();
             moveArrows.SetActive(false);
         }
+
+        /// <summary>
+        /// Updates input field values of release position and velocity
+        /// </summary>
         public void HideEditor()
         {
             trajectoryPanel.SetActive(false);
@@ -141,6 +143,7 @@ namespace Synthesis.DriverPractice
             dpmRobot.drawing = true;
             moveArrows.SetActive(true);
         }
+
         private void UpdateTrajectoryValues()
         {
             dp = dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]);
@@ -153,6 +156,7 @@ namespace Synthesis.DriverPractice
             releaseHorizontalEntry.GetComponent<InputField>().text = dp.releaseVelocity.z.ToString();
             RefreshMoveArrows();
         }
+        #region increment on +- button pressed
         public void SetPositivePositionIncrement(int xyz)
         {
             positiveOffset = true;
@@ -176,64 +180,6 @@ namespace Synthesis.DriverPractice
             positiveOffset = false;
             this.xyz = xyz;
             position = false;
-        }
-        public void PositionInput(int xyz)
-        {
-            InputControl.freeze = false;
-
-            Vector3 releasePosition = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition;
-            switch (xyz)
-            {
-                case 1:
-                    releasePosition.x = float.Parse(xOffsetEntry.GetComponent<InputField>().text);
-                    break;
-                case 2:
-                    releasePosition.y = float.Parse(yOffsetEntry.GetComponent<InputField>().text);
-                    break;
-                case 3:
-                    releasePosition.z = float.Parse(zOffsetEntry.GetComponent<InputField>().text);
-                    break;
-                default:
-                    break;
-            }
-            editing = false;
-            DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition = releasePosition;
-        }
-        public void ReleaseInput(int xyz)
-        {
-            InputControl.freeze = false;
-
-            Vector3 releaseVelocity = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity;
-            switch (xyz)
-            {
-                case 1:
-                    releaseVelocity.x = float.Parse(releaseSpeedEntry.GetComponent<InputField>().text);
-                    break;
-                case 2:
-                    releaseVelocity.y = float.Parse(releaseVerticalEntry.GetComponent<InputField>().text);
-                    break;
-                case 3:
-                    releaseVelocity.z = float.Parse(releaseHorizontalEntry.GetComponent<InputField>().text);
-                    break;
-                default:
-                    break;
-            }
-            editing = false;
-            DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity = releaseVelocity;
-        }
-        public void StartEditing()
-        {
-            editing = true;
-            InputControl.freeze = true;
-        }
-        public void StopEditing()
-        {
-            xyz = 0;
-        }
-        public void ResetVectors(bool position)
-        {
-            if (position) DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition = Vector3.zero;
-            else DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity = Vector3.zero;
         }
         private void IncrementTrajectoryValues()
         {
@@ -279,6 +225,83 @@ namespace Synthesis.DriverPractice
             }
             DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0] = dp;
         }
+        #endregion
+        /// <summary>
+        /// Set release position values to input fields and update mode
+        /// </summary>
+        /// <param name="xyz">coord of vector</param>
+        public void PositionInput(int xyz)
+        {
+            InputControl.freeze = false;
+
+            Vector3 releasePosition = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition;
+            switch (xyz)
+            {
+                case 1:
+                    releasePosition.x = float.Parse(xOffsetEntry.GetComponent<InputField>().text);
+                    break;
+                case 2:
+                    releasePosition.y = float.Parse(yOffsetEntry.GetComponent<InputField>().text);
+                    break;
+                case 3:
+                    releasePosition.z = float.Parse(zOffsetEntry.GetComponent<InputField>().text);
+                    break;
+                default:
+                    break;
+            }
+            editing = false;
+            DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition = releasePosition;
+        }
+        /// <summary>
+        /// Set release velocity values to input fields and update mode
+        /// </summary>
+        /// <param name="xyz">coord of vector</param>
+        public void ReleaseInput(int xyz)
+        {
+            InputControl.freeze = false;
+
+            Vector3 releaseVelocity = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity;
+            switch (xyz)
+            {
+                case 1:
+                    releaseVelocity.x = float.Parse(releaseSpeedEntry.GetComponent<InputField>().text);
+                    break;
+                case 2:
+                    releaseVelocity.y = float.Parse(releaseVerticalEntry.GetComponent<InputField>().text);
+                    break;
+                case 3:
+                    releaseVelocity.z = float.Parse(releaseHorizontalEntry.GetComponent<InputField>().text);
+                    break;
+                default:
+                    break;
+            }
+            editing = false;
+            DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity = releaseVelocity;
+        }
+        /// <summary>
+        /// on input field click
+        /// </summary>
+        public void StartEditing()
+        {
+            editing = true;
+            InputControl.freeze = true; //freeze controls
+        }
+        public void StopEditing()
+        {
+            xyz = 0;
+        }
+        /// <summary>
+        /// Reset vector to ZERO
+        /// </summary>
+        /// <param name="position">position or velocity</param>        
+        public void ResetVectors(bool position)
+        {
+            if (position) DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releasePosition = Vector3.zero;
+            else DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0].releaseVelocity = Vector3.zero;
+        }
+        /// <summary>
+        /// toggle trajectory line display
+        /// </summary>
         public void ToggleTrajectoryDisplay()
         {
             if (dpmRobot.drawing)
@@ -292,15 +315,20 @@ namespace Synthesis.DriverPractice
                 showTrajectory.GetComponentInChildren<Text>().text = "Hide Trajectory";
             }
         }
+        /// <summary>
+        /// Draw trajectory line
+        /// </summary>
         private void DrawTrajectory()
         {
             LineRenderer line = trajectoryLine.GetComponent<LineRenderer>();
 
+            //look of the line
             line.startWidth = 0.2f;
             line.material = Resources.Load("Materials/Projection") as Material;
             line.startColor = Color.blue;
             line.endColor = Color.cyan;
 
+            //show line
             line.enabled = true;
 
             DriverPractice dp = DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[gamepieceIndex].name)).ToArray()[0];
@@ -319,6 +347,9 @@ namespace Synthesis.DriverPractice
                 pos = pos + vel * Time.fixedDeltaTime;
             }
         }
+        /// <summary>
+        /// Convert release velocity vector to actual line velocity
+        /// </summary>
         private UnityEngine.Vector3 VelocityToVector3(Vector3 release)
         {
             UnityEngine.Quaternion horVector;
@@ -344,7 +375,6 @@ namespace Synthesis.DriverPractice
             moveArrows.transform.parent = releaseNode.transform;
             moveArrows.transform.localPosition = dp.releasePosition;
         }
-
         /// <summary>
         /// Creates a <see cref="GameObject"/> instantiated from the MoveArrows prefab.
         /// </summary>
@@ -373,6 +403,9 @@ namespace Synthesis.DriverPractice
 
             return arrows;
         }
+        /// <summary>
+        /// Change trajectory line and move arrows to new active robot
+        /// </summary>
         private void OnActiveRobotChange()
         {
             dpmRobot = mainState.ActiveRobot.GetDriverPractice();
