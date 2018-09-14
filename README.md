@@ -16,7 +16,7 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 
 * [Simulation Engine](https://github.com/Autodesk/synthesis/blob/master/engine/unity5/README.md)
 * [Inventor Exporter (Inventor Plugin)](https://github.com/Autodesk/synthesis/blob/master/exporters/robot_exporter/README.md)
-* [Fusion Exporter (Fusion Plugin)](https://raw.githubusercontent.com/Autodesk/synthesis/master/exporters/FusionExporter/README.md)
+* [Fusion Exporter (Fusion Plugin)](https://github.com/Autodesk/synthesis/blob/master/exporters/FusionExporter/README.md)
 * [Code Emulator](https://github.com/Autodesk/synthesis/blob/master/emulation/README.md)
 
 
