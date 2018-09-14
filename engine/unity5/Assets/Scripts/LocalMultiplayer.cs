@@ -105,7 +105,6 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
         {
             UserMessageManager.Dispatch("Robot directory not found!", 5);
         }
-        ToggleAddRobotWindow();
         UpdateUI();
 
         PlayerPrefs.SetInt("hasManipulator", 0); //0 for false, 1 for true

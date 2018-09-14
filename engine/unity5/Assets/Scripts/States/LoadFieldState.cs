@@ -76,7 +76,7 @@ namespace Synthesis.States
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
                     fieldList.SetActive(false);
                     splashScreen?.SetActive(true);
-                    mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartMaMSim();
+                    StateMachine.SceneGlobal.GetComponent<MaMSimUI>().StartMaMSim();
                 }
                 else
                 {

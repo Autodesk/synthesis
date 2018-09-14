@@ -38,6 +38,7 @@ namespace Assets.Scripts.GUI
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SimUI simUI;
+        Panel panel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -89,13 +90,14 @@ namespace Assets.Scripts.GUI
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             bindedKeyPanel = Auxiliary.FindObject(canvas, "BindedKeyPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-            
+
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
             robotCameraGUI = StateMachine.SceneGlobal.GetComponent<RobotCameraGUI>();
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
+            panel = StateMachine.SceneGlobal.GetComponent<Panel>();
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
 
@@ -109,15 +111,8 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnChangeRobotButtonPressed()
         {
-            if (changePanel.activeSelf == true)
-            {
-                changePanel.SetActive(false);
-            }
-            else
-            {
-                changePanel.SetActive(true);
-                addPanel.SetActive(false);
-            }
+            panel.OpenOnly(changePanel);
+            panel.Freeze(true);
         }
 
         /// <summary>
@@ -181,16 +176,8 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnChangeFieldButtonPressed()
         {
-            if (changeFieldPanel.activeSelf)
-            {
-                changeFieldPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
-            }
-            else
-            {
-                EndOtherProcesses();
-                changeFieldPanel.SetActive(true);
-            }
+            panel.OpenOnly(changeFieldPanel);
+            panel.Freeze(true);
         }
 
         /// <summary>
@@ -206,16 +193,8 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnMultiplayerButtonPressed()
         {
-            if (multiplayerPanel.activeSelf)
-            {
-                multiplayerPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                multiplayerPanel.SetActive(true);
-                multiplayer.UpdateUI();
-            }
+            panel.OpenOnly(multiplayerPanel);
+            multiplayer.UpdateUI();
         }
 
         /// <summary>
@@ -306,7 +285,7 @@ namespace Assets.Scripts.GUI
             inputManagerPanel.SetActive(false);
 
             simUI.CancelOrientation();
-            
+
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();

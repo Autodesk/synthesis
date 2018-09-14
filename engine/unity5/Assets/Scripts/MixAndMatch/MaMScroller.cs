@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Synthesis.Utils;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,17 +27,23 @@ namespace Synthesis.MixAndMatch
         {
             mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");
 
-            wheelRightScroll = GameObject.Find("WheelRightScroll");
-            wheelLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("WheelLeftScroll")).First();
-            wheels = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().Wheels;
+            wheelRightScroll = Auxiliary.FindGameObject("WheelRightScroll");
+            wheelLeftScroll = Auxiliary.FindGameObject("WheelLeftScroll");
+            //add to wheels object
+            foreach (Transform t in Auxiliary.FindGameObject("Wheels").transform)
+                wheels.Add(t.gameObject);
 
-            driveBaseRightScroll = GameObject.Find("BaseRightScroll");
-            driveBaseLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("BaseLeftScroll")).First();
-            driveBases = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().Bases;
+            driveBaseRightScroll = Auxiliary.FindGameObject("BaseRightScroll");
+            driveBaseLeftScroll = Auxiliary.FindGameObject("BaseLeftScroll");
+            //add to drive bases
+            foreach (Transform t in Auxiliary.FindGameObject("DriveBases").transform)
+                driveBases.Add(t.gameObject);
 
-            manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
-            manipulatorLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ManipulatorLeftScroll")).First();
-            manipulators = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().Manipulators;
+            manipulatorRightScroll = Auxiliary.FindGameObject("ManipulatorRightScroll");
+            manipulatorLeftScroll = Auxiliary.FindGameObject("ManipulatorLeftScroll");
+            //add to manipulators
+            foreach (Transform t in Auxiliary.FindGameObject("Manipulators").transform)
+                manipulators.Add(t.gameObject);
         }
 
         public bool Scroll(bool right, List<GameObject> objectList, int firstObject, Vector2[] positions, GameObject rightScroll, GameObject leftScroll)

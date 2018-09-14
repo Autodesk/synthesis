@@ -106,8 +106,6 @@ namespace Synthesis.GUI
             }
             else
             {
-                UpdateWindows();
-
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
                 {
                     if (!exitPanel.activeSelf)
@@ -187,17 +185,7 @@ namespace Synthesis.GUI
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
-
-        private void UpdateWindows()
-        {
-            if (State != null)
-            {
-                UpdateFreeroamWindow();
-                UpdateOverviewWindow();
-            }
-            UpdateSpawnpointWindow();
-            UpdateDriverStationPanel();
-        }
+        
 
         #region tab buttons
         /// <summary>
@@ -285,8 +273,6 @@ namespace Synthesis.GUI
             string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
             if (Directory.Exists(directory))
             {
-                panel.SetActive(false);
-                changeRobotPanel.SetActive(false);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedRobot", directory);
                 PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
@@ -335,29 +321,12 @@ namespace Synthesis.GUI
                 mamRobot.RobotHasManipulator = false;
         }
 
-        public void ToggleChangeRobotPanel()
-        {
-            if (changeRobotPanel.activeSelf)
-            {
-                changeRobotPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
-            }
-            else
-            {
-                EndOtherProcesses();
-                changeRobotPanel.SetActive(true);
-                robotListPanel.SetActive(true);
-            }
-        }
-
         public void ChangeField()
         {
             GameObject panel = GameObject.Find("FieldListPanel");
             string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
             if (Directory.Exists(directory))
             {
-                panel.SetActive(false);
-                changeFieldPanel.SetActive(false);
                 loadingPanel.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedField", directory);
@@ -368,10 +337,6 @@ namespace Synthesis.GUI
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
                     });
-                //FieldDataHandler.Load();
-                //DPMDataHandler.Load();
-                //Controls.Init();
-                //Controls.Load();
                 SceneManager.LoadScene("Scene");
             }
             else
@@ -381,173 +346,25 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// These toggle, change, and add functions are tethered in Unity
+        /// Toggles panel on and off and freezes camera & robot controls
         /// </summary>
-        public void ToggleChangeFieldPanel()
+        public void TogglePanelFreeze(GameObject panel)
         {
-            if (changeFieldPanel.activeSelf)
-            {
-                changeFieldPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
-            }
-            else
-            {
-                EndOtherProcesses();
-                changeFieldPanel.SetActive(true);
-            }
+            TogglePanel(panel);
+            DynamicCamera.ControlEnabled = !panel.activeSelf;
+            InputControl.freeze = panel.activeSelf;
         }
+        /// <summary>
+        /// Toggles panel on and off
+        /// </summary>
         public void TogglePanel(GameObject panel)
         {
-            if (panel.activeSelf == true)
-            {
-                panel.SetActive(false);
-            }
-            else
-            {
-                panel.SetActive(true);
-            }
-        }
-
-        public void ToggleAddRobotPanel()
-        {
-            if (addPanel.activeSelf == true)
-            {
-                addPanel.SetActive(false);
-            }
-            else
-            {
-                addPanel.SetActive(true);
-                changePanel.SetActive(false);
-            }
-        }
-
-        public void ToggleChangePanel()
-        {
-            if (changePanel.activeSelf == true)
-            {
-                changePanel.SetActive(false);
-            }
-            else
-            {
-                changePanel.SetActive(true);
-                addPanel.SetActive(false);
-            }
+            if (!panel.activeSelf) EndOtherProcesses();
+            panel.SetActive(!panel.activeSelf);
         }
 
         #endregion
-        #region camera button functions
-        /// <summary>
-        /// Toggles between different dynamic camera states
-        /// </summary>
-        /// <param name="mode"></param>
-        public void SwitchCameraView(int mode)
-        {
-            switch (mode)
-            {
-                case 1:
-                    camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 2:
-                    camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 3:
-                    camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 4:
-                    camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Change camera tool tips
-        /// </summary>
-        public void CameraToolTips()
-        {
-            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
-                camera.GetComponent<Text>().text = "Driver Station";
-            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-                camera.GetComponent<Text>().text = "Freeroam";
-            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
-                camera.GetComponent<Text>().text = "Orbit Robot";
-            else if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
-                camera.GetComponent<Text>().text = "Overview";
-        }
-
-        /// <summary>
-        /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
-        /// </summary>
-        private void UpdateFreeroamWindow()
-        {
-            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
-            {
-                if (!freeroamWindowClosed)
-                {
-                    freeroamCameraWindow.SetActive(true);
-                }
-
-            }
-            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-            {
-                freeroamCameraWindow.SetActive(false);
-            }
-        }
-
-        private void UpdateOverviewWindow()
-        {
-            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)) && !overviewWindowClosed)
-            {
-                if (!overviewWindowClosed)
-                {
-                    overviewCameraWindow.SetActive(true);
-                }
-
-            }
-            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
-            {
-                overviewCameraWindow.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Close freeroam camera tool tip
-        /// </summary>
-        public void CloseFreeroamWindow()
-        {
-            freeroamCameraWindow.SetActive(false);
-            freeroamWindowClosed = true;
-        }
-
-        /// <summary>
-        /// Close overview camera tooltip
-        /// </summary>
-        public void CloseOverviewWindow()
-        {
-            overviewCameraWindow.SetActive(false);
-            overviewWindowClosed = true;
-        }
-
-        /// <summary>
-        /// Activate driver station tool tips if the main camera is in driver station state
-        /// </summary>
-        private void UpdateDriverStationPanel()
-        {
-            driverStationPanel.SetActive(camera.ActiveState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
-        }
-
-        /// <summary>
-        /// Change to driver station view to the opposite side
-        /// </summary>
-        public void ToggleDriverStation()
-        {
-            oppositeSide = !oppositeSide;
-            camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
-        }
-        #endregion
+        
         #region orient button functions
         public void OrientLeft()
         {
@@ -586,7 +403,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on the boolean passed.
         /// </summary>
-        /// <param name="show"></param>
+        /// <param name="show"></param
         public void ShowControlPanel(bool alreadySaved)
         {
             if (!inputManagerPanel.activeSelf)
