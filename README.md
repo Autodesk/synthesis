@@ -15,8 +15,8 @@ For more information on the product itself or the team, visit http://synthesis.a
 Synthesis is comprised of 4 separate components that are mostly developed independently of each other. You will want to clone the entire repository first, then follow a different set of steps depending on which component you wish to work on. The links below will lead you to specific instructions that will get you a copy of that component up and running on your local machine for development and testing purposes.
 
 * [Simulation Engine](https://github.com/Autodesk/synthesis/blob/master/engine/unity5/README.md)
-* [Robot Exporter (Inventor Plugin)](https://github.com/Autodesk/synthesis/blob/master/exporters/robot_exporter/README.md)
-* [Field Exporter (Inventor Plugin)](https://github.com/Autodesk/synthesis/blob/master/exporters/field_exporter/README.md)
+* [Inventor Exporter (Inventor Plugin)](https://github.com/Autodesk/synthesis/blob/master/exporters/robot_exporter/README.md)
+* [Fusion Exporter (Fusion Plugin)](https://raw.githubusercontent.com/Autodesk/synthesis/master/exporters/FusionExporter/README.md)
 * [Code Emulator](https://github.com/Autodesk/synthesis/blob/master/emulation/README.md)
 
 
