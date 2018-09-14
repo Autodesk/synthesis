@@ -73,7 +73,7 @@ namespace Synthesis.States
             moveArrows.transform.parent = goalIndicator.transform;
             moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
 
-            if (move) moveArrows.GetComponent<MoveArrows>().Translaste = (translation) => goalIndicator.transform.Translate(translation, Space.World);
+            if (move) moveArrows.GetComponent<MoveArrows>().Translate = (translation) => goalIndicator.transform.Translate(translation, Space.World);
             else moveArrows.GetComponent<MoveArrows>().Translate = (translation) => goalIndicator.transform.localScale += translation;
 
             StateMachine.SceneGlobal.Link<GoalState>(moveArrows);
