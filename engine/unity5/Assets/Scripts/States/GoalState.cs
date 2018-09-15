@@ -49,6 +49,7 @@ namespace Synthesis.States
             overlay = Auxiliary.FindObject(ui, "Overlay");
             #endregion
 
+            //create indicator
             if (goalIndicator != null) GameObject.Destroy(goalIndicator);
             if (goalIndicator == null)
             {
@@ -59,26 +60,30 @@ namespace Synthesis.States
                 Color newColor = new Color(0, 0.88f, 0, 0.6f);
                 render.material.color = newColor;
             }
-            goalIndicator.transform.position = color.Equals("Red") ? gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position : gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position;
-            goalIndicator.transform.localScale = color.Equals("Red") ? gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale : gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale;
+
+            GameObject goal = color.Equals("Red") ? gm.redGoals[gamepieceIndex][goalIndex] : gm.blueGoals[gamepieceIndex][goalIndex];
+            goalIndicator.transform.position = goal.GetComponent<Goal>().position;
+            goalIndicator.transform.localScale = goal.GetComponent<Goal>().scale;
 
             settingGamepieceGoalVertical = false;
 
+            //move arrow attachment
             GameObject moveArrows = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs\\MoveArrows"));
             moveArrows.name = "IndicatorMoveArrows";
             moveArrows.transform.parent = goalIndicator.transform;
             moveArrows.transform.localPosition = UnityEngine.Vector3.zero;
 
             if (move) moveArrows.GetComponent<MoveArrows>().Translate = (translation) => goalIndicator.transform.Translate(translation, Space.World);
-            else moveArrows.GetComponent<MoveArrows>().Translate = (translation) => goalIndicator.transform.localScale += translation;//goalIndicator.transform.localScale.Scale(translation);
+            else moveArrows.GetComponent<MoveArrows>().Translate = (translation) => goalIndicator.transform.localScale += translation;
 
             StateMachine.SceneGlobal.Link<GoalState>(moveArrows);
 
+            //camera stuff
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.ActiveState;
-
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, goalIndicator));
 
+            //help menu stuff
             Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(Reset);
