@@ -101,7 +101,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnFieldExportButtonClicked()
         {
-            Application.OpenURL("http://bxd.autodesk.com/synthesis/tutorials-field.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
         }
 
         /// <summary>
