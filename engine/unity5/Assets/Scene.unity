@@ -91666,7 +91666,7 @@ MonoBehaviour:
   m_Text: '
 
 
-    Tutorials: bxd.autodesk.com
+    Tutorials: synthesis.autodesk.com
 
 
     Home Tab: Main simulator functions
@@ -91675,7 +91675,10 @@ MonoBehaviour:
     Driver Practice Tab: Gamepiece setup and interaction
 
 
-    Scoring Tab: Match play'
+    Scoring Tab: Match play
+
+
+    Sensors: Robot camera and sensor configurations'
 --- !u!222 &2034670807
 CanvasRenderer:
   m_ObjectHideFlags: 0
