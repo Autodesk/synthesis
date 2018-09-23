@@ -6,7 +6,7 @@ Synthesis is a robotics simulator designed to help FIRST Robotics teams design, 
 * Driver practice & strategy
 * Code emulation
 
-Developed solely by FIRST students, Synthesis is built with a direct focus on the FIRST community. At the start of this year, we made the project fully open source so that we can better involve the community. This way, contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Developed solely by FIRST students, Synthesis is built with a direct focus on the FIRST community. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
 
 For more information on the product itself or the team, visit http://synthesis.autodesk.com/
 
