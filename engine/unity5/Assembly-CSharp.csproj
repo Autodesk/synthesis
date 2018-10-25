@@ -303,7 +303,6 @@
     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
     <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
-    <Compile Include="Assets\Scripts\Settings\Settings.cs" />
     <Compile Include="Assets\Scripts\SimStart.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
