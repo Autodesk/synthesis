@@ -663,7 +663,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
             if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
             {
                 Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>

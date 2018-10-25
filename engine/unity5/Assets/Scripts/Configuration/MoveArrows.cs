@@ -156,6 +156,7 @@ namespace Synthesis.Configuration
                 currentArrowPoint = mouseRay.GetPoint(enter);
             }
 
+            //prevents move arrows from going below field
             if (currentArrowPoint.y < GameObject.Find("Field").transform.position.y) { currentArrowPoint.y = GameObject.Find("Field").transform.position.y; lastArrowPoint.y = GameObject.Find("Field").transform.position.y; }
 
             if (lastArrowPoint != Vector3.zero)

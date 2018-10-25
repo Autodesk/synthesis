@@ -9,25 +9,6 @@ namespace Synthesis.Input
 {
     public class Controls
     {
-        #region Old Controls: 2017 and Older
-        //public enum Control
-        //{
-        //    Forward, Backward, Right, Left, ResetRobot, CameraToggle, pwm2Plus, pwm2Neg, pwm3Plus, pwm3Neg, pwm4Plus,
-        //    pwm4Neg, pwm5Plus, pwm5Neg, pwm6Plus, pwm6Neg, PickupPrimary, ReleasePrimary, SpawnPrimary, PickupSecondary,
-        //    ReleaseSecondary, SpawnSecondary
-        //};
-
-        //public static KeyCode[] ControlKey = new KeyCode[23];
-        //public static KeyCode[] BackupKeys = new KeyCode[23];
-        //public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot",
-        //                                                "Toggle Camera", "PWM 2 Positive", "PWM 2 Negative", "PWM 3 Positive",
-        //                                                "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive",
-        //                                                "PWM 5 Negative", "PWM 6 Positive", "PWM 6 Negative", "Pick Up Primary Gamepiece",
-        //                                                "Release Primary Gamepiece", "Spawn Primary Gamepiece", "Pick Up Secondary Gamepiece",
-        //                                                "Release Secondary Gamepiece", "Spawn Secondary Gamepiece"
-        //};
-        #endregion
-
         public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
 
         ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
@@ -83,11 +64,12 @@ namespace Synthesis.Input
             public KeyMapping duplicateRobot;
             public KeyMapping switchActiveRobot;
 
+            //driver practice controls
             public List<KeyMapping> pickup;
             public List<KeyMapping> release;
             public List<KeyMapping> spawnPieces;
 
-            
+
         }
 
         /// <summary>
@@ -124,22 +106,13 @@ namespace Synthesis.Input
         /// </summary>
         public static Axes[] axes = new Axes[6];
 
-
         /// <summary>
         /// Initializes the <see cref="Controls"/> class.
         /// </summary>
         static Controls()
         {
-            
-        }
-
-        public static void Init()
-        {
-            if (TankDriveEnabled)
-                TankControls();
-            else ArcadeControls();
-
-            Controls.Load();
+            TankControls();
+            ArcadeControls();
         }
 
         /// <summary>
@@ -220,7 +193,7 @@ namespace Synthesis.Input
                 }
             }
         }
-        
+
 
         /// <summary>
         /// Converts string representation of CustomInput to CustomInput.
@@ -262,14 +235,14 @@ namespace Synthesis.Input
         /// </summary>
         public static void ArcadeControls()
         {
-            // TODO: Please someone simplify this. Load the defaults from an Json file or something.
+            //controls are repeated for each player with indexes changing 
 
             #region Primary Controls
             //Basic Controls
-            buttons[0].forward = InputControl.SetKey("1: Forward", PlayerOneIndex, KeyCode.W, false);
-            buttons[0].backward = InputControl.SetKey("1: Backward", PlayerOneIndex, KeyCode.S, false);
-            buttons[0].left = InputControl.SetKey("1: Left", PlayerOneIndex, KeyCode.A, false);
-            buttons[0].right = InputControl.SetKey("1: Right", PlayerOneIndex, KeyCode.D, false);
+            buttons[0].forward = InputControl.SetKey("1: Forward", PlayerOneIndex, KeyCode.UpArrow, false);
+            buttons[0].backward = InputControl.SetKey("1: Backward", PlayerOneIndex, KeyCode.DownArrow, false);
+            buttons[0].left = InputControl.SetKey("1: Left", PlayerOneIndex, KeyCode.LeftArrow, false);
+            buttons[0].right = InputControl.SetKey("1: Right", PlayerOneIndex, KeyCode.RightArrow, false);
 
             //Remaining PWM controls
             buttons[0].pwm2Plus = InputControl.SetKey("1: PWM 2 Positive", PlayerOneIndex, KeyCode.Alpha1, false);
@@ -298,6 +271,8 @@ namespace Synthesis.Input
             buttons[0].trajectory = InputControl.SetKey("1: Toggle Trajectory", PlayerOneIndex, KeyCode.T, false);
             buttons[0].duplicateRobot = InputControl.SetKey("1: Duplicate Robot", PlayerOneIndex, KeyCode.U, false);
             buttons[0].switchActiveRobot = InputControl.SetKey("1: Switch Active Robot", PlayerOneIndex, KeyCode.Y, false);
+
+            //driver practice controls - dependent on number of gamepieces
             buttons[0].pickup = new List<KeyMapping>();
             buttons[0].release = new List<KeyMapping>();
             buttons[0].spawnPieces = new List<KeyMapping>();
@@ -646,6 +621,8 @@ namespace Synthesis.Input
             buttons[0].trajectory = InputControl.SetKey("1: Toggle Trajectory", PlayerOneIndex, KeyCode.T, true);
             buttons[0].duplicateRobot = InputControl.SetKey("1: Duplicate Robot", PlayerOneIndex, KeyCode.U, true);
             buttons[0].switchActiveRobot = InputControl.SetKey("1: Switch Active Robot", PlayerOneIndex, KeyCode.Y, true);
+
+            //driver practice controls - dependent on number of gamepieces
             buttons[0].pickup = new List<KeyMapping>();
             buttons[0].release = new List<KeyMapping>();
             buttons[0].spawnPieces = new List<KeyMapping>();

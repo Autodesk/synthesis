@@ -266,6 +266,12 @@ namespace Synthesis.GUI
         {
             helpMenu.SetActive(true);
 
+            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: synthesis.autodesk.com" +
+                "\n\nHome Tab: Main simulator functions" +
+                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
+                "\n\nScoring Tab: Match play" +
+                "\n\nSensors: Robot camera and sensor configurations";
+
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);
             tabs.transform.Translate(new Vector3(300, 0, 0));
