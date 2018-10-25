@@ -90,12 +90,10 @@ namespace BxDRobotExporter
         /// <param name="FirstTime"></param>
         public void Activate(ApplicationAddInSite AddInSiteObject, bool FirstTime)
         {
-
             MainApplication = AddInSiteObject.Application; //Gets the application object, which is used in many different ways throughout this whole process
             string ClientID = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
-            
             Utilities.LoadSettings();
-            
+
             #region Add Parallel Environment
 
             #region Load Images
@@ -636,7 +634,7 @@ namespace BxDRobotExporter
         /// <param name="Child"></param>
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition)
+        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
 
@@ -646,8 +644,7 @@ namespace BxDRobotExporter
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
-            Properties.Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
-            Properties.Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
+            Properties.Settings.Default.ConfigVersion = 2; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
         } 
         #endregion

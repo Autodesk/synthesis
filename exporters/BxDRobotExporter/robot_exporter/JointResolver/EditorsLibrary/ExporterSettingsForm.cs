@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation);
 
     public partial class PluginSettingsForm : Form
     {
@@ -79,14 +79,13 @@ namespace EditorsLibrary
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName);
             }
 
             //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
             public string fieldName;
-            public String defaultRobotCompetition;
             public bool openSynthesis;
             //Inventor
             public Color InventorChildColor;

@@ -95,12 +95,12 @@ public partial class DriveChooser : Form
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                 if (pneumaticMeta != null)
                 {
-                    numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
+                    cmbPneumaticDiameter.SelectedIndex = (int)pneumaticMeta.widthEnum;
                     cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
                 }
                 else
                 {
-                    numericUpDownPnuDia.Value = (decimal)1.0;
+                    cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
                     cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                 }
             }
@@ -135,115 +135,6 @@ public partial class DriveChooser : Form
                 ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
                 
             }
-            {
-                switch (joint.cDriver.motor)
-                {
-                    case MotorType.GENERIC:
-                        RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
-                        MotorTypeDropDown.SelectedItem = "GENERIC";
-                        break;
-                    case MotorType.CIM:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "CIM";
-                        break;
-                    case MotorType.MINI_CIM:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "MIN_CIM";
-                        break;
-                    case MotorType.BAG_MOTOR:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "BAG_MOTOR";
-                        break;
-                    case MotorType.REDLINE_775_PRO:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "REDLINE_775_PRO";
-                        break;
-                    case MotorType.ANDYMARK_9015:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "ANDYMARK_9015";
-                        break;
-                    case MotorType.BANEBOTS_775_18v:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "BANEBOTS_775_18v";
-                        break;
-                    case MotorType.BANEBOTS_775_12v:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "BANEBOTS_775_12v";
-                        break;
-                    case MotorType.BANEBOTS_550_12v:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "BANEBOTS_550_12v";
-                        break;
-                    case MotorType.ANDYMARK_775_125:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "ANDYMARK_775_125";
-                        break;
-                    case MotorType.SNOW_BLOWER:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "SNOW_BLOWER";
-                        break;
-                    case MotorType.NIDEC_BLDC:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "NIDEC_BLDC";
-                        break;
-                    case MotorType.THROTTLE_MOTOR:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "THROTTLE_MOTOR";
-                        break;
-                    case MotorType.WINDOW_MOTOR:
-                        RobotCompetitionDropDown.SelectedItem = "FRC";
-                        MotorTypeDropDown.SelectedItem = "WINDOW_MOTOR";
-                        break;
-                    case MotorType.NEVEREST:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "NEVEREST";
-                        break;
-                    case MotorType.TETRIX_MOTOR:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "TETRIX_MOTOR";
-                        break;
-                    case MotorType.MODERN_ROBOTICS_MATRIX:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "MODERN_ROBOTICS_MATRIX";
-                        break;
-                    case MotorType.REV_ROBOTICS_HD_HEX_20_TO_1:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_HD_HEX_20_TO_1";
-                        break;
-                    case MotorType.REV_ROBOTICS_HD_HEX_40_TO_1:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_HD_HEX_40_TO_1";
-                        break;
-                    case MotorType.REV_ROBOTICS_CORE_HEX:
-                        RobotCompetitionDropDown.SelectedItem = "FTC";
-                        MotorTypeDropDown.SelectedItem = "REV_ROBOTICS_CORE_HEX";
-                        break;
-                    case MotorType.VEX_V5_Smart_Motor_600_RPM:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_600_RPM";
-                        break;
-                    case MotorType.VEX_V5_Smart_Motor_200_RPM:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_200_RPM";
-                        break;
-                    case MotorType.VEX_V5_Smart_Motor_100_RPM:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_V5_Smart_Motor_100_RPM";
-                        break;
-                    case MotorType.VEX_393_NORMAL_SPEED:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_393_NORMAL_SPEED";
-                        break;
-                    case MotorType.VEX_393_HIGH_SPEED:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_393_HIGH_SPEED";
-                        break;
-                    case MotorType.VEX_393_TURBO_GEAR_SET:
-                        RobotCompetitionDropDown.SelectedItem = "VEX";
-                        MotorTypeDropDown.SelectedItem = "VEX_393_TURBO_GEAR_SET";
-                        break;
-                }
-            }
             #endregion
         }
         else //Default values
@@ -260,15 +151,13 @@ public partial class DriveChooser : Form
 
             chkBoxHasBrake.Checked = false;
 
-            numericUpDownPnuDia.Value = (decimal)0.5;
+            cmbPneumaticDiameter.SelectedIndex = (int)PneumaticDiameter.MEDIUM;
             cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
             cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
             cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
             chkBoxDriveWheel.Checked = false;
-
-            RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition;
-            MotorTypeDropDown.SelectedItem = "GENERIC";
+            
         }
 
         PrepLayout();
@@ -288,19 +177,18 @@ public partial class DriveChooser : Form
         PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
         WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
         ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-        Enum.TryParse(MotorTypeDropDown.SelectedItem.ToString(), out MotorType motor);
+
         if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
             txtPort1.Value != joint.cDriver.port1 ||
             txtPort2.Value != joint.cDriver.port2 ||
             txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
             txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
             inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
-            rbCAN.Checked != joint.cDriver.isCan || chkBoxHasBrake.Checked != joint.cDriver.hasBrake ||
-            motor != joint.cDriver.motor)
+            rbCAN.Checked != joint.cDriver.isCan || chkBoxHasBrake.Checked != joint.cDriver.hasBrake)
             return true;
 
         if (pneumatic != null && 
-            (numericUpDownPnuDia.Value != (decimal)pneumatic.width ||
+            (cmbPneumaticDiameter.SelectedIndex != (int)pneumatic.widthEnum ||
             cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
             return true;
 
@@ -349,7 +237,6 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Add(metaWheel);
                 tabsMeta.TabPages.Add(metaGearing);
                 tabsMeta.TabPages.Add(metaBrake);
-                tabsMeta.TabPages.Add(metaMotorType);
                 chkBoxDriveWheel.Show();
                 rbCAN.Show();
                 rbPWM.Show();
@@ -365,6 +252,7 @@ public partial class DriveChooser : Form
             {
                 tabsMeta.Visible = true;
                 tabsMeta.TabPages.Clear();
+                tabsMeta.TabPages.Add(metaGearing);
                 tabsMeta.TabPages.Add(metaBrake);
                 chkBoxHasBrake.Show();
 
@@ -430,15 +318,6 @@ public partial class DriveChooser : Form
                 isCan = rbCAN.Checked,
                 hasBrake = chkBoxHasBrake.Checked
         };
-            if (cType.IsMotor())
-            {
-                if (!Enum.TryParse(MotorTypeDropDown.SelectedItem.ToString(), out MotorType motor))
-                {
-                    motor = MotorType.GENERIC;
-                }
-                joint.cDriver.motor = motor;
-                SynthesisGUI.PluginSettings.defaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
-            }
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
@@ -466,7 +345,7 @@ public partial class DriveChooser : Form
                 PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                 {
                     pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
-                    width = (double)numericUpDownPnuDia.Value
+                    widthEnum = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex
                 }; //The info about the wheel attached to the joint.
                 joint.cDriver.AddInfo(pneumaticDriver);
                 #endregion
@@ -568,55 +447,5 @@ public partial class DriveChooser : Form
         {
             lblPort.Text = "PWM Port";
         }
-    }
-
-    private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        switch (RobotCompetitionDropDown.SelectedItem.ToString())
-        {
-            case "GENERIC":
-                MotorTypeDropDown.Items.Clear();
-                MotorTypeDropDown.Items.Add("GENERIC");
-                break;
-            case "FRC":
-                MotorTypeDropDown.Items.Clear();
-                MotorTypeDropDown.Items.Add("GENERIC");
-                MotorTypeDropDown.Items.Add("CIM");
-                MotorTypeDropDown.Items.Add("MINI_CIM");
-                MotorTypeDropDown.Items.Add("BAG_MOTOR");
-                MotorTypeDropDown.Items.Add("REDLINE_775_PRO");
-                MotorTypeDropDown.Items.Add("ANDYMARK_9015");
-                MotorTypeDropDown.Items.Add("BANEBOTS_775_18v");
-                MotorTypeDropDown.Items.Add("BANEBOTS_775_12v");
-                MotorTypeDropDown.Items.Add("BANEBOTS_550_12v");
-                MotorTypeDropDown.Items.Add("ANDYMARK_775_125");
-                MotorTypeDropDown.Items.Add("SNOW_BLOWER");
-                MotorTypeDropDown.Items.Add("NIDEC_BLDC");
-                MotorTypeDropDown.Items.Add("THROTTLE_MOTOR");
-                MotorTypeDropDown.Items.Add("WINDOW_MOTOR");
-                MotorTypeDropDown.Items.Add("NEVEREST");
-                break;
-            case "FTC":
-                MotorTypeDropDown.Items.Clear();
-                MotorTypeDropDown.Items.Add("GENERIC");
-                MotorTypeDropDown.Items.Add("NEVEREST");
-                MotorTypeDropDown.Items.Add("TETRIX_MOTOR");
-                MotorTypeDropDown.Items.Add("MODERN_ROBOTICS_MATRIX");
-                MotorTypeDropDown.Items.Add("REV_ROBOTICS_HD_HEX_20_TO_1");
-                MotorTypeDropDown.Items.Add("REV_ROBOTICS_HD_HEX_40_TO_1");
-                MotorTypeDropDown.Items.Add("REV_ROBOTICS_CORE_HEX");
-                break;
-            case "VEX":
-                MotorTypeDropDown.Items.Clear();
-                MotorTypeDropDown.Items.Add("GENERIC");
-                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_600_RPM");
-                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_200_RPM");
-                MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_100_RPM");
-                MotorTypeDropDown.Items.Add("VEX_393_NORMAL_SPEED");
-                MotorTypeDropDown.Items.Add("VEX_393_HIGH_SPEED");
-                MotorTypeDropDown.Items.Add("VEX_393_TURBO_GEAR_SET");
-                break;
-        }
-        MotorTypeDropDown.SelectedItem = "GENERIC";
     }
 }

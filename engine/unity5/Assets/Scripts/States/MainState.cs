@@ -280,7 +280,7 @@ namespace Synthesis.States
                 return false;
 
             FieldDataHandler.Load(fieldPath);
-            Controls.Load();
+            Controls.Init();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);

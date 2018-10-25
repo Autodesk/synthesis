@@ -350,7 +350,7 @@ public static partial class BXDJSkeleton
 
         writer.WriteAttributeString("DriverMetaID", meta.GetID().ToString());
 
-        writer.WriteElementString("WidthMM", (meta.width * 25.4).ToString("F4"));
+        writer.WriteElementString("WidthMM", meta.widthMM.ToString("F4"));
         writer.WriteElementString("PressurePSI", meta.pressurePSI.ToString("F4"));
 
         writer.WriteEndElement();

@@ -17,17 +17,5 @@
     <Setting Name="ConfigVersion" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="DefaultRobotCompetition" Type="System.String" Scope="User">
-      <Value Profile="(Default)">GENERIC</Value>
-    </Setting>
-    <Setting Name="SelectedField" Type="System.String" Scope="User">
-      <Value Profile="(Default)">firstRun</Value>
-    </Setting>
-    <Setting Name="ShowExportOrAdvancedForm" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ExportToField" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

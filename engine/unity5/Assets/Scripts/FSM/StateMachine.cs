@@ -171,7 +171,7 @@ namespace Synthesis.FSM
             {
                 CurrentState = null;
             }
-
+            
             if (unfreeze)
             {
                 unfreeze = false;
@@ -186,7 +186,7 @@ namespace Synthesis.FSM
                     t.Clear();
                 }
             }
-
+            
             return CurrentState;
         }
 

@@ -130,8 +130,16 @@ namespace Synthesis.Input
         /// </summary>
         static Controls()
         {
-            TankControls();
-            ArcadeControls();
+            
+        }
+
+        public static void Init()
+        {
+            if (TankDriveEnabled)
+                TankControls();
+            else ArcadeControls();
+
+            Controls.Load();
         }
 
         /// <summary>

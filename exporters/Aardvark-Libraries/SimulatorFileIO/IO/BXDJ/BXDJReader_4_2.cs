@@ -98,27 +98,23 @@ public partial class BXDJSkeleton
                     <xs:enumeration value='MINI_CIM'/>
                     <xs:enumeration value='BAG_MOTOR'/>
                     <xs:enumeration value='REDLINE_775_PRO'/>
-                    <xs:enumeration value='ANDYMARK_9015'/>
+                    <xs:enumeration value='_9015'/>
                     <xs:enumeration value='BANEBOTS_775_18v'/>
                     <xs:enumeration value='BANEBOTS_775_12v'/>
                     <xs:enumeration value='BANEBOTS_550_12v'/>
                     <xs:enumeration value='ANDYMARK_775_125'/>
                     <xs:enumeration value='SNOW_BLOWER'/>
-                    <xs:enumeration value='NIDEC_BLDC'/>
+                    <xs:enumeration value='NIDEN_BLDC'/>
                     <xs:enumeration value='THROTTLE_MOTOR'/>
                     <xs:enumeration value='WINDOW_MOTOR'/>
                     <xs:enumeration value='NEVEREST'/>
                     <xs:enumeration value='TETRIX_MOTOR'/>
-                    <xs:enumeration value='MODERN_ROBOTICS_MATRIX'/>
-                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_20_TO_1'/>
-                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_40_TO_1'/>
-                    <xs:enumeration value='REV_ROBOTICS_CORE_HEX'/>
-                    <xs:enumeration value='VEX_V5_Smart_Motor_600_RPM'/>
-                    <xs:enumeration value='VEX_V5_Smart_Motor_200_RPM'/>
-                    <xs:enumeration value='VEX_V5_Smart_Motor_100_RPM'/>
-                    <xs:enumeration value='VEX_393_NORMAL_SPEED'/>
-                    <xs:enumeration value='VEX_393_HIGH_SPEED'/>
-                    <xs:enumeration value='VEX_393_TURBO_GEAR_SET'/>
+                    <xs:enumeration value='MODERN_ROBOTICS_MATRIX_12V'/>
+                    <xs:enumeration value='REV_ROBOTICS_HD_HEX_12V'/>
+                    <xs:enumeration value='REV_ROBOTICS_CORE_HEX_12V'/>
+                    <xs:enumeration value='VEX_V5_Smart_Motor'/>
+                    <xs:enumeration value='VEX_269'/>
+                    <xs:enumeration value='VEX_393'/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:element>
@@ -752,10 +748,6 @@ public partial class BXDJSkeleton
                 case "DriveType":
                     // Initialize the driver.
                     driver = new JointDriver((JointDriverType)Enum.Parse(typeof(JointDriverType), reader.ReadElementContentAsString()));
-                    break;
-                case "MotorType":
-                    // Initialize the driver.
-                    driver.motor = (MotorType)Enum.Parse(typeof(MotorType), reader.ReadElementContentAsString());
                     break;
                 case "Port1":
                     // Assign a value to port1.

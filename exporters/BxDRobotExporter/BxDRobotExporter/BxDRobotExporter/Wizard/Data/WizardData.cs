@@ -60,11 +60,9 @@ namespace BxDRobotExporter.Wizard
             public void ApplyToNode()
             {
                 Node.GetSkeletalJoint().cDriver = new JointDriver(JointDriverType.MOTOR);
-
-                Node.GetSkeletalJoint().cDriver.motor = MotorType.GENERIC;
                 //if (WheelType != WizardWheelType.MECANUM)
                 //{
-                Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
+                    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort);
                 //} else
                 //{
                 //    Node.GetSkeletalJoint().cDriver.SetPort(PWMPort, 1);
@@ -76,7 +74,7 @@ namespace BxDRobotExporter.Wizard
                         wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
                         wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
                         wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                        wheelDriver.forwardAsympValue = 8; //Force of leveled off kinetic friction force.
+                        wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
 
                         if (WheelType == WizardWheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
                         {

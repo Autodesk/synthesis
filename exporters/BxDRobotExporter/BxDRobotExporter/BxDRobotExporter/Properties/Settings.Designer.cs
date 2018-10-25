@@ -12,7 +12,7 @@ namespace BxDRobotExporter.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -58,7 +58,37 @@ namespace BxDRobotExporter.Properties {
                 this["SaveLocation"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("firstRun")]
+        public string SelectedField
+        {
+            get
+            {
+                return ((string)(this["SelectedField"]));
+            }
+            set
+            {
+                this["SelectedField"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportToField
+        {
+            get
+            {
+                return ((bool)(this["ExportToField"]));
+            }
+            set
+            {
+                this["ExportToField"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
@@ -70,7 +100,22 @@ namespace BxDRobotExporter.Properties {
                 this["FancyColors"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowExportOrAdvancedForm
+        {
+            get
+            {
+                return ((bool)(this["ShowExportOrAdvancedForm"]));
+            }
+            set
+            {
+                this["ShowExportOrAdvancedForm"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
@@ -80,54 +125,6 @@ namespace BxDRobotExporter.Properties {
             }
             set {
                 this["ConfigVersion"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("GENERIC")]
-        public string DefaultRobotCompetition {
-            get {
-                return ((string)(this["DefaultRobotCompetition"]));
-            }
-            set {
-                this["DefaultRobotCompetition"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("firstRun")]
-        public string SelectedField {
-            get {
-                return ((string)(this["SelectedField"]));
-            }
-            set {
-                this["SelectedField"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowExportOrAdvancedForm {
-            get {
-                return ((bool)(this["ShowExportOrAdvancedForm"]));
-            }
-            set {
-                this["ShowExportOrAdvancedForm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ExportToField {
-            get {
-                return ((bool)(this["ExportToField"]));
-            }
-            set {
-                this["ExportToField"] = value;
             }
         }
     }

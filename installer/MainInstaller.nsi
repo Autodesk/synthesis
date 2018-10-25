@@ -143,7 +143,7 @@ File /r "MixAndMatch\*"
 
 SectionEnd
 
-Section "Inventor Exporter Plugin" iExporter
+Section "Inventor Exporter Plugin" Exporter
 
   ; Set output path to plugin directory
   SetOutPath $INSTDIR
@@ -151,17 +151,6 @@ Section "Inventor Exporter Plugin" iExporter
   
   SetOutPath $APPDATA\Autodesk\ApplicationPlugins
   File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
-
-SectionEnd
-
-Section "Fusion Exporter Plugin" fExporter
-
-  ; Set output path to plugin directory
-  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns"
-  File /r "FusionExporter"
-  
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle\Contents\"
-  File /r "FusionExporter\FusionSynth.dll"
 
 SectionEnd
 
@@ -178,15 +167,13 @@ SectionEnd
 
   LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
   LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
-  LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
-  LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator."
+  LangString DESC_Exporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor Addin used to import Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
   !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
-  !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
-  !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Exporter} $(DESC_Exporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   

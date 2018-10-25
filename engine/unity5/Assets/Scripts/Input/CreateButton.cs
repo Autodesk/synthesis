@@ -725,19 +725,19 @@ namespace Synthesis.Input
                 case 0:  //tank drive slider is OFF
                     InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
-                    Controls.Load();
+                    Controls.Init();
                     UpdateActiveButtons();
                     break;
                 case 1:  //tank drive slider is ON
                     InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
                     Controls.TankDriveEnabled = true;
-                    Controls.Load();
+                    Controls.Init();
                     UpdateActiveButtons();
                     break;
                 default: //defaults to arcade drive
                     InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
-                    Controls.Load();
+                    Controls.Init();
                     UpdateActiveButtons();
                     break;
             }
