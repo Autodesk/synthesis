@@ -11,7 +11,7 @@ namespace Synthesis.Settings
         void Start()
         {
             DontDestroyOnLoad(this);
-            Controls.Load();
+            Controls.Init();
         }
 
         // Update is called once per frame
