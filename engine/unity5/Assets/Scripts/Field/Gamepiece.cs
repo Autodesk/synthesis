@@ -10,6 +10,10 @@ namespace Synthesis.Field
         public string name;
         public int holdingLimit;
         public Vector3 spawnpoint;
+        /// <summary>
+        /// Constructor to set gamepiece values by converting xml element 
+        /// </summary>
+        /// <param name="e">xml element with gamepiece tag</param>
         public Gamepiece(XElement e)
         {
             this.name = e.Attribute("id").Value;

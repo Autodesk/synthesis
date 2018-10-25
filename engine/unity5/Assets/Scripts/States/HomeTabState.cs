@@ -26,7 +26,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnTutorialsButtonClicked()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnWebsiteButtonClicked()
         {
-            Application.OpenURL("http://bxd.autodesk.com/");
+            Application.OpenURL("http://synthesis.autodesk.com");
         }
 
         /// <summary>

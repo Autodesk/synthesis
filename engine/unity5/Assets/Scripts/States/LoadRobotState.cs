@@ -81,7 +81,7 @@ namespace Synthesis.States
         /// </summary>
         public void OnRobotExportButtonClicked()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
         }
 
         /// <summary>

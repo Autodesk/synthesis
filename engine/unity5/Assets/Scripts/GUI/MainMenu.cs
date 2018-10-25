@@ -293,7 +293,7 @@ namespace Synthesis.GUI
         {
             if (yes)
             {
-                Process.Start("http://bxd.autodesk.com");
+                Process.Start("http://synthesis.autodesk.com");
                 Process.Start(updater);
                 Application.Quit();
             }
