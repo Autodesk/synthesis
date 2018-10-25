@@ -49,7 +49,7 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Selects robot code and starts VM. 
         /// </summary>
-        public void OnSelectRobotCodeButtonPressed()
+        public void OnSelectRobotCodeButtonClicked()
         {
             SSHClient.SCPFileSender();
         }
@@ -57,12 +57,12 @@ namespace Assets.Scripts.GUI
         /// <summary>
         /// Opens the Synthesis Driver Station for emulation
         /// </summary>
-        public void OnDriverStationButtonPressed()
+        public void OnDriverStationButtonClicked()
         {
             emulationDriverStation.OpenDriverStation();
         }
 
-        public void OnStartRobotCodeButtonPressed()
+        public void OnStartRobotCodeButtonClicked()
         {
             emulationDriverStation.ToggleRobotCodeButton();
             SSHClient.StartRobotCode();
@@ -70,7 +70,7 @@ namespace Assets.Scripts.GUI
         }
 
         #region Help Button and Menu
-        public void OnHelpButtonPressed()
+        public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);
 
