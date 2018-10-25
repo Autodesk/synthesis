@@ -106,15 +106,13 @@ namespace Synthesis.Input
         /// </summary>
         public static Axes[] axes = new Axes[6];
 
-        public static void Init()
+        /// <summary>
+        /// Initializes the <see cref="Controls"/> class.
+        /// </summary>
+        static Controls()
         {
-            //must initialize default tank or arcade seperately to allow pwm controls
-            if (TankDriveEnabled)
-                TankControls();
-            else ArcadeControls();
-
-            //write saved controls over defaults
-            Load();
+            TankControls();
+            ArcadeControls();
         }
 
         /// <summary>
