@@ -20,7 +20,7 @@ namespace Synthesis.BUExtensions
         private bool updatePosition;
 
         private const float VerticalOffset = 0.1f;
-        private const float SimTorque = 2.42f;
+        private float torque = 2.42f;
         private const float MaxAngularSpeed = 40f;
         private const float RollingFriction = 0.01f;
 
@@ -110,9 +110,13 @@ namespace Synthesis.BUExtensions
         /// Applies the given force to the wheel.
         /// </summary>
         /// <param name="force"></param>
-        public void ApplyForce(float force)
+        public void ApplyForce(float force, float torque, bool old)
         {
-            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar, wheelIndex);
+            this.torque = torque;
+            if (old)
+                robot.RaycastRobot.ApplyEngineForce(-force * (torque / radius) * robot.RaycastRobot.OverrideMass * MassTorqueScalar, wheelIndex);
+            else
+                robot.RaycastRobot.ApplyEngineForce(-force * torque, wheelIndex);
         }
 
         /// <summary>
