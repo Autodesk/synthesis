@@ -137,9 +137,10 @@ namespace Synthesis.Input
         {
             if (TankDriveEnabled)
                 TankControls();
-            else ArcadeControls();
+            else
+                ArcadeControls();
 
-            Controls.Load();
+            Load();
         }
 
         /// <summary>
