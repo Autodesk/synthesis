@@ -14,7 +14,12 @@ using Synthesis.Utils;
 public class DriveJoints
 {
     private const float SpeedArrowPwm = 0.5f;
+    private const float WheelMaxSpeed = 300f;
+    private const float WheelMotorImpulse = 0.1f;
+    private const float WheelCoastFriction = 0.025f;
 
+    private const float HingeMaxSpeed = 4f;
+    private const float HingeMotorImpulse = 10f;
     private const float HingeCostFriction = 0.1f;
 
     private const float MaxSliderForce = 1000f;
@@ -24,21 +29,6 @@ public class DriveJoints
 
     private static readonly float[] motors;
     private static readonly JoystickSerializer[] joystickSerializers;
-
-    public struct Motor
-    {
-        public float baseTorque;
-        public float maxSpeed;
-        public float slope;
-        public Motor(float baseTorque, float maxSpeed)
-        {
-            this.baseTorque = baseTorque / 60;
-            this.maxSpeed = maxSpeed * 0.104719755f;
-            this.slope = 0f;
-        }
-    }
-
-    private static Dictionary<MotorType, Motor> motorDefinition = new Dictionary<MotorType, Motor>();
 
     /// <summary>
     /// Represents ports on a mecanum drive.
@@ -63,8 +53,6 @@ public class DriveJoints
 
         for (int i = 0; i < joystickSerializers.Length; i++)
             joystickSerializers[i] = new JoystickSerializer(i);
-
-        DefineMotors();
     }
 
     /// <summary>
@@ -108,60 +96,51 @@ public class DriveJoints
 
                 BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 
-                SkeletalJoint_Base joint = rigidNode.GetSkeletalJoint();
-
                 if (raycastWheel != null)
                 {
-                    if (joint.cDriver.port1 == i + 1)
+                    if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                     {
-                        float output = pwm[i];
-
-                        MotorType motorType = joint.cDriver.GetMotorType();
-
-                        float torque = motorType == MotorType.GENERIC ? 2.42f : 60 * motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * raycastWheel.GetWheelSpeed() / 9.549297f;
-
-                        if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                            torque /= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                        raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
+                        float force = pwm[i];
+                        if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                            force *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                        raycastWheel.ApplyForce(force);
                     }
                 }
 
-                if (joint != null && joint.cDriver != null)
+                if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
                 {
-                    if (joint.cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
+                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
-                        if (joint.cDriver.port1 == i + 1)
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
                         {
                             float maxSpeed = 0f;
                             float impulse = 0f;
                             float friction = 0f;
+                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                                impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
 
-                            friction = HingeCostFriction;
-
-                            MotorType motorType = joint.cDriver.GetMotorType();
-                            Motor motor = motorType == MotorType.GENERIC ? new Motor(10f, 4f) : motorDefinition[motorType];
-
-                            maxSpeed = motor.maxSpeed;
-                            impulse = motor.baseTorque - motor.slope * ((RigidBody)(rigidNode.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length / 9.549297f;
-
-
-                            if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                            if (rigidNode.HasDriverMeta<WheelDriverMeta>())
                             {
-                                float gearRatio = Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-                                impulse /= gearRatio;
-                                maxSpeed *= gearRatio;
+                                maxSpeed = WheelMaxSpeed;
+                                impulse = WheelMotorImpulse;
+                                friction = WheelCoastFriction;
+                            }
+                            else
+                            {
+                                maxSpeed = HingeMaxSpeed;
+                                impulse = HingeMotorImpulse;
+                                friction = HingeCostFriction;
                             }
 
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
                             hingedConstraint.enableMotor = true;
                             hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
-                            hingedConstraint.maxMotorImpulse = joint.cDriver.hasBrake ? motor.baseTorque : pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
+                            hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
                         }
                     }
-                    else if (joint.cDriver.GetDriveType().IsElevator())
+                    else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                     {
-                        if (joint.cDriver.port1 == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
+                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
                         {
                             BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
                             SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
@@ -169,24 +148,6 @@ public class DriveJoints
                             sc.MaxLinearMotorForce = MaxSliderForce;
                             sc.TargetLinearMotorVelocity = pwm[i] * MaxSliderSpeed;
                         }
-                    }
-                    else if (joint.cDriver.GetDriveType().IsPneumatic() && rigidNode.HasDriverMeta<PneumaticDriverMeta>())
-                    {
-                        BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
-                        SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
-
-                        float output = motors[joint.cDriver.port1 - 1];
-
-                        float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI * 6894.76f;
-                        float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM * 0.001f;
-                        float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
-
-                        float force = psi * ((float)Math.PI) * width * width / 4f;
-                        float speed = stroke / 60f;
-
-                        sc.PoweredLinearMotor = true;
-                        sc.MaxLinearMotorForce = force;
-                        sc.TargetLinearMotorVelocity = sc.TargetLinearMotorVelocity != 0 && output == 0 ? sc.TargetLinearMotorVelocity : output * speed;
                     }
                 }
             }
@@ -390,42 +351,69 @@ public class DriveJoints
             {
                 float output = motors[node.GetSkeletalJoint().cDriver.port1 - 1];
 
-                MotorType motorType = joint.cDriver.GetMotorType();
+                if (node.GetSkeletalJoint().cDriver.InputGear != 0 && node.GetSkeletalJoint().cDriver.OutputGear != 0)
+                    output *= Convert.ToSingle(node.GetSkeletalJoint().cDriver.InputGear / node.GetSkeletalJoint().cDriver.OutputGear);
 
-                float torque = motorType == MotorType.GENERIC ? 2.42f : 60 * motorDefinition[motorType].baseTorque - motorDefinition[motorType].slope * raycastWheel.GetWheelSpeed() / 9.549297f;
-
-                if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                    torque /= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                raycastWheel.ApplyForce(output, torque, motorType == MotorType.GENERIC);
+                raycastWheel.ApplyForce(output);
             }
             else if (joint.cDriver.GetDriveType().IsMotor() && node.MainObject.GetComponent<BHingedConstraint>() != null)
             {
-                float maxSpeed = 0f;
-                float impulse = 0f;
-                float friction = 0f;
-                float output = !joint.cDriver.isCan ? motors[joint.cDriver.port1 - 1] : motors[joint.cDriver.port1 - 10];
-
-                friction = HingeCostFriction;
-
-                MotorType motorType = joint.cDriver.GetMotorType();
-                Motor motor = motorType == MotorType.GENERIC ? new Motor(10f, 4f) : motorDefinition[motorType];
-
-                maxSpeed = motor.maxSpeed;
-                impulse = motor.baseTorque - motor.slope * ((RigidBody)(node.MainObject.GetComponent<BRigidBody>().GetCollisionObject())).AngularVelocity.Length / 9.549297f;
-
-
-                if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                if (!joint.cDriver.isCan)
                 {
-                    float gearRatio = Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-                    impulse /= gearRatio;
-                    maxSpeed *= gearRatio;
-                }
+                    float maxSpeed = 0f;
+                    float impulse = 0f;
+                    float friction = 0f;
+                    float output = motors[joint.cDriver.port1 - 1];
 
-                BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
-                hingedConstraint.enableMotor = true;
-                hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
-                hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? motor.baseTorque : output == 0f ? friction : Mathf.Abs(output * impulse);
+                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                    if (node.HasDriverMeta<WheelDriverMeta>())
+                    {
+                        maxSpeed = WheelMaxSpeed;
+                        impulse = WheelMotorImpulse;
+                        friction = WheelCoastFriction;
+                    }
+                    else
+                    {
+                        maxSpeed = HingeMaxSpeed;
+                        impulse = HingeMotorImpulse;
+                        friction = HingeCostFriction;
+                    }
+
+                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
+                    hingedConstraint.enableMotor = true;
+                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
+                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                }
+                else
+                {
+                    float maxSpeed = 0f;
+                    float impulse = 0f;
+                    float friction = 0f;
+                    float output = motors[joint.cDriver.port1 - 10];
+
+                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                    if (node.HasDriverMeta<WheelDriverMeta>())
+                    {
+                        maxSpeed = WheelMaxSpeed;
+                        impulse = WheelMotorImpulse;
+                        friction = WheelCoastFriction;
+                    }
+                    else
+                    {
+                        maxSpeed = HingeMaxSpeed;
+                        impulse = HingeMotorImpulse;
+                        friction = HingeCostFriction;
+                    }
+
+                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
+                    hingedConstraint.enableMotor = true;
+                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
+                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                }
             }
             else if (joint.cDriver.GetDriveType().IsElevator() && node.HasDriverMeta<ElevatorDriverMeta>())
             {
@@ -436,24 +424,6 @@ public class DriveJoints
                 sc.PoweredLinearMotor = true;
                 sc.MaxLinearMotorForce = MaxSliderForce;
                 sc.TargetLinearMotorVelocity = output * MaxSliderSpeed;
-            }
-            else if (joint.cDriver.GetDriveType().IsPneumatic() && node.HasDriverMeta<PneumaticDriverMeta>())
-            {
-                BSliderConstraint bSliderConstraint = node.MainObject.GetComponent<BSliderConstraint>();
-                SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
-
-                float output = motors[joint.cDriver.port1 - 1];
-
-                float psi = node.GetDriverMeta<PneumaticDriverMeta>().pressurePSI * 6894.76f;
-                float width = node.GetDriverMeta<PneumaticDriverMeta>().widthMM * 0.001f;
-                float stroke = (sc.UpperLinearLimit - sc.LowerLinearLimit) / 0.01f;
-
-                float force = psi * ((float)Math.PI) * width * width / 4f;
-                float speed = stroke / 60f;
-
-                sc.PoweredLinearMotor = true;
-                sc.MaxLinearMotorForce = force;
-                sc.TargetLinearMotorVelocity = sc.TargetLinearMotorVelocity != 0 && output == 0 ? sc.TargetLinearMotorVelocity : output * speed;
             }
         }
     }
@@ -532,34 +502,4 @@ public class DriveJoints
             }
         }
     }
-    #region add to dictionary
-    private static void DefineMotors()
-    {
-        motorDefinition.Add(MotorType.CIM, new Motor(2.41f, 5330f));
-        motorDefinition.Add(MotorType.MINI_CIM, new Motor(1.41f, 5840f));
-        motorDefinition.Add(MotorType.BAG_MOTOR, new Motor(0.43f, 13180f));
-        motorDefinition.Add(MotorType.REDLINE_775_PRO, new Motor(0.71f, 18730f));
-        motorDefinition.Add(MotorType.ANDYMARK_9015, new Motor(0.36f, 14270f));
-        motorDefinition.Add(MotorType.BANEBOTS_775_18v, new Motor(0.72f, 13050f));
-        motorDefinition.Add(MotorType.BANEBOTS_775_12v, new Motor(0.43f, 8700f));
-        motorDefinition.Add(MotorType.BANEBOTS_550_12v, new Motor(0.38f, 19000f));
-        motorDefinition.Add(MotorType.ANDYMARK_775_125, new Motor(0.28f, 5800f));
-        motorDefinition.Add(MotorType.SNOW_BLOWER, new Motor(7.9f, 100f));
-        motorDefinition.Add(MotorType.NIDEC_BLDC, new Motor(0.32f, 2700f));
-        motorDefinition.Add(MotorType.THROTTLE_MOTOR, new Motor(0.13f, 5300f));
-        motorDefinition.Add(MotorType.WINDOW_MOTOR, new Motor(0.154f, 90f));
-        motorDefinition.Add(MotorType.NEVEREST, new Motor(0.17f, 5480f));
-        motorDefinition.Add(MotorType.TETRIX_MOTOR, new Motor(0.38f, 150f));
-        motorDefinition.Add(MotorType.MODERN_ROBOTICS_MATRIX, new Motor(3.27f, 190f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_20_TO_1, new Motor(2.1f, 300f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_HD_HEX_40_TO_1, new Motor(4.2f, 150f));
-        motorDefinition.Add(MotorType.REV_ROBOTICS_CORE_HEX, new Motor(3.2f, 125f));
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_600_RPM, new Motor(2.1f, 600f)); //torque may be wrong
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_200_RPM, new Motor(2.1f, 200f)); //torque may be wrong
-        motorDefinition.Add(MotorType.VEX_V5_Smart_Motor_100_RPM, new Motor(2.1f, 100f)); //torque may be wrong
-        motorDefinition.Add(MotorType.VEX_393_NORMAL_SPEED, new Motor(1.67f, 100f));
-        motorDefinition.Add(MotorType.VEX_393_HIGH_SPEED, new Motor(1.04f, 160f));
-        motorDefinition.Add(MotorType.VEX_393_TURBO_GEAR_SET, new Motor(0.7f, 240f));
-    }
-    #endregion
 }
