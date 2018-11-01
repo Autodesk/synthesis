@@ -66,7 +66,7 @@ namespace Synthesis.GUI
 
         private void Awake()
         {
-            string CurrentVersion = "4.2.1.0";
+            string CurrentVersion = "4.2.2.0";
 
             if (CheckConnection())
             {
