@@ -78,7 +78,7 @@ IfFileExists "$INSTDIR" +1 +28
         Delete "$SMPROGRAMS\BXD Synthesis.lnk"
 		
         ; Remove directories used
-        RMDir $INSTDIR
+		RMDir /r "$PROGRAMFILES\Autodesk\Synthesis"
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
