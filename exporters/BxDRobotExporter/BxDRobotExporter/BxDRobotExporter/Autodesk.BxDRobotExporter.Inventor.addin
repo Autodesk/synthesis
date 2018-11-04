@@ -4,7 +4,7 @@
   <ClientId>{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}</ClientId>
   <DisplayName>Synthesis Robot Exporter</DisplayName>
   <Description>Export Inventor Assembly files as robots into Synthesis</Description>
-  <Assembly>C:\Program Files (x86)\Autodesk\Synthesis\Exporter\BxDRobotExporter.dll</Assembly>
+  <Assembly>C:\Program Files\Autodesk\Synthesis\Exporter\BxDRobotExporter.dll</Assembly>
   <LoadOnStartUp>1</LoadOnStartUp>
   <UserUnloadable>1</UserUnloadable>
   <SupportedSoftwareVersionGreaterThan>20..</SupportedSoftwareVersionGreaterThan>
