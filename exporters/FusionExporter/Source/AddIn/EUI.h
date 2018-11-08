@@ -13,6 +13,7 @@
 #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "../Data/BXDJ/ConfigData.h"
+#include "../Data/Filesystem.h"
 
 using namespace adsk::core;
 using namespace adsk::fusion;

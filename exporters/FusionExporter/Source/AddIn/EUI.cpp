@@ -18,6 +18,7 @@ using namespace SynthesisAddIn;
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
 {
 	this->UI = UI;
+	//UI->messageBox(Filesystem::getCurrentRobotDirectory("test"));
 	this->app = app;
 	exportRobotThread = nullptr;
 	createWorkspace();
@@ -117,6 +118,8 @@ void EUI::startExportRobot()
 	exportPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+
 #ifdef ALLOW_MULTITHREADING
 	// Wait for all threads to finish
 	if (exportRobotThread != nullptr)
@@ -127,13 +130,14 @@ void EUI::startExportRobot()
 	}
 
 	killExportThread = false;
-	exportRobotThread = new std::thread(&EUI::exportRobot, this, Exporter::loadConfiguration(app->activeDocument()));
+	exportRobotThread = new std::thread(&EUI::exportRobot, this, config);
 #else
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
-		//updateProgress(percent);
 	}, &killExportThread);
 #endif
+
+	UI->messageBox("Your exported robot can be found at: " + Filesystem::getCurrentRobotDirectory(config.robotName));
 }
 
 void EUI::cancelExportRobot()
@@ -153,14 +157,17 @@ void EUI::updateProgress(double percent)
 	if (percent < 0)
 		percent = 0;
 	
-	if (percent > 1)
+	if (percent > 1) {
 		percent = 1;
+	}
 
 	progressPalette->sendInfoToHTML("progress", std::to_string(percent));
+
 }
 
 void EUI::exportRobot(BXDJ::ConfigData config)
 {
+	//UI->messageBox("Robot Exported successfully to: ");
 	openProgressPalette();
 
 	try
@@ -173,12 +180,16 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 		// Add delay before closing so that loading bar has time to animate
 		if (!killExportThread)
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+		//UI->messageBox("Robot Exported successfully to: ");
 	}
 	catch (const std::exception& e)
 	{
 		progressPalette->sendInfoToHTML("error", "An error occurred while exporting \"" + config.robotName + "\":<br>" + std::string(e.what()));
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
+
+	//UI->messageBox("Robot Exported successfully to: " + Filesystem::getCurrentRobotDirectory("name"));
 	
 	closeProgressPalette();
 }
