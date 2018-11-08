@@ -5,7 +5,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller4.2.1.exe"
+Caption "Synthesis 4.2.1.1 Setup"
+
+OutFile "SynthesisInstaller4.2.1.1.exe"
 
 InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 

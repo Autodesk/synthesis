@@ -5,7 +5,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-OutFile "SynthesisInstaller(x86)4.2.1.exe"
+Caption "Synthesis (x86) 4.2.1.1 Setup"
+
+OutFile "SynthesisInstaller(x86)4.2.1.1.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -99,8 +101,8 @@ Section "Synthesis (required)" SynthesisRequired
 
   File /r "Synthesis32\*"
 
-  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
-  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis32.exe"
+  CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
+  CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis (x86)"
