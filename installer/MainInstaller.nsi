@@ -1,4 +1,5 @@
 !include MUI2.nsh
+!include x64.nsh
 ;!include LogicLib.nsh
 
 Name "Synthesis"
@@ -14,6 +15,16 @@ InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
 RequestExecutionLevel admin
+
+  Section
+  ${If} ${RunningX64}
+	goto install_stuff
+  ${Else}
+	MessageBox MB_OK "Whoa There! This install requires a 64 bit system. Sorry about that."
+	Quit
+  ${EndIf}
+    install_stuff:
+  SectionEnd
 
 ;--------------------------------
 ;Interface Settings
