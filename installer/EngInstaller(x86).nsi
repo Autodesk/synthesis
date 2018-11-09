@@ -117,7 +117,7 @@ Section "Synthesis (required)" SynthesisRequired
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
   ; Update this on release
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.2.1.0"
+                 "DisplayVersion" "4.2.1.1"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
