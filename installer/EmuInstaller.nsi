@@ -33,7 +33,6 @@ Section
   
 	MessageBox MB_YESNO "It appears that you do not have Synthesis installed. Would you like to download it now?" IDNO NoDownload
       ExecShell "open" "http://synthesis.autodesk.com/download.html"
-	  ExecShell "open" "http://synthesis.autodesk.com/Downloadables/Synthesis%20Installer.exe"
 	  
 	  Quit
 	  
