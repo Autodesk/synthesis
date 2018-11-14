@@ -67,19 +67,13 @@ IfFileExists "$INSTDIR" +1 +28
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
         RMDIR /r $APPDATA\RobotViewer
 
-        ; Remove shortcuts, if any
+        ; Remove excess shortcuts
         Delete "$SMPROGRAMS\Synthesis.lnk"
         Delete "$DESKTOP\Synthesis.lnk"
+		Delete "$SMPROGRAMS\BXD Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
-
-        ;Remove launcher shortcuts
         Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
-        Delete "$DESKTOP\BXD Synthesis.lnk"
-        Delete "$SMPROGRAMS\BXD Synthesis.lnk"
-		
-        ; Remove directories used
-        RMDir $INSTDIR
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
