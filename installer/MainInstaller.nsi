@@ -69,7 +69,6 @@ IfFileExists "$INSTDIR" +1 +28
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
-        RMDir /r $INSTDIR
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -79,18 +78,16 @@ IfFileExists "$INSTDIR" +1 +28
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
         RMDIR /r $APPDATA\RobotViewer
 
-        ; Remove shortcuts, if any
+        ; Remove excess shortcuts
         Delete "$SMPROGRAMS\Synthesis.lnk"
         Delete "$DESKTOP\Synthesis.lnk"
+		Delete "$SMPROGRAMS\BXD Synthesis.lnk"
         Delete "$DESKTOP\BXD Synthesis.lnk"
-
-        ;Remove launcher shortcuts
-        Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
+		Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
-        Delete "$DESKTOP\BXD Synthesis.lnk"
-        Delete "$SMPROGRAMS\BXD Synthesis.lnk"
-		
-        ; Remove directories used
+        
+        ; Remove expired directories
+		RMDir /r $INSTDIR
 		RMDir /r "$PROGRAMFILES\Autodesk\Synthesis"
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
