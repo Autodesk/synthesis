@@ -181,13 +181,6 @@ Section "Uninstall"
   RMDir $INSTDIR
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
-  
-  IfFileExists "$PROGRAMFILES\qemu" file_found uninstall_complete
-  
-	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
-	exec '"$PROGRAMFILES\qemu\qemu-uninstall.exe" \s'
-	Quit
 	
 	uninstall_complete:
 
