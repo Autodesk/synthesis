@@ -159,6 +159,7 @@ Section "Uninstall"
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
   RMDir /r /REBOOTOK $INSTDIR
+  RMDir /r /REBOOTOK $PROGRAMFILES64\Autodesk\Synthesis
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -172,16 +173,11 @@ Section "Uninstall"
   ; Remove any shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"
   Delete "$DESKTOP\Synthesis.lnk"
+  Delete "$SMPROGRAMS\BXD Synthesis.lnk"
   Delete "$DESKTOP\BXD Synthesis.lnk"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
-  Delete "$SMPROGRAMS\BXD Synthesis.lnk"
-  
-  ; Remove directories used
-  RMDir $INSTDIR
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
-	
-	uninstall_complete:
 
 SectionEnd
