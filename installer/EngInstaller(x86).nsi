@@ -16,8 +16,8 @@ InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 RequestExecutionLevel admin
 
 ;--------------------------------
-;Interface Settings
 
+  ;Interface Settings
   !define MUI_WELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "W21_SYN_sidebar.bmp"
   !define MUI_ICON "W16_SYN_launch.ico"
@@ -31,32 +31,34 @@ RequestExecutionLevel admin
   !define MUI_FINISHPAGE_LINK_LOCATION "http://bxd.autodesk.com/tutorials.html"
   
 ;--------------------------------
-;Pages
 
+  ; Installer GUI Pages
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
 
+  ; Uninstaller GUI Pages
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
   !insertmacro MUI_UNPAGE_FINISH
   
 ;--------------------------------
-;Languages
 
+  ; Default Language
   !insertmacro MUI_LANGUAGE "English"
 
+ ;--------------------------------
 Section
 
 ;Where we can read registry data if we need it
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
     MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
-      ; Remove registry keys
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
-
+		
+		; Remove outdated exporter plugins
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -112,9 +114,9 @@ Section "Synthesis (required)" SynthesisRequired
   
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
-  ; Update this on release
+
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.2.2"
+                 "DisplayVersion" "4.2.2" ;UPDATE ON RELEASE
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -124,7 +126,7 @@ Section "Synthesis (required)" SynthesisRequired
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
-	;Install Fields
+	; Extract field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
 	File /r "Fields\*"
 
@@ -132,17 +134,19 @@ SectionEnd
 
 Section "MixAndMatch Files" MixMatch
 
-SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
+  ; Set extraction path for Mix&Match files
+  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
 
-File /r "MixAndMatch\*"
+  File /r "MixAndMatch\*"
 
 SectionEnd
 
 Section "Robot Files" RoboFiles
 
-SetOutPath $APPDATA\Autodesk\Synthesis\Robots
+  ; Set extraction path for preloaded robot files
+  SetOutPath $APPDATA\Autodesk\Synthesis\Robots
 
-File /r "Robots\*"
+  File /r "Robots\*"
 
 SectionEnd
   
