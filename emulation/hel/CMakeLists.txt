@@ -32,6 +32,7 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
 else()
   if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
+    SET(CMAKE_BUILD_TYPE DEBUG)
     MESSAGE(WARNING "No build type specified; defaulting to debug.")
   endif()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
@@ -45,12 +46,14 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${CMAKE_BINARY_DIR}/lib
     ${CMAKE_BINARY_DIR}/lib/lib
     ${NILIB_DIRECTORY}/src/lib
-    ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena
-    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena
-    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena
-    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena
-    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena
-    ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/
+    ${NILIB_DIRECTORY}/src/lib/chipobject
+    ${NILIB_DIRECTORY}/src/lib/netcomm
+    ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release
+    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena/release
+    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena/release
+    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
+    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
+    ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
     ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
@@ -68,11 +71,11 @@ else()
     ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${NILIB_DIRECTORY}/src/lib
-    ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
-    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64
-    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64
-    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64
-    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64
+    ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/release
+    ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64/release
+    ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
+    ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64/release
+    ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64/release
     ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
 endif()
 
@@ -92,13 +95,14 @@ EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${NILIB_DIRECTORY} ${NILIB_DIRECTORY}/src/include/FRC_FPGA_ChipObject/tSystem.h ./gradlew :wpilibc:build NILib
+  BUILD_COMMAND ""
   INSTALL_COMMAND "")
 
 EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
-  GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
+  GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   CONFIGURE_COMMAND ""
+  PATCH_COMMAND cd ${WPILIB_DIRECTORY}/shared/ && patch -p1 config.gradle ${CMAKE_BINARY_DIR}/external-configs/config.patch
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
@@ -216,7 +220,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
 
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
         # ADD_DEPENDENCIES(${test_name} ctre)
-        # TARGET_LINK_LIBRARIES(${test_name} wpi libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+        TARGET_LINK_LIBRARIES(${test_name} wpi) # libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
         # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
           # "${CTRE_DIRECTORY}/cpp/include/"
           # "${CTRE_DIRECTORY}/libraries/driver/include")
