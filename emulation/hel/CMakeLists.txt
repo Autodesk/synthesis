@@ -13,6 +13,7 @@ FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/user-code)
 SET(hel_VERSION_MAJOR 1)
 SET(hel_VERSION_MINOR 0)
 
+SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
 # SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
@@ -43,7 +44,7 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
     ${CMAKE_BINARY_DIR}/lib/lib
-    ${WPILIB_DIRECTORY}/ni-libraries/lib
+    ${NILIB_DIRECTORY}/src/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena
@@ -66,7 +67,7 @@ else()
     ${CMAKE_BINARY_DIR}/lib
     ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
-    ${WPILIB_DIRECTORY}/ni-libraries/lib
+    ${NILIB_DIRECTORY}/src/lib
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64
@@ -87,13 +88,19 @@ ADD_CUSTOM_TARGET(asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM)
 
+EXTERNALPROJECT_ADD(ni-libraries
+  PREFIX lib/ni-libraries
+  GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${NILIB_DIRECTORY} ${NILIB_DIRECTORY}/src/include/FRC_FPGA_ChipObject/tSystem.h ./gradlew :wpilibc:build NILib
+  INSTALL_COMMAND "")
+
 EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://www.github.com/wpilibsuite/allwpilib.git
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/libwpilibc.so ./gradlew :wpilibc:build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
-
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
 #   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
@@ -145,16 +152,16 @@ ADD_LIBRARY(hel SHARED
   src/can_device.cpp
   src/can_motor_controller.cpp
   src/pdp.cpp)
-ADD_DEPENDENCIES(hel asio wpilib)
+ADD_DEPENDENCIES(hel asio ni-libraries)
 
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
-  "${WPILIB_DIRECTORY}/ni-libraries/include"
+  "${NILIB_DIRECTORY}/src/include"
   "${ASIO_DIRECTORY}/include"
   "${CMAKE_BINARY_DIR}/include")
 if(ARCH MATCHES "^[Aa][Rr][Mm]")
-  TARGET_LINK_LIBRARIES(hel wpi)
+  # TARGET_LINK_LIBRARIES(hel wpi)
 else()
-  TARGET_LINK_LIBRARIES(hel wpi-x86)
+  # TARGET_LINK_LIBRARIES(hel wpi-x86)
 endif()
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
@@ -227,7 +234,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-        "${WPILIB_DIRECTORY}/ni-libraries/include"
+        "${NILIB_DIRECTORY}/src/include"
         # "${CTRE_DIRECTORY}/cpp/include/"
         # "${CTRE_DIRECTORY}/libraries/driver/include"
         "${CMAKE_BINARY_DIR}/include"
@@ -275,7 +282,7 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
       "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
       "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-      "${WPILIB_DIRECTORY}/ni-libraries/include"
+      "${NILIB_DIRECTORY}/src/include"
       # "${CTRE_DIRECTORY}/cpp/include/"
       # "${CTRE_DIRECTORY}/libraries/driver/include"
       "${CMAKE_BINARY_DIR}/include"

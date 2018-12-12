@@ -54,13 +54,13 @@ namespace hel{
             return instance.first->watchdog.getStatus().PowerDisableCount;
         }
 
-        void writeCommand(uint16_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
+        void writeCommand(uint32_t /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
 
-        uint16_t readCommand(tRioStatusCode* /*status*/){ //unnecessary for emulation
+        uint32_t readCommand(tRioStatusCode* /*status*/){ //unnecessary for emulation
             return 0;
         }
 
-        uint8_t readChallenge(tRioStatusCode* /*status*/){ //unnecessary for emulation
+        uint32_t readChallenge(tRioStatusCode* /*status*/){ //unnecessary for emulation
             return 0;
         }
 
