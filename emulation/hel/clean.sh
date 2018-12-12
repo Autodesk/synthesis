@@ -14,6 +14,9 @@ case "$1" in
     "wpilib")
         rm -rf lib/wpilib;
         ;;
+    "ni-libraries")
+        rm -rf lib/ni-libraries;
+        ;;
     "ctre")
         rm -rf lib/ctre;
         ;;
@@ -31,7 +34,7 @@ case "$1" in
         ;;
     "all")
         killall qemu-system-arm;
-        rm -rf vm-package vm-package.tar.gz vm_lock CMakeFiles CMakeCache.txt cmake_install.cmake Makefile CMakeDoxyfile.in CMakeDoxygenDefaults.cmake GoogleTest-prefix bin/benchmarks/* bin/tests/* lib/lib lib/lib64 lib/google_test lib/GoogleBench lib/include lib/wpilib lib/ctre lib/ASIO build/* lib/libhel.so docs/html/* docs/latex/*
+        rm -rf vm-package vm-package.tar.gz vm_lock CMakeFiles CMakeCache.txt cmake_install.cmake Makefile CMakeDoxyfile.in CMakeDoxygenDefaults.cmake GoogleTest-prefix bin/benchmarks/* bin/tests/* lib/lib lib/lib64 lib/google_test lib/GoogleBench lib/include lib/wpilib lib/ni-libraries lib/ctre lib/ASIO build/* lib/libhel.so docs/html/* docs/latex/*
         ;;
     *)
         printf "Skipping clean. No target specified.\n"

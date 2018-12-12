@@ -54,10 +54,10 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
     ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxathena.zip_882ce6d6786024fd1378ddee15c75ec3/linux/athena/shared/
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxathenadebug.zip_22ad814603cbf64b5e87fc6dc01ee8e2/linux/athena/shared/
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
-    )
+  )
 else()
   if(NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     MESSAGE(WARNING "No architecture specified; defaulting to x86.")
@@ -76,7 +76,8 @@ else()
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.2.0-linuxx86-64.zip_999e5b59f8220bfc2a18df6ce4bd57fb/linux/x86-64/shared/)
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxx86-64debug.zip_4a64a99b7657804f077cb1086b2f7fb5/linux/x86-64/shared
+  )
 endif()
 
 ADD_CUSTOM_TARGET(build_vm
@@ -103,7 +104,7 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   CONFIGURE_COMMAND ""
   PATCH_COMMAND cd ${WPILIB_DIRECTORY}/shared/ && patch -p1 config.gradle ${CMAKE_BINARY_DIR}/external-configs/config.patch
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
