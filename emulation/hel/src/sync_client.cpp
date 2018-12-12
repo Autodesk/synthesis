@@ -59,7 +59,7 @@ namespace hel {
                     instance.second.unlock();
                     usleep(30000);
                 }
-            } catch(std::system_error) {
+            } catch(std::system_error&) {
                 std::cerr << "Synthesis warning: Receiver socket disconnected. User code will continue to run, but inputs will be set to default.\n";
                 auto instance = ReceiveDataManager::getInstance();
                 instance.first->deserializeDeep(std::string(DEFAULT_DESERIALIZATION_DATA));
