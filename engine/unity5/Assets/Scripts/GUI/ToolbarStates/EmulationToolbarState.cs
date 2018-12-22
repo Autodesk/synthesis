@@ -65,7 +65,6 @@ namespace Assets.Scripts.GUI
         public void OnStartRobotCodeButtonClicked()
         {
             emulationDriverStation.ToggleRobotCodeButton();
-            SSHClient.StartRobotCode();
             //Serialization.RestartThreads("10.140.148.66");
         }
 

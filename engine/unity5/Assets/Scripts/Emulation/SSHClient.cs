@@ -33,6 +33,19 @@ public class SSHClient
         }
     }
 
+    public static void StopRobotCode()
+    {
+        new Thread(() =>
+        {
+            using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
+            {
+                client.Connect();
+                client.RunCommand("sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1;");
+                client.Disconnect();
+            }
+        }).Start();
+    }
+
     public static void StartRobotCode()
     {
         new Thread(() =>
@@ -40,13 +53,9 @@ public class SSHClient
             using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
             {
                 client.Connect();
-                client.RunCommand ("killall java && killall FRCUserProgram; chmod +x /home/lvuser/FRCUserProgram");
+                client.RunCommand("sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1; nohup /home/lvuser/frc_program_chooser.sh </dev/null >/dev/null 2>&1 &");
+                client.Disconnect();
             }
         }).Start();
     }
-    public static void RestartRobotCode()
-    {
-        StartRobotCode();
-    }
-
 }

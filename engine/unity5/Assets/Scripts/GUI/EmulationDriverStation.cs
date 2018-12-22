@@ -106,17 +106,19 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if (!isRunCode)
+            if (!isRunCode) // Start robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StopCode;
                 isRunCode = true;
+                SSHClient.StartRobotCode();
             }
-            else
+            else // Stop robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Run Code";
                 GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StartCode;
                 isRunCode = false;
+                SSHClient.StopRobotCode();
             }
         }
 
