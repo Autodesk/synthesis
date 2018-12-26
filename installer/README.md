@@ -1,4 +1,4 @@
-# Nullsoft Scriptable Install System
+# <img src="https://raw.githubusercontent.com/Autodesk/synthesis/master/installer/orange-install-nsis.ico" alt="logo" width="50" height ="50" align="left"/>Nullsoft Scriptable Install System
 
 For installation on Windows Operating Systems, we use our own custom written NSIS installer in order to extract all the necessary files to their proper locations on the system. The installer is split into 3 different scripts as follows:
 
@@ -15,7 +15,7 @@ Q: Why does the emulator component have its own separate installer?
 
 A: This is done in order to conserve storage and download time, so that only those who want the emulator download it.
 
-Q: If I download an updated Synthesis installer, will it replace all of my custom robot export files?
+Q: If I download an updated Synthesis installer, will running it replace all of my custom robot export files?
 
 A: No, reinstalling Synthesis will only replace all of the application components, but your custom robots will be saved.
 
