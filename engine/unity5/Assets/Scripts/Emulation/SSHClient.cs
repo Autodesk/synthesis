@@ -16,21 +16,37 @@ public class SSHClient
         try
         {
             //choofdlog.Multiselect = true;
-            string sFileName = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false)[0];
-            UnityEngine.Debug.Log(sFileName);
+            string fullFileName = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false)[0];
+            UnityEngine.Debug.Log(fullFileName);
+
+            string fileName = fullFileName.Substring(fullFileName.LastIndexOf('\\') + 1);
+
+            string targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
+            const string JAR_EXTENSION = ".jar";
+
+            if(fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
+            {
+                targetFileName += JAR_EXTENSION;
+            }
+
+            using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
+            {
+                client.Connect();
+                client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                client.Disconnect();
+            }
+
             using (ScpClient client = new ScpClient("127.0.0.1", 10022, "lvuser", ""))
             {
                 client.Connect();
-                using (Stream localFile = File.OpenRead(sFileName))
+                using (Stream localFile = File.OpenRead(fullFileName))
                 {
-                    client.Upload(localFile, @"/home/lvuser/" + sFileName.Substring(sFileName.LastIndexOf('\\') + 1));
+                    client.Upload(localFile, @"/home/lvuser/" + targetFileName);
                 }
+                client.Disconnect();
             }
         }
-
-        catch (Exception ex)
-        {
-        }
+        catch (Exception){}
     }
 
     private static bool VMConnected = false; // Last connection status
