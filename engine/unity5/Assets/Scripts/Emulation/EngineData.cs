@@ -116,7 +116,6 @@ public partial class JoystickData
 
     public JoystickData()
     {
-        var rand = new System.Random();
         Axes = new long[12];
         AxisTypes = new long[12];
         Povs = new long[12];

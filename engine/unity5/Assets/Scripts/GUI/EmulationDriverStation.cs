@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -45,6 +46,7 @@ namespace Synthesis.GUI
         InputField gameDataInput;
         GameObject emuDriverStationPanel;
         GameObject runButton;
+        UnityEngine.UI.Text VMConnectionStatusMessage;
 
         // Sprites for emulation coloring details
         // Tethered in Unity > Simulator > Attached to the EmulationDriverStation script
@@ -66,6 +68,9 @@ namespace Synthesis.GUI
             gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
+            VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
+
+            StartCoroutine(UpdateVMConnectionStatus());
             GameData();
         }
 
@@ -102,10 +107,35 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
+        /// Indicator for VM connection status
+        /// </summary>
+        public System.Collections.IEnumerator UpdateVMConnectionStatus()
+        {
+            while (true)
+            {
+                UnityEngine.Debug.Log("Updating VM Connection Status");
+                if (SSHClient.IsVMConnected())
+                {
+                    VMConnectionStatusMessage.text = "Connected";
+                    yield return new WaitForSeconds(15.0f); // s
+                }
+                else
+                {
+                    VMConnectionStatusMessage.text = "Connecting";
+                    yield return new WaitForSeconds(3.0f); // s
+                }
+            }
+        }
+
+        /// <summary>
         /// Toggle button for run/stop code toolbar button
         /// </summary>
         public void ToggleRobotCodeButton()
         {
+            if(!SSHClient.IsVMConnected())
+            {
+                return;
+            }
             if (!isRunCode) // Start robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
@@ -132,28 +162,24 @@ namespace Synthesis.GUI
             {
                 case "teleop":
                     state = DriveState.Teleop;
-                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "auto":
                     state = DriveState.Auto;
-                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
                     state = DriveState.Test;
-                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
                 default:
                     state = DriveState.Teleop;
-                    Debug.Log(state);
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
@@ -164,7 +190,6 @@ namespace Synthesis.GUI
         public void RobotEnabled()
         {
             isRobotDisabled = false;
-            Debug.Log(isRobotDisabled);
             GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
         }
@@ -172,7 +197,6 @@ namespace Synthesis.GUI
         public void RobotDisabled()
         {
             isRobotDisabled = true;
-            Debug.Log(isRobotDisabled);
             GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
