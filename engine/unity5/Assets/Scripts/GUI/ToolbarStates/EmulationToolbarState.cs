@@ -74,9 +74,10 @@ namespace Assets.Scripts.GUI
             helpMenu.SetActive(true);
 
             // Used to change the text of emulation help menu
-            helpBodyText.GetComponent<Text>().text = "\n\nStart Code: Select your code file" +
-                "\n\nDriver Station: Access the Synthesis FRC Driver Station to manipulate your robot" +
-                "\n\nStart Code/ Stop Code: Run or disable code";
+            helpBodyText.GetComponent<Text>().text = "\n\nSelect Code: Select the user program file to upload. Uploading may take a couple seconds." +
+                "\n\nDriver Station: Access an FRC driver station-like tool to manipulate robot running state." +
+                "\n\nStart Code / Stop Code: Run or kill user program in VM. It may take a second to start the user program." +
+                "\n\nVM Connection status: Shows SSH connection status to VM. Running user program is disabled until connection is established.";
 
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "EmulationToolbar";
             overlay.SetActive(true);
