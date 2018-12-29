@@ -23,7 +23,7 @@ public class SSHClient
                 client.Connect();
                 using (Stream localFile = File.OpenRead(sFileName))
                 {
-                   client.Upload(localFile, @"/home/lvuser/" + sFileName.Substring(sFileName.LastIndexOf('\\') + 1));
+                    client.Upload(localFile, @"/home/lvuser/" + sFileName.Substring(sFileName.LastIndexOf('\\') + 1));
                 }
             }
         }
@@ -31,6 +31,45 @@ public class SSHClient
         catch (Exception ex)
         {
         }
+    }
+
+    private static bool VMConnected = false; // Last connection status
+    private static Thread TestVMConnectionThread = new Thread(() =>
+    {
+        while (true)
+        {
+            try
+            {
+                using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
+                {
+                    client.Connect();
+                    VMConnected = client.IsConnected;
+                    UnityEngine.Debug.Log("Connection status:  " + VMConnected);
+                    client.Disconnect();
+                }
+            }
+            catch
+            {
+                VMConnected = false;
+            }
+            if (VMConnected) // Sleep longer if connected since it's less vital to check for disconnects
+            {
+                Thread.Sleep(15000); // ms
+            }
+            else
+            {
+                Thread.Sleep(3000); // ms
+            }
+        }
+    });
+
+    public static bool IsVMConnected()
+    {
+        if (!TestVMConnectionThread.IsAlive)
+        {
+            TestVMConnectionThread.Start();
+        }
+        return VMConnected;
     }
 
     public static void StopRobotCode()

@@ -55,7 +55,6 @@ public class Serialization
 
     public static void Deserialize(string ip = "127.0.0.1", int port = 11001)
     {
-        EmuData emu;
         string rest = "";
         string strJSON = "";
         int retries = 65536;
@@ -242,7 +241,7 @@ public class Serialization
                     byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(jData + '\x1B');
 
                     Console.WriteLine("Sending : " + jData);
-                    UnityEngine.Debug.Log(jData.Length);
+                    //UnityEngine.Debug.Log(jData.Length);
                     nwStream.Write(bytesToSend, 0, bytesToSend.Length);
                     System.Threading.Thread.Sleep(30);
                 }
