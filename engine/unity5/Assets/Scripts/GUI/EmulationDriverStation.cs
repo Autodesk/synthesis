@@ -113,7 +113,6 @@ namespace Synthesis.GUI
         {
             while (true)
             {
-                UnityEngine.Debug.Log("Updating VM Connection Status");
                 if (SSHClient.IsVMConnected())
                 {
                     VMConnectionStatusMessage.text = "Connected";
