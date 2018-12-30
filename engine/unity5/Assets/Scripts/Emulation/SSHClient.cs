@@ -60,7 +60,6 @@ public class SSHClient
                 {
                     client.Connect();
                     VMConnected = client.IsConnected;
-                    UnityEngine.Debug.Log("Connection status:  " + VMConnected);
                     client.Disconnect();
                 }
             }

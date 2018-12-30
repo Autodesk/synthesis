@@ -140,7 +140,6 @@ public partial class JoystickData
 
     public JoystickData(int axisCount, int buttonCount, int povCount)
     {
-        var rand = new System.Random();
         Axes = new long[12];
         AxisTypes = new long[12];
         Povs = new long[12];
@@ -165,7 +164,6 @@ public partial class JoystickData
 
     public JoystickData(bool isXbox, int type, string name, int axisCount, int buttonCount, int povCount)
     {
-        var rand = new System.Random();
         Axes = new long[12];
         AxisTypes = new long[12];
         Povs = new long[12];
@@ -294,7 +292,6 @@ public class RobotMode
     public void updateRobotMode()
     {
         Enabled = Synthesis.GUI.EmulationDriverStation.Instance.isRobotDisabled?0:1;
-        //Enabled = 1;
         EmergencyStopped = 0;
         FMSAttached = 1;
         DSAttached = 1;
@@ -314,7 +311,6 @@ public class RobotMode
                 break;
         }
     }
-
 }
 
 public class EncoderData

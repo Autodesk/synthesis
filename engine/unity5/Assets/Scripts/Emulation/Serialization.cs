@@ -16,6 +16,7 @@ public class Serialization
     private static Thread receiver;
     private static Process proc;
 
+    private const string ESCAPE_CHARACTER = "\x1B";
 
     public static bool needsToReconnect { get; set; }
 
@@ -59,12 +60,9 @@ public class Serialization
         string strJSON = "";
         int retries = 65536;
         TcpClient client = null;
-        bool kill = false;
 
         do
         {
-            if (kill)
-                return;
             try
             {
                 UnityEngine.Debug.Log("Attempting to connect to remote host " + ip + " over port " + port);
@@ -77,7 +75,6 @@ public class Serialization
                 {
                     UnityEngine.Debug.Log("Connection failed to establish to remote host "+ ip +". " + retries + " retries remaining. Retrying in 5 seconds");
                     System.Threading.Thread.Sleep(5000);
-
                 }
                 else
                 {
@@ -96,14 +93,14 @@ public class Serialization
         int count = 0;
         while (true)
         {
-            while (true)
+            while (true) // Handle packet receival, buffering, and parsing
             {
                 int bytesRead = 0;
                 byte[] buffer = new byte[client.ReceiveBufferSize];
 
                 string jsonBuffer = "";
 
-                try
+                try  // Get new TCP packet
                 {
                     bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
                     jsonBuffer = Encoding.ASCII.GetString(buffer, 0, bytesRead);
@@ -146,46 +143,42 @@ public class Serialization
                     nwStream = newClient.GetStream();
                     continue;
                 }
-                strJSON = rest;
+                strJSON = rest + jsonBuffer;
                 rest = "";
-                if (strJSON.IndexOf("\x1B") != -1)
+
+                const string PREAMBLE = "{\"roborio";
+
+                if (strJSON.Length >= PREAMBLE.Length && strJSON.Substring(0, PREAMBLE.Length) != PREAMBLE) // Front of buffer isn't start of JSON packet
                 {
-                    rest = strJSON.Substring(strJSON.IndexOf("\x1B") + 1);
-                    strJSON = strJSON.Substring(0, strJSON.IndexOf("\x1B"));
+                    if (strJSON.IndexOf(ESCAPE_CHARACTER) == -1) // Wait until end of packet is found to clip the front off the buffer
+                    {
+                        rest = strJSON;
+                    }
+                    else
+                    {
+                        rest = strJSON.Substring(strJSON.IndexOf(ESCAPE_CHARACTER) + 1);  // If the start of the buffer isn't the start of a packet, clip the front off
+                    }
+                }
+                else if (strJSON.IndexOf(ESCAPE_CHARACTER) != -1) // Front of packet is preamble and end of packet is present--the whole packet has been received
+                {
+                    while (strJSON.IndexOf(ESCAPE_CHARACTER) != -1) // Parse all received packets before receiving more--prevents the buffer from getting behind (and we can't discard packets)
+                    {
+                        rest = strJSON.Substring(strJSON.IndexOf(ESCAPE_CHARACTER) + 1);
+                        strJSON = strJSON.Substring(0, strJSON.IndexOf(ESCAPE_CHARACTER));
+
+                        //UnityEngine.Debug.Log(strJSON + "\n\n" + rest);
+                        OutputManager.Instance = JsonConvert.DeserializeObject<EmuData>(strJSON);
+                        strJSON = rest;
+                        System.Threading.Thread.Sleep(5);
+                    }
                     break;
                 }
-                strJSON += jsonBuffer;
-
-                if (strJSON.Length >= 9 && strJSON.Substring(0, 9) != "{\"roborio")
-                {
-                    if (strJSON.IndexOf("\x1B") == -1)
-                        rest = strJSON;
-                    else
-                        rest = strJSON.Substring(strJSON.IndexOf("\x1B") + 1);
-                    continue;
-                }
-                else if (strJSON.Length >= 9)
+                else // Front of packet has been received but not end
                 {
                     rest = strJSON;
-                    continue;
                 }
-
-                if (strJSON.IndexOf("\x1B") == -1)
-                {
-                    rest = strJSON;
-                    continue;
-                }
-                rest = strJSON.Substring(strJSON.IndexOf("\x1B") + 1);
-                strJSON = strJSON.Substring(0, strJSON.IndexOf("\x1B"));
-                break;
-
             }
-            if (strJSON != "")
-            {
-                OutputManager.Instance = JsonConvert.DeserializeObject<EmuData>(strJSON);
-                strJSON = "";
-                System.Threading.Thread.Sleep(30);
-            }
+            System.Threading.Thread.Sleep(30);
         }
     }
 
