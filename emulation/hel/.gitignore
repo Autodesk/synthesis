@@ -47,4 +47,5 @@ GRTAGS
 
 # VM Files
 vm-package.tar.gz
+vm-package.zip
 vm-package/*
