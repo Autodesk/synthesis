@@ -39,8 +39,8 @@ else()
 endif()
 
 if(ARCH MATCHES "^[Aa][Rr][Mm]")
-  SET(CMAKE_C_COMPILER arm-frc-linux-gnueabi-gcc)
-  SET(CMAKE_CXX_COMPILER arm-frc-linux-gnueabi-g++)
+  SET(CMAKE_C_COMPILER arm-frc2019-linux-gnueabi-gcc)
+  SET(CMAKE_CXX_COMPILER arm-frc2019-linux-gnueabi-g++)
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
@@ -54,7 +54,7 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
     ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxathenadebug.zip_22ad814603cbf64b5e87fc6dc01ee8e2/linux/athena/shared/
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxathena.zip_3e38e7c98115770c2774d54027662b61/linux/athena/shared/
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
   )
@@ -103,7 +103,6 @@ EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   CONFIGURE_COMMAND ""
-  PATCH_COMMAND cd ${WPILIB_DIRECTORY}/shared/ && patch -p1 config.gradle ${CMAKE_BINARY_DIR}/external-configs/config.patch
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
