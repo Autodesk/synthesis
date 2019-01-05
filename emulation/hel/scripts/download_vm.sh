@@ -2,7 +2,7 @@
 
 # Download the emulator VM
 
-FILE_URL="https://www.dropbox.com/s/knbc6r2wmh78vow/vm-package.zip?dl=0" # "https://dl.dropboxusercontent.com/s/svvxunbh7akmw3y/vm-package.tar.gz?dl=0"
+FILE_URL="https://www.dropbox.com/s/knbc6r2wmh78vow/vm-package.zip?dl=0"
 
 if [ ! -f vm-package.zip ] ; then
 	printf "Begun downloading VM image\n"
