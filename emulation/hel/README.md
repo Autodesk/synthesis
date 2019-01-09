@@ -10,7 +10,7 @@ HEL is the core of Synthesis's emulation. It is the piece of software that redir
 
 ## How It Works
 
-HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRIO. FRC user code interfaces with WPILib, which is a high-level library built on HAL (the RoboRIO's hardware abstraction layer). In turn, HAL is built on the Ni FPGA, which interfaces with hardware. Ni FPGA code is available as a set of header files, which can be found in allwpilib under [ni-libraries](https://github.com/wpilibsuite/allwpilib/ "allwpilib"). These headers contain pure abstract classes which HEL implements using derived classes. So, where HAL calls Ni FPGA functions which normally communicate with hardware, those calls instead use HEL's implementation which communicate with its core, a `RoboRIO` Singleton instance which handles the data. 
+HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRIO. FRC user code interfaces with WPILib, which is a high-level library built on HAL (the RoboRIO's hardware abstraction layer). In turn, HAL is built on the Ni FPGA, which interfaces with hardware. Ni FPGA code is available as a set of header files, which can be found on GitHub [here](https://github.com/wpilibsuite/ni-libraries). These headers contain pure abstract classes which HEL implements using derived classes. So, where HAL calls Ni FPGA functions which normally communicate with hardware, those calls instead use HEL's implementation which communicate with its core, a `RoboRIO` Singleton instance which handles the data. 
 
 Reading into that `RoboRIO` instance, background threads serialize and deserialize data as JSON to communicate with Synthesis's engine over TCP. They update `RoboRIO` with received data such as joystick and encoder inputs while transmitting outputs such as PWM signals to the simulated robot. 
 
@@ -37,8 +37,8 @@ HEL is emulation of a layer of robot code several levels below that at which use
 sudo apt update && sudo apt-get install cmake;
 
 # Necessary only for Java users
-sudo apt install openjdk-8-jre-headless;
-sudo apt install openjdk-8-jdk;
+sudo apt install openjdk-11-jre-headless;
+sudo apt install openjdk-11-jdk;
 
 # Necessary for all users
 sudo apt-add-repository ppa:wpilib/toolchain
