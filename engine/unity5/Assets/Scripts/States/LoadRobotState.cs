@@ -27,7 +27,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "//synthesis//Robots"));
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
 
             robotList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
