@@ -92,9 +92,11 @@ ADD_CUSTOM_TARGET(asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM)
 
+
 EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
+  GIT_TAG ${NILIB}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
@@ -102,6 +104,7 @@ EXTERNALPROJECT_ADD(ni-libraries
 EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
+  GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:build WPILib
   INSTALL_COMMAND "")
@@ -171,7 +174,7 @@ endif()
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
-    ADD_DEPENDENCIES(FRCUserProgram wpilib)
+    ADD_DEPENDENCIES(FRCUserProgram wpilib ni-libraries)
     # ADD_DEPENDENCIES(ctre)
     TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
@@ -218,18 +221,18 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
       ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
 
+      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread hel)
+      TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
+
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
         # ADD_DEPENDENCIES(${test_name} ctre)
         TARGET_LINK_LIBRARIES(${test_name} wpi) # libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
         # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
-          # "${CTRE_DIRECTORY}/cpp/include/"
-          # "${CTRE_DIRECTORY}/libraries/driver/include")
+        #   "${CTRE_DIRECTORY}/cpp/include/"
+        #   "${CTRE_DIRECTORY}/libraries/driver/include")
       else()
         TARGET_LINK_LIBRARIES(${test_name} wpi-x86)
       endif()
-
-      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread hel)
-      TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
       TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
         "${WPILIB_DIRECTORY}/cscore/src/main/native/include"
