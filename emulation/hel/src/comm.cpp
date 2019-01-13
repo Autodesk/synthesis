@@ -42,6 +42,10 @@ extern "C" {
         return 0; //HAL does not expect error status if parameters are nullptr
     }
 
+    int FRC_NetworkCommunication_getWatchdogActive(void){ // TODO
+        return 0;
+    }
+
     int FRC_NetworkCommunication_getAllianceStation(enum AllianceStationID_t* allianceStation){
         auto instance = hel::RoboRIOManager::getInstance();
         if (allianceStation != nullptr)
@@ -188,41 +192,23 @@ extern "C" {
     void FRC_NetworkCommunication_getVersionString(char* /*version*/){} //unnecessary for emulation
 
     int FRC_NetworkCommunication_observeUserProgramStarting(void){ //unnecessary for emulation
+        // Communicate to DS that RoboRIO is ready
         return 0;
     }
 
     void FRC_NetworkCommunication_observeUserProgramDisabled(void){
-        auto instance = hel::RoboRIOManager::getInstance();
-
-        instance.first->robot_mode.setEnabled(false);
-
-        instance.second.unlock();
+        // Communicate to DS that RoboRIO has been disabled
     }
 
     void FRC_NetworkCommunication_observeUserProgramAutonomous(void){
-        auto instance = hel::RoboRIOManager::getInstance();
-
-        instance.first->robot_mode.setMode(hel::RobotMode::Mode::AUTONOMOUS);
-        instance.first->robot_mode.setEnabled(true);
-
-        instance.second.unlock();
+        // Communicate to DS that RoboRIO has been set to autonomous
     }
 
     void FRC_NetworkCommunication_observeUserProgramTeleop(void){
-        auto instance = hel::RoboRIOManager::getInstance();
-
-        instance.first->robot_mode.setMode(hel::RobotMode::Mode::TELEOPERATED);
-        instance.first->robot_mode.setEnabled(true);
-
-        instance.second.unlock();
+        // Communicate to DS that RoboRIO has been set to teleoperated
     }
 
     void FRC_NetworkCommunication_observeUserProgramTest(void){
-        auto instance = hel::RoboRIOManager::getInstance();
-
-        instance.first->robot_mode.setMode(hel::RobotMode::Mode::TEST);
-        instance.first->robot_mode.setEnabled(true);
-
-        instance.second.unlock();
+        // Communicate to DS that RoboRIO has been set to test mode
     }
 }
