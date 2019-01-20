@@ -14,6 +14,12 @@ HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRI
 
 Reading into that `RoboRIO` instance, background threads serialize and deserialize data as JSON to communicate with Synthesis's engine over TCP. They update `RoboRIO` with received data such as joystick and encoder inputs while transmitting outputs such as PWM signals to the simulated robot. 
 
+| Library               | Supported Version |
+|-----------------------|-------------------|
+| WPILib (Java and C++) | v2019.2.1         |
+| NI Libraries          | v2019-12          |
+
+
 ## Scope of Emulation and Simulation
 
 Since HEL is a re-implementation of the Ni FPGA, it has the potential to support all RoboRIO inputs and outputs, including network data from the FRC Driver Station such as alliance station ID. Currently, HEL and the engine support: 
