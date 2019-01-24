@@ -10,24 +10,44 @@ public class SSHClient
 {
     //@"C:\Program Files (x86)\Autodesk\Synthesis"
 
-
-    public static void SCPFileSender()
+    public class UserProgram
     {
-        try
+        public enum UserProgramType
         {
-            //choofdlog.Multiselect = true;
-            string fullFileName = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false)[0];
-            UnityEngine.Debug.Log(fullFileName);
+            JAVA,
+            CPP
+        }
+
+        public string fullFileName { get; private set; }
+        public string targetFileName { get; private set; }
+        public UserProgramType type { get; private set; }
+
+        public UserProgram(string fullFileName)
+        {
+            this.fullFileName = fullFileName;
 
             string fileName = fullFileName.Substring(fullFileName.LastIndexOf('\\') + 1);
 
-            string targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
+            this.targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
             const string JAR_EXTENSION = ".jar";
 
-            if(fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
+            if (fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
             {
-                targetFileName += JAR_EXTENSION;
+                this.targetFileName += JAR_EXTENSION;
+                this.type = UserProgramType.JAVA;
             }
+            else
+            {
+                this.type = UserProgramType.CPP;
+            }
+        }
+    }
+
+    public static void SCPFileSender(UserProgram userProgram)
+    {
+        try
+        {
+            //choofdlog.Multiselect = true
 
             using (SshClient client = new SshClient("127.0.0.1", 10022, "lvuser", ""))
             {
@@ -39,9 +59,9 @@ public class SSHClient
             using (ScpClient client = new ScpClient("127.0.0.1", 10022, "lvuser", ""))
             {
                 client.Connect();
-                using (Stream localFile = File.OpenRead(fullFileName))
+                using (Stream localFile = File.OpenRead(userProgram.fullFileName))
                 {
-                    client.Upload(localFile, @"/home/lvuser/" + targetFileName);
+                    client.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
                 }
                 client.Disconnect();
             }

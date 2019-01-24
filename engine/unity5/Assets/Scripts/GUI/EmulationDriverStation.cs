@@ -45,6 +45,7 @@ namespace Synthesis.GUI
         GameObject canvas;
         InputField gameDataInput;
         GameObject emuDriverStationPanel;
+        GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
         GameObject runButton;
         UnityEngine.UI.Text VMConnectionStatusMessage;
 
@@ -67,6 +68,7 @@ namespace Synthesis.GUI
             canvas = GameObject.Find("Canvas");
             gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
+            javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
 
@@ -104,6 +106,22 @@ namespace Synthesis.GUI
                 RobotState("teleop");
                 RobotDisabled();
             }
+        }
+
+        /// <summary>
+        /// Displays dialogue that Java emulation is not currently supproted (WPILib v2019)
+        /// </summary>
+        public void ShowJavaNotSupportedPopUp()
+        {
+            javaEmulationNotSupportedPopUp.SetActive(true);
+        }
+
+        /// <summary>
+        /// Close dialogue that displays Java emulation is not currently supproted
+        /// </summary>
+        public void CloseJavaNotSupportedPopUp()
+        {
+            javaEmulationNotSupportedPopUp.SetActive(false);
         }
 
         /// <summary>
