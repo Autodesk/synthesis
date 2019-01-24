@@ -51,7 +51,25 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            SSHClient.SCPFileSender();
+
+            string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
+            if (selectedFiles.Length != 1)
+            {
+                UnityEngine.Debug.Log("No files selected for robot code upload");
+            }
+            else
+            {
+                SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
+                if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                {
+                    emulationDriverStation.ShowJavaNotSupportedPopUp();
+                }
+                else
+                {
+                    SSHClient.SCPFileSender(userProgram);
+                }
+            }
+            { }
         }
 
         /// <summary>
