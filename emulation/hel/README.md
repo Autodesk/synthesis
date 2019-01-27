@@ -10,9 +10,15 @@ HEL is the core of Synthesis's emulation. It is the piece of software that redir
 
 ## How It Works
 
-HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRIO. FRC user code interfaces with WPILib, which is a high-level library built on HAL (the RoboRIO's hardware abstraction layer). In turn, HAL is built on the Ni FPGA, which interfaces with hardware. Ni FPGA code is available as a set of header files, which can be found in allwpilib under [ni-libraries](https://github.com/wpilibsuite/allwpilib/ "allwpilib"). These headers contain pure abstract classes which HEL implements using derived classes. So, where HAL calls Ni FPGA functions which normally communicate with hardware, those calls instead use HEL's implementation which communicate with its core, a `RoboRIO` Singleton instance which handles the data. 
+HEL is a re-implementation of the Ni FPGA which would normally run on the RoboRIO. FRC user code interfaces with WPILib, which is a high-level library built on HAL (the RoboRIO's hardware abstraction layer). In turn, HAL is built on the Ni FPGA, which interfaces with hardware. Ni FPGA code is available as a set of header files, which can be found on GitHub [here](https://github.com/wpilibsuite/ni-libraries). These headers contain pure abstract classes which HEL implements using derived classes. So, where HAL calls Ni FPGA functions which normally communicate with hardware, those calls instead use HEL's implementation which communicate with its core, a `RoboRIO` Singleton instance which handles the data. 
 
 Reading into that `RoboRIO` instance, background threads serialize and deserialize data as JSON to communicate with Synthesis's engine over TCP. They update `RoboRIO` with received data such as joystick and encoder inputs while transmitting outputs such as PWM signals to the simulated robot. 
+
+| Library               | Supported Version |
+|-----------------------|-------------------|
+| WPILib (Java and C++) | v2019.2.1         |
+| NI Libraries          | v2019-12          |
+
 
 ## Scope of Emulation and Simulation
 
@@ -37,8 +43,8 @@ HEL is emulation of a layer of robot code several levels below that at which use
 sudo apt update && sudo apt-get install cmake;
 
 # Necessary only for Java users
-sudo apt install openjdk-8-jre-headless;
-sudo apt install openjdk-8-jdk;
+sudo apt install openjdk-11-jre-headless;
+sudo apt install openjdk-11-jdk;
 
 # Necessary for all users
 sudo apt-add-repository ppa:wpilib/toolchain
@@ -54,7 +60,7 @@ cmake . -DCMAKE_BUILD_TYPE=RELEASE \
 make hel;
 ```
 
-The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mode can be specified using `-DCMAKE_BUILD_MODE=(RELEASE|DEBUG)` to enable or disable debug symbols. To build tests, specify `-DTESTING=(ON|OFF)`; note that HAL-, CTRE-, and WPILib-based tests are not supported in x86 mode. If building for x86, benchmarks can be built with `-DBENCHMARKS=(ON|OFF)`. Doxygen comments can be built with `-DBUILD_DOC=(ON|OFF)`.
+The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mode can be specified using `-DCMAKE_BUILD_MODE=(RELEASE|DEBUG)` to enable or disable debug symbols. To build tests, specify `-DTESTING=(ON|OFF)`; note that HAL-, CTRE-, and WPILib-based tests are not supported in x86 mode. If building for x86, benchmarks can be built with `-DBENCHMARKS=(ON|OFF)`. Doxygen comments can be built with `-DBUILD_DOC=(ON|OFF)`. By default, master is pulled for WPILib and the Ni Libraries, but the WPILib and Ni Libraries versions can be specified with `-DWPILIB=[GIT TAG]` and `-DNILIB=[GIT TAG]` respectively.
 
 The project can be cleaned using the clean script:
 
