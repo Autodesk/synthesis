@@ -91,7 +91,7 @@ namespace hel{
     RobotMode RobotMode::deserialize(std::string input){
         RobotMode a;
         a.mode = s_to_robot_mode(unquote(pullObject("\"mode\"",input)));
-        a.enabled = stob(pullObject("\"enabled\"",input));
+        a.setEnabled(stob(pullObject("\"enabled\"",input)));
         a.emergency_stopped = stob(pullObject("\"emergency_stopped\"",input));
         a.fms_attached = stob(pullObject("\"fms_attached\"",input));
         a.ds_attached = stob(pullObject("\"ds_attached\"",input));
@@ -120,7 +120,7 @@ namespace hel{
         return s;
     }
 
-    RobotMode::RobotMode()noexcept:mode(RobotMode::Mode::TELEOPERATED),enabled(true),emergency_stopped(false),fms_attached(false),ds_attached(true){}
+    RobotMode::RobotMode()noexcept:mode(RobotMode::Mode::TELEOPERATED),enabled(false),emergency_stopped(false),fms_attached(false),ds_attached(true){} // For testing, defaulting enabled to true is helpful
     RobotMode::RobotMode(const RobotMode& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
         COPY(mode);
