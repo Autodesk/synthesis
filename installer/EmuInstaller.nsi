@@ -3,7 +3,7 @@
   
   Name "Synthesis Emulator Installation"
   
-  OutFile "SynthesisEmuInstaller4.2.1.exe"
+  OutFile "SynthesisEmuInstaller4.2.2.exe"
 
   ;Default installation folder
   InstallDir $APPDATA\Autodesk\Synthesis\Emulator
@@ -45,7 +45,7 @@ Section
 	  File /r "Emulator\rootfs.ext4"
 	  File /r "Emulator\zImage"
 	  File /r "Emulator\zynq-zed.dtb"
-	  File /r "Emulator\qemu-w64-setup-20180519.exe"
+	  File /r "Emulator\qemu-w64-setup-20181211.exe"
 	  exec '"$APPDATA\Autodesk\Synthesis\Emulator\qemu-w64-setup-20180519.exe" \s'
 	
 	  Quit
