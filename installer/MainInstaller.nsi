@@ -89,6 +89,8 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         
         ; Remove expired directories
 		RMDir /r $INSTDIR
+		RMDir /r $APPDATA\Synthesis
+		RMDir /r $APPDATA\BXD_Aardvark
 		RMDir /r $PROGRAMFILES\Autodesk\Synthesis
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
