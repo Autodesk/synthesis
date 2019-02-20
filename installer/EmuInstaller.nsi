@@ -45,8 +45,10 @@ Section
 	  File /r "Emulator\rootfs.ext4"
 	  File /r "Emulator\zImage"
 	  File /r "Emulator\zynq-zed.dtb"
+	  
+	  ;UPDATE BOTH VERSIONS ON QEMU UPDATE
 	  File /r "Emulator\qemu-w64-setup-20181211.exe"
-	  exec '"$APPDATA\Autodesk\Synthesis\Emulator\qemu-w64-setup-20180519.exe" \s'
+	  exec '"$APPDATA\Autodesk\Synthesis\Emulator\qemu-w64-setup-20181211.exe" \s'
 	
 	  Quit
 
