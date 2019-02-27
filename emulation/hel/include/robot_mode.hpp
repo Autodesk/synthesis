@@ -26,6 +26,8 @@ namespace hel{
             AUTONOMOUS,TELEOPERATED,TEST
         };
 
+		static const bool DEFAULT_ENABLED_STATUS = false; // For testing, defaulting enabled to true is helpful
+
     private:
 
         /**
