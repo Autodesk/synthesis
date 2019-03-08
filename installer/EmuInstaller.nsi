@@ -40,6 +40,7 @@ Section
   
 	perform_install:
 	
+	  RMDir /r $INSTDIR
 	  SetOutPath $INSTDIR
   
 	  File /r "Emulator\rootfs.ext4"
@@ -47,8 +48,9 @@ Section
 	  File /r "Emulator\zynq-zed.dtb"
 	  
 	  ;UPDATE BOTH VERSIONS ON QEMU UPDATE
-	  File /r "Emulator\qemu-w64-setup-20181211.exe"
-	  exec '"$APPDATA\Autodesk\Synthesis\Emulator\qemu-w64-setup-20181211.exe" \s'
+	  File "/oname=$PLUGINSDIR\qemu-w64-setup-20181211.exe" "Emulator\qemu-w64-setup-20181211.exe"
+	  HideWindow
+	  ExecWait "$PLUGINSDIR\qemu-w64-setup-20181211.exe"
 	
 	  Quit
 
