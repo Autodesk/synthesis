@@ -83,7 +83,9 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		RMDir /r $PROGRAMFILES64\Autodesk\Synthesis
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
-
+		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
+		DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
+		
         Goto next
 
       false:
@@ -163,6 +165,9 @@ Section "Uninstall"
   NawFam:
   ; Remove registry keys
   DeleteRegKey HKLM SOFTWARE\Synthesis
+  DeleteRegKey HKCU SOFTWARE\Autodesk\Synthesis
+  DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
   RMDir /r /REBOOTOK $INSTDIR
   RMDir /r /REBOOTOK $PROGRAMFILES64\Autodesk\Synthesis
@@ -183,7 +188,5 @@ Section "Uninstall"
   Delete "$DESKTOP\BXD Synthesis.lnk"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
-
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
 SectionEnd
