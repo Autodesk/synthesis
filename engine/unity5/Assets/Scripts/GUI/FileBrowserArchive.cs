@@ -6,6 +6,7 @@ using System.Collections.Generic;
 namespace Synthesis.GUI
 {
     /// <summary>
+    /// [DEPRECATED] <see cref="StandaloneFileBrowser.cs"/>
     /// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
     /// Directory only based file browser.
     /// </summary>
