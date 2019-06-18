@@ -194,6 +194,12 @@ namespace Synthesis.GUI
                 SwitchErrorScreen();
             else
                 StateMachine.SceneGlobal.PushState(new HomeTabState());
+
+            if (GameObject.Find("NetworkManager") != null)
+            {
+                StateMachine.SceneGlobal.ChangeState(new SimTabState());
+                //UnityEngine.Debug.Log("Load from multiplayer");
+            }
         }
 
         /// <summary>
