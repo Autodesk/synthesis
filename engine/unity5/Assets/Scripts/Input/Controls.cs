@@ -174,7 +174,6 @@ namespace Synthesis.Input
         {
             ArcadeControls();
             ReadOnlyCollection<KeyMapping> keys = InputControl.GetKeysList();
-            Debug.Log(keys.Count + " KEYS");
 
             foreach (KeyMapping key in keys)
             {
