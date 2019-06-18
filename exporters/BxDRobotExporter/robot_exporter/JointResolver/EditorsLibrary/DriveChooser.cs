@@ -339,7 +339,8 @@ public partial class DriveChooser : Form
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
             lblPort.Text = cType.GetPortType(rbCAN.Checked) + " Port" + (cType.HasTwoPorts() ? "s" : "");
             txtPort2.Visible = cType.HasTwoPorts();
-            txtPort1.Maximum = txtPort2.Maximum = cType.GetPortMax();
+            
+            txtPort1.Maximum = txtPort2.Maximum = cType.GetPortMax(rbCAN.Checked);
             grpDriveOptions.Visible = true;
 
             if (cType.IsMotor())
@@ -568,6 +569,7 @@ public partial class DriveChooser : Form
         {
             lblPort.Text = "PWM Port";
         }
+        PrepLayout();
     }
 
     private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
@@ -618,5 +620,15 @@ public partial class DriveChooser : Form
                 break;
         }
         MotorTypeDropDown.SelectedItem = "GENERIC";
+    }
+
+    private void LblPort_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void TxtPort1_ValueChanged(object sender, EventArgs e)
+    {
+
     }
 }
