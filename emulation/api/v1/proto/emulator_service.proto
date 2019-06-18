@@ -40,7 +40,7 @@ message RobotOutputs {
         bool inverted        = 4;
     }
     string api                      = 1;
-    repeated int32 pwm_headers      = 2;
+    repeated double pwm_headers      = 2;
     repeated RelayState relay       = 3;
     repeated float analog_outputs   = 4; 
     repeated MXPData mxp_data       = 5;
