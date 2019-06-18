@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package EmulationService;
+
+message RoboRIO {
+    enum RelayState {
+        INVALID_STATE = 0;
+        ON            = 1;
+        OFF           = 2;
+    }
+
+    enum MXPConfig {
+        INVALID_CONFIG = 0;
+        DI             = 1;
+        DO             = 2;
+        PWM            = 3;
+        SPI            = 4;
+        I2C            = 5;
+    }
+
+    enum CANType {
+        INVALID_CAN_TYPE    = 0;
+        TALON_SRX           = 1;
+        VICTOR_SPX          = 2;
+        UNKNOWN             = 3;
+        PCM                 = 4;
+        PDP                 = 5;
+    }
+
+    message MXPData {
+        MXPConfig mxp_config = 1;
+        int32 value            = 2;
+    }
+    message CANDevice {
+        CANType can_type     = 1;
+        int32 id               = 2;
+        float percent_output = 3;
+        bool inverted        = 4;
+    }
+    string api                      = 1;
+    repeated int32 pwm_headers      = 2;
+    repeated RelayState relay       = 3;
+    repeated float analog_outputs   = 4; 
+    repeated MXPData mxp_data       = 5;
+    repeated int32 digital_headers  = 6;
+    repeated CANDevice can_device   = 7;
+}
+
+message EmulatorResponse {
+    enum ErrorCode {
+        INTERNAL_ERROR = 0;
+    }
+
+    string api = 1;
+    ErrorCode error_code = 2;
+    RoboRIO roborio = 3;
+}
+
+message EmulatorRequest {
+    string api = 1;
+}
+
+service EmulatorService {
+    rpc GetEmulatorStatus(stream EmulatorRequest) returns (stream EmulatorResponse) {}
+}
