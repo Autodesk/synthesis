@@ -1,21 +1,29 @@
 # FusionExporter (FusionSynth)
-Autodesk Fusion 360 Robot exporter using the Fusion 360 API for C++.
+
+## Road Map
+* TBD
 
 ## Requirements
-*  Windows
-*  Fusion 360 (Up to date)
-*  Visual Studio Community 2015+
+* Git
+* Autodesk Fusion 360 2019
+* Microsoft Visual Studio 2019
 
 ## Setup Instructions
-1.  Install Fusion 360
-2.  Open solution (`FusionSynth.sln`) as administrator
-3.  Change Debug command in project settings to Fusion360.exe  
+1) Clone the repository by running `git clone --recursive https://github.com/Autodesk/synthesis`
+2) Launch Visual Studio in Admin Mode for necessary permissions
+3) Import the FusionSynth.sln Solution in Visual Studio
+   - File -> Open -> Project/Solution
+   - Select `... \synthesis\exporters\FusionExporter\FusionSynth.sln`
+4) Change Debug command in project settings to Fusion360.exe
     (Usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
-4.  Build the solution
-5.  Start the debugger
-6.  In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
-7.  Select the "FusionExporter" folder
-8.  Close Fusion 360 and start debugging again
+5) Build > Build Solution
+6) Start the debugger
+7) In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
+8) Select the "FusionExporter" folder
+9) Close Fusion 360 and start debugging again
+
+## Current Issues
+* TBD
 
 ## Documentation
 *  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Fusion-Exporter)
