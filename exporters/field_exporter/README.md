@@ -5,13 +5,13 @@ The field exporter is an application used to convert an Autodesk Inventor Assemb
 ## Cloning the repository
 In order to properly clone this repository and its dependencies onto your local machine you need to execute the following commands:
 
-        `git clone --recursive https://github.com/Autodesk/synthesis`
+        git clone --recursive https://github.com/Autodesk/synthesis
         
 OR
 
-       `git clone https://github.com/Autodesk/synthesis`
-       `cd synthesis/exporters/field_exporter`
-       `git submodule update --init --recursive`
+       git clone https://github.com/Autodesk/synthesis
+       cd synthesis/exporters/field_exporter
+       git submodule update --init --recursive
 
 ## Building the solution
 ### Microsoft Visual Studio
