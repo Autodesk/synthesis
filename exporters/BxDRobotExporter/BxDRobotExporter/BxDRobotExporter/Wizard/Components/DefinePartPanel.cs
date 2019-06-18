@@ -96,6 +96,15 @@ namespace BxDRobotExporter.Wizard
             typeOptions = JointDriver.GetAllowedDrivers(joint);
             DriverComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 
+            if (rbCAN.Checked)
+            {
+                PortOneUpDown.Maximum = PortTwoUpDown.Maximum = 64;
+            }
+            else
+            {
+                PortOneUpDown.Maximum = PortTwoUpDown.Maximum = 20;
+            }
+
             if (joint.cDriver.port1 < PortOneUpDown.Minimum)
                 PortOneUpDown.Value = PortOneUpDown.Minimum;
             else if (joint.cDriver.port1 > PortOneUpDown.Maximum)
