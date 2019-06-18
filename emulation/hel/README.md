@@ -48,8 +48,10 @@ sudo apt install openjdk-11-jdk;
 
 # Necessary for all users
 sudo apt-add-repository ppa:wpilib/toolchain
+sudo apt-add-repository ppa:wpilib/toolchain-beta
 sudo apt update 
 sudo apt install frc-toolchain
+sudo apt install frc2019-toolchain
 ```
 
 After the utilities have been installed, all that is left to do is build. To get started and build HEL, navigate to the `hel` directory in a terminal and execute the following command:
@@ -60,7 +62,7 @@ cmake . -DCMAKE_BUILD_TYPE=RELEASE \
 make hel;
 ```
 
-The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mode can be specified using `-DCMAKE_BUILD_MODE=(RELEASE|DEBUG)` to enable or disable debug symbols. To build tests, specify `-DTESTING=(ON|OFF)`; note that HAL-, CTRE-, and WPILib-based tests are not supported in x86 mode. If building for x86, benchmarks can be built with `-DBENCHMARKS=(ON|OFF)`. Doxygen comments can be built with `-DBUILD_DOC=(ON|OFF)`. By default, master is pulled for WPILib and the Ni Libraries, but the WPILib and Ni Libraries versions can be specified with `-DWPILIB=[GIT TAG]` and `-DNILIB=[GIT TAG]` respectively.
+The target architecture can be specified using `-DARCH=(ARM|X86)`. The build mode can be specified using `-DCMAKE_BUILD_TYPE=(RELEASE|DEBUG)` to enable or disable debug symbols. To build tests, specify `-DTESTING=(ON|OFF)`; note that HAL-, CTRE-, and WPILib-based tests are not supported in x86 mode. If building for x86, benchmarks can be built with `-DBENCHMARKS=(ON|OFF)`. Doxygen comments can be built with `-DBUILD_DOC=(ON|OFF)`. By default, master is pulled for WPILib and the Ni Libraries, but the WPILib and Ni Libraries versions can be specified with `-DWPILIB=[GIT TAG]` and `-DNILIB=[GIT TAG]` respectively.
 
 The project can be cleaned using the clean script:
 
