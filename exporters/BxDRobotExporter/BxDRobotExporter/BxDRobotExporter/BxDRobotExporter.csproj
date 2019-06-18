@@ -331,10 +331,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
+    <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
+    <ProgramFiles64 Condition="$(ProgramFiles64) == ''">$(ProgramFiles)</ProgramFiles64>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.15063.0\x86\mt.exe" -manifest "$(ProjectDir)BxDRobotExporter.X.manifest" -outputresource:"$(TargetPath)";#2 -nologo
-XCopy "$(TargetPath)" "%25ProgramFiles%25\Autodesk\Synthesis\Exporter\" /Y /R /S
+    <PostBuildEvent>XCopy "$(TargetPath)" "$(ProgramFiles64)\Autodesk\Synthesis\Exporter\" /Y /R /S
 XCopy "$(ProjectDir)Autodesk.BxDRobotExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 </PostBuildEvent>
   </PropertyGroup>
