@@ -246,6 +246,7 @@ namespace BxDFieldExporter
                     oPane.Refresh();
                     ReadSaveFieldData();// read the save so the user doesn't loose any previous work
                     //TimerWatch();// begin the timer watcher to detect deselect
+                    inExportView = true; // Set exporter to loaded.
                 }
                 else
                 {
@@ -365,7 +366,7 @@ namespace BxDFieldExporter
 
 Use the friction slider to adjust the friction coefficient in the simulator. 
 
-Checking “Dynamic” enables an object to be moved in the simulator. For example, check “Dynamic” for objects like balls or other game pieces. Do not check “Dynamic” for static objects like the floor and walls.",
+Checking ï¿½Dynamicï¿½ enables an object to be moved in the simulator. For example, check ï¿½Dynamicï¿½ for objects like balls or other game pieces. Do not check ï¿½Dynamicï¿½ for static objects like the floor and walls.",
                     ttComponentProperties, "Edit Component Properties");
 
                 addAssembly = controlDefs.AddButtonDefinition(" Add New Assembly ", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addAssemblyIconSmall, addAssemblyIconLarge);
@@ -377,7 +378,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
                 addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(AddNewPart_OnExecute);
                 ToolTip(addPart, "Adds a part to a field component.",
-                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Add New Part”, and select the part to add to the component. To add multiple part to one component, repeat the process.",
+                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click ï¿½Add New Partï¿½, and select the part to add to the component. To add multiple part to one component, repeat the process.",
                     ttAddPart, "Add New Part");
 
                 removeAssembly = controlDefs.AddButtonDefinition(" Remove Assembly ", "BxD:FieldExporter:RemoveAssembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeAssemblyIconSmall, removeAssemblyIconLarge);
@@ -389,7 +390,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 removePart = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removePartIconSmall, removePartIconLarge);
                 removePart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(RemovePartAssembly_OnExecute);
                 ToolTip(removePart, "Removes a part from a field component.",
-                   "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Remove Part”, and select the part to remove from the component. To remove multiple parts from one component, repeat the process.",
+                   "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click ï¿½Remove Partï¿½, and select the part to remove from the component. To remove multiple parts from one component, repeat the process.",
                    ttRemovePart, "Remove Assembly");
 
                 exportField = controlDefs.AddButtonDefinition("Export Field", "BxD:FieldExporter:ExportField", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportFieldIconSmall, exportFieldIconLarge);
@@ -935,7 +936,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 context = null;// clears the object because inventor needs it that way
                 resultObj = null;
                 String name = "";// make name that can store the names of the browser nodes
-                Char[] arr = { '¯', '\\', '_', '(', ':', '(', ')', '_', '/', '¯' };// contains the limiter of the strings so we can read them
+                Char[] arr = { 'ï¿½', '\\', '_', '(', ':', '(', ')', '_', '/', 'ï¿½' };// contains the limiter of the strings so we can read them
                 foreach (Inventor.PropertySet s in sets)
                 {// looks at all the properties in the propertysets
                     if (s.DisplayName.Equals("Number of Folders"))
@@ -1010,7 +1011,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             foreach (FieldDataComponent Component in FieldComponents)
             {// looks at all the browser node under the top node
                 g += Component.Name;// add the name of the node to the string so when we read the dataComponents we don't lose the name
-                g += "¯\\_(:()_/¯";// adds the limiter to the string so we can tell where one name ends and another begins
+                g += "ï¿½\\_(:()_/ï¿½";// adds the limiter to the string so we can tell where one name ends and another begins
             }
             try
             {
@@ -1064,7 +1065,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 {// looks at all the occurences
                     refKey = new byte[0];// clears the current refKey because Inventor needs them to be clear
                     n.GetReferenceKey(ref refKey, 0);// write the reference key of the occurence to the byte[]
-                    g += (InventorApplication.ActiveDocument.ReferenceKeyManager.KeyToString(refKey)) + "¯\\_(:()_/¯";//convert the refkey to a string and adds a limiter so we can read the string at the start of the add in
+                    g += (InventorApplication.ActiveDocument.ReferenceKeyManager.KeyToString(refKey)) + "ï¿½\\_(:()_/ï¿½";//convert the refkey to a string and adds a limiter so we can read the string at the start of the add in
                 }
             }
             catch (Exception)
@@ -1114,7 +1115,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             UpdateLegacy();
             Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
             Program.INVENTOR_APPLICATION = InventorApplication;
-            LegacyUtilities.exporter.ShowDialog();
+            LegacyUtilities.exporter.Show();
             SetAllButtons(true);
         }
 
