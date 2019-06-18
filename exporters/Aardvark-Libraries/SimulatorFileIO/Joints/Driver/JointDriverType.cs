@@ -163,16 +163,18 @@ public static class JointDriverTypeExtensions
     /// </summary>
     /// <param name="type">Driver type</param>
     /// <returns>Max port number</returns>
-    public static int GetPortMax(this JointDriverType type)
+    public static int GetPortMax(this JointDriverType type, bool isCan)
     {
+      
         switch (type)
         {
             case JointDriverType.MOTOR:
+
             case JointDriverType.DUAL_MOTOR:
             case JointDriverType.SERVO:
             case JointDriverType.WORM_SCREW:
             case JointDriverType.ELEVATOR:
-                return 8; // PWM
+                return isCan ? 63 : 19;
             case JointDriverType.BUMPER_PNEUMATIC:
                 return 8; // Bumper
             case JointDriverType.RELAY_PNEUMATIC:
@@ -181,4 +183,6 @@ public static class JointDriverTypeExtensions
                 return -1;
         }
     }
+
+    
 }
