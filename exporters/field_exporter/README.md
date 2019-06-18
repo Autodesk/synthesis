@@ -20,9 +20,9 @@ OR
  - YOU MUST LAUNCH VS IN ADMIN MODE - it will still build but it cannot copy file to destination
  - Open Solution
  - If you get a NewtonSoft Error - Follow direction below
-        - Right click solution and select `Manage Nuget Packages`
-        - Make sure NewtonSoft Json Appears, if not download it via nuget and apply it to Field Exporter
-        - If it is make sure to click the blue update arrow
+ - Right click solution and select `Manage Nuget Packages`
+ - Make sure NewtonSoft Json Appears, if not download it via nuget and apply it to Field Exporter
+ - If it is make sure to click the blue update arrow
 
 #### 2015
 Building the solution with Visual Studio 2015 is relatively easy. First, open the solution in Visual Studio 2015. Any edition of Visual Studio 2015 is capable of building this project. Ensure that the "Solution Platforms" drop-down menu is set to "Any CPU." Right-click on the solution, then click "Build Solution." The project will now build.
