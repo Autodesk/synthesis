@@ -172,7 +172,9 @@ namespace Synthesis.Input
         /// </summary>
         public static void Load()
         {
+            ArcadeControls();
             ReadOnlyCollection<KeyMapping> keys = InputControl.GetKeysList();
+            Debug.Log(keys.Count + " KEYS");
 
             foreach (KeyMapping key in keys)
             {
