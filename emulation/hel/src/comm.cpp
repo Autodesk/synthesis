@@ -28,7 +28,13 @@ extern "C" {
         return 0;
     }
 
-    void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
+#ifdef _WIN32
+	void setNewDataSem(HANDLE){} //unnecessary for emulation
+#elif defined (__vxworks)
+	void setNewDataSem(SEM_ID){} //unnecessary for emulation
+#else
+	void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
+#endif
 
     int setNewDataOccurRef(uint32_t refnum){
         auto instance = hel::RoboRIOManager::getInstance();
