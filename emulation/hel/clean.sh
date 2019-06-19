@@ -23,6 +23,12 @@ case "$1" in
     "asio")
         rm -rf lib/ASIO;
         ;;
+    "grpc")
+        rm -rf lib/grpc;
+        ;;
+    "gen_grpc")
+        rm -rf lib/gen;
+        ;;
     "hel")
         rm -rf build/* lib/libhel.so;
         ;;

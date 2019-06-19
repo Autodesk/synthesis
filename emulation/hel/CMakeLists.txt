@@ -16,10 +16,15 @@ SET(hel_VERSION_MINOR 0)
 SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
+SET(GRPC_DIRECTORY "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
+
+SET(GRPC "v1.21.4")
 # SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
+SET(GEN_GRPC_COMMAND "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh")
+
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
@@ -92,6 +97,12 @@ ADD_CUSTOM_TARGET(asio ALL
   COMMENT "Download the C++ ASIO library"
   VERBATIM)
 
+ADD_CUSTOM_TARGET(gen_grpc
+  COMMAND ${BUILD_GRPC} --system-grpc
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+  COMMENT "Generate libhel protobuf and gRPC files"
+  VERBATIM)
+ADD_DEPENDENCIES(gen_grpc grpc)
 
 EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
@@ -118,7 +129,15 @@ EXTERNALPROJECT_ADD(wpilib
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
 
-ADD_LIBRARY(hel SHARED
+ExternalProject_ADD(grpc
+  PREFIX lib/grpc
+  GIT_REPOSITORY https://github.com/grpc/grpc.git
+  GIT_TAG ${GRPC}
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh
+  INSTALL_COMMAND "")
+
+  ADD_LIBRARY(hel SHARED
   src/roborio.cpp
   src/roborio_manager.cpp
   src/send_data.cpp
@@ -159,12 +178,18 @@ ADD_LIBRARY(hel SHARED
   src/can_motor_controller.cpp
   src/can_comm.cpp
   src/pdp.cpp)
-ADD_DEPENDENCIES(hel asio ni-libraries)
+  lib/gen/emulator_service.pb.cc
+  lib/gen/emulator_service.grpc.pb.cc)
+ADD_DEPENDENCIES(hel asio ni-libraries gen_grpc)
 
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
-  "${NILIB_DIRECTORY}/src/include"
+  "${CMAKE_BINARY_DIR}/include"
   "${ASIO_DIRECTORY}/include"
-  "${CMAKE_BINARY_DIR}/include")
+  "${GRPC_DIRECTORY}/include"
+  "${NILIB_DIRECTORY}/src/include"
+  "${GRPC_DIRECTORY}/third_party/protobuf/src"
+  "${CMAKE_BINARY_DIR}/lib/gen"
+  )
 if(ARCH MATCHES "^[Aa][Rr][Mm]")
   # TARGET_LINK_LIBRARIES(hel wpi)
 else()
