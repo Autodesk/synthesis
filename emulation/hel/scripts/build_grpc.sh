@@ -4,38 +4,41 @@
 set -e
 set -o pipefail
 
+cd $1 # GRPC folder
+
 TOOLCHAIN=arm-frc2019-linux-gnueabi
 
-if [[ $( bc <<< "$( $TOOLCHAIN-gcc -dumpversion | cut -c1 ) > 7" ) == 1 ]] ; then
-	export CXXFLAGS="-Wno-error=class-memaccess -Wno-error=ignored-qualifiers -Wno-error=stringop-truncation"
-	export CFLAGS="-Wno-error=class-memaccess -Wno-error=ignored-qualifiers -Wno-error=stringop-truncation"
-fi
+ADDITIONAL_FLAGS="-Wno-error"
+export CXXFLAGS="$CXXFLAGS $ADDITIONAL_FLAGS"
+export CFLAGS="$CFLAGS $ADDITIONAL_FLAGS"
 
 git submodule update --init
 
-printf "\nCross-compiling and installing protobuf\n\n\n"
+if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
+    printf "Installing native gRPC\n\n"
+    make -j10 && \
+        sudo make install && \
+        sudo ldconfig
+    make clean
+else
+    printf "Native gRPC installed. Skipping native build.\n\n"
+fi
 
-cd third_party/protobuf
-./autogen.sh
-./configure
-make -j10 && make check && sudo make install && sudo ldconfig
+printf "Cross-compiling and installing gRPC\n\n"
 
-printf "\nCross-compiling and installing gRPC\n\n\n"
+export GRPC_CROSS_COMPILE=true
+export GRPC_CROSS_AROPTS="cr --target=elf32-little"
 
-cd ../../
-make clean
-make plugins -j10
-
-export GRPC_CROSS_COMPILATION=true
-export GRPC_CROSS_AROPTS="cr --target=$TOOLCHAIN"
-
-make \
+make plugins static -j10 \
      HAS_PKG_CONFIG=false \
      CC=$TOOLCHAIN-gcc \
      CXX=$TOOLCHAIN-g++ \
+     CPP=$TOOLCHAIN-cpp \
      RANLIB=$TOOLCHAIN-ranlib \
      LD=$TOOLCHAIN-ld \
+     LDXX=$TOOLCHAIN-g++ \
      HOSTLD=$TOOLCHAIN-ld \
      AR=$TOOLCHAIN-ar \
+     AS=$TOOLCHAIN-as \
      AROPTS='-r' \
-     PROTOBUF_CONFIG_OPTS="--host=$TOOLCHAIN --with-protoc=$(find . -name protoc -print -quit)" static -j10
+     PROTOBUF_CONFIG_OPTS="--host=$TOOLCHAIN --with-protoc=$(find . -name protoc -print -quit)"

@@ -23,6 +23,8 @@ SET(GRPC "v1.21.4")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
+SET(GEN_GRPC_COMMAND "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh")
+
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
@@ -98,7 +100,7 @@ ADD_CUSTOM_TARGET(asio ALL
   VERBATIM)
 
 ADD_CUSTOM_TARGET(gen_grpc
-  COMMAND ${CMD_GEN_GRPC}
+  COMMAND ${BUILD_GRPC} --system-grpc
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
   COMMENT "Generate libhel protobuf and gRPC files"
   VERBATIM)
@@ -188,7 +190,6 @@ ADD_DEPENDENCIES(hel asio ni-libraries gen_grpc)
 
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
-  "${ASIO_DIRECTORY}/include"
   "${NILIB_DIRECTORY}/src/include"
   "${GRPC_DIRECTORY}/include"
   "${GRPC_DIRECTORY}/third_party/protobuf/src"
