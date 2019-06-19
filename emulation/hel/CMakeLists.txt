@@ -98,6 +98,7 @@ EXTERNALPROJECT_ADD(ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
   GIT_TAG ${NILIB}
   CONFIGURE_COMMAND ""
+  PATCH_COMMAND patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/win_frc_comm.patch
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
 
