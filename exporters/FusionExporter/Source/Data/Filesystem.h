@@ -17,4 +17,10 @@ namespace Filesystem
 	///
 	void createDirectory(std::string path);
 
+	///
+	/// Checks if a folder exists
+	/// \param path The path of the directory to locate
+	///
+
+	bool directoryExists(std::string path);
 };
