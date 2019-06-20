@@ -16,6 +16,7 @@ using EditorsLibrary;
 using JointResolver.ControlGUI;
 using OGLViewer;
 using Inventor;
+using JointResolver.EditorsLibrary;
 
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
@@ -741,6 +742,47 @@ public partial class SynthesisGUI : Form
         return false;
     }
 
+    public bool PromptExporterSettings()
+    {
+        try
+        {
+            //TODO: Implement Value saving and loading
+            PluginSettingsForm eSettingsForm = new PluginSettingsForm();
+
+            eSettingsForm.ShowDialog();
+
+            //BXDSettings.Instance.AddSettingsObject("Plugin Settings", ExporterSettingsForm.values);
+            PluginSettings = PluginSettingsForm.Values;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+            throw;
+        }
+        return false;
+    }
+
+    public bool PromptAnalyticsDisclaimer()
+    {
+        try
+        {
+            //TODO: Implement Value saving and loading
+            AnalyticsPrompt analyticsPrompt = new AnalyticsPrompt();
+
+            analyticsPrompt.ShowDialog();
+
+            //BXDSettings.Instance.AddSettingsObject("Plugin Settings", ExporterSettingsForm.values);
+            PluginSettings = PluginSettingsForm.Values;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+            throw;
+        }
+        return false;
+    }
     /// <summary>
     /// Opens the <see cref="PluginSettingsForm"/> form
     /// </summary>

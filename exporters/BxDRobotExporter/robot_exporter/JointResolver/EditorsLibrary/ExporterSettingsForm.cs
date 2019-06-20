@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit, bool useAnalytics);
 
     public partial class PluginSettingsForm : Form
     {
@@ -45,6 +45,7 @@ namespace EditorsLibrary
         {
             Values = SynthesisGUI.PluginSettings;
             ChildHighlight.BackColor = Values.InventorChildColor;
+            checkAnalytics.Checked = Values.UseAnalytics;
         }
         
         /// <summary>
@@ -66,7 +67,9 @@ namespace EditorsLibrary
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = false,
-                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots"
+                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots",
+                UseAnalytics = false,
+                FirstLoad = true
             };
         }
 
@@ -79,7 +82,7 @@ namespace EditorsLibrary
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition, UseAnalytics);
             }
 
             //General
@@ -90,6 +93,8 @@ namespace EditorsLibrary
             public bool openSynthesis;
             //Inventor
             public Color InventorChildColor;
+            public bool UseAnalytics;
+            public bool FirstLoad;
         }
 
         /// <summary>
@@ -116,5 +121,15 @@ namespace EditorsLibrary
             }
         }
 
+        private void PluginSettingsForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Values.UseAnalytics = checkAnalytics.Checked;
+            SaveValues();
+        }
     }
 }

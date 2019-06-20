@@ -66,6 +66,7 @@ namespace BxDRobotExporter
         //Standalone Buttons
         ButtonDefinition WizardExportButton;
         ButtonDefinition SetWeightButton;
+        ButtonDefinition ExporterSettingsButton;
         ButtonDefinition SaveButton;
         ButtonDefinition ExportButton;
 
@@ -95,7 +96,7 @@ namespace BxDRobotExporter
             string ClientID = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             
             Utilities.LoadSettings();
-            
+           
             #region Add Parallel Environment
 
             #region Load Images
@@ -160,6 +161,11 @@ namespace BxDRobotExporter
             SetWeightButton.OnHelp += _OnHelp;
             SettingsPanel.CommandControls.AddButton(SetWeightButton, true);
 
+            // Exporter Settings
+            ExporterSettingsButton = ControlDefs.AddButtonDefinition("Exporter Settings", "BxD:RobotExporter:ExporterSettngs", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Open Synthesis Settings Panel", WeightRobotIconSmall, ExportSetupRobotIconLarge);
+            ExporterSettingsButton.OnExecute += ExporterSettings_OnExecute;
+            ExporterSettingsButton.OnHelp += _OnHelp;
+            SettingsPanel.CommandControls.AddButton(ExporterSettingsButton, true);
             //Save Button
             SaveButton = ControlDefs.AddButtonDefinition("Save Configuration", "BxD:RobotExporter:SaveRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save robot configuration to your assembly file for future exporting.", SaveRobotIconSmall, SaveRobotIconLarge);
             SaveButton.OnExecute += SaveButton_OnExecute;
@@ -226,6 +232,7 @@ namespace BxDRobotExporter
             #endregion
 
             Instance = this;
+          
         }
 
         /// <summary>
@@ -312,6 +319,12 @@ namespace BxDRobotExporter
             // Reload panels in UI
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
+
+            if (SynthesisGUI.PluginSettings.FirstLoad)
+            {
+                SynthesisGUI.Instance.PromptAnalyticsDisclaimer();
+                ExporterSettings_FirstLoad();
+            }
         }
         
         /// <summary>
@@ -572,7 +585,11 @@ namespace BxDRobotExporter
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;
         }
-
+        private void ExporterSettings_OnExecute(NameValueMap Context)
+        {
+            if (Utilities.GUI.PromptExporterSettings())
+                PendingChanges = true;
+        }
         /// <summary>
         /// Opens the help page on bxd.autodesk.com. This is the callback used for all OnHelp events.
         /// </summary>
@@ -636,7 +653,7 @@ namespace BxDRobotExporter
         /// <param name="Child"></param>
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition)
+        private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors, string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
 
@@ -647,9 +664,16 @@ namespace BxDRobotExporter
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
             Properties.Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
-            Properties.Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
+            Properties.Settings.Default.SendAnalytics = useAnalytics;
+            Properties.Settings.Default.ConfigVersion = 4; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
-        } 
+        }
+        
+        private void ExporterSettings_FirstLoad()
+        {
+            Properties.Settings.Default.FirstLoad = false;
+            Properties.Settings.Default.Save();
+        }
         #endregion
         #endregion
 
