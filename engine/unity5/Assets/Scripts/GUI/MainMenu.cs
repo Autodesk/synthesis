@@ -160,19 +160,19 @@ namespace Synthesis.GUI
             file.Directory.Create();
 
             //Assigns the currently store registry values or default file path to the proper variables if they exist.
-            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Robots"));
-            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields"));
+            string robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            string fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
 
             //If the directory doesn't exist, create it.
             if (!Directory.Exists(robotDirectory))
             {
-                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Robots\");
+                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots" + Path.DirectorySeparatorChar);
                 file.Directory.Create();
                 robotDirectory = file.Directory.FullName;
             }
             if (!Directory.Exists(fieldDirectory))
             {
-                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields\");
+                file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields" + Path.DirectorySeparatorChar);
                 file.Directory.Create();
                 fieldDirectory = file.Directory.FullName;
             }
