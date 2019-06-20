@@ -46,6 +46,15 @@ window.fusionJavaScriptHandler =
                     document.getElementById('progress').classList.add('error');
                     lastProgress = 1;
                 }
+                else if (action == 'success')
+                {
+                    console.log("Error: " + data);
+                    document.getElementById('status').innerHTML = "Export Successfully Completed! (This will auto-close in 5s)"
+                    document.getElementById('progress').style.display = "none";
+
+                    lastProgress = 1;
+                }
+
                 else if (action == 'debugger')
                 {
                     debugger;
