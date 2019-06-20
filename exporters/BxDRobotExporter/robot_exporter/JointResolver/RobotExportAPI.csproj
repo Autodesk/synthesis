@@ -78,6 +78,10 @@
     <OutputPath>bin\Benchmark\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EditorsLibrary\AnalyticsPrompt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorsLibrary\AnalyticsPrompt.Designer.cs" />
     <Compile Include="ControlGUI\LiteExporterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -214,6 +218,7 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditorsLibrary\AnalyticsPrompt.resx" />
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
