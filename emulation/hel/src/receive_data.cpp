@@ -1,5 +1,7 @@
 #include "receive_data.hpp"
 
+#include <algorithm>
+
 #include "roborio_manager.hpp"
 #include "util.hpp"
 #include "json_util.hpp"
@@ -159,6 +161,152 @@ namespace hel{
         deserializeRobotMode(input);
         deserializeEncoders(input);
     }
+    void ReceiveData::sync(const EmulationService::RobotInputs& req) {
+        for(size_t i = 0; i < std::min(this->joysticks.size(), (size_t) req.joysticks_size()); i++) {
+            auto joystick = &this->joysticks[i];
+            auto joystick_data = req.joysticks(i);
+
+            joystick->setIsXBox(joystick_data.is_xbox());
+            joystick->setType((uint8_t)joystick_data.type());
+            joystick->setName(joystick_data.name());
+            joystick->setButtons(joystick_data.buttons());
+            joystick->setButtonCount((uint8_t)joystick_data.button_count());
+
+            for (size_t j = 0; j < std::min(joystick->getAxes().size(), (size_t) joystick_data.axis_size()); j++) {
+                joysticks[i].getAxes()[j] = joystick_data.axis(j);
+            }
+
+            joystick->setAxisCount(joystick_data.axis_count());
+
+            for (size_t j = 0; j < std::min(joystick->getAxisTypes().size(), (size_t) joystick_data.axis_size()); j++) {
+                joysticks[i].getAxisTypes()[j] = joystick_data.axis_types(j);
+            }
+
+            for (size_t j = 0; j < std::min(joystick->getPOVs().size(), (size_t) joystick_data.povs_size()); j++) {
+                joysticks[i].getPOVs()[j] = joystick_data.povs(j);
+            }
+
+            joystick->setPOVCount(joystick_data.pov_count());
+            joystick->setOutputs(joystick_data.outputs());
+            joystick->setLeftRumble(joystick_data.left_rumble());
+            joystick->setRightRumble(joystick_data.right_rumble());
+        }
+
+        auto match_info = &this->match_info;
+        match_info->setEventName(req.match_info().event_name());
+        match_info->setGameSpecificMessage(req.match_info().game_specific_message());
+        match_info->setMatchType(static_cast<MatchType_t>(req.match_info().match_type()));
+        match_info->setMatchNumber(req.match_info().match_number());
+        match_info->setReplayNumber(req.match_info().replay_number());
+        match_info->setAllianceStationID(static_cast<AllianceStationID_t>(req.match_info().alliance_station_id()));
+        match_info->setMatchTime(req.match_info().match_time());
+
+        auto robot_mode = &this->robot_mode;
+        robot_mode->setEnabled(req.robot_mode().enabled());
+        robot_mode->setEmergencyStopped(req.robot_mode().is_emergency_stopped());
+        robot_mode->setFMSAttached(req.robot_mode().is_fms_attached());
+        robot_mode->setDSAttached(req.robot_mode().is_ds_attached());
+        robot_mode->setMode(static_cast<RobotMode::Mode>(req.robot_mode().mode()));
+
+        for (size_t i = 0; i < std::min(this->encoder_managers.size(), (size_t) req.encoder_managers_size()); i++) {
+            auto encoder = &this->encoder_managers[i];
+            auto encoder_data = req.encoder_managers(i);
+            if(!encoder) {
+                auto new_encoder = EncoderManager(
+                                                  encoder_data.a_channel(),
+                                                  static_cast<EncoderManager::PortType>(encoder_data.a_type()),
+                                                  encoder_data.b_channel(),
+                                                  static_cast<EncoderManager::PortType>(encoder_data.b_type())
+                                                  );
+                encoder->set(new_encoder);
+            } else {
+                encoder->get().setAChannel(encoder_data.a_channel());
+                encoder->get().setAType(static_cast<EncoderManager::PortType>(encoder_data.a_channel()));
+                encoder->get().setBChannel(encoder_data.b_channel());
+                encoder->get().setBType(static_cast<EncoderManager::PortType>(encoder_data.b_channel()));
+            }
+        }
+    }
+
+    void ReceiveData::deepSync(const EmulationService::RobotInputs& req) {
+ 
+        for(size_t i = 0; i < std::min(this->digital_hdrs.size(), (size_t) req.digital_headers_size()); i++) {
+            this->digital_hdrs[i] = req.digital_headers(i);
+        }
+
+        for(size_t i = 0; i < std::min(this->digital_mxp.size(), (size_t) req.mxp_data_size()); i++) {
+            auto mxp = &this->digital_mxp[i];
+            auto mxp_data = req.mxp_data(i);
+            mxp->config = static_cast<MXPData::Config>(mxp_data.mxp_config());
+            mxp->value = mxp_data.value();
+        }
+
+        for(size_t i = 0; i < std::min(this->joysticks.size(), (size_t) req.joysticks_size()); i++) {
+            auto joystick = &this->joysticks[i];
+            auto joystick_data = req.joysticks(i);
+
+            joystick->setIsXBox(joystick_data.is_xbox());
+            joystick->setType((uint8_t)joystick_data.type());
+            joystick->setName(joystick_data.name());
+            joystick->setButtons(joystick_data.buttons());
+            joystick->setButtonCount((uint8_t)joystick_data.button_count());
+
+            for (size_t j = 0; j < std::min(joystick->getAxes().size(), (size_t) joystick_data.axis_size()); j++) {
+                joysticks[i].getAxes()[j] = joystick_data.axis(j);
+            }
+
+            joystick->setAxisCount(joystick_data.axis_count());
+
+            for (size_t j = 0; j < std::min(joystick->getAxisTypes().size(), (size_t) joystick_data.axis_size()); j++) {
+                joysticks[i].getAxisTypes()[j] = joystick_data.axis_types(j);
+            }
+
+            for (size_t j = 0; j < std::min(joystick->getPOVs().size(), (size_t) joystick_data.povs_size()); j++) {
+                joysticks[i].getPOVs()[j] = joystick_data.povs(j);
+            }
+
+            joystick->setPOVCount(joystick_data.pov_count());
+            joystick->setOutputs(joystick_data.outputs());
+            joystick->setLeftRumble(joystick_data.left_rumble());
+            joystick->setRightRumble(joystick_data.right_rumble());
+        }
+
+        auto match_info = &this->match_info;
+        match_info->setEventName(req.match_info().event_name());
+        match_info->setGameSpecificMessage(req.match_info().game_specific_message());
+        match_info->setMatchType(static_cast<MatchType_t>(req.match_info().match_type()));
+        match_info->setMatchNumber(req.match_info().match_number());
+        match_info->setReplayNumber(req.match_info().replay_number());
+        match_info->setAllianceStationID(static_cast<AllianceStationID_t>(req.match_info().alliance_station_id()));
+        match_info->setMatchTime(req.match_info().match_time());
+
+        auto robot_mode = &this->robot_mode;
+        robot_mode->setEnabled(req.robot_mode().enabled());
+        robot_mode->setEmergencyStopped(req.robot_mode().is_emergency_stopped());
+        robot_mode->setFMSAttached(req.robot_mode().is_fms_attached());
+        robot_mode->setDSAttached(req.robot_mode().is_ds_attached());
+        robot_mode->setMode(static_cast<RobotMode::Mode>(req.robot_mode().mode()));
+
+        for (size_t i = 0; i < std::min(this->encoder_managers.size(), (size_t) req.encoder_managers_size()); i++) {
+            auto encoder = &this->encoder_managers[i];
+            auto encoder_data = req.encoder_managers(i);
+            if(!encoder) {
+                auto new_encoder = EncoderManager(
+                                                  encoder_data.a_channel(),
+                                                  static_cast<EncoderManager::PortType>(encoder_data.a_type()),
+                                                  encoder_data.b_channel(),
+                                                  static_cast<EncoderManager::PortType>(encoder_data.b_type())
+                                                  );
+                encoder->set(new_encoder);
+            } else {
+                encoder->get().setAChannel(encoder_data.a_channel());
+                encoder->get().setAType(static_cast<EncoderManager::PortType>(encoder_data.a_channel()));
+                encoder->get().setBChannel(encoder_data.b_channel());
+                encoder->get().setBType(static_cast<EncoderManager::PortType>(encoder_data.b_channel()));
+            }
+        }
+
+    }
 
     void ReceiveData::deserializeDeep(std::string input){
         if(input == last_received_data){
@@ -173,4 +321,5 @@ namespace hel{
         deserializeRobotMode(input);
         deserializeEncoders(input);
     }
+
 }

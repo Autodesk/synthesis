@@ -4,6 +4,8 @@
 #include <memory>
 #include <mutex>
 
+#include<emulator_service.grpc.pb.h>
+
 #include "bounds_checked_array.hpp"
 #include "digital_system.hpp"
 #include "encoder_manager.hpp"
@@ -133,6 +135,9 @@ namespace hel{
          */
 
         std::string toString()const;
+
+        void sync(const EmulationService::RobotInputs&);
+        void deepSync(const EmulationService::RobotInputs&);
 
         /**
          * \brief Parse a given input JSON string and update ReceiveData's internal data

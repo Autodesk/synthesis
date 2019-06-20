@@ -162,7 +162,12 @@ message RobotOutputsResponse {
     bool success = 3;
     RobotOutputs output_data = 4;
 }
-service EmulatorService {
+
+service EmulationWriter {
     rpc RobotInputs(stream UpdateRobotInputsRequest) returns (UpdateRobotInputsResponse) {}
+}
+
+service EmulationReader {
     rpc RobotOutputs(RobotOutputsRequest) returns (stream RobotOutputsResponse) {}
 }
+
