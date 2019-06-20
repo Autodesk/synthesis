@@ -120,12 +120,19 @@ namespace hel{
             assert(_is_valid);
             return _data;
         }
+
         void set(T data){
             _data = data;
             _is_valid = true;
         }
 
-        constexpr operator bool()const noexcept{
+        Maybe& operator=(const T& t)noexcept {
+            _data = t;
+            _is_valid = true;
+            return *this;
+        }
+
+        constexpr bool is_valid()const noexcept{
             return _is_valid;
         }
 
