@@ -10,7 +10,5 @@ public:
                                     grpc::ServerContext*,
                                     grpc::ServerReader<EmulationService::UpdateRobotInputsRequest>*,
                                     EmulationService::UpdateRobotInputsResponse*);
-
-    
 };
 #endif
