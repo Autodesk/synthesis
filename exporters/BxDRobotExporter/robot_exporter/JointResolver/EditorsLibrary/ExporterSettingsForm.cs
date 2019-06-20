@@ -65,7 +65,7 @@ namespace EditorsLibrary
             return new PluginSettingsValues()
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
-                GeneralUseFancyColors = false,
+                GeneralUseFancyColors = true,
                 GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots"
             };
         }
