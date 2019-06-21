@@ -263,7 +263,7 @@ namespace Synthesis.States
                     LineRenderer lr = t.gameObject.AddComponent<LineRenderer>();
                     lr.startWidth = 0.01f;
                     lr.endWidth = 0.01f;
-                    lr.material = new Material(Shader.Find("Particles/Alpha Blended"));
+                    lr.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended"));
                     lr.startColor = new Color(0.0f, 0.75f, 0.0f, 1.0f);
                     lr.endColor = new Color(0.0f, 1.0f, 0.0f, 0.25f);
                     lr.positionCount = t.States.Length;
