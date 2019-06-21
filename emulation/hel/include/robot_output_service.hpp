@@ -9,5 +9,4 @@ public:
                                      const EmulationService::RobotOutputsRequest*,
                                      grpc::ServerWriter<EmulationService::RobotOutputsResponse>*);
 
-    
 };

@@ -14,6 +14,45 @@ namespace hel{
         return new_data;
     }
 
+    EmulationService::RobotOutputs SendData::syncShallow() {
+        if (!new_data) {
+            return output;
+        }
+
+        for (auto i = 0u; i < pwm_hdrs.size(); i++) {
+            output.set_pwm_headers(i, pwm_hdrs[i]);
+        }
+        for (auto i = 0u; i < digital_mxp.size(); i++) {
+            switch(digital_mxp[i].config) {
+            case MXPData::Config::PWM:
+            case MXPData::Config::DO: {
+                auto elem = output.mutable_mxp_data(i);
+                EmulationService::MXPData mxp;
+                mxp.set_mxp_config(static_cast<EmulationService::MXPData::MXPConfig>(digital_mxp[i].config));
+                mxp.set_value(digital_mxp[i].value);
+                *elem = mxp;
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
+        for(auto i = 0u; i < can_motor_controllers.size(); i++ ) {
+            auto elem = output.mutable_can_device(i);
+            EmulationService::RobotOutputs::CANDevice can;
+            can.set_can_type(static_cast<EmulationService::RobotOutputs::CANType>(can_motor_controllers[i].getType()));
+            can.set_id(can_motor_controllers[i].getID());
+            can.set_inverted(can_motor_controllers[i].getInverted());
+            can.set_percent_output(can_motor_controllers[i].getPercentOutput());
+            *elem = can;
+        }
+
+        new_data = false;
+        return output;
+    }
+
+
     void SendData::updateShallow(){
         if(!hal_is_initialized){
             return;
@@ -51,10 +90,20 @@ namespace hel{
         new_data = true;
     }
 
-    void SendData::updateDeep(){
-        if(!hal_is_initialized){
-            return;
+    EmulationService::RobotOutputs SendData::syncDeep() {
+        syncShallow();
+        for(auto i = 0u; i < relays.size(); i++) {
+            output.set_relay(i, static_cast<EmulationService::RobotOutputs::RelayState>(relays[i]));
         }
+        for(auto i = 0u; i < analog_outputs.size(); i++) {
+            output.set_analog_outputs(i, analog_outputs[i]);
+        }
+        for(auto i = 0u; i < digital_hdrs.size(); i++ ){
+            output.set_digital_headers(i, digital_hdrs[i]);
+        }
+    }
+
+    void SendData::updateDeep(){
 
         updateShallow();
 
