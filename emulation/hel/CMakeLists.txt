@@ -23,8 +23,6 @@ SET(GRPC "v1.21.4")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
-SET(GEN_GRPC_COMMAND "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh")
-
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
