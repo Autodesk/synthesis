@@ -207,7 +207,7 @@
             this.Name = "ExportRobotForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Export Robot";
+            this.Text = "Export Robot to Synthesis";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             this.WindowControlLayout.ResumeLayout(false);
