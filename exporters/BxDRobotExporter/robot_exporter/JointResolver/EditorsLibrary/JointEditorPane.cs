@@ -132,6 +132,8 @@ namespace EditorsLibrary
             item_chType.Width = this.lstJoints.Width / 8;
             item_chParent.Width = this.lstJoints.Width / 8;
             item_chChild.Width = this.lstJoints.Width / 8;
+            item_chParent.Width = 0;
+            item_chChild.Width = 0;
             item_chDrive.Width = this.lstJoints.Width / 3;
             item_chWheel.Width = this.lstJoints.Width / 8;
             item_chSensors.Width = this.lstJoints.Width / 8;
