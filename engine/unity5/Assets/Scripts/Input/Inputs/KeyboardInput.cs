@@ -672,19 +672,21 @@ namespace Synthesis.Input.Inputs
             /// <summary>
             /// Initializes the <see cref="Internal.KeyCodeConversions"/> class.
             /// </summary>
-            static KeyCodeConversions()
+            /*static KeyCodeConversions()
             {
                 string[] keyCodes = Enum.GetNames(typeof(KeyCode));
 
                 if (
                     keyCodes.Length != toStringMap.Count + 2 // Two duplicates for Apple keys
                     ||
-                    keyCodes.Length != fromStringMap.Count
+                    keyCodes.Length != fromStringMap.Count // 
                    )
                 {
-                    Debug.LogError("KeyCode to string conversion may fail, please contact with developer: Gris87@yandex.ru");
+                    // Key modifiers are currently not used in Synthesis which produces this error as there are 326 Unity key bindings
+                    // and only 319 are implemented which invokes this error.
+                    Debug.LogError("Some keys may not be implemented.");
                 }
-            }
+            }*/
 
             /// <summary>
             /// Converts specified KeyCode to string.
