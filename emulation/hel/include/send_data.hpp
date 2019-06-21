@@ -12,6 +12,7 @@
 #include "mxp_data.hpp"
 #include "pwm_system.hpp"
 #include "relay_system.hpp"
+#include "robot_output_service.hpp"
 
 namespace hel{
     /**
@@ -75,6 +76,8 @@ namespace hel{
          */
 
         std::map<uint32_t, std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
+
+        EmulationService::RobotOutputs output;
 
         /**
          * \brief Update the serialized_data with the PWM headers
@@ -147,6 +150,9 @@ namespace hel{
          */
 
         std::string toString()const;
+
+        EmulationService::RobotOutputs syncShallow();
+        EmulationService::RobotOutputs syncDeep();
 
         /**
          * \brief Update and return the JSON serialized outputs
