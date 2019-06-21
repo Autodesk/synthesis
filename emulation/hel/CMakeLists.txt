@@ -23,8 +23,6 @@ SET(GRPC "v1.21.4")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
-SET(GEN_GRPC_COMMAND "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh")
-
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
@@ -53,6 +51,8 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${NILIB_DIRECTORY}/src/lib
     ${NILIB_DIRECTORY}/src/lib/chipobject
     ${NILIB_DIRECTORY}/src/lib/netcomm
+    ${GRPC_DIRECTORY}/libs/opt
+    ${GRPC_DIRECTORY}/libs/opt/protobuf
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena/release
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena/release
@@ -117,7 +117,7 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew build
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
@@ -125,7 +125,7 @@ EXTERNALPROJECT_ADD(wpilib
 #   GIT_TAG v2018.19.0
 #   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
 #   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/ctre.patch
-#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
+#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh CRTE ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
 
@@ -134,10 +134,11 @@ ExternalProject_ADD(grpc
   GIT_REPOSITORY https://github.com/grpc/grpc.git
   GIT_TAG ${GRPC}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh
+  #BUILD_COMMAND sudo ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} ${GRPC_DIRECTORY}/libs/opt/libgrpc.a sudo ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
   INSTALL_COMMAND "")
 
-  ADD_LIBRARY(hel SHARED
+ADD_LIBRARY(hel SHARED
   src/roborio.cpp
   src/roborio_manager.cpp
   src/send_data.cpp
@@ -181,22 +182,17 @@ ExternalProject_ADD(grpc
   lib/gen/emulator_service.pb.cc
   lib/gen/emulator_service.grpc.pb.cc
   src/robot_input_service.cpp
-  )
+)
 ADD_DEPENDENCIES(hel asio ni-libraries gen_grpc)
 
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${ASIO_DIRECTORY}/include"
-  "${GRPC_DIRECTORY}/include"
   "${NILIB_DIRECTORY}/src/include"
+  "${GRPC_DIRECTORY}/include"
   "${GRPC_DIRECTORY}/third_party/protobuf/src"
   "${CMAKE_BINARY_DIR}/lib/gen"
-  )
-if(ARCH MATCHES "^[Aa][Rr][Mm]")
-  # TARGET_LINK_LIBRARIES(hel wpi)
-else()
-  # TARGET_LINK_LIBRARIES(hel wpi-x86)
-endif()
+)
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
   IF(NOT DEFINED WPILIB)
@@ -252,7 +248,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
       ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
 
-      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread hel)
+      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc_plugin_support.a libprotobuf.a libgpr.a libgrpc.a hel)
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
@@ -272,7 +268,10 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-        "${NILIB_DIRECTORY}/src/include"
+  	"${GRPC_DIRECTORY}/include"
+	"${GRPC_DIRECTORY}/third_party/protobuf/src"
+  	"${CMAKE_BINARY_DIR}/lib/gen"
+	"${NILIB_DIRECTORY}/src/include"
         # "${CTRE_DIRECTORY}/cpp/include/"
         # "${CTRE_DIRECTORY}/libraries/driver/include"
         "${CMAKE_BINARY_DIR}/include"
@@ -320,6 +319,9 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
       "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
       "${WPILIB_DIRECTORY}/hal/src/main/native/include"
+      "${GRPC_DIRECTORY}/include"
+      "${GRPC_DIRECTORY}/third_party/protobuf/src"
+      "${CMAKE_BINARY_DIR}/lib/gen"
       "${NILIB_DIRECTORY}/src/include"
       # "${CTRE_DIRECTORY}/cpp/include/"
       # "${CTRE_DIRECTORY}/libraries/driver/include"

@@ -27,7 +27,7 @@ namespace hel{
         instance.first->robot_mode = robot_mode;
         instance.first->encoder_managers = encoder_managers;
         for(Maybe<EncoderManager>& a: instance.first->encoder_managers){
-            if(a){
+            if(a.isValid()){
                 a.get().update();
             }
         }
@@ -63,7 +63,7 @@ namespace hel{
         s += "match_info:" + match_info.toString() + ", ";
         s += "robot_mode:" + robot_mode.toString() + ", ";
         s += "encoder_managers:" + asString(encoder_managers, std::function<std::string(Maybe<EncoderManager>)>([&](Maybe<EncoderManager> a){
-                                                                                                                     if(a){
+                                                                                                                     if(a.isValid()){
                                                                                                                          return a.get().toString();
                                                                                                                      }
                                                                                                                      return std::string("null");

@@ -1,3 +1,5 @@
+#!/bin/bash 
+
 PROTOC=""
 GRPC_PLUGIN=""
 
