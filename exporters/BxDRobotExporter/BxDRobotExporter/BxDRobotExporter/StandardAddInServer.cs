@@ -10,6 +10,7 @@ using System.Diagnostics;
 using EditorsLibrary;
 using System.Runtime.InteropServices;
 using System.Collections;
+using JointResolver.EditorsLibrary;
 
 namespace BxDRobotExporter
 {
@@ -163,7 +164,7 @@ namespace BxDRobotExporter
             #region Setup Buttons
             //Drive Train panel buttons
             DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train Type", "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Select the drivetrain type (tank, H-drive, or mecanum).", LoadRobotIconSmall, LoadRobotIconLarge);
-            DriveTrainTypeButton.OnExecute += BeginWizardExport_OnExecute;
+            DriveTrainTypeButton.OnExecute += DriveTrainType_OnExecute;
             DriveTrainTypeButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DriveTrainTypeButton, true);
             
@@ -233,6 +234,16 @@ namespace BxDRobotExporter
             Instance = this;
         }
 
+        private void DriveTrainType_OnExecute(NameValueMap context)
+        {
+            DriveTrainTypeForm driveTrainTypeForm = new DriveTrainTypeForm();
+            driveTrainTypeForm.ShowDialog();
+            if (driveTrainTypeForm.DialogResult == DialogResult.OK)
+            {
+                SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainTypeForm.driveTrainType;
+            }
+        }
+
         /// <summary>
         /// Called when the <see cref="StandardAddInServer"/> is being unloaded
         /// </summary>
@@ -297,19 +308,19 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences = new List<ComponentOccurrence>();
             disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
-            if (!Utilities.GUI.LoadRobotData(AsmDocument))
-            {
-                Wizard.WizardForm wizard = new Wizard.WizardForm();
-                wizard.ShowDialog();
-                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-                {
-                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
-                    finishDialog.ShowDialog();
-                }
-                PendingChanges = true; // Force save button on since no data has been saved to this file
-            }
-            else
-                PendingChanges = false; // No changes are pending if data has been loaded
+//            if (!Utilities.GUI.LoadRobotData(AsmDocument))
+//            {
+//                Wizard.WizardForm wizard = new Wizard.WizardForm();
+//                wizard.ShowDialog();
+//                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+//                {
+//                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+//                    finishDialog.ShowDialog();
+//                }
+//                PendingChanges = true; // Force save button on since no data has been saved to this file
+//            }
+//            else
+//                PendingChanges = false; // No changes are pending if data has been loaded
 
             // Hide non-jointed components;
             
@@ -537,11 +548,11 @@ namespace BxDRobotExporter
                 Utilities.HideDockableWindows();
 
                 wizard.ShowDialog();
-                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-                {
-                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
-                    finishDialog.ShowDialog();
-                }
+//                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
+//                {
+//                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
+//                    finishDialog.ShowDialog();
+//                }
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
            
@@ -575,11 +586,11 @@ namespace BxDRobotExporter
         }
 
         //Settings
-    /// <summary>
-    /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
-    /// </summary>
-    /// <param name="Context"></param>
-    private void SetWeight_OnExecute(NameValueMap Context)
+        /// <summary>
+        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
+        /// </summary>
+        /// <param name="Context"></param>
+        private void SetWeight_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;

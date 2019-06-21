@@ -46,7 +46,7 @@
             // 
             this.WeightBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.WeightBox.Location = new System.Drawing.Point(65, 5);
-            this.WeightBox.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.WeightBox.Margin = new System.Windows.Forms.Padding(5);
             this.WeightBox.Maximum = new decimal(new int[] {
             150,
             0,
@@ -69,7 +69,7 @@
             this.tableLayoutPanel1.Controls.Add(this.WeightLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.UnitBox, 2, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 4);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -103,7 +103,7 @@
             // 
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.CancelButton.Location = new System.Drawing.Point(287, 4);
-            this.CancelButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(100, 28);
             this.CancelButton.TabIndex = 1;
@@ -113,7 +113,7 @@
             // SaveButton
             // 
             this.SaveButton.Location = new System.Drawing.Point(179, 4);
-            this.SaveButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SaveButton.Margin = new System.Windows.Forms.Padding(4);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(100, 28);
             this.SaveButton.TabIndex = 2;
@@ -126,7 +126,7 @@
             this.CalculatedWeightCheck.AutoSize = true;
             this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
             this.CalculatedWeightCheck.Location = new System.Drawing.Point(4, 4);
-            this.CalculatedWeightCheck.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CalculatedWeightCheck.Margin = new System.Windows.Forms.Padding(4);
             this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
             this.CalculatedWeightCheck.Size = new System.Drawing.Size(167, 28);
             this.CalculatedWeightCheck.TabIndex = 3;
@@ -139,7 +139,7 @@
             this.WeightLabel.AutoSize = true;
             this.WeightLabel.Dock = System.Windows.Forms.DockStyle.Right;
             this.WeightLabel.Location = new System.Drawing.Point(4, 4);
-            this.WeightLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.WeightLabel.Margin = new System.Windows.Forms.Padding(4);
             this.WeightLabel.Name = "WeightLabel";
             this.WeightLabel.Size = new System.Drawing.Size(52, 24);
             this.WeightLabel.TabIndex = 1;
@@ -153,7 +153,7 @@
             "Pounds",
             "Kilograms"});
             this.UnitBox.Location = new System.Drawing.Point(288, 4);
-            this.UnitBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.UnitBox.Margin = new System.Windows.Forms.Padding(4);
             this.UnitBox.Name = "UnitBox";
             this.UnitBox.Size = new System.Drawing.Size(99, 24);
             this.UnitBox.TabIndex = 2;
@@ -169,11 +169,10 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "SetWeightForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Weight";
             ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
