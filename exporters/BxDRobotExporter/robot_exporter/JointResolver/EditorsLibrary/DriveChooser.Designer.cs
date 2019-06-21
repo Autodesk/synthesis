@@ -559,10 +559,10 @@
             0,
             0});
             this.OutputGeartxt.Minimum = new decimal(new int[] {
-            1000,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.OutputGeartxt.Name = "OutputGeartxt";
             this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.OutputGeartxt.TabIndex = 16;
@@ -603,10 +603,10 @@
             0,
             0});
             this.InputGeartxt.Minimum = new decimal(new int[] {
-            1000,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.InputGeartxt.Name = "InputGeartxt";
             this.InputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.InputGeartxt.TabIndex = 15;
