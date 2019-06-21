@@ -79,6 +79,8 @@ namespace hel{
 
         EmulationService::RobotOutputs output;
 
+        EmulationService::RobotOutputs output;
+
         /**
          * \brief Update the serialized_data with the PWM headers
          */
