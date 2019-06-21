@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -319,7 +319,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void ClosingExporter()
         {
-            WarnIfUnsaved(false);
+            CancelButtonOnExecute(null);
 
             // Re-enable disabled components
             if (disabledAssemblyOccurences != null)
@@ -901,29 +901,6 @@ namespace BxDRobotExporter
                 button.ProgressiveToolTip.IsProgressive = true;
             }
             button.ProgressiveToolTip.Title = title;
-        }
-
-        /// <summary>
-        /// If the user has unsaved work, warn them that they are about to exit with unsaved work
-        /// </summary>
-        /// <returns>True if the user wishes to continue without saving/no saving is needed.</returns>
-        public bool WarnIfUnsaved(bool allowCancel = true)
-        {
-            if (!PendingChanges)
-                return true; // No changes to save
-
-            DialogResult saveResult = MessageBox.Show("Save robot configuration?", "Save",
-                                                      allowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo);
-
-            if (saveResult == DialogResult.Yes)
-            {
-                SaveButton_OnExecute(null);
-                return !PendingChanges;
-            }
-            else if (saveResult == DialogResult.No)
-                return true; // Continue without saving
-            else
-                return false; // Don't continue
         }
 
         /// <summary>
