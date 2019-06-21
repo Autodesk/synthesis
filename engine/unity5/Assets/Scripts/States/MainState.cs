@@ -184,7 +184,7 @@ namespace Synthesis.States
             StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
-            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"Autodesk\Synthesis\Emulator");
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator");
             string directoryPath = "";
 
             if (Directory.Exists(defaultDirectory))

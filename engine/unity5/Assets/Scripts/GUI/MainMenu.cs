@@ -156,7 +156,7 @@ namespace Synthesis.GUI
             UICallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
             //Creates the replay directory
-            FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\");
+            FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Replays" + Path.DirectorySeparatorChar);
             file.Directory.Create();
 
             //Assigns the currently store registry values or default file path to the proper variables if they exist.
