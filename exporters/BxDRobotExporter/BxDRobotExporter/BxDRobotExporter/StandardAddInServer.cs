@@ -163,34 +163,34 @@ namespace BxDRobotExporter
 
             #region Setup Buttons
             //Drive Train panel buttons
-            DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train Type", "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Select the drivetrain type (tank, H-drive, or mecanum).", LoadRobotIconSmall, LoadRobotIconLarge);
+            DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train\nType", "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Select the drivetrain type (tank, H-drive, or mecanum).", LoadRobotIconSmall, LoadRobotIconLarge);
             DriveTrainTypeButton.OnExecute += DriveTrainType_OnExecute;
             DriveTrainTypeButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DriveTrainTypeButton, true);
             
-            WheelAssignmentButton = ControlDefs.AddButtonDefinition("Wheel Assignment", "BxD:RobotExporter:SetWheelAssignment", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Configure drivetrain wheels.", RobotMagicWandIconSmall, RobotMagicWandIconLarge);
+            WheelAssignmentButton = ControlDefs.AddButtonDefinition("Wheel\nAssignment", "BxD:RobotExporter:SetWheelAssignment", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Configure drivetrain wheels.", RobotMagicWandIconSmall, RobotMagicWandIconLarge);
             WheelAssignmentButton.OnExecute += BeginWizardExport_OnExecute;
             WheelAssignmentButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(WheelAssignmentButton, true);
             
-            DrivetrainWeightButton = ControlDefs.AddButtonDefinition("Drive Train Weight", "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign the weight of the drivetrain.", WeightRobotIconSmall, WeightRobotIconLarge);
+            DrivetrainWeightButton = ControlDefs.AddButtonDefinition("Drive Train\nWeight", "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign the weight of the drivetrain.", WeightRobotIconSmall, WeightRobotIconLarge);
             DrivetrainWeightButton.OnExecute += SetWeight_OnExecute;
             DrivetrainWeightButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DrivetrainWeightButton, true);
             
             // Joint panel buttons
-            CreateJointButton = ControlDefs.AddButtonDefinition("Assign New Joint", "BxD:RobotExporter:CreateJoint", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall, NewJointIconLarge);
+            CreateJointButton = ControlDefs.AddButtonDefinition("New Joint", "BxD:RobotExporter:CreateJoint", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall, NewJointIconLarge);
             CreateJointButton.OnExecute += BeginWizardExport_OnExecute;
             CreateJointButton.OnHelp += _OnHelp;
             JointPanel.CommandControls.AddButton(CreateJointButton, true);
             
-            EditJointButton = ControlDefs.AddButtonDefinition("Edit Joint Assignment", "BxD:RobotExporter:EditJoint", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
+            EditJointButton = ControlDefs.AddButtonDefinition("Edit Joint", "BxD:RobotExporter:EditJoint", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
             EditJointButton.OnExecute += BeginWizardExport_OnExecute;
             EditJointButton.OnHelp += _OnHelp;
             JointPanel.CommandControls.AddButton(EditJointButton, true);
 
             // ChecklistPanel buttons
-            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export Pre-check", "BxD:RobotExporter:PreCheck", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
+            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nPre-check", "BxD:RobotExporter:PreCheck", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
             PreCheckButton.OnExecute += BeginWizardExport_OnExecute;
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
