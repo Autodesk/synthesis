@@ -132,7 +132,7 @@ namespace hel{
             return *this;
         }
 
-        constexpr bool is_valid()const noexcept{
+        constexpr bool isValid()const noexcept{
             return _is_valid;
         }
 
