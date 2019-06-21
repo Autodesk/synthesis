@@ -40,8 +40,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 8184722643778467996}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 390187df4b3a8394abf032e623159108, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e7d41c52c10cb54d8d3e35f84b243c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  analyticsManagerPrefab: {fileID: 473622768083658846, guid: 587bb36eedb8c39488f7a903e852ad49,
+  analyticsManagerPrefab: {fileID: 473622768083658846, guid: 80adc8a8abc2a074aa89ed52e40af9c0,
     type: 3}
