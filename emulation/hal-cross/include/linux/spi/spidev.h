@@ -17,6 +17,7 @@ struct spi_ioc_transfer {
     __u8        rx_nbits;
     __u16       pad;
 };
+
 #define SPI_IOC_MAGIC 'k'
 
 #define SPI_MSGSIZE(N) \

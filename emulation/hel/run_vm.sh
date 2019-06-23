@@ -23,12 +23,11 @@ else
 	-net nic \
 	-sd vm-package/rootfs.ext4 < /dev/null &> /dev/null; rm -rf ./vm_lock )&
 	printf "VM successfully started. Please wait while it initializes.\n"
-	sleep 10
 fi
 
 until ssh -q -p 10022 lvuser@localhost exit; do
 	printf "Waiting for connection.\n"
-	sleep 5
+	sleep 1
 done
 
 printf "VM connections available.\n"

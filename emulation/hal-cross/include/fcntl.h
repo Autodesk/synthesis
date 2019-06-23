@@ -3,12 +3,8 @@
 
 #define O_RDWR 2
 
-int open(const char *path, int oflag, ... );/*{
-	return 1;
-}*/
+int open(const char *path, int oflag, ... );
 
-int close(int fildes);/*{
-	return 0;
-}*/
+int close(int fildes);
 
 #endif
