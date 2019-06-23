@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-
 #define NYI {                                             \
         printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");  \
         exit(1);                                          \
