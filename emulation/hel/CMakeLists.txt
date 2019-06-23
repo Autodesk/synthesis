@@ -34,7 +34,9 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
 if(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
+	if(NOT WIN32)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
+	endif()
 else()
   if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
     SET(CMAKE_BUILD_TYPE DEBUG)
@@ -181,7 +183,10 @@ ADD_LIBRARY(hel SHARED
   src/error.cpp
   src/alarm.cpp
   src/system.cpp
+  src/dma_manager.cpp
+  src/interrupt.cpp
   src/interrupt_manager.cpp
+  src/analog_trigger.cpp
   src/analog_input_calibration.cpp
   src/joystick.cpp
   src/match_info.cpp

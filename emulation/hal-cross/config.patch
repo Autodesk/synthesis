@@ -1,5 +1,5 @@
 diff --git a/shared/config.gradle b/shared/config.gradle
-index d5ac9b17..d455377f 100644
+index d5ac9b17..d22a4655 100644
 --- a/shared/config.gradle
 +++ b/shared/config.gradle
 @@ -1,38 +1,39 @@
@@ -8,14 +8,14 @@ index d5ac9b17..d455377f 100644
  
 -def windowsCompilerArgs = ['/EHsc', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/FS', '/Zc:inline', '/W3', '/wd4244', '/wd4267', '/wd4146', '/wd4996', '/std:c++17', '/Zc:throwingNew', '/permissive-', '/WX']
 -def windowsCCompilerArgs = ['/Zi', '/FS', '/Zc:inline', '/W3', '/WX']
-+def windowsCompilerArgs = ['/EHsc', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/FS', '/Zc:inline', '/W3', '/wd4244', '/wd4267', '/wd4146', '/wd4996', '/std:c++17', '/Zc:throwingNew', '/permissive-', '/IC\\mingw\\include', "/I${projectDir}\\..\\..\\..\\..\\ni-libraries\\src\\ni-libraries\\src\\include"]
++def windowsCompilerArgs = ['/EHsc', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/FS', '/Zc:inline', '/W3', '/wd4244', '/wd4267', '/wd4146', '/wd4996', '/std:c++17', '/Zc:throwingNew', '/permissive-', '/IC:\\mingw\\include', "/I${projectDir}\\..\\..\\..\\..\\ni-libraries\\src\\ni-libraries\\src\\include"]
 +
 +def windowsCCompilerArgs = ['/Zi', '/FS', '/Zc:inline', '/W3']
  def windowsReleaseCompilerArgs = ['/O2', '/MD']
  def windowsDebugCompilerArgs = ['/Od', '/MDd']
  def windowsLinkerArgs = ['/DEBUG:FULL']
 -def windowsReleaseLinkerArgs = ['/OPT:REF', '/OPT:ICF']
-+def windowsReleaseLinkerArgs = ['/OPT:REF', '/OPT:ICF', "${projectDir}\\..\\..\\..\\..\\..\\build\\Debug\\hel.lib"]
++def windowsReleaseLinkerArgs = ['/OPT:REF', '/OPT:ICF', "${projectDir}\\..\\..\\..\\..\\..\\Debug\\hel.lib"]
  
 -def linuxCrossCompilerArgs = ['-std=c++17', '-Wformat=2', '-Wall', '-Wextra', '-Werror', '-pedantic', '-Wno-psabi', '-g',
 +def linuxCrossCompilerArgs = ['-std=c++14', '-Wformat=2', '-Wall', '-Wextra',  '-pedantic', '-Wno-psabi', '-g',
