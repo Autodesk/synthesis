@@ -1,9 +1,7 @@
 #ifndef _HEL_IOCTL_H
 #define _HEL_IOCTL_H
 
-int ioctl(int fd, unsigned long request, ...);/*{
-	return 0;
-}*/
+int ioctl(int fd, unsigned long request, ...);
 
 
 #define _IOC_NRBITS 8
