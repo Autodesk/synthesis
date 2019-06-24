@@ -82,6 +82,7 @@ public class JointDriver : BinaryRWObject, IComparable<JointDriver>
         try
         {
             MetaInfo.Add(metaDriver.GetType(), metaDriver);
+           // metaDriver.LoadJSONType();
         }
         catch
         {
