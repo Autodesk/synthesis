@@ -559,10 +559,10 @@
             0,
             0});
             this.OutputGeartxt.Minimum = new decimal(new int[] {
-            1000,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.OutputGeartxt.Name = "OutputGeartxt";
             this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.OutputGeartxt.TabIndex = 16;
@@ -603,10 +603,10 @@
             0,
             0});
             this.InputGeartxt.Minimum = new decimal(new int[] {
-            1000,
+            1,
             0,
             0,
-            -2147483648});
+            0});
             this.InputGeartxt.Name = "InputGeartxt";
             this.InputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.InputGeartxt.TabIndex = 15;
@@ -673,10 +673,10 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.38583F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 61.61417F));
-            this.tableLayoutPanel1.Controls.Add(this.MotorTypeLabel, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.RobotCompetitionDropDown, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.MotorTypeDropDown, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.RobotCompetitonLabel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.MotorTypeLabel, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -689,11 +689,13 @@
             // MotorTypeLabel
             // 
             this.MotorTypeLabel.AutoSize = true;
+            this.MotorTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MotorTypeLabel.Location = new System.Drawing.Point(198, 0);
             this.MotorTypeLabel.Name = "MotorTypeLabel";
-            this.MotorTypeLabel.Size = new System.Drawing.Size(80, 17);
+            this.MotorTypeLabel.Size = new System.Drawing.Size(307, 31);
             this.MotorTypeLabel.TabIndex = 16;
             this.MotorTypeLabel.Text = "Motor Type";
+            this.MotorTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // RobotCompetitionDropDown
             // 
@@ -716,6 +718,7 @@
             // 
             this.MotorTypeDropDown.Dock = System.Windows.Forms.DockStyle.Top;
             this.MotorTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.MotorTypeDropDown.Enabled = false;
             this.MotorTypeDropDown.FormattingEnabled = true;
             this.MotorTypeDropDown.Location = new System.Drawing.Point(198, 33);
             this.MotorTypeDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -732,6 +735,7 @@
             this.RobotCompetitonLabel.Size = new System.Drawing.Size(189, 31);
             this.RobotCompetitonLabel.TabIndex = 15;
             this.RobotCompetitonLabel.Text = "Robot Competition";
+            this.RobotCompetitonLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ConfigJointLayout
             // 
