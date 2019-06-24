@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using Synthesis.Utils;
 namespace Synthesis.Network
 {
     [NetworkSettings(channel = 0, sendInterval = 0f)]
@@ -159,7 +159,7 @@ namespace Synthesis.Network
             if (robotGuid.Length > 0)
                 return;
 
-            string robotFile = PlayerPrefs.GetString("simSelectedRobot") + "\\skeleton.bxdj";
+            string robotFile = PlayerPrefs.GetString("simSelectedRobot") + "\\skeleton";
 
             if (!File.Exists(robotFile))
             {
@@ -167,7 +167,7 @@ namespace Synthesis.Network
                 return;
             }
 
-            Task<RigidNode_Base> loadingTask = new Task<RigidNode_Base>(() => BXDJSkeleton.ReadSkeleton(robotFile));
+            Task<RigidNode_Base> loadingTask = new Task<RigidNode_Base>(() =>  BXDExtensions.ReadSkeletonSafe(robotFile));
 
             loadingTask.ContinueWith(t =>
             {
@@ -212,7 +212,7 @@ namespace Synthesis.Network
 
                 foreach (string dir in Directory.GetDirectories(robotsDirectory, otherIdentity.robotName))
                 {
-                    RigidNode_Base root = BXDJSkeleton.ReadSkeleton(dir + "\\skeleton.bxdj");
+                    RigidNode_Base root = BXDExtensions.ReadSkeletonSafe(dir + "\\skeleton");
 
                     if (root.GUID.ToString().Equals(otherIdentity.robotGuid))
                     {

@@ -73,7 +73,27 @@ namespace BXDSim.IO.BXDJ
     
         }
 
+        //Odeza Test
+        // This attempts to load the odeza bot that was fully exported from Inventor
+        // If the bot is not found, this test will just pass as normal 
+        // This was developed for local testing on my machine
+        // - Alex
 
+        [Test]
+        public void TestOdeza()
+        {
+            string odezaPath = @"C:\Users\Victo\AppData\Roaming\Autodesk\Synthesis\Robots\Odesza1\\skeleton.json";
+            if (!File.Exists(odezaPath))
+            {
+                return;
+            }
+            
+            RigidNode_Base loaded = BXDJSkeletonJson.ReadSkeleton(odezaPath);
+
+            Assert.IsNotNull(loaded);
+
+
+        }
 
         // Generation Methods
         private RigidNode_Base CreateNodeWithChild()
