@@ -10,6 +10,7 @@ using System.Diagnostics;
 using EditorsLibrary;
 using System.Runtime.InteropServices;
 using System.Collections;
+using BxDRobotExporter.Wizard;
 using JointResolver.EditorsLibrary;
 
 namespace BxDRobotExporter
@@ -185,7 +186,7 @@ namespace BxDRobotExporter
             JointPanel.CommandControls.AddButton(CreateJointButton, true);
             
             EditJointButton = ControlDefs.AddButtonDefinition("Edit Joint", "BxD:RobotExporter:EditJoint", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
-            EditJointButton.OnExecute += BeginWizardExport_OnExecute;
+            EditJointButton.OnExecute += EditJoint_OnExecute;
             EditJointButton.OnHelp += _OnHelp;
             JointPanel.CommandControls.AddButton(EditJointButton, true);
 
@@ -555,6 +556,21 @@ namespace BxDRobotExporter
 //                }
                 Utilities.GUI.ReloadPanels();
                 Utilities.ShowDockableWindows();
+           
+        }
+        
+        public void EditJoint_OnExecute(NameValueMap Context)
+        {
+            if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                return;
+
+            Utilities.HideDockableWindows();
+
+            JointForm jointEditor = new JointForm();
+            jointEditor.ShowDialog();
+            
+            Utilities.GUI.ReloadPanels();
+            Utilities.ShowDockableWindows();
            
         }
 
