@@ -31,7 +31,7 @@ namespace BxDRobotExporter.Wizard
         private void exportRobotButton_Click(object sender, EventArgs e)
         {
             Close();
-            StandardAddInServer.Instance.ForceExport();
+            StandardAddInServer.Instance.PromptExportToSynthesis();
         }
         
     }
