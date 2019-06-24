@@ -635,13 +635,19 @@ namespace BxDRobotExporter
 
                 if (occurrence != null)
                 {
-                    SelectNode(occurrence);
                     occurrences.Add(occurrence);
                 }
             }
 
             // Set camera view
             ViewOccurrences(occurrences, 15, ViewDirection.Y);
+            
+            // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
+            ChildHighlight.Clear(); 
+            foreach (var componentOccurrence in occurrences)
+            {
+                ChildHighlight.AddItem(componentOccurrence);
+            }
         }
         
         /// <summary>
