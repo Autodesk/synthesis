@@ -579,8 +579,10 @@ public partial class DriveChooser : Form
             case "GENERIC":
                 MotorTypeDropDown.Items.Clear();
                 MotorTypeDropDown.Items.Add("GENERIC");
+                MotorTypeDropDown.Enabled = false;
                 break;
             case "FRC":
+                MotorTypeDropDown.Enabled = true;
                 MotorTypeDropDown.Items.Clear();
                 MotorTypeDropDown.Items.Add("GENERIC");
                 MotorTypeDropDown.Items.Add("CIM");
@@ -599,6 +601,7 @@ public partial class DriveChooser : Form
                 MotorTypeDropDown.Items.Add("NEVEREST");
                 break;
             case "FTC":
+                MotorTypeDropDown.Enabled = true;
                 MotorTypeDropDown.Items.Clear();
                 MotorTypeDropDown.Items.Add("GENERIC");
                 MotorTypeDropDown.Items.Add("NEVEREST");
@@ -609,6 +612,7 @@ public partial class DriveChooser : Form
                 MotorTypeDropDown.Items.Add("REV_ROBOTICS_CORE_HEX");
                 break;
             case "VEX":
+                MotorTypeDropDown.Enabled = true;
                 MotorTypeDropDown.Items.Clear();
                 MotorTypeDropDown.Items.Add("GENERIC");
                 MotorTypeDropDown.Items.Add("VEX_V5_Smart_Motor_600_RPM");
