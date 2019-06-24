@@ -280,6 +280,7 @@ namespace Synthesis.States
                 return false;
 
             FieldDataHandler.Load(fieldPath);
+            Controls.UpdateFieldControls();
             Controls.Load();
 
             string loadResult;
