@@ -344,8 +344,12 @@ public partial class SynthesisGUI : Form
     /// <summary>
     /// Saves the robot to the directory it was loaded from or the default directory
     /// </summary>
-    /// <returns></returns>
-    public bool ExportRobot()
+    /// <returns></returns\>
+    /// 
+
+  
+
+public bool ExportRobot()
     {
         try
         {
@@ -361,6 +365,15 @@ public partial class SynthesisGUI : Form
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
             BXDJSkeleton.SetupFileNames(SkeletonBase);
+           
+
+            BXDJSkeletonJson.WriteSkeleton(
+                (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.json",
+                    SkeletonBase
+                );
+
+
+
             BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
             for (int i = 0; i < Meshes.Count; i++)

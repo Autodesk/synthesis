@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 /// <summary>
 /// Possible types of skeletal joints.
 /// </summary>
+/// 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum SkeletalJointType : byte
 {
     DEFAULT = 0,
@@ -17,8 +20,11 @@ public enum SkeletalJointType : byte
 /// <summary>
 /// Represents a moving joint between two nodes.
 /// </summary>
+/// 
+
 public abstract class SkeletalJoint_Base
 {
+    public SkeletalJointType typeSave;
     /// <summary>
     /// Generic delegate for creating skeletal joints from a joint type.
     /// </summary>
@@ -50,6 +56,8 @@ public abstract class SkeletalJoint_Base
     /// The joint driver for this joint.  This can be null.
     /// </summary>
     public JointDriver cDriver;
+
+    public double weight = 10;
 
     /// <summary>
     /// The sensors that read information from this joint.
