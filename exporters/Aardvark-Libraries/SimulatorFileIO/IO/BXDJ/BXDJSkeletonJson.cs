@@ -85,22 +85,30 @@ public static partial class BXDJSkeletonJson
             node.ModelFileName = FileUtilities.SanatizeFileName("node_" + i + ".bxda");
             node.ModelID = nodes[i].GetModelID();
 
-
+          
 
             if (parentID[i] >= 0)
             {
                 node.joint = nodes[i].GetSkeletalJoint();
+                
                 node.joint.typeSave = node.joint.GetJointType();
-            }
-              
-           
 
-            
+                if (node.joint.cDriver != null)
+                {
+                    node.joint.cDriver.port1 += 1;
+                    node.joint.cDriver.port2 += 1;
+                }
+
+
+            }
+
+
+
             //WriteJoint(nodes[i].GetSkeletalJoint(), node);
 
             jsonSkeleton.Nodes.Add(node);
         }
-        jsonSkeleton.DriveTrainType = (baseNode.driveTrainType).ToString();
+        jsonSkeleton.DriveTrainType = baseNode.driveTrainType;
         jsonSkeleton.SoftwareExportedWith = "INVENTOR";
         var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
         string toWrite = JsonConvert.SerializeObject(jsonSkeleton, settings);
@@ -115,25 +123,37 @@ public static partial class BXDJSkeletonJson
         JsonSkeleton skeleton = JsonConvert.DeserializeObject<JsonSkeleton>(jsonData, new JsonSerializerSettings() { Converters = converters });
         List<JsonSkeletonNode> nodes = skeleton.Nodes;
 
+        if(nodes.Count < 1)
+        {
+            Console.Error.WriteLine("0 Nodes Loaded! Failed import");
+
+            return null;
+        }
+
         foreach(JsonSkeletonNode node in nodes)
         {
-            RigidNode_Base newNode = new RigidNode_Base(new Guid(node.GUID));
+            RigidNode_Base newNode = RigidNode_Base.NODE_FACTORY(new Guid(node.GUID));
+            newNode.ModelFileName = node.ModelFileName;
+            newNode.ModelFullID = node.ModelID;
+
+
             if (node.ParentID == "-1")
             {
                 root = newNode;
+                root.driveTrainType = skeleton.DriveTrainType;
+               
             }
             else
             {
-
+                
                 root.AddChild(node.joint, newNode);
             }
-        }
 
-        if(root == null)
-        {
             
         }
 
+      
+     
         return root;
     }
     public class JointConverter : JsonConverter

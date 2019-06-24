@@ -8,7 +8,7 @@ namespace BXDSim.IO.BXDJ
     public class JsonSkeleton
     {
         public string Version;
-        public string DriveTrainType;
+        public RigidNode_Base.DriveTrainType DriveTrainType;
         public string SoftwareExportedWith;
         public List<JsonSkeletonNode> Nodes = new List<JsonSkeletonNode>();
     }
