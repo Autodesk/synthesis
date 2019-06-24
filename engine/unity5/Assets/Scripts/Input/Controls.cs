@@ -172,6 +172,7 @@ namespace Synthesis.Input
         /// </summary>
         public static void Load()
         {
+            ArcadeControls();
             ReadOnlyCollection<KeyMapping> keys = InputControl.GetKeysList();
 
             foreach (KeyMapping key in keys)
@@ -227,6 +228,19 @@ namespace Synthesis.Input
             }
 
             return null;
+        }
+
+        public static void UpdateFieldControls()
+        {
+            buttons[0].pickup = new List<KeyMapping>();
+            buttons[0].release = new List<KeyMapping>();
+            buttons[0].spawnPieces = new List<KeyMapping>();
+            for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
+            {
+                buttons[0].pickup.Add(InputControl.SetKey("1: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftControl, false));
+                buttons[0].release.Add(InputControl.SetKey("1: Release " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftShift, false));
+                buttons[0].spawnPieces.Add(InputControl.SetKey("1: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.RightControl, false));
+            }
         }
 
         /// <summary>
