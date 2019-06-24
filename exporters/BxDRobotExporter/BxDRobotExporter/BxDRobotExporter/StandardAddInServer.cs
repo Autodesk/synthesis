@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -195,10 +195,10 @@ namespace BxDRobotExporter
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
             
-//            DOFButton = ControlDefs.AddButtonDefinition("DOF", "BxD:RobotExporter:DOF", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "TODO", ExportSetupRobotIconSmall, ExportSetupRobotIconLarge);
-//            DOFButton.OnExecute += BeginWizardExport_OnExecute;
-//            DOFButton.OnHelp += _OnHelp;
-//            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
+            DOFButton = ControlDefs.AddButtonDefinition("DOF", "BxD:RobotExporter:DOF", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit degrees of freedom.", PrecheckIconSmall, PrecheckIconLarge);
+            DOFButton.OnExecute += BeginWizardExport_OnExecute;
+            DOFButton.OnHelp += _OnHelp;
+            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
             
             // Quit button
 //            QuitButton = ControlDefs.AddButtonDefinition("Save Without Exporting", "BxD:RobotExporter:Quit", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save configuration and exit the robot exporting environment.", SaveRobotIconSmall, SaveRobotIconLarge);
