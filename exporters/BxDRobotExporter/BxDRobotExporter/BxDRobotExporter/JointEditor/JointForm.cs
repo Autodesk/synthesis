@@ -1,14 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using BxDRobotExporter.Wizard;
 
-namespace BxDRobotExporter.Wizard
+namespace BxDRobotExporter.JointEditor
 {
     public partial class JointForm : Form
     {        

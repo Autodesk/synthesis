@@ -1,31 +1,34 @@
-partial class JointCardEditor
+namespace BxDRobotExporter.JointEditor
 {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
-
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
+    partial class JointCardEditor
     {
-        if (disposing && (components != null))
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
         {
-            components.Dispose();
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
-        base.Dispose(disposing);
-    }
 
-    #region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent()
-    {
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
@@ -79,21 +82,21 @@ partial class JointCardEditor
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             this.JointOptionsLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPort1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPort2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtHighLimit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtLowLimit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtPort1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtPort2)).BeginInit();
             this.tabsMeta.SuspendLayout();
             this.metaWheel.SuspendLayout();
             this.WheelLayout.SuspendLayout();
             this.metaPneumatic.SuspendLayout();
             this.PneumaticLayout.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPnuDia)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.numericUpDownPnuDia)).BeginInit();
             this.metaGearing.SuspendLayout();
             this.GearLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.OutputGeartxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.InputGeartxt)).BeginInit();
             this.metaBrake.SuspendLayout();
             this.BreakLayout.SuspendLayout();
             this.metaMotorType.SuspendLayout();
@@ -101,7 +104,7 @@ partial class JointCardEditor
             this.ConfigJointLayout.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.WeightBox)).BeginInit();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -113,7 +116,8 @@ partial class JointCardEditor
             this.cmbJointDriver.Name = "cmbJointDriver";
             this.cmbJointDriver.Size = new System.Drawing.Size(508, 24);
             this.cmbJointDriver.TabIndex = 0;
-            this.cmbJointDriver.SelectedIndexChanged += new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
+            this.cmbJointDriver.SelectedIndexChanged +=
+                new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
             // 
             // grpChooseDriver
             // 
@@ -147,8 +151,10 @@ partial class JointCardEditor
             this.JointOptionsLayout.AutoSize = true;
             this.JointOptionsLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.JointOptionsLayout.ColumnCount = 4;
-            this.JointOptionsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.JointOptionsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.JointOptionsLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.JointOptionsLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.JointOptionsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.JointOptionsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.JointOptionsLayout.Controls.Add(this.txtHighLimit, 1, 3);
@@ -175,18 +181,22 @@ partial class JointCardEditor
             // 
             this.txtHighLimit.DecimalPlaces = 4;
             this.txtHighLimit.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtHighLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.txtHighLimit.Increment = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                65536
+            });
             this.txtHighLimit.Location = new System.Drawing.Point(191, 78);
             this.txtHighLimit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtHighLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+            this.txtHighLimit.Minimum = new decimal(new int[]
+            {
+                100,
+                0,
+                0,
+                -2147483648
+            });
             this.txtHighLimit.Name = "txtHighLimit";
             this.txtHighLimit.Size = new System.Drawing.Size(182, 22);
             this.txtHighLimit.TabIndex = 4;
@@ -206,18 +216,22 @@ partial class JointCardEditor
             // 
             this.txtLowLimit.DecimalPlaces = 4;
             this.txtLowLimit.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtLowLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.txtLowLimit.Increment = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                65536
+            });
             this.txtLowLimit.Location = new System.Drawing.Point(3, 78);
             this.txtLowLimit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtLowLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+            this.txtLowLimit.Minimum = new decimal(new int[]
+            {
+                100,
+                0,
+                0,
+                -2147483648
+            });
             this.txtLowLimit.Name = "txtLowLimit";
             this.txtLowLimit.Size = new System.Drawing.Size(182, 22);
             this.txtLowLimit.TabIndex = 3;
@@ -231,11 +245,13 @@ partial class JointCardEditor
             this.txtPort1.Name = "txtPort1";
             this.txtPort1.Size = new System.Drawing.Size(182, 22);
             this.txtPort1.TabIndex = 1;
-            this.txtPort1.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.txtPort1.Value = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                0
+            });
             // 
             // txtPort2
             // 
@@ -245,11 +261,13 @@ partial class JointCardEditor
             this.txtPort2.Name = "txtPort2";
             this.txtPort2.Size = new System.Drawing.Size(182, 22);
             this.txtPort2.TabIndex = 2;
-            this.txtPort2.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.txtPort2.Value = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                0
+            });
             // 
             // lblLimits
             // 
@@ -309,11 +327,13 @@ partial class JointCardEditor
             this.cmbWheelType.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbWheelType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbWheelType.FormattingEnabled = true;
-            this.cmbWheelType.Items.AddRange(new object[] {
-            "Not a Wheel",
-            "Normal",
-            "Omni",
-            "Mecanum"});
+            this.cmbWheelType.Items.AddRange(new object[]
+            {
+                "Not a Wheel",
+                "Normal",
+                "Omni",
+                "Mecanum"
+            });
             this.cmbWheelType.Location = new System.Drawing.Point(3, 27);
             this.cmbWheelType.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbWheelType.Name = "cmbWheelType";
@@ -327,10 +347,12 @@ partial class JointCardEditor
             this.cmbPneumaticPressure.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPneumaticPressure.FormattingEnabled = true;
             this.cmbPneumaticPressure.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.cmbPneumaticPressure.Items.AddRange(new object[] {
-            "60 psi",
-            "20 psi",
-            "10 psi"});
+            this.cmbPneumaticPressure.Items.AddRange(new object[]
+            {
+                "60 psi",
+                "20 psi",
+                "10 psi"
+            });
             this.cmbPneumaticPressure.Location = new System.Drawing.Point(257, 27);
             this.cmbPneumaticPressure.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
@@ -367,9 +389,12 @@ partial class JointCardEditor
             this.WheelLayout.AutoSize = true;
             this.WheelLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.WheelLayout.ColumnCount = 3;
-            this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.WheelLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.WheelLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.WheelLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.WheelLayout.Controls.Add(this.chkBoxDriveWheel, 2, 1);
             this.WheelLayout.Controls.Add(this.lblFriction, 1, 0);
             this.WheelLayout.Controls.Add(this.cmbFrictionLevel, 1, 1);
@@ -400,10 +425,12 @@ partial class JointCardEditor
             this.cmbFrictionLevel.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbFrictionLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFrictionLevel.FormattingEnabled = true;
-            this.cmbFrictionLevel.Items.AddRange(new object[] {
-            "High",
-            "Medium",
-            "Low"});
+            this.cmbFrictionLevel.Items.AddRange(new object[]
+            {
+                "High",
+                "Medium",
+                "Low"
+            });
             this.cmbFrictionLevel.Location = new System.Drawing.Point(172, 27);
             this.cmbFrictionLevel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmbFrictionLevel.Name = "cmbFrictionLevel";
@@ -436,8 +463,10 @@ partial class JointCardEditor
             this.PneumaticLayout.AutoSize = true;
             this.PneumaticLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PneumaticLayout.ColumnCount = 2;
-            this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PneumaticLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PneumaticLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.PneumaticLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.PneumaticLayout.Controls.Add(this.tableLayoutPanel2, 0, 1);
             this.PneumaticLayout.Controls.Add(this.cmbPneumaticPressure, 1, 1);
             this.PneumaticLayout.Controls.Add(this.lblPressure, 1, 0);
@@ -455,14 +484,17 @@ partial class JointCardEditor
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+            this.tableLayoutPanel2.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
             this.tableLayoutPanel2.Controls.Add(this.numericUpDownPnuDia, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.PnuDiaUnits, 1, 0);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 28);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(
+                new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(248, 32);
             this.tableLayoutPanel2.TabIndex = 15;
             // 
@@ -470,11 +502,13 @@ partial class JointCardEditor
             // 
             this.numericUpDownPnuDia.DecimalPlaces = 6;
             this.numericUpDownPnuDia.Location = new System.Drawing.Point(3, 3);
-            this.numericUpDownPnuDia.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+            this.numericUpDownPnuDia.Maximum = new decimal(new int[]
+            {
+                10,
+                0,
+                0,
+                0
+            });
             this.numericUpDownPnuDia.Name = "numericUpDownPnuDia";
             this.numericUpDownPnuDia.Size = new System.Drawing.Size(179, 22);
             this.numericUpDownPnuDia.TabIndex = 0;
@@ -529,8 +563,10 @@ partial class JointCardEditor
             this.GearLayout.AutoSize = true;
             this.GearLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.GearLayout.ColumnCount = 2;
-            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.GearLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.GearLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.GearLayout.Controls.Add(this.OutputGeartxt, 0, 1);
             this.GearLayout.Controls.Add(this.lblOutputGear, 1, 0);
             this.GearLayout.Controls.Add(this.lblInputGear, 0, 0);
@@ -549,24 +585,30 @@ partial class JointCardEditor
             // 
             this.OutputGeartxt.DecimalPlaces = 5;
             this.OutputGeartxt.Location = new System.Drawing.Point(257, 31);
-            this.OutputGeartxt.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.OutputGeartxt.Minimum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            -2147483648});
+            this.OutputGeartxt.Maximum = new decimal(new int[]
+            {
+                1000,
+                0,
+                0,
+                0
+            });
+            this.OutputGeartxt.Minimum = new decimal(new int[]
+            {
+                1000,
+                0,
+                0,
+                -2147483648
+            });
             this.OutputGeartxt.Name = "OutputGeartxt";
             this.OutputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.OutputGeartxt.TabIndex = 16;
-            this.OutputGeartxt.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.OutputGeartxt.Value = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                0
+            });
             // 
             // lblOutputGear
             // 
@@ -593,24 +635,30 @@ partial class JointCardEditor
             // 
             this.InputGeartxt.DecimalPlaces = 5;
             this.InputGeartxt.Location = new System.Drawing.Point(3, 31);
-            this.InputGeartxt.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.InputGeartxt.Minimum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            -2147483648});
+            this.InputGeartxt.Maximum = new decimal(new int[]
+            {
+                1000,
+                0,
+                0,
+                0
+            });
+            this.InputGeartxt.Minimum = new decimal(new int[]
+            {
+                1000,
+                0,
+                0,
+                -2147483648
+            });
             this.InputGeartxt.Name = "InputGeartxt";
             this.InputGeartxt.Size = new System.Drawing.Size(206, 22);
             this.InputGeartxt.TabIndex = 15;
-            this.InputGeartxt.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.InputGeartxt.Value = new decimal(new int[]
+            {
+                1,
+                0,
+                0,
+                0
+            });
             // 
             // metaBrake
             // 
@@ -628,8 +676,10 @@ partial class JointCardEditor
             this.BreakLayout.AutoSize = true;
             this.BreakLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BreakLayout.ColumnCount = 2;
-            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.BreakLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.BreakLayout.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.BreakLayout.Controls.Add(this.chkBoxHasBrake, 0, 0);
             this.BreakLayout.Dock = System.Windows.Forms.DockStyle.Top;
             this.BreakLayout.Location = new System.Drawing.Point(0, 0);
@@ -667,8 +717,10 @@ partial class JointCardEditor
             // 
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.38583F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 61.61417F));
+            this.tableLayoutPanel1.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.38583F));
+            this.tableLayoutPanel1.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 61.61417F));
             this.tableLayoutPanel1.Controls.Add(this.RobotCompetitionDropDown, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.MotorTypeDropDown, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.RobotCompetitonLabel, 0, 0);
@@ -677,8 +729,10 @@ partial class JointCardEditor
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(
+                new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(
+                new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(508, 63);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -687,17 +741,20 @@ partial class JointCardEditor
             this.RobotCompetitionDropDown.Dock = System.Windows.Forms.DockStyle.Top;
             this.RobotCompetitionDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.RobotCompetitionDropDown.FormattingEnabled = true;
-            this.RobotCompetitionDropDown.Items.AddRange(new object[] {
-            "GENERIC",
-            "FRC",
-            "FTC",
-            "VEX"});
+            this.RobotCompetitionDropDown.Items.AddRange(new object[]
+            {
+                "GENERIC",
+                "FRC",
+                "FTC",
+                "VEX"
+            });
             this.RobotCompetitionDropDown.Location = new System.Drawing.Point(3, 33);
             this.RobotCompetitionDropDown.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.RobotCompetitionDropDown.Name = "RobotCompetitionDropDown";
             this.RobotCompetitionDropDown.Size = new System.Drawing.Size(189, 24);
             this.RobotCompetitionDropDown.TabIndex = 14;
-            this.RobotCompetitionDropDown.SelectedIndexChanged += new System.EventHandler(this.RobotCompetitionDropDown_SelectedIndexChanged);
+            this.RobotCompetitionDropDown.SelectedIndexChanged +=
+                new System.EventHandler(this.RobotCompetitionDropDown_SelectedIndexChanged);
             // 
             // MotorTypeDropDown
             // 
@@ -772,7 +829,8 @@ partial class JointCardEditor
             this.tableLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.ColumnStyles.Add(
+                new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.Controls.Add(this.CalculatedWeightCheck, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.WeightBox, 1, 0);
@@ -793,11 +851,13 @@ partial class JointCardEditor
             this.WeightBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.WeightBox.Location = new System.Drawing.Point(65, 5);
             this.WeightBox.Margin = new System.Windows.Forms.Padding(5);
-            this.WeightBox.Maximum = new decimal(new int[] {
-            150,
-            0,
-            0,
-            0});
+            this.WeightBox.Maximum = new decimal(new int[]
+            {
+                150,
+                0,
+                0,
+                0
+            });
             this.WeightBox.Name = "WeightBox";
             this.WeightBox.Size = new System.Drawing.Size(333, 22);
             this.WeightBox.TabIndex = 0;
@@ -817,9 +877,11 @@ partial class JointCardEditor
             // UnitBox
             // 
             this.UnitBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.UnitBox.Items.AddRange(new object[] {
-            "Pounds",
-            "Kilograms"});
+            this.UnitBox.Items.AddRange(new object[]
+            {
+                "Pounds",
+                "Kilograms"
+            });
             this.UnitBox.Location = new System.Drawing.Point(407, 4);
             this.UnitBox.Margin = new System.Windows.Forms.Padding(4);
             this.UnitBox.Name = "UnitBox";
@@ -854,10 +916,10 @@ partial class JointCardEditor
             this.grpDriveOptions.PerformLayout();
             this.JointOptionsLayout.ResumeLayout(false);
             this.JointOptionsLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPort1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPort2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtHighLimit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtLowLimit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtPort1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.txtPort2)).EndInit();
             this.tabsMeta.ResumeLayout(false);
             this.metaWheel.ResumeLayout(false);
             this.metaWheel.PerformLayout();
@@ -869,13 +931,13 @@ partial class JointCardEditor
             this.PneumaticLayout.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPnuDia)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.numericUpDownPnuDia)).EndInit();
             this.metaGearing.ResumeLayout(false);
             this.metaGearing.PerformLayout();
             this.GearLayout.ResumeLayout(false);
             this.GearLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.OutputGeartxt)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InputGeartxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.OutputGeartxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.InputGeartxt)).EndInit();
             this.metaBrake.ResumeLayout(false);
             this.metaBrake.PerformLayout();
             this.BreakLayout.ResumeLayout(false);
@@ -890,62 +952,63 @@ partial class JointCardEditor
             this.groupBox1.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.WeightBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        #endregion
+
+        private System.Windows.Forms.ComboBox cmbJointDriver;
+        private System.Windows.Forms.GroupBox grpChooseDriver;
+        private System.Windows.Forms.GroupBox grpDriveOptions;
+        private System.Windows.Forms.NumericUpDown txtPort2;
+        private System.Windows.Forms.Label lblPort;
+        private System.Windows.Forms.NumericUpDown txtPort1;
+        private System.Windows.Forms.ComboBox cmbWheelType;
+        private System.Windows.Forms.ComboBox cmbPneumaticPressure;
+        private System.Windows.Forms.TabControl tabsMeta;
+        private System.Windows.Forms.TabPage metaWheel;
+        private System.Windows.Forms.TabPage metaPneumatic;
+        private System.Windows.Forms.ComboBox cmbFrictionLevel;
+        private System.Windows.Forms.Label lblDiameter;
+        private System.Windows.Forms.TabPage metaGearing;
+        private System.Windows.Forms.Label lblInputGear;
+        private System.Windows.Forms.Label lblPressure;
+        private System.Windows.Forms.Label lblOutputGear;
+        private System.Windows.Forms.NumericUpDown txtHighLimit;
+        private System.Windows.Forms.Label lblLimits;
+        private System.Windows.Forms.NumericUpDown txtLowLimit;
+        private System.Windows.Forms.Label lblFriction;
+        private System.Windows.Forms.Label lblType;
+        private System.Windows.Forms.TabPage metaBrake;
+        private System.Windows.Forms.CheckBox chkBoxHasBrake;
+        private System.Windows.Forms.CheckBox chkBoxDriveWheel;
+        private System.Windows.Forms.RadioButton rbPWM;
+        private System.Windows.Forms.RadioButton rbCAN;
+        private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
+        private System.Windows.Forms.TableLayoutPanel JointOptionsLayout;
+        private System.Windows.Forms.TableLayoutPanel WheelLayout;
+        private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
+        private System.Windows.Forms.TableLayoutPanel GearLayout;
+        private System.Windows.Forms.TableLayoutPanel BreakLayout;
+        private System.Windows.Forms.NumericUpDown InputGeartxt;
+        private System.Windows.Forms.NumericUpDown OutputGeartxt;
+        private System.Windows.Forms.TabPage metaMotorType;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label MotorTypeLabel;
+        private System.Windows.Forms.ComboBox RobotCompetitionDropDown;
+        private System.Windows.Forms.ComboBox MotorTypeDropDown;
+        private System.Windows.Forms.Label RobotCompetitonLabel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
+        private System.Windows.Forms.Label PnuDiaUnits;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.CheckBox CalculatedWeightCheck;
+        private System.Windows.Forms.NumericUpDown WeightBox;
+        private System.Windows.Forms.Label WeightLabel;
+        private System.Windows.Forms.ComboBox UnitBox;
     }
-
-    #endregion
-
-    private System.Windows.Forms.ComboBox cmbJointDriver;
-    private System.Windows.Forms.GroupBox grpChooseDriver;
-    private System.Windows.Forms.GroupBox grpDriveOptions;
-    private System.Windows.Forms.NumericUpDown txtPort2;
-    private System.Windows.Forms.Label lblPort;
-    private System.Windows.Forms.NumericUpDown txtPort1;
-    private System.Windows.Forms.ComboBox cmbWheelType;
-    private System.Windows.Forms.ComboBox cmbPneumaticPressure;
-    private System.Windows.Forms.TabControl tabsMeta;
-    private System.Windows.Forms.TabPage metaWheel;
-    private System.Windows.Forms.TabPage metaPneumatic;
-    private System.Windows.Forms.ComboBox cmbFrictionLevel;
-    private System.Windows.Forms.Label lblDiameter;
-    private System.Windows.Forms.TabPage metaGearing;
-    private System.Windows.Forms.Label lblInputGear;
-    private System.Windows.Forms.Label lblPressure;
-    private System.Windows.Forms.Label lblOutputGear;
-    private System.Windows.Forms.NumericUpDown txtHighLimit;
-    private System.Windows.Forms.Label lblLimits;
-    private System.Windows.Forms.NumericUpDown txtLowLimit;
-    private System.Windows.Forms.Label lblFriction;
-    private System.Windows.Forms.Label lblType;
-    private System.Windows.Forms.TabPage metaBrake;
-    private System.Windows.Forms.CheckBox chkBoxHasBrake;
-    private System.Windows.Forms.CheckBox chkBoxDriveWheel;
-    private System.Windows.Forms.RadioButton rbPWM;
-    private System.Windows.Forms.RadioButton rbCAN;
-    private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
-    private System.Windows.Forms.TableLayoutPanel JointOptionsLayout;
-    private System.Windows.Forms.TableLayoutPanel WheelLayout;
-    private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
-    private System.Windows.Forms.TableLayoutPanel GearLayout;
-    private System.Windows.Forms.TableLayoutPanel BreakLayout;
-    private System.Windows.Forms.NumericUpDown InputGeartxt;
-    private System.Windows.Forms.NumericUpDown OutputGeartxt;
-    private System.Windows.Forms.TabPage metaMotorType;
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-    private System.Windows.Forms.Label MotorTypeLabel;
-    private System.Windows.Forms.ComboBox RobotCompetitionDropDown;
-    private System.Windows.Forms.ComboBox MotorTypeDropDown;
-    private System.Windows.Forms.Label RobotCompetitonLabel;
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-    private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
-    private System.Windows.Forms.Label PnuDiaUnits;
-    private System.Windows.Forms.GroupBox groupBox1;
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-    private System.Windows.Forms.CheckBox CalculatedWeightCheck;
-    private System.Windows.Forms.NumericUpDown WeightBox;
-    private System.Windows.Forms.Label WeightLabel;
-    private System.Windows.Forms.ComboBox UnitBox;
 }

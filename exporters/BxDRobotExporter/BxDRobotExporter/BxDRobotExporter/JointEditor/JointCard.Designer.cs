@@ -1,4 +1,4 @@
-namespace BxDRobotExporter.Wizard
+namespace BxDRobotExporter.JointEditor
 {
     sealed partial class JointCard
     {
