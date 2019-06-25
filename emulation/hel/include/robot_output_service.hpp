@@ -1,12 +1,15 @@
-#include<emulator_service.grpc.pb.h>
-#include<grpc++/grpc++.h>
+#ifndef _ROBOT_OUTPUT_SERVICE_HPP_
+#define _ROBOT_OUTPUT_SERVICE_HPP_
 
-class RobotOuputService final :
+#include<emulator_service.grpc.pb.h>
+
+class RobotOutputService final :
     public EmulationService::EmulationWriter::Service {
 public:
-    virtual grpc::Status RobotOuputs(
+    virtual grpc::Status RobotOutputs(
                                      grpc::ServerContext*,
                                      const EmulationService::RobotOutputsRequest*,
                                      grpc::ServerWriter<EmulationService::RobotOutputsResponse>*);
 
 };
+#endif
