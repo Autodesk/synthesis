@@ -14,7 +14,6 @@ Status RobotOutputService::RobotOutputs(
 
     for (;;) {
         auto instance = hel::SendDataManager::getInstance();
-
         if(instance.first->hasNewData()){
             auto data = instance.first->syncShallow();
             instance.second.unlock();
