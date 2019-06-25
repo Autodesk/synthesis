@@ -1,8 +1,8 @@
 diff --git a/shared/config.gradle b/shared/config.gradle
-index d5ac9b17..055daba9 100644
+index d5ac9b17..2ac59cd8 100644
 --- a/shared/config.gradle
 +++ b/shared/config.gradle
-@@ -1,38 +1,39 @@
+@@ -1,38 +1,40 @@
  import edu.wpi.first.nativeutils.*
  import org.gradle.internal.os.OperatingSystem
  
@@ -30,12 +30,14 @@ index d5ac9b17..055daba9 100644
  
 -def linuxCompilerArgs = ['-std=c++17', '-Wformat=2', '-Wall', '-Wextra', '-Werror', '-pedantic', '-Wno-psabi', '-g',
 +def linuxCompilerArgs = ['-std=c++14', '-Wformat=2', '-Wall', '-Wextra',  '-pedantic', '-Wno-psabi', '-g',
++"-I${projectDir}/../../../../ni-libraries/src/ni-libraries/src/include",
                           '-Wno-unused-parameter', '-Wno-error=deprecated-declarations', '-fPIC', '-rdynamic',
                           '-pthread']
 -def linuxCCompilerArgs = ['-Wformat=2', '-Wall', '-Wextra', '-Werror', '-pedantic', '-Wno-psabi', '-g',
 +def linuxCCompilerArgs = ['-Wformat=2', '-Wall', '-Wextra',  '-pedantic', '-Wno-psabi', '-g',
                            '-Wno-unused-parameter', '-fPIC', '-rdynamic', '-pthread']
- def linuxLinkerArgs = ['-rdynamic', '-pthread', '-ldl']
+-def linuxLinkerArgs = ['-rdynamic', '-pthread', '-ldl']
++def linuxLinkerArgs = ['-rdynamic', '-pthread', '-ldl', '-lhel', "-L${projectDir}/../../../../../lib/"]
  def linuxReleaseCompilerArgs = ['-O2']
  def linuxDebugCompilerArgs = ['-O0']
  def linux32BitArg = '-m32'
