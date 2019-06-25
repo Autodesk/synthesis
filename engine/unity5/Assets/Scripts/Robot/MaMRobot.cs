@@ -28,7 +28,7 @@ namespace Synthesis.Robot
         public bool RobotHasManipulator { get; set; }
         
 
-        private RigidNode_Base manipulatorNode;
+        private RigidNode manipulatorNode;
 
         private string wheelPath;
 
@@ -57,7 +57,9 @@ namespace Synthesis.Robot
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
-            manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + Path.DirectorySeparatorChar + "skeleton.bxdj");
+            
+            manipulatorNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode ;
+            
             manipulatorNode.ListAllNodes(nodes);
 
             //Load node_0 for attaching manipulator to robot

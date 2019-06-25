@@ -25,3 +25,18 @@ void Filesystem::createDirectory(std::string path)
 	std::wstring sPath = std::wstring(path.begin(), path.end());
 	CreateDirectory(sPath.c_str(), NULL);
 }
+
+
+bool Filesystem::directoryExists(std::string path)
+{
+	std::wstring sPath = std::wstring(path.begin(), path.end());
+
+	DWORD ftyp = GetFileAttributes(sPath.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!
+
+	return false;    // this is not a directory!
+}

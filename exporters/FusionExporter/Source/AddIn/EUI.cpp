@@ -12,7 +12,7 @@
 #include <Fusion/FusionAll.h>
 #include "../Exporter.h"
 #include "../Data/BXDJ/Utility.h"
-
+#include <Windows.h>
 using namespace SynthesisAddIn;
 
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
@@ -120,6 +120,17 @@ void EUI::startExportRobot()
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 
+	//Check if file already exists
+	std::string filePath = Filesystem::getCurrentRobotDirectory(config.robotName);
+
+	if (Filesystem::directoryExists(filePath)) {
+		DialogResults res = UI->messageBox("Robot Export Already Exists! Overwrite?", "Robot Export", MessageBoxButtonTypes::YesNoButtonType, WarningIconType);
+		if (res != DialogYes) {
+			cancelExportRobot();
+		}
+	}
+
+	
 #ifdef ALLOW_MULTITHREADING
 	// Wait for all threads to finish
 	if (exportRobotThread != nullptr)
@@ -171,16 +182,18 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 	openProgressPalette();
 
 	try
-	{
+	{	
 		Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 		{
 			updateProgress(percent);
 		}, &killExportThread);
-
+		progressPalette->sendInfoToHTML("success", Filesystem::getCurrentRobotDirectory(config.robotName));
 		// Add delay before closing so that loading bar has time to animate
 		if (!killExportThread)
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		
 
+		std::this_thread::sleep_for(std::chrono::seconds(5));
 		//UI->messageBox("Robot Exported successfully to: ");
 	}
 	catch (const std::exception& e)
