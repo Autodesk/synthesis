@@ -182,6 +182,7 @@ ADD_LIBRARY(hel SHARED
   lib/gen/emulator_service.pb.cc
   lib/gen/emulator_service.grpc.pb.cc
   src/robot_input_service.cpp
+  src/robot_output_service.cpp
 )
 ADD_DEPENDENCIES(hel asio ni-libraries gen_grpc)
 
