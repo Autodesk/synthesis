@@ -52,7 +52,7 @@ namespace BxDRobotExporter.Wizard
             // 
             this.DefinePartsLayout.AutoScroll = true;
             this.DefinePartsLayout.AutoSize = true;
-            this.DefinePartsLayout.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.DefinePartsLayout.BackColor = System.Drawing.SystemColors.ControlLight;
             this.DefinePartsLayout.ColumnCount = 1;
             this.DefinePartsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.DefinePartsLayout.Controls.Add(this.tableLayoutPanel1, 0, 0);
@@ -63,16 +63,16 @@ namespace BxDRobotExporter.Wizard
             this.DefinePartsLayout.Padding = new System.Windows.Forms.Padding(20);
             this.DefinePartsLayout.RowCount = 1;
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DefinePartsLayout.Size = new System.Drawing.Size(624, 621);
+            this.DefinePartsLayout.Size = new System.Drawing.Size(682, 621);
             this.DefinePartsLayout.TabIndex = 3;
             // 
             // JointForm
             // 
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ClientSize = new System.Drawing.Size(624, 621);
+            this.ClientSize = new System.Drawing.Size(682, 621);
             this.Controls.Add(this.DefinePartsLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(642, 1100);
+            this.MaximumSize = new System.Drawing.Size(840, 1500);
             this.MinimumSize = new System.Drawing.Size(642, 300);
             this.Name = "JointForm";
             this.Text = "Joint Editor";

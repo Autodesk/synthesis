@@ -26,7 +26,6 @@ partial class JointCardEditor
     /// </summary>
     private void InitializeComponent()
     {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DriveChooser));
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
@@ -40,7 +39,6 @@ partial class JointCardEditor
             this.rbCAN = new System.Windows.Forms.RadioButton();
             this.rbPWM = new System.Windows.Forms.RadioButton();
             this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
-            this.SaveButton = new System.Windows.Forms.Button();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.tabsMeta = new System.Windows.Forms.TabControl();
@@ -67,11 +65,17 @@ partial class JointCardEditor
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.metaMotorType = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.MotorTypeLabel = new System.Windows.Forms.Label();
             this.RobotCompetitionDropDown = new System.Windows.Forms.ComboBox();
             this.MotorTypeDropDown = new System.Windows.Forms.ComboBox();
             this.RobotCompetitonLabel = new System.Windows.Forms.Label();
+            this.MotorTypeLabel = new System.Windows.Forms.Label();
             this.ConfigJointLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.WeightBox = new System.Windows.Forms.NumericUpDown();
+            this.WeightLabel = new System.Windows.Forms.Label();
+            this.UnitBox = new System.Windows.Forms.ComboBox();
+            this.CalculatedWeightCheck = new System.Windows.Forms.CheckBox();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             this.JointOptionsLayout.SuspendLayout();
@@ -95,6 +99,9 @@ partial class JointCardEditor
             this.metaMotorType.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.ConfigJointLayout.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).BeginInit();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -111,7 +118,7 @@ partial class JointCardEditor
             // grpChooseDriver
             // 
             this.grpChooseDriver.Controls.Add(this.cmbJointDriver);
-            this.grpChooseDriver.Location = new System.Drawing.Point(3, 2);
+            this.grpChooseDriver.Location = new System.Drawing.Point(3, 90);
             this.grpChooseDriver.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.grpChooseDriver.Name = "grpChooseDriver";
             this.grpChooseDriver.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -126,7 +133,7 @@ partial class JointCardEditor
             this.grpDriveOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.grpDriveOptions.Controls.Add(this.JointOptionsLayout);
             this.grpDriveOptions.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grpDriveOptions.Location = new System.Drawing.Point(3, 156);
+            this.grpDriveOptions.Location = new System.Drawing.Point(3, 244);
             this.grpDriveOptions.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.grpDriveOptions.Name = "grpDriveOptions";
             this.grpDriveOptions.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -297,17 +304,6 @@ partial class JointCardEditor
             this.chkBoxDriveWheel.Text = "Drive Wheel ";
             this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
             // 
-            // SaveButton
-            // 
-            this.SaveButton.Location = new System.Drawing.Point(3, 281);
-            this.SaveButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(513, 28);
-            this.SaveButton.TabIndex = 11;
-            this.SaveButton.Text = "Save";
-            this.SaveButton.UseVisualStyleBackColor = true;
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
-            // 
             // cmbWheelType
             // 
             this.cmbWheelType.Dock = System.Windows.Forms.DockStyle.Top;
@@ -348,7 +344,7 @@ partial class JointCardEditor
             this.tabsMeta.Controls.Add(this.metaGearing);
             this.tabsMeta.Controls.Add(this.metaBrake);
             this.tabsMeta.Controls.Add(this.metaMotorType);
-            this.tabsMeta.Location = new System.Drawing.Point(3, 60);
+            this.tabsMeta.Location = new System.Drawing.Point(3, 148);
             this.tabsMeta.Margin = new System.Windows.Forms.Padding(3, 2, 0, 2);
             this.tabsMeta.Name = "tabsMeta";
             this.tabsMeta.SelectedIndex = 0;
@@ -686,17 +682,6 @@ partial class JointCardEditor
             this.tableLayoutPanel1.Size = new System.Drawing.Size(508, 63);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // MotorTypeLabel
-            // 
-            this.MotorTypeLabel.AutoSize = true;
-            this.MotorTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MotorTypeLabel.Location = new System.Drawing.Point(198, 0);
-            this.MotorTypeLabel.Name = "MotorTypeLabel";
-            this.MotorTypeLabel.Size = new System.Drawing.Size(307, 31);
-            this.MotorTypeLabel.TabIndex = 16;
-            this.MotorTypeLabel.Text = "Motor Type";
-            this.MotorTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // RobotCompetitionDropDown
             // 
             this.RobotCompetitionDropDown.Dock = System.Windows.Forms.DockStyle.Top;
@@ -737,16 +722,27 @@ partial class JointCardEditor
             this.RobotCompetitonLabel.Text = "Robot Competition";
             this.RobotCompetitonLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // MotorTypeLabel
+            // 
+            this.MotorTypeLabel.AutoSize = true;
+            this.MotorTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MotorTypeLabel.Location = new System.Drawing.Point(198, 0);
+            this.MotorTypeLabel.Name = "MotorTypeLabel";
+            this.MotorTypeLabel.Size = new System.Drawing.Size(307, 31);
+            this.MotorTypeLabel.TabIndex = 16;
+            this.MotorTypeLabel.Text = "Motor Type";
+            this.MotorTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // ConfigJointLayout
             // 
             this.ConfigJointLayout.AutoSize = true;
             this.ConfigJointLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ConfigJointLayout.ColumnCount = 1;
             this.ConfigJointLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ConfigJointLayout.Controls.Add(this.grpChooseDriver, 0, 0);
-            this.ConfigJointLayout.Controls.Add(this.grpDriveOptions, 0, 2);
-            this.ConfigJointLayout.Controls.Add(this.SaveButton, 0, 3);
-            this.ConfigJointLayout.Controls.Add(this.tabsMeta, 0, 1);
+            this.ConfigJointLayout.Controls.Add(this.grpChooseDriver, 0, 1);
+            this.ConfigJointLayout.Controls.Add(this.grpDriveOptions, 0, 3);
+            this.ConfigJointLayout.Controls.Add(this.tabsMeta, 0, 2);
+            this.ConfigJointLayout.Controls.Add(this.groupBox1, 0, 0);
             this.ConfigJointLayout.Location = new System.Drawing.Point(4, 4);
             this.ConfigJointLayout.Margin = new System.Windows.Forms.Padding(4);
             this.ConfigJointLayout.Name = "ConfigJointLayout";
@@ -755,26 +751,104 @@ partial class JointCardEditor
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ConfigJointLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ConfigJointLayout.Size = new System.Drawing.Size(522, 311);
+            this.ConfigJointLayout.Size = new System.Drawing.Size(522, 367);
             this.ConfigJointLayout.TabIndex = 12;
             // 
-            // DriveChooser
+            // groupBox1
             // 
-//            this.AcceptButton = this.SaveButton;
+            this.groupBox1.AutoSize = true;
+            this.groupBox1.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(516, 82);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Attatched Component Weight";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.AutoSize = true;
+            this.tableLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.Controls.Add(this.CalculatedWeightCheck, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.WeightBox, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.WeightLabel, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.UnitBox, 2, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(510, 61);
+            this.tableLayoutPanel3.TabIndex = 2;
+            // 
+            // WeightBox
+            // 
+            this.WeightBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.WeightBox.Location = new System.Drawing.Point(65, 5);
+            this.WeightBox.Margin = new System.Windows.Forms.Padding(5);
+            this.WeightBox.Maximum = new decimal(new int[] {
+            150,
+            0,
+            0,
+            0});
+            this.WeightBox.Name = "WeightBox";
+            this.WeightBox.Size = new System.Drawing.Size(333, 22);
+            this.WeightBox.TabIndex = 0;
+            // 
+            // WeightLabel
+            // 
+            this.WeightLabel.AutoSize = true;
+            this.WeightLabel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.WeightLabel.Location = new System.Drawing.Point(4, 4);
+            this.WeightLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.WeightLabel.Name = "WeightLabel";
+            this.WeightLabel.Size = new System.Drawing.Size(52, 24);
+            this.WeightLabel.TabIndex = 1;
+            this.WeightLabel.Text = "Weight";
+            this.WeightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // UnitBox
+            // 
+            this.UnitBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.UnitBox.Items.AddRange(new object[] {
+            "Pounds",
+            "Kilograms"});
+            this.UnitBox.Location = new System.Drawing.Point(407, 4);
+            this.UnitBox.Margin = new System.Windows.Forms.Padding(4);
+            this.UnitBox.Name = "UnitBox";
+            this.UnitBox.Size = new System.Drawing.Size(99, 24);
+            this.UnitBox.TabIndex = 2;
+            // 
+            // CalculatedWeightCheck
+            // 
+            this.CalculatedWeightCheck.AutoSize = true;
+            this.tableLayoutPanel3.SetColumnSpan(this.CalculatedWeightCheck, 3);
+            this.CalculatedWeightCheck.Dock = System.Windows.Forms.DockStyle.Left;
+            this.CalculatedWeightCheck.Location = new System.Drawing.Point(4, 36);
+            this.CalculatedWeightCheck.Margin = new System.Windows.Forms.Padding(4);
+            this.CalculatedWeightCheck.Name = "CalculatedWeightCheck";
+            this.CalculatedWeightCheck.Size = new System.Drawing.Size(167, 21);
+            this.CalculatedWeightCheck.TabIndex = 4;
+            this.CalculatedWeightCheck.Text = "Use calculated weight";
+            this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
+            // 
+            // JointCardEditor
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(547, 474);
             this.Controls.Add(this.ConfigJointLayout);
-//            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-//            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-//            this.MaximizeBox = false;
-//            this.MinimizeBox = false;
-            this.Name = "DriveChooser";
-//            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Driver Configuration";
+            this.Name = "JointCardEditor";
+            this.Size = new System.Drawing.Size(530, 375);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
             this.grpDriveOptions.PerformLayout();
@@ -812,6 +886,11 @@ partial class JointCardEditor
             this.tableLayoutPanel1.PerformLayout();
             this.ConfigJointLayout.ResumeLayout(false);
             this.ConfigJointLayout.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -825,7 +904,6 @@ partial class JointCardEditor
     private System.Windows.Forms.NumericUpDown txtPort2;
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPort1;
-    private System.Windows.Forms.Button SaveButton;
     private System.Windows.Forms.ComboBox cmbWheelType;
     private System.Windows.Forms.ComboBox cmbPneumaticPressure;
     private System.Windows.Forms.TabControl tabsMeta;
@@ -864,4 +942,10 @@ partial class JointCardEditor
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
     private System.Windows.Forms.Label PnuDiaUnits;
+    private System.Windows.Forms.GroupBox groupBox1;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+    private System.Windows.Forms.CheckBox CalculatedWeightCheck;
+    private System.Windows.Forms.NumericUpDown WeightBox;
+    private System.Windows.Forms.Label WeightLabel;
+    private System.Windows.Forms.ComboBox UnitBox;
 }
