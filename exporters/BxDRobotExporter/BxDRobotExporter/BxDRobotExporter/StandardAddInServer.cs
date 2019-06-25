@@ -11,7 +11,15 @@ using EditorsLibrary;
 using System.Runtime.InteropServices;
 using System.Collections;
 using BxDRobotExporter.Wizard;
+using JointResolver.ControlGUI;
 using JointResolver.EditorsLibrary;
+using ProgressBar = Inventor.ProgressBar;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using Inventor;
+using System.Linq;
 
 namespace BxDRobotExporter
 {
@@ -200,18 +208,6 @@ namespace BxDRobotExporter
             DOFButton.OnExecute += BeginWizardExport_OnExecute;
             DOFButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(DOFButton, true);
-            
-            // Quit button
-//            QuitButton = ControlDefs.AddButtonDefinition("Save Without Exporting", "BxD:RobotExporter:Quit", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Save configuration and exit the robot exporting environment.", SaveRobotIconSmall, SaveRobotIconLarge);
-//            QuitButton.OnExecute += SaveRobotData;
-//            QuitButton.OnHelp += _OnHelp;
-//            ExitPanel.CommandControls.AddButton(QuitButton, true);
-            
-            //Export Button
-//            ExportButton = ControlDefs.AddButtonDefinition("Export To Synthesis", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Export your robot's model to Synthesis.", SynthesisLogoSmall, SynthesisLogoLarge);
-//            ExportButton.OnExecute += ExportButtonOnExecute;
-//            ExportButton.OnHelp += _OnHelp;
-//            ExitPanel.CommandControls.AddButton(ExportButton, true);
 
             #endregion
             #endregion
@@ -309,6 +305,7 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences = new List<ComponentOccurrence>();
             disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
+            Utilities.GUI.LoadRobotData(AsmDocument);
 //            if (!Utilities.GUI.LoadRobotData(AsmDocument))
 //            {
 //                Wizard.WizardForm wizard = new Wizard.WizardForm();
@@ -532,6 +529,7 @@ namespace BxDRobotExporter
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
         private bool exporterBlocked = false;
+
         #endregion
 
         #region Custom Button Events
@@ -559,6 +557,7 @@ namespace BxDRobotExporter
            
         }
         
+        private ProgressBarForm _editJointProgressBar;
         public void EditJoint_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
@@ -566,8 +565,15 @@ namespace BxDRobotExporter
 
             Utilities.HideDockableWindows();
 
-            JointForm jointEditor = new JointForm();
-            jointEditor.ShowDialog();
+            _editJointProgressBar = new ProgressBarForm("Loading Joint Editor", (sender, args) =>
+            {
+                _editJointProgressBar.SetProgress("Loading robot skeleton...", 1, 5);
+                JointForm jointEditor = new JointForm();
+                jointEditor.Shown += (o, eventArgs) => _editJointProgressBar.SetProgressWindowVisible(false);
+                _editJointProgressBar.SetProgress("Loading joint editor...", 4, 5);
+                jointEditor.ShowDialog();
+            });
+            _editJointProgressBar.ShowDialog();
             
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
@@ -660,6 +666,7 @@ namespace BxDRobotExporter
             
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
             ChildHighlight.Clear(); 
+            
             foreach (var componentOccurrence in occurrences)
             {
                 ChildHighlight.AddItem(componentOccurrence);

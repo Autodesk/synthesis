@@ -33,10 +33,6 @@ namespace BxDRobotExporter.Wizard
                     JointCard panel = new JointCard(node, this);
                     panels.Add(panel);
                     AddControlToNewTableRow(panel, DefinePartsLayout);
-                    if (node.GetSkeletalJoint().cDriver != null)
-                    {
-                        panel.refillValues(node.GetSkeletalJoint());// refills the panel with existing driver settings
-                    }
                 }
             }
             ResumeLayout();
