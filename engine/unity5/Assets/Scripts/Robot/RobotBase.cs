@@ -23,7 +23,7 @@ using BulletSharp;
 using Synthesis.GUI;
 using UnityEngine.Networking;
 using Synthesis.Field;
-
+using Newtonsoft.Json;
 namespace Synthesis.Robot
 {
     /// <summary>
@@ -151,7 +151,7 @@ namespace Synthesis.Robot
             robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
                 return false;
 
             OnInitializeRobot();
@@ -160,8 +160,11 @@ namespace Synthesis.Robot
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new RigidNode(guid); };
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            RootNode = BXDJSkeleton.ReadSkeleton(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") as RigidNode;
+
+            RootNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode;
+
             RootNode.ListAllNodes(nodes);
+            
 
             Debug.Log(RootNode.driveTrainType.ToString());
 
