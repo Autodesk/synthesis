@@ -1,17 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using Inventor;
+using BxDRobotExporter.Wizard;
 
-
-namespace BxDRobotExporter.Wizard
+namespace BxDRobotExporter.JointEditor
 {
     /// <summary>
     /// Used in the <see cref="DefineMovingPartsPage"/> to set joint driver information.
@@ -24,25 +15,19 @@ namespace BxDRobotExporter.Wizard
         /// </summary>
         public RigidNode_Base node;
 
+        public JointForm jointForm { get; set; }
+
         public JointCard(RigidNode_Base node, JointForm jointForm)
         {
-            InitializeComponent();
-            
-            BackColor = System.Drawing.Color.White;
-            Dock = DockStyle.Top;
-            MinimumSize = new Size(0, 0); // Minimum size only needed in editor
-            ParentJointForm = jointForm;
-
+            this.jointForm = jointForm;
             this.node = node;
 
+            Dock = DockStyle.Top;
+            
+            InitializeComponent();
             RefillValues(node);
-
-//            StandardAddInServer.Instance.MainApplication.ActiveView.SaveAsBitmap("C:\\Users\\t_wanglia\\Downloads\\shot.bmp", 1024, 768);
-
             AddHighlightAction(this);
         }
-
-        public JointForm ParentJointForm { get; set; }
 
         /// <summary>
         /// refills values from existing joint
@@ -79,7 +64,7 @@ namespace BxDRobotExporter.Wizard
 
         private void editButton_Click(object sender, EventArgs e)
         {
-            ParentJointForm.CollapseAllCards(this);
+            jointForm.CollapseAllCards(this);
             jointCardEditor.Visible = !jointCardEditor.Visible;
         }
 

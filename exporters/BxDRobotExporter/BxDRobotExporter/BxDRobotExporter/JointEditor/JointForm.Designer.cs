@@ -1,4 +1,4 @@
-namespace BxDRobotExporter.Wizard
+namespace BxDRobotExporter.JointEditor
 {
     partial class JointForm
     {
@@ -72,7 +72,7 @@ namespace BxDRobotExporter.Wizard
             this.ClientSize = new System.Drawing.Size(682, 621);
             this.Controls.Add(this.DefinePartsLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(840, 1500);
+            this.MaximumSize = new System.Drawing.Size(1840, 1500);
             this.MinimumSize = new System.Drawing.Size(642, 300);
             this.Name = "JointForm";
             this.Text = "Joint Editor";

@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Inventor;
 using System.Linq;
+using BxDRobotExporter.JointEditor;
 
 namespace BxDRobotExporter
 {
