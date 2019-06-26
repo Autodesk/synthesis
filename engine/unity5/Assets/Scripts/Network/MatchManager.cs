@@ -121,7 +121,7 @@ namespace Synthesis.Network
             if (fieldGuid.Length > 0)
                 return;
 
-            string fieldFile = PlayerPrefs.GetString("simSelectedField") + "\\definition.bxdf";
+            string fieldFile = PlayerPrefs.GetString("simSelectedField") + Path.DirectorySeparatorChar + "definition.bxdf";
 
             if (!File.Exists(fieldFile))
             {
