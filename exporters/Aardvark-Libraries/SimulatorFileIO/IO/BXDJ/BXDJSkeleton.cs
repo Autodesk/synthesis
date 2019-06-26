@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Newtonsoft.Json;
 /// <summary>
 /// Utility functions for reading/writing BXDJ files
 /// </summary>
@@ -37,9 +38,13 @@ public static partial class BXDJSkeleton
     /// <param name="baseNode"></param>
     public static void WriteSkeleton(string path, RigidNode_Base baseNode)
     {
+
+        //EXPERIMENT
+
+       // JSONExport(path, baseNode);
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
-
+        
         // Determine the parent ID for each node in the list.
         int[] parentID = new int[nodes.Count];
 
@@ -476,6 +481,7 @@ public static partial class BXDJSkeleton
                 {
                     SkeletalJoint_Base joint = SkeletalJoint_Base.ReadJointFully(reader);
                     nodes[parent].AddChild(joint, nodes[i]);
+
                 }
                 else
                 {
