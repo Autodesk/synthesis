@@ -379,6 +379,7 @@ namespace BxDRobotExporter
             // Hide non-jointed components;
 
             // Reload panels in UI
+            jointForm = new JointForm();
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
         }
@@ -599,6 +600,7 @@ namespace BxDRobotExporter
         }
 
         private bool exporterBlocked = false;
+        private JointForm jointForm;
 
         #endregion
 
@@ -632,8 +634,7 @@ namespace BxDRobotExporter
                 return;
 
             Utilities.HideDockableWindows();
-            JointForm jointEditor = new JointForm();
-            jointEditor.ShowDialog();
+            jointForm.ShowDialog();
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
         }
