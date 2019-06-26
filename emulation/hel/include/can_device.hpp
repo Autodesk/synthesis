@@ -16,7 +16,14 @@ namespace hel{
          * \brief The various CAN devices Synthesis can recognize
          */
 
-        enum class Type{VICTOR_SPX,TALON_SRX,PCM,PDP,UNKNOWN};
+        enum class Type{
+		VICTOR_SPX,
+		TALON_SRX,
+		SPARK_MAX,
+		PCM,
+		PDP,
+		UNKNOWN
+	};
 
         /**
          * \brief The maximum CAN bus address allowed on the RoboRIO
@@ -34,9 +41,10 @@ namespace hel{
 
         enum IDMask: uint32_t{
             DEVICE_ID = 0b00111111,
-            DEVICE_TYPE = 0b1111000001000000000000000000,
+            DEVICE_TYPE = 0b1111111111110000000000000000,
             TALON_SRX_TYPE = 0x02040000,
             VICTOR_SPX_TYPE = 0x01040000,
+            SPARK_MAX_TYPE = 0x02050000,
             PCM_TYPE = 0x09041000,
             PDP_TYPE = 0x08041000
         };
