@@ -8,6 +8,8 @@ namespace hel{
             return "TALON_SRX";
         case CANDevice::Type::VICTOR_SPX:
             return "VICTOR_SPX";
+        case CANDevice::Type::SPARK_MAX:
+          return "SPARK_MAX";
         case CANDevice::Type::UNKNOWN:
             return "UNKNOWN";
         case CANDevice::Type::PCM:
@@ -25,6 +27,8 @@ namespace hel{
             return CANDevice::Type::TALON_SRX;
         case hasher("VICTOR_SPX"):
             return CANDevice::Type::VICTOR_SPX;
+        case hasher("SPARK_MAX"):
+          return CANDevice::Type::SPARK_MAX;
         case hasher("PCM"):
             return CANDevice::Type::PCM;
         case hasher("PDP"):
@@ -45,6 +49,8 @@ namespace hel{
             return Type::VICTOR_SPX;
         } else if(compareBits(message_id, IDMask::TALON_SRX_TYPE, IDMask::DEVICE_TYPE)){
             return Type::TALON_SRX;
+        } else if(compareBits(message_id, IDMask::SPARK_MAX_TYPE, IDMask::DEVICE_TYPE)){
+          return Type::SPARK_MAX;
         } else if(compareBits(message_id, IDMask::PCM_TYPE, IDMask::DEVICE_TYPE)){
             return Type::PCM;
         } else if(compareBits(message_id, IDMask::PDP_TYPE, IDMask::DEVICE_TYPE)){
