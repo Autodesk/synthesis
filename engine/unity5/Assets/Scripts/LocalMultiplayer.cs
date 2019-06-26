@@ -95,7 +95,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
             });
         }
         GameObject panel = GameObject.Find("RobotListPanel");
-        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        string directory = PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))
         {
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
