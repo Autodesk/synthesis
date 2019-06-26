@@ -49,9 +49,6 @@
       <HintPath>..\..\BxDRobotExporter\packages\Newtonsoft.Json.12.0.2\lib\net35\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\BxDRobotExporter\packages\NUnit.3.12.0\lib\net35\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -75,7 +72,6 @@
     <Compile Include="IO\BXDJ\BXDJReader_3_0.cs" />
     <Compile Include="IO\BXDJ\BXDJSkeletonJson.cs" />
     <Compile Include="IO\BXDJ\BXDJSkeletonJsonDefinitions.cs" />
-    <Compile Include="IO\BXDJ\BXDJSkeletonTests.cs" />
     <Compile Include="IO\IOUtilities.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
