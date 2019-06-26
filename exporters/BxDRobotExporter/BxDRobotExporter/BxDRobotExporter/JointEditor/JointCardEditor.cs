@@ -1,48 +1,81 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
 using System.Globalization;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace BxDRobotExporter.JointEditor
 {
-    public partial class JointCardEditor : UserControl
+    public partial class
+        JointCardEditor : UserControl // TODO: Use this UserControl in the DriveChooser form and remove the save button in DriveChooser
     {
+        private bool disableAutoSave;
+        private SkeletalJoint_Base joint;
+        private JointCard jointCard;
+        private List<RigidNode_Base> nodes;
+
+        private JointDriverType[] typeOptions;
+
         public JointCardEditor()
         {
             InitializeComponent();
-            DisableScrollSelection();
+            DisableScrollSelection(this);
+            EnableLiveSave(this);
         }
 
-        public bool Saved;
-
-        private JointDriverType[] typeOptions;
-        private SkeletalJoint_Base joint;
-        private List<RigidNode_Base> nodes;
+        public void SetParentCard(JointCard jointCard)
+        {
+            this.jointCard = jointCard;
+        }
 
         /// <summary>
         /// Disables scroll selection on NumericUpDown and ComboBox type
         /// </summary>
-        private void DisableScrollSelection()
+        private static void DisableScrollSelection(Control control) // TODO: WinForms util class
         {
-            foreach (Control control in Controls)
+            if (control is NumericUpDown || control is ComboBox)
             {
-                if (control is NumericUpDown || control is ComboBox)
-                {
-                    control.MouseWheel += (o, e) => ((HandledMouseEventArgs) e).Handled = true;
-                }
+                control.MouseWheel += (o, e) => ((HandledMouseEventArgs) e).Handled = true;
+            }
+
+            foreach (Control subControl in control.Controls)
+            {
+                DisableScrollSelection(subControl);
             }
         }
 
-        public void LoadSettings(RigidNode_Base node)
+        private void EnableLiveSave(Control control) // TODO: WinForms util class
         {
-            Saved = false;
+            AddChangeListener(control, SaveChanges);
+            foreach (Control subControl in control.Controls)
+            {
+                EnableLiveSave(subControl);
+            }
+        }
+
+        private static void AddChangeListener(Control control, EventHandler @event) // TODO: WinForms util class
+        {
+            switch (control)
+            {
+                case NumericUpDown down:
+                    down.ValueChanged += @event;
+                    break;
+                case ComboBox box:
+                    box.SelectedIndexChanged += @event;
+                    break;
+                case CheckBox box:
+                    box.CheckedChanged += @event;
+                    break;
+                case RadioButton box:
+                    box.CheckedChanged += @event;
+                    break;
+            }
+        }
+
+        public void
+            LoadSettings(RigidNode_Base node) // TODO: Settings saving and loading should be done in a dedicated class
+        {
+            disableAutoSave = true;
             joint = node.GetSkeletalJoint();
             nodes = new List<RigidNode_Base>();
             nodes.Add(node);
@@ -50,6 +83,8 @@ namespace BxDRobotExporter.JointEditor
 
             // Used for capitalization
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
+
+            // TODO: Per joint weight load and save
 
             cmbJointDriver.Items.Clear();
             cmbJointDriver.Items.Add("No Driver");
@@ -83,12 +118,14 @@ namespace BxDRobotExporter.JointEditor
                 rbPWM.Checked = !joint.cDriver.isCan;
                 rbCAN.Checked = joint.cDriver.isCan;
                 chkBoxHasBrake.Checked = joint.cDriver.hasBrake;
-                if (joint.cDriver.OutputGear == 0) // prevents output gear from being 0
+                if (joint.cDriver.OutputGear == 0
+                ) // prevents output gear from being 0 //TODO: should be enforced via form limits
                 {
                     joint.cDriver.OutputGear = 1;
                 }
 
-                if (joint.cDriver.InputGear == 0) // prevents input gear from being 0
+                if (joint.cDriver.InputGear == 0
+                ) // prevents input gear from being 0//TODO: should be enforced via form limits
                 {
                     joint.cDriver.InputGear = 1;
                 }
@@ -144,10 +181,9 @@ namespace BxDRobotExporter.JointEditor
                 }
                 {
                     ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
-
                 }
                 {
-                    switch (joint.cDriver.motor)
+                    switch (joint.cDriver.motor) // TODO: Use motor definition file
                     {
                         case MotorType.GENERIC:
                             RobotCompetitionDropDown.SelectedItem =
@@ -284,13 +320,22 @@ namespace BxDRobotExporter.JointEditor
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
-            PrepLayout();
+            UpdateLayout();
             base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
+
+            disableAutoSave = false;
         }
 
-        private bool ShouldSave()
+        private bool ShouldSave() // TODO: Settings saving and loading should be done in a dedicated class
         {
+            if (disableAutoSave)
+            {
+                return false;
+            }
+
             if (joint.cDriver == null) return true;
+
+            // TODO: Per joint weight load and save
 
             double inputGear = 1, outputGear = 1;
 
@@ -336,7 +381,7 @@ namespace BxDRobotExporter.JointEditor
         /// <summary>
         /// Changes the position of window elements based on the type of driver.
         /// </summary>
-        void PrepLayout()
+        void UpdateLayout()
         {
             chkBoxDriveWheel.Hide();
             rbCAN.Hide();
@@ -401,9 +446,11 @@ namespace BxDRobotExporter.JointEditor
             tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
         }
 
-        private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+        private void
+            cmbJointDriver_SelectedIndexChanged(object sender,
+                EventArgs e) // TODO: Settings saving and loading should be done in a dedicated class
         {
-            PrepLayout();
+            UpdateLayout();
         }
 
         /// <summary>
@@ -411,14 +458,16 @@ namespace BxDRobotExporter.JointEditor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveButton_Click(object sender, EventArgs e)
+        private void
+            SaveChanges(object sender,
+                EventArgs e) // TODO: Settings saving and loading should be done in a dedicated class
         {
-            bool canClose = true;
             if (!ShouldSave())
             {
-//            Close();
                 return;
             }
+
+            disableAutoSave = true;
 
             if (cmbJointDriver.SelectedIndex <= 0)
             {
@@ -426,13 +475,12 @@ namespace BxDRobotExporter.JointEditor
             }
             else
             {
+                // TODO: Per joint weight load and save
+
                 JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
-                double inputGear = 1, outputGear = 1;
-
-                inputGear = (double) InputGeartxt.Value;
-
-                outputGear = (double) OutputGeartxt.Value; // tries to parse the double from the output gear
+                var inputGear = (double) InputGeartxt.Value;
+                var outputGear = (double) OutputGeartxt.Value;
 
                 joint.cDriver = new JointDriver(cType)
                 {
@@ -544,12 +592,9 @@ namespace BxDRobotExporter.JointEditor
                 }
             }
 
-            if (canClose) // make sure there are no outstanding issues for the user to fix before we save
-            {
-                Saved = true;
-                LegacyInterchange.LegacyEvents.OnRobotModified();
-//            Close();
-            }
+            jointCard?.RefillValues(); // TODO: Use event listener for change events
+
+            disableAutoSave = false;
         }
 
         private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
@@ -566,7 +611,7 @@ namespace BxDRobotExporter.JointEditor
             }
         }
 
-        private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
+        private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e) // TODO: Delete method
         {
             /*if (chkBoxHasBrake.Checked)
             {
@@ -582,24 +627,23 @@ namespace BxDRobotExporter.JointEditor
             }*/
         }
 
-        private void rbCAN_CheckedChanged(object sender, EventArgs e)
+        private void rbCAN_CheckedChanged(object sender, EventArgs e) // TODO: Delete method
         {
             if (rbCAN.Checked)
             {
                 lblPort.Text = "CAN Port";
-
             }
             else
             {
                 lblPort.Text = "PWM Port";
             }
 
-            PrepLayout();
+            UpdateLayout();
         }
 
         private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (RobotCompetitionDropDown.SelectedItem.ToString())
+            switch (RobotCompetitionDropDown.SelectedItem.ToString()) // TODO: Use some kind of motor definition file
             {
                 case "GENERIC":
                     MotorTypeDropDown.Items.Clear();
@@ -650,16 +694,6 @@ namespace BxDRobotExporter.JointEditor
             }
 
             MotorTypeDropDown.SelectedItem = "GENERIC";
-        }
-
-        private void LblPort_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TxtPort1_ValueChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }
