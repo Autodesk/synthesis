@@ -14,12 +14,43 @@ public static class ToStringUtils
         {
             wheelData = joint.cDriver.GetInfo<WheelDriverMeta>();
         }
-        return wheelData!=null ? wheelData.GetTypeString() : "No Wheel";
+
+        return wheelData != null ? wheelData.GetTypeString() + ", " + WheelFrictionString(wheelData) + " Friction" : "No Wheel";
+    }
+
+    public static string WheelFrictionString(WheelDriverMeta wheel)
+    {
+        switch (wheel.GetFrictionLevel())
+        {
+            case FrictionLevel.LOW:
+                return "Low";
+            case FrictionLevel.MEDIUM:
+                return "Medium";
+            case FrictionLevel.HIGH:
+                return "High";
+            default:
+                return "None";
+        }
     }
 
     public static string DriverString(SkeletalJoint_Base joint)
     {
-        return joint.cDriver != null ? joint.cDriver.ToString() : "No Driver";
+        return joint.cDriver != null ? joint.cDriver.ToString() + (joint.cDriver.port1 > 2 ? "" : ", " + DriveTrainSideString(joint)) + " Drivetrain" : "No Driver";
+    }
+
+    public static string DriveTrainSideString(SkeletalJoint_Base joint)
+    {
+        switch (joint.cDriver.port1)
+        {
+            case 0:
+                return "Right";
+            case 1:
+                return "Left";
+            case 2:
+                return "Other";
+            default:
+                return "None";
+        }
     }
 
     public static string NodeNameString(RigidNode_Base node)
@@ -34,6 +65,6 @@ public static class ToStringUtils
 
     public static string JointTypeString(SkeletalJoint_Base joint)
     {
-        return Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()), true);
+        return Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true);
     }
 }

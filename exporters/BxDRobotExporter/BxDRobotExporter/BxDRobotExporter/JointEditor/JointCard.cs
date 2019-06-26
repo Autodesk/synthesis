@@ -1,50 +1,30 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
-using BxDRobotExporter.Wizard;
 using Inventor;
 
 namespace BxDRobotExporter.JointEditor
 {
-    /// <summary>
-    /// Used in the <see cref="DefineMovingPartsPage"/> to set joint driver information.
-    /// </summary>
-    /// <remarks>This is the most manual part of the entire guided export and could probably be improved.</remarks>
     public sealed partial class JointCard : UserControl
     {
-        private bool hasHighlighted = false;
+        private readonly JointForm jointForm;
+        private readonly RigidNode_Base node;
 
-        /// <summary>
-        /// The <see cref="RigidNode_Base"/> which the driver will be applied to.
-        /// </summary>
-        public RigidNode_Base node;
+        private bool isHighlighted;
 
         public JointCard(RigidNode_Base node, JointForm jointForm)
         {
             this.jointForm = jointForm;
             this.node = node;
 
-            Dock = DockStyle.Top;
-
             InitializeComponent();
-            jointCardEditor.SetParentCard(this);
-            jointCardEditor.LoadSettings(node);
-            RefillValues();
+
+            jointEditor.Initialize(new List<RigidNode_Base> {node}, this);
+
             AddHighlightAction(this);
         }
 
-        public JointForm jointForm { get; set; }
-
-        public void RefillValues()
-        {
-            RefillValues(node);
-        }
-
-
-        /// <summary>
-        /// refills values from existing joint
-        /// </summary>
-        /// <param name="joint"></param>
-        private void RefillValues(RigidNode_Base node)
+        public void LoadValues()
         {
             var joint = node.GetSkeletalJoint();
             jointName.Text = ToStringUtils.NodeNameString(node);
@@ -53,50 +33,61 @@ namespace BxDRobotExporter.JointEditor
             wheelTypeValue.Text = ToStringUtils.WheelTypeString(joint);
         }
 
-        /// <summary>
-        /// Highlights the node in inventor.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HighlightNode(object sender, EventArgs e)
+        public void LoadValuesRecursive()
         {
-            if (hasHighlighted)
+            LoadValues();
+            jointEditor.LoadValues();
+        }
+
+        private void HighlightSelf()
+        {
+            if (isHighlighted)
             {
                 return;
             }
 
             jointForm.ResetAllHighlight();
-            hasHighlighted = true;
+            isHighlighted = true;
 
             StandardAddInServer.Instance.SelectNode(node);
-            Camera cam = StandardAddInServer.Instance.MainApplication.ActiveView.Camera;
-            pictureBox1.Image =
-                AxHostConverter.PictureDispToImage(cam.CreateImage(pictureBox1.Width, pictureBox1.Height));
+            Camera cam = StandardAddInServer.Instance.MainApplication.ActiveView.Camera; // TODO: This should be done with a separate camera
+            pictureBox1.Image = AxHostConverter.PictureDispToImage(cam.CreateImage(pictureBox1.Width, pictureBox1.Height));
             StandardAddInServer.Instance.SelectNode(node);
         }
 
         public void ResetHighlight()
         {
-            hasHighlighted = false;
+            isHighlighted = false;
         }
 
         private void AddHighlightAction(Control baseControl)
         {
-            baseControl.MouseHover += HighlightNode;
+            baseControl.MouseHover += (sender, args) => HighlightSelf();
 
             foreach (Control control in baseControl.Controls)
                 AddHighlightAction(control);
         }
 
-        private void editButton_Click(object sender, EventArgs e)
+        private void ToggleCollapsed()
         {
             jointForm.CollapseAllCards(this);
-            jointCardEditor.Visible = !jointCardEditor.Visible;
+            SetCollapsed(!IsCollapsed());
         }
 
         public void SetCollapsed(bool collapse)
         {
-            jointCardEditor.Visible = !collapse;
+            jointEditor.Visible = !collapse;
+        }
+
+
+        public bool IsCollapsed()
+        {
+            return !jointEditor.Visible;
+        }
+
+        private void editButton_Click(object sender, EventArgs e)
+        {
+            ToggleCollapsed();
         }
     }
 }
