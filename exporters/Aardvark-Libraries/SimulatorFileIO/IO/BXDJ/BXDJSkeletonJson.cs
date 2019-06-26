@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using BXDSim.IO.BXDJ;
 using Newtonsoft.Json.Linq;
 /// <summary>
