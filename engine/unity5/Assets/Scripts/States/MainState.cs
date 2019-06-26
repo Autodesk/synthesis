@@ -186,7 +186,7 @@ namespace Synthesis.States
             StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
-            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"Autodesk\Synthesis\Emulator");
+            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator");
             string directoryPath = "";
 
             if (Directory.Exists(defaultDirectory))
@@ -278,7 +278,7 @@ namespace Synthesis.States
                 return new UnityFieldDefinition(guid, name);
             };
 
-            if (!File.Exists(directory + "\\definition.bxdf"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf"))
                 return false;
 
             FieldDataHandler.Load(fieldPath);
@@ -290,10 +290,10 @@ namespace Synthesis.States
             }
 
             string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
+            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);
             Debug.Log(loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
-            return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
+            return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
         }
 
         /// <summary>
