@@ -5,9 +5,9 @@ using BxDRobotExporter.Wizard;
 namespace BxDRobotExporter.JointEditor
 {
     public partial class JointForm : Form
-    {        
+    {
         WizardData data = new WizardData();
-        
+
         /// <summary>
         /// List containing all of the <see cref="DefinePartPanel"/>s 
         /// </summary>
@@ -17,23 +17,22 @@ namespace BxDRobotExporter.JointEditor
         public JointForm()
         {
             InitializeComponent();
-            
+
             SuspendLayout();
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
             {
-                if (node.GetSkeletalJoint() != null)// create new part panels for every node
+                if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {
                     JointCard panel = new JointCard(node, this);
                     panels.Add(panel);
                     AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
-            ResumeLayout();
 
-            
+            ResumeLayout();
         }
-        
+
         /// <summary>
         /// Adds a control to a new row at the end of the table.
         /// </summary>
@@ -63,6 +62,18 @@ namespace BxDRobotExporter.JointEditor
                 {
                     JointCard card = (JointCard) control;
                     card.SetCollapsed(true);
+                }
+            }
+        }
+
+        public void ResetAllHighlight()
+        {
+            foreach (var control in DefinePartsLayout.Controls)
+            {
+                if (control is JointCard)
+                {
+                    JointCard card = (JointCard) control;
+                    card.ResetHighlight();
                 }
             }
         }

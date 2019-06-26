@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using BxDRobotExporter.Wizard;
+using Inventor;
 
 namespace BxDRobotExporter.JointEditor
 {
@@ -10,6 +11,8 @@ namespace BxDRobotExporter.JointEditor
     /// <remarks>This is the most manual part of the entire guided export and could probably be improved.</remarks>
     public sealed partial class JointCard : UserControl
     {
+        private bool hasHighlighted = false;
+
         /// <summary>
         /// The <see cref="RigidNode_Base"/> which the driver will be applied to.
         /// </summary>
@@ -57,7 +60,24 @@ namespace BxDRobotExporter.JointEditor
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
+            if (hasHighlighted)
+            {
+                return;
+            }
+
+            jointForm.ResetAllHighlight();
+            hasHighlighted = true;
+
             StandardAddInServer.Instance.SelectNode(node);
+            Camera cam = StandardAddInServer.Instance.MainApplication.ActiveView.Camera;
+            pictureBox1.Image =
+                AxHostConverter.PictureDispToImage(cam.CreateImage(pictureBox1.Width, pictureBox1.Height));
+            StandardAddInServer.Instance.SelectNode(node);
+        }
+
+        public void ResetHighlight()
+        {
+            hasHighlighted = false;
         }
 
         private void AddHighlightAction(Control baseControl)

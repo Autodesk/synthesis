@@ -135,6 +135,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JointEditor\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="JointEditor\JointCard.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -44,7 +44,7 @@ namespace BxDRobotExporter.JointEditor
             this.jointTypeValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.jointCardEditor = new JointCardEditor();
+            this.jointCardEditor = new BxDRobotExporter.JointEditor.JointCardEditor();
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -72,17 +72,18 @@ namespace BxDRobotExporter.JointEditor
             this.DriverLayout.Name = "DriverLayout";
             this.DriverLayout.RowCount = 1;
             this.DriverLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DriverLayout.Size = new System.Drawing.Size(532, 123);
+            this.DriverLayout.Size = new System.Drawing.Size(557, 123);
             this.DriverLayout.TabIndex = 1;
             // 
             // pictureBox1
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Image = global::BxDRobotExporter.Resource.EditDrivers32;
             this.pictureBox1.InitialImage = null;
             this.pictureBox1.Location = new System.Drawing.Point(4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 100);
+            this.pictureBox1.Size = new System.Drawing.Size(125, 115);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
@@ -97,7 +98,7 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel1.Controls.Add(this.jointName, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(108, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(133, 1);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
@@ -265,7 +266,7 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(530, 448);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(540, 448);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // tableLayoutPanel5
@@ -277,12 +278,12 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel5.Controls.Add(this.jointCardEditor, 0, 0);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 123);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(12, 123);
             this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 326F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 325F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(532, 325);
             this.tableLayoutPanel5.TabIndex = 2;
             // 
@@ -308,9 +309,9 @@ namespace BxDRobotExporter.JointEditor
             this.Controls.Add(this.tableLayoutPanel3);
             this.Margin = new System.Windows.Forms.Padding(0, 0, 0, 15);
             this.MaximumSize = new System.Drawing.Size(800, 0);
-            this.MinimumSize = new System.Drawing.Size(530, 0);
+            this.MinimumSize = new System.Drawing.Size(540, 0);
             this.Name = "JointCard";
-            this.Size = new System.Drawing.Size(530, 448);
+            this.Size = new System.Drawing.Size(540, 448);
             this.DriverLayout.ResumeLayout(false);
             this.DriverLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

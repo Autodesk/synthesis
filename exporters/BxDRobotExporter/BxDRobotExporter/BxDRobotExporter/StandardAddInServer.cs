@@ -922,6 +922,11 @@ namespace BxDRobotExporter
 
             Inventor.Point focusPoint = MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
 
+            cam.Fit(); // TODO: Determine model size properly
+            double width, height;
+            cam.GetExtents(out width, out height);
+            cam.SetExtents(width * 0.4, height * 0.4);
+
             cam.Target = focusPoint;
 
             // Flip view for negative direction
