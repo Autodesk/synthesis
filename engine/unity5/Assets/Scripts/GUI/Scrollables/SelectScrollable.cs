@@ -24,7 +24,7 @@ namespace Synthesis.GUI.Scrollables
             items.Clear();
 
             foreach (string robot in folders)
-                if (File.Exists(robot + "\\" + TargetFilename))
+                if (File.Exists(robot + Path.DirectorySeparatorChar + TargetFilename))
                     items.Add(new DirectoryInfo(robot).Name);
 
             if (items.Count > 0)

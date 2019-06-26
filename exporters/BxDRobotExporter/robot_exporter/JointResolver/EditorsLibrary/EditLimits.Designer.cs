@@ -67,10 +67,10 @@ namespace EditorsLibrary
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(233, 245);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnCancel.Location = new System.Drawing.Point(175, 199);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(121, 27);
+            this.btnCancel.Size = new System.Drawing.Size(91, 22);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -78,10 +78,10 @@ namespace EditorsLibrary
             // 
             // btnOkay
             // 
-            this.btnOkay.Location = new System.Drawing.Point(103, 246);
-            this.btnOkay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnOkay.Location = new System.Drawing.Point(77, 200);
+            this.btnOkay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnOkay.Name = "btnOkay";
-            this.btnOkay.Size = new System.Drawing.Size(124, 26);
+            this.btnOkay.Size = new System.Drawing.Size(93, 21);
             this.btnOkay.TabIndex = 0;
             this.btnOkay.Text = "OK";
             this.btnOkay.UseVisualStyleBackColor = true;
@@ -91,26 +91,29 @@ namespace EditorsLibrary
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.Controls.Add(this.Angular_Group_Box, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LinearGroup, 0, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 13);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(10, 11);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(374, 174);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(280, 141);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // Angular_Group_Box
             // 
             this.Angular_Group_Box.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.Angular_Group_Box.Controls.Add(this.tableLayoutPanel2);
-            this.Angular_Group_Box.Location = new System.Drawing.Point(3, 3);
+            this.Angular_Group_Box.Location = new System.Drawing.Point(2, 2);
+            this.Angular_Group_Box.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_Group_Box.Name = "Angular_Group_Box";
-            this.Angular_Group_Box.Size = new System.Drawing.Size(368, 81);
+            this.Angular_Group_Box.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Angular_Group_Box.Size = new System.Drawing.Size(276, 66);
             this.Angular_Group_Box.TabIndex = 0;
             this.Angular_Group_Box.TabStop = false;
             this.Angular_Group_Box.Text = "Angular (Degrees)";
@@ -127,18 +130,20 @@ namespace EditorsLibrary
             this.tableLayoutPanel2.Controls.Add(this.Angular_End, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.Angular_Current, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.Angular_Start, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(7, 22);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(5, 18);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(355, 53);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(266, 43);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // Angular_Start_textbox
             // 
             this.Angular_Start_textbox.DecimalPlaces = 5;
-            this.Angular_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Angular_Start_textbox.Location = new System.Drawing.Point(2, 23);
+            this.Angular_Start_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_Start_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -150,13 +155,14 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Angular_Start_textbox.Name = "Angular_Start_textbox";
-            this.Angular_Start_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Start_textbox.Size = new System.Drawing.Size(84, 20);
             this.Angular_Start_textbox.TabIndex = 0;
             // 
             // Angular_Current_textbox
             // 
             this.Angular_Current_textbox.DecimalPlaces = 5;
-            this.Angular_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Angular_Current_textbox.Location = new System.Drawing.Point(90, 23);
+            this.Angular_Current_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_Current_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -168,13 +174,14 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Angular_Current_textbox.Name = "Angular_Current_textbox";
-            this.Angular_Current_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Current_textbox.Size = new System.Drawing.Size(84, 20);
             this.Angular_Current_textbox.TabIndex = 1;
             // 
             // Angular_End_textbox
             // 
             this.Angular_End_textbox.DecimalPlaces = 5;
-            this.Angular_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Angular_End_textbox.Location = new System.Drawing.Point(178, 23);
+            this.Angular_End_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_End_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -186,15 +193,16 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Angular_End_textbox.Name = "Angular_End_textbox";
-            this.Angular_End_textbox.Size = new System.Drawing.Size(113, 22);
+            this.Angular_End_textbox.Size = new System.Drawing.Size(85, 20);
             this.Angular_End_textbox.TabIndex = 2;
             // 
             // Angular_End
             // 
             this.Angular_End.AutoSize = true;
-            this.Angular_End.Location = new System.Drawing.Point(239, 3);
+            this.Angular_End.Location = new System.Drawing.Point(178, 2);
+            this.Angular_End.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_End.Name = "Angular_End";
-            this.Angular_End.Size = new System.Drawing.Size(55, 20);
+            this.Angular_End.Size = new System.Drawing.Size(45, 17);
             this.Angular_End.TabIndex = 5;
             this.Angular_End.Text = "End";
             this.Angular_End.UseVisualStyleBackColor = true;
@@ -204,19 +212,20 @@ namespace EditorsLibrary
             // 
             this.Angular_Current.AutoSize = true;
             this.Angular_Current.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Angular_Current.Location = new System.Drawing.Point(121, 4);
-            this.Angular_Current.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.Angular_Current.Location = new System.Drawing.Point(90, 3);
+            this.Angular_Current.Margin = new System.Windows.Forms.Padding(2, 3, 2, 0);
             this.Angular_Current.Name = "Angular_Current";
-            this.Angular_Current.Size = new System.Drawing.Size(112, 22);
+            this.Angular_Current.Size = new System.Drawing.Size(84, 18);
             this.Angular_Current.TabIndex = 4;
             this.Angular_Current.Text = "       Current";
             // 
             // Angular_Start
             // 
             this.Angular_Start.AutoSize = true;
-            this.Angular_Start.Location = new System.Drawing.Point(3, 3);
+            this.Angular_Start.Location = new System.Drawing.Point(2, 2);
+            this.Angular_Start.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Angular_Start.Name = "Angular_Start";
-            this.Angular_Start.Size = new System.Drawing.Size(60, 20);
+            this.Angular_Start.Size = new System.Drawing.Size(48, 17);
             this.Angular_Start.TabIndex = 3;
             this.Angular_Start.Text = "Start";
             this.Angular_Start.UseVisualStyleBackColor = true;
@@ -226,9 +235,11 @@ namespace EditorsLibrary
             // 
             this.LinearGroup.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.LinearGroup.Controls.Add(this.tableLayoutPanel3);
-            this.LinearGroup.Location = new System.Drawing.Point(3, 90);
+            this.LinearGroup.Location = new System.Drawing.Point(2, 72);
+            this.LinearGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.LinearGroup.Name = "LinearGroup";
-            this.LinearGroup.Size = new System.Drawing.Size(368, 81);
+            this.LinearGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.LinearGroup.Size = new System.Drawing.Size(276, 66);
             this.LinearGroup.TabIndex = 1;
             this.LinearGroup.TabStop = false;
             this.LinearGroup.Text = "Linear (In)";
@@ -245,18 +256,20 @@ namespace EditorsLibrary
             this.tableLayoutPanel3.Controls.Add(this.Linear_Current, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.Linear_Start, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.Linear_End_textbox, 2, 1);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(7, 22);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(5, 18);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(355, 53);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(266, 43);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // Linear_Start_textbox
             // 
             this.Linear_Start_textbox.DecimalPlaces = 5;
-            this.Linear_Start_textbox.Location = new System.Drawing.Point(3, 29);
+            this.Linear_Start_textbox.Location = new System.Drawing.Point(2, 23);
+            this.Linear_Start_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Linear_Start_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -268,13 +281,14 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Linear_Start_textbox.Name = "Linear_Start_textbox";
-            this.Linear_Start_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Start_textbox.Size = new System.Drawing.Size(84, 20);
             this.Linear_Start_textbox.TabIndex = 0;
             // 
             // Linear_Current_textbox
             // 
             this.Linear_Current_textbox.DecimalPlaces = 5;
-            this.Linear_Current_textbox.Location = new System.Drawing.Point(121, 29);
+            this.Linear_Current_textbox.Location = new System.Drawing.Point(90, 23);
+            this.Linear_Current_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Linear_Current_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -286,15 +300,16 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Linear_Current_textbox.Name = "Linear_Current_textbox";
-            this.Linear_Current_textbox.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Current_textbox.Size = new System.Drawing.Size(84, 20);
             this.Linear_Current_textbox.TabIndex = 1;
             // 
             // Linear_End
             // 
             this.Linear_End.AutoSize = true;
-            this.Linear_End.Location = new System.Drawing.Point(239, 3);
+            this.Linear_End.Location = new System.Drawing.Point(178, 2);
+            this.Linear_End.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Linear_End.Name = "Linear_End";
-            this.Linear_End.Size = new System.Drawing.Size(55, 20);
+            this.Linear_End.Size = new System.Drawing.Size(45, 17);
             this.Linear_End.TabIndex = 5;
             this.Linear_End.Text = "End";
             this.Linear_End.UseVisualStyleBackColor = true;
@@ -304,19 +319,20 @@ namespace EditorsLibrary
             // 
             this.Linear_Current.AutoSize = true;
             this.Linear_Current.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Linear_Current.Location = new System.Drawing.Point(121, 4);
-            this.Linear_Current.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.Linear_Current.Location = new System.Drawing.Point(90, 3);
+            this.Linear_Current.Margin = new System.Windows.Forms.Padding(2, 3, 2, 0);
             this.Linear_Current.Name = "Linear_Current";
-            this.Linear_Current.Size = new System.Drawing.Size(112, 22);
+            this.Linear_Current.Size = new System.Drawing.Size(84, 18);
             this.Linear_Current.TabIndex = 4;
             this.Linear_Current.Text = "       Current";
             // 
             // Linear_Start
             // 
             this.Linear_Start.AutoSize = true;
-            this.Linear_Start.Location = new System.Drawing.Point(3, 3);
+            this.Linear_Start.Location = new System.Drawing.Point(2, 2);
+            this.Linear_Start.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Linear_Start.Name = "Linear_Start";
-            this.Linear_Start.Size = new System.Drawing.Size(60, 20);
+            this.Linear_Start.Size = new System.Drawing.Size(48, 17);
             this.Linear_Start.TabIndex = 3;
             this.Linear_Start.Text = "Start";
             this.Linear_Start.UseVisualStyleBackColor = true;
@@ -325,7 +341,8 @@ namespace EditorsLibrary
             // Linear_End_textbox
             // 
             this.Linear_End_textbox.DecimalPlaces = 5;
-            this.Linear_End_textbox.Location = new System.Drawing.Point(239, 29);
+            this.Linear_End_textbox.Location = new System.Drawing.Point(178, 23);
+            this.Linear_End_textbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Linear_End_textbox.Maximum = new decimal(new int[] {
             -1,
             -1,
@@ -337,14 +354,15 @@ namespace EditorsLibrary
             -1,
             -2147483648});
             this.Linear_End_textbox.Name = "Linear_End_textbox";
-            this.Linear_End_textbox.Size = new System.Drawing.Size(113, 22);
+            this.Linear_End_textbox.Size = new System.Drawing.Size(85, 20);
             this.Linear_End_textbox.TabIndex = 2;
             // 
             // AnimateJointButton
             // 
-            this.AnimateJointButton.Location = new System.Drawing.Point(10, 18);
+            this.AnimateJointButton.Location = new System.Drawing.Point(8, 15);
+            this.AnimateJointButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.AnimateJointButton.Name = "AnimateJointButton";
-            this.AnimateJointButton.Size = new System.Drawing.Size(112, 23);
+            this.AnimateJointButton.Size = new System.Drawing.Size(84, 19);
             this.AnimateJointButton.TabIndex = 1;
             this.AnimateJointButton.Text = "Animate Joint";
             this.AnimateJointButton.UseVisualStyleBackColor = true;
@@ -354,25 +372,27 @@ namespace EditorsLibrary
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.groupBox1.Controls.Add(this.AnimateJointButton);
-            this.groupBox1.Location = new System.Drawing.Point(16, 193);
+            this.groupBox1.Location = new System.Drawing.Point(12, 157);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(371, 47);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(278, 38);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Animate";
             // 
             // EditLimits
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(399, 283);
+            this.ClientSize = new System.Drawing.Size(299, 230);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.btnOkay);
             this.Controls.Add(this.btnCancel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditLimits";
