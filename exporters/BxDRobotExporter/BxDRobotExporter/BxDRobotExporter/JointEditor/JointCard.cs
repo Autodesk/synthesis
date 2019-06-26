@@ -15,19 +15,27 @@ namespace BxDRobotExporter.JointEditor
         /// </summary>
         public RigidNode_Base node;
 
-        public JointForm jointForm { get; set; }
-
         public JointCard(RigidNode_Base node, JointForm jointForm)
         {
             this.jointForm = jointForm;
             this.node = node;
 
             Dock = DockStyle.Top;
-            
+
             InitializeComponent();
-            RefillValues(node);
+            jointCardEditor.SetParentCard(this);
+            jointCardEditor.LoadSettings(node);
+            RefillValues();
             AddHighlightAction(this);
         }
+
+        public JointForm jointForm { get; set; }
+
+        public void RefillValues()
+        {
+            RefillValues(node);
+        }
+
 
         /// <summary>
         /// refills values from existing joint
@@ -35,15 +43,13 @@ namespace BxDRobotExporter.JointEditor
         /// <param name="joint"></param>
         private void RefillValues(RigidNode_Base node)
         {
-            jointCardEditor.LoadSettings(node);
-            
             var joint = node.GetSkeletalJoint();
             jointName.Text = ToStringUtils.NodeNameString(node);
             jointTypeValue.Text = ToStringUtils.JointTypeString(joint);
             driverValue.Text = ToStringUtils.DriverString(joint);
             wheelTypeValue.Text = ToStringUtils.WheelTypeString(joint);
         }
-        
+
         /// <summary>
         /// Highlights the node in inventor.
         /// </summary>
