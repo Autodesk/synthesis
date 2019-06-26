@@ -124,7 +124,7 @@ namespace SFB {
         private static string GetDirectoryPath(string directory) {
             var directoryPath = Path.GetFullPath(directory);
             if (!directoryPath.EndsWith("\\")) {
-                directoryPath += "\\";
+                directoryPath += Path.DirectorySeparatorChar;
             }
             return Path.GetDirectoryName(directoryPath) + Path.DirectorySeparatorChar;
         }

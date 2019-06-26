@@ -29,7 +29,7 @@ namespace Synthesis.Field
             field.Add(GoalData());
             field.Add(GeneralData());
             //save function
-            field.Save(PlayerPrefs.GetString("simSelectedField") + "\\" + "field_data.xml");
+            field.Save(PlayerPrefs.GetString("simSelectedField") + Path.DirectorySeparatorChar + "field_data.xml");
         }
         /// <summary>
         /// Get Goal Data as an XElement - Split into Red and Blue Goals
@@ -112,9 +112,9 @@ namespace Synthesis.Field
         /// <param name="fieldPath">location to field folder passed upon field load</param>
         public static void Load(string fieldPath)
         {
-            if (File.Exists(fieldPath + "\\" + "field_data.xml"))
+            if (File.Exists(fieldPath + Path.DirectorySeparatorChar + "field_data.xml"))
             {
-                file = XDocument.Load(fieldPath + "\\" + "field_data.xml");
+                file = XDocument.Load(fieldPath + Path.DirectorySeparatorChar + "field_data.xml");
                 gamepieces = getGamepieces();
                 redGoals = getRedGoals();
                 blueGoals = getBlueGoals();

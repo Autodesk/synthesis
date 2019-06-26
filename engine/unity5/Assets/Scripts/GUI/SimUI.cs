@@ -275,7 +275,7 @@ namespace Synthesis.GUI
         public void ChangeRobot()
         {
             GameObject panel = GameObject.Find("RobotListPanel");
-            string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+            string directory = PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
             if (Directory.Exists(directory))
             {
                 panel.SetActive(false);
@@ -346,7 +346,7 @@ namespace Synthesis.GUI
         public void ChangeField()
         {
             GameObject panel = GameObject.Find("FieldListPanel");
-            string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
+            string directory = PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
             if (Directory.Exists(directory))
             {
                 panel.SetActive(false);
