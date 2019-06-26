@@ -1,23 +1,15 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BxDRobotExporter.Wizard;
 
 namespace BxDRobotExporter.JointEditor
 {
     public partial class JointForm : Form
     {
-        WizardData data = new WizardData();
-
-        /// <summary>
-        /// List containing all of the <see cref="DefinePartPanel"/>s 
-        /// </summary>
-        private List<JointCard> panels = new List<JointCard>();
-
+        private readonly List<JointCard> jointCards = new List<JointCard>();
 
         public JointForm()
         {
             InitializeComponent();
-
             SuspendLayout();
 
             foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
@@ -25,57 +17,34 @@ namespace BxDRobotExporter.JointEditor
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {
                     JointCard panel = new JointCard(node, this);
-                    panels.Add(panel);
-                    AddControlToNewTableRow(panel, DefinePartsLayout);
+                    panel.Dock = DockStyle.Top;
+
+                    jointCards.Add(panel);
+
+                    WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
 
             ResumeLayout();
         }
 
-        /// <summary>
-        /// Adds a control to a new row at the end of the table.
-        /// </summary>
-        /// <param name="control">Control to append to table.</param>
-        /// <param name="table">Table to add control to.</param>
-        /// <param name="rowStyle">Style of the new row. Autosized if left null.</param>
-        private void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
+        public void LoadValuesRecursive()
         {
-            if (rowStyle == null)
-            {
-                rowStyle = new RowStyle();
-                rowStyle.SizeType = SizeType.AutoSize;
-            }
-
-            table.RowCount++;
-            table.RowStyles.Add(rowStyle);
-            table.Controls.Add(control);
-            table.SetRow(control, table.RowCount - 1);
-            table.SetColumn(control, 0);
+            jointCards.ForEach(card => card.LoadValuesRecursive());
         }
 
         public void CollapseAllCards(JointCard besides = null)
         {
-            foreach (var control in DefinePartsLayout.Controls)
+            jointCards.ForEach(card =>
             {
-                if (control is JointCard && control != besides)
-                {
-                    JointCard card = (JointCard) control;
+                if (card != besides)
                     card.SetCollapsed(true);
-                }
-            }
+            });
         }
 
         public void ResetAllHighlight()
         {
-            foreach (var control in DefinePartsLayout.Controls)
-            {
-                if (control is JointCard)
-                {
-                    JointCard card = (JointCard) control;
-                    card.ResetHighlight();
-                }
-            }
+            jointCards.ForEach(card => card.ResetHighlight());
         }
     }
 }

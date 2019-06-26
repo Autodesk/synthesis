@@ -44,7 +44,7 @@ namespace BxDRobotExporter.JointEditor
             this.jointTypeValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.jointCardEditor = new BxDRobotExporter.JointEditor.JointCardEditor();
+            this.jointEditor = new BxDRobotExporter.JointEditor.JointCardEditor();
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -277,28 +277,28 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel5.ColumnCount = 1;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel5.Controls.Add(this.jointCardEditor, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.jointEditor, 0, 0);
             this.tableLayoutPanel5.Location = new System.Drawing.Point(12, 123);
             this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 325F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 326F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(532, 325);
             this.tableLayoutPanel5.TabIndex = 2;
             // 
             // jointCardEditor
             // 
-            this.jointCardEditor.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.jointCardEditor.AutoSize = true;
-            this.jointCardEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.jointCardEditor.BackColor = System.Drawing.SystemColors.Control;
-            this.jointCardEditor.Location = new System.Drawing.Point(1, 0);
-            this.jointCardEditor.Margin = new System.Windows.Forms.Padding(1, 0, 1, 1);
-            this.jointCardEditor.Name = "jointCardEditor";
-            this.jointCardEditor.Size = new System.Drawing.Size(530, 324);
-            this.jointCardEditor.TabIndex = 19;
-            this.jointCardEditor.Visible = false;
+            this.jointEditor.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.jointEditor.AutoSize = true;
+            this.jointEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.jointEditor.BackColor = System.Drawing.SystemColors.Control;
+            this.jointEditor.Location = new System.Drawing.Point(1, 0);
+            this.jointEditor.Margin = new System.Windows.Forms.Padding(1, 0, 1, 1);
+            this.jointEditor.Name = "jointEditor";
+            this.jointEditor.Size = new System.Drawing.Size(530, 324);
+            this.jointEditor.TabIndex = 19;
+            this.jointEditor.Visible = false;
             // 
             // JointCard
             // 
@@ -346,6 +346,6 @@ namespace BxDRobotExporter.JointEditor
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label jointTypeValue;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private JointCardEditor jointCardEditor;
+        private JointCardEditor jointEditor;
     }
 }

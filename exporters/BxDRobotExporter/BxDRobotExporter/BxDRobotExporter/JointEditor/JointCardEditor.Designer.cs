@@ -41,12 +41,13 @@ namespace BxDRobotExporter.JointEditor
             this.lblLimits = new System.Windows.Forms.Label();
             this.rbCAN = new System.Windows.Forms.RadioButton();
             this.rbPWM = new System.Windows.Forms.RadioButton();
-            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.tabsMeta = new System.Windows.Forms.TabControl();
             this.metaWheel = new System.Windows.Forms.TabPage();
             this.WheelLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbDriveSide = new System.Windows.Forms.ComboBox();
+            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.lblFriction = new System.Windows.Forms.Label();
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
             this.lblType = new System.Windows.Forms.Label();
@@ -295,18 +296,6 @@ namespace BxDRobotExporter.JointEditor
             this.rbPWM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.rbPWM.UseVisualStyleBackColor = true;
             // 
-            // chkBoxDriveWheel
-            // 
-            this.chkBoxDriveWheel.AutoSize = true;
-            this.chkBoxDriveWheel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.chkBoxDriveWheel.Location = new System.Drawing.Point(394, 27);
-            this.chkBoxDriveWheel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
-            this.chkBoxDriveWheel.Size = new System.Drawing.Size(111, 24);
-            this.chkBoxDriveWheel.TabIndex = 5;
-            this.chkBoxDriveWheel.Text = "Drive Wheel ";
-            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
-            // 
             // cmbWheelType
             // 
             this.cmbWheelType.Dock = System.Windows.Forms.DockStyle.Top;
@@ -373,7 +362,8 @@ namespace BxDRobotExporter.JointEditor
             this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.WheelLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.WheelLayout.Controls.Add(this.chkBoxDriveWheel, 2, 1);
+            this.WheelLayout.Controls.Add(this.cmbDriveSide, 2, 1);
+            this.WheelLayout.Controls.Add(this.chkBoxDriveWheel, 2, 0);
             this.WheelLayout.Controls.Add(this.lblFriction, 1, 0);
             this.WheelLayout.Controls.Add(this.cmbFrictionLevel, 1, 1);
             this.WheelLayout.Controls.Add(this.lblType, 0, 0);
@@ -385,8 +375,38 @@ namespace BxDRobotExporter.JointEditor
             this.WheelLayout.RowCount = 2;
             this.WheelLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.WheelLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.WheelLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.WheelLayout.Size = new System.Drawing.Size(508, 53);
             this.WheelLayout.TabIndex = 13;
+            // 
+            // cmbDriveSide
+            // 
+            this.cmbDriveSide.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbDriveSide.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDriveSide.Enabled = false;
+            this.cmbDriveSide.FormattingEnabled = true;
+            this.cmbDriveSide.Items.AddRange(new object[] {
+            "High",
+            "Medium",
+            "Low"});
+            this.cmbDriveSide.Location = new System.Drawing.Point(341, 27);
+            this.cmbDriveSide.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmbDriveSide.Name = "cmbDriveSide";
+            this.cmbDriveSide.Size = new System.Drawing.Size(164, 24);
+            this.cmbDriveSide.TabIndex = 16;
+            // 
+            // chkBoxDriveWheel
+            // 
+            this.chkBoxDriveWheel.AutoSize = true;
+            this.chkBoxDriveWheel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.chkBoxDriveWheel.Location = new System.Drawing.Point(394, 2);
+            this.chkBoxDriveWheel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
+            this.chkBoxDriveWheel.Size = new System.Drawing.Size(111, 21);
+            this.chkBoxDriveWheel.TabIndex = 5;
+            this.chkBoxDriveWheel.Text = "Drive Wheel ";
+            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
+            this.chkBoxDriveWheel.CheckedChanged += new System.EventHandler(this.chkBoxDriveWheel_CheckedChanged);
             // 
             // lblFriction
             // 
@@ -654,7 +674,6 @@ namespace BxDRobotExporter.JointEditor
             this.chkBoxHasBrake.TabIndex = 0;
             this.chkBoxHasBrake.Text = "Has Brake";
             this.chkBoxHasBrake.UseVisualStyleBackColor = true;
-            this.chkBoxHasBrake.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
             // 
             // metaMotorType
             // 
@@ -925,7 +944,6 @@ namespace BxDRobotExporter.JointEditor
         private System.Windows.Forms.Label lblType;
         private System.Windows.Forms.TabPage metaBrake;
         private System.Windows.Forms.CheckBox chkBoxHasBrake;
-        private System.Windows.Forms.CheckBox chkBoxDriveWheel;
         private System.Windows.Forms.RadioButton rbPWM;
         private System.Windows.Forms.RadioButton rbCAN;
         private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
@@ -951,5 +969,7 @@ namespace BxDRobotExporter.JointEditor
         private System.Windows.Forms.NumericUpDown WeightBox;
         private System.Windows.Forms.Label WeightLabel;
         private System.Windows.Forms.ComboBox UnitBox;
+        private System.Windows.Forms.CheckBox chkBoxDriveWheel;
+        private System.Windows.Forms.ComboBox cmbDriveSide;
     }
 }
