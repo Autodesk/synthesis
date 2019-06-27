@@ -15556,36 +15556,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ebb11c6fc3a2f498bd89593f7744aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 310145530}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &310145530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29949,7 +29919,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231148}
+      - m_Target: {fileID: 0}
         m_MethodName: CancelDefineRelease
         m_Mode: 1
         m_Arguments:
@@ -41545,7 +41515,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231148}
+      - m_Target: {fileID: 0}
         m_MethodName: CancelDefineIntake
         m_Mode: 1
         m_Arguments:
@@ -44061,7 +44031,6 @@ GameObject:
   - component: {fileID: 860974967}
   - component: {fileID: 860974972}
   - component: {fileID: 860974970}
-  - component: {fileID: 860974968}
   - component: {fileID: 860974971}
   m_Layer: 5
   m_Name: ReplayModeButton
@@ -44091,18 +44060,6 @@ RectTransform:
   m_AnchoredPosition: {x: 450, y: -0.504364}
   m_SizeDelta: {x: 100, y: -128.00873}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &860974968
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 860974966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 207469858, guid: 852e56802eb941638acbb491814497b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &860974970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52038,7 +51995,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1039971749}
   - component: {fileID: 1039971748}
-  - component: {fileID: 1039971747}
   - component: {fileID: 1039971746}
   - component: {fileID: 1039971745}
   m_Layer: 0
@@ -52057,14 +52013,6 @@ AudioListener:
   m_GameObject: {fileID: 1039971744}
   m_Enabled: 0
 --- !u!124 &1039971746
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1039971744}
-  m_Enabled: 0
---- !u!92 &1039971747
 Behaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79731,7 +79679,6 @@ GameObject:
   - component: {fileID: 1672929939}
   - component: {fileID: 1672929938}
   - component: {fileID: 1672929937}
-  - component: {fileID: 1672929936}
   - component: {fileID: 1672929935}
   m_Layer: 5
   m_Name: Scrollbar Vertical
@@ -79777,7 +79724,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1672929936}
+        - m_Target: {fileID: 0}
           m_MethodName: BeginDrag
           m_Mode: 1
           m_Arguments:
@@ -79794,7 +79741,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1672929936}
+        - m_Target: {fileID: 0}
           m_MethodName: EndDrag
           m_Mode: 1
           m_Arguments:
@@ -79807,18 +79754,6 @@ MonoBehaviour:
           m_CallState: 2
       m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
         Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
---- !u!114 &1672929936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1672929933}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e5a793f6d7ab1f4fa3c9c8d8c08065f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1672929937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82765,7 +82700,6 @@ GameObject:
   - component: {fileID: 1741231145}
   - component: {fileID: 1741231146}
   - component: {fileID: 1741231147}
-  - component: {fileID: 1741231148}
   - component: {fileID: 1741231149}
   - component: {fileID: 1741231150}
   - component: {fileID: 1741231151}
@@ -82844,18 +82778,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b87c4742e1a24f049a773c2eb9266dc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1741231148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1741231142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89003b5628d03314aaa13d2f1d642080, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1741231149
