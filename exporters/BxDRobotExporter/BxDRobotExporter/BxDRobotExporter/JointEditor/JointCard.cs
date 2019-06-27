@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Inventor;
+using EditorsLibrary;
 
 namespace BxDRobotExporter.JointEditor
 {
@@ -11,6 +11,7 @@ namespace BxDRobotExporter.JointEditor
         private readonly RigidNode_Base node;
 
         private bool isHighlighted;
+        private bool hasLoadedEditor;
 
         public JointCard(RigidNode_Base node, JointForm jointForm)
         {
@@ -36,7 +37,7 @@ namespace BxDRobotExporter.JointEditor
         public void LoadValuesRecursive()
         {
             LoadValues();
-            jointEditor.LoadValues();
+            hasLoadedEditor = false;
         }
 
         private void HighlightSelf()
@@ -49,10 +50,28 @@ namespace BxDRobotExporter.JointEditor
             jointForm.ResetAllHighlight();
             isHighlighted = true;
 
-            StandardAddInServer.Instance.SelectNode(node);
-            Camera cam = StandardAddInServer.Instance.MainApplication.ActiveView.Camera; // TODO: This should be done with a separate camera
-            pictureBox1.Image = AxHostConverter.PictureDispToImage(cam.CreateImage(pictureBox1.Width, pictureBox1.Height));
-            StandardAddInServer.Instance.SelectNode(node);
+            InventorUtils.FocusAndHighlightNode(node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+        }
+
+        public void LoadPreviewIcon()
+        {
+            var iconCamera = InventorManager.Instance.TransientObjects.CreateCamera();
+            iconCamera.SceneObject = StandardAddInServer.Instance.AsmDocument.ComponentDefinition;
+
+            const double zoom = 0.4; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+            const int widthConst = 3; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
+
+            var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> {node});
+            iconCamera.Fit();
+            iconCamera.GetExtents(out _, out var height);
+
+            InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
+
+
+            pictureBox1.Image = AxHostConverter.PictureDispToImage(
+                iconCamera.CreateImage(pictureBox1.Height * widthConst, pictureBox1.Height,
+                    StandardAddInServer.Instance.MainApplication.TransientObjects.CreateColor(210, 222, 239),
+                    StandardAddInServer.Instance.MainApplication.TransientObjects.CreateColor(175, 189, 209)));
         }
 
         public void ResetHighlight()
@@ -88,6 +107,25 @@ namespace BxDRobotExporter.JointEditor
         private void editButton_Click(object sender, EventArgs e)
         {
             ToggleCollapsed();
+            if (!hasLoadedEditor)
+            {
+                hasLoadedEditor = true;
+                jointEditor.SuspendLayout();
+                jointEditor.LoadValues();
+                jointEditor.ResumeLayout();
+            }
+        }
+
+        private void constraintsButton_Click(object sender, EventArgs e)
+        {
+            var limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
+            limitEditor.ShowDialog(ParentForm);
+        }
+
+        private void sensorsButton_Click(object sender, EventArgs e)
+        {
+            var listForm = new SensorListForm(node.GetSkeletalJoint());
+            listForm.ShowDialog(ParentForm);
         }
     }
 }

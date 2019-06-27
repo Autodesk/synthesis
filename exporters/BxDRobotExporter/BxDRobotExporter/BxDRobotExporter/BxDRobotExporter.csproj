@@ -135,6 +135,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InventorUtils.cs" />
     <Compile Include="JointEditor\AxHostConverter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -156,7 +157,7 @@
     <Compile Include="JointEditor\JointForm.Designer.cs">
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="JointEditor\WinFormsUtils.cs"/>
+    <Compile Include="JointEditor\WinFormsUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

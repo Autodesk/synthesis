@@ -52,7 +52,7 @@ namespace BxDRobotExporter
 
         public Inventor.Application MainApplication;
 
-        AssemblyDocument AsmDocument;
+        public AssemblyDocument AsmDocument;
         List<ComponentOccurrence> disabledAssemblyOccurences;
         Inventor.Environment ExporterEnv;
         bool EnvironmentEnabled = false;
@@ -81,7 +81,7 @@ namespace BxDRobotExporter
         ButtonDefinition ExportButton;
 
         //Highlighting
-        HighlightSet ChildHighlight;
+        public HighlightSet ChildHighlight;
         HighlightSet WheelHighlight;
 
         #endregion
@@ -217,7 +217,7 @@ namespace BxDRobotExporter
                 "Configure drivetrain wheels.", RobotMagicWandIconSmall, RobotMagicWandIconLarge);
             WheelAssignmentButton.OnExecute += BeginWizardExport_OnExecute;
             WheelAssignmentButton.OnHelp += _OnHelp;
-            DriveTrainPanel.CommandControls.AddButton(WheelAssignmentButton, true);
+//            DriveTrainPanel.CommandControls.AddButton(WheelAssignmentButton, true);
 
             DrivetrainWeightButton = ControlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
@@ -232,7 +232,7 @@ namespace BxDRobotExporter
                 NewJointIconLarge);
             CreateJointButton.OnExecute += delegate(NameValueMap context) { MessageBox.Show("New joint action not implemented!"); };
             CreateJointButton.OnHelp += _OnHelp;
-            JointPanel.CommandControls.AddButton(CreateJointButton, true);
+//            JointPanel.CommandControls.AddButton(CreateJointButton, true);
 
             EditJointButton = ControlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall,
@@ -346,7 +346,7 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += SelectNodes;
+            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
@@ -413,8 +413,6 @@ namespace BxDRobotExporter
             if (AsmDocument != null)
                 Marshal.ReleaseComObject(AsmDocument);
             AsmDocument = null;
-
-            ChildHighlight = null;
 
             EnvironmentEnabled = false;
         }
@@ -634,7 +632,6 @@ namespace BxDRobotExporter
                 return;
 
             Utilities.HideDockableWindows();
-            jointForm.LoadValuesRecursive();
             jointForm.ShowDialog();
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
@@ -692,58 +689,6 @@ namespace BxDRobotExporter
         #endregion
 
         #region RobotExportAPI Events
-
-        /// <summary>
-        /// Selects a list of nodes in Inventor.
-        /// </summary>
-        /// <param name="nodes">List of nodes to select.</param>
-        public void SelectNodes(List<RigidNode_Base> nodes)
-        {
-            ChildHighlight.Clear();
-
-            if (nodes == null)
-            {
-                return;
-            }
-
-            // Get all node ID's
-            List<string> nodeIDs = new List<string>();
-            ;
-            foreach (RigidNode_Base node in nodes)
-                nodeIDs.AddRange(node.GetModelID().Split(new String[] {"-_-"}, StringSplitOptions.RemoveEmptyEntries));
-
-            // Select all nodes
-            List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
-            foreach (string id in nodeIDs)
-            {
-                ComponentOccurrence occurrence = GetOccurrence(id);
-
-                if (occurrence != null)
-                {
-                    occurrences.Add(occurrence);
-                }
-            }
-
-            // Set camera view
-            ViewOccurrences(occurrences, 15, ViewDirection.Y);
-
-            // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            ChildHighlight.Clear();
-
-            foreach (var componentOccurrence in occurrences)
-            {
-                ChildHighlight.AddItem(componentOccurrence);
-            }
-        }
-
-        /// <summary>
-        /// Public method used to select a node.
-        /// </summary>
-        /// <param name="node">Node to select.</param>
-        public void SelectNode(RigidNode_Base node)
-        {
-            SelectNodes(new List<RigidNode_Base>() {node});
-        }
 
         /// <summary>
         /// Called when the user presses 'OK' in the settings menu
@@ -891,107 +836,6 @@ namespace BxDRobotExporter
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="ComponentOccurrence"/> of the specified name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public ComponentOccurrence GetOccurrence(string name)
-        {
-            foreach (ComponentOccurrence component in AsmDocument.ComponentDefinition.Occurrences)
-            {
-                if (component.Name == name)
-                    return component;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Sets the position and target of the camera.
-        /// </summary>
-        /// <param name="focus">Point that camera should look at.</param>
-        /// <param name="viewDistance">Distance the camera should be from that point</param>
-        /// <param name="viewDirection">Direction to view the point from.</param>
-        /// <param name="animate">True to animate movement of camera.</param>
-        public void SetCameraView(Vector focus, double viewDistance, ViewDirection viewDirection = ViewDirection.Y,
-            bool animate = true)
-        {
-            Camera cam = MainApplication.ActiveView.Camera;
-
-            Inventor.Point focusPoint = MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
-
-            cam.Fit(); // TODO: Determine model size properly
-            double width, height;
-            cam.GetExtents(out width, out height);
-            cam.SetExtents(width * 0.4, height * 0.4);
-
-            cam.Target = focusPoint;
-
-            // Flip view for negative direction
-            if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
-                viewDistance = -viewDistance;
-
-            Inventor.UnitVector up = null;
-
-            // Find camera position and upwards direction
-            if ((viewDirection & ViewDirection.X) == ViewDirection.X)
-            {
-                focus.X += viewDistance;
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
-            }
-
-            if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
-            {
-                focus.Y += viewDistance;
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
-            }
-
-            if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
-            {
-                focus.Z += viewDistance;
-                up = MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
-            }
-
-            cam.Eye = MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
-            cam.UpVector = up;
-
-            // Apply settings
-            if (animate)
-                cam.Apply();
-            else
-                cam.ApplyWithoutTransition();
-        }
-
-        /// <summary>
-        /// Moves the camera to the midpoint of all the specified occurrences. Used in the wizard to point out the specified occurence.
-        /// </summary>
-        /// <param name="occurrences">The <see cref="ComponentOccurrence"/>s for the <see cref="Camera"/> to focus on</param>
-        /// <param name="viewDistance">The distence from <paramref name="occurrence"/> that the camera will be</param>
-        /// <param name="viewDirection">The direction of the camera</param>
-        /// <param name="animate">True if you want to animate the camera moving to the new position</param>
-        public void ViewOccurrences(List<ComponentOccurrence> occurrences, double viewDistance,
-            ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
-        {
-            if (occurrences.Count < 1)
-                return;
-
-            double xSum = 0, ySum = 0, zSum = 0;
-            int i = 0;
-            foreach (ComponentOccurrence occurrence in occurrences)
-            {
-                xSum += occurrence.Transformation.Translation.X;
-                ySum += occurrence.Transformation.Translation.Y;
-                zSum += occurrence.Transformation.Translation.Z;
-
-                i++;
-            }
-
-            Vector translation = MainApplication.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
-
-            SetCameraView(translation, viewDistance, viewDirection, animate);
         }
 
         /// <summary>
