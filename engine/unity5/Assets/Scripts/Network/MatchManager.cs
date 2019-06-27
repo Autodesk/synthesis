@@ -121,15 +121,15 @@ namespace Synthesis.Network
             if (fieldGuid.Length > 0)
                 return;
 
-            string fieldFile = PlayerPrefs.GetString("simSelectedField") + "\\definition.bxdf";
+            string fieldFile = PlayerPrefs.GetString("simSelectedField") + "\\definition";
 
-            if (!File.Exists(fieldFile))
+            if (!File.Exists(fieldFile + ".bxdf") && !File.Exists(fieldFile + ".json"))
             {
                 CancelSync();
                 return;
             }
 
-            Task<FieldDefinition> loadingTask = new Task<FieldDefinition>(() => BXDFProperties.ReadProperties(fieldFile));
+            Task<FieldDefinition> loadingTask = new Task<FieldDefinition>(() => Utils.BXDExtensions.ReadFieldSafe(fieldFile));
 
             loadingTask.ContinueWith(t =>
             {

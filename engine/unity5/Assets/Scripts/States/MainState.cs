@@ -276,15 +276,19 @@ namespace Synthesis.States
                 return new UnityFieldDefinition(guid, name);
             };
 
-            if (!File.Exists(directory + "\\definition.bxdf"))
+            if (!File.Exists(directory + "\\definition.bxdf") && !File.Exists(directory + "\\definition.json"))
                 return false;
 
             FieldDataHandler.Load(fieldPath);
             Controls.Load();
 
-            string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
-            Debug.Log(loadResult);
+
+
+
+            fieldDefinition = (UnityFieldDefinition)Utils.BXDExtensions.ReadFieldSafe(directory + "\\definition");
+
+            
+            
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
         }

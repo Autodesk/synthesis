@@ -28,9 +28,12 @@ public class FieldDefinition
         private set;
     }
 
+    public BXDVector3 rotationOffset = new BXDVector3();
+
     /// <summary>
     /// The group containing each child node.
     /// </summary>
+    /// 
     public FieldNodeGroup NodeGroup
     {
         get;
@@ -40,23 +43,31 @@ public class FieldDefinition
     /// <summary>
     /// A dictionary containing each PropertySet and a string identifier.
     /// </summary>
-    private Dictionary<string, PropertySet> propertySets;
+    public Dictionary<string, PropertySet> propertySets;
 
     /// <summary>
     /// The mesh to be exported.
     /// </summary>
-    private BXDAMesh mesh;
+    public BXDAMesh mesh;
 
     /// <summary>
     /// Initailizes a new instance of the FieldDefinition class.
     /// </summary>
     /// <param name="guid"></param>
-    protected FieldDefinition(Guid guid, string name)
+    public FieldDefinition(Guid guid, string name)
     {
         GUID = guid;
         NodeGroup = new FieldNodeGroup(name);
         propertySets = new Dictionary<string, PropertySet>();
         mesh = new BXDAMesh(GUID);
+    }
+
+    public void SetTo(FieldDefinition source)
+    {
+        propertySets = source.propertySets;
+        NodeGroup = source.NodeGroup;
+        rotationOffset = source.rotationOffset;
+        GUID = source.GUID;
     }
 
     /// <summary>
@@ -87,6 +98,7 @@ public class FieldDefinition
     {
         mesh.meshes.Add(subMesh);
     }
+
 
     /// <summary>
     /// Used for adding a collision mesh and creating a collision mesh ID for the given node.
