@@ -4,6 +4,7 @@ using Synthesis.GUI.Scrollables;
 using Synthesis.MixAndMatch;
 using Synthesis.Utils;
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Synthesis.States
@@ -31,7 +32,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields"));
+            fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
             mixAndMatchModeScript = Auxiliary.FindGameObject("MixAndMatchModeScript");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
             fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectScrollable>();
@@ -65,10 +66,11 @@ namespace Synthesis.States
         {
             GameObject fieldList = GameObject.Find("SimLoadFieldList");
             string entry = (fieldList.GetComponent<SelectScrollable>().selectedEntry);
+            UserMessageManager.Dispatch(fieldDirectory, 20);
             if (entry != null)
             {
                 string simSelectedFieldName = fieldList.GetComponent<SelectScrollable>().selectedEntry;
-                string simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
+                string simSelectedField = fieldDirectory + Path.DirectorySeparatorChar + simSelectedFieldName + Path.DirectorySeparatorChar;
 
                 if (StateMachine.FindState<MixAndMatchState>() != null) //Starts the MixAndMatch scene
                 {

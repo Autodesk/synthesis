@@ -151,7 +151,7 @@ namespace Synthesis.Robot
             robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
-            if (!File.Exists(directory + "\\skeleton.bxdj") && !File.Exists(directory + "\\skeleton.json"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
                 return false;
 
             OnInitializeRobot();
@@ -160,7 +160,9 @@ namespace Synthesis.Robot
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new RigidNode(guid); };
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-            RootNode = BXDExtensions.ReadSkeletonSafe(directory + "/skeleton") as RigidNode;
+
+            RootNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode;
+
             RootNode.ListAllNodes(nodes);
             
 
@@ -331,7 +333,7 @@ namespace Synthesis.Robot
                 RigidNode node = (RigidNode)n;
                 node.CreateTransform(transform);
 
-                if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName))
+                if (!node.CreateMesh(RobotDirectory + Path.DirectorySeparatorChar + node.ModelFileName))
                     return false;
 
                 if (node.PhysicalProperties != null)
