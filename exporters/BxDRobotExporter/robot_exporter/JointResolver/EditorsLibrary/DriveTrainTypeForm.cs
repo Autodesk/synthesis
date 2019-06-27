@@ -71,7 +71,7 @@ namespace JointResolver.EditorsLibrary
                 selectedrb = rb;
             }
 
-            var selectedColor = Color.LightSalmon;
+            var selectedColor = Color.FromArgb(172, 204, 239);
             switch (selectedrb.Name)
             {
                 case "tankButton":

@@ -383,7 +383,7 @@ namespace BxDRobotExporter.JointEditor
             // 
             this.cmbDriveSide.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbDriveSide.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDriveSide.Enabled = false;
+            this.cmbDriveSide.Visible = false;
             this.cmbDriveSide.FormattingEnabled = true;
             this.cmbDriveSide.Items.AddRange(new object[] {
             "High",

@@ -31,9 +31,6 @@ namespace BxDRobotExporter.JointEditor
             this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.deleteButton = new System.Windows.Forms.Button();
-            this.editButton = new System.Windows.Forms.Button();
             this.jointName = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.wheelTypeValue = new System.Windows.Forms.Label();
@@ -44,14 +41,18 @@ namespace BxDRobotExporter.JointEditor
             this.jointTypeValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.editButton = new System.Windows.Forms.Button();
+            this.constraintsButton = new System.Windows.Forms.Button();
+            this.sensorsButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.jointEditor = new BxDRobotExporter.JointEditor.JointCardEditor();
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // DriverLayout
@@ -84,7 +85,7 @@ namespace BxDRobotExporter.JointEditor
             this.pictureBox1.Location = new System.Drawing.Point(4, 4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(125, 115);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
@@ -107,44 +108,6 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(423, 121);
             this.tableLayoutPanel1.TabIndex = 4;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.AutoSize = true;
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Controls.Add(this.deleteButton, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.editButton, 0, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 88);
-            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(423, 33);
-            this.tableLayoutPanel4.TabIndex = 4;
-            // 
-            // deleteButton
-            // 
-            this.deleteButton.Dock = System.Windows.Forms.DockStyle.Right;
-            this.deleteButton.Location = new System.Drawing.Point(280, 3);
-            this.deleteButton.Name = "deleteButton";
-            this.deleteButton.Size = new System.Drawing.Size(140, 27);
-            this.deleteButton.TabIndex = 3;
-            this.deleteButton.Text = "Delete";
-            this.deleteButton.UseVisualStyleBackColor = true;
-            // 
-            // editButton
-            // 
-            this.editButton.Dock = System.Windows.Forms.DockStyle.Left;
-            this.editButton.Location = new System.Drawing.Point(3, 3);
-            this.editButton.Name = "editButton";
-            this.editButton.Size = new System.Drawing.Size(140, 27);
-            this.editButton.TabIndex = 2;
-            this.editButton.Text = "Edit";
-            this.editButton.UseVisualStyleBackColor = true;
-            this.editButton.Click += new System.EventHandler(this.editButton_Click);
             // 
             // jointName
             // 
@@ -283,11 +246,63 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 326F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 325F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(532, 325);
             this.tableLayoutPanel5.TabIndex = 2;
             // 
-            // jointCardEditor
+            // editButton
+            // 
+            this.editButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.editButton.Location = new System.Drawing.Point(3, 3);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(120, 27);
+            this.editButton.TabIndex = 2;
+            this.editButton.Text = "Edit Joint";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            // 
+            // constraintsButton
+            // 
+            this.constraintsButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.constraintsButton.Location = new System.Drawing.Point(129, 3);
+            this.constraintsButton.Name = "constraintsButton";
+            this.constraintsButton.Size = new System.Drawing.Size(120, 27);
+            this.constraintsButton.TabIndex = 3;
+            this.constraintsButton.Text = "Edit Constraints";
+            this.constraintsButton.UseVisualStyleBackColor = true;
+            this.constraintsButton.Click += new System.EventHandler(this.constraintsButton_Click);
+            // 
+            // sensorsButton
+            // 
+            this.sensorsButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.sensorsButton.Location = new System.Drawing.Point(255, 3);
+            this.sensorsButton.Name = "sensorsButton";
+            this.sensorsButton.Size = new System.Drawing.Size(120, 27);
+            this.sensorsButton.TabIndex = 4;
+            this.sensorsButton.Text = "Edit Sensors";
+            this.sensorsButton.UseVisualStyleBackColor = true;
+            this.sensorsButton.Click += new System.EventHandler(this.sensorsButton_Click);
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.AutoSize = true;
+            this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.Controls.Add(this.sensorsButton, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.constraintsButton, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.editButton, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(45, 88);
+            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(378, 33);
+            this.tableLayoutPanel4.TabIndex = 4;
+            // 
+            // jointEditor
             // 
             this.jointEditor.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.jointEditor.AutoSize = true;
@@ -317,13 +332,13 @@ namespace BxDRobotExporter.JointEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -332,11 +347,7 @@ namespace BxDRobotExporter.JointEditor
         #endregion
         private System.Windows.Forms.TableLayoutPanel DriverLayout;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Button deleteButton;
-        private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.Label jointName;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label wheelTypeValue;
@@ -347,5 +358,10 @@ namespace BxDRobotExporter.JointEditor
         private System.Windows.Forms.Label jointTypeValue;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private JointCardEditor jointEditor;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Button sensorsButton;
+        private System.Windows.Forms.Button constraintsButton;
+        private System.Windows.Forms.Button editButton;
     }
 }

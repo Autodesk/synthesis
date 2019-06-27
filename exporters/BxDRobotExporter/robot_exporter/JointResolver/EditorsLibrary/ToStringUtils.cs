@@ -35,7 +35,7 @@ public static class ToStringUtils
 
     public static string DriverString(SkeletalJoint_Base joint)
     {
-        return joint.cDriver != null ? joint.cDriver.ToString() + (joint.cDriver.port1 > 2 ? "" : ", " + DriveTrainSideString(joint)) + " Drivetrain" : "No Driver";
+        return joint.cDriver != null ? joint.cDriver.ToString() + (joint.cDriver.port1 > 2 ? "" : ", " + DriveTrainSideString(joint) + " Drivetrain") : "No Driver";
     }
 
     public static string DriveTrainSideString(SkeletalJoint_Base joint)

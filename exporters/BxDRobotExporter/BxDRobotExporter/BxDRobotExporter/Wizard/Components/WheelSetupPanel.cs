@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
@@ -38,7 +32,7 @@ namespace BxDRobotExporter.Wizard
             this.MouseClick += delegate (object sender, MouseEventArgs e)
             {
                 if (this.Node != null)
-                    StandardAddInServer.Instance.SelectNode(this.Node);
+                    InventorUtils.FocusAndHighlightNode(this.Node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
             };
             
             BackColor = Color.White;
@@ -96,7 +90,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.SelectNode(Node);
+            InventorUtils.FocusAndHighlightNode(Node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
         }
 
         /// <summary>

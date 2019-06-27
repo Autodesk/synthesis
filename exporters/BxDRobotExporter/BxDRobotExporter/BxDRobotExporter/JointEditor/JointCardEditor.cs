@@ -47,7 +47,7 @@ namespace BxDRobotExporter.JointEditor
 
             // TODO: Per joint weight load and save
 
-            cmbDriveSide.Items.Clear();
+            cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");
             cmbDriveSide.Items.Add("Right");
             cmbDriveSide.Items.Add("Other");
@@ -330,8 +330,7 @@ namespace BxDRobotExporter.JointEditor
                     tabsMeta.TabPages.Add(metaBrake);
                     tabsMeta.TabPages.Add(metaMotorType);
                     chkBoxDriveWheel.Visible = !cType.HasTwoPorts();
-                    cmbDriveSide.Visible = !cType.HasTwoPorts();
-                    cmbDriveSide.Enabled = chkBoxDriveWheel.Checked;
+                    cmbDriveSide.Visible = !cType.HasTwoPorts() && chkBoxDriveWheel.Checked;
                     grpDriveOptions.Visible = !chkBoxDriveWheel.Checked;
 
                     rbCAN.Show();
@@ -368,11 +367,6 @@ namespace BxDRobotExporter.JointEditor
 
             // Set window size
             tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
-        }
-
-        private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e) // TODO: Settings saving and loading should be done in a dedicated class
-        {
-            UpdateLayout();
         }
 
         /// <summary>
@@ -546,20 +540,6 @@ namespace BxDRobotExporter.JointEditor
             }
         }
 
-        private void rbCAN_CheckedChanged(object sender, EventArgs e) // TODO: Delete method
-        {
-            if (rbCAN.Checked)
-            {
-                lblPort.Text = "CAN Port";
-            }
-            else
-            {
-                lblPort.Text = "PWM Port";
-            }
-
-            UpdateLayout();
-        }
-
         private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (RobotCompetitionDropDown.SelectedItem.ToString()) // TODO: Use some kind of motor definition file
@@ -614,10 +594,19 @@ namespace BxDRobotExporter.JointEditor
 
             MotorTypeDropDown.SelectedItem = "GENERIC";
         }
+        private void rbCAN_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateLayout();
+        }
 
         private void chkBoxDriveWheel_CheckedChanged(object sender, EventArgs e)
         {
-            cmbDriveSide.Enabled = chkBoxDriveWheel.Checked;
+            UpdateLayout();
+        }
+        
+        private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateLayout();
         }
     }
 }

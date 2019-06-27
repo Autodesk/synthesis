@@ -26,11 +26,17 @@ namespace BxDRobotExporter.JointEditor
             }
 
             ResumeLayout();
-        }
+            
+            Shown += (sender, args) => // First load
+            {
+                jointCards.ForEach(card => card.LoadPreviewIcon());
+            };
 
-        public void LoadValuesRecursive()
-        {
-            jointCards.ForEach(card => card.LoadValuesRecursive());
+            Activated += (sender, args) => // Every time the form is displayed
+            {
+                CollapseAllCards();
+                jointCards.ForEach(card => card.LoadValuesRecursive());
+            };
         }
 
         public void CollapseAllCards(JointCard besides = null)
