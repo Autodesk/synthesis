@@ -1,13 +1,6 @@
-﻿using Inventor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
+using Inventor;
 
 namespace EditorsLibrary
 {
@@ -222,6 +215,20 @@ namespace EditorsLibrary
                 }
         }
 
+        private void Linear_Current_textbox_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = Convert.ToDouble(Linear_Current_textbox.Text) * 2.54;
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = pos + " cm";
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = pos+1 + " cm";
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+        }
+        private void Angular_Current_textbox_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = Convert.ToDouble(Angular_Current_textbox.Value) * (Math.PI / 180);
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.StartValue = pos + " rad";
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.EndValue = pos+1 + " rad";
+            ((InventorSkeletalJoint)joint).GetWrapped().asmJointOccurrence.DriveSettings.GoToStart();
+        }
         private void Angular_Start_CheckedChanged(object sender, EventArgs e)
         {
                 if (this.Angular_Start.Checked)
