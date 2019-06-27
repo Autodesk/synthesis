@@ -25,7 +25,7 @@ namespace Synthesis.GUI.Scrollables
 
         void OnEnable()
         {
-            directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields"));
+            directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
             items = new List<string>();
             items.Clear();
         }
@@ -38,7 +38,7 @@ namespace Synthesis.GUI.Scrollables
                 string[] folders = System.IO.Directory.GetDirectories(directory);
                 foreach (string field in folders)
                 {
-                    if (File.Exists(field + "\\definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
+                    if (File.Exists(field + Path.DirectorySeparatorChar + "definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
                 }
                 if (items.Count > 0) selectedEntry = items[0];
             }
