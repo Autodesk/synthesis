@@ -289,10 +289,6 @@ namespace BxDRobotExporter
         {
             DriveTrainTypeForm driveTrainTypeForm = new DriveTrainTypeForm();
             driveTrainTypeForm.ShowDialog();
-            if (driveTrainTypeForm.DialogResult == DialogResult.OK)
-            {
-                SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainTypeForm.driveTrainType;
-            }
         }
 
         /// <summary>
