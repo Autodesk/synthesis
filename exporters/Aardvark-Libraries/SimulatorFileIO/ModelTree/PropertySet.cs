@@ -53,11 +53,7 @@ public struct PropertySet
         /// <summary>
         /// The scale of the BoxCollider.
         /// </summary>
-        public BXDVector3 Scale
-        {
-            get;
-            private set;
-        }
+        public BXDVector3 Scale;
 
         /// <summary>
         /// Initializes a new instance of the BoxCollider class.
@@ -74,11 +70,7 @@ public struct PropertySet
         /// <summary>
         /// The scale of the SphereCollider.
         /// </summary>
-        public float Scale
-        {
-            get;
-            private set;
-        }
+        public float Scale;
 
         /// <summary>
         /// Initializes a new instance of the SphereCollider class.
@@ -95,11 +87,7 @@ public struct PropertySet
         /// <summary>
         /// Determines whether or not the MeshCollider is convex.
         /// </summary>
-        public bool Convex
-        {
-            get;
-            private set;
-        }
+        public bool Convex;
 
         /// <summary>
         /// Initializes a new instance of the MeshCollider class.

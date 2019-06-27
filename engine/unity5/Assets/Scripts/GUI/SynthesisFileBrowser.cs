@@ -50,7 +50,7 @@ namespace Synthesis.GUI
                     //If directory contains field or robot files, display error message to user prompting them to select directory
                     //instead of the actual field
                     if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
-                                                                      || directorySelection.GetFiles("*.bxdj").Length != 0)
+                                                                      || directorySelection.GetFiles("*.bxdj").Length != 0 || directorySelection.GetFiles("*.json").Length != 0)
                     {
                         UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
                         directorySelection = directorySelection.Parent;
