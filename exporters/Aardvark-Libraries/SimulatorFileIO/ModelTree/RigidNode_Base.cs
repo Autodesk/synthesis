@@ -53,6 +53,7 @@ public class RigidNode_Base
     /// </summary>
     public string ModelFileName;
 
+
     /// <summary>
     /// The globally unique identifier.
     /// </summary>

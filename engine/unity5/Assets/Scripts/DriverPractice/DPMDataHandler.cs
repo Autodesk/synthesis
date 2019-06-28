@@ -27,7 +27,7 @@ namespace Synthesis.DriverPractice
             XElement robot = new XElement("RobotData", null); //parent
             robot.Add(DriverPracticeData());
             //save function - saves to active robot instead of SimSelectedRobot to support multiplayer
-            robot.Save(StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.FilePath + "\\" + "robot_data.xml");
+            robot.Save(StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.FilePath + Path.DirectorySeparatorChar + "robot_data.xml");
         }
         /// <summary>
         /// Get Driver Practice "Mode" Data as an XElement - Split into Red and Blue Goals
@@ -64,10 +64,10 @@ namespace Synthesis.DriverPractice
         /// <param name="fieldPath">location to robot folder passed upon robot load</param>
         public static void Load(string filePath)
         {
-            if (File.Exists(filePath + "\\" + "robot_data.xml"))
+            if (File.Exists(filePath + Path.DirectorySeparatorChar + "robot_data.xml"))
             {
 
-                file = XDocument.Load(filePath + "\\" + "robot_data.xml");
+                file = XDocument.Load(filePath + Path.DirectorySeparatorChar + "robot_data.xml");
                 dpmodes = getDriverPractice();
             }
             else WriteRobot(); //creates dummy file w/ basic values ex: intake/release node = node_0.bxda

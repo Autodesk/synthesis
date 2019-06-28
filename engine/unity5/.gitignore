@@ -76,6 +76,7 @@ build/
 *.pidb
 *.log
 *.scc
+!SimulatorAPI.dll
 
 # Visual C++ cache files
 ipch/

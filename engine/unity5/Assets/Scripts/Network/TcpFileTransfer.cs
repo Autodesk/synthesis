@@ -175,7 +175,7 @@ namespace Synthesis.Network
 
             string fileName = reader.ReadString();
 
-            using (FileStream file = File.Create(saveDirectory + "\\" + fileName))
+            using (FileStream file = File.Create(saveDirectory + Path.DirectorySeparatorChar + fileName))
             {
                 while (true)
                 {
