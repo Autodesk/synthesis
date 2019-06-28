@@ -63,17 +63,19 @@ namespace BxDRobotExporter.JointEditor
             this.DefinePartsLayout.Padding = new System.Windows.Forms.Padding(20);
             this.DefinePartsLayout.RowCount = 1;
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DefinePartsLayout.Size = new System.Drawing.Size(682, 621);
+            this.DefinePartsLayout.Size = new System.Drawing.Size(682, 953);
             this.DefinePartsLayout.TabIndex = 3;
             // 
             // JointForm
             // 
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ClientSize = new System.Drawing.Size(682, 621);
+            this.ClientSize = new System.Drawing.Size(682, 953);
             this.Controls.Add(this.DefinePartsLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(840, 1500);
-            this.MinimumSize = new System.Drawing.Size(642, 300);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(700, 1000);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(700, 1000);
             this.Name = "JointForm";
             this.Text = "Joint Editor";
             this.DefinePartsLayout.ResumeLayout(false);

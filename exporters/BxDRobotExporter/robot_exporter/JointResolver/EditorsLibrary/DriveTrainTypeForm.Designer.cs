@@ -37,16 +37,16 @@
             this.hdriveOption = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.tankLabel = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tankOption = new System.Windows.Forms.TableLayoutPanel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.tankLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.customOption.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.hdriveOption.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tankOption.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -167,31 +167,6 @@
             this.label2.Text = "H-Drive";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // tankLabel
-            // 
-            this.tankLabel.AutoSize = true;
-            this.tankLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tankLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tankLabel.Location = new System.Drawing.Point(11, 154);
-            this.tankLabel.Name = "tankLabel";
-            this.tankLabel.Size = new System.Drawing.Size(121, 20);
-            this.tankLabel.TabIndex = 7;
-            this.tankLabel.Text = "Tank Drive";
-            this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.Image = global::JointResolver.Properties.Resources.LoadAnimation;
-            this.pictureBox1.InitialImage = global::JointResolver.Properties.Resources.LoadAnimation;
-            this.pictureBox1.Location = new System.Drawing.Point(14, 15);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(115, 131);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 6;
-            this.pictureBox1.TabStop = false;
-            // 
             // tankOption
             // 
             this.tankOption.BackColor = System.Drawing.SystemColors.Control;
@@ -210,6 +185,31 @@
             this.tankOption.Size = new System.Drawing.Size(143, 182);
             this.tankOption.TabIndex = 10;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox1.Image = global::JointResolver.Properties.Resources.LoadAnimation;
+            this.pictureBox1.InitialImage = global::JointResolver.Properties.Resources.LoadAnimation;
+            this.pictureBox1.Location = new System.Drawing.Point(14, 15);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(115, 131);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 6;
+            this.pictureBox1.TabStop = false;
+            // 
+            // tankLabel
+            // 
+            this.tankLabel.AutoSize = true;
+            this.tankLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tankLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tankLabel.Location = new System.Drawing.Point(11, 154);
+            this.tankLabel.Name = "tankLabel";
+            this.tankLabel.Size = new System.Drawing.Size(121, 20);
+            this.tankLabel.TabIndex = 7;
+            this.tankLabel.Text = "Tank Drive";
+            this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // DriveTrainTypeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -220,6 +220,8 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "DriveTrainTypeForm";
             this.Text = "Drive Train Type Selection";
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -229,9 +231,9 @@
             this.hdriveOption.ResumeLayout(false);
             this.hdriveOption.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tankOption.ResumeLayout(false);
             this.tankOption.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
