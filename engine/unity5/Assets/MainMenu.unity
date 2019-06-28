@@ -1133,7 +1133,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0000019073, y: 199}
+  m_AnchoredPosition: {x: 0.0000019073, y: 123}
   m_SizeDelta: {x: 943, y: 197}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &160961371
@@ -2234,7 +2234,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &280238516
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13403,7 +13403,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -20}
+  m_AnchoredPosition: {x: 0, y: -154}
   m_SizeDelta: {x: 943, y: 197}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1703412565
@@ -15457,6 +15457,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 473622768083658846, guid: 80adc8a8abc2a074aa89ed52e40af9c0,
+        type: 3}
+      propertyPath: m_Name
+      value: AnalyticsManager
+      objectReference: {fileID: 0}
     - target: {fileID: 473622768083658844, guid: 80adc8a8abc2a074aa89ed52e40af9c0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15511,11 +15516,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 473622768083658846, guid: 80adc8a8abc2a074aa89ed52e40af9c0,
-        type: 3}
-      propertyPath: m_Name
-      value: AnalyticsManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80adc8a8abc2a074aa89ed52e40af9c0, type: 3}
