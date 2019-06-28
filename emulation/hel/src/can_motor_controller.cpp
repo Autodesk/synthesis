@@ -74,7 +74,7 @@ namespace hel{
 //#undef COPY
         }
 
-        void CANMotorController::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA)noexcept{
+        void CANMotorController::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
             assert(DATA.size() == MessageData::SIZE);
 
             uint8_t command_byte = DATA[MessageData::COMMAND_BYTE];
@@ -95,12 +95,14 @@ namespace hel{
                      i != SendCommandByteMask::INVERT &&
                      checkBitHigh(command_byte,i)
                 ){
-                    std::cerr<<"Synthesis warning: Unsupported feature: Writing to CAN motor controller ("<<asString(getType()) <<" with ID "<<((unsigned)getID())<<") using unknown command data byte "<<((unsigned)command_byte)<<" (bit "<<i<<")\n";
+                  warnUnsupportedFeature("Writing to CAN motor controller (" + asString(getType()) + " with ID " + std::to_string((unsigned)getID()) + ") using unknown command data byte " + std::to_string((unsigned)command_byte) + " (bit " + std::to_string(i) + ")\n");
                 }
             }
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/)noexcept{
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/){
+          // if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
+          // }
             return {}; // TODO
         }
     }
@@ -112,17 +114,48 @@ namespace hel{
             assert(getType() == CANMessageID::Type::SPARK_MAX);
         }
 
-    CANMotorController::CANMotorController(const CANMotorController& source)noexcept: CANMotorControllerBase(source){
+        CANMotorController::CANMotorController(const CANMotorController& source)noexcept: CANMotorControllerBase(source){
 //#define COPY(NAME) NAME = source.NAME
 //#undef COPY
         }
 
-    void CANMotorController::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& /*DATA*/)noexcept{
-            setPercentOutput(0); // TODO
+        void CANMotorController::parseCANPacket(const int32_t& API_ID, const std::vector<uint8_t>& /*DATA*/){
+            switch(API_ID){
+            case CommandAPIID::HEARTBEAT:
+                break;
+            default:
+                ; // throw UnhandledEnumConstantException("REV Robotics Spark MAX API ID " + std::to_string(API_ID));
+            }
+
+            // setPercentOutput(0); // TODO
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/)noexcept{
-            return {}; // TODO
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID){
+            std::vector<uint8_t> data;
+            switch(API_ID){
+            case CommandAPIID::FIRMWARE:
+                {
+                    uint32_t x = MIN_FIRMWARE_VERSION;
+                    // Place each byte of firmware version into data vector in order
+                    for(unsigned i = 0; i < 32; i += 8){
+                        data.insert(data.begin(), x & 0xFF);
+                        x >>= 8;
+                    }
+                    data.push_back((uint8_t)USE_FIRMWARE_DEBUG_BUILD);
+                    data.push_back((uint8_t)HARDWARE_REVISION);
+                    break;
+                }
+            default:
+                throw UnhandledEnumConstantException("REV Robotics Spark MAX API ID " + std::to_string(API_ID));
+            }
+
+            // printf("\nSENDING:[");
+            // for(const auto& a: data){
+            //     printf("%d, ", (int)a);
+            // }
+            // printf("]\n\n");
+
+            return data;
         }
     }
 }

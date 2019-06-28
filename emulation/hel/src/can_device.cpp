@@ -4,6 +4,13 @@
 
 namespace hel{
 
+    std::string CANMessageID::toString()const{
+        std::string s;
+        s += asString(manufacturer) + " " + asString(type);
+        s += " (ID " + std::to_string(id) + ", API ID " + std::to_string(api_id) + ")";
+        return s;
+    }
+
     std::string asString(CANMessageID::Type type){
         switch(type){
         case CANMessageID::Type::TALON_SRX:

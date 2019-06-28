@@ -22,9 +22,9 @@ namespace hel{
 
         std::string toString()const;
 
-        void parseCANPacket(const int32_t&, const std::vector<uint8_t>&)noexcept;
+        void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
-        std::vector<uint8_t> generateCANPacket(const int32_t&)noexcept;
+        std::vector<uint8_t> generateCANPacket(const int32_t&);
 
         /**
          * Constructor for PDP
