@@ -108,6 +108,14 @@ namespace Synthesis.GUI
 
             if (UIStateMachine.CurrentState == null)
             {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Multiplater,
+                    AnalyticsLedger.TimingVarible.Customizing,
+                    AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu);
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerMenu,
+                    AnalyticsLedger.EventAction.BackedOut,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
                 SceneManager.LoadScene("MainMenu");
             }

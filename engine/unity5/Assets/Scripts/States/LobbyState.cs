@@ -150,6 +150,14 @@ namespace Synthesis.States
         /// </summary>
         public void OnStartButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Multiplater,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu);
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerSimulator,
+                AnalyticsLedger.EventAction.Start,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             MatchManager.Instance.syncing = true;
             MatchManager.Instance.AwaitPushState<FetchingMetadataState>();
         }
