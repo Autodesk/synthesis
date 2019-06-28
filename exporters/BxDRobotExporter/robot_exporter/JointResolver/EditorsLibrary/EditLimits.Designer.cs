@@ -396,7 +396,6 @@ namespace EditorsLibrary
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditLimits";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Limits";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.Angular_Group_Box.ResumeLayout(false);
