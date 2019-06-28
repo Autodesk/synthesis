@@ -4,30 +4,48 @@ using UnityEngine;
 
 public class AnalyticsLedger
 {
+
+    public static int getMilliseconds()
+    {
+        return (int)(Time.unscaledTime * 1000);
+    }
+
     public class EventCatagory {
         public const string
-            Location = "location";
+            MainSimMenu = "simMenu",
+            MixAndMatchMenu = "mixMenu",
+            SettingsMenu = "settingsMenu",
+            MultiplayerMenu = "multiplayerMenu",
+            MainSimulator = "mainSimulator",
+            MixAndMatchSimulator = "mixSimulator",
+            MultiplayerSimulator = "multiplayerSimulator";
     }
 
     public class EventAction
     {
         public const string
-            StartSimulator = "startSim",
-            StartMixAndMatch = "startMix",
-            TutorialRequest = "requestedTutorial";
+            Start = "start",
+            TutorialRequest = "requestedTutorial",
+            Saved = "saved",
+            BackedOut = "backedOut",
+            Continued = "continued";
     }
 
     public class PageView
     {
         public const string
             MainSimMenu = "simMenu",
-            MixAndMatchMenu = "mixMenu";
+            MixAndMatchMenu = "mixMenu",
+            MultiplayerMenu = "multiplayerMenu",
+            MainSimulator = "mainSimulator",
+            MixAndMatchSimulator = "mixSimulator",
+            MultiplayerSimulator = "multiplayerSimulator";
     }
 
     public class TimingCatagory
     {
         public const string
-            MainSim = "mainSim",
+            Main = "main",
             MixMatch = "mixAndMatch",
             Multiplater = "multiplayer";
     }
