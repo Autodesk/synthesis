@@ -120,9 +120,9 @@ namespace hel{
                 GET_POWER_PERCENT = 0b1010000000000
             };
 
-            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&)noexcept;
+            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
-            std::vector<uint8_t> generateCANPacket(const int32_t&)noexcept;
+            std::vector<uint8_t> generateCANPacket(const int32_t&);
 
             /**
              * Constructor for CANMotorController
@@ -148,9 +148,22 @@ namespace hel{
 
     namespace rev{
         struct CANMotorController: public CANMotorControllerBase{
-            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&)noexcept;
+            // Firmware version can packet strucute: Major | Minor | Build 2 | Build 1 | Debug | Hardware Revision - REV swaps Build 2 and build 1 bytes when determining build version
+            static constexpr uint32_t MIN_FIRMWARE_VERSION = 0x0101001C;
+            static constexpr bool USE_FIRMWARE_DEBUG_BUILD = false;
+            static constexpr uint8_t HARDWARE_REVISION = 0x00;
 
-            std::vector<uint8_t> generateCANPacket(const int32_t&)noexcept;
+            enum CommandAPIID: int32_t{
+                HEARTBEAT = 0x092,
+                FIRMWARE  = 0x098
+            };
+
+        private:
+
+        public:
+            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
+
+            std::vector<uint8_t> generateCANPacket(const int32_t&);
 
             /**
              * Constructor for CANMotorController

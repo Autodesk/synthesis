@@ -8,12 +8,12 @@ namespace hel{
         return s;
     }
 
-    void PCM::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA)noexcept{
+    void PCM::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
         assert(DATA.size() == MessageData::SIZE);
         setSolenoids(DATA[MessageData::SOLENOIDS]);
     }
 
-    std::vector<uint8_t> PCM::generateCANPacket(const int32_t& /*API_ID*/)noexcept{
+    std::vector<uint8_t> PCM::generateCANPacket(const int32_t& /*API_ID*/){
         return {};
     }
 

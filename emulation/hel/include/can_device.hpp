@@ -54,6 +54,8 @@ namespace hel{
 
         static uint32_t generate(Type, Manufacturer, int32_t, uint8_t)noexcept;
 
+      std::string toString()const;
+
         Type getType()const noexcept;
 
         Manufacturer getManufacturer()const noexcept;
@@ -96,9 +98,9 @@ namespace hel{
 
         uint8_t getID()const noexcept;
 
-        virtual void parseCANPacket(const int32_t&, const std::vector<uint8_t>&)noexcept = 0;
+        virtual void parseCANPacket(const int32_t&, const std::vector<uint8_t>&) = 0;
 
-        virtual std::vector<uint8_t> generateCANPacket(const int32_t&)noexcept = 0;
+        virtual std::vector<uint8_t> generateCANPacket(const int32_t&) = 0;
 
         CANDevice()noexcept;
 

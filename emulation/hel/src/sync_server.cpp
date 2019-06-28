@@ -27,7 +27,7 @@ namespace hel {
                     try {
                         asio::write(socket, asio::buffer(data), asio::transfer_all());
                     } catch(std::system_error&){
-                        std::cerr << "Synthesis warning: Sender socket disconnected. User code will continue to run.\n";
+                        warn("Sender socket disconnected. User code will continue to run.");
                         break;
                     }
                 } else {
