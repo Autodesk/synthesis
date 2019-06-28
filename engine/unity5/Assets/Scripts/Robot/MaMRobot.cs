@@ -28,7 +28,7 @@ namespace Synthesis.Robot
         public bool RobotHasManipulator { get; set; }
         
 
-        private RigidNode_Base manipulatorNode;
+        private RigidNode manipulatorNode;
 
         private string wheelPath;
 
@@ -57,14 +57,16 @@ namespace Synthesis.Robot
 
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
-            manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
+            
+            manipulatorNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode ;
+            
             manipulatorNode.ListAllNodes(nodes);
 
             //Load node_0 for attaching manipulator to robot
             RigidNode node = (RigidNode)nodes[0];
 
             node.CreateTransform(ManipulatorObject.transform);
-            if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+            if (!node.CreateMesh(directory + Path.DirectorySeparatorChar + node.ModelFileName))
             {
                 Destroy(ManipulatorObject);
                 return false;
@@ -79,7 +81,7 @@ namespace Synthesis.Robot
                 RigidNode otherNode = (RigidNode)nodes[i];
                 otherNode.CreateTransform(ManipulatorObject.transform);
 
-                if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
+                if (!otherNode.CreateMesh(directory + Path.DirectorySeparatorChar + otherNode.ModelFileName))
                 {
                     Destroy(ManipulatorObject);
                     return false;
@@ -147,7 +149,7 @@ namespace Synthesis.Robot
 
             try
             {
-                using (TextReader reader = File.OpenText(RobotDirectory + "\\position.txt"))
+                using (TextReader reader = File.OpenText(RobotDirectory + Path.DirectorySeparatorChar + "position.txt"))
                 {
                     manipulatorOffset.x = float.Parse(reader.ReadLine());
                     manipulatorOffset.y = float.Parse(reader.ReadLine());
@@ -177,7 +179,7 @@ namespace Synthesis.Robot
             RigidNode node = (RigidNode)nodes[0];
             node.CreateTransform(transform);
 
-            if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
+            if (!node.CreateMesh(RobotDirectory + Path.DirectorySeparatorChar + node.ModelFileName, true, wheelMass))
                 return false;
 
             node.CreateJoint(this);
@@ -190,12 +192,12 @@ namespace Synthesis.Robot
 
             //Get the wheel mesh data from the file they are stored in. They are stored as .bxda files. This may need to update if exporters/file types change.
             BXDAMesh mesh = new BXDAMesh();
-            mesh.ReadFromFile(wheelPath + "\\node_0.bxda");
+            mesh.ReadFromFile(wheelPath + Path.DirectorySeparatorChar + "node_0.bxda");
 
             List<Mesh> meshList = new List<Mesh>();
             List<Material[]> materialList = new List<Material[]>();
 
-            RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelPath + "\\skeleton.bxdj");
+            RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelPath + Path.DirectorySeparatorChar + "skeleton.bxdj");
 
             Material[] materials = new Material[0];
             Auxiliary.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
@@ -216,7 +218,7 @@ namespace Synthesis.Robot
                 node = (RigidNode)nodes[i];
                 node.CreateTransform(transform);
 
-                if (!node.CreateMesh(RobotDirectory + "\\" + node.ModelFileName, true, wheelMass))
+                if (!node.CreateMesh(RobotDirectory + Path.DirectorySeparatorChar + node.ModelFileName, true, wheelMass))
                     return false;
 
                 //If the node is a wheel, destroy the original wheel mesh and replace it with the wheels selected in MaM

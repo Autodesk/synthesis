@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using Synthesis.Utils;
 namespace Synthesis.Network
 {
     [NetworkSettings(channel = 0, sendInterval = 0f)]
@@ -159,7 +159,7 @@ namespace Synthesis.Network
             if (robotGuid.Length > 0)
                 return;
 
-            string robotFile = PlayerPrefs.GetString("simSelectedRobot") + "\\skeleton.bxdj";
+            string robotFile = PlayerPrefs.GetString("simSelectedRobot") + Path.DirectorySeparatorChar + "skeleton";
 
             if (!File.Exists(robotFile))
             {
@@ -167,7 +167,7 @@ namespace Synthesis.Network
                 return;
             }
 
-            Task<RigidNode_Base> loadingTask = new Task<RigidNode_Base>(() => BXDJSkeleton.ReadSkeleton(robotFile));
+            Task<RigidNode_Base> loadingTask = new Task<RigidNode_Base>(() =>  BXDExtensions.ReadSkeletonSafe(robotFile));
 
             loadingTask.ContinueWith(t =>
             {
@@ -212,7 +212,7 @@ namespace Synthesis.Network
 
                 foreach (string dir in Directory.GetDirectories(robotsDirectory, otherIdentity.robotName))
                 {
-                    RigidNode_Base root = BXDJSkeleton.ReadSkeleton(dir + "\\skeleton.bxdj");
+                    RigidNode_Base root = BXDJSkeleton.ReadSkeleton(dir + Path.DirectorySeparatorChar + "skeleton");
 
                     if (root.GUID.ToString().Equals(otherIdentity.robotGuid))
                     {
@@ -224,7 +224,7 @@ namespace Synthesis.Network
                 if (otherIdentity.RobotFolder.Length == 0)
                 {
                     unresolvedDependencies.Add(otherIdentity.id);
-                    otherIdentity.RobotFolder = robotsDirectory + "\\" + otherIdentity.robotName;
+                    otherIdentity.RobotFolder = robotsDirectory + Path.DirectorySeparatorChar + otherIdentity.robotName;
                 }
             }
 
@@ -233,7 +233,7 @@ namespace Synthesis.Network
             
             foreach (string dir in Directory.GetDirectories(fieldsDirectory, MatchManager.Instance.FieldName))
             {
-                FieldDefinition definition = BXDFProperties.ReadProperties(dir + "\\definition.bxdf");
+                FieldDefinition definition = BXDFProperties.ReadProperties(dir + Path.DirectorySeparatorChar + "definition.bxdf");
 
                 if (definition.GUID.ToString().Equals(MatchManager.Instance.FieldGuid))
                 {
@@ -245,7 +245,7 @@ namespace Synthesis.Network
             if (MatchManager.Instance.FieldFolder.Length == 0)
             {
                 unresolvedDependencies.Add(-1);
-                MatchManager.Instance.FieldFolder = fieldsDirectory + "\\" + MatchManager.Instance.FieldName;
+                MatchManager.Instance.FieldFolder = fieldsDirectory + Path.DirectorySeparatorChar + MatchManager.Instance.FieldName;
             }
 
             CmdAddDependencies(unresolvedDependencies.ToArray());
@@ -277,7 +277,7 @@ namespace Synthesis.Network
 
             int port = FileTransferBasePort + id;
 
-            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + "\\" + robotName,
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + robotName,
                 OnServerFileReceived);
 
             TargetTransferResources(connectionToClient, port);
@@ -342,7 +342,7 @@ namespace Synthesis.Network
         [TargetRpc]
         public void TargetReceiveFiles(NetworkConnection target, int port, string playerPrefsDirectory, string folderName)
         {
-            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString(playerPrefsDirectory) + "\\" + folderName,
+            TcpFileTransfer.ReceiveFiles(port, PlayerPrefs.GetString(playerPrefsDirectory) + Path.DirectorySeparatorChar + folderName,
                 OnClientFileReceived);
         }
 
