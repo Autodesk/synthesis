@@ -143,6 +143,29 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InventorUtils.cs" />
+    <Compile Include="JointEditor\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCard.Designer.cs">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\JointCardEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCardEditor.Designer.cs">
+      <DependentUpon>JointCardEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\JointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointForm.Designer.cs">
+      <DependentUpon>JointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\WinFormsUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -234,6 +257,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointCard.resx">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointCardEditor.resx">
+      <DependentUpon>JointCardEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointForm.resx">
+      <DependentUpon>JointForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -336,7 +368,6 @@
       <Name>RobotExportAPI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
