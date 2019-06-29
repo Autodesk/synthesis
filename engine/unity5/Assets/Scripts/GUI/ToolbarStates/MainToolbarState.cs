@@ -152,10 +152,12 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnResetRobotButtonClicked()
         {
-            MultiplayerState multiplayerState = StateMachine.SceneGlobal.CurrentState as MultiplayerState;
+            //MultiplayerState multiplayerState = StateMachine.SceneGlobal.CurrentState as MultiplayerState;
 
-            if (multiplayerState != null)
-                multiplayerState.ActiveRobot.CmdResetRobot();
+            //if (multiplayerState != null)
+            //    multiplayerState.ActiveRobot.CmdResetRobot();
+
+            State.ActiveRobot.ResetRobotOrientation();
         }
 
         /// <summary>
