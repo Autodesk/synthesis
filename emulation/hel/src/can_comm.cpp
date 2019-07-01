@@ -1,7 +1,9 @@
 #include "roborio_manager.hpp"
 #include "util.hpp"
 
-// #include <iostream> // TODO delete
+#include "FRC_NetworkCommunication/CANSessionMux.h"
+
+#include <iostream> // TODO delete
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -47,7 +49,7 @@ namespace hel{
             instance.second.unlock();
         }
 
-        void receiveMessage(const CANMessageID& message_id){
+      std::vector<uint8_t> receiveMessage(const CANMessageID& message_id){
             auto instance = hel::RoboRIOManager::getInstance();
 
             switch(message_id.getType()){
@@ -67,6 +69,7 @@ namespace hel{
                 break;
             }
             instance.second.unlock();
+            return {};
         }
     }
 
@@ -124,10 +127,14 @@ namespace hel{
 
 extern "C"{
 
-    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
-        if(messageID == hel::SILENT_UNKNOWN_DEVICE_ID){
-            return;
-        }
+    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
+        // if(messageID == hel::SILENT_UNKNOWN_DEVICE_ID){ // TODO figure out what this is
+        //     return;
+        // }
+
+      if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
+        hel::warnUnsupportedFeature("CANSessionMux repeating message not yet repeated (periodMs: " + std::to_string(periodMs) + ")");
+      }
 
         hel::CANMessageID message_id = hel::CANMessageID::parse(messageID);
 
@@ -138,7 +145,7 @@ extern "C"{
             std::copy(data, data + dataSize, std::back_inserter(data_v));
         }
 
-        // std::cout << "Sending   " << messageID << " = "<< message_id.toString() << " ["; // TODO delete
+        // std::cout << "Sending   " << message_id.toString() << " ["; // TODO delete
         // for(unsigned i = 0; i < data_v.size(); i++){
         //   std::cout << (int)data_v[i];
         //   if(i < (data_v.size() - 1)){
@@ -160,19 +167,19 @@ extern "C"{
         }
     }
 
-    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
-        if(messageID != nullptr && *messageID == hel::SILENT_UNKNOWN_DEVICE_ID){
-            return;
-        }
+    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* status){
+        // if(messageID != nullptr && *messageID == hel::SILENT_UNKNOWN_DEVICE_ID){
+        //     return;
+        // }
 
-        hel::CANMessageID message_id = hel::CANMessageID::parse(*messageID);
+        hel::CANMessageID message_id = hel::CANMessageID::parse(*messageID & messageIDMask);
         std::vector<uint8_t> data_v;
 
         // std::cout << "Receiving " << message_id.toString() << "\n"; // TODO delete
 
         switch(message_id.getManufacturer()){
         case hel::CANMessageID::Manufacturer::CTRE:
-            hel::ctre::receiveMessage(message_id);
+            data_v = hel::ctre::receiveMessage(message_id);
             break;
         case hel::CANMessageID::Manufacturer::REV:
             data_v = hel::rev::receiveMessage(message_id);
@@ -184,7 +191,7 @@ extern "C"{
 
         std::copy(data_v.begin(), data_v.end(), data);
         *dataSize = data_v.size();
-        *timeStamp = hel::Global::getCurrentTime() / 1000;
+        *timeStamp = hel::Global::getCurrentTime() / 1000; // Milliseconds
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){
