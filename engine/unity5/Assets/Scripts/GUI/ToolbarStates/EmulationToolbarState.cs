@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace Assets.Scripts.GUI
 {
@@ -19,11 +20,14 @@ namespace Assets.Scripts.GUI
     /// </summary>
     public class EmulationToolbarState : State
     {
+        public static bool exiting = false;
+
         EmulationDriverStation emulationDriverStation;
 
         GameObject canvas;
         GameObject tabs;
         GameObject emulationToolbar;
+        GameObject loadingPanel = null;
 
         GameObject helpMenu;
         GameObject overlay;
@@ -36,6 +40,7 @@ namespace Assets.Scripts.GUI
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
+            loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
 
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
@@ -44,6 +49,8 @@ namespace Assets.Scripts.GUI
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
+
+            EditorApplication.wantsToQuit += BoutaQuit;
         }
 
         /// <summary>
@@ -51,6 +58,8 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
+            LoadCode();
+            /*loadingPanel.SetActive(true);
 
             string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
             if (selectedFiles.Length != 1)
@@ -68,8 +77,63 @@ namespace Assets.Scripts.GUI
                 {
                     SSHClient.SCPFileSender(userProgram);
                 }
+
+                
             }
-            { }
+            loadingPanel.SetActive(false);
+            { }*/
+        }
+
+        public async void LoadCode()
+        {
+            bool good = false;
+            SSHClient.UserProgram _userProgram = null;
+            try
+            {
+                Task Check = Task.Factory.StartNew(() =>
+                {
+                    string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
+                    if (selectedFiles.Length != 1)
+                    {
+                        UnityEngine.Debug.Log("No files selected for robot code upload");
+                    }
+                    else
+                    {
+                        SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
+                        if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                    {
+                            emulationDriverStation.ShowJavaNotSupportedPopUp();
+                        }
+                        else
+                        {
+                            good = true;
+                            _userProgram = userProgram;
+                        }
+                    }
+                });
+                await Check;
+                while (!Check.IsCompleted) { if (exiting) Check.Dispose(); }
+            } catch (Exception e)
+            {
+                UnityEngine.Debug.Log(e.StackTrace);
+            }
+            if (good)
+            {
+                loadingPanel.SetActive(true);
+                try
+                {
+                    Task Upload = Task.Factory.StartNew(() =>
+                    {
+                        SSHClient.SCPFileSender(_userProgram);
+                    });
+                    await Upload;
+                    while (!Upload.IsCompleted) { if (exiting) Upload.Dispose(); }
+                } catch (Exception e)
+                {
+                    UnityEngine.Debug.Log(e.StackTrace);
+                }
+                loadingPanel.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -129,5 +193,12 @@ namespace Assets.Scripts.GUI
             }
         }
         #endregion
+
+        bool BoutaQuit()
+        {
+            exiting = true;
+            return true;
+        }
+
     }
 }
