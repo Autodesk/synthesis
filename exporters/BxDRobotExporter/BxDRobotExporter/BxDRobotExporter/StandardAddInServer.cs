@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.JointEditor;
+using BxDRobotExporter.Messages;
 using EditorsLibrary;
 using Inventor;
 using JointResolver.EditorsLibrary;
@@ -502,6 +503,13 @@ namespace BxDRobotExporter
                         Utilities.ShowDockableWindows();
                         HiddenExporter = false;
                     }
+                }
+            } else if (BeforeOrAfter == EventTimingEnum.kAfter)
+            {
+                if (Properties.Settings.Default.ShowFirstLaunchInfo)
+                {
+                    var firstLaunchInfo = new FirstLaunchInfo();
+                    firstLaunchInfo.ShowDialog();
                 }
             }
 
