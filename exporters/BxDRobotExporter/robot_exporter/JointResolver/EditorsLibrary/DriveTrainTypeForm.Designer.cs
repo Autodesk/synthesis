@@ -40,6 +40,7 @@
             this.tankOption = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tankLabel = new System.Windows.Forms.Label();
+            this.btnApply = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.customOption.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -210,12 +211,24 @@
             this.tankLabel.Text = "Tank Drive";
             this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // btnApply
+            // 
+            this.btnApply.Location = new System.Drawing.Point(337, 234);
+            this.btnApply.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.Size = new System.Drawing.Size(121, 27);
+            this.btnApply.TabIndex = 4;
+            this.btnApply.Text = "Apply";
+            this.btnApply.UseVisualStyleBackColor = true;
+            this.btnApply.Click += new System.EventHandler(this.BtnApply_Click);
+            // 
             // DriveTrainTypeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(480, 244);
+            this.ClientSize = new System.Drawing.Size(480, 266);
+            this.Controls.Add(this.btnApply);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -251,5 +264,6 @@
         private System.Windows.Forms.TableLayoutPanel tankOption;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label tankLabel;
+        private System.Windows.Forms.Button btnApply;
     }
 }
