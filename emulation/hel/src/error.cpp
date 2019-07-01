@@ -80,7 +80,9 @@ namespace hel{
     }
 
     void warn(const std::string& message){
+#ifdef ENABLE_SYNTHESIS_WARNINGS
         std::cerr << makeWarningMessage(message);
+#endif
     }
 
     void warnUnsupportedFeature(const std::string& message){
