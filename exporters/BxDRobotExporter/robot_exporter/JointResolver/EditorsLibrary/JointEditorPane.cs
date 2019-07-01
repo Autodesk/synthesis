@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 namespace EditorsLibrary
 {
     public partial class JointEditorPane : UserControl
@@ -47,6 +46,7 @@ namespace EditorsLibrary
         public JointEditorPane()
         {
             InitializeComponent();
+            this.DoLayout(null, null);
             
             RegisterContextAction("Edit Driver", EditDriver_Internal);
             RegisterContextAction("Edit Sensors", ListSensors_Internal);
@@ -130,12 +130,9 @@ namespace EditorsLibrary
         {
             //Scales the columns to the width
             item_chType.Width = this.lstJoints.Width / 8;
-            item_chParent.Width = this.lstJoints.Width / 8;
-            item_chChild.Width = this.lstJoints.Width / 8;
-            item_chParent.Width = 0;
-            item_chChild.Width = 0;
+            item_chChild.Width = this.lstJoints.Width / 3;
             item_chDrive.Width = this.lstJoints.Width / 3;
-            item_chWheel.Width = this.lstJoints.Width / 8;
+            item_chWheel.Width = this.lstJoints.Width / 3;
             item_chSensors.Width = this.lstJoints.Width / 8;
 
             this.lstJoints.Width = this.Width;
@@ -238,7 +235,7 @@ namespace EditorsLibrary
                     if (joint != null)
                     {
                         ListViewItem item = new ListViewItem(new string[] {
-                            ToStringUtils.JointTypeString(joint), ToStringUtils.ParentNameString(node), ToStringUtils.NodeNameString(node), ToStringUtils.DriverString(joint), ToStringUtils.WheelTypeString(joint), ToStringUtils.SensorCountString(joint)})
+                            ToStringUtils.JointTypeString(joint), ToStringUtils.NodeNameString(node), ToStringUtils.DriverString(joint), ToStringUtils.WheelTypeString(joint), ToStringUtils.SensorCountString(joint)})
                         {
                             Tag = node
                         };
@@ -290,6 +287,11 @@ namespace EditorsLibrary
                         select item.Tag as RigidNode_Base;
 
             return items.ToList();
+        }
+
+        private void lstJoints_SizeChanged(object sender, EventArgs e)
+        {
+            this.DoLayout(null, null);
         }
     }
 }
