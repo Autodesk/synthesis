@@ -10,6 +10,7 @@ namespace BxDRobotExporter
 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
+        public static DockableWindow EmbededPrecheckPane;
 
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
@@ -31,6 +32,17 @@ namespace BxDRobotExporter
             #endregion
             
             EmbededJointPane.Visible = true;
+            
+            EmbededPrecheckPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:PrecheckPane", "Robot Export Guide");
+            
+            EmbededPrecheckPane.DockingState = DockingStateEnum.kDockRight;
+            EmbededPrecheckPane.Width = 400;
+            EmbededPrecheckPane.ShowVisibilityCheckBox = false;
+            EmbededPrecheckPane.ShowTitleBar = true;
+            var precheckPanel = new PrecheckPanel.PrecheckPanel();
+            EmbededPrecheckPane.AddChild(precheckPanel.Handle);
+            
+            EmbededPrecheckPane.Visible = true;
         }
 
         private static IntPtr[] CreateChildDialog()
@@ -63,6 +75,11 @@ namespace BxDRobotExporter
             {
                 EmbededJointPane.Visible = false;
                 EmbededJointPane.Delete();
+            }
+            if (EmbededPrecheckPane != null)
+            {
+                EmbededPrecheckPane.Visible = false;
+                EmbededPrecheckPane.Delete();
             }
         }
 
