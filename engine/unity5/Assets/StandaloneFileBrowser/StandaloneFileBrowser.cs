@@ -19,6 +19,8 @@ namespace SFB {
             _platformWrapper = new StandaloneFileBrowserMac();
 #elif UNITY_STANDALONE_WIN
             _platformWrapper = new StandaloneFileBrowserWindows();
+#elif UNITY_STANDALONE_LINUX
+            _platformWrapper = new StandaloneFileBrowserLinux();
 #elif UNITY_EDITOR
             _platformWrapper = new StandaloneFileBrowserEditor();
 #endif
@@ -82,12 +84,7 @@ namespace SFB {
         /// <param name="directory">Root directory</param>
         /// <param name="multiselect"></param>
         /// <returns>Returns array of chosen paths. Zero length array when cancelled</returns>
-        //public static string[] OpenFolderPanel(string title, string directory, bool multiselect) {
-        //    return _platformWrapper.OpenFolderPanel(title, directory, multiselect);
-        //}
-
-        public static string OpenFolderPanel(string title, string directory, bool multiselect)
-        {
+        public static string OpenFolderPanel(string title, string directory, bool multiselect) {
             return _platformWrapper.OpenFolderPanel(title, directory, multiselect);
         }
 
