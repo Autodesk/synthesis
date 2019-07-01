@@ -44,9 +44,11 @@ namespace BxDRobotExporter.JointEditor
 
             // Used for capitalization
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
-
-            // TODO: Per joint weight load and save
-
+            
+            CalculatedWeightCheck.Checked = joint.weight <= 0;
+            UnitBox.SelectedIndex = SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 0;
+            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
+            
             cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");
             cmbDriveSide.Items.Add("Right");
@@ -299,10 +301,9 @@ namespace BxDRobotExporter.JointEditor
         /// </summary>
         private void UpdateLayout()
         {
+            WeightBox.Enabled = !CalculatedWeightCheck.Checked;
+            
             chkBoxDriveWheel.Hide();
-            rbCAN.Hide();
-            rbPWM.Hide();
-            grpDriveOptions.Visible = true;
 
             if (cmbJointDriver.SelectedIndex <= 0) //If the joint is not driven
             {
@@ -342,6 +343,8 @@ namespace BxDRobotExporter.JointEditor
                     tabsMeta.TabPages.Clear();
                     tabsMeta.TabPages.Add(metaPneumatic);
                     tabsMeta.TabPages.Add(metaBrake);
+                    rbCAN.Hide();
+                    rbPWM.Hide();
                 }
                 else if (cType.IsElevator())
                 {
@@ -380,6 +383,18 @@ namespace BxDRobotExporter.JointEditor
             {
                 return;
             }
+            
+            var preferMetric = UnitBox.SelectedIndex == 1;
+
+            if (CalculatedWeightCheck.Checked)
+                joint.weight = -1;
+            else
+            {
+                if (!preferMetric)
+                    joint.weight = (float)WeightBox.Value / 2.20462f;
+                else
+                    joint.weight = (float)WeightBox.Value;
+            }
 
             if (cmbJointDriver.SelectedIndex <= 0)
             {
@@ -387,8 +402,6 @@ namespace BxDRobotExporter.JointEditor
             }
             else
             {
-                // TODO: Per joint weight load and save
-
                 JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
                 var inputGear = (double) InputGeartxt.Value;
@@ -605,6 +618,11 @@ namespace BxDRobotExporter.JointEditor
         }
         
         private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateLayout();
+        }
+
+        private void CalculatedWeightCheck_CheckedChanged(object sender, EventArgs e)
         {
             UpdateLayout();
         }

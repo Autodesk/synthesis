@@ -383,7 +383,6 @@ namespace BxDRobotExporter.JointEditor
             // 
             this.cmbDriveSide.Dock = System.Windows.Forms.DockStyle.Top;
             this.cmbDriveSide.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDriveSide.Visible = false;
             this.cmbDriveSide.FormattingEnabled = true;
             this.cmbDriveSide.Items.AddRange(new object[] {
             "High",
@@ -394,6 +393,7 @@ namespace BxDRobotExporter.JointEditor
             this.cmbDriveSide.Name = "cmbDriveSide";
             this.cmbDriveSide.Size = new System.Drawing.Size(164, 24);
             this.cmbDriveSide.TabIndex = 16;
+            this.cmbDriveSide.Visible = false;
             // 
             // chkBoxDriveWheel
             // 
@@ -822,9 +822,11 @@ namespace BxDRobotExporter.JointEditor
             this.CalculatedWeightCheck.TabIndex = 4;
             this.CalculatedWeightCheck.Text = "Use calculated weight";
             this.CalculatedWeightCheck.UseVisualStyleBackColor = true;
+            this.CalculatedWeightCheck.CheckedChanged += new System.EventHandler(this.CalculatedWeightCheck_CheckedChanged);
             // 
             // WeightBox
             // 
+            this.WeightBox.DecimalPlaces = 2;
             this.WeightBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.WeightBox.Location = new System.Drawing.Point(65, 5);
             this.WeightBox.Margin = new System.Windows.Forms.Padding(5);
