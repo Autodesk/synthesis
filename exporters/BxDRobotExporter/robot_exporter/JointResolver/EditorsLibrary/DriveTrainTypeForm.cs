@@ -63,9 +63,10 @@ namespace JointResolver.EditorsLibrary
                 value.BackColor = SelectedColor;
             }
         }
-        private void BtnApply_Click(object sender, EventArgs e)
+        private void BtnOk_Click(object sender, EventArgs e)
         {
             SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainType;
+            Close();
         }
     }
 }
