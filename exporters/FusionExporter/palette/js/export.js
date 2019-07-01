@@ -78,6 +78,11 @@ window.fusionJavaScriptHandler =
                     console.log(data);
                     if (openFieldsetSensors != null)
                         openFieldsetSensors.dataset.sensors = data;
+                }else if (action == 'dt_weight')
+                {
+                    console.log("Receiving dt weight info...");
+                    console.log(data);
+                    applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
                 {

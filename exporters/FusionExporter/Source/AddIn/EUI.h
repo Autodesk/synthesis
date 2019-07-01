@@ -35,6 +35,9 @@ namespace SynthesisAddIn
 		// UI Management
 		void preparePalettes(); ///< Creates all palettes
 
+		void openDriveWeightPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
+		void closeDriveWeightPalette(std::string data); ///< Closes the robot exporter configuration palette. Enables the export button.
+
 		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
@@ -82,6 +85,7 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> panel; ///< Synthesis control panel.
 		Ptr<ToolbarControls> panelControls; ///< Synthesis control panel controls.
 
+		Ptr<Palette> driveWeightPalette; ///< Robot export configuration palette.
 		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
@@ -118,6 +122,9 @@ namespace SynthesisAddIn
 		// UI Creation/Deletion
 		bool createWorkspace(); ///< Creates the Synthesis workspace, panel, and controls.
 		void deleteWorkspace(); ///< Deletes the panel and controls.
+
+		bool createDriveWeightPalette(); ///< Creates the robot export configuration palette.
+		void deleteDriveWeightPalette(); ///< Deletes the robot export configuration palette.
 
 		bool createExportPalette(); ///< Creates the robot export configuration palette.
 		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
