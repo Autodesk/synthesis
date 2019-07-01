@@ -175,6 +175,12 @@
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
     <Compile Include="JointEditor\WinFormsUtils.cs" />
+    <Compile Include="Messages\FirstLaunchInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Messages\FirstLaunchInfo.Designer.cs">
+      <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="PrecheckPanel\PrecheckPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -286,6 +292,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Messages\FirstLaunchInfo.resx">
+      <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PrecheckPanel\PrecheckPanel.resx">
       <DependentUpon>PrecheckPanel.cs</DependentUpon>
