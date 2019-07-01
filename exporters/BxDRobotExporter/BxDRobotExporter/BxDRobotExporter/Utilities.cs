@@ -10,7 +10,7 @@ namespace BxDRobotExporter
 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
-        static DockableWindow EmbededPrecheckPane;
+        public static DockableWindow EmbededPrecheckPane;
 
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
