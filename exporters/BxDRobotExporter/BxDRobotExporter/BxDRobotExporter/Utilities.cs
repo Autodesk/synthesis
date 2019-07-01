@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Inventor;
 using System.Windows.Forms;
-using System.Drawing;
-using System.IO;
-using System.Diagnostics;
+using Inventor;
 
 namespace BxDRobotExporter
 {
@@ -27,7 +20,7 @@ namespace BxDRobotExporter
             IntPtr[] children = CreateChildDialog();
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
-            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
+            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
             
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
