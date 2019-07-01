@@ -70,6 +70,18 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
+
+	// Update the config state
+	if (eventArgs->action() == "state_update") {
+		eui->saveConfiguration(eventArgs->data());
+	}
+	else if (eventArgs->action() == "export") {
+		eui->saveConfiguration(eventArgs->data());
+		eui->startExportRobot();
+	}
+		
+
+	/*
 	if (eventArgs->action() == "highlight")
 		eui->highlightJoint(eventArgs->data());
 
@@ -86,6 +98,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		if (eventArgs->action() == "export")
 			eui->startExportRobot();
 	}
+	*/
 }
 
 // Close Exporter Form Event

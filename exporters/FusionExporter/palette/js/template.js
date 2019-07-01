@@ -1,6 +1,8 @@
 // Handles the receiving of data from Fusion
 var lastState = {};
 
+
+
 window.fusionJavaScriptHandler =
     {
         handle: function (action, data)
@@ -10,7 +12,7 @@ window.fusionJavaScriptHandler =
                 if (action == 'state')
                 {
                     console.log("Receiving sensor info...");
-                   
+                    console.log(data);
                     applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'debugger')
@@ -34,21 +36,22 @@ window.fusionJavaScriptHandler =
 // Populates the form with sensors
 function applyConfigData(state)
 {
-    console.log(state);
     // Delete all existing slots
     lastState = state;
     // UI Setting Goes Here
-    var uiRobotName = document.getElementById("robot-name");
-    uiRobotName.value = lastState.name;
 }
 
 
 // Outputs currently entered data as a JSON object
 function readConfigData()
 {
-    var uiRobotName = document.getElementById("robot-name");
+    var configData = {};
+
     // READ UI
-    lastState.robotName = uiRobotName.value;
+
+    //
+
+    lastState.sensors = configData;
     return lastState;
 }
 
@@ -56,8 +59,4 @@ function readConfigData()
 function sendInfoToFusion()
 {
     adsk.fusionSendData('state_update', JSON.stringify(readConfigData()));
-}
-
-function exportRobot(){
-    adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }
