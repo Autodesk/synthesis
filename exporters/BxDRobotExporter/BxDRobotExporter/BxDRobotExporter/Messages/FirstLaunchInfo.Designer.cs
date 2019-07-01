@@ -90,8 +90,11 @@ namespace BxDRobotExporter.Messages
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(396, 187);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(396, 187);
             this.Name = "FirstLaunchInfo";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Synthesis Robot Exporter Plugin Loaded";
             this.ResumeLayout(false);
