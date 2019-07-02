@@ -12,14 +12,21 @@
 1) Clone the repository by running `git clone --recursive https://github.com/Autodesk/synthesis`
 2) Launch Visual Studio in Admin Mode for necessary permissions
 3) Import the FusionSynth.sln Solution in Visual Studio
-   - File -> Open -> Project/Solution
-   - Select `... \synthesis\exporters\FusionExporter\FusionSynth.sln`
-4) Change Debug command in project settings to Fusion360.exe
-    (Usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
-5) Build > Build Solution
+   - `File > Open > Project/Solution`
+   - Select `...\synthesis\exporters\FusionExporter\FusionSynth.sln`
+4) Add your Fusion360 executable as the target for debugging
+   - In Visual Studio, navigate to `Project > FusionSynth Properties...`
+   - In the menu on the left, navigate to `Configuration Properties > Debugging`
+   - Change the `Command` property in the main menu to your Fusion360 executable (Usually located in `C:\Users\<your username>\AppData\Local\Autodesk\webdeploy\production\<long random string>\Fusion360.exe`)
+5) Build the solution (`Build > Build Solution`)
 6) Start the debugger
-7) In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
-8) Select the "FusionExporter" folder
+7) Add the Add-In to Fusion 360
+   - In Fusion 360, click the button labeled `Add-Ins`
+   - In the popup, select the `Add-Ins` tab
+   - Click the ➕ icon next to `My Add-Ins`
+   - Navigate to the `FusionExporter` project folder (`...\synthesis\exporters\FusionExporter\`)
+   - Click on the add-in named `FusionSynth`, which should appear under the My Add-Ins folder (if not, rebuild the project in visual studio)
+   - Ensure the `Run on Startup` box is checked
 9) Close Fusion 360 and start debugging again
 
 ## Current Issues
