@@ -23,7 +23,7 @@ namespace hel{
         RoboRIO roborio = RoboRIOManager::getCopy();
 
         for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-            pwm_hdrs[i] = PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
+            pwm_hdrs[i] = roborio.pwm_system.getHdrZeroLatch(i) ? 0.0 : PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
         }
 
         for(unsigned i = 0; i < digital_mxp.size(); i++){
@@ -39,7 +39,7 @@ namespace hel{
                 if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
                     remapped_i -= 4;
                 }
-                digital_mxp[i].value = PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
+                digital_mxp[i].value = roborio.pwm_system.getMXPZeroLatch(i) ? 0.0 : PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
                 break;
             }
             case MXPData::Config::SPI:
