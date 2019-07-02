@@ -45,16 +45,6 @@ namespace SFB {
             return paths.Split((char)28);
         }
 
-        public void OpenFilePanelAsync(string title, string directory, ExtensionFilter[] extensions, bool multiselect, Action<string[]> cb) {
-            _openFileCb = cb;
-            DialogOpenFilePanelAsync(
-                title,
-                directory,
-                GetFilterFromFileExtensionList(extensions),
-                multiselect,
-                (string result) => { _openFileCb.Invoke(result.Split((char)28)); });
-        }
-
         public string OpenFolderPanel(string title, string directory, bool multiselect) {
             var paths = Marshal.PtrToStringAnsi(DialogOpenFolderPanel(
                 title,
@@ -63,31 +53,12 @@ namespace SFB {
             return paths;
         }
 
-        public void OpenFolderPanelAsync(string title, string directory, bool multiselect, Action<string[]> cb) {
-            _openFolderCb = cb;
-            DialogOpenFolderPanelAsync(
-                title,
-                directory,
-                multiselect,
-                (string result) => { _openFolderCb.Invoke(result.Split((char)28)); });
-        }
-
         public string SaveFilePanel(string title, string directory, string defaultName, ExtensionFilter[] extensions) {
             return Marshal.PtrToStringAnsi(DialogSaveFilePanel(
                 title,
                 directory,
                 defaultName,
                 GetFilterFromFileExtensionList(extensions)));
-        }
-
-        public void SaveFilePanelAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions, Action<string> cb) {
-            _saveFileCb = cb;
-            DialogSaveFilePanelAsync(
-                title,
-                directory,
-                defaultName,
-                GetFilterFromFileExtensionList(extensions),
-                (string result) => { _saveFileCb.Invoke(result); });
         }
 
         private static string GetFilterFromFileExtensionList(ExtensionFilter[] extensions) {
@@ -108,11 +79,6 @@ namespace SFB {
             }
             filterString = filterString.Remove(filterString.Length - 1);
             return filterString;
-        }
-
-        public void OpenFolderPanelAsync(string title, string directory, bool multiselect, Action<string> cb)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -41,10 +41,6 @@ namespace SFB {
             return filenames;
         }
 
-        public void OpenFilePanelAsync(string title, string directory, ExtensionFilter[] extensions, bool multiselect, Action<string[]> cb) {
-            cb.Invoke(OpenFilePanel(title, directory, extensions, multiselect));
-        }
-
         public string OpenFolderPanel(string title, string directory, bool multiselect) {
             var fd = new VistaFolderBrowserDialog();
             fd.Description = title;
@@ -55,10 +51,6 @@ namespace SFB {
             var filenames = res == DialogResult.OK ? fd.SelectedPath : null;
             fd.Dispose();
             return filenames;
-        }
-
-        public void OpenFolderPanelAsync(string title, string directory, bool multiselect, Action<string> cb) {
-            cb.Invoke(OpenFolderPanel(title, directory, multiselect));
         }
 
         public string SaveFilePanel(string title, string directory, string defaultName, ExtensionFilter[] extensions) {
@@ -91,10 +83,6 @@ namespace SFB {
             var filename = res == DialogResult.OK ? fd.FileName : "";
             fd.Dispose();
             return filename;
-        }
-
-        public void SaveFilePanelAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions, Action<string> cb) {
-            cb.Invoke(SaveFilePanel(title, directory, defaultName, extensions));
         }
 
         // .NET Framework FileDialog Filter format
