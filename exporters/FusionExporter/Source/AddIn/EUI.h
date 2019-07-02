@@ -79,13 +79,20 @@ namespace SynthesisAddIn
 		Ptr<UserInterface> UI; ///< Active Fusion user interface.
 
 		Ptr<Workspace> workSpace; ///< Synthesis workspace.
-		Ptr<ToolbarPanel> panel; ///< Synthesis control panel.
-		Ptr<ToolbarControls> panelControls; ///< Synthesis control panel controls.
+		Ptr<ToolbarPanel> finishPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> driveTrainPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
 		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
+		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainWeight; ///< Export robot button.
+		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
+		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
+		Ptr<CommandDefinition> robotExportGuide; ///< Export robot button.
 		Ptr<CommandDefinition> exportButtonCommand; ///< Export robot button.
 
 		// Event Handlers
@@ -116,8 +123,8 @@ namespace SynthesisAddIn
 		bool clearHandler(Ptr<T> el);
 
 		// UI Creation/Deletion
-		bool createWorkspace(); ///< Creates the Synthesis workspace, panel, and controls.
-		void deleteWorkspace(); ///< Deletes the panel and controls.
+		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
+		void deleteWorkspace(); ///< Deletes the finishPanel and controls.
 
 		bool createExportPalette(); ///< Creates the robot export configuration palette.
 		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
@@ -128,8 +135,9 @@ namespace SynthesisAddIn
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
 
-		bool createExportButton(); ///< Creates the export robot button.
-		void deleteExportButton(); ///< Deletes the export robot button.
+		void createPanels(); ///< Creates the export robot button.
+		void createButtons(); ///< Creates the export robot button.
+		void deleteButtons(); ///< Deletes the export robot button.
 
 		// Thread Information
 		std::thread * exportRobotThread; ///< Pointer to any active robot export thread.
