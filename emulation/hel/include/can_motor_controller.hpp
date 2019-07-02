@@ -95,6 +95,9 @@ namespace hel{
 
     namespace ctre{
         struct CANMotorController: public CANMotorControllerBase{
+            static constexpr uint32_t HEARTBEAT_ID = 63;
+            static constexpr uint32_t HEARTBEAT_API_ID = 1;
+
             /**
              * \brief Interpretation definitions for CAN message data bytes
              */
@@ -153,14 +156,21 @@ namespace hel{
             static constexpr bool USE_FIRMWARE_DEBUG_BUILD = false;
             static constexpr uint8_t HARDWARE_REVISION = 0x00;
 
+            static constexpr uint32_t HEARTBEAT_ID = 0;
+
             enum CommandAPIID: int32_t{
+                DC_SET = 0x002,
+                SMART_VEL_SET = 0x013,
+                POS_SET = 0x032,
+                VOLT_SET = 0x042,
+                CURRENT_SET = 0x043,
+                SMARTMOTION_SET = 0x052,
+                CLEAR_FAULTS = 0x06E,
                 HEARTBEAT = 0x092,
-                FIRMWARE  = 0x098
+                FIRMWARE  = 0x098,
+                PARAM_ACCESS = 0x300 // least significant eight bits of the API ID with this identifier select for the parameter
             };
 
-        private:
-
-        public:
             void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
             std::vector<uint8_t> generateCANPacket(const int32_t&);

@@ -119,15 +119,27 @@ namespace hel{
 //#undef COPY
         }
 
-        void CANMotorController::parseCANPacket(const int32_t& API_ID, const std::vector<uint8_t>& /*DATA*/){
+        void CANMotorController::parseCANPacket(const int32_t& API_ID, const std::vector<uint8_t>& DATA){
             switch(API_ID){
+            case CommandAPIID::DC_SET:
+                {
+                    if(DATA.size() == 0){
+                        setPercentOutput(0.0);
+                    } else if(DATA.size() == 8){
+                        float power = 0.0;
+                        std::memcpy(&power, DATA.data(), sizeof(float));
+                        setPercentOutput(power);
+                    } else {
+                        assert(0);
+                    }
+                    break;
+                }
             case CommandAPIID::HEARTBEAT:
-                break;
+            case CommandAPIID::FIRMWARE:
+              break;
             default:
-                ; // throw UnhandledEnumConstantException("REV Robotics Spark MAX API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Sending CAN packet to REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
-
-            // setPercentOutput(0); // TODO
         }
 
         std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID){
@@ -146,14 +158,8 @@ namespace hel{
                     break;
                 }
             default:
-                throw UnhandledEnumConstantException("REV Robotics Spark MAX API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Receiving CAN packet from REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
-
-            // printf("\nSENDING:[");
-            // for(const auto& a: data){
-            //     printf("%d, ", (int)a);
-            // }
-            // printf("]\n\n");
 
             return data;
         }

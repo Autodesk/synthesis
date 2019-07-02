@@ -127,7 +127,6 @@ namespace hel{
         a.type         = parseDeviceType(a.manufacturer, (message_id >> 24) & 0x1F);
         a.api_id       = (message_id >> 6) & 0x3FF;
         a.id           = message_id & 0x3F;
-        assert(a.id <= MAX_CAN_BUS_ADDRESS);
         return a;
     }
 
