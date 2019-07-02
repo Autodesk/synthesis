@@ -41,6 +41,8 @@ namespace hel{
 
         struct PWM{
 
+            bool zero_latch;
+
             /**
              * \brief 2 bit PWM signal mask.
              * 2-bit mask for signal masking frequency, effectively scaling the pulse width (0 = 1x 1, = 2x, 3 = 4x)
@@ -99,6 +101,14 @@ namespace hel{
          */
 
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig)noexcept;
+
+        bool getHdrZeroLatch(uint8_t)const;
+
+        void setHdrZeroLatch(uint8_t, bool);
+
+        bool getMXPZeroLatch(uint8_t)const;
+
+        void setMXPZeroLatch(uint8_t, uint32_t);
 
         /**
          * \brief Get current pwm scale for a header based PWM.
