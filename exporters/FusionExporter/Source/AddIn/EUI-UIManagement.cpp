@@ -275,22 +275,22 @@ void EUI::createPanels()
 
 void EUI::createButtons()
 {
-	driveTrainType = UI->commandDefinitions()->addButtonDefinition(K_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	driveTrainType = UI->commandDefinitions()->addButtonDefinition(K_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/DriveIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainType);
 
-	driveTrainWeight = UI->commandDefinitions()->addButtonDefinition(K_DT_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	driveTrainWeight = UI->commandDefinitions()->addButtonDefinition(K_DT_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/WeightIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeight);
 
-	editJointsButton = UI->commandDefinitions()->addButtonDefinition(K_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	editJointsButton = UI->commandDefinitions()->addButtonDefinition(K_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/JointIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton);
 
-	editDOFButton = UI->commandDefinitions()->addButtonDefinition(K_DOF, "Edit Degrees of Freedom", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	editDOFButton = UI->commandDefinitions()->addButtonDefinition(K_DOF, "Edit Degrees of Freedom", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton);
 
-	robotExportGuide = UI->commandDefinitions()->addButtonDefinition(K_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	robotExportGuide = UI->commandDefinitions()->addButtonDefinition(K_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(robotExportGuide);
 
-	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Finish Robot Export", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
+	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Finish Robot Export", "Setup your robot for exporting to Synthesis.", "Resources/FinishIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(exportButtonCommand);
 
 
