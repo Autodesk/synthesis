@@ -3,7 +3,6 @@
 #include "send_data.hpp"
 
 #include <unistd.h>
-#include <iostream>
 
 namespace hel {
 

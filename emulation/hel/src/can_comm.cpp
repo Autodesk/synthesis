@@ -3,8 +3,6 @@
 
 #include "FRC_NetworkCommunication/CANSessionMux.h"
 
-#include <iostream> // TODO delete
-
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -39,6 +37,12 @@ namespace hel{
                     break;
                 }
             case CANMessageID::Type::UNKNOWN:
+                {
+                    if(message_id.getID() != ctre::CANMotorController::HEARTBEAT_ID || message_id.getAPIID() != ctre::CANMotorController::HEARTBEAT_API_ID){ // Ignore heartbeat
+                        warnUnsupportedDevice(message_id, "write to");
+                    }
+                    break;
+                }
             case CANMessageID::Type::PDP:
                 warnUnsupportedDevice(message_id, "write to");
                 break;
@@ -80,17 +84,19 @@ namespace hel{
             switch(message_id.getType()){
             case CANMessageID::Type::SPARK_MAX:
                 {
-                    if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
-                        if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE){
-                        // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller. Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
-                        instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
+                    if(message_id.getID() != rev::CANMotorController::HEARTBEAT_ID || message_id.getAPIID() != rev::CANMotorController::CommandAPIID::HEARTBEAT){ // Ignore heartbeat
+                        if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                            if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE){
+                                // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller. 
+                                // Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
+                                instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
+                            } else {
+                                warnUnconnectedDevice(message_id, "write to");
+                            }
                         } else {
-                        warnUnconnectedDevice(message_id, "write to");
+                            instance.first->can_motor_controllers[message_id.getID()]->parseCANPacket(message_id.getAPIID(), data);
                         }
-                    } else {
-                        instance.first->can_motor_controllers[message_id.getID()]->parseCANPacket(message_id.getAPIID(), data);
                     }
-                    // TODO
                     break;
                 }
             default:
@@ -106,12 +112,13 @@ namespace hel{
 
             switch(message_id.getType()){
             case hel::CANMessageID::Type::SPARK_MAX:
-              if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE && instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
-                // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller. Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
-                instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
-              }
-              instance.second.unlock();
-              return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
+                if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE && instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                    // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller.
+                    // Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
+                    instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
+                }
+                instance.second.unlock();
+                return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
             default:
                 warnUnsupportedDevice(message_id, "read from");
                 break;
@@ -121,22 +128,15 @@ namespace hel{
             return {};
         }
     }
-
-    constexpr uint32_t SILENT_UNKNOWN_DEVICE_ID = 262271; //Unclear what this CAN address is attempting to communicate. This is used to silence Synthesis warnings about this CAN address not being found since user code tries to communicate to it very frequently, which causes lag with all the warnings
 }
 
 extern "C"{
-
     void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
-        // if(messageID == hel::SILENT_UNKNOWN_DEVICE_ID){ // TODO figure out what this is
-        //     return;
-        // }
-
-      if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
-        hel::warnUnsupportedFeature("CANSessionMux repeating message not yet repeated (periodMs: " + std::to_string(periodMs) + ")");
-      }
-
         hel::CANMessageID message_id = hel::CANMessageID::parse(messageID);
+
+        if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
+            hel::warnUnsupportedFeature("CANSessionMux repeating message (" + message_id.toString() + " periodMs: " + std::to_string(periodMs) + ")");
+        }
 
         std::vector<uint8_t> data_v;
         data_v.reserve(dataSize);
@@ -144,15 +144,6 @@ extern "C"{
         if(data != nullptr){
             std::copy(data, data + dataSize, std::back_inserter(data_v));
         }
-
-        // std::cout << "Sending   " << message_id.toString() << " ["; // TODO delete
-        // for(unsigned i = 0; i < data_v.size(); i++){
-        //   std::cout << (int)data_v[i];
-        //   if(i < (data_v.size() - 1)){
-        //     std::cout << ", ";
-        //   }
-        // }
-        // std::cout << "]\n";
 
         switch(message_id.getManufacturer()){
         case hel::CANMessageID::Manufacturer::CTRE:
@@ -167,15 +158,10 @@ extern "C"{
         }
     }
 
-    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* status){
-        // if(messageID != nullptr && *messageID == hel::SILENT_UNKNOWN_DEVICE_ID){
-        //     return;
-        // }
-
+    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
         hel::CANMessageID message_id = hel::CANMessageID::parse(*messageID & messageIDMask);
-        std::vector<uint8_t> data_v;
 
-        // std::cout << "Receiving " << message_id.toString() << "\n"; // TODO delete
+        std::vector<uint8_t> data_v;
 
         switch(message_id.getManufacturer()){
         case hel::CANMessageID::Manufacturer::CTRE:

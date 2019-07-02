@@ -2,7 +2,6 @@
 #include "receive_data.hpp"
 
 #include <unistd.h>
-#include <iostream>
 #include "util.hpp"
 #include "global.hpp"
 #include "json_util.hpp"
