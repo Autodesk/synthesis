@@ -24,6 +24,9 @@ namespace Assets.Scripts.GUI
 
         EmulationDriverStation emulationDriverStation;
 
+        bool loaded = false;
+        float lastAdditionalDot = 0;
+
         GameObject canvas;
         GameObject tabs;
         GameObject emulationToolbar;
@@ -51,6 +54,26 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
 
             EditorApplication.wantsToQuit += BoutaQuit;
+        }
+
+        public override void FixedUpdate()
+        {
+            if (loadingPanel.activeSelf)
+            {
+                if (loaded)
+                {
+                    loadingPanel.SetActive(false);
+                    loaded = false;
+                } else
+                {
+                    Text t = loadingPanel.transform.Find("Text").GetComponent<Text>();
+                    if (Time.unscaledTime >= lastAdditionalDot + 0.5)
+                    {
+                        t.text += ".";
+                        lastAdditionalDot = Time.unscaledTime;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -86,53 +109,28 @@ namespace Assets.Scripts.GUI
 
         public async void LoadCode()
         {
-            bool good = false;
-            SSHClient.UserProgram _userProgram = null;
-            try
+            string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
+            if (selectedFiles.Length != 1)
             {
-                Task Check = Task.Factory.StartNew(() =>
-                {
-                    string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
-                    if (selectedFiles.Length != 1)
-                    {
-                        UnityEngine.Debug.Log("No files selected for robot code upload");
-                    }
-                    else
-                    {
-                        SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
-                        if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
-                    {
-                            emulationDriverStation.ShowJavaNotSupportedPopUp();
-                        }
-                        else
-                        {
-                            good = true;
-                            _userProgram = userProgram;
-                        }
-                    }
-                });
-                await Check;
-                while (!Check.IsCompleted) { if (exiting) Check.Dispose(); }
-            } catch (Exception e)
-            {
-                UnityEngine.Debug.Log(e.StackTrace);
+                UnityEngine.Debug.Log("No files selected for robot code upload");
             }
-            if (good)
+            else
             {
-                loadingPanel.SetActive(true);
-                try
+                SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
+                if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
                 {
+                    emulationDriverStation.ShowJavaNotSupportedPopUp();
+                }
+                else
+                {
+                    loadingPanel.SetActive(true);
                     Task Upload = Task.Factory.StartNew(() =>
                     {
-                        SSHClient.SCPFileSender(_userProgram);
+                        SSHClient.SCPFileSender(userProgram);
+                        loaded = true;
                     });
                     await Upload;
-                    while (!Upload.IsCompleted) { if (exiting) Upload.Dispose(); }
-                } catch (Exception e)
-                {
-                    UnityEngine.Debug.Log(e.StackTrace);
                 }
-                loadingPanel.SetActive(false);
             }
         }
 
