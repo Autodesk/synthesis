@@ -675,10 +675,16 @@ namespace BxDRobotExporter
             }
             else
             {
-                blueHighlightSet.Clear();
-                greenHighlightSet.Clear();
-                redHighlightSet.Clear();
+                ClearDOFHighlight();
             }
+        }
+
+        public void ClearDOFHighlight()
+        {
+            blueHighlightSet.Clear();
+            greenHighlightSet.Clear();
+            redHighlightSet.Clear();
+            displayDOF = false;
         }
 
         private void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
