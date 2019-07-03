@@ -135,7 +135,7 @@ extern "C"{
         hel::CANMessageID message_id = hel::CANMessageID::parse(messageID);
 
         if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
-            hel::warnUnsupportedFeature("CANSessionMux repeating message (" + message_id.toString() + " periodMs: " + std::to_string(periodMs) + ")");
+            hel::warnUnsupportedFeature("Sending repeating CAN message (" + message_id.toString() + " periodMs " + std::to_string(periodMs) + ") -- sending once");
         }
 
         std::vector<uint8_t> data_v;

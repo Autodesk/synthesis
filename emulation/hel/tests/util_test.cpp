@@ -41,18 +41,15 @@ TEST(UtilTest, setBit){
     EXPECT_TRUE(hel::checkBitLow(a, I));
 }
 
-TEST(UtilTest, checkBits){ // TODO delete?
-    uint32_t a = 0b11000;
-    uint32_t b = 0b11000;
-    uint32_t c = 0b01001;
-    uint32_t comparison_mask_1 = 0b11111;
-    uint32_t base_talon = 0x02040000;
-    uint32_t send_talon = 33816705;
-    uint32_t comparison_mask_2 = 0b11000001000000000000000000;
+TEST(UtilTest, containsBits){
+    uint32_t a        = 0b11000;
+    uint32_t b        = 0b11001;
+    uint32_t c        = 0b01001;
+    uint32_t bit_mask = 0b11000;
 
-    EXPECT_EQ(true, hel::compareBits(a,b,comparison_mask_1));
-    EXPECT_EQ(false, hel::compareBits(a,c,comparison_mask_1));
-    EXPECT_EQ(true, hel::compareBits(send_talon,base_talon,comparison_mask_2));
+    EXPECT_TRUE(hel::containsBits(a,bit_mask));
+    EXPECT_TRUE(hel::containsBits(b,bit_mask));
+    EXPECT_FALSE(hel::containsBits(c,bit_mask));
 }
 
 TEST(UtilTest, Maybe){

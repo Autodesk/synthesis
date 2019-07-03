@@ -120,7 +120,7 @@ namespace hel{
              */
 
             enum ReceiveCommandIDMask: uint32_t{
-                GET_POWER_PERCENT = 0b1010000000000
+                GET_POWER_PERCENT = 0x1400
             };
 
             void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);

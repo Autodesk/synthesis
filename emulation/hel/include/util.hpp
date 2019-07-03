@@ -219,22 +219,13 @@ namespace hel{
 
     /**
      * \brief Compare the bits in two integers given a comparison mask
-     * \param a The first integer to compare
-     * \param b The second integer to compare
-     * \param comparison_mask The comparison mask to use. The function will compare all the bits where the comparison mask is high
-     * \return True if all the specified bits match
+     * \param a The integer to check
+     * \param comparison_mask The bit mask to use
+     * \return True if all bits in the bit mask are high in the integer
      */
 
-    constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){ // TODO delete?
-        unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
-        for(unsigned i = 0 ; i < msb; i++){
-            if(checkBitHigh(comparison_mask,i)){
-                if(checkBitHigh(a,i) != checkBitHigh(b,i)){
-                    return false;
-                }
-            }
-        }
-        return true;
+    constexpr bool containsBits(uint32_t a, uint32_t bit_mask){
+        return (a & bit_mask) == bit_mask;
     }
 }
 
