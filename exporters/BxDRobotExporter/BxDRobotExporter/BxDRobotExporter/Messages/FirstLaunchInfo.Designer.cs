@@ -42,11 +42,11 @@ namespace BxDRobotExporter.Messages
             // 
             this.label2.Dock = System.Windows.Forms.DockStyle.Top;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.label2.Location = new System.Drawing.Point(0, 28);
+            this.label2.Location = new System.Drawing.Point(0, 23);
             this.label2.Margin = new System.Windows.Forms.Padding(0);
             this.label2.Name = "label2";
-            this.label2.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label2.Size = new System.Drawing.Size(361, 42);
+            this.label2.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Size = new System.Drawing.Size(303, 34);
             this.label2.TabIndex = 1;
             this.label2.Text = "To begin the export process, select the \"Robot Export\" button under the \"Environm" +
     "ents\" tab.";
@@ -59,8 +59,8 @@ namespace BxDRobotExporter.Messages
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(5);
-            this.label1.Size = new System.Drawing.Size(364, 28);
+            this.label1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.label1.Size = new System.Drawing.Size(303, 23);
             this.label1.TabIndex = 0;
             this.label1.Text = "The Synthesis robot exporter add-in has been added.";
             // 
@@ -72,23 +72,23 @@ namespace BxDRobotExporter.Messages
             this.checkBox1.Cursor = System.Windows.Forms.Cursors.No;
             this.checkBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.checkBox1.Location = new System.Drawing.Point(0, 70);
+            this.checkBox1.Location = new System.Drawing.Point(0, 57);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.checkBox1.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
             this.checkBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.checkBox1.Size = new System.Drawing.Size(361, 22);
+            this.checkBox1.Size = new System.Drawing.Size(303, 19);
             this.checkBox1.TabIndex = 2;
             this.checkBox1.Text = "Don\'t show this message again.";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(115, 96);
+            this.button1.Location = new System.Drawing.Point(92, 77);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
-            this.button1.Size = new System.Drawing.Size(116, 27);
+            this.button1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.button1.Size = new System.Drawing.Size(93, 22);
             this.button1.TabIndex = 3;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
@@ -97,10 +97,10 @@ namespace BxDRobotExporter.Messages
             // FirstLaunchInfo
             // 
             this.AcceptButton = this.button1;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(361, 129);
+            this.ClientSize = new System.Drawing.Size(303, 116);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
