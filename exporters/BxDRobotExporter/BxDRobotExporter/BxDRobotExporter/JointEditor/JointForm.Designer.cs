@@ -40,7 +40,7 @@ namespace BxDRobotExporter.JointEditor
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(23, 23);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(23, 19);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -52,6 +52,7 @@ namespace BxDRobotExporter.JointEditor
             // 
             this.DefinePartsLayout.AutoScroll = true;
             this.DefinePartsLayout.AutoSize = true;
+            this.DefinePartsLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.DefinePartsLayout.BackColor = System.Drawing.SystemColors.ControlLight;
             this.DefinePartsLayout.ColumnCount = 1;
             this.DefinePartsLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -60,7 +61,7 @@ namespace BxDRobotExporter.JointEditor
             this.DefinePartsLayout.Location = new System.Drawing.Point(0, 0);
             this.DefinePartsLayout.Margin = new System.Windows.Forms.Padding(0);
             this.DefinePartsLayout.Name = "DefinePartsLayout";
-            this.DefinePartsLayout.Padding = new System.Windows.Forms.Padding(20);
+            this.DefinePartsLayout.Padding = new System.Windows.Forms.Padding(20, 16, 43, 20);
             this.DefinePartsLayout.RowCount = 1;
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.DefinePartsLayout.Size = new System.Drawing.Size(682, 953);
@@ -68,14 +69,16 @@ namespace BxDRobotExporter.JointEditor
             // 
             // JointForm
             // 
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(682, 953);
             this.Controls.Add(this.DefinePartsLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(700, 1000);
+            this.MaximumSize = new System.Drawing.Size(1000, 1000);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(700, 1000);
+            this.MinimumSize = new System.Drawing.Size(0, 1000);
             this.Name = "JointForm";
             this.Text = "Joint Editor";
             this.DefinePartsLayout.ResumeLayout(false);

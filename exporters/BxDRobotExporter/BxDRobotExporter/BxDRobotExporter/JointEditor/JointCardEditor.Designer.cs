@@ -870,7 +870,7 @@ namespace BxDRobotExporter.JointEditor
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.ConfigJointLayout);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "JointCardEditor";
             this.Size = new System.Drawing.Size(530, 375);
             this.grpChooseDriver.ResumeLayout(false);
