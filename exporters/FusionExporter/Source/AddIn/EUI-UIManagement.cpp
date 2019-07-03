@@ -18,7 +18,7 @@ bool EUI::createWorkspace()
 		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
 		if (!workSpace)
 		{
-			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
+			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/FinishIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 
 			addHandler<WorkspaceActivatedHandler>(UI);
