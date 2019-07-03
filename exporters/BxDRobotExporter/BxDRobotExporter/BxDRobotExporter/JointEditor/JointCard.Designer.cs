@@ -164,7 +164,6 @@ namespace BxDRobotExporter.JointEditor
             // jointName
             // 
             this.jointName.AutoEllipsis = true;
-            this.jointName.AutoSize = true;
             this.jointName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.jointName.Location = new System.Drawing.Point(3, 0);
@@ -203,7 +202,6 @@ namespace BxDRobotExporter.JointEditor
             // wheelTypeValue
             // 
             this.wheelTypeValue.AutoEllipsis = true;
-            this.wheelTypeValue.AutoSize = true;
             this.wheelTypeValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wheelTypeValue.Location = new System.Drawing.Point(116, 41);
             this.wheelTypeValue.Name = "wheelTypeValue";
@@ -214,7 +212,6 @@ namespace BxDRobotExporter.JointEditor
             // driverValue
             // 
             this.driverValue.AutoEllipsis = true;
-            this.driverValue.AutoSize = true;
             this.driverValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.driverValue.Location = new System.Drawing.Point(116, 21);
             this.driverValue.Name = "driverValue";
@@ -261,7 +258,6 @@ namespace BxDRobotExporter.JointEditor
             // jointTypeValue
             // 
             this.jointTypeValue.AutoEllipsis = true;
-            this.jointTypeValue.AutoSize = true;
             this.jointTypeValue.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointTypeValue.Location = new System.Drawing.Point(116, 1);
             this.jointTypeValue.Name = "jointTypeValue";
