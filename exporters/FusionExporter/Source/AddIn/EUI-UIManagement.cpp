@@ -18,28 +18,15 @@ bool EUI::createWorkspace()
 		workSpace = UI->workspaces()->itemById(K_WORKSPACE);
 		if (!workSpace)
 		{
-			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/SynthesisIcons");
+			workSpace = UI->workspaces()->add("DesignProductType", K_WORKSPACE, "Synthesis", "Resources/FinishIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
+
+			addHandler<WorkspaceActivatedHandler>(UI);
+			addHandler<WorkspaceDeactivatedHandler>(UI);
+
+			createPanels();
+			createButtons();
 		}
-
-		addHandler<WorkspaceActivatedHandler>(UI);
-		addHandler<WorkspaceDeactivatedHandler>(UI);
-
-		// Create panel
-		Ptr<ToolbarPanels> toolbarPanels = workSpace->toolbarPanels();
-		panel = workSpace->toolbarPanels()->itemById(K_PANEL);
-		if (!panel)
-			panel = workSpace->toolbarPanels()->add(K_PANEL, "Export");
-
-		panelControls = panel->controls();
-
-		// Create buttons
-		if (!createExportButton())
-			throw "Failed to create toolbar buttons.";
-
-		// Add buttons to panel
-		if (!panelControls->itemById(K_EXPORT_BUTTON))
-			panelControls->addCommand(exportButtonCommand)->isPromoted(true);
 
 		return true;
 	}
@@ -61,7 +48,7 @@ void EUI::deleteWorkspace()
 	deleteProgressPalette();
 
 	// Delete buttons
-	deleteExportButton();
+	deleteButtons();
 
 	// Delete event handlers
 	delete workspaceActivatedHandler;
@@ -205,30 +192,55 @@ void EUI::closeProgressPalette()
 	enableExportButton();
 }
 
-// BUTTONS
+// BUTTONS AND PANELS
 
-bool EUI::createExportButton()
+void EUI::createPanels()
 {
-	// Create button command definition
-	exportButtonCommand = UI->commandDefinitions()->itemById(K_EXPORT_BUTTON);
-	
-	if (!exportButtonCommand)
-	{
-		exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Export", "Setup your robot for exporting to Synthesis.", "Resources/SynthesisIcons");
-		return addHandler<ShowPaletteCommandCreatedHandler>(exportButtonCommand);
-	}
-
-	return true;
+	driveTrainPanel = workSpace->toolbarPanels()->add(K_DRIVE_PANEL, "Drive Train Setup");
+	jointSetupPanel = workSpace->toolbarPanels()->add(K_JOINT_PANEL, "Joint Setup");
+	precheckPanel = workSpace->toolbarPanels()->add(K_PRECHECK_PANEL, "Robot Setup Checklist");
+	finishPanel = workSpace->toolbarPanels()->add(K_FINISH_PANEL, "Finish");
 }
 
-void EUI::deleteExportButton()
+void EUI::createButtons()
+{
+	driveTrainType = UI->commandDefinitions()->addButtonDefinition(K_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/DriveIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainType);
+
+	driveTrainWeight = UI->commandDefinitions()->addButtonDefinition(K_DT_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/WeightIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeight);
+
+	editJointsButton = UI->commandDefinitions()->addButtonDefinition(K_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/JointIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton);
+
+	editDOFButton = UI->commandDefinitions()->addButtonDefinition(K_DOF, "Edit Degrees of Freedom", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton);
+
+	robotExportGuide = UI->commandDefinitions()->addButtonDefinition(K_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(robotExportGuide);
+
+	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(K_EXPORT_BUTTON, "Finish Robot Export", "Setup your robot for exporting to Synthesis.", "Resources/FinishIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(exportButtonCommand);
+
+
+	// Add buttons to finishPanel
+	driveTrainPanel->controls()->addCommand(driveTrainType)->isPromoted(true);
+	driveTrainPanel->controls()->addCommand(driveTrainWeight)->isPromoted(true);
+	jointSetupPanel->controls()->addCommand(editJointsButton)->isPromoted(true);
+	precheckPanel->controls()->addCommand(robotExportGuide)->isPromoted(true);
+	precheckPanel->controls()->addCommand(editDOFButton)->isPromoted(true);
+	finishPanel->controls()->addCommand(exportButtonCommand)->isPromoted(true);
+}
+
+
+void EUI::deleteButtons()
 {
 	// Delete button
 	Ptr<ToolbarPanelList> panels = UI->allToolbarPanels();
 	if (!panels)
 		return;
 
-	Ptr<ToolbarPanel> panel = panels->itemById(SynthesisAddIn::K_PANEL);
+	Ptr<ToolbarPanel> panel = panels->itemById(SynthesisAddIn::K_FINISH_PANEL);
 	if (!panel)
 		return;
 
