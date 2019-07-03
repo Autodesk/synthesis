@@ -239,12 +239,6 @@ namespace BxDRobotExporter
             EditJointButton.OnExecute += EditJoint_OnExecute;
             EditJointButton.OnHelp += _OnHelp;
             JointPanel.CommandControls.AddButton(EditJointButton, true);
-            
-            DOFButton = ControlDefs.AddButtonDefinition("Edit Degrees\nof Freedom", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit degrees of freedom.", EditJointIconSmall, EditJointIconLarge);
-            DOFButton.OnExecute += delegate { MessageBox.Show("DOF editor not implemented!"); };
-            DOFButton.OnHelp += _OnHelp;
-            JointPanel.CommandControls.AddButton(DOFButton, true);
 
             // ChecklistPanel buttons
             PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nGuide", "BxD:RobotExporter:PreCheck",
@@ -253,6 +247,13 @@ namespace BxDRobotExporter
             PreCheckButton.OnExecute += delegate {Utilities.EmbededPrecheckPane.Visible = !Utilities.EmbededPrecheckPane.Visible; };
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
+            
+            DOFButton = ControlDefs.AddButtonDefinition("View Degrees\nof Freedom", "BxD:RobotExporter:DOF",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", EditJointIconSmall, EditJointIconLarge);
+            DOFButton.OnExecute += delegate { MessageBox.Show("DOF editor not implemented!"); };
+            DOFButton.OnHelp += _OnHelp;
+//            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
+
 
             #endregion
 
