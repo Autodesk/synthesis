@@ -1,6 +1,4 @@
-#include "gtest/gtest.h"
-#include "accelerometer.hpp"
-#include <iostream>
+#include "testing.hpp"
 
 TEST(Accelerometer, convertAccel) {
     hel::Accelerometer accelerometer;
