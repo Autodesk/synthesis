@@ -2,7 +2,6 @@
 #include "receive_data.hpp"
 
 #include <unistd.h>
-#include <iostream>
 #include "util.hpp"
 #include "global.hpp"
 #include "json_util.hpp"
@@ -60,7 +59,7 @@ namespace hel {
                     usleep(30000);
                 }
             } catch(std::system_error&) {
-                std::cerr << "Synthesis warning: Receiver socket disconnected. User code will continue to run, but inputs will be set to default.\n";
+                warn("Receiver socket disconnected. User code will continue to run, but inputs will be set to default.");
                 auto instance = ReceiveDataManager::getInstance();
                 instance.first->deserializeDeep(std::string(DEFAULT_DESERIALIZATION_DATA));
                 instance.first->updateDeep();
