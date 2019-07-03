@@ -15,15 +15,15 @@ namespace hel{
     /**
      * \fn constexpr unsigned findMostSignificantBit(T value)
      * \brief Finds the most significant bit in an integer
-     * Finds the index of the high bit of the greatest value; returns zero if zero is passed in
+     * Finds the index of the high bit of the greatest value; returns -1 if zero
      * \tparam T The type of integer
      * \param value The integer to analyze
      * \return The zero-indexed index of the most significant bit
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    constexpr unsigned findMostSignificantBit(T value){
-        unsigned most_significant_bit = 0;
+    constexpr int findMostSignificantBit(T value){
+        int most_significant_bit = -1;
 
         while(value != 0){
             value >>= 1;
@@ -225,7 +225,7 @@ namespace hel{
      * \return True if all the specified bits match
      */
 
-    constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){
+    constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){ // TODO delete?
         unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
         for(unsigned i = 0 ; i < msb; i++){
             if(checkBitHigh(comparison_mask,i)){

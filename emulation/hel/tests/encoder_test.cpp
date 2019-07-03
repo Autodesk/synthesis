@@ -1,7 +1,4 @@
-#include "gtest/gtest.h"
-#include "frc/WPILib.h"
-#include "roborio_manager.hpp"
-#include <iostream>
+#include "testing.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;

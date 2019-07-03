@@ -1,12 +1,11 @@
 #include "testing.hpp"
 
-#include <vector>
-
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-TEST(PWMTest, SetSpeed) {
-    constexpr unsigned SIZE = nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters + nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters;
+TEST(PWMTest, SetSpeed){
+    constexpr unsigned SIZE = nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumHdrRegisters +
+        nFPGA::nRoboRIO_FPGANamespace::tPWM::kNumMXPRegisters;
 
     for(unsigned i = 0; i < SIZE; i++){
         double power = 2.0 * i / SIZE - 1.0;

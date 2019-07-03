@@ -197,6 +197,7 @@ namespace hel{
     };
 
     namespace pwm_pulse_width{
+        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         constexpr int32_t MAX = 1499;
         constexpr int32_t CENTER = 999;
         constexpr int32_t MIN = 499;
