@@ -55,7 +55,8 @@ namespace BxDRobotExporter
         }
 
         public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
-        { 
+        {
+            StandardAddInServer.Instance.ClearDOFHighlight();
             StandardAddInServer.Instance.ChildHighlight.Clear();
 
             foreach (var componentOccurrence in occurrences)
