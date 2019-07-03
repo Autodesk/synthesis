@@ -145,7 +145,7 @@ namespace hel{
         switch(type){
         case Type::UNKNOWN:
             instance.second.unlock();
-            std::cerr<<"Synthesis exception: No matching input found in user code for input configured in robot model (EncoderManager with a channel on "<<asString(a_type)<<" port "<<((unsigned)a_channel)<<" and b channel on "<<asString(b_type)<<" port "<<((unsigned)b_channel)<<")\n";
+            warn("No matching input found in user code for input configured in robot model (EncoderManager with a channel on " + asString(a_type) + " port " + std::to_string((unsigned)a_channel) + " and b channel on " + asString(b_type) + " port " + std::to_string((unsigned)b_channel) + ")");
             return;
         case Type::FPGA_ENCODER:
         {
