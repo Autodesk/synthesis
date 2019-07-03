@@ -57,7 +57,7 @@ void EUI::deleteWorkspace()
 
 	// Delete palettes
 	deleteExportPalette();
-	deleteSensorsPalette();
+
 	deleteProgressPalette();
 
 	// Delete buttons
@@ -76,7 +76,6 @@ void EUI::deleteWorkspace()
 void EUI::preparePalettes()
 {
 	createExportPalette();
-	createSensorsPalette();
 	createProgressPalette();
 }
 
@@ -134,88 +133,18 @@ void EUI::openExportPalette()
 
 	uiThread = new std::thread([this](std::string configJSON)
 	{
-		exportPalette->sendInfoToHTML("joints", configJSON);
+		exportPalette->sendInfoToHTML("state", configJSON);
 		exportPalette->isVisible(true);
-		exportPalette->sendInfoToHTML("joints", configJSON);
+		exportPalette->sendInfoToHTML("state", configJSON);
 	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 }
 
 void EUI::closeExportPalette()
 {
 	exportPalette->isVisible(false);
-	sensorsPalette->isVisible(false);
 	enableExportButton();
 }
 
-// Sensors Palette
-
-bool EUI::createSensorsPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
-
-	// Check if palette already exists
-	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
-	if (!sensorsPalette)
-	{
-		// Create palette
-		sensorsPalette = palettes->add(K_SENSORS_PALETTE, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
-		if (!sensorsPalette)
-			return false;
-
-		// Dock the palette to the right side of Fusion window.
-		sensorsPalette->dockingState(PaletteDockStateRight);
-
-		addHandler<ReceiveFormDataHandler>(sensorsPalette);
-	}
-
-	return true;
-}
-
-void EUI::deleteSensorsPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	// Check if palette already exists
-	sensorsPalette = palettes->itemById(K_SENSORS_PALETTE);
-
-	if (!sensorsPalette)
-		return;
-
-	clearHandler<ReceiveFormDataHandler>(sensorsPalette);
-
-	sensorsPalette->deleteMe();
-	sensorsPalette = nullptr;
-}
-
-void EUI::openSensorsPalette(std::string sensors)
-{
-	static std::thread * uiThread = nullptr;
-	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-	uiThread = new std::thread([this](std::string sensors)
-	{
-		sensorsPalette->sendInfoToHTML("sensors", sensors);
-		sensorsPalette->isVisible(true);
-		sensorsPalette->sendInfoToHTML("sensors", sensors);
-	}, sensors);
-}
-
-void EUI::closeSensorsPalette(std::string sensorsToSave)
-{
-	sensorsPalette->isVisible(false);
-
-	if (sensorsToSave.length() > 0)
-	{
-		static std::thread * uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		uiThread = new std::thread([this](std::string sensors) { exportPalette->sendInfoToHTML("sensors", sensors); }, sensorsToSave);
-	}
-}
 
 // Progress Palette
 
