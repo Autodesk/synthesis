@@ -60,13 +60,15 @@ namespace Assets.Scripts.GUI
         {
             if (loadingPanel.activeSelf)
             {
+                Text t = loadingPanel.transform.Find("Text").GetComponent<Text>();
+
                 if (loaded)
                 {
+                    t.text = "Loading.";
                     loadingPanel.SetActive(false);
                     loaded = false;
                 } else
                 {
-                    Text t = loadingPanel.transform.Find("Text").GetComponent<Text>();
                     if (Time.unscaledTime >= lastAdditionalDot + 0.5)
                     {
                         t.text += ".";
