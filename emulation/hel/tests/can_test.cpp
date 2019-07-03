@@ -1,8 +1,6 @@
-#include "gtest/gtest.h"
-#include "frc/WPILib.h"
+#include "testing.hpp"
 //#include "ctre/Phoenix.h"
 #include "roborio_manager.hpp"
-#include <iostream>
 #include <cmath>
 #include "FRC_NetworkCommunication/CANSessionMux.h"
 

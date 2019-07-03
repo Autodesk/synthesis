@@ -172,6 +172,10 @@ else()
 endif()
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+  IF(NOT DEFINED WPILIB)
+    MESSAGE(FATAL_ERROR "Please specify WPILib Version with WPILIB tag")
+  ENDIF()
+
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
     ADD_DEPENDENCIES(FRCUserProgram wpilib ni-libraries)
