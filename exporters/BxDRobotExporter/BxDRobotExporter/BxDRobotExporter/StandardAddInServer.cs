@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.JointEditor;
+using BxDRobotExporter.Messages;
 using EditorsLibrary;
 using Inventor;
 using JointResolver.EditorsLibrary;
@@ -228,33 +229,30 @@ namespace BxDRobotExporter
 
             // Joint panel buttons
             CreateJointButton = ControlDefs.AddButtonDefinition("New Joint", "BxD:RobotExporter:CreateJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall,
-                NewJointIconLarge);
-            CreateJointButton.OnExecute += delegate(NameValueMap context) { MessageBox.Show("New joint action not implemented!"); };
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall, NewJointIconLarge);
+            CreateJointButton.OnExecute += delegate { MessageBox.Show("New joint action not implemented!"); };
             CreateJointButton.OnHelp += _OnHelp;
 //            JointPanel.CommandControls.AddButton(CreateJointButton, true);
 
             EditJointButton = ControlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall,
-                EditJointIconLarge);
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
             EditJointButton.OnExecute += EditJoint_OnExecute;
             EditJointButton.OnHelp += _OnHelp;
             JointPanel.CommandControls.AddButton(EditJointButton, true);
+            
+            DOFButton = ControlDefs.AddButtonDefinition("Edit Degrees\nof Freedom", "BxD:RobotExporter:DOF",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit degrees of freedom.", EditJointIconSmall, EditJointIconLarge);
+            DOFButton.OnExecute += delegate { MessageBox.Show("DOF editor not implemented!"); };
+            DOFButton.OnHelp += _OnHelp;
+            JointPanel.CommandControls.AddButton(DOFButton, true);
 
             // ChecklistPanel buttons
-            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nPre-check", "BxD:RobotExporter:PreCheck",
+            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nGuide", "BxD:RobotExporter:PreCheck",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
                 "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
-            PreCheckButton.OnExecute += delegate(NameValueMap context) { MessageBox.Show("Pre-check not implemented!"); };
+            PreCheckButton.OnExecute += delegate {Utilities.EmbededPrecheckPane.Visible = !Utilities.EmbededPrecheckPane.Visible; };
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
-
-            DOFButton = ControlDefs.AddButtonDefinition("Edit Degrees\nof Freedom", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit degrees of freedom.", PrecheckIconSmall,
-                PrecheckIconLarge);
-            DOFButton.OnExecute += delegate(NameValueMap context) { MessageBox.Show("DOF editor not implemented!"); };
-            DOFButton.OnHelp += _OnHelp;
-            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
 
             #endregion
 
@@ -505,6 +503,13 @@ namespace BxDRobotExporter
                         Utilities.ShowDockableWindows();
                         HiddenExporter = false;
                     }
+                }
+            } else if (BeforeOrAfter == EventTimingEnum.kAfter)
+            {
+                if (Properties.Settings.Default.ShowFirstLaunchInfo)
+                {
+                    var firstLaunchInfo = new FirstLaunchInfo();
+                    firstLaunchInfo.ShowDialog();
                 }
             }
 

@@ -12,6 +12,7 @@ namespace JointResolver.EditorsLibrary
         private static readonly Color DefaultColor = SystemColors.Control;
 
         private readonly Dictionary<RigidNode_Base.DriveTrainType, Control> controls = new Dictionary<RigidNode_Base.DriveTrainType, Control>();
+        private RigidNode_Base.DriveTrainType driveTrainType;
 
         public DriveTrainTypeForm()
         {
@@ -26,12 +27,12 @@ namespace JointResolver.EditorsLibrary
                 RecursiveControlNavigator(keyValuePair.Value, control => control.MouseDown += (sender, args) => SelectType(keyValuePair.Key));
                 RecursiveControlNavigator(keyValuePair.Value, control => control.MouseEnter += (sender, args) =>
                 {
-                    if (SynthesisGUI.Instance.SkeletonBase.driveTrainType != keyValuePair.Key)
+                    if (driveTrainType != keyValuePair.Key)
                         keyValuePair.Value.BackColor = HoverColor;
                 });
                 RecursiveControlNavigator(keyValuePair.Value, control => control.MouseLeave += (sender, args) =>
                 {
-                    if (SynthesisGUI.Instance.SkeletonBase.driveTrainType != keyValuePair.Key)
+                    if (driveTrainType != keyValuePair.Key)
                         keyValuePair.Value.BackColor = DefaultColor;
                 });
             }
@@ -51,7 +52,7 @@ namespace JointResolver.EditorsLibrary
 
         private void SelectType(RigidNode_Base.DriveTrainType type)
         {
-            SynthesisGUI.Instance.SkeletonBase.driveTrainType = type;
+            driveTrainType = type;
             foreach (var keyValuePair in controls)
             {
                 keyValuePair.Value.BackColor = DefaultColor;
@@ -61,6 +62,11 @@ namespace JointResolver.EditorsLibrary
             {
                 value.BackColor = SelectedColor;
             }
+        }
+        private void BtnOk_Click(object sender, EventArgs e)
+        {
+            SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainType;
+            Close();
         }
     }
 }
