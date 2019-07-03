@@ -82,13 +82,11 @@ namespace hel{
             /*
                 From testing with CTRE motor controllers:
                 DATA[x] - DATA[0] results in the number with the correct sign
-                DATA[1] - DATA[0] is the number of 256*256's
-                DATA[2] - DATA[0] is the number of 256's
-                DATA[3] - DATA[0] is the number of 1's
-                divide by (256*256*4) to scale from the range -256*256*4 to 256*256*4 to the range -1.0 to 1.0
+                DATA[1] is the first byte of the number and DATA[2] is the second
+                Dividing by 0x0400 scales the value to the proper -1.0 to 1.0
             */
-            setPercentOutput(((double)( (DATA[1] - DATA[0])*256*256 + (DATA[2] - DATA[0])*256 + (DATA[3] - DATA[0])) ) / (256*256*4));
-            setInverted(hel::checkBitHigh(command_byte,SendCommandByteMask::INVERT));
+            setPercentOutput((double)(((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400);
+            setInverted(checkBitHigh(command_byte,SendCommandByteMask::INVERT));
 
             for(unsigned i = 0; i < 8; i++){ //check for unrecognized command bits
                 if(
@@ -101,8 +99,8 @@ namespace hel{
         }
 
         std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/){
-          // if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
-          // }
+            // if(containsBits(*messageID, CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
+            // }
             return {}; // TODO
         }
     }
