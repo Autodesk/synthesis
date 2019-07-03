@@ -339,6 +339,9 @@ namespace BxDRobotExporter
             blueHighlightSet = AsmDocument.CreateHighlightSet();
             greenHighlightSet = AsmDocument.CreateHighlightSet();
             redHighlightSet = AsmDocument.CreateHighlightSet();
+            blueHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.DodgerBlue);
+            greenHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.LawnGreen);
+            redHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.Red);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = Utilities.GetInventorColor(SynthesisGUI.PluginSettings.InventorChildColor);
             WheelHighlight = AsmDocument.CreateHighlightSet();
@@ -651,12 +654,11 @@ namespace BxDRobotExporter
 
                 foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
                 {
-                    if (node == Utilities.GUI.SkeletonBase)
+                    if (node == Utilities.GUI.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                     {
                         continue;
                     }
-
-                    if (node.GetSkeletalJoint() == null || node.GetSkeletalJoint().cDriver == null)
+                    if (node.GetSkeletalJoint() == null || node.GetSkeletalJoint().cDriver == null) // TODO: Figure out how to identify nodes that aren't set up (highlight red)
                     {
                         problemNodes.Add(node);
                     }
@@ -666,12 +668,10 @@ namespace BxDRobotExporter
                     }
                 }
 
-
                 ChildHighlight.Clear();
-
-                CreateHighlightSet(rootNodes, System.Drawing.Color.DodgerBlue, blueHighlightSet);
-                CreateHighlightSet(jointedNodes, System.Drawing.Color.LawnGreen, greenHighlightSet);
-                CreateHighlightSet(problemNodes, System.Drawing.Color.Red, redHighlightSet);
+                CreateHighlightSet(rootNodes, blueHighlightSet);
+                CreateHighlightSet(jointedNodes, greenHighlightSet);
+                CreateHighlightSet(problemNodes, redHighlightSet);
             }
             else
             {
@@ -681,10 +681,9 @@ namespace BxDRobotExporter
             }
         }
 
-        private void CreateHighlightSet(List<RigidNode_Base> nodes, System.Drawing.Color color, HighlightSet highlightSet)
+        private void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
         {
             highlightSet.Clear();
-            highlightSet.Color = Utilities.GetInventorColor(color);
             foreach (var componentOccurrence in InventorUtils.GetComponentOccurrencesFromNodes(nodes))
             {
                 highlightSet.AddItem(componentOccurrence);
