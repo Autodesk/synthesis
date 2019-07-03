@@ -74,7 +74,7 @@ namespace hel{
          * \brief All the CAN motor controller outputs
          */
 
-        std::map<uint32_t, CANMotorController> can_motor_controllers;
+        std::map<uint32_t, std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
 
         /**
          * \brief Update the serialized_data with the PWM headers
