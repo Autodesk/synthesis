@@ -68,7 +68,6 @@ namespace hel{
     }
 
     double PWMSystem::getPercentOutput(uint32_t pulse_width)noexcept{
-        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         if (pulse_width == 0) {
             return 0.0;
         } else if (pulse_width > pwm_pulse_width::MAX) {
@@ -83,9 +82,10 @@ namespace hel{
         return 0.0;
     }
 
-    PWMSystem::PWM::PWM()noexcept:period_scale(0), pulse_width(0){}
+    PWMSystem::PWM::PWM()noexcept: zero_latch(false), period_scale(0), pulse_width(0){}
     PWMSystem::PWM::PWM(const PWM& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
+        COPY(zero_latch);
         COPY(period_scale);
         COPY(pulse_width);
 #undef COPY
