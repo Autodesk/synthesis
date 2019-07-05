@@ -338,6 +338,8 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="PrecheckPanel\ExportGuide.html" />
+    <None Include="Resources\Tank.PNG" />
+    <None Include="Resources\hDrive.PNG" />
     <None Include="Resources\SynButton32.bmp" />
     <None Include="Resources\SynButton16.bmp" />
     <None Include="Resources\Logo32.bmp" />
