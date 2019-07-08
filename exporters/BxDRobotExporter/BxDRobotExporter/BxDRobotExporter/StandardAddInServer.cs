@@ -72,7 +72,7 @@ namespace BxDRobotExporter
         ButtonDefinition DrivetrainWeightButton;
         ButtonDefinition WheelAssignmentButton;
 
-        ButtonDefinition CreateJointButton;
+        ButtonDefinition AdvancedEditJointButton;
         ButtonDefinition EditJointButton;
 
         ButtonDefinition PreCheckButton;
@@ -174,11 +174,11 @@ namespace BxDRobotExporter
             DriveTrainPanel.CommandControls.AddButton(DrivetrainWeightButton, true);
 
             // Joint panel buttons
-            CreateJointButton = ControlDefs.AddButtonDefinition("New Joint", "BxD:RobotExporter:CreateJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall, NewJointIconLarge);
-            CreateJointButton.OnExecute += delegate { MessageBox.Show("New joint action not implemented!"); };
-            CreateJointButton.OnHelp += _OnHelp;
-//            JointPanel.CommandControls.AddButton(CreateJointButton, true);
+            AdvancedEditJointButton = ControlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Joint editor for advanced users.", EditJointIconSmall, EditJointIconLarge);
+            AdvancedEditJointButton.OnExecute += AdvancedEditJoint_OnExecute;
+            AdvancedEditJointButton.OnHelp += _OnHelp;
+            JointPanel.SlideoutControls.AddButton(AdvancedEditJointButton);
 
             EditJointButton = ControlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
@@ -193,13 +193,12 @@ namespace BxDRobotExporter
             PreCheckButton.OnExecute += delegate {Utilities.EmbededPrecheckPane.Visible = !Utilities.EmbededPrecheckPane.Visible; };
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
-            
+
             DOFButton = ControlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", PrecheckIconSmall, PrecheckIconLarge);
             DOFButton.OnExecute += DOF_OnExecute;
             DOFButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(DOFButton, true);
-
 
             #endregion
 
@@ -328,7 +327,7 @@ namespace BxDRobotExporter
             // Reload panels in UI
             jointForm = new JointForm();
             Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
+            Utilities.HideAdvancedJointEditor();
         }
 
         /// <summary>
@@ -429,7 +428,7 @@ namespace BxDRobotExporter
             {
                 if (BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    Utilities.HideDockableWindows();
+                    Utilities.HideAdvancedJointEditor();
                     HiddenExporter = true;
                 }
             }
@@ -453,7 +452,6 @@ namespace BxDRobotExporter
                 {
                     if ((AsmDocument == null || assembly == AsmDocument) && HiddenExporter)
                     {
-                        Utilities.ShowDockableWindows();
                         HiddenExporter = false;
                     }
                 }
@@ -561,28 +559,6 @@ namespace BxDRobotExporter
 
         #region Custom Button Events
 
-        /// <summary>
-        /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>, then opens the <see cref="Wizard.WizardForm"/>
-        /// </summary>
-        /// <param name="Context"></param>
-        public void BeginWizardExport_OnExecute(NameValueMap Context)
-        {
-            if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
-                return;
-
-            Wizard.WizardForm wizard = new Wizard.WizardForm();
-            Utilities.HideDockableWindows();
-
-            wizard.ShowDialog();
-//                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-//                {
-//                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
-//                    finishDialog.ShowDialog();
-//                }
-            Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
-        }
-
         private bool displayDOF = false;
         public void DOF_OnExecute(NameValueMap Context)
         {
@@ -646,12 +622,16 @@ namespace BxDRobotExporter
             if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                 return;
 
-            Utilities.HideDockableWindows();
+            Utilities.HideAdvancedJointEditor();
             await jointForm.PreShow();
             jointForm.ShowDialog();
 
             Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
+        }
+
+        private void AdvancedEditJoint_OnExecute(NameValueMap Context)
+        {
+            Utilities.ToggleAdvancedJointEditor();
         }
 
         /// <summary>
