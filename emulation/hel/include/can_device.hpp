@@ -100,7 +100,7 @@ namespace hel{
 
         virtual void parseCANPacket(const int32_t&, const std::vector<uint8_t>&) = 0;
 
-        virtual std::vector<uint8_t> generateCANPacket(const int32_t&) = 0;
+        virtual std::vector<uint8_t> generateCANPacket(const int32_t&)const = 0;
 
         CANDevice()noexcept;
 

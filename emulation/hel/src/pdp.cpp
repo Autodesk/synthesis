@@ -5,11 +5,11 @@ namespace hel{
         return "()";
     }
 
-    void PDP::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
-        assert(DATA.size() == MessageData::SIZE);
+    void PDP::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& /*DATA*/){
+        // assert(DATA.size() == MessageData::SIZE);
     }
 
-    std::vector<uint8_t> PDP::generateCANPacket(const int32_t& /*API_ID*/){
+    std::vector<uint8_t> PDP::generateCANPacket(const int32_t& /*API_ID*/)const{
         return {};
     }
 
