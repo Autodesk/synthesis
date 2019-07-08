@@ -87,6 +87,15 @@ namespace Synthesis.GUI
         GameObject helpMenu;
         GameObject overlay;
 
+        private static SimUI instance = null;
+
+        private void Start()
+        {
+            instance = this;
+        }
+
+        public static SimUI getSimUI() { return instance; }
+
         private void Update()
         {
             if (toolkit == null)
@@ -254,6 +263,18 @@ namespace Synthesis.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
             }
+        }
+
+        public void ShowError(string msg)
+        {
+            GameObject errorScreen = Auxiliary.FindGameObject("ErrorScreen");
+            errorScreen.transform.Find("ErrorText").GetComponent<Text>().text = msg;
+            errorScreen.SetActive(true);
+        }
+
+        public void CloseErrorScreen()
+        {
+            Auxiliary.FindGameObject("ErrorScreen").SetActive(false);
         }
 
         /// <summary>
@@ -791,6 +812,7 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                    MainState.timesLoaded--;
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
@@ -812,7 +834,8 @@ namespace Synthesis.GUI
                     exitPanel.SetActive(true);
                     break;
                 case "exit":
-                    SceneManager.LoadScene("MainMenu");
+                    if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    //else UnityEditor.EditorApplication.isPlaying = false;
                     break;
                 case "cancel":
                     exitPanel.SetActive(false);

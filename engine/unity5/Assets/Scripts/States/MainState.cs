@@ -157,7 +157,7 @@ namespace Synthesis.States
 
                 try
                 {
-                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                    //result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
                 } catch (Exception e) {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
@@ -167,7 +167,7 @@ namespace Synthesis.States
                     PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
                     if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                     {
-                        AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
+                        AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nThis is the default bot\nReinstall recommended)");
                         return;
                     }
                 }

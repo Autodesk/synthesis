@@ -183,6 +183,7 @@ namespace Synthesis.Robot
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                MainState.timesLoaded--;
                 SceneManager.LoadScene("Scene");
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
