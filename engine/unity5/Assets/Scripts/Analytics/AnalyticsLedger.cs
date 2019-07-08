@@ -12,13 +12,21 @@ public class AnalyticsLedger
 
     public class EventCatagory {
         public const string
+
+            // Main Menu scene and events
             MainSimMenu = "simMenu",
             MixAndMatchMenu = "mixMenu",
             SettingsMenu = "settingsMenu",
             MultiplayerMenu = "multiplayerMenu",
-            MainSimulator = "mainSimulator",
             MixAndMatchSimulator = "mixSimulator",
-            MultiplayerSimulator = "multiplayerSimulator";
+
+            // Activated scenes 
+            MainSimulator = "mainSimulator",
+            MultiplayerSimulator = "multiplayerSimulator",
+
+            // Scene events 
+            ChangeRobot = "changeRobot",
+            ChangeField = "changeField";
     }
 
     public class EventAction
@@ -28,7 +36,8 @@ public class AnalyticsLedger
             TutorialRequest = "requestedTutorial",
             Saved = "saved",
             BackedOut = "backedOut",
-            Continued = "continued";
+            Continued = "continued",
+            Clicked = "clicked";
     }
 
     public class PageView

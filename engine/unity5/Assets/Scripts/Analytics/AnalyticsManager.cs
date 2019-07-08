@@ -97,7 +97,7 @@ public class AnalyticsManager : MonoBehaviour {
     public void LogStandardInfo()
     {
         loggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
-        loggedData.Enqueue(new KeyValuePair<string, string>("tid", TESTING_TRACKING_ID));
+        loggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
         loggedData.Enqueue(new KeyValuePair<string, string>("cid", "555"));
     }
 
