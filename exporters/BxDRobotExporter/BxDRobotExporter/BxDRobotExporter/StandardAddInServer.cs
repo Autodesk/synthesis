@@ -155,7 +155,8 @@ namespace BxDRobotExporter
 
             #endregion
 
-            #region Setup Buttons
+            #region Setup Buttons 
+            // TODO: Delete these region things
 
             //Drive Train panel buttons
             DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train\nType",
@@ -186,18 +187,18 @@ namespace BxDRobotExporter
             JointPanel.CommandControls.AddButton(EditJointButton, true);
 
             // ChecklistPanel buttons
-            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nGuide", "BxD:RobotExporter:PreCheck",
+            PreCheckButton = ControlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:PreCheck",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
                 "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
             PreCheckButton.OnExecute += delegate {Utilities.EmbededPrecheckPane.Visible = !Utilities.EmbededPrecheckPane.Visible; };
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
             
-            DOFButton = ControlDefs.AddButtonDefinition("View Degrees\nof Freedom", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", EditJointIconSmall, EditJointIconLarge);
-            DOFButton.OnExecute += delegate { MessageBox.Show("DOF editor not implemented!"); };
+            DOFButton = ControlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", PrecheckIconSmall, PrecheckIconLarge);
+            DOFButton.OnExecute += DOF_OnExecute;
             DOFButton.OnHelp += _OnHelp;
-//            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
+            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
 
 
             #endregion
@@ -280,6 +281,12 @@ namespace BxDRobotExporter
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
             Utilities.CreateDockableWindows(MainApplication);
+            blueHighlightSet = AsmDocument.CreateHighlightSet();
+            greenHighlightSet = AsmDocument.CreateHighlightSet();
+            redHighlightSet = AsmDocument.CreateHighlightSet();
+            blueHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.DodgerBlue);
+            greenHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.LawnGreen);
+            redHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.Red);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = Utilities.GetInventorColor(SynthesisGUI.PluginSettings.InventorChildColor);
             WheelHighlight = AsmDocument.CreateHighlightSet();
@@ -546,6 +553,9 @@ namespace BxDRobotExporter
 
         private bool exporterBlocked = false;
         private JointForm jointForm;
+        private HighlightSet blueHighlightSet;
+        private HighlightSet greenHighlightSet;
+        private HighlightSet redHighlightSet;
 
         #endregion
 
@@ -571,6 +581,64 @@ namespace BxDRobotExporter
 //                }
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
+        }
+
+        private bool displayDOF = false;
+        public void DOF_OnExecute(NameValueMap Context)
+        {
+            displayDOF = !displayDOF;
+
+            if (displayDOF)
+            {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                    return;
+
+                var rootNodes = new List<RigidNode_Base> {Utilities.GUI.SkeletonBase};
+                var jointedNodes = new List<RigidNode_Base>();
+                var problemNodes = new List<RigidNode_Base>();
+
+                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                {
+                    if (node == Utilities.GUI.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                    {
+                        continue;
+                    }
+                    if (node.GetSkeletalJoint() == null || node.GetSkeletalJoint().cDriver == null) // TODO: Figure out how to identify nodes that aren't set up (highlight red)
+                    {
+                        problemNodes.Add(node);
+                    }
+                    else
+                    {
+                        jointedNodes.Add(node);
+                    }
+                }
+
+                ChildHighlight.Clear();
+                CreateHighlightSet(rootNodes, blueHighlightSet);
+                CreateHighlightSet(jointedNodes, greenHighlightSet);
+                CreateHighlightSet(problemNodes, redHighlightSet);
+            }
+            else
+            {
+                ClearDOFHighlight();
+            }
+        }
+
+        public void ClearDOFHighlight()
+        {
+            blueHighlightSet.Clear();
+            greenHighlightSet.Clear();
+            redHighlightSet.Clear();
+            displayDOF = false;
+        }
+
+        private void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
+        {
+            highlightSet.Clear();
+            foreach (var componentOccurrence in InventorUtils.GetComponentOccurrencesFromNodes(nodes))
+            {
+                highlightSet.AddItem(componentOccurrence);
+            }
         }
 
         public void EditJoint_OnExecute(NameValueMap Context)
