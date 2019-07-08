@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections;
-using System.Runtime.InteropServices;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -730,7 +722,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.SelectNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
+                InventorUtils.FocusAndHighlightNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
                 // Start drag-and-drop process
                 NodeListBox.DoDragDrop(NodeListBox.SelectedItem.ToString(), DragDropEffects.Move);
             }
@@ -749,7 +741,7 @@ namespace BxDRobotExporter.Wizard
                 return;
 
             // Highlight node in Inventor
-            StandardAddInServer.Instance.SelectNode(setupPanels[name].Node);
+            InventorUtils.FocusAndHighlightNode(setupPanels[name].Node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
             // Start drag-and-drop process
             NodeListBox.DoDragDrop(name, DragDropEffects.Move);
         }
@@ -929,7 +921,7 @@ namespace BxDRobotExporter.Wizard
             if (NodeListBox.SelectedItem != null)
             {
                 // Highlight node in Inventor
-                StandardAddInServer.Instance.SelectNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node);
+                InventorUtils.FocusAndHighlightNode(setupPanels[NodeListBox.SelectedItem.ToString()].Node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
             }
         }
         /// <summary>

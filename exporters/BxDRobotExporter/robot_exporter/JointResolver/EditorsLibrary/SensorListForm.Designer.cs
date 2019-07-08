@@ -114,7 +114,6 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(549, 298);
             this.Name = "SensorListForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Sensor List";
             this.Activated += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             this.Deactivate += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
