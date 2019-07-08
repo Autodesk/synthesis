@@ -41,13 +41,6 @@ namespace SynthesisAddIn
 		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
-		/// Loads and opens the sensors configuration palette.
-		/// \param sensors Existing sensor configuration to load.
-		void openSensorsPalette(std::string sensors);
-		/// Closes the sensors configuration palette.
-		/// \param sensorsToSave Sensor configuration to send to the robot exporter for saving.
-		void closeSensorsPalette(std::string sensorsToSave = "");
-
 		void openProgressPalette(); ///< Opens the progress bar palette and sets the progress to 0.
 		void closeProgressPalette(); ///< Closes the progress bar palette.
 
@@ -82,14 +75,20 @@ namespace SynthesisAddIn
 		Ptr<UserInterface> UI; ///< Active Fusion user interface.
 
 		Ptr<Workspace> workSpace; ///< Synthesis workspace.
-		Ptr<ToolbarPanel> panel; ///< Synthesis control panel.
-		Ptr<ToolbarControls> panelControls; ///< Synthesis control panel controls.
+		Ptr<ToolbarPanel> finishPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> driveTrainPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
 		Ptr<Palette> driveWeightPalette; ///< Robot export configuration palette.
 		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
-		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
+		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainWeight; ///< Export robot button.
+		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
+		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
+		Ptr<CommandDefinition> robotExportGuide; ///< Export robot button.
 		Ptr<CommandDefinition> exportButtonCommand; ///< Export robot button.
 
 		// Event Handlers
@@ -120,8 +119,8 @@ namespace SynthesisAddIn
 		bool clearHandler(Ptr<T> el);
 
 		// UI Creation/Deletion
-		bool createWorkspace(); ///< Creates the Synthesis workspace, panel, and controls.
-		void deleteWorkspace(); ///< Deletes the panel and controls.
+		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
+		void deleteWorkspace(); ///< Deletes the finishPanel and controls.
 
 		bool createDriveWeightPalette(); ///< Creates the robot export configuration palette.
 		void deleteDriveWeightPalette(); ///< Deletes the robot export configuration palette.
@@ -129,14 +128,12 @@ namespace SynthesisAddIn
 		bool createExportPalette(); ///< Creates the robot export configuration palette.
 		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
 
-		bool createSensorsPalette(); ///< Creates the sensor configuration palette.
-		void deleteSensorsPalette(); ///< Deletes the sensor configuration palette.
-
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
 
-		bool createExportButton(); ///< Creates the export robot button.
-		void deleteExportButton(); ///< Deletes the export robot button.
+		void createPanels(); ///< Creates the export robot button.
+		void createButtons(); ///< Creates the export robot button.
+		void deleteButtons(); ///< Deletes the export robot button.
 
 		// Thread Information
 		std::thread * exportRobotThread; ///< Pointer to any active robot export thread.

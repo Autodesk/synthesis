@@ -36,21 +36,24 @@ namespace SynthesisAddIn
 	class ShowPaletteCommandExecuteHandler : public CommandEventHandler
 	{
 	public:
-		ShowPaletteCommandExecuteHandler(EUI * eui) : eui(eui) {}
+		ShowPaletteCommandExecuteHandler(EUI * eui, std::string id_) : eui(eui), id(id_) {  }
 		void notify(const Ptr<CommandEventArgs>& eventArgs) override;
 	private:
 		EUI * eui;
+		std::string id;
 	};
 
 	/// Notified when the export robot button is clicked.
 	class ShowPaletteCommandCreatedHandler : public CommandCreatedEventHandler
 	{
 	public:
-		ShowPaletteCommandCreatedHandler(EUI * eui) : eui(eui) {}
+		ShowPaletteCommandCreatedHandler(EUI* eui, std::string id_) : eui(eui), id(id_) {  }
 		~ShowPaletteCommandCreatedHandler();
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		void setId(std::string id_) { id = id_; }
 	private:
 		EUI * eui;
+		std::string id;
 
 		ShowPaletteCommandExecuteHandler * showPaletteCommandExecuteHandler = nullptr;
 		Ptr<Command> command;
