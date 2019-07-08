@@ -14,185 +14,184 @@
 #include "relay_system.hpp"
 #include "robot_output_service.hpp"
 
-namespace hel{
-    /**
-     * \brief Container for all the data to send to the Synthesis engine
-     * Contains functions to interpret RoboRIO data and prepare it for transmission
-     */
+namespace hel {
+/**
+ * \brief Container for all the data to send to the Synthesis engine
+ * Contains functions to interpret RoboRIO data and prepare it for transmission
+ */
 
-    struct SendData{
-    private:
-        /**
-         * \brief A copy of the most recently serialized data
-         * SendData will offer this unless an update function is called, which tells it to regenerate this string
-         */
+struct SendData {
+   private:
+	/**
+	 * \brief Whether SendData has been updated since last serialization
+	 */
 
-        std::string serialized_data;
+	bool new_data;
 
-        /**
-         * \brief Whether SendData has been updated since last serialization
-         */
+	/**
+	 * \brief Whether the robot is enabled and SendData should send outputs
+	 */
 
-        bool new_data;
+	bool enabled;
 
-        /**
-         * \brief Whether the robot is enabled and SendData should send outputs
-         */
+	/**
+	 * \brief The interpreted states of all the PWM header outputs
+	 */
+public:
+	BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
+private:
+	/**
+	 * \brief The interpreted states of all the relay outputs
+	 */
 
-        bool enabled;
+	BoundsCheckedArray<RelaySystem::State, RelaySystem::NUM_RELAY_HEADERS>
+		relays;
 
-        /**
-         * \brief The interpreted states of all the PWM header outputs
-         */
+	/**
+	 * \brief The interpreted states of all the analog outputs
+	 */
 
-        BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
+	BoundsCheckedArray<double, AnalogOutputs::NUM_ANALOG_OUTPUTS>
+		analog_outputs;
 
-        /**
-         * \brief The interpreted states of all the relay outputs
-         */
+	/**
+	 * \brief The interpreted states of all the digital MXP outputs
+	 */
 
-        BoundsCheckedArray<RelaySystem::State, RelaySystem::NUM_RELAY_HEADERS> relays;
+	BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS>
+		digital_mxp;
 
-        /**
-         * \brief The interpreted states of all the analog outputs
-         */
+	/**
+	 * \brief The interpreted states of all the digital header outputs
+	 */
 
-        BoundsCheckedArray<double, AnalogOutputs::NUM_ANALOG_OUTPUTS> analog_outputs;
+	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
-        /**
-         * \brief The interpreted states of all the digital MXP outputs
-         */
+	/**
+	 * \brief All the CAN motor controller outputs
+	 */
 
-        BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
+	std::map<uint32_t, CANMotorController> can_motor_controllers;
 
-        /**
-         * \brief The interpreted states of all the digital header outputs
-         */
+	EmulationService::RobotOutputs output;
 
-        BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
+	/**
+	 * \brief Update the serialized_data with the PWM headers
+	 */
 
-        /**
-         * \brief All the CAN motor controller outputs
-         */
+	void serializePWMHdrs();
 
-        std::map<uint32_t, std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
+	/**
+	 * \brief Update the serialized_data with the relays
+	 */
 
-        EmulationService::RobotOutputs output;
+	void serializeRelays();
 
-        EmulationService::RobotOutputs output;
+	/**
+	 * \brief Update the serialized_data with the analog outputs
+	 */
 
-        /**
-         * \brief Update the serialized_data with the PWM headers
-         */
+	void serializeAnalogOutputs();
 
-        void serializePWMHdrs();
+	/**
+	 * \brief Update the serialized_data with the digital MXP
+	 */
 
-        /**
-         * \brief Update the serialized_data with the relays
-         */
+	void serializeDigitalMXP();
 
-        void serializeRelays();
+	/**
+	 * \brief Update the serialized_data with the digital headers
+	 */
 
-        /**
-         * \brief Update the serialized_data with the analog outputs
-         */
+	void serializeDigitalHdrs();
 
-        void serializeAnalogOutputs();
+	/**
+	 * \brief Update the serialized_data with the CAN motor controllers
+	 */
 
-        /**
-         * \brief Update the serialized_data with the digital MXP
-         */
+	void serializeCANMotorControllers();
 
-        void serializeDigitalMXP();
+   public:
+	/**
+	 * \brief Constructor for SendData
+	 */
 
-        /**
-         * \brief Update the serialized_data with the digital headers
-         */
+	SendData();
 
-        void serializeDigitalHdrs();
+	/**
+	 * \brief Update the data held by SendData from a copy of the RoboRIO
+	 * instance This only updates the data supported by Synthesis's engine
+	 */
 
-        /**
-         * \brief Update the serialized_data with the CAN motor controllers
-         */
+	void updateShallow();
 
-        void serializeCANMotorControllers();
+	/**
+	 * \brief Update the data held by SendData from a copy of the RoboRIO
+	 * instance This updates all the data supported by HEL
+	 */
 
-    public:
-        /**
-         * \brief Constructor for SendData
-         */
+	void updateDeep();
 
-        SendData();
+	/**
+	 * \brief Set output enable
+	 * If SendData is disabled, it outputs zeroed outputs until it is re-enabled
+	 * \param e The new value to use for enabled
+	 */
 
-        /**
-         * \brief Update the data held by SendData from a copy of the RoboRIO instance
-         * This only updates the data supported by Synthesis's engine
-         */
+	void enable(bool);
 
-        void updateShallow();
+	/**
+	 * \brief Format SendData as a string
+	 * \return A string containing all the values held by SendData
+	 */
 
-        /**
-         * \brief Update the data held by SendData from a copy of the RoboRIO instance
-         * This updates all the data supported by HEL
-         */
+	std::string toString() const;
 
-        void updateDeep();
+	EmulationService::RobotOutputs syncShallow();
+	EmulationService::RobotOutputs syncDeep();
 
-        /**
-         * \brief Set output enable
-         * If SendData is disabled, it outputs zeroed outputs until it is re-enabled
-         * \param e The new value to use for enabled
-         */
+	/**
+	 * \brief Update and return the JSON serialized outputs
+	 * Only updates the cached serialized string if there is new data and it is
+	 * enabled. If it is disabled, it returns zeroed outputs. This also only
+	 * generates a string using the data supported by Synthesis's engine.
+	 */
 
-        void enable(bool);
+	std::string serializeShallow();
 
-        /**
-         * \brief Format SendData as a string
-         * \return A string containing all the values held by SendData
-         */
+	/**
+	 * \brief Update and return the JSON serialized outputs
+	 * Only updates the cached serialized string if there is new data and it is
+	 * enabled. If it is disabled, it returns zeroed outputs. This also
+	 * generates a string using all the data supported by HEL.
+	 */
 
-        std::string toString()const;
+	std::string serializeDeep();
 
-        EmulationService::RobotOutputs syncShallow();
-        EmulationService::RobotOutputs syncDeep();
+	/**
+	 * \brief Get if SendData has new data
+	 * \return True if SendData has been updated since last serialization
+	 */
 
-        /**
-         * \brief Update and return the JSON serialized outputs
-         * Only updates the cached serialized string if there is new data and it is enabled. If it is disabled, it returns zeroed outputs. This also only generates a string using the data supported by Synthesis's engine.
-         */
+	bool hasNewData() const;
+};
 
-        std::string serializeShallow();
+class SendDataManager {  // TODO move to separate file
+   public:
+	static std::pair<std::shared_ptr<SendData>,
+					 std::unique_lock<std::recursive_mutex>>
+	getInstance() {
+		std::unique_lock<std::recursive_mutex> lock(send_data_mutex);
+		if (instance == nullptr) {
+			instance = std::make_shared<SendData>();
+		}
+		return std::make_pair(instance, std::move(lock));
+	}
 
-        /**
-         * \brief Update and return the JSON serialized outputs
-         * Only updates the cached serialized string if there is new data and it is enabled. If it is disabled, it returns zeroed outputs. This also  generates a string using all the data supported by HEL.
-         */
-
-        std::string serializeDeep();
-
-        /**
-         * \brief Get if SendData has new data
-         * \return True if SendData has been updated since last serialization
-         */
-
-        bool hasNewData()const;
-    };
-
-    class SendDataManager { //TODO move to separate file
-    public:
-        static std::pair<std::shared_ptr<SendData>, std::unique_lock<std::recursive_mutex>> getInstance() {
-            std::unique_lock<std::recursive_mutex> lock(send_data_mutex);
-            if (instance == nullptr) {
-                instance = std::make_shared<SendData>();
-            }
-            return std::make_pair(instance, std::move(lock));
-        }
-
-    private:
-        static std::shared_ptr<SendData> instance;
-        static std::recursive_mutex send_data_mutex;
-
-    };
-}
+   private:
+	static std::shared_ptr<SendData> instance;
+	static std::recursive_mutex send_data_mutex;
+};
+}  // namespace hel
 
 #endif
