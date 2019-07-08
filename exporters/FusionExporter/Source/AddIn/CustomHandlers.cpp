@@ -38,7 +38,7 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 
 	// Create handler
 	if (showPaletteCommandExecuteHandler == nullptr)
-		showPaletteCommandExecuteHandler = new ShowPaletteCommandExecuteHandler(eui);
+		showPaletteCommandExecuteHandler = new ShowPaletteCommandExecuteHandler(eui, id);
 
 	Ptr<CommandEvent> exec = command->execute();
 	if (exec)
@@ -63,13 +63,29 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	eui->openExportPalette();
+	if (id == SynthesisAddIn::K_DT_WEIGHT)
+		eui->openDriveWeightPalette();
+
+
+	//eui->openExportPalette();
 }
 
 /// Palette Events
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
+
+	// Update the config state
+	if (eventArgs->action() == "state_update") {
+		eui->saveConfiguration(eventArgs->data());
+	}
+	else if (eventArgs->action() == "export") {
+		eui->saveConfiguration(eventArgs->data());
+		eui->startExportRobot();
+	}
+		
+
+	/*
 	if (eventArgs->action() == "highlight")
 		eui->highlightJoint(eventArgs->data());
 
@@ -91,6 +107,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		if (eventArgs->action() == "export")
 			eui->startExportRobot();
 	}
+	*/
 }
 
 // Close Exporter Form Event
