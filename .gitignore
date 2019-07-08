@@ -23,6 +23,7 @@ installer/cygscripts/http*
 *.sdf
 *.VC.db
 *.DS_Store
+**/.idea
 
 Synthesis_Data/
 
