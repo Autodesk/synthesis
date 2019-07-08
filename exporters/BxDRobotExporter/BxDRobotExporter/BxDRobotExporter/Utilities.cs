@@ -36,7 +36,7 @@ namespace BxDRobotExporter
             EmbededPrecheckPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:PrecheckPane", "Robot Export Guide");
             
             EmbededPrecheckPane.DockingState = DockingStateEnum.kDockRight;
-            EmbededPrecheckPane.Width = 400;
+            EmbededPrecheckPane.Width = 600;
             EmbededPrecheckPane.ShowVisibilityCheckBox = false;
             EmbededPrecheckPane.ShowTitleBar = true;
             var precheckPanel = new PrecheckPanel.PrecheckPanel();
