@@ -74,8 +74,11 @@ namespace hel{
 //#undef COPY
         }
 
-        void CANMotorController::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
-            assert(DATA.size() == MessageData::SIZE);
+        void CANMotorController::parseCANPacket(const int32_t& API_ID, const std::vector<uint8_t>& DATA){
+            if(DATA.size() != MessageData::SIZE){
+                warnUnsupportedFeature("Writing to CAN motor controller (" + asString(getType()) + " with ID " + std::to_string((unsigned)getID()) + ") with API ID " + std::to_string(API_ID) + " and data " + asString(DATA, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + "\n");
+                return;
+            }
 
             uint8_t command_byte = DATA[MessageData::COMMAND_BYTE];
 
@@ -98,10 +101,14 @@ namespace hel{
             }
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/){
-            // if(containsBits(*messageID, CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
-            // }
-            return {}; // TODO
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID)const{
+            std::vector<uint8_t> data;
+            switch(API_ID){
+            case CommandAPIID::GET_PERCENT_OUTPUT:
+            default:
+                warnUnsupportedFeature("Receiving CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+            }
+            return data;
         }
     }
 
@@ -136,11 +143,11 @@ namespace hel{
             case CommandAPIID::FIRMWARE:
               break;
             default:
-                warnUnsupportedFeature("Sending CAN packet to REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Sending CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID){
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID)const{
             std::vector<uint8_t> data;
             switch(API_ID){
             case CommandAPIID::FIRMWARE:
@@ -156,7 +163,7 @@ namespace hel{
                     break;
                 }
             default:
-                warnUnsupportedFeature("Receiving CAN packet from REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Receiving CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
 
             return data;

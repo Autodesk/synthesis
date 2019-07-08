@@ -8,38 +8,29 @@ using namespace nRoboRIO_FPGANamespace;
 
 std::vector<uint8_t> generateCTREPercentOutputData(double percent_output)noexcept{
     std::vector<uint8_t> data(hel::ctre::CANMotorController::MessageData::SIZE);
-    uint32_t percent_output_int = std::fabs(percent_output * 256 * 256 * 4);
+    uint32_t percent_output_int = std::fabs(percent_output) * 0x0400;
 
-    //divide percent_output_int among the bytes as expected by CTRE's CAN protocol
-    data[1] = percent_output_int / (256*256);
-    percent_output_int %= 256 * 256;
-    data[2] = percent_output_int / 256;
-    percent_output_int %= 256;
-    data[3] = percent_output_int;
+    // Divide percent_output_int among the bytes as expected by CTRE's CAN protocol
+    data[1] = (percent_output_int >> 8) & 0xFF;
+    data[2] = percent_output_int & 0xFF;
 
-    if(percent_output < 0.0){//format as 2's compliment
-        data[0] = 255;
-        data[1] = 255 - data[1];
-        data[2] = 255 - data[2];
-        data[3] = 255 - data[3];
+    if(percent_output < 0.0){
+        data[0] = 0xFF;
+        data[1] = 0xFF - data[1];
+        data[2] = 0xFF - data[2];
     }
     return data;
 }
 
-void printControllers(std::map<unsigned, std::shared_ptr<hel::CANMotorControllerBase>> can_motor_controllers){
-    std::cout << "can_motor_controllers:[";
-    for(const std::pair<unsigned, std::shared_ptr<hel::CANMotorControllerBase>>& a: can_motor_controllers){
-        std::cout << a.second->toString() << ", ";
-    }
-    std::cout << "]\n";
+std::vector<uint8_t> generateREVPercentOutputData(double percent_output)noexcept{
+    std::vector<uint8_t> data(8);
+    float power = percent_output;
+    std::memcpy(data.data(), &power, sizeof(float));
+    return data;
 }
 
-TEST(CANTest, IDs){
-    auto instance = hel::RoboRIOManager::getInstance();
-    //ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon = {1};
-    printControllers(instance.first->can_motor_controllers);
-    EXPECT_EQ(1, 1); //TODO
-    instance.second.unlock();
+void printControllers(std::map<unsigned, std::shared_ptr<hel::CANMotorControllerBase>> can_motor_controllers){
+    std::cout << "can_motor_controllers:" << asString(can_motor_controllers, [](auto a){ return a.second->toString(); }) << "\n";
 }
 
 TEST(CANTest, convertPercentOutputData){
@@ -63,21 +54,54 @@ TEST(CANTest, convertPercentOutputData){
     EXPECT_NEAR(a.getPercentOutput(), percent_output, EPSILON);
 }
 
-TEST(CANTest, sendMessage){
-    int32_t id = hel::CANMessageID::generate(hel::CANMessageID::Type::TALON_SRX, hel::CANMessageID::Manufacturer::CTRE, 0, 3);
+TEST(CANTest, setCTREPercentOutput){
+    const unsigned DEVICE_ID = 3;
+
+    int32_t id = hel::CANMessageID::generate(
+        hel::CANMessageID::Type::TALON_SRX,
+        hel::CANMessageID::Manufacturer::CTRE,
+        0,
+        DEVICE_ID
+    );
     double percent_output = 0.6;
-    std::vector<uint8_t> data(hel::ctre::CANMotorController::MessageData::SIZE);
-
-    FRC_NetworkCommunication_CANSessionMux_sendMessage(id, data.data(), data.size(), 0, nullptr);
-
-    data = generateCTREPercentOutputData(percent_output);
-    data[hel::ctre::CANMotorController::MessageData::COMMAND_BYTE] = 0b100000;
+    std::vector<uint8_t> data = generateCTREPercentOutputData(percent_output);
 
     FRC_NetworkCommunication_CANSessionMux_sendMessage(id, data.data(), data.size(), 0, nullptr);
 
     auto instance = hel::RoboRIOManager::getInstance();
     printControllers(instance.first->can_motor_controllers);
-    EXPECT_NEAR(instance.first->can_motor_controllers[3]->getPercentOutput(), percent_output, EPSILON);
+    EXPECT_NEAR(instance.first->can_motor_controllers[DEVICE_ID]->getPercentOutput(), percent_output, EPSILON);
+
+    instance.second.unlock();
+}
+
+TEST(CANTest, setREVPercentOutput){
+    const unsigned DEVICE_ID = 5;
+
+    int32_t id = hel::CANMessageID::generate(
+        hel::CANMessageID::Type::SPARK_MAX,
+        hel::CANMessageID::Manufacturer::REV,
+        hel::rev::CANMotorController::CommandAPIID::FIRMWARE,
+        DEVICE_ID
+    );
+    double percent_output = -0.3;
+    std::vector<uint8_t> data;
+
+    FRC_NetworkCommunication_CANSessionMux_sendMessage(id, data.data(), data.size(), 0, nullptr);
+
+    id = hel::CANMessageID::generate(
+        hel::CANMessageID::Type::SPARK_MAX,
+        hel::CANMessageID::Manufacturer::REV,
+        hel::rev::CANMotorController::CommandAPIID::DC_SET,
+        DEVICE_ID
+    );
+    data = generateREVPercentOutputData(percent_output);
+
+    FRC_NetworkCommunication_CANSessionMux_sendMessage(id, data.data(), data.size(), 0, nullptr);
+
+    auto instance = hel::RoboRIOManager::getInstance();
+    printControllers(instance.first->can_motor_controllers);
+    EXPECT_NEAR(instance.first->can_motor_controllers[DEVICE_ID]->getPercentOutput(), percent_output, EPSILON);
 
     instance.second.unlock();
 }
