@@ -641,13 +641,15 @@ namespace BxDRobotExporter
             }
         }
 
-        public void EditJoint_OnExecute(NameValueMap Context)
+        public async void EditJoint_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                 return;
 
             Utilities.HideDockableWindows();
+            await jointForm.PreShow();
             jointForm.ShowDialog();
+
             Utilities.GUI.ReloadPanels();
             Utilities.ShowDockableWindows();
         }
