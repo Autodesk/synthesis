@@ -22,11 +22,30 @@ public class AnalyticsLedger
 
             // Activated scenes 
             MainSimulator = "mainSimulator",
-            MultiplayerSimulator = "multiplayerSimulator",
+            //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
-            // Scene events 
+            // Main toolbar scene events
             ChangeRobot = "changeRobot",
-            ChangeField = "changeField";
+            ChangeField = "changeField",
+
+            ResetDropdown = "resetDropdown",
+            ResetRobot = "resetRobot",
+            ResetSpawnpoint = "resetSpawnpoint",
+            ResetField = "resetField",
+
+            CameraDropdown = "camDropdown",
+            DriverView = "driverStationView",
+            OrbitView = "orbitView",
+            FreeroamView = "freeRoamView",
+            Overview = "overviewView",
+
+            ReplayMode = "replayMode",
+            Multiplayer = "multiplayer",
+            Stopwatch = "stopWatch",
+            Ruler = "ruler",
+            ControlPanel = "controlPanel",
+            MainHelp = "mainToolbarHelp";
+
     }
 
     public class EventAction
@@ -37,7 +56,8 @@ public class AnalyticsLedger
             Saved = "saved",
             BackedOut = "backedOut",
             Continued = "continued",
-            Clicked = "clicked";
+            Clicked = "buttonClicked",
+            Viewed = "viewed";
     }
 
     public class PageView
@@ -64,7 +84,8 @@ public class AnalyticsLedger
         public const string
             Loading = "loading",
             Playing = "playing",
-            Customizing = "customizing";
+            Customizing = "customizing",
+            Viewing = "viewing";
     }
 
     public class TimingLabel
@@ -76,6 +97,9 @@ public class AnalyticsLedger
             MultiplayerLobbyMenu = "multiplayerLobbyMenu",
             MixAndMatchSim = "mixSim",
             MainSim = "mainSim",
-            MultiplayerSim = "multiplayerSim";
+            MultiplayerSim = "multiplayerSim",
+
+            // Help menus
+            MainHelp = "mainToolbarHelp";
     }
 }

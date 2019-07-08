@@ -130,24 +130,44 @@ namespace Synthesis.GUI
         /// <param name="i"></param>
         public void OnResetRobotDropdownValueChanged(int i)
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             switch (i)
             {
                 case 1:
                     State.BeginRobotReset();
                     State.EndRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetRobot,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 2:
                     GameObject.Destroy(GameObject.Find("Dropdown List"));
                     EndOtherProcesses();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     State.BeginRobotReset();
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetSpawnpoint,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 3:
                     Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);
                     Auxiliary.FindObject(canvas, "LoadingPanel").SetActive(true);
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetField,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
             }
         }
@@ -171,23 +191,48 @@ namespace Synthesis.GUI
         /// <param name="mode"></param>
         public void OnCameraDropdownValueChanged(int mode)
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             switch (mode)
             {
                 case 1:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
                     DynamicCamera.ControlEnabled = true;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverView,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 2:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
                     DynamicCamera.ControlEnabled = true;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.OrbitView,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 3:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
                     DynamicCamera.ControlEnabled = true;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.FreeroamView,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 4:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                     DynamicCamera.ControlEnabled = true;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Overview,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                     break;
             }
         }
@@ -206,6 +251,11 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "change",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
         }
 
@@ -215,6 +265,11 @@ namespace Synthesis.GUI
         public void OnReplayModeButtonClicked()
         {
             State.EnterReplayState();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ReplayMode,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -231,6 +286,11 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 multiplayerPanel.SetActive(true);
                 multiplayer.UpdateUI();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Multiplayer,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
         }
 
@@ -240,6 +300,11 @@ namespace Synthesis.GUI
         public void OnStopwatchClicked()
         {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Stopwatch,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -256,6 +321,11 @@ namespace Synthesis.GUI
         public void OnRulerClicked()
         {
             toolkit.ToggleRulerWindow(!rulerWindow.activeSelf);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Ruler,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -264,6 +334,11 @@ namespace Synthesis.GUI
         public void OnInfoButtonClicked()
         {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -288,12 +363,12 @@ namespace Synthesis.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Main Toolbar Help Button Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainHelp,
+                AnalyticsLedger.EventAction.Viewed,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainHelp,
+                AnalyticsLedger.TimingVarible.Viewing);
         }
 
         private void CloseHelpMenu()
