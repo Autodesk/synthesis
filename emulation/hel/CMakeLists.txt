@@ -15,14 +15,12 @@ SET(hel_VERSION_MINOR 0)
 
 SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
-SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
 SET(GRPC_DIRECTORY "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
 
 SET(GRPC "v1.21.4")
 # SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
-SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
@@ -91,12 +89,6 @@ ADD_CUSTOM_TARGET(build_vm
 	COMMENT "Download, build, and run synthesis VM"
 	VERBATIM)
 
-ADD_CUSTOM_TARGET(asio ALL
-  COMMAND ${CLONE_ASIO_COMMAND}
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
-  COMMENT "Download the C++ ASIO library"
-  VERBATIM)
-
 ADD_CUSTOM_TARGET(gen_grpc
   COMMAND ${CMD_GEN_GRPC}
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
@@ -130,12 +122,13 @@ EXTERNALPROJECT_ADD(wpilib
 # ADD_DEPENDENCIES(ctre wpilib)
 
 ExternalProject_ADD(grpc
+  BUILD_ALWAYS TRUE 
   PREFIX lib/grpc
   GIT_REPOSITORY https://github.com/grpc/grpc.git
   GIT_TAG ${GRPC}
   CONFIGURE_COMMAND ""
   #BUILD_COMMAND sudo ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} ${GRPC_DIRECTORY}/libs/opt/libgrpc.a sudo ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
   INSTALL_COMMAND "")
 
 ADD_LIBRARY(hel SHARED
@@ -143,8 +136,6 @@ ADD_LIBRARY(hel SHARED
   src/roborio_manager.cpp
   src/send_data.cpp
   src/receive_data.cpp
-  src/sync_server.cpp
-  src/sync_client.cpp
   src/util.cpp
   src/json_util.cpp
   src/init.cpp
@@ -184,8 +175,8 @@ ADD_LIBRARY(hel SHARED
   src/robot_input_service.cpp
   src/robot_output_service.cpp
 )
-ADD_DEPENDENCIES(hel asio ni-libraries gen_grpc)
-
+ADD_DEPENDENCIES(hel ni-libraries gen_grpc)
+target_link_libraries(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"
@@ -193,6 +184,8 @@ TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${GRPC_DIRECTORY}/third_party/protobuf/src"
   "${CMAKE_BINARY_DIR}/lib/gen"
 )
+
+
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
   IF(NOT DEFINED WPILIB)
@@ -246,9 +239,9 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       MESSAGE("Test \"${test_name}\" found. Generating build target.")
 
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
-      ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
+      ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilib)
 
-      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc_plugin_support.a libprotobuf.a libgpr.a libgrpc.a hel)
+      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
@@ -275,7 +268,6 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         # "${CTRE_DIRECTORY}/cpp/include/"
         # "${CTRE_DIRECTORY}/libraries/driver/include"
         "${CMAKE_BINARY_DIR}/include"
-        "${ASIO_DIRECTORY}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
 
       SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
@@ -307,7 +299,7 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
     MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
     ADD_EXECUTABLE(${benchmark_name} ${file})
-    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench asio wpilib)
+    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench wpilib)
 
     TARGET_LINK_LIBRARIES(${benchmark_name} gtest gtest_main pthread hel benchmark benchmark_main wpi-x86)
     TARGET_COMPILE_OPTIONS(${benchmark_name} PUBLIC -pthread)
@@ -326,7 +318,6 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
       # "${CTRE_DIRECTORY}/cpp/include/"
       # "${CTRE_DIRECTORY}/libraries/driver/include"
       "${CMAKE_BINARY_DIR}/include"
-      "${ASIO_DIRECTORY}/include"
       "${CMAKE_BINARY_DIR}/include"
       "${CMAKE_BINARY_DIR}/lib/include")
 

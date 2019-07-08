@@ -1,13 +1,6 @@
 #ifndef _ROBORIO_HPP_
 #define _ROBORIO_HPP_
 
-#define ASIO_STANDALONE
-#define ASIO_HAS_STD_ADDRESSOF
-#define ASIO_HAS_STD_ARRAY
-#define ASIO_HAS_CSTDINT
-#define ASIO_HAS_STD_SHARED_PTR
-#define ASIO_HAS_STD_TYPE_TRAITS
-
 #include <array>
 #include <map>
 #include <memory>
@@ -16,7 +9,7 @@
 #include <thread>
 #include <atomic>
 
-#include <asio.hpp>
+#include <grpcpp/grpcpp.h>
 
 #include "accelerometer.hpp"
 #include "accumulator.hpp"
