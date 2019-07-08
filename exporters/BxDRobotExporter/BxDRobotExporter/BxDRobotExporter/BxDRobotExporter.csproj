@@ -127,6 +127,8 @@
     <Reference Include="OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OpenTK.GLControl.1.1.2349.61993\lib\NET40\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -135,14 +137,56 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.InteropServices">
       <HintPath>..\..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Runtime.InteropServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.InteropServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.XML" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InventorUtils.cs" />
+    <Compile Include="JointEditor\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCard.Designer.cs">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\JointCardEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointCardEditor.Designer.cs">
+      <DependentUpon>JointCardEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\JointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JointEditor\JointForm.Designer.cs">
+      <DependentUpon>JointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JointEditor\WinFormsUtils.cs" />
+    <Compile Include="Messages\FirstLaunchInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Messages\FirstLaunchInfo.Designer.cs">
+      <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PrecheckPanel\PrecheckPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PrecheckPanel\PrecheckPanel.Designer.cs">
+      <DependentUpon>PrecheckPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -153,6 +197,11 @@
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PictureDispConverter.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -235,6 +284,25 @@
     <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
       <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointCard.resx">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointCardEditor.resx">
+      <DependentUpon>JointCardEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointEditor\JointForm.resx">
+      <DependentUpon>JointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Messages\FirstLaunchInfo.resx">
+      <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PrecheckPanel\PrecheckPanel.resx">
+      <DependentUpon>PrecheckPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
@@ -269,6 +337,9 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="PrecheckPanel\ExportGuide.html" />
+    <None Include="Resources\Tank.PNG" />
+    <None Include="Resources\hDrive.PNG" />
     <None Include="Resources\SynButton32.bmp" />
     <None Include="Resources\SynButton16.bmp" />
     <None Include="Resources\Logo32.bmp" />
@@ -336,7 +407,6 @@
       <Name>RobotExportAPI</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
@@ -354,12 +424,12 @@ XCopy "$(ProjectDir)Autodesk.BxDRobotExporter.Inventor.addin" "%25AppData%25\Aut
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Fody.2.0.0\build\portable-net+sl+win+wpa+wp\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.0\build\portable-net+sl+win+wpa+wp\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets'))" />
     <Error Condition="!Exists('..\..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NUnit.3.12.0\build\NUnit.props'))" />
     <Error Condition="!Exists('..\..\packages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NUnit3TestAdapter.3.13.0\build\net35\NUnit3TestAdapter.props'))" />
+    <Error Condition="!Exists('..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets'))" />
   </Target>
   <Import Project="..\packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.1.6.2\build\portable-net+sl+win+wpa+wp\Costura.Fody.targets')" />
-  <Import Project="..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets" Condition="Exists('..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" />
   <Import Project="..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.2.0.0\build\dotnet\Fody.targets')" />
+  <Import Project="..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets" Condition="Exists('..\..\packages\Costura.Fody.1.6.2\build\dotnet\Costura.Fody.targets')" />
 </Project>

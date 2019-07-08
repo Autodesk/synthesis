@@ -176,6 +176,7 @@ namespace EditorsLibrary
             this.Angular_Current_textbox.Name = "Angular_Current_textbox";
             this.Angular_Current_textbox.Size = new System.Drawing.Size(84, 20);
             this.Angular_Current_textbox.TabIndex = 1;
+            this.Angular_Current_textbox.ValueChanged += new System.EventHandler(this.Angular_Current_textbox_ValueChanged);
             // 
             // Angular_End_textbox
             // 
@@ -302,6 +303,7 @@ namespace EditorsLibrary
             this.Linear_Current_textbox.Name = "Linear_Current_textbox";
             this.Linear_Current_textbox.Size = new System.Drawing.Size(84, 20);
             this.Linear_Current_textbox.TabIndex = 1;
+            this.Linear_Current_textbox.ValueChanged += new System.EventHandler(this.Linear_Current_textbox_ValueChanged);
             // 
             // Linear_End
             // 
@@ -396,7 +398,6 @@ namespace EditorsLibrary
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditLimits";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Limits";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.Angular_Group_Box.ResumeLayout(false);
