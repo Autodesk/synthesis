@@ -83,10 +83,17 @@ namespace BxDRobotExporter
             }
         }
 
+        public static void ToggleAdvancedJointEditor()
+        {
+            if (EmbededJointPane != null)
+            {
+                EmbededJointPane.Visible = !EmbededJointPane.Visible;
+            }
+        }
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="StandardAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void HideDockableWindows()
+        public static void HideAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {
@@ -97,7 +104,7 @@ namespace BxDRobotExporter
         /// <summary>
         /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="StandardAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void ShowDockableWindows()
+        public static void ShowAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {
