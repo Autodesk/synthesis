@@ -115,6 +115,11 @@ namespace Synthesis.GUI
             {
                 changePanel.SetActive(true);
                 addPanel.SetActive(false);
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "change",
+                AnalyticsLedger.getMilliseconds().ToString());
             }
         }
 
