@@ -164,7 +164,6 @@ namespace BxDRobotExporter.JointEditor
             // jointName
             // 
             this.jointName.AutoEllipsis = true;
-            this.jointName.AutoSize = true;
             this.jointName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
             this.jointName.Location = new System.Drawing.Point(3, 0);

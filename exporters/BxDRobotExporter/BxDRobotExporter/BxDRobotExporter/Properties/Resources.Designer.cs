@@ -79,14 +79,33 @@ namespace BxDRobotExporter.Properties {
         ///            color: white;
         ///            font-weight: normal;
         ///        }
-        ///        ul {
-        ///            font-size: 18px;
-        ///            padding: 0;
-        ///   [rest of string was truncated]&quot;;.
+        ///        h4 {
+        ///            color: GrayText;
+        ///            font-size: 17px [rest of string was truncated]&quot;;.
         /// </summary>
         public static string ExportGuide {
             get {
                 return ResourceManager.GetString("ExportGuide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap hDrive {
+            get {
+                object obj = ResourceManager.GetObject("hDrive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Tank {
+            get {
+                object obj = ResourceManager.GetObject("Tank", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

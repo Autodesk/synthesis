@@ -107,71 +107,23 @@ namespace BxDRobotExporter
 
             #region Load Images
 
-            stdole.IPictureDisp ExportRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
-            stdole.IPictureDisp ExportRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
+            stdole.IPictureDisp EditJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32)); //these are still here at request of QA
+            stdole.IPictureDisp EditJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32));
 
-            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save16));
-            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save32));
+            stdole.IPictureDisp NewJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced16)); //these are still here at request of QA
+            stdole.IPictureDisp NewJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced32));
 
-            stdole.IPictureDisp ExportSetupRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
-            stdole.IPictureDisp ExportSetupRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
+            stdole.IPictureDisp DrivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32)); //these are still here at request of QA
+            stdole.IPictureDisp DrivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32));
 
-            stdole.IPictureDisp
-                WandIconSmall =
-                    PictureDispConverter.ToIPictureDisp(
-                        new Bitmap(Resource.Wand16)); //these are still here at request of QA
-            stdole.IPictureDisp WandIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
+            stdole.IPictureDisp PrecheckIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32)); //these are still here at request of QA
+            stdole.IPictureDisp PrecheckIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32));
 
-            stdole.IPictureDisp EditJointIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.EditDrivers16)); //these are still here at request of QA
-            stdole.IPictureDisp EditJointIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.EditDrivers16));
+            stdole.IPictureDisp DrivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
+            stdole.IPictureDisp DrivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
 
-            stdole.IPictureDisp
-                NewJointIconSmall =
-                    PictureDispConverter.ToIPictureDisp(
-                        new Bitmap(Resource.Advanced16)); //these are still here at request of QA
-            stdole.IPictureDisp NewJointIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced32));
-
-            stdole.IPictureDisp RobotMagicWandIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.RobotMagicWand16)); //these are still here at request of QA
-            stdole.IPictureDisp RobotMagicWandIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand32));
-
-            stdole.IPictureDisp LoadRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.LoadRobot16)); //these are still here at request of QA
-            stdole.IPictureDisp LoadRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot32));
-
-            stdole.IPictureDisp RobotClickIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.RobotClick16)); //these are still here at request of QA
-            stdole.IPictureDisp RobotClickIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick32));
-
-            stdole.IPictureDisp PrecheckIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.EditLimits16)); //these are still here at request of QA
-            stdole.IPictureDisp PrecheckIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.EditLimits32));
-
-            stdole.IPictureDisp WeightRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight16));
-            stdole.IPictureDisp WeightRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight32));
-
-            stdole.IPictureDisp SynthesisLogoSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
-            stdole.IPictureDisp SynthesisLogoLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
+            stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
+            stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
 
             #endregion
 
@@ -209,21 +161,14 @@ namespace BxDRobotExporter
             //Drive Train panel buttons
             DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train\nType",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Select the drivetrain type (tank, H-drive, or mecanum).", LoadRobotIconSmall, LoadRobotIconLarge);
+                "Select the drivetrain type (tank, H-drive, or mecanum).", DrivetrainTypeIconSmall, DrivetrainTypeIconLarge);
             DriveTrainTypeButton.OnExecute += DriveTrainType_OnExecute;
             DriveTrainTypeButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DriveTrainTypeButton, true);
 
-            WheelAssignmentButton = ControlDefs.AddButtonDefinition("Wheel\nAssignment",
-                "BxD:RobotExporter:SetWheelAssignment", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Configure drivetrain wheels.", RobotMagicWandIconSmall, RobotMagicWandIconLarge);
-            WheelAssignmentButton.OnExecute += BeginWizardExport_OnExecute;
-            WheelAssignmentButton.OnHelp += _OnHelp;
-//            DriveTrainPanel.CommandControls.AddButton(WheelAssignmentButton, true);
-
             DrivetrainWeightButton = ControlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Assign the weight of the drivetrain.", WeightRobotIconSmall, WeightRobotIconLarge);
+                "Assign the weight of the drivetrain.", DrivetrainWeightIconSmall, DrivetrainWeightIconLarge);
             DrivetrainWeightButton.OnExecute += SetWeight_OnExecute;
             DrivetrainWeightButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DrivetrainWeightButton, true);
