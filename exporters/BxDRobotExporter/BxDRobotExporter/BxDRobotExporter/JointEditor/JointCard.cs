@@ -58,7 +58,8 @@ namespace BxDRobotExporter.JointEditor
             var iconCamera = InventorManager.Instance.TransientObjects.CreateCamera();
             iconCamera.SceneObject = StandardAddInServer.Instance.AsmDocument.ComponentDefinition;
 
-            const double zoom = 0.4; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+            const double zoom = 0.6; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+            
             const int widthConst = 3; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
 
             var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> {node});

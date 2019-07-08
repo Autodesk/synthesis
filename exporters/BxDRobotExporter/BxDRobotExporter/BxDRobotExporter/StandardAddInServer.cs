@@ -72,7 +72,7 @@ namespace BxDRobotExporter
         ButtonDefinition DrivetrainWeightButton;
         ButtonDefinition WheelAssignmentButton;
 
-        ButtonDefinition CreateJointButton;
+        ButtonDefinition AdvancedEditJointButton;
         ButtonDefinition EditJointButton;
 
         ButtonDefinition PreCheckButton;
@@ -107,71 +107,23 @@ namespace BxDRobotExporter
 
             #region Load Images
 
-            stdole.IPictureDisp ExportRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
-            stdole.IPictureDisp ExportRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
+            stdole.IPictureDisp EditJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32)); //these are still here at request of QA
+            stdole.IPictureDisp EditJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32));
 
-            stdole.IPictureDisp SaveRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save16));
-            stdole.IPictureDisp SaveRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Save32));
+            stdole.IPictureDisp NewJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced16)); //these are still here at request of QA
+            stdole.IPictureDisp NewJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced32));
 
-            stdole.IPictureDisp ExportSetupRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
-            stdole.IPictureDisp ExportSetupRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
+            stdole.IPictureDisp DrivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32)); //these are still here at request of QA
+            stdole.IPictureDisp DrivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32));
 
-            stdole.IPictureDisp
-                WandIconSmall =
-                    PictureDispConverter.ToIPictureDisp(
-                        new Bitmap(Resource.Wand16)); //these are still here at request of QA
-            stdole.IPictureDisp WandIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Wand32));
+            stdole.IPictureDisp PrecheckIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32)); //these are still here at request of QA
+            stdole.IPictureDisp PrecheckIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32));
 
-            stdole.IPictureDisp EditJointIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.EditDrivers16)); //these are still here at request of QA
-            stdole.IPictureDisp EditJointIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.EditDrivers16));
+            stdole.IPictureDisp DrivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
+            stdole.IPictureDisp DrivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
 
-            stdole.IPictureDisp
-                NewJointIconSmall =
-                    PictureDispConverter.ToIPictureDisp(
-                        new Bitmap(Resource.Advanced16)); //these are still here at request of QA
-            stdole.IPictureDisp NewJointIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced32));
-
-            stdole.IPictureDisp RobotMagicWandIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.RobotMagicWand16)); //these are still here at request of QA
-            stdole.IPictureDisp RobotMagicWandIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotMagicWand32));
-
-            stdole.IPictureDisp LoadRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.LoadRobot16)); //these are still here at request of QA
-            stdole.IPictureDisp LoadRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.LoadRobot32));
-
-            stdole.IPictureDisp RobotClickIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.RobotClick16)); //these are still here at request of QA
-            stdole.IPictureDisp RobotClickIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotClick32));
-
-            stdole.IPictureDisp PrecheckIconSmall =
-                PictureDispConverter.ToIPictureDisp(
-                    new Bitmap(Resource.EditLimits16)); //these are still here at request of QA
-            stdole.IPictureDisp PrecheckIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.EditLimits32));
-
-            stdole.IPictureDisp WeightRobotIconSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight16));
-            stdole.IPictureDisp WeightRobotIconLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Weight32));
-
-            stdole.IPictureDisp SynthesisLogoSmall =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
-            stdole.IPictureDisp SynthesisLogoLarge =
-                PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
+            stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
+            stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
 
             #endregion
 
@@ -203,36 +155,30 @@ namespace BxDRobotExporter
 
             #endregion
 
-            #region Setup Buttons
+            #region Setup Buttons 
+            // TODO: Delete these region things
 
             //Drive Train panel buttons
             DriveTrainTypeButton = ControlDefs.AddButtonDefinition("Drive Train\nType",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Select the drivetrain type (tank, H-drive, or mecanum).", LoadRobotIconSmall, LoadRobotIconLarge);
+                "Select the drivetrain type (tank, H-drive, or mecanum).", DrivetrainTypeIconSmall, DrivetrainTypeIconLarge);
             DriveTrainTypeButton.OnExecute += DriveTrainType_OnExecute;
             DriveTrainTypeButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DriveTrainTypeButton, true);
 
-            WheelAssignmentButton = ControlDefs.AddButtonDefinition("Wheel\nAssignment",
-                "BxD:RobotExporter:SetWheelAssignment", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Configure drivetrain wheels.", RobotMagicWandIconSmall, RobotMagicWandIconLarge);
-            WheelAssignmentButton.OnExecute += BeginWizardExport_OnExecute;
-            WheelAssignmentButton.OnHelp += _OnHelp;
-//            DriveTrainPanel.CommandControls.AddButton(WheelAssignmentButton, true);
-
             DrivetrainWeightButton = ControlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "Assign the weight of the drivetrain.", WeightRobotIconSmall, WeightRobotIconLarge);
+                "Assign the weight of the drivetrain.", DrivetrainWeightIconSmall, DrivetrainWeightIconLarge);
             DrivetrainWeightButton.OnExecute += SetWeight_OnExecute;
             DrivetrainWeightButton.OnHelp += _OnHelp;
             DriveTrainPanel.CommandControls.AddButton(DrivetrainWeightButton, true);
 
             // Joint panel buttons
-            CreateJointButton = ControlDefs.AddButtonDefinition("New Joint", "BxD:RobotExporter:CreateJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Assign a joint to a motor.", NewJointIconSmall, NewJointIconLarge);
-            CreateJointButton.OnExecute += delegate { MessageBox.Show("New joint action not implemented!"); };
-            CreateJointButton.OnHelp += _OnHelp;
-//            JointPanel.CommandControls.AddButton(CreateJointButton, true);
+            AdvancedEditJointButton = ControlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Joint editor for advanced users.", EditJointIconSmall, EditJointIconLarge);
+            AdvancedEditJointButton.OnExecute += AdvancedEditJoint_OnExecute;
+            AdvancedEditJointButton.OnHelp += _OnHelp;
+            JointPanel.SlideoutControls.AddButton(AdvancedEditJointButton);
 
             EditJointButton = ControlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "Edit existing joints.", EditJointIconSmall, EditJointIconLarge);
@@ -241,19 +187,18 @@ namespace BxDRobotExporter
             JointPanel.CommandControls.AddButton(EditJointButton, true);
 
             // ChecklistPanel buttons
-            PreCheckButton = ControlDefs.AddButtonDefinition("Robot Export\nGuide", "BxD:RobotExporter:PreCheck",
+            PreCheckButton = ControlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:PreCheck",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
                 "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
             PreCheckButton.OnExecute += delegate {Utilities.EmbededPrecheckPane.Visible = !Utilities.EmbededPrecheckPane.Visible; };
             PreCheckButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
-            
-            DOFButton = ControlDefs.AddButtonDefinition("View Degrees\nof Freedom", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", EditJointIconSmall, EditJointIconLarge);
-            DOFButton.OnExecute += delegate { MessageBox.Show("DOF editor not implemented!"); };
-            DOFButton.OnHelp += _OnHelp;
-//            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
 
+            DOFButton = ControlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", PrecheckIconSmall, PrecheckIconLarge);
+            DOFButton.OnExecute += DOF_OnExecute;
+            DOFButton.OnHelp += _OnHelp;
+            ChecklistPanel.CommandControls.AddButton(DOFButton, true);
 
             #endregion
 
@@ -335,6 +280,12 @@ namespace BxDRobotExporter
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
             Utilities.CreateDockableWindows(MainApplication);
+            blueHighlightSet = AsmDocument.CreateHighlightSet();
+            greenHighlightSet = AsmDocument.CreateHighlightSet();
+            redHighlightSet = AsmDocument.CreateHighlightSet();
+            blueHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.DodgerBlue);
+            greenHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.LawnGreen);
+            redHighlightSet.Color = Utilities.GetInventorColor(System.Drawing.Color.Red);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = Utilities.GetInventorColor(SynthesisGUI.PluginSettings.InventorChildColor);
             WheelHighlight = AsmDocument.CreateHighlightSet();
@@ -376,7 +327,7 @@ namespace BxDRobotExporter
             // Reload panels in UI
             jointForm = new JointForm();
             Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
+            Utilities.HideAdvancedJointEditor();
         }
 
         /// <summary>
@@ -477,7 +428,7 @@ namespace BxDRobotExporter
             {
                 if (BeforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    Utilities.HideDockableWindows();
+                    Utilities.HideAdvancedJointEditor();
                     HiddenExporter = true;
                 }
             }
@@ -501,7 +452,6 @@ namespace BxDRobotExporter
                 {
                     if ((AsmDocument == null || assembly == AsmDocument) && HiddenExporter)
                     {
-                        Utilities.ShowDockableWindows();
                         HiddenExporter = false;
                     }
                 }
@@ -601,42 +551,87 @@ namespace BxDRobotExporter
 
         private bool exporterBlocked = false;
         private JointForm jointForm;
+        private HighlightSet blueHighlightSet;
+        private HighlightSet greenHighlightSet;
+        private HighlightSet redHighlightSet;
 
         #endregion
 
         #region Custom Button Events
 
-        /// <summary>
-        /// Opens the <see cref="LiteExporterForm"/> through <see cref="Utilities.GUI"/>, then opens the <see cref="Wizard.WizardForm"/>
-        /// </summary>
-        /// <param name="Context"></param>
-        public void BeginWizardExport_OnExecute(NameValueMap Context)
+        private bool displayDOF = false;
+        public void DOF_OnExecute(NameValueMap Context)
         {
-            if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
-                return;
+            displayDOF = !displayDOF;
 
-            Wizard.WizardForm wizard = new Wizard.WizardForm();
-            Utilities.HideDockableWindows();
+            if (displayDOF)
+            {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                    return;
 
-            wizard.ShowDialog();
-//                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-//                {
-//                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
-//                    finishDialog.ShowDialog();
-//                }
-            Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
+                var rootNodes = new List<RigidNode_Base> {Utilities.GUI.SkeletonBase};
+                var jointedNodes = new List<RigidNode_Base>();
+                var problemNodes = new List<RigidNode_Base>();
+
+                foreach (RigidNode_Base node in Utilities.GUI.SkeletonBase.ListAllNodes())
+                {
+                    if (node == Utilities.GUI.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                    {
+                        continue;
+                    }
+                    if (node.GetSkeletalJoint() == null || node.GetSkeletalJoint().cDriver == null) // TODO: Figure out how to identify nodes that aren't set up (highlight red)
+                    {
+                        problemNodes.Add(node);
+                    }
+                    else
+                    {
+                        jointedNodes.Add(node);
+                    }
+                }
+
+                ChildHighlight.Clear();
+                CreateHighlightSet(rootNodes, blueHighlightSet);
+                CreateHighlightSet(jointedNodes, greenHighlightSet);
+                CreateHighlightSet(problemNodes, redHighlightSet);
+            }
+            else
+            {
+                ClearDOFHighlight();
+            }
         }
 
-        public void EditJoint_OnExecute(NameValueMap Context)
+        public void ClearDOFHighlight()
+        {
+            blueHighlightSet.Clear();
+            greenHighlightSet.Clear();
+            redHighlightSet.Clear();
+            displayDOF = false;
+        }
+
+        private void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
+        {
+            highlightSet.Clear();
+            foreach (var componentOccurrence in InventorUtils.GetComponentOccurrencesFromNodes(nodes))
+            {
+                highlightSet.AddItem(componentOccurrence);
+            }
+        }
+
+        public async void EditJoint_OnExecute(NameValueMap Context)
         {
             if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
                 return;
 
-            Utilities.HideDockableWindows();
+            Utilities.HideAdvancedJointEditor();
+            await jointForm.PreShow();
             jointForm.ShowDialog();
+
             Utilities.GUI.ReloadPanels();
-            Utilities.ShowDockableWindows();
+        }
+
+        private void AdvancedEditJoint_OnExecute(NameValueMap Context)
+        {
+            Utilities.ToggleAdvancedJointEditor();
         }
 
         /// <summary>
