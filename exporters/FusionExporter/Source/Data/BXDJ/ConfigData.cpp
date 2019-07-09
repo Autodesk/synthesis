@@ -13,6 +13,7 @@ ConfigData::ConfigData()
 {
 	robotName = "unnamed";
 	drivetrainType = TANK;
+	weight.value = 10;
 }
 
 ConfigData::ConfigData(const ConfigData & other)
