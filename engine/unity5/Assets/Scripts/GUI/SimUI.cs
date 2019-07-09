@@ -19,6 +19,7 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Assets.Scripts.GUI;
 using Synthesis.Field;
+using System;
 
 namespace Synthesis.GUI
 {
@@ -62,6 +63,7 @@ namespace Synthesis.GUI
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
         GameObject analyticsPanel;
+        GameObject settingsPanel;
 
         GameObject exitPanel;
         GameObject loadingPanel;
@@ -174,6 +176,7 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
+            settingsPanel = Auxiliary.FindGameObject("OptionsTab");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -249,6 +252,20 @@ namespace Synthesis.GUI
             currentTab = "EmulationTab";
             EmulationToolbarState.s = new Serialization();
             tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
+        public void OnSettingsTab()
+        {
+            if (settingsPanel.activeSelf)
+            {
+                settingsPanel.SetActive(false);
+            }
+            else
+            {
+                EndOtherProcesses();
+                //settingsPanel.SetActive(true);
+                tabStateMachine.ChangeState(new OptionsTabState());
+            }
         }
 
         private void CloseHelpMenu(string currentID = " ")
@@ -361,7 +378,14 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
+                changeRobotPanel.transform.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
+        }
+
+        public void ChangeRobotDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseRobotState());
         }
 
         public void ChangeField()
@@ -408,8 +432,16 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
+                changeFieldPanel.transform.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
         }
+
+        public void ChangeFieldDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseFieldState());
+        }
+
         public void TogglePanel(GameObject panel)
         {
             if (panel.activeSelf == true)

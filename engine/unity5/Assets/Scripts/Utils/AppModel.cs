@@ -55,7 +55,7 @@ namespace Synthesis.Utils
             {
                 errorDefined = true;
                 ErrorMessage = message;
-                SceneManager.LoadScene("MainMenu");
+                SceneManager.LoadScene("ErrorScene");
             }
         }
     }

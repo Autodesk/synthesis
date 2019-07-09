@@ -142,7 +142,7 @@ namespace Synthesis.States
 
                 if (timesLoaded > 0) {
 
-                    GameObject.Find("Environment").SetActive(false);
+                    //GameObject.Find("Environment").SetActive(false);
 
                     if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
                         AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
@@ -157,7 +157,7 @@ namespace Synthesis.States
 
                 try
                 {
-                    //result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
                 } catch (Exception e) {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
