@@ -1,34 +1,34 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj": {}
+    "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj": {
+    "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj",
+        "projectUniqueName": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj",
         "projectName": "SimulatorAPI",
-        "projectPath": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj"
+        "projectPath": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj"
       },
       "frameworks": {
         "net35": {}
       }
     },
-    "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj": {
+    "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj",
+        "projectUniqueName": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj",
         "projectName": "RobotExporterTests",
-        "projectPath": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj",
-        "packagesPath": "C:\\Users\\t_wanglia\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\obj\\",
+        "projectPath": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\RobotExporterTests.csproj",
+        "packagesPath": "C:\\Users\\Victo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\BxDRobotExporter\\RobotExporterTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\t_wanglia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Victo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -41,8 +41,8 @@
         "frameworks": {
           "netcoreapp2.1": {
             "projectReferences": {
-              "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj": {
-                "projectPath": "C:\\Users\\t_wanglia\\Repos\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj"
+              "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj": {
+                "projectPath": "C:\\Users\\Victo\\Documents\\Sythesis\\synthesis\\exporters\\Aardvark-Libraries\\SimulatorFileIO\\SimulatorAPI.csproj"
               }
             }
           }
