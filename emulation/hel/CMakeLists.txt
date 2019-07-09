@@ -16,6 +16,7 @@ SET(hel_VERSION_MINOR 0)
 SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(GRPC_DIRECTORY "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
+SET(PROTOBUF_SOURCE_DIR ${CMAKE_BINARY_DIR}/../api/v1/proto)
 SET(GRPC_GEN_DIR "${CMAKE_BINARY_DIR}/lib/gen")
 
 SET(GRPC "v1.21.4")
@@ -103,8 +104,22 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so "./gradlew build"
+  BUILD_COMMAND ""
   INSTALL_COMMAND "")
+
+ADD_CUSTOM_TARGET(wpilibc
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} "${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so" "./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Build WPILib for C++"
+  VERBATIM)
+ADD_DEPENDENCIES(wpilibc wpilib)
+
+ADD_CUSTOM_TARGET(wpilibj
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} "${WPILIB_DIRECTORY}/wpilibj/build/libs/wpilibj.jar" "./gradlew :wpilibj:assemble"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Build WPILib for Java"
+  VERBATIM)
+ADD_DEPENDENCIES(wpilibj wpilib)
 
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
@@ -124,15 +139,18 @@ ExternalProject_ADD(grpc
   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
   INSTALL_COMMAND "")
 
-FILE(GLOB GENERATED_FILES ${GRPC_GEN_DIR}/*)
-SET_SOURCE_FILES_PROPERTIES(${GENERATED_FILES} PROPERTIES GENERATED TRUE)
+FILE(GLOB PROTOBUF_SOURCE_FILES ${PROTOBUF_SOURCE_DIR}/*)
+SET(GENERATED_FILES ${GRPC_GEN_DIR}/emulator_service.grpc.pb.cc ${GRPC_GEN_DIR}/emulator_service.grpc.pb.h ${GRPC_GEN_DIR}/emulator_service.pb.cc ${GRPC_GEN_DIR}/emulator_service.pb.h)
 
-ADD_CUSTOM_TARGET(gen_grpc
-  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh "Generate gRPC C++ files" ${CMAKE_BINARY_DIR} "${GENERATED_FILES}" "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh --system-protoc"
+ADD_CUSTOM_COMMAND(
+  OUTPUT ${GENERATED_FILES}
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh --system-protoc
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
   COMMENT "Generate libhel protobuf and gRPC files"
+  DEPENDS ${PROTOBUF_SOURCE_FILES}
   VERBATIM)
-ADD_DEPENDENCIES(gen_grpc grpc)
+ADD_CUSTOM_TARGET(grpc_gen DEPENDS ${GENERATED_FILES})
+ADD_DEPENDENCIES(grpc_gen grpc)
 
 ADD_LIBRARY(hel SHARED
   src/roborio.cpp
@@ -176,14 +194,13 @@ ADD_LIBRARY(hel SHARED
   src/robot_output_service.cpp
   ${GENERATED_FILES}
 )
-ADD_DEPENDENCIES(hel ni-libraries gen_grpc)
-target_link_libraries(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
+ADD_DEPENDENCIES(hel ni-libraries grpc_gen)
+TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"
   "${GRPC_DIRECTORY}/include"
   "${GRPC_DIRECTORY}/third_party/protobuf/src"
-  "${CMAKE_BINARY_DIR}/lib/gen"
   "${GRPC_GEN_DIR}"
 )
 
@@ -194,7 +211,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
-    ADD_DEPENDENCIES(FRCUserProgram wpilib ni-libraries)
+    ADD_DEPENDENCIES(FRCUserProgram wpilibc ni-libraries)
     # ADD_DEPENDENCIES(ctre)
     TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
@@ -239,7 +256,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       MESSAGE("Test \"${test_name}\" found. Generating build target.")
 
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
-      ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilib)
+      ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilibc)
 
       TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
@@ -299,7 +316,7 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
     MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
     ADD_EXECUTABLE(${benchmark_name} ${file})
-    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench wpilib)
+    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench wpilibc)
 
     TARGET_LINK_LIBRARIES(${benchmark_name} gtest gtest_main pthread hel benchmark benchmark_main wpi-x86)
     TARGET_COMPILE_OPTIONS(${benchmark_name} PUBLIC -pthread)

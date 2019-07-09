@@ -39,7 +39,7 @@ case "$1" in
         rm -rf docs/html/* docs/latex/*;
         ;;
     "all")
-        killall qemu-system-arm;
+        killall qemu-system-arm &> /dev/null;
         rm -rf vm-package vm-package.zip vm-package.tar.gz vm_lock CMakeFiles CMakeCache.txt cmake_install.cmake Makefile CMakeDoxyfile.in CMakeDoxygenDefaults.cmake GoogleTest-prefix bin/benchmarks/* bin/tests/* lib/lib lib/lib64 lib/google_test lib/GoogleBench lib/include lib/wpilib lib/ni-libraries lib/ctre lib/grpc lib/gen lib/ASIO build/* lib/libhel.so docs/html/* docs/latex/*
         ;;
     *)
