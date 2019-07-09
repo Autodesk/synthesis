@@ -106,7 +106,7 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew assemble WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary WPILib
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
