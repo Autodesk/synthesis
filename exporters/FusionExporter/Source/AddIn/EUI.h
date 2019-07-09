@@ -12,6 +12,9 @@
 #include <list>
 #include <experimental/filesystem>
 #include <Core/Application/Viewport.h>
+#include <windows.h>
+#include <KnownFolders.h>
+#include <ShlObj.h>
 #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "../Data/BXDJ/ConfigData.h"
@@ -35,7 +38,8 @@ namespace SynthesisAddIn
 		~EUI(); ///< Cancels any in-progress export and deletes the workspace.
 
 		// UI Management
-		void preparePalettes(); ///< Creates all palettes
+		void prepareAllPalettes(); ///< Creates all palettes
+		void hideAllPalettes();
 
 		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
@@ -52,9 +56,6 @@ namespace SynthesisAddIn
 
 		void openProgressPalette(); ///< Opens the progress bar palette and sets the progress to 0.
 		void closeProgressPalette(); ///< Closes the progress bar palette.
-
-		void enableExportButton(); ///< Enables the export robot button.
-		void disableExportButton(); ///< Disables the export robot button.
 
 		// UI Controls
 		///
@@ -90,7 +91,7 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
-		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
+		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.

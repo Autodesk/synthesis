@@ -173,6 +173,7 @@
     <None Include="Palette\js\fusionInterface.js" />
     <None Include="Palette\js\export.js" />
     <None Include="palette\jointEditor.html" />
+    <None Include="palette\js\jointEditor.js" />
     <None Include="palette\js\progress.js" />
     <None Include="palette\js\sensors.js" />
     <None Include="palette\js\utility.js" />
