@@ -23,7 +23,7 @@ namespace hel{
          * \brief Whether to invert the percent_output signal or not
          */
 
-        bool inverted;
+        bool inverted; // Move to CTRE motor controllers only?
 
     public:
         /**
@@ -115,17 +115,13 @@ namespace hel{
                 INVERT = 6
             };
 
-            /**
-             * \brief Interpretation definitions for message ID bitmask for CAN frames requesting data
-             */
-
-            enum ReceiveCommandIDMask: uint32_t{
-                GET_POWER_PERCENT = 0b1010000000000
+            enum CommandAPIID: int32_t{
+                GET_PERCENT_OUTPUT = 0x007
             };
 
             void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
-            std::vector<uint8_t> generateCANPacket(const int32_t&);
+            std::vector<uint8_t> generateCANPacket(const int32_t&)const;
 
             /**
              * Constructor for CANMotorController
@@ -173,7 +169,7 @@ namespace hel{
 
             void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
-            std::vector<uint8_t> generateCANPacket(const int32_t&);
+            std::vector<uint8_t> generateCANPacket(const int32_t&)const;
 
             /**
              * Constructor for CANMotorController
