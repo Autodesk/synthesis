@@ -37,8 +37,8 @@ namespace SynthesisAddIn
 		// UI Management
 		void preparePalettes(); ///< Creates all palettes
 
-		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
-		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
+		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
+		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
 		/// Loads and opens the sensors configuration palette.
 		/// \param sensors Existing sensor configuration to load.
@@ -46,6 +46,9 @@ namespace SynthesisAddIn
 		/// Closes the sensors configuration palette.
 		/// \param sensorsToSave Sensor configuration to send to the robot exporter for saving.
 		void closeSensorsPalette(std::string sensorsToSave = "");
+
+		void openFinishPalette();
+		void closeFinishPalette();
 
 		void openProgressPalette(); ///< Opens the progress bar palette and sets the progress to 0.
 		void closeProgressPalette(); ///< Closes the progress bar palette.
@@ -89,6 +92,7 @@ namespace SynthesisAddIn
 
 		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
+		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
 		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
@@ -129,8 +133,11 @@ namespace SynthesisAddIn
 		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
 		void deleteWorkspace(); ///< Deletes the finishPanel and controls.
 
-		bool createExportPalette(); ///< Creates the robot export configuration palette.
-		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
+		bool createJointEditorPalette(); ///< Creates the robot export configuration palette.
+		void deleteJointEditorPalette(); ///< Deletes the robot export configuration palette.
+
+		bool createFinishPalette();
+		void deleteFinishPalette();
 
 		bool createSensorsPalette(); ///< Creates the sensor configuration palette.
 		void deleteSensorsPalette(); ///< Deletes the sensor configuration palette.
