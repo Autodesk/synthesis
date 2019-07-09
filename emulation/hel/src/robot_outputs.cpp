@@ -6,7 +6,7 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
 
-SendData::SendData()
+RobotOutputs::RobotOutputs()
 	: new_data(true),
 	  enabled(RobotMode::DEFAULT_ENABLED_STATUS),
 	  pwm_hdrs(0.0),
@@ -21,9 +21,9 @@ SendData::SendData()
 	}
 }
 
-bool SendData::hasNewData() const { return new_data; }
+bool RobotOutputs::hasNewData() const { return new_data; }
 
-EmulationService::RobotOutputs SendData::syncShallow() {
+EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 	if (!new_data) {
 		return output;
 	}
@@ -64,7 +64,7 @@ EmulationService::RobotOutputs SendData::syncShallow() {
 	return output;
 }
 
-void SendData::updateShallow() {
+void RobotOutputs::updateShallow() {
 	if (!hal_is_initialized) {
 		return;
 	}
@@ -108,7 +108,7 @@ void SendData::updateShallow() {
 	new_data = true;
 }
 
-EmulationService::RobotOutputs SendData::syncDeep() {
+EmulationService::RobotOutputs RobotOutputs::syncDeep() {
 	syncShallow();
 	for (auto i = 0u; i < relays.size(); i++) {
 		output.set_relay(
@@ -124,7 +124,7 @@ EmulationService::RobotOutputs SendData::syncDeep() {
 	return output;
 }
 
-void SendData::updateDeep() {
+void RobotOutputs::updateDeep() {
 	updateShallow();
 
 	RoboRIO roborio = RoboRIOManager::getCopy();
@@ -154,7 +154,7 @@ void SendData::updateDeep() {
 	new_data = true;
 }
 
-std::string SendData::toString() const {
+std::string RobotOutputs::toString() const {
 	std::string s = "(";
 	s += "pwm_hdrs:" +
 		 asString(pwm_hdrs,
@@ -194,7 +194,7 @@ std::string SendData::toString() const {
 	return s;
 }
 
-void SendData::enable(bool e) {
+void RobotOutputs::enable(bool e) {
 	if (e != enabled) {
 		new_data = true;
 		enabled = e;

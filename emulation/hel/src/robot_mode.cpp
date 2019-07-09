@@ -1,7 +1,7 @@
 #include "robot_mode.hpp"
 
 #include "error.hpp"
-#include "send_data.hpp"
+#include "robot_outputs.hpp"
 #include "util.hpp"
 
 namespace hel{
@@ -19,7 +19,7 @@ namespace hel{
 
     void RobotMode::setEnabled(bool e)noexcept{
         enabled = e;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->enable(e);
         instance.second.unlock();
     }

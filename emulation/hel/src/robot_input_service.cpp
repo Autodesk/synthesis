@@ -1,5 +1,5 @@
 #include "robot_input_service.hpp"
-#include "receive_data.hpp"
+#include "robot_inputs.hpp"
 
 #include <utility>
 
@@ -11,7 +11,7 @@ Status RobotInputService::RobotInputs(
 	UpdateRobotInputsResponse* response) {
 	UpdateRobotInputsRequest req;
 	while (stream->Read(&req)) {
-		auto instance = hel::ReceiveDataManager::getInstance();
+		auto instance = hel::RobotInputsManager::getInstance();
 		instance.first->sync(req.output_data());
 		instance.first->updateShallow();
 		instance.second.unlock();

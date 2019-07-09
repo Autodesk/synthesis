@@ -1,5 +1,5 @@
-#ifndef _RECIEVE_DATA_HPP_
-#define _RECIEVE_DATA_HPP_
+#ifndef _ROBOT_INPUTS_HPP_
+#define _ROBOT_INPUTS_HPP_
 
 #include <memory>
 #include <mutex>
@@ -22,7 +22,7 @@ namespace hel {
  * by the RoboRIOManager
  */
 
-struct ReceiveData {
+struct RobotInputs {
    private:
 	/**
 	 * \brief The states of all the digital headers configured in input mode
@@ -93,26 +93,26 @@ struct ReceiveData {
     void syncDeep(const EmulationService::RobotInputs&);
 
 	/**
-	 * Constructor for ReceiveData
+	 * Constructor for RobotInputs
 	 */
 
-	ReceiveData();
+	RobotInputs();
 };
 
-class ReceiveDataManager {  // TODO move to separate file
+class RobotInputsManager {  // TODO move to separate file
    public:
-	static std::pair<std::shared_ptr<ReceiveData>,
+	static std::pair<std::shared_ptr<RobotInputs>,
 					 std::unique_lock<std::recursive_mutex>>
 	getInstance() {
 		std::unique_lock<std::recursive_mutex> lock(receive_data_mutex);
 		if (instance == nullptr) {
-			instance = std::make_shared<ReceiveData>();
+			instance = std::make_shared<RobotInputs>();
 		}
 		return std::make_pair(instance, std::move(lock));
 	}
 
    private:
-	static std::shared_ptr<ReceiveData> instance;
+	static std::shared_ptr<RobotInputs> instance;
 	static std::recursive_mutex receive_data_mutex;
 };
 }  // namespace hel

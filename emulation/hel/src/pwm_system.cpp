@@ -51,7 +51,7 @@ namespace hel{
 
     void PWMSystem::setHdrPulseWidth(uint8_t index, uint32_t value){
         hdr[index].pulse_width = value;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -62,7 +62,7 @@ namespace hel{
 
     void PWMSystem::setMXPPulseWidth(uint8_t index, uint32_t value){
         mxp[index].pulse_width = value;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }

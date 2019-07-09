@@ -16,7 +16,7 @@ namespace hel{
 
     void CANMotorControllerBase::setPercentOutput(double out)noexcept{
         percent_output = out;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -27,7 +27,7 @@ namespace hel{
 
     void CANMotorControllerBase::setInverted(bool i)noexcept{
         inverted = i;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }

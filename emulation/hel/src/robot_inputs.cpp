@@ -1,17 +1,14 @@
-#include "receive_data.hpp"
-
-#include <algorithm>
-
 #include "roborio_manager.hpp"
 #include "util.hpp"
 
+#include <algorithm>
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel{
 
-ReceiveData::ReceiveData()
+RobotInputs::RobotInputs()
 	: digital_hdrs(false),
 	  digital_mxp({}),
 	  joysticks({}),
@@ -19,7 +16,7 @@ ReceiveData::ReceiveData()
 	  robot_mode({}),
 	  encoder_managers({}) {}
 
-void ReceiveData::updateShallow() const {
+void RobotInputs::updateShallow() const {
 	if (!hal_is_initialized) {
 		return;
 	}
@@ -37,7 +34,7 @@ void ReceiveData::updateShallow() const {
 	instance.second.unlock();
 }
 
-void ReceiveData::updateDeep() const {
+void RobotInputs::updateDeep() const {
 	if (!hal_is_initialized) {
 		return;
 	}
@@ -60,7 +57,7 @@ void ReceiveData::updateDeep() const {
 	instance.second.unlock();
 }
 
-std::string ReceiveData::toString() const {
+std::string RobotInputs::toString() const {
 	std::string s = "(";
 	s += "digital_hdrs:" +
 		 asString(digital_hdrs, [](auto d) { return std::to_string(d); }) +
@@ -81,7 +78,7 @@ std::string ReceiveData::toString() const {
 	s += ")";
 	return s;
 }
-void ReceiveData::sync(const EmulationService::RobotInputs& req) {
+void RobotInputs::sync(const EmulationService::RobotInputs& req) {
 	for (size_t i = 0;
 		 i < std::min(this->joysticks.size(), (size_t) req.joysticks_size());
 		 i++) {
@@ -162,7 +159,7 @@ void ReceiveData::sync(const EmulationService::RobotInputs& req) {
 	}
 }
 
-void ReceiveData::syncDeep(const EmulationService::RobotInputs& req) {
+void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	for (size_t i = 0; i < std::min(this->digital_hdrs.size(),
 									(size_t) req.digital_headers_size());
 		 i++) {
