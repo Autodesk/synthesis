@@ -71,7 +71,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
 	if (eventArgs->action() == "highlight")
-		eui->highlightJoint(eventArgs->data(), true, 1);
+		eui->highlightJoint(eventArgs->data(), false, 1);
 
 	else if (eventArgs->action() == "edit_sensors")
 		eui->openSensorsPalette(eventArgs->data());

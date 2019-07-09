@@ -133,6 +133,7 @@ function applyConfigData(configData)
         fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
         fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
+        // Highlight joint if hover for 0.5 seconds
         (function(id){delayHover(fieldset, function() {highlightJoint(id)})}(fieldset.dataset.jointId));
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');

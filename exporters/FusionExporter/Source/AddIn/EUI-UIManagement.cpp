@@ -121,23 +121,23 @@ void EUI::openExportPalette()
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
-	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // Load joint config and update with current joints in document
 
-	Ptr<Camera> ogCam = app->activeViewport()->camera();
+	Ptr<Camera> ogCam = app->activeViewport()->camera(); // Save the original camera position
 
-	config.tempIconDir = std::experimental::filesystem::temp_directory_path().string() + "Synthesis\\FusionIconCache\\";
+	config.tempIconDir = std::experimental::filesystem::temp_directory_path().string() + "Synthesis\\FusionIconCache\\"; // Get OS temp dir for icons and save to JSON object
 
 	int index = 0;
-	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints())
+	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
 	{
 		EUI::highlightJoint(joint.first, false, 0.6);
 		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 200, 200); // TODO: Make this cross-platform
 		index++;
 	};
 
-	EUI::resetHighlight(true, 1.5, ogCam);
+	EUI::resetHighlight(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
 
-	uiThread = new std::thread([this](std::string configJSON)
+	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
 		exportPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
 		exportPalette->isVisible(true);
