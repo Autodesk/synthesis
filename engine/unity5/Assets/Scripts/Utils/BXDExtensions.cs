@@ -18,34 +18,9 @@ namespace Synthesis.Utils
                node =  BXDJSkeleton.ReadSkeleton(xmlPath);
             }
 
-
-           
             return node;
             
         }
-        public static FieldDefinition ReadFieldSafe(string path)
-        {
-            string jsonPath = path + ".json";
-            string xmlPath = path + ".bxdf";
-            FieldDefinition loadedField = null;
-            if (File.Exists(jsonPath))
-            {
-                //Load JSON
-                Debug.Log("Loading JSON Field: " + jsonPath);
-                loadedField = BXDFPropertiesJson.ReadProperties(jsonPath);
-
-
-            }
-            else
-            {
-                loadedField = BXDFProperties.ReadProperties(xmlPath);
-            }
-
-
-            return loadedField;
-
-        }
-
 
         public static T GetDriverMeta<T>(this RigidNode_Base node) where T : JointDriverMeta
         {
