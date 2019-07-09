@@ -97,6 +97,17 @@ window.fusionJavaScriptHandler =
         }
     };
 
+var delayHover = function (elem, callback) {
+    var timeout = null;
+    elem.onmouseover = function() {
+        timeout = setTimeout(callback, 500);
+    };
+
+    elem.onmouseout = function() {
+        clearTimeout(timeout);
+    }
+};
+
 // Populates the form with joints
 function applyConfigData(configData)
 {
@@ -121,6 +132,8 @@ function applyConfigData(configData)
         fieldset.dataset.jointId = joints[i].id;
         fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
         fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
+
+        (function(id){delayHover(fieldset, function() {highlightJoint(id)})}(fieldset.dataset.jointId));
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
