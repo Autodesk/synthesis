@@ -42,11 +42,11 @@ protected:
 
 };
 
-template<typename T = double>
+template<typename T>
 Vector3<T>::Vector3() : Vector3(0, 0, 0)
 {}
 
-template<typename T = double>
+template<typename T>
 Vector3<T>::Vector3(const Vector3<T> & vector)
 {
 	x = vector.x;
@@ -54,7 +54,7 @@ Vector3<T>::Vector3(const Vector3<T> & vector)
 	z = vector.z;
 }
 
-template<typename T = double>
+template<typename T>
 Vector3<T>::Vector3(T x, T y, T z)
 {
 	this->x = x;
