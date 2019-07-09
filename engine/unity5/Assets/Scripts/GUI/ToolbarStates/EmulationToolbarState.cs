@@ -52,8 +52,6 @@ namespace Assets.Scripts.GUI
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
-
-            EditorApplication.wantsToQuit += BoutaQuit;
         }
 
         public override void FixedUpdate()
@@ -84,29 +82,6 @@ namespace Assets.Scripts.GUI
         public void OnSelectRobotCodeButtonClicked()
         {
             LoadCode();
-            /*loadingPanel.SetActive(true);
-
-            string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
-            if (selectedFiles.Length != 1)
-            {
-                UnityEngine.Debug.Log("No files selected for robot code upload");
-            }
-            else
-            {
-                SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
-                if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
-                {
-                    emulationDriverStation.ShowJavaNotSupportedPopUp();
-                }
-                else
-                {
-                    SSHClient.SCPFileSender(userProgram);
-                }
-
-                
-            }
-            loadingPanel.SetActive(false);
-            { }*/
         }
 
         public async void LoadCode()
@@ -193,12 +168,6 @@ namespace Assets.Scripts.GUI
             }
         }
         #endregion
-
-        bool BoutaQuit()
-        {
-            exiting = true;
-            return true;
-        }
 
     }
 }
