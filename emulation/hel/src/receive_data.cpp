@@ -2,19 +2,14 @@
 
 #include <algorithm>
 
-#include "json_util.hpp"
 #include "roborio_manager.hpp"
 #include "util.hpp"
+
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-namespace hel {
-namespace detail {
-const auto liftedDeserialize =
-	hel::Maybe<std::string>::lift<hel::EncoderManager>(
-		hel::EncoderManager::deserialize);
-}
+namespace hel{
 
 ReceiveData::ReceiveData()
 	: digital_hdrs(false),
@@ -73,7 +68,7 @@ std::string ReceiveData::toString() const {
 	s += "joysticks:" +
 		 asString(joysticks, [](auto j) { return j.toString(); }) + ", ";
 	s += "digital_mxp:" +
-		 asString(digital_mxp, [](auto m) { return m.serialize(); }) + ", ";
+		 asString(digital_mxp, [](auto m) { return m.toString(); }) + ", ";
 	s += "match_info:" + match_info.toString() + ", ";
 	s += "robot_mode:" + robot_mode.toString() + ", ";
 	s += "encoder_managers:" +
@@ -167,7 +162,7 @@ void ReceiveData::sync(const EmulationService::RobotInputs& req) {
 	}
 }
 
-void ReceiveData::deepSync(const EmulationService::RobotInputs& req) {
+void ReceiveData::syncDeep(const EmulationService::RobotInputs& req) {
 	for (size_t i = 0; i < std::min(this->digital_hdrs.size(),
 									(size_t) req.digital_headers_size());
 		 i++) {

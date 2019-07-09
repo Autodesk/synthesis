@@ -64,54 +64,6 @@ struct ReceiveData {
 	BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS>
 		encoder_managers;
 
-	/**
-	 * \brief Deserialize the digital header states from the received JSON
-	 * string Consumes the digital headers portion of the JSON string \param
-	 * input The JSON string to deserialize
-	 */
-
-	void deserializeDigitalHdrs(std::string&);
-
-	/**
-	 * \brief Deserialize the joystick states from the received JSON string
-	 * Consumes the joysticks' portion of the JSON string
-	 * \param input The JSON string to deserialize
-	 */
-
-	void deserializeJoysticks(std::string&);
-
-	/**
-	 * \brief Deserialize the digital MXP states from the received JSON string
-	 * Consumes the digital MXP portion of the JSON string
-	 * \param input The JSON string to deserialize
-	 */
-
-	void deserializeDigitalMXP(std::string&);
-
-	/**
-	 * \brief Deserialize the match info from the received JSON string
-	 * Consumes the match info portion of the JSON string
-	 * \param input The JSON string to deserialize
-	 */
-
-	void deserializeMatchInfo(std::string&);
-
-	/**
-	 * \brief Deserialize the robot mode from the received JSON string
-	 * Consumes the robot mode portion of the JSON string
-	 * \param input The JSON string to deserialize
-	 */
-
-	void deserializeRobotMode(std::string&);
-
-	/**
-	 * \brief Deserialize the encoder states from the received JSON string
-	 * Consumes the encoders' portion of the JSON string
-	 * \param input The JSON string to deserialize
-	 */
-
-	void deserializeEncoders(std::string&);
-
    public:
 	/**
 	 * \brief Update the data held by the RoboRIO instance in RoboRIOManager
@@ -137,23 +89,8 @@ struct ReceiveData {
 	std::string toString() const;
 
 	void sync(const EmulationService::RobotInputs&);
-	void deepSync(const EmulationService::RobotInputs&);
 
-	/**
-	 * \brief Parse a given input JSON string and update ReceiveData's internal
-	 * data For efficiency, this only touches the inputs supported by
-	 * Synthesis's engine.
-	 */
-
-	void deserializeShallow(std::string);
-
-	/**
-	 * \brief Parse a given input JSON string and update ReceiveData's internal
-	 * data This touches all RoboRIO inputs supported by HEL, not just those
-	 * supported by Synthesis's engine
-	 */
-
-	void deserializeDeep(std::string);
+    void syncDeep(const EmulationService::RobotInputs&);
 
 	/**
 	 * Constructor for ReceiveData

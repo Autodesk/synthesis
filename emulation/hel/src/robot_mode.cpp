@@ -1,7 +1,6 @@
 #include "robot_mode.hpp"
 
 #include "error.hpp"
-#include "json_util.hpp"
 #include "send_data.hpp"
 #include "util.hpp"
 
@@ -86,27 +85,6 @@ namespace hel{
         default:
             throw UnhandledCase();
         }
-    }
-
-    RobotMode RobotMode::deserialize(std::string input){
-        RobotMode a;
-        a.mode = s_to_robot_mode(unquote(pullObject("\"mode\"",input)));
-        a.setEnabled(stob(pullObject("\"enabled\"",input)));
-        a.emergency_stopped = stob(pullObject("\"emergency_stopped\"",input));
-        a.fms_attached = stob(pullObject("\"fms_attached\"",input));
-        a.ds_attached = stob(pullObject("\"ds_attached\"",input));
-        return a;
-    }
-
-    std::string RobotMode::serialize()const{
-        std::string s = "{";
-        s += "\"mode\":" + quote(asString(mode)) + ", ";
-        s += "\"enabled\":" + asString(enabled) + ", ";
-        s += "\"emergency_stopped\":" + asString(emergency_stopped) + ", ";
-        s += "\"fms_attached\":" + asString(fms_attached) + ", ";
-        s += "\"ds_attached\":" + asString(ds_attached);
-        s += "}";
-        return s;
     }
 
     std::string RobotMode::toString()const{

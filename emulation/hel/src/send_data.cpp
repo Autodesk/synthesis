@@ -1,4 +1,3 @@
-#include "json_util.hpp"
 #include "roborio_manager.hpp"
 #include "util.hpp"
 
@@ -6,27 +5,6 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-constexpr char ZEROED_SERIALIZATION_DATA[] =
-	"{\"roborio\":{\"pwm_hdrs\":[0.000000,0.000000,0.000000,0.000000,0.000000,"
-	"0.000000,0.000000,0.000000,0.000000,0.000000],\"relays\":[\"OFF\",\"OFF\","
-	"\"OFF\",\"OFF\"],\"analog_outputs\":[0.000000,0.000000],\"digital_mxp\":[{"
-	"\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000},{\"config\":\"DI\", "
-	"\"value\":0.000000}],\"digital_hdrs\":[0,0,0,0,0,0,0,0,0,0],\"can_motor_"
-	"controllers\":[]}}\x1B";  // TODO replace with shallow and deep versions
 
 SendData::SendData()
 	: new_data(true),
@@ -82,7 +60,6 @@ EmulationService::RobotOutputs SendData::syncShallow() {
 		*elem = can;
 	}
 
-	printf("here %d\n");
 	new_data = false;
 	return output;
 }
@@ -144,6 +121,7 @@ EmulationService::RobotOutputs SendData::syncDeep() {
 	for (auto i = 0u; i < digital_hdrs.size(); i++) {
 		output.set_digital_headers(i, digital_hdrs[i]);
 	}
+	return output;
 }
 
 void SendData::updateDeep() {
