@@ -137,12 +137,14 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                /*
-                if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-                {
-                    AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                    return;
-                }*/
+                if (timesLoaded > 0) {
+                    if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
+                        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                        return;
+                    }
+                } else {
+                    timesLoaded++;
+                }
 
                 if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                 {

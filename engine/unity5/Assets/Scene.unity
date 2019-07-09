@@ -86082,12 +86082,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1789002688}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2b3c5b56c65a4043ba723fe2e4e2dac, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a543082e7c7c9c458ee8ef07f7d9cbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   drawGizmo: 1
-  hullMesh: {fileID: 0}
-  m_localScaling: {x: 1, y: 1, z: 1}
+  hullMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_localScaling: {x: 500, y: 0.5, z: 500}
 --- !u!1 &1791260496
 GameObject:
   m_ObjectHideFlags: 0
