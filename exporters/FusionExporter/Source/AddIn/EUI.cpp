@@ -105,7 +105,8 @@ void EUI::highlightJoint(std::string jointID, bool transition, double zoom)
 
 	app->activeViewport()->camera(cam);
 
-	auto fitCamera = app->activeViewport()->camera();
+	// TODO: There must be a better way to find the extents of the robot without calculations
+	auto fitCamera = app->activeViewport()->camera(); // This camera is only used to find the extents of the complete robot
 
 	cam->isFitView(false);
 	cam->viewExtents(fitCamera->viewExtents() * zoom);
@@ -127,7 +128,7 @@ void EUI::resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam)
 	// Set camera view
 	Ptr<Camera> cam = app->activeViewport()->camera();
 
-	Ptr<Point3D> eyeLocation = Point3D::create(0, 100, 0);
+	Ptr<Point3D> eyeLocation = Point3D::create(0, 100, 0); // TODO: Much of this is the same as highlightJoint
 	Ptr<Point3D> targetLocation = Point3D::create(0, 0, 0);
 
 	cam->target(targetLocation);
@@ -139,7 +140,8 @@ void EUI::resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam)
 
 	app->activeViewport()->camera(cam);
 
-	auto fitCamera = app->activeViewport()->camera();
+	// TODO: There must be a better way to find the extents of the robot without calculations
+	auto fitCamera = app->activeViewport()->camera(); // This camera is only used to find the extents of the complete robot
 
 	auto newCamera = app->activeViewport()->camera();
 	newCamera->viewExtents(fitCamera->viewExtents() * zoom);
