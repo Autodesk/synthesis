@@ -75,42 +75,6 @@ private:
 
 	EmulationService::RobotOutputs output;
 
-	/**
-	 * \brief Update the serialized_data with the PWM headers
-	 */
-
-	void serializePWMHdrs();
-
-	/**
-	 * \brief Update the serialized_data with the relays
-	 */
-
-	void serializeRelays();
-
-	/**
-	 * \brief Update the serialized_data with the analog outputs
-	 */
-
-	void serializeAnalogOutputs();
-
-	/**
-	 * \brief Update the serialized_data with the digital MXP
-	 */
-
-	void serializeDigitalMXP();
-
-	/**
-	 * \brief Update the serialized_data with the digital headers
-	 */
-
-	void serializeDigitalHdrs();
-
-	/**
-	 * \brief Update the serialized_data with the CAN motor controllers
-	 */
-
-	void serializeCANMotorControllers();
-
    public:
 	/**
 	 * \brief Constructor for SendData
@@ -149,24 +113,6 @@ private:
 
 	EmulationService::RobotOutputs syncShallow();
 	EmulationService::RobotOutputs syncDeep();
-
-	/**
-	 * \brief Update and return the JSON serialized outputs
-	 * Only updates the cached serialized string if there is new data and it is
-	 * enabled. If it is disabled, it returns zeroed outputs. This also only
-	 * generates a string using the data supported by Synthesis's engine.
-	 */
-
-	std::string serializeShallow();
-
-	/**
-	 * \brief Update and return the JSON serialized outputs
-	 * Only updates the cached serialized string if there is new data and it is
-	 * enabled. If it is disabled, it returns zeroed outputs. This also
-	 * generates a string using all the data supported by HEL.
-	 */
-
-	std::string serializeDeep();
 
 	/**
 	 * \brief Get if SendData has new data

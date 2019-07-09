@@ -7,7 +7,7 @@ using namespace grpc;
 using namespace EmulationService;
 
 Status RobotInputService::RobotInputs(
-	ServerContext* context, ServerReader<UpdateRobotInputsRequest>* stream,
+    ServerContext* /*context*/, ServerReader<UpdateRobotInputsRequest>* stream,
 	UpdateRobotInputsResponse* response) {
 	UpdateRobotInputsRequest req;
 	while (stream->Read(&req)) {

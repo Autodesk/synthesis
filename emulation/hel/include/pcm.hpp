@@ -72,13 +72,6 @@ namespace hel{
         void setSolenoids(const BoundsCheckedArray<bool,NUM_SOLENOIDS>&);
 
         /**
-         * \brief Convert the PCM to a JSON object
-         * \return A string representing the data in JSON format
-         */
-
-        std::string serialize()const;
-
-        /**
          * \brief Format the PCM object as a string
          * \return A string containing the PCM information
          */

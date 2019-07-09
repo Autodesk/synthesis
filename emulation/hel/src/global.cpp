@@ -113,7 +113,7 @@ tGlobal* tGlobal::create(tRioStatusCode* /*status*/) {
 		builder.RegisterService(&inputs);
 		builder.RegisterService(&outputs);
 		auto server = builder.BuildAndStart();
-		printf("gRPC serving on %s.\n", server_addr.c_str());
+		// printf("gRPC serving on %s.\n", server_addr.c_str());
 		server->Wait();
 	});
 	return new hel::GlobalManager();

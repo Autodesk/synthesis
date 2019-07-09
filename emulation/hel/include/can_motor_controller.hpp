@@ -56,23 +56,6 @@ namespace hel{
         void setInverted(bool)noexcept;
 
         /**
-         * \fn std::string serialize()const
-         * \brief Convert the CANMotorControllerBase to a JSON object
-         * \return a string representing the data in JSON format
-         */
-
-        virtual std::string serialize()const;
-
-        /**
-         * \fn static CANMotorControllerBase deserialize(std::string input)
-         * \brief Convert a JSON object string to a CANMotorControllerBase object
-         * \param input the data to parse
-         * \return the generated CANMotorControllerBase object
-         */
-
-      static std::shared_ptr<CANMotorControllerBase> deserialize(std::string);
-
-        /**
          * Constructor for CANMotorControllerBase
          */
 

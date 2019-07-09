@@ -1,5 +1,4 @@
 #include "roborio_manager.hpp"
-#include "json_util.hpp"
 
 #include <cmath>
 
@@ -13,20 +12,6 @@ namespace hel{
         s += "inverted:" + asString(inverted);
         s += ")";
         return s;
-    }
-
-    std::string CANMotorControllerBase::serialize()const {
-        std::string s = "{";
-        s += "\"type\":" + quote(asString(getType())) + ", ";
-        s += "\"id\":" + std::to_string(getID()) + ", ";
-        s += "\"percent_output\":" + std::to_string(percent_output) + ", ";
-        s += "\"inverted\":" + std::to_string(inverted);
-        s += "}";
-        return s;
-    }
-
-    std::shared_ptr<CANMotorControllerBase> CANMotorControllerBase::deserialize(std::string /*input*/){
-        return std::make_shared<ctre::CANMotorController>(); // Need for deserialization removed in other pull request
     }
 
     void CANMotorControllerBase::setPercentOutput(double out)noexcept{

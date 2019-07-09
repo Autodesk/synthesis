@@ -16,6 +16,7 @@ SET(hel_VERSION_MINOR 0)
 SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(GRPC_DIRECTORY "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
+SET(GRPC_GEN_DIR "${CMAKE_BINARY_DIR}/lib/gen")
 
 SET(GRPC "v1.21.4")
 # SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
@@ -89,13 +90,6 @@ ADD_CUSTOM_TARGET(build_vm
 	COMMENT "Download, build, and run synthesis VM"
 	VERBATIM)
 
-ADD_CUSTOM_TARGET(gen_grpc
-  COMMAND ${CMD_GEN_GRPC}
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-  COMMENT "Generate libhel protobuf and gRPC files"
-  VERBATIM)
-ADD_DEPENDENCIES(gen_grpc grpc)
-
 EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
@@ -109,27 +103,36 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew build
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so "./gradlew build"
   INSTALL_COMMAND "")
+
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
 #   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
 #   GIT_TAG v2018.19.0
 #   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
 #   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/ctre.patch
-#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh CRTE ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary
+#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh CRTE ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a "./gradlew arm:cpp:CTRE_PhoenixStaticLibrary"
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
 
 ExternalProject_ADD(grpc
-  BUILD_ALWAYS TRUE 
   PREFIX lib/grpc
   GIT_REPOSITORY https://github.com/grpc/grpc.git
   GIT_TAG ${GRPC}
   CONFIGURE_COMMAND ""
-  #BUILD_COMMAND sudo ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
   INSTALL_COMMAND "")
+
+FILE(GLOB GENERATED_FILES ${GRPC_GEN_DIR}/*)
+SET_SOURCE_FILES_PROPERTIES(${GENERATED_FILES} PROPERTIES GENERATED TRUE)
+
+ADD_CUSTOM_TARGET(gen_grpc
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh "Generate gRPC C++ files" ${CMAKE_BINARY_DIR} "${GENERATED_FILES}" "${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh --system-protoc"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+  COMMENT "Generate libhel protobuf and gRPC files"
+  VERBATIM)
+ADD_DEPENDENCIES(gen_grpc grpc)
 
 ADD_LIBRARY(hel SHARED
   src/roborio.cpp
@@ -137,7 +140,6 @@ ADD_LIBRARY(hel SHARED
   src/send_data.cpp
   src/receive_data.cpp
   src/util.cpp
-  src/json_util.cpp
   src/init.cpp
   src/analog_input.cpp
   src/analog_output.cpp
@@ -169,11 +171,10 @@ ADD_LIBRARY(hel SHARED
   src/can_device.cpp
   src/can_motor_controller.cpp
   src/can_comm.cpp
-  src/pdp.cpp)
-  lib/gen/emulator_service.pb.cc
-  lib/gen/emulator_service.grpc.pb.cc
+  src/pdp.cpp
   src/robot_input_service.cpp
   src/robot_output_service.cpp
+  ${GENERATED_FILES}
 )
 ADD_DEPENDENCIES(hel ni-libraries gen_grpc)
 target_link_libraries(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
@@ -183,9 +184,8 @@ TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${GRPC_DIRECTORY}/include"
   "${GRPC_DIRECTORY}/third_party/protobuf/src"
   "${CMAKE_BINARY_DIR}/lib/gen"
+  "${GRPC_GEN_DIR}"
 )
-
-
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
   IF(NOT DEFINED WPILIB)

@@ -39,21 +39,6 @@ namespace hel{
         std::string toString()const;
 
         /**
-         * \brief Convert the port to a JSON object
-         * \return A string representing the data in JSON format
-         */
-
-        std::string serialize()const;
-
-        /**
-         * \brief Convert a JSON object string to an MXPData object
-         * \param input The data to parse
-         * \return The generated MXPData object
-         */
-
-        static MXPData deserialize(std::string);
-
-        /**
          * Constructor for MXPData
          */
 

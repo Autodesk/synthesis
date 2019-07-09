@@ -1,5 +1,4 @@
 #include "roborio_manager.hpp"
-#include "json_util.hpp"
 
 namespace hel{
     std::string PCM::toString()const{
@@ -34,17 +33,6 @@ namespace hel{
 
     void PCM::setSolenoids(const BoundsCheckedArray<bool,NUM_SOLENOIDS>& values){
         solenoids = values;
-    }
-
-    std::string PCM::serialize()const{
-        std::string s = "{";
-        s += serializeList(
-            "\"solenoids\"",
-            solenoids,
-            std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))
-            );
-        s += "}";
-        return s;
     }
 
     std::string PCM::toString()const{
