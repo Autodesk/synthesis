@@ -43,6 +43,14 @@
                 margin-top: 0.5rem;
                 margin-bottom: 0.5rem;
             }
+            
+            .joint-config-image {
+                float: left;
+                height: 112px;
+                border-color: #6d6d6d;
+                border-style: solid;
+                margin-right: 10px;
+            }
         </style>
     </head>
     <body>
@@ -58,6 +66,7 @@
 
                 <button class="edit-sensors-button" onclick="editSensors(this.parentNode)">Edit Sensors</button>
 
+                <img class="joint-config-image">
                 <div class="driver-div">
                     <span class="field-label">Driver Type: </span>
                     <span class="field-select"><select class="driver-type" onchange="updateFieldOptions(this)">

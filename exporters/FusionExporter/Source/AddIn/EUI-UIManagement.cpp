@@ -1,5 +1,6 @@
 #include "EUI.h"
 #include "../Exporter.h"
+#include "../Data/BXDJ/Utility.h"
 
 using namespace SynthesisAddIn;
 
@@ -79,7 +80,7 @@ bool EUI::createExportPalette()
 	exportPalette = palettes->itemById(K_EXPORT_PALETTE);
 	if (!exportPalette)
 	{
-		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
+		exportPalette = palettes->add(K_EXPORT_PALETTE, "Robot Exporter Form", "Palette/export.html", false, true, true, 370, 200);
 		if (!exportPalette)
 			return false;
 
@@ -113,18 +114,35 @@ void EUI::deleteExportPalette()
 
 void EUI::openExportPalette()
 {
+
 	exportButtonCommand->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+
+	Ptr<Camera> ogCam = app->activeViewport()->camera();
+
+	config.tempIconDir = std::experimental::filesystem::temp_directory_path().string() + "Synthesis\\FusionIconCache\\";
+
+	int index = 0;
+	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints())
+	{
+		EUI::highlightJoint(joint.first, false, 0.6);
+		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 200, 200); // TODO: Make this cross-platform
+		index++;
+	};
+
+	EUI::resetHighlight(true, 1.5, ogCam);
+
 	uiThread = new std::thread([this](std::string configJSON)
 	{
-		exportPalette->sendInfoToHTML("joints", configJSON);
+		exportPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
 		exportPalette->isVisible(true);
 		exportPalette->sendInfoToHTML("joints", configJSON);
-	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+	}, config.toJSONString());
 }
 
 void EUI::closeExportPalette()
