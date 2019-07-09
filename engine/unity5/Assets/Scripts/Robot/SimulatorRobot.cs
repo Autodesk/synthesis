@@ -213,11 +213,12 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
-            {
-                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
-                BeginReset();
-                EndReset();
+            if (GameObject.Find("Field") != null) {
+                if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2) {
+                    if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                    BeginReset();
+                    EndReset();
+                }
             }
 
             #region Encoder Calculations
