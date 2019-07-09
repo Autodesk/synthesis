@@ -84,7 +84,7 @@ bool EUI::createDriveWeightPalette() {
 		if (!driveWeightPalette)
 			return false;
 
-		driveWeightPalette->dockingState(PaletteDockStateFloating);
+		driveWeightPalette->dockingState(PaletteDockingStates::PaletteDockStateRight);
 
 		addHandler<ReceiveFormDataHandler>(driveWeightPalette);
 		addHandler<CloseExporterFormEventHandler>(driveWeightPalette);
