@@ -30,7 +30,7 @@ namespace Synthesis.Robot
     /// To be attached to all robot parent objects.
     /// Handles all robot-specific interaction such as driving joints, resetting, and orienting robot.
     /// </summary>
-    public class RobotBase : NetworkBehaviour
+    public class RobotBase : MonoBehaviour
     {
         /// <summary>
         /// The <see cref="UnityPacket.OutputStatePacket"/> of the robot.

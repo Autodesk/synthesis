@@ -62,5 +62,10 @@ namespace EditorsLibrary
             else
                 WeightBox.Value = 0;
         }
+
+        private void UnitBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
