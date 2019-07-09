@@ -169,9 +169,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\css\synthesisExporter.css" />
+    <None Include="palette\export.html" />
     <None Include="Palette\js\fusionInterface.js" />
     <None Include="Palette\js\export.js" />
-    <None Include="palette\export.html" />
+    <None Include="palette\jointEditor.html" />
     <None Include="palette\js\progress.js" />
     <None Include="palette\js\sensors.js" />
     <None Include="palette\js\utility.js" />
