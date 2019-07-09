@@ -138,7 +138,10 @@ function applyConfigData(configData)
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
         jointTitle.dataset.jointId = joints[i].id;
-        jointTitle.onclick = function () { highlightJoint(this.dataset.jointId); };
+
+        var jointImage = getElByClass(fieldset, 'joint-config-image');
+        jointImage.setAttribute("src",configData.tempIconDir+i+".png");
+        
 
         // Filter for angular or linear joints
         var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
