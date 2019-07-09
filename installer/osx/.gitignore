@@ -2,3 +2,4 @@ target/
 application/*
 An
 Autdoesk
+!application/.gitkeep
