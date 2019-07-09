@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -6,110 +7,66 @@ namespace JointResolver.EditorsLibrary
 {
     public partial class DriveTrainTypeForm : Form
     {
-        private RadioButton selectedrb;
-        public RigidNode_Base.DriveTrainType driveTrainType;
+        private static readonly Color SelectedColor = Color.FromArgb(239, 195, 154);
+        private static readonly Color HoverColor = Color.FromArgb(239, 217, 192);
+        private static readonly Color DefaultColor = SystemColors.Control;
+
+        private readonly Dictionary<RigidNode_Base.DriveTrainType, Control> controls = new Dictionary<RigidNode_Base.DriveTrainType, Control>();
+        private RigidNode_Base.DriveTrainType driveTrainType;
 
         public DriveTrainTypeForm()
         {
             InitializeComponent();
+
+            controls.Add(RigidNode_Base.DriveTrainType.TANK, tankOption);
+            controls.Add(RigidNode_Base.DriveTrainType.H_DRIVE, hdriveOption);
+            controls.Add(RigidNode_Base.DriveTrainType.CUSTOM, customOption);
+
+            foreach (var keyValuePair in controls)
+            {
+                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseDown += (sender, args) => SelectType(keyValuePair.Key));
+                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseEnter += (sender, args) =>
+                {
+                    if (driveTrainType != keyValuePair.Key)
+                        keyValuePair.Value.BackColor = HoverColor;
+                });
+                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseLeave += (sender, args) =>
+                {
+                    if (driveTrainType != keyValuePair.Key)
+                        keyValuePair.Value.BackColor = DefaultColor;
+                });
+            }
             
-            switch (SynthesisGUI.Instance.SkeletonBase.driveTrainType)
+            
+            SelectType(SynthesisGUI.Instance.SkeletonBase.driveTrainType);
+        }
+
+        private void RecursiveControlNavigator(Control control, Action<Control> action)
+        {
+            action.Invoke(control);
+            foreach (Control subControl in control.Controls)
             {
-                case RigidNode_Base.DriveTrainType.TANK:
-                    tankButton.Checked = true;
-                    break;
-                case RigidNode_Base.DriveTrainType.H_DRIVE:
-                    hdriveButton.Checked = true;
-                    break;
-                case RigidNode_Base.DriveTrainType.CUSTOM:
-                    otherButton.Checked = true;
-                    break;
+                RecursiveControlNavigator(subControl, action);
             }
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        private void SelectType(RigidNode_Base.DriveTrainType type)
         {
-            switch (selectedrb.Name)
+            driveTrainType = type;
+            foreach (var keyValuePair in controls)
             {
-                case "tankButton":
-                    driveTrainType = RigidNode_Base.DriveTrainType.TANK;
-                    break;
-                case "hdriveButton":
-                    driveTrainType = RigidNode_Base.DriveTrainType.H_DRIVE;
-                    break;
-                case "otherButton":
-                    driveTrainType = RigidNode_Base.DriveTrainType.CUSTOM;
-                    break;
+                keyValuePair.Value.BackColor = DefaultColor;
             }
-            DialogResult = DialogResult.OK;
+
+            if (controls.TryGetValue(type, out var value))
+            {
+                value.BackColor = SelectedColor;
+            }
+        }
+        private void BtnOk_Click(object sender, EventArgs e)
+        {
+            SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainType;
             Close();
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            Close();
-        }
-
-
-        void radioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-
-            if (rb == null)
-            {
-                MessageBox.Show("Sender is not a RadioButton");
-                return;
-            }
-
-            // Ensure that the RadioButton.Checked property
-            // changed to true.
-            if (rb.Checked)
-            {
-                // Keep track of the selected RadioButton by saving a reference
-                // to it.
-                selectedrb = rb;
-            }
-
-            var selectedColor = Color.LightSalmon;
-            switch (selectedrb.Name)
-            {
-                case "tankButton":
-                    resetBackColor();
-                    tankPicture.BackColor = selectedColor;
-                    break;
-                case "hdriveButton":
-                    resetBackColor();
-                    hdrivePicture.BackColor = selectedColor;
-                    break;
-                case "otherButton":
-                    resetBackColor();
-                    otherPicture.BackColor = selectedColor;
-                    break;
-            }
-        }
-
-        private void resetBackColor()
-        {
-            var defaultColor = SystemColors.Control;
-            tankPicture.BackColor = defaultColor;
-            hdrivePicture.BackColor = defaultColor;
-            otherPicture.BackColor = defaultColor;
-        }
-
-        private void tankPicture_Click(object sender, EventArgs e)
-        {
-            tankButton.Checked = true;
-        }
-
-        private void hdrivePicture_Click(object sender, EventArgs e)
-        {
-            hdriveButton.Checked = true;
-        }
-
-        private void otherPicture_Click(object sender, EventArgs e)
-        {
-            otherButton.Checked = true;
         }
     }
 }

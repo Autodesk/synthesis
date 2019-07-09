@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
@@ -335,7 +329,7 @@ namespace BxDRobotExporter.Wizard
         /// <param name="e"></param>
         private void HighlightNode(object sender, EventArgs e)
         {
-            StandardAddInServer.Instance.SelectNode(node);
+            InventorUtils.FocusAndHighlightNode(node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
         }
 
         private void AddHighlightAction(Control baseControl)
