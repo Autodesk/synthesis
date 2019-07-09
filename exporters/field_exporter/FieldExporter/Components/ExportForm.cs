@@ -101,6 +101,8 @@ namespace FieldExporter.Components
 
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
 
+            fieldDefinition.rotationOffset = FieldMetaForm.GetRotationOffset();
+
             foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
                 fieldDefinition.AddPropertySet(ps);
 
@@ -191,7 +193,7 @@ namespace FieldExporter.Components
             ExportFieldData(directory);
 
             // Property sets
-            BXDFProperties.WriteProperties(directory + "\\definition.bxdf", fieldDefinition);
+            BXDFPropertiesJson.WriteProperties(directory + "\\definition.json", fieldDefinition);
 
             // Open the export directory when done
             if (openFolderCheckBox.Checked)

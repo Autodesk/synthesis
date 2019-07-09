@@ -17,20 +17,22 @@ namespace Synthesis.Field
         private const float CollisionMargin = 0.01f;
         private const float FrictionScale = 0.02f;
         private const float RollingFrictionScale = 0.0025f;
-
+      
         public UnityFieldDefinition(Guid guid, string name)
             : base(guid, name)
         {
         }
 
         public void CreateTransform(Transform root)
-        {
+        {          
             unityObject = root.gameObject;
+            unityObject.transform.Rotate(new Vector3(0, 45, 0));
         }
 
         public bool CreateMesh(string filePath, bool multiplayer = false, bool host = false)
         {
             BXDAMesh mesh = new BXDAMesh();
+            
             mesh.ReadFromFile(filePath, null);
 
             if (!mesh.GUID.Equals(GUID))
@@ -67,6 +69,7 @@ namespace Synthesis.Field
 
                 GameObject subObject;
 
+
                 //if (multiplayer && propertySet.HasValue && propertySet.Value.Mass != 0)
                 //{
                 //    if (host)
@@ -88,6 +91,7 @@ namespace Synthesis.Field
                 //}
 
                 subObject = new GameObject(node.NodeID);
+
                 subObject.transform.parent = unityObject.transform;
 
                 GameObject meshObject = new GameObject(node.NodeID + "-mesh");
@@ -119,7 +123,8 @@ namespace Synthesis.Field
 
                 // Set the position of the object (scaled by 1/100 to match Unity's scaling correctly).
                 meshObject.transform.position = new Vector3(-node.Position.x * 0.01f, node.Position.y * 0.01f, node.Position.z * 0.01f);
-
+                
+                
                 if (GetPropertySets().ContainsKey(node.PropertySetID))
                 {
                     PropertySet currentPropertySet = GetPropertySets()[node.PropertySetID];
@@ -199,18 +204,20 @@ namespace Synthesis.Field
                         subObject.AddComponent<Tracker>();
                         subObject.name = currentPropertySet.PropertySetID; //sets game elements to the same name as the property set - used to identify proper colliders
                     }
-
-                    meshObject.transform.parent = subObject.transform;
+                    meshObject.transform.parent = subObject.transform;                   
                 }
                 else
                 {
-                    meshObject.transform.parent = unityObject.transform;
+                    subObject.transform.parent = unityObject.transform;
+                    
                 }
+             
             }
 
             //if (!host)
             //    foreach (NetworkElement ne in networkElements.Values)
             //        ne.gameObject.AddComponent<NetworkMesh>();
+
 
             #region Free mesh
             foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
@@ -229,11 +236,19 @@ namespace Synthesis.Field
                     list[i] = null;
                 }
             }
+
+            unityObject.transform.rotation = Quaternion.Euler(0, 45, 0);
             mesh = null;
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
             #endregion
 
             return true;
         }
+
+        public Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+        {
+            return Quaternion.Euler(angles) * (point - pivot) + pivot;
+        }
     }
+    
 }

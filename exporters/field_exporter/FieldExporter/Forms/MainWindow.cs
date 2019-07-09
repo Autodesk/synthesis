@@ -7,14 +7,20 @@ using System.Diagnostics;
 namespace FieldExporter
 {
     public partial class MainWindow : Form
-    {   
+    {
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
+        /// 
+
+        
+
         public MainWindow()
         {
             InitializeComponent();
+            comboForward.SelectedItem = comboForward.Items[0];
 
+            comboUp.SelectedItem = comboForward.Items[2];
             Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
 
@@ -63,6 +69,8 @@ namespace FieldExporter
 
             pleaseWait.Close();
             Enabled = true;
+
+            
         }
 
         /// <summary>
@@ -154,6 +162,104 @@ namespace FieldExporter
         {
             if (exportForm.IsExporting)
                 e.Cancel = true;
+        }
+
+        private void UpdateRotationOffset()
+        {
+            BXDVector3 rot = new BXDVector3();
+
+     
+            // Forward Remap
+            switch (comboForward.SelectedIndex)
+            {
+                case 0: // Forward
+                    if (!checkForwardInvert.Checked)
+                    {
+                        rot.y = 0;
+                    }
+                    else
+                    {
+                        rot.y = -180;
+                    }
+                    break;
+                case 1: // Side
+                    if (!checkForwardInvert.Checked)
+                    {
+                        rot.y = 90;
+                    }
+                    else
+                    {
+                        rot.y = -90;
+                    }
+                    break;
+                case 2: // Up
+                    if (!checkForwardInvert.Checked)
+                    {
+                        rot.x = 90;
+                    }
+                    else
+                    {
+                        rot.x = -90;
+                    }
+                    break;
+            }
+
+
+            switch (comboUp.SelectedIndex)
+            {
+                case 0: // Forward
+                    if (!checkUpInvert.Checked)
+                    {
+                        rot.x = -90;
+                    }
+                    else
+                    {
+                        rot.x = 90;
+                    }
+                    break;
+                case 1: // Side
+                    if (!checkUpInvert.Checked)
+                    {
+                        rot.z = -90;
+                    }
+                    else
+                    {
+                        rot.z = 90;
+                    }
+                    break;
+                case 2: // Up
+                    if (!checkUpInvert.Checked)
+                    {
+                        rot.z = 0;
+                    }
+                    else
+                    {
+                        rot.z = 180;
+                    }
+                    break;
+            }
+
+            fieldMeta.SetRotationOffset(rot);
+        }
+
+        private void ComboForward_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateRotationOffset();
+        }
+
+        private void ComboUp_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateRotationOffset();
+        }
+
+        private void CheckForwardInvert_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateRotationOffset();
+        }
+
+        private void CheckUpInvert_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateRotationOffset();
         }
     }
 }

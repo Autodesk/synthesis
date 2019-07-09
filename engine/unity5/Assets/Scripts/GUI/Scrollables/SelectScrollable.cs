@@ -11,6 +11,7 @@ namespace Synthesis.GUI.Scrollables
     public class SelectScrollable : ScrollablePanel
     {
         public string TargetFilename;
+        public string[] TargetExtensions;
         public string ErrorMessage;
 
         /// <summary>
@@ -24,8 +25,12 @@ namespace Synthesis.GUI.Scrollables
             items.Clear();
 
             foreach (string robot in folders)
-                if (File.Exists(robot + Path.DirectorySeparatorChar + TargetFilename))
-                    items.Add(new DirectoryInfo(robot).Name);
+                foreach (string ext in TargetExtensions)
+                {
+                    if (File.Exists(robot + "\\" + TargetFilename + ext))
+                        items.Add(new DirectoryInfo(robot).Name);
+                }
+               
 
             if (items.Count > 0)
                 selectedEntry = items[0];

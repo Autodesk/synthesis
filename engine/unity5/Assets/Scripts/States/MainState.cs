@@ -278,7 +278,7 @@ namespace Synthesis.States
                 return new UnityFieldDefinition(guid, name);
             };
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf") && !File.Exists(directory + Path.DirectorySeparatorChar + "definition.json"))
                 return false;
 
             FieldDataHandler.Load(fieldPath);
@@ -289,9 +289,8 @@ namespace Synthesis.States
                 Controls.UpdateFieldControls(false);
             }
 
-            string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);
-            Debug.Log(loadResult);
+            fieldDefinition = (UnityFieldDefinition)BXDExtensions.ReadFieldSafe(directory + Path.DirectorySeparatorChar + "definition");
+         
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
         }
