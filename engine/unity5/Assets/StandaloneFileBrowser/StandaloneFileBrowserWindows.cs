@@ -41,6 +41,10 @@ namespace SFB {
             return filenames;
         }
 
+        public void OpenFilePanelAsync(string title, string directory, ExtensionFilter[] extensions, bool multiselect, Action<string[]> cb) {
+            cb.Invoke(OpenFilePanel(title, directory, extensions, multiselect));
+        }
+
         public string OpenFolderPanel(string title, string directory, bool multiselect) {
             var fd = new VistaFolderBrowserDialog();
             fd.Description = title;
@@ -51,6 +55,10 @@ namespace SFB {
             var filenames = res == DialogResult.OK ? fd.SelectedPath : null;
             fd.Dispose();
             return filenames;
+        }
+
+        public void OpenFolderPanelAsync(string title, string directory, bool multiselect, Action<string> cb) {
+            cb.Invoke(OpenFolderPanel(title, directory, multiselect));
         }
 
         public string SaveFilePanel(string title, string directory, string defaultName, ExtensionFilter[] extensions) {
@@ -85,6 +93,10 @@ namespace SFB {
             return filename;
         }
 
+        public void SaveFilePanelAsync(string title, string directory, string defaultName, ExtensionFilter[] extensions, Action<string> cb) {
+            cb.Invoke(SaveFilePanel(title, directory, defaultName, extensions));
+        }
+
         // .NET Framework FileDialog Filter format
         // https://msdn.microsoft.com/en-us/library/microsoft.win32.filedialog.filter
         private static string GetFilterFromFileExtensionList(ExtensionFilter[] extensions) {
@@ -112,10 +124,7 @@ namespace SFB {
         private static string GetDirectoryPath(string directory) {
             var directoryPath = Path.GetFullPath(directory);
             if (!directoryPath.EndsWith("\\")) {
-                directoryPath += "\\";
-            }
-            if (Path.GetPathRoot(directoryPath) == directoryPath) {
-                return directory;
+                directoryPath += Path.DirectorySeparatorChar;
             }
             return Path.GetDirectoryName(directoryPath) + Path.DirectorySeparatorChar;
         }

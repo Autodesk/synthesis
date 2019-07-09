@@ -7,6 +7,8 @@ using System.Xml;
 
 namespace FieldExporter.Exporter
 {
+
+
     public class FieldProperties
     {
         public BXDVector3[] spawnpoints { get; private set; }

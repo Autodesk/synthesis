@@ -11,6 +11,7 @@ namespace FieldExporter.Components
         InteractionEvents interactionEvents;
         SelectEvents selectEvents;
         static List<BXDVector3> spawnpoints = new List<BXDVector3>();
+        static BXDVector3 rotationOffset = new BXDVector3(0, 0,0);
 
         public FieldMetaForm()
         {
@@ -20,6 +21,17 @@ namespace FieldExporter.Components
         public static BXDVector3[] GetSpawnpoints()
         {
             return spawnpoints.ToArray();
+        }
+
+        public static BXDVector3 GetRotationOffset()
+        {
+            return rotationOffset;
+        }
+
+        public void SetRotationOffset(BXDVector3 rotOffset)
+        {
+            rotationOffset = rotOffset;
+            
         }
 
         public void SetSpawnpoints(BXDVector3[] points)
