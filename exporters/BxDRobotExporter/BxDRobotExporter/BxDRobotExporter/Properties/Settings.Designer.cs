@@ -142,5 +142,17 @@ namespace BxDRobotExporter.Properties {
                 this["ShowFirstLaunchInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TrackAnalytics {
+            get {
+                return ((bool)(this["TrackAnalytics"]));
+            }
+            set {
+                this["TrackAnalytics"] = value;
+            }
+        }
     }
 }
