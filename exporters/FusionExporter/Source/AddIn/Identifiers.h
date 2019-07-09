@@ -9,7 +9,7 @@ namespace SynthesisAddIn
 	const std::string PANEL_DT = "SynthesisDrivePanel";
 	const std::string PANEL_JOINT = "SynthesisJointPanel";
 	const std::string PANEL_PRECHECK = "SynthesisPrecheckPanel";
-	const std::string PALETTE_EXPORT = "ExporterFormPalette";
+	const std::string PALETTE_JOINT_EDITOR = "ExporterFormPalette";
 	const std::string PALETTE_SENSORS = "SensorsFormPalette";
 	const std::string PALETTE_PROGRESS = "ProcessFormPalette";
 	const std::string PALETTE_FINISH = "FinishFormPalette";

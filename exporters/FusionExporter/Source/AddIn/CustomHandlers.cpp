@@ -14,7 +14,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->preparePalettes();
+		eui->prepareAllPalettes();
 	}
 }
 

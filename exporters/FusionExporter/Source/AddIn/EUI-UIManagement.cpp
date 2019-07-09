@@ -215,12 +215,28 @@ void EUI::openFinishPalette()
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // Load joint config and update with current joints in document
 
+
+	PWSTR path = NULL;
+
+	std::string fieldNames = "[";
+
+	HRESULT result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
+	if (SUCCEEDED(result)) {
+		std::wstring relativeSynthesis = L"\\Autodesk\\Synthesis\\Fields";
+		for (const auto& entry : std::experimental::filesystem::directory_iterator(path+relativeSynthesis))
+			fieldNames+="\""+entry.path().filename().string()+"\",";
+	}
+	fieldNames.pop_back(); // remove last comma
+	fieldNames += "]";
+
+	CoTaskMemFree(path);
+
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
-		finishPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
+		finishPalette->sendInfoToHTML("fieldNames", configJSON); // TODO: Why is this duplicated
 		finishPalette->isVisible(true);
-		finishPalette->sendInfoToHTML("joints", configJSON);
-	}, config.toJSONString());
+		finishPalette->sendInfoToHTML("fieldNames", configJSON);
+	}, fieldNames);
 }
 
 void EUI::closeFinishPalette()

@@ -79,12 +79,6 @@ window.fusionJavaScriptHandler =
                     if (openFieldsetSensors != null)
                         openFieldsetSensors.dataset.sensors = data;
                 }
-                else if (action == 'fieldNames')
-                {
-                    console.log("Receiving field names...");
-                    console.log(data);
-                    applyFieldList(JSON.parse(data))
-                }
                 else if (action == 'debugger')
                 {
                     debugger;
@@ -114,14 +108,6 @@ var delayHover = function (elem, callback) {
     }
 };
 
-// Populates the form with joints
-function applyFieldList(configData) {
-    var fieldOptions = document.getElementById("frc-field-options");
-    fieldOptions.options.length = 0;
-    for(var thing in configData) {
-        fieldOptions.options[fieldOptions.options.length] = new Option(configData[thing], configData[thing]);
-    }
-}
 // Populates the form with joints
 function applyConfigData(configData)
 {
