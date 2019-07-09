@@ -11,12 +11,12 @@ public class FieldNodeGroup
     /// <summary>
     /// A list containing each child FieldNode.
     /// </summary>
-    public Dictionary<string, FieldNode> childNodes;
+    private Dictionary<string, FieldNode> childNodes;
 
     /// <summary>
     /// A list containing each child FieldNodeGroup.
     /// </summary>
-    public Dictionary<string, FieldNodeGroup> childNodeGroups;
+    private Dictionary<string, FieldNodeGroup> childNodeGroups;
 
     /// <summary>
     /// Used for defining how a child will be processed while iterating through a node path.

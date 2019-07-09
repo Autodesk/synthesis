@@ -1,5 +1,4 @@
-
-//using Synthesis.FSM;
+﻿//using Synthesis.FSM;
 //using Synthesis.GUI;
 //using System;
 //using System.Collections;

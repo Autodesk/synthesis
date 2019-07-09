@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExporter\FieldExporter.csproj", "{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLEW", "..\Aardvark-Libraries\CLEW\CLEW.vcxproj", "{CAC8B4CC-70F1-438C-95AC-B996E658DDEB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VHACD", "..\Aardvark-Libraries\VHACD\VHACD.vcxproj", "{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporterTests", "FieldExporterTests\FieldExporterTests.csproj", "{9CA48052-A278-4FFA-A66F-8D82B4F5558B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,23 +75,8 @@ Global
 		{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}.Release|Win32.ActiveCfg = Release|Win32
 		{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}.Release|Win32.Build.0 = Release|Win32
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Debug|Win32.Build.0 = Debug|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Win32.ActiveCfg = Release|Any CPU
-		{9CA48052-A278-4FFA-A66F-8D82B4F5558B}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6F0D02E6-6EC1-4FDE-8827-D5C8B9C9CBA4}
 	EndGlobalSection
 EndGlobal
