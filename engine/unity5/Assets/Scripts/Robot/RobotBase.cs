@@ -151,7 +151,7 @@ namespace Synthesis.Robot
             robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && !File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
                 return false;
 
             OnInitializeRobot();

@@ -26,7 +26,7 @@ namespace Synthesis.Field
         public void CreateTransform(Transform root)
         {          
             unityObject = root.gameObject;
-            unityObject.transform.Rotate(new Vector3(0, 45, 0));
+            //unityObject.transform.Rotate(new Vector3(0, 45, 0));
         }
 
         public bool CreateMesh(string filePath, bool multiplayer = false, bool host = false)
@@ -237,7 +237,7 @@ namespace Synthesis.Field
                 }
             }
 
-            unityObject.transform.rotation = Quaternion.Euler(0, 45, 0);
+            //unityObject.transform.rotation = Quaternion.Euler(0, 45, 0);
             mesh = null;
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
             #endregion
