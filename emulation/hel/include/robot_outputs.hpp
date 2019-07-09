@@ -1,5 +1,5 @@
-#ifndef _SEND_DATA_HPP_
-#define _SEND_DATA_HPP_
+#ifndef _ROBOT_OUTPUTS_HPP_
+#define _ROBOT_OUTPUTS_HPP_
 
 #include <map>
 #include <memory>
@@ -20,16 +20,16 @@ namespace hel {
  * Contains functions to interpret RoboRIO data and prepare it for transmission
  */
 
-struct SendData {
+struct RobotOutputs {
    private:
 	/**
-	 * \brief Whether SendData has been updated since last serialization
+	 * \brief Whether RobotOutputs has been updated since last serialization
 	 */
 
 	bool new_data;
 
 	/**
-	 * \brief Whether the robot is enabled and SendData should send outputs
+	 * \brief Whether the robot is enabled and RobotOutputs should send outputs
 	 */
 
 	bool enabled;
@@ -77,20 +77,20 @@ private:
 
    public:
 	/**
-	 * \brief Constructor for SendData
+	 * \brief Constructor for RobotOutputs
 	 */
 
-	SendData();
+	RobotOutputs();
 
 	/**
-	 * \brief Update the data held by SendData from a copy of the RoboRIO
+	 * \brief Update the data held by RobotOutputs from a copy of the RoboRIO
 	 * instance This only updates the data supported by Synthesis's engine
 	 */
 
 	void updateShallow();
 
 	/**
-	 * \brief Update the data held by SendData from a copy of the RoboRIO
+	 * \brief Update the data held by RobotOutputs from a copy of the RoboRIO
 	 * instance This updates all the data supported by HEL
 	 */
 
@@ -98,15 +98,15 @@ private:
 
 	/**
 	 * \brief Set output enable
-	 * If SendData is disabled, it outputs zeroed outputs until it is re-enabled
+	 * If RobotOutputs is disabled, it outputs zeroed outputs until it is re-enabled
 	 * \param e The new value to use for enabled
 	 */
 
 	void enable(bool);
 
 	/**
-	 * \brief Format SendData as a string
-	 * \return A string containing all the values held by SendData
+	 * \brief Format RobotOutputs as a string
+	 * \return A string containing all the values held by RobotOutputs
 	 */
 
 	std::string toString() const;
@@ -115,27 +115,27 @@ private:
 	EmulationService::RobotOutputs syncDeep();
 
 	/**
-	 * \brief Get if SendData has new data
-	 * \return True if SendData has been updated since last serialization
+	 * \brief Get if RobotOutputs has new data
+	 * \return True if RobotOutputs has been updated since last serialization
 	 */
 
 	bool hasNewData() const;
 };
 
-class SendDataManager {  // TODO move to separate file
+class RobotOutputsManager {  // TODO move to separate file
    public:
-	static std::pair<std::shared_ptr<SendData>,
+	static std::pair<std::shared_ptr<RobotOutputs>,
 					 std::unique_lock<std::recursive_mutex>>
 	getInstance() {
 		std::unique_lock<std::recursive_mutex> lock(send_data_mutex);
 		if (instance == nullptr) {
-			instance = std::make_shared<SendData>();
+			instance = std::make_shared<RobotOutputs>();
 		}
 		return std::make_pair(instance, std::move(lock));
 	}
 
    private:
-	static std::shared_ptr<SendData> instance;
+	static std::shared_ptr<RobotOutputs> instance;
 	static std::recursive_mutex send_data_mutex;
 };
 }  // namespace hel

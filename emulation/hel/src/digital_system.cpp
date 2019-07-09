@@ -20,7 +20,7 @@ namespace hel{
 
     void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable enabled_out)noexcept{
         enabled_outputs = enabled_out;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -47,7 +47,7 @@ namespace hel{
 
     void DigitalSystem::setMXPSpecialFunctionsEnabled(uint16_t enabled_mxp_special_functions)noexcept{
         mxp_special_functions_enabled = enabled_mxp_special_functions;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }

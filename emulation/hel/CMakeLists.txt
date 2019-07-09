@@ -155,8 +155,8 @@ ADD_DEPENDENCIES(grpc_gen grpc)
 ADD_LIBRARY(hel SHARED
   src/roborio.cpp
   src/roborio_manager.cpp
-  src/send_data.cpp
-  src/receive_data.cpp
+  src/robot_outputs.cpp
+  src/robot_inputs.cpp
   src/util.cpp
   src/init.cpp
   src/analog_input.cpp

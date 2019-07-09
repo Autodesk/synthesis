@@ -46,7 +46,7 @@ namespace hel{
         case RelaySystem::State::ERROR:
             return "ERROR";
         default:
-            throw UnhandledEnumConstantException("hel::SendData::RelayState");
+            throw UnhandledEnumConstantException("hel::RobotOutputs::RelayState");
         }
     }
 
