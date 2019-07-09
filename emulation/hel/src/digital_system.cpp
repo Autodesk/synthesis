@@ -147,7 +147,7 @@ namespace hel{
         template<typename T, typename S> //note: this is not an Ni FPGA function
         bool allowOutput(T output,S enabled, bool requires_special_function){
             auto instance = RoboRIOManager::getInstance();
-            for(unsigned i = 1; i < findMostSignificantBit(output); i++){
+            for(int i = 0; i < findMostSignificantBit(output); i++){
                 if(!checkBitHigh(output, i)){ //Ignore if it's not trying to output
                     continue;
                 }
@@ -473,7 +473,7 @@ namespace hel{
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setMXPSpecialFunctionsEnabled(value);
-            for(unsigned i = 0; i < findMostSignificantBit(value); i++){
+            for(int i = 0; i < findMostSignificantBit(value); i++){
                 MXPData::Config mxp_config = DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
                 if(mxp_config == MXPData::Config::I2C || mxp_config == MXPData::Config::SPI){
                     hel::warnUnsupportedFeature("Configuring digital MXP input " + std::to_string(i) + " for " + asString(mxp_config));

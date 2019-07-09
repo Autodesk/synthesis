@@ -13,7 +13,7 @@ namespace hel{
         setSolenoids(DATA[MessageData::SOLENOIDS]);
     }
 
-    std::vector<uint8_t> PCM::generateCANPacket(const int32_t& /*API_ID*/){
+    std::vector<uint8_t> PCM::generateCANPacket(const int32_t& /*API_ID*/)const{
         return {};
     }
 

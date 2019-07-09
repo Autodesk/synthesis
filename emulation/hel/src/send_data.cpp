@@ -8,7 +8,7 @@ using namespace nRoboRIO_FPGANamespace;
 namespace hel{
     constexpr char ZEROED_SERIALIZATION_DATA[] = "{\"roborio\":{\"pwm_hdrs\":[0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000],\"relays\":[\"OFF\",\"OFF\",\"OFF\",\"OFF\"],\"analog_outputs\":[0.000000,0.000000],\"digital_mxp\":[{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000}],\"digital_hdrs\":[0,0,0,0,0,0,0,0,0,0],\"can_motor_controllers\":[]}}\x1B"; //TODO replace with shallow and deep versions
 
-  SendData::SendData():serialized_data(""),new_data(true),enabled(RobotMode::DEFAULT_ENABLED_STATUS),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
+  SendData::SendData():serialized_data(""),new_data(true),enabled(HEL_DEFAULT_ENABLED_STATUS),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
 
     bool SendData::hasNewData()const{
@@ -23,7 +23,7 @@ namespace hel{
         RoboRIO roborio = RoboRIOManager::getCopy();
 
         for(unsigned i = 0; i < pwm_hdrs.size(); i++){
-            pwm_hdrs[i] = PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
+            pwm_hdrs[i] = roborio.pwm_system.getHdrZeroLatch(i) ? 0.0 : PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
         }
 
         for(unsigned i = 0; i < digital_mxp.size(); i++){
@@ -39,7 +39,7 @@ namespace hel{
                 if(remapped_i >= 4){ //digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
                     remapped_i -= 4;
                 }
-                digital_mxp[i].value = PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
+                digital_mxp[i].value = roborio.pwm_system.getMXPZeroLatch(remapped_i) ? 0.0 : PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
                 break;
             }
             case MXPData::Config::SPI:
