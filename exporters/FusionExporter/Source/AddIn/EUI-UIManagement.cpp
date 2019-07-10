@@ -22,8 +22,8 @@ bool EUI::createWorkspace()
 			workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
 			workSpace->tooltip("Export robot models to the Synthesis simulator");
 
-			addHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
-			addHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
+			addHandler<WorkspaceActivatedHandler>(UI);
+			addHandler<WorkspaceDeactivatedHandler>(UI);
 
 			createPanels();
 			createButtons();
@@ -40,13 +40,12 @@ bool EUI::createWorkspace()
 
 void EUI::deleteWorkspace()
 {
-	clearHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
-	clearHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
+	clearHandler<WorkspaceActivatedHandler>(UI);
+	clearHandler<WorkspaceDeactivatedHandler>(UI);
 
 	// Delete palettes
 	deleteJointEditorPalette();
 	deleteSensorsPalette();
-	deleteGuidePalette();
 	deleteFinishPalette();
 	deleteProgressPalette();
 
@@ -67,7 +66,6 @@ void EUI::prepareAllPalettes()
 {
 	createJointEditorPalette();
 	createSensorsPalette();
-	createGuidePalette();
 	createFinishPalette();
 	createProgressPalette();
 }
@@ -76,9 +74,9 @@ void EUI::hideAllPalettes()
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
-	guidePalette->isVisible(false);
 	finishPalette->isVisible(false);
 }
+
 
 // Export Palette
 
@@ -98,8 +96,8 @@ bool EUI::createJointEditorPalette()
 
 		jointEditorPalette->dockingState(PaletteDockStateRight);
 
-		addHandler<ReceiveFormDataHandler>(jointEditorPalette, jointEditorReceiveFormDataHandler);
-		addHandler<ClosePaletteEventHandler>(jointEditorPalette, jointEditorPaletteHandler);
+		addHandler<ReceiveFormDataHandler>(jointEditorPalette);
+		addHandler<CloseExporterFormEventHandler>(jointEditorPalette);
 	}
 
 	return true;
@@ -117,8 +115,8 @@ void EUI::deleteJointEditorPalette()
 	if (!jointEditorPalette)
 		return;
 
-	clearHandler<ReceiveFormDataHandler>(jointEditorPalette, jointEditorReceiveFormDataHandler);
-	clearHandler<ClosePaletteEventHandler>(jointEditorPalette, jointEditorClosePaletteEventHandler);
+	clearHandler<ReceiveFormDataHandler>(jointEditorPalette);
+	clearHandler<CloseExporterFormEventHandler>(jointEditorPalette);
 
 	jointEditorPalette->deleteMe();
 	jointEditorPalette = nullptr;
@@ -128,7 +126,6 @@ void EUI::openJointEditorPalette()
 {
 	hideAllPalettes();
 	editJointsButton->controlDefinition()->isEnabled(false);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -166,72 +163,6 @@ void EUI::closeJointEditorPalette()
 	editJointsButton->controlDefinition()->isEnabled(true);
 }
 
-// Guide Palette
-
-bool EUI::createGuidePalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
-
-	// Check if palette already exists
-	guidePalette = palettes->itemById(PALETTE_GUIDE);
-	if (!guidePalette)
-	{
-		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "Palette/guide.html", false, true, true, 400, 200);
-		if (!guidePalette)
-			return false;
-
-		// Dock the palette to the right side of Fusion window.
-		guidePalette->dockingState(PaletteDockStateRight);
-
-		addHandler<ReceiveFormDataHandler>(guidePalette, guideReceiveFormDataHandler);
-		addHandler<ClosePaletteEventHandler>(guidePalette, guideCloseGuideFormEventHandler);
-	}
-
-	return true;
-}
-
-void EUI::deleteGuidePalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	// Check if palette already exists
-	guidePalette = palettes->itemById(PALETTE_GUIDE);
-	if (!guidePalette)
-		return;
-
-	clearHandler<ReceiveFormDataHandler>(guidePalette, guideReceiveFormDataHandler);
-	clearHandler<ClosePaletteEventHandler>(guidePalette, guideCloseGuideFormEventHandler);
-
-	guidePalette->deleteMe();
-	guidePalette = nullptr;
-}
-
-void EUI::openGuidePalette()
-{
-	robotExportGuideButton->controlDefinition()->isEnabled(false);
-
-	static std::thread* uiThread = nullptr;
-	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-	uiThread = new std::thread([this]()
-		{
-			guidePalette->sendInfoToHTML("guide", "0");
-			guidePalette->isVisible(true);
-			guidePalette->sendInfoToHTML("guide", "0");
-		});
-}
-
-void EUI::closeGuidePalette()
-{
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	guidePalette->isVisible(false);
-}
-
 // Finish palette
 
 bool EUI::createFinishPalette()
@@ -250,8 +181,8 @@ bool EUI::createFinishPalette()
 
 		finishPalette->dockingState(PaletteDockStateRight);
 
-		addHandler<ReceiveFormDataHandler>(finishPalette, finishPaletteReceiveFormDataHandler);
-		addHandler<ClosePaletteEventHandler>(finishPalette, finishPaletteCloseEventHandler);
+		addHandler<ReceiveFormDataHandler>(finishPalette);
+		addHandler<CloseExporterFormEventHandler>(finishPalette);
 	}
 
 	return true;
@@ -269,8 +200,8 @@ void EUI::deleteFinishPalette()
 	if (!finishPalette)
 		return;
 
-	clearHandler<ReceiveFormDataHandler>(finishPalette, finishPaletteReceiveFormDataHandler);
-	clearHandler<ClosePaletteEventHandler>(finishPalette, finishPaletteCloseEventHandler);
+	clearHandler<ReceiveFormDataHandler>(finishPalette);
+	clearHandler<CloseExporterFormEventHandler>(finishPalette);
 
 	finishPalette->deleteMe();
 	finishPalette = nullptr;
@@ -278,8 +209,6 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(false);
-
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
@@ -312,7 +241,6 @@ void EUI::openFinishPalette()
 
 void EUI::closeFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(true);
 	finishPalette->isVisible(false);
 }
 
@@ -336,7 +264,7 @@ bool EUI::createSensorsPalette()
 		// Dock the palette to the right side of Fusion window.
 		sensorsPalette->dockingState(PaletteDockStateRight);
 
-		addHandler<ReceiveFormDataHandler>(sensorsPalette, sensorsReceiveFormDataHandler);
+		addHandler<ReceiveFormDataHandler>(sensorsPalette);
 	}
 
 	return true;
@@ -354,7 +282,7 @@ void EUI::deleteSensorsPalette()
 	if (!sensorsPalette)
 		return;
 
-	clearHandler<ReceiveFormDataHandler>(sensorsPalette, sensorsReceiveFormDataHandler);
+	clearHandler<ReceiveFormDataHandler>(sensorsPalette);
 
 	sensorsPalette->deleteMe();
 	sensorsPalette = nullptr;
@@ -457,43 +385,34 @@ void EUI::createPanels()
 
 void EUI::createButtons()
 {
-	driveTrainTypeButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/DriveIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainTypeButton, driveTrainShowPaletteCommandCreatedHandler);
+	driveTrainType = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/DriveIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainType);
 
-	driveTrainWeightButton = UI->commandDefinitions()->addButtonDefinition(BTN_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/WeightIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
+	driveTrainWeight = UI->commandDefinitions()->addButtonDefinition(BTN_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/WeightIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeight);
 
 	editJointsButton = UI->commandDefinitions()->addButtonDefinition(BTN_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/JointIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton, editJointsShowPaletteCommandCreatedHandler);
+	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton);
 
 	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Toggle Degrees of Freedom Viewer", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
+	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton);
 
-	robotExportGuideButton = UI->commandDefinitions()->addButtonDefinition(BTN_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(robotExportGuideButton, robotExportGuideShowPaletteCommandCreatedHandler);
+	robotExportGuide = UI->commandDefinitions()->addButtonDefinition(BTN_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(robotExportGuide);
 
-	finishButton = UI->commandDefinitions()->addButtonDefinition(BTN_EXPORT, "Finish Robot Export", "Setup your robot for exporting to Synthesis.", "Resources/FinishIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(finishButton, finishShowPaletteCommandCreatedHandler);
+	exportButtonCommand = UI->commandDefinitions()->addButtonDefinition(BTN_EXPORT, "Finish Robot Export", "Setup your robot for exporting to Synthesis.", "Resources/FinishIcons");
+	addHandler<ShowPaletteCommandCreatedHandler>(exportButtonCommand);
 
 
 	// Add buttons to finishPanel
-	driveTrainPanel->controls()->addCommand(driveTrainTypeButton)->isPromoted(true);
-	driveTrainPanel->controls()->addCommand(driveTrainWeightButton)->isPromoted(true);
+	driveTrainPanel->controls()->addCommand(driveTrainType)->isPromoted(true);
+	driveTrainPanel->controls()->addCommand(driveTrainWeight)->isPromoted(true);
 	jointSetupPanel->controls()->addCommand(editJointsButton)->isPromoted(true);
-	precheckPanel->controls()->addCommand(robotExportGuideButton)->isPromoted(true);
+	precheckPanel->controls()->addCommand(robotExportGuide)->isPromoted(true);
 	precheckPanel->controls()->addCommand(editDOFButton)->isPromoted(true);
-	finishPanel->controls()->addCommand(finishButton)->isPromoted(true);
+	finishPanel->controls()->addCommand(exportButtonCommand)->isPromoted(true);
 }
 
-
-void EUI::deleteButtonCommand(Ptr<CommandDefinition>& buttonCommand, ShowPaletteCommandCreatedHandler* buttonHandler)
-{
-	if (buttonCommand) {
-		clearHandler<ShowPaletteCommandCreatedHandler>(buttonCommand, buttonHandler);
-		buttonCommand->deleteMe();
-		buttonCommand = nullptr;
-	}
-}
 
 void EUI::deleteButtons()
 {
@@ -518,11 +437,14 @@ void EUI::deleteButtons()
 	if (!commandDefinitions)
 		return;
 
-	// Delete btn commands
-	deleteButtonCommand(driveTrainTypeButton, driveTrainShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(editJointsButton, editJointsShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(robotExportGuideButton, robotExportGuideShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(finishButton, finishShowPaletteCommandCreatedHandler);
+	// Delete command
+	exportButtonCommand = commandDefinitions->itemById(BTN_EXPORT);
+	
+	if (!exportButtonCommand)
+		return;
+
+	clearHandler<ShowPaletteCommandCreatedHandler>(exportButtonCommand);
+
+	exportButtonCommand->deleteMe();
+	exportButtonCommand = nullptr;
 }

@@ -50,6 +50,7 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler(EUI* eui, std::string id_) : eui(eui), id(id_) {  }
 		~ShowPaletteCommandCreatedHandler();
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
+		void setId(std::string id_) { id = id_; }
 	private:
 		EUI * eui;
 		std::string id;
@@ -70,13 +71,12 @@ namespace SynthesisAddIn
 	};
 
 	/// Notified when the export robot form is closed.
-	class ClosePaletteEventHandler : public UserInterfaceGeneralEventHandler
+	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		ClosePaletteEventHandler(EUI * eui, std::string id_) : eui(eui), id(id_) {}
+		CloseExporterFormEventHandler(EUI * eui) : eui(eui) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
 		EUI * eui;
-		std::string id;
 	};
 }
