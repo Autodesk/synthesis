@@ -2,14 +2,11 @@
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Sockets;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 using Synthesis.GUI;
 
-public class Serialization
+public class EmulationClient
 {
 
     private static Thread sender;
@@ -20,7 +17,7 @@ public class Serialization
 
     public static bool needsToReconnect { get; set; }
 
-    public Serialization(string ip = "127.0.0.1", int sendPort = 11000, int receivedPort = 11001)
+    public EmulationClient(string ip = "127.0.0.1", int sendPort = 11000, int receivedPort = 11001)
     {
         sender = new Thread(new ThreadStart(() => Serialize(ip, sendPort)));
         receiver = new Thread(new ThreadStart(() => Deserialize(ip, receivedPort)));
@@ -36,7 +33,7 @@ public class Serialization
         receiver.Start();
     }
 
-    ~Serialization()
+    ~EmulationClient()
     {
         UnityEngine.Debug.Log("Killing Threads");
         proc.Kill();
@@ -58,7 +55,7 @@ public class Serialization
     {
         string rest = "";
         string strJSON = "";
-        int retries = 65536;
+        int retries = 0x10000;
         TcpClient client = null;
 
         do
@@ -89,7 +86,7 @@ public class Serialization
         UnityEngine.Debug.Log("Connection successfully established to " + ip);
         NetworkStream nwStream = client.GetStream();
 
-        retries = 65536;
+        retries = 0x10000;
         int count = 0;
         while (true)
         {

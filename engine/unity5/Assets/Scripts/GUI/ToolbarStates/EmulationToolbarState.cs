@@ -171,7 +171,7 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        internal static Serialization s;
+        internal static EmulationClient s;
 
         private void CloseHelpMenu()
         {

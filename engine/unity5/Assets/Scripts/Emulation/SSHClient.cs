@@ -1,9 +1,6 @@
 ﻿using System;
 using Renci.SshNet;
-using Renci.SshNet.Sftp;
 using System.IO;
-using System.Configuration;
-using System.IO.Compression;
 using System.Threading;
 
 public class SSHClient
