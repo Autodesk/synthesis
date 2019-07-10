@@ -117,6 +117,11 @@ namespace Synthesis.DriverPractice
                 moveArrows.SetActive(true);
             }
             //else prompt user to define intake and release first
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditTrajectory,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         public void CloseEditor()
         {
