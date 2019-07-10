@@ -46,14 +46,40 @@ public class AnalyticsLedger
             ControlPanel = "controlPanel",
             MainHelp = "mainToolbarHelp",
 
-            // DPM Toolbar Events
+            // DPM toolbar events
             DefineIntake = "defineIntake",
             DefineRelease = "defineRelease",
             EditTrajectory = "editTrajectory",
             SetSpawnpoint = "setSpawnpoint",
             SpawnGamepiece = "spawnGamepiece",
             ClearGamepiece = "clearGamepiece",
-            DPMHelp = "dpmHelp";
+            DPMHelp = "dpmHelp",
+
+            // Scoring toolbar events
+            ScoreZones = "scoreZone",
+            ScoreBoard = "scoreBoard",
+            ScoreHelp = "scoreHelp",
+
+            // Sensor toolbar events
+            RobotCamera = "robotCamera",
+
+            UltrasonicDropdown = "ultraSensorDropdown",
+            AddUltrasonic = "addUltraSensor",
+            EditUltrasonic = "editUltraSensor",
+            RemoveUltrasonic = "removeUltraSensor",
+
+            BeamBreakDropdown = "beamBreakDropdown",
+            AddBeam = "addBeamBreakSensor",
+            EditBeam = "editBeamBreakSensor",
+            RemoveBeam = "removeBeamSensor",
+
+            GyroscopeDropdown = "gyroDropdown",
+            AddGyro = "addGyroSensor",
+            EditGyro = "editGyroSensor",
+            RemoveGyro = "removeGyroSensor",
+
+            HideOutputs = "hideSensorOutputs",
+            SensorHelp = "sensorHelp";
     }
 
     public class EventAction

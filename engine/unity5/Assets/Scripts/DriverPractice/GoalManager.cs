@@ -89,6 +89,11 @@ namespace Synthesis.DriverPractice
                 redButton.GetComponent<Button>().image.color = Color.black;
             }
             CreateTabs();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreZones,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         public void CloseGoalManager()
         {
@@ -295,6 +300,12 @@ namespace Synthesis.DriverPractice
         public void OpenScoreboard()
         {
             scoreboard.SetActive(true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreBoard,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
         }
         public void CloseScoreboard()
         {
