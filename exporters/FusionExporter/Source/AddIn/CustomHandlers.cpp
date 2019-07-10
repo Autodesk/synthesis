@@ -67,6 +67,8 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		eui->openJointEditorPalette();
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
+	else if (id == SynthesisAddIn::BTN_DOF)
+		eui->toggleDOF();
 }
 
 /// Palette Events
@@ -74,7 +76,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
 	if (eventArgs->action() == "highlight")
-		eui->highlightJoint(eventArgs->data(), false, 1);
+		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 
 	else if (eventArgs->action() == "edit_sensors")
 		eui->openSensorsPalette(eventArgs->data());
