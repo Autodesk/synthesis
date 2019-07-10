@@ -98,6 +98,8 @@ namespace Synthesis.GUI
 
         public static SimUI getSimUI() { return instance; }
 
+        public StateMachine getTabStateMachine() { return tabStateMachine; }
+
         private void Update()
         {
             if (toolkit == null)
@@ -176,7 +178,7 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
-            settingsPanel = Auxiliary.FindGameObject("OptionsTab");
+            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -256,7 +258,12 @@ namespace Synthesis.GUI
 
         public void OnSettingsTab()
         {
-            if (settingsPanel.activeSelf)
+            if (!settingsPanel.activeSelf)
+            {
+                tabStateMachine.PushState(new SettingsState());
+            }
+
+            /*if (settingsPanel.activeSelf)
             {
                 settingsPanel.SetActive(false);
             }
@@ -265,7 +272,7 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 //settingsPanel.SetActive(true);
                 tabStateMachine.ChangeState(new OptionsTabState());
-            }
+            }*/
         }
 
         private void CloseHelpMenu(string currentID = " ")
