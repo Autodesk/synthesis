@@ -12,6 +12,9 @@
 #include <list>
 #include <experimental/filesystem>
 #include <Core/Application/Viewport.h>
+#include <windows.h>
+#include <KnownFolders.h>
+#include <ShlObj.h>
 #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "../Data/BXDJ/ConfigData.h"
@@ -35,10 +38,11 @@ namespace SynthesisAddIn
 		~EUI(); ///< Cancels any in-progress export and deletes the workspace.
 
 		// UI Management
-		void preparePalettes(); ///< Creates all palettes
+		void prepareAllPalettes(); ///< Creates all palettes
+		void hideAllPalettes();
 
-		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
-		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
+		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
+		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
 		/// Loads and opens the sensors configuration palette.
 		/// \param sensors Existing sensor configuration to load.
@@ -47,11 +51,14 @@ namespace SynthesisAddIn
 		/// \param sensorsToSave Sensor configuration to send to the robot exporter for saving.
 		void closeSensorsPalette(std::string sensorsToSave = "");
 
+		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
+		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
+
+		void openFinishPalette();
+		void closeFinishPalette();
+
 		void openProgressPalette(); ///< Opens the progress bar palette and sets the progress to 0.
 		void closeProgressPalette(); ///< Closes the progress bar palette.
-
-		void enableExportButton(); ///< Enables the export robot button.
-		void disableExportButton(); ///< Disables the export robot button.
 
 		// UI Controls
 		///
@@ -87,16 +94,18 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
-		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
+		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
+		Ptr<Palette> guidePalette; ///< Robot export guide palette.
+		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
-		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
-		Ptr<CommandDefinition> driveTrainWeight; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainTypeButton; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainWeightButton; ///< Export robot button.
 		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
 		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
-		Ptr<CommandDefinition> robotExportGuide; ///< Export robot button.
-		Ptr<CommandDefinition> exportButtonCommand; ///< Export robot button.
+		Ptr<CommandDefinition> robotExportGuideButton; ///< Export robot button.
+		Ptr<CommandDefinition> finishButton; ///< Export robot button.
 
 		// Event Handlers
 		// These handlers are managed in EUI-Handers.cpp.
@@ -105,41 +114,56 @@ namespace SynthesisAddIn
 
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
+
 		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
-		ReceiveFormDataHandler * receiveFormDataHandler = nullptr;
-		CloseExporterFormEventHandler * closeExporterFormEventHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
-		///
-		/// Add a handler to a UI element.
-		/// \param E Handler to add.
-		/// \param el UI element to add handler to.
-		///
-		template<typename E, typename T>
-		bool addHandler(Ptr<T> el);
+		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
+		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
+		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
+		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
 
-		///
-		/// Removes a handler from a UI element.
-		/// \param E Handler to remove.
-		/// \param el UI element to remove handler from.
-		///
+		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
+
 		template<typename E, typename T>
-		bool clearHandler(Ptr<T> el);
+		bool addHandler(Ptr<T> el, E* a);
+		
+		template<typename E, typename T>
+		bool clearHandler(Ptr<T> el, E*);
 
 		// UI Creation/Deletion
 		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
 		void deleteWorkspace(); ///< Deletes the finishPanel and controls.
 
-		bool createExportPalette(); ///< Creates the robot export configuration palette.
-		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
+		bool createJointEditorPalette(); ///< Creates the robot export configuration palette.
+		void deleteJointEditorPalette(); ///< Deletes the robot export configuration palette.
+
+		bool createFinishPalette();
+		void deleteFinishPalette();
 
 		bool createSensorsPalette(); ///< Creates the sensor configuration palette.
 		void deleteSensorsPalette(); ///< Deletes the sensor configuration palette.
+
+		bool createGuidePalette(); ///< Creates the robot export guide configuration palette.
+		void deleteGuidePalette(); ///< Deletes the robot export guide configuration palette.
 
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
 
 		void createPanels(); ///< Creates the export robot button.
 		void createButtons(); ///< Creates the export robot button.
+		void deleteButtonCommand(Ptr<CommandDefinition>& buttonCommand,
+		                  ShowPaletteCommandCreatedHandler* buttonHandler);
 		void deleteButtons(); ///< Deletes the export robot button.
 
 		// Thread Information
