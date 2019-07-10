@@ -394,7 +394,7 @@ void EUI::createButtons()
 	editJointsButton = UI->commandDefinitions()->addButtonDefinition(BTN_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/JointIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton);
 
-	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "View Degrees of Freedom", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
+	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Toggle Degrees of Freedom Viewer", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton);
 
 	robotExportGuide = UI->commandDefinitions()->addButtonDefinition(BTN_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
