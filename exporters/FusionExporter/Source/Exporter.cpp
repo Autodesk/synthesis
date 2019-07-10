@@ -150,7 +150,54 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 	// Write robot to file
 	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
 
+	std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.json";
+
+	nlohmann::json robotJson;
+	robotJson["Version"]        = CURRENT_VERSION;
+	robotJson["DriveTrainType"] = config.drivetrainType;
+	robotJson["SoftwareExportedWith"] = "FUSION_360";
+
+
+	nlohmann::json nodeJsonArray = nlohmann::json::array();
+
+	for each (std::shared_ptr<BXDJ::RigidNode> node in allNodes)
+	{
+		nlohmann::json nodeJson;
+		nodeJson["GUID"] = node->getGUID().toString();
+		node->getParent()->getId();
+		
+	}
+	
+
+
+	int completedOccurrences = 0;
+	for (int i = 0; i < allNodes.size(); i++)
+	{
+		// Prepare binary writer for writing mesh
+		std::string filenameBXDA = "node_" + std::to_string(allNodes[i]->getGUID().getSeed()) + ".bxda";
+		BXDA::BinaryWriter binary(Filesystem::getCurrentRobotDirectory(config.robotName) + filenameBXDA);
+
+		// Generate mesh
+		BXDA::Mesh mesh(allNodes[i]->getGUID());
+		int occurrencesInNode = allNodes[i]->getOccurrenceCount();
+		allNodes[i]->getMesh(mesh, false, [progressCallback, completedOccurrences, occurrencesInNode, totalOccurrences](double percent)
+		{
+			if (progressCallback)
+				progressCallback((completedOccurrences + percent * occurrencesInNode) / totalOccurrences); // Scale percent of each node by the number of occurrences in that node
+		}, cancel);
+		completedOccurrences += occurrencesInNode;
+
+		// Check if thread is being canceled
+		if (cancel != nullptr)
+			if (*cancel)
+				break;
+
+		// Write mesh
+		binary.write(mesh);
+	}
+
 	// Write BXDJ file
+	/*
 	std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
 	BXDJ::XmlWriter xml(filenameBXDJ, false);
 
@@ -189,7 +236,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		// Write mesh
 		binary.write(mesh);
 	}
-
+	*/
 	// If canceled, delete the created robot folder
 	if (cancel != nullptr)
 		if (*cancel)
