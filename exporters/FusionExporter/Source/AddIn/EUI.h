@@ -10,6 +10,8 @@
 
 #include <thread>
 #include <list>
+#include <experimental/filesystem>
+#include <Core/Application/Viewport.h>
 #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "../Data/BXDJ/ConfigData.h"
@@ -56,7 +58,8 @@ namespace SynthesisAddIn
 		/// Highlights a joint in Fusion.
 		/// \param jointID ID generated from BXDJ::Utility::getUniqueJointID.
 		///
-		void highlightJoint(std::string jointID);
+		void highlightJoint(std::string jointID, bool transition, double zoom);
+		void resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam);
 
 		// Robot Exporting
 		///

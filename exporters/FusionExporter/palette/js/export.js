@@ -97,6 +97,17 @@ window.fusionJavaScriptHandler =
         }
     };
 
+var delayHover = function (elem, callback, hoverTime) {
+    var timeout = null;
+    elem.onmouseover = function() {
+        timeout = setTimeout(callback, hoverTime);
+    };
+
+    elem.onmouseout = function() {
+        clearTimeout(timeout);
+    }
+};
+
 // Populates the form with joints
 function applyConfigData(configData)
 {
@@ -122,10 +133,18 @@ function applyConfigData(configData)
         fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
         fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
+        // Highlight joint if hover for 0.5 seconds
+        (function(id){delayHover(fieldset, function () {
+            highlightJoint(id)
+        }, 200)}(fieldset.dataset.jointId));
+
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
         jointTitle.dataset.jointId = joints[i].id;
-        jointTitle.onclick = function () { highlightJoint(this.dataset.jointId); };
+
+        var jointImage = getElByClass(fieldset, 'joint-config-image');
+        jointImage.setAttribute("src",configData.tempIconDir+i+".png");
+        
 
         // Filter for angular or linear joints
         var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
