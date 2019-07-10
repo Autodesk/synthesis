@@ -103,10 +103,10 @@ window.fusionJavaScriptHandler =
         }
     };
 
-var delayHover = function (elem, callback, hoverTime) {
+var delayHover = function (elem, callback) {
     var timeout = null;
     elem.onmouseover = function() {
-        timeout = setTimeout(callback, hoverTime);
+        timeout = setTimeout(callback, 500);
     };
 
     elem.onmouseout = function() {
@@ -148,9 +148,7 @@ function applyConfigData(configData)
         fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
 
         // Highlight joint if hover for 0.5 seconds
-        (function(id){delayHover(fieldset, function () {
-            highlightJoint(id)
-        }, 200)}(fieldset.dataset.jointId));
+        (function(id){delayHover(fieldset, function() {highlightJoint(id)})}(fieldset.dataset.jointId));
 
         var jointTitle = getElByClass(fieldset, 'joint-config-legend');
         jointTitle.innerHTML = joints[i].name;
