@@ -79,7 +79,14 @@ public class AnalyticsLedger
             RemoveGyro = "removeGyroSensor",
 
             HideOutputs = "hideSensorOutputs",
-            SensorHelp = "sensorHelp";
+            SensorHelp = "sensorHelp",
+
+            // Emulation toolbar events
+            SelectCode = "selectCode",
+            DriverStation = "emulationDriverStation",
+            RunCode = "runCode",
+            EmulationHelp = "emulationHelp";
+
     }
 
     public class EventAction

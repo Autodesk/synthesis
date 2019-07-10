@@ -70,6 +70,11 @@ namespace Assets.Scripts.GUI
                 }
             }
             { }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SelectCode,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -78,12 +83,22 @@ namespace Assets.Scripts.GUI
         public void OnDriverStationButtonClicked()
         {
             emulationDriverStation.OpenDriverStation();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverStation,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public void OnStartRobotCodeButtonClicked()
         {
             emulationDriverStation.ToggleRobotCodeButton();
             //Serialization.RestartThreads("10.140.148.66");
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
+                AnalyticsLedger.EventAction.Start,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         #region Help Button and Menu
@@ -105,6 +120,11 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationHelp,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
 
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
