@@ -143,12 +143,12 @@ namespace Synthesis.States
                 Tracking = true;
 
                 if (timesLoaded > 0) {
-
-                    //GameObject.Find("Environment").SetActive(false);
-
                     if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
                         AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
                         return;
+                    } else
+                    {
+                        //GameObject.Find("Environment").transform.position = new Vector3(0, GameObject.Find("Field").GetComponent<, 0);
                     }
                 } else {
                     Controls.Load();

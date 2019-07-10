@@ -49,7 +49,8 @@ public class SettingsState : State {
         resolutionIndex = resInd == -1 ? 0 : resInd;
         qualityIndex = PlayerPrefs.GetInt("qualityLevel");
 
-        resolutionT.text = PlayerPrefs.GetString("resolution");
+
+        resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
         screenT.text = PlayerPrefs.GetInt("fullscreen") == 0 ? "Windowed" : "Fullscreen";
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel")];
 
