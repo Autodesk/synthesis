@@ -34,8 +34,6 @@ namespace hel{
         BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids;
 
     public:
-        std::string toString()const;
-
         void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
         std::vector<uint8_t> generateCANPacket(const int32_t&)const;

@@ -1,6 +1,7 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
+#include "system_interface.hpp"
 #include "util.hpp"
-#include "error.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -244,21 +245,21 @@ namespace hel{
         }
 
         void writePWMDutyCycleA(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleA");
+            warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleA");
         }
 
         uint8_t readPWMDutyCycleA(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleA");
+            warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleA");
             return 0;
         }
 
         void writePWMDutyCycleB(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleB");
+            warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleB");
             //no need to reimplement writePWMDutyCycleA, they do the same thing
         }
 
         uint8_t readPWMDutyCycleB(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleB");
+            warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleB");
             //no need to reimplement readPWMDutyCycleA, they do the same thing
             return 0;
         }
@@ -371,7 +372,7 @@ namespace hel{
         void writePulse(tPulse value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
-                hel::warn("Multiple digital output pulses should not be allowed at once");
+                warn("Multiple digital output pulses should not be allowed at once");
                 return;
             }
             try{
@@ -476,7 +477,7 @@ namespace hel{
             for(int i = 0; i < findMostSignificantBit(value); i++){
                 MXPData::Config mxp_config = DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
                 if(mxp_config == MXPData::Config::I2C || mxp_config == MXPData::Config::SPI){
-                    hel::warnUnsupportedFeature("Configuring digital MXP input " + std::to_string(i) + " for " + asString(mxp_config));
+                    warnUnsupportedFeature("Configuring digital MXP input " + std::to_string(i) + " for " + asString(mxp_config));
                 }
             }
 
