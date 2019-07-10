@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+            font-family: Arial,sans-serif;
+            margin: 0;
+        }
+        h1 {
+            font-size: 20px;
+            margin: 0;
+            padding: 10px 10px 10px 15px;
+            background-color: #3D3D3D;
+            color: white;
+            font-weight: normal;
+        }
+        h4 {
+            color: GrayText;
+            font-size: 17px;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        ul {
+            font-size: 18px;
+            padding: 0;
+            margin-left: 40px;
+            margin-right: 30px;
+        }
+        li {
+            margin: 10px 0 10px 0;
+        }
+    </style>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+    </head>
+    <body>
+        <h1>Robot Export Guide</h1>
+        <ol>
+            <li>Separate moving parts of your design into separate components at the top level of your assembly tree (YouTube Tutorial: https://youtu.be/fY3Vdkh8L0Y)</li>
+            <li>At the top of the Fusion 360 window, add joints to your assemblies. Under the <i>Assemble</i> tab, click the <i>Joint</i> button. (YouTube Tutorial: https://youtu.be/_YCP-cWn1Gc)</li>
+            <li>Assign your drive train type using the <i>Drive Train Type</i> button under the <i>Drive Train Setup</i> category.</li>
+            <li>Set your drive train weight using the <i>Drive Train Weight</i> under the <i>Drive Train Setup</i> category.</li>
+            <li>Configure the details of your joints using the <i>Edit Joints</i> button under the <i>Joint Setup</i> category:</li>
+            <ol type="a">
+                <li>Joint Setup</li>
+                <li>Limits Setup</li>
+                <li>Sensor Setup</li>
+            </ol>
+            <li>View the degrees of freedom using the <i>Toggle Degrees of Freedom View</i> button under the <i>Robot Setup Checklist</i> category.</li>
+        </ol>
+    </body>
+</html>
