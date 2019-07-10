@@ -51,6 +51,9 @@ namespace SynthesisAddIn
 		/// \param sensorsToSave Sensor configuration to send to the robot exporter for saving.
 		void closeSensorsPalette(std::string sensorsToSave = "");
 
+		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
+		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
+
 		void openFinishPalette();
 		void closeFinishPalette();
 
@@ -93,6 +96,7 @@ namespace SynthesisAddIn
 
 		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
+		Ptr<Palette> guidePalette; ///< Robot export guide palette.
 		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
@@ -142,6 +146,9 @@ namespace SynthesisAddIn
 
 		bool createSensorsPalette(); ///< Creates the sensor configuration palette.
 		void deleteSensorsPalette(); ///< Deletes the sensor configuration palette.
+
+		bool createGuidePalette(); ///< Creates the robot export guide configuration palette.
+		void deleteGuidePalette(); ///< Deletes the robot export guide configuration palette.
 
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
