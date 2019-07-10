@@ -61,8 +61,6 @@ namespace BxDRobotExporter.Messages
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F);
             this.checkBox1.Location = new System.Drawing.Point(16, 76);
             this.checkBox1.Name = "checkBox1";

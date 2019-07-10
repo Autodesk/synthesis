@@ -1,22 +1,6 @@
 #include "roborio_manager.hpp"
 
 namespace hel{
-    std::string PCM::toString()const{
-        std::string s = "(";
-        s += "solenoids:" + asString(solenoids, std::function<std::string(bool)>(static_cast<std::string(*)(unsigned)>(std::to_string)));
-        s += ")";
-        return s;
-    }
-
-    void PCM::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
-        assert(DATA.size() == MessageData::SIZE);
-        setSolenoids(DATA[MessageData::SOLENOIDS]);
-    }
-
-    std::vector<uint8_t> PCM::generateCANPacket(const int32_t& /*API_ID*/){
-        return {};
-    }
-
     BoundsCheckedArray<bool, PCM::NUM_SOLENOIDS> PCM::getSolenoids()const noexcept{
         return solenoids;
     }

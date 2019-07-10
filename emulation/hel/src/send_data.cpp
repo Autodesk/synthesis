@@ -8,7 +8,7 @@ using namespace nRoboRIO_FPGANamespace;
 namespace hel{
     constexpr char ZEROED_SERIALIZATION_DATA[] = "{\"roborio\":{\"pwm_hdrs\":[0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000],\"relays\":[\"OFF\",\"OFF\",\"OFF\",\"OFF\"],\"analog_outputs\":[0.000000,0.000000],\"digital_mxp\":[{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000},{\"config\":\"DI\", \"value\":0.000000}],\"digital_hdrs\":[0,0,0,0,0,0,0,0,0,0],\"can_motor_controllers\":[]}}\x1B"; //TODO replace with shallow and deep versions
 
-  SendData::SendData():serialized_data(""),new_data(true),enabled(RobotMode::DEFAULT_ENABLED_STATUS),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
+    SendData::SendData():serialized_data(""),new_data(true),enabled(false),pwm_hdrs(0.0), relays(RelaySystem::State::OFF), analog_outputs(0.0), digital_mxp({}), digital_hdrs(false), can_motor_controllers({}){}
 
 
     bool SendData::hasNewData()const{
@@ -88,7 +88,7 @@ namespace hel{
         s += "analog_outputs:" + asString(analog_outputs, std::function<std::string(double)>(static_cast<std::string(*)(double)>(std::to_string))) + ", ";
         s += "digital_mxp:" + asString(digital_mxp, std::function<std::string(MXPData)>(&MXPData::toString)) + ", ";
         s += "digital_hdrs:" + asString(digital_hdrs, std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))) + ", ";
-        s += "can_motor_controllers:" + asString(can_motor_controllers, std::function<std::string(std::pair<uint32_t,std::shared_ptr<CANMotorControllerBase>>)>([&](std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>> a){ return "[" + std::to_string(a.first) + ", " + a.second->toString() + "]";}));
+        s += "can_motor_controllers:" + asString(can_motor_controllers, std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){ return "[" + std::to_string(a.first) + ", " + a.second.toString() + "]";}));
         s += ")";
         return s;
     }
@@ -131,8 +131,8 @@ namespace hel{
         serialized_data += serializeList(
             "\"can_motor_controllers\"",
             can_motor_controllers,
-            std::function<std::string(std::pair<uint32_t,std::shared_ptr<CANMotorControllerBase>>)>([&](std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>> a){
-                                                                                   return a.second->serialize();
+            std::function<std::string(std::pair<uint32_t,CANMotorController>)>([&](std::pair<uint32_t, CANMotorController> a){
+                                                                                   return a.second.serialize();
                                                                                })
             );
     }

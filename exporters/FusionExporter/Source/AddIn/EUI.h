@@ -38,6 +38,13 @@ namespace SynthesisAddIn
 		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
+		/// Loads and opens the sensors configuration palette.
+		/// \param sensors Existing sensor configuration to load.
+		void openSensorsPalette(std::string sensors);
+		/// Closes the sensors configuration palette.
+		/// \param sensorsToSave Sensor configuration to send to the robot exporter for saving.
+		void closeSensorsPalette(std::string sensorsToSave = "");
+
 		void openProgressPalette(); ///< Opens the progress bar palette and sets the progress to 0.
 		void closeProgressPalette(); ///< Closes the progress bar palette.
 
@@ -78,6 +85,7 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
 		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
+		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
 		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
@@ -120,6 +128,9 @@ namespace SynthesisAddIn
 
 		bool createExportPalette(); ///< Creates the robot export configuration palette.
 		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
+
+		bool createSensorsPalette(); ///< Creates the sensor configuration palette.
+		void deleteSensorsPalette(); ///< Deletes the sensor configuration palette.
 
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
