@@ -116,7 +116,7 @@ void EUI::saveConfiguration(std::string jsonConfig)
 void EUI::startExportRobot()
 {
 	exportPalette->isVisible(false);
-
+	sensorsPalette->isVisible(false);
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 

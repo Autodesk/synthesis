@@ -1,7 +1,7 @@
 #ifndef _CAN_MOTOR_CONTROLLER_HPP_
 #define _CAN_MOTOR_CONTROLLER_HPP_
 
-#include <vector>
+#include "bounds_checked_array.hpp"
 #include "can_device.hpp"
 
 namespace hel{
@@ -11,8 +11,49 @@ namespace hel{
      * Holds data for generic CAN motor controllers
      */
 
-    struct CANMotorControllerBase: public CANDevice{
+    struct CANMotorController{
+
+        /**
+         * \brief Interpretation definitions for CAN message data bytes
+         */
+
+        enum MessageData{
+            COMMAND_BYTE = 7,
+            SIZE = 8
+        };
+
+        /**
+         * \brief Interpretation definitions for command byte bitmask
+         */
+
+        enum SendCommandByteMask: uint8_t{
+            SET_POWER_PERCENT = 5,
+            SET_INVERTED = 6
+        };
+
+        /**
+         * \brief Interpretation definitions for message ID bitmask for CAN frames requesting data
+         */
+
+        enum ReceiveCommandIDMask: uint32_t{
+            GET_POWER_PERCENT = 0b1010000000000
+        };
+
     private:
+        /**
+         * \brief The type of CAN device
+         *
+         * Should be a motor controller type
+         */
+
+        CANDevice::Type type;
+
+        /**
+         * \brief The CAN device ID
+         */
+
+        uint8_t id;
+
         /**
          * \brief The set percent output of the motor controller
          */
@@ -27,11 +68,32 @@ namespace hel{
 
     public:
         /**
-         * \brief Format the CANMotorControllerBase as a string
-         * \return A string representing the CANMotorControllerBase data
+         * \brief Format the CANMotorController as a string
+         * \return A string representing the CANMotorController data
          */
 
-        virtual std::string toString()const;
+        std::string toString()const;
+
+        /**
+         * \brief Get the type of motor controller
+         * \return The motor controller's type as a CANDevice::Type
+         */
+
+        CANDevice::Type getType()const noexcept;
+
+        /**
+         * \brief Get the device ID of the motor controller
+         * \return The device ID of the motor controller
+         */
+
+        uint8_t getID()const noexcept;
+
+        /**
+         * \brief Set the percent output of the motor controller using the byte format CTRE CAN protocol uses
+         * \param data The percent output to set to
+         */
+
+        void setPercentOutputData(BoundsCheckedArray<uint8_t,MessageData::SIZE>)noexcept;
 
         /**
          * \brief Set the percent output of the motor controller
@@ -48,6 +110,14 @@ namespace hel{
         double getPercentOutput()const noexcept;
 
         /**
+         * \fn BoundsCheckedArray<uint8_t,MessageData::SIZE> getPercentOutputData()const noexcept
+         * \brief Fetch the percent output in the byte format the CTRE CAN protocol uses
+         * \return A BoundsCheckedArray representing the percent output in byte format
+         */
+
+        BoundsCheckedArray<uint8_t,MessageData::SIZE> getPercentOutputData()const noexcept;
+
+        /**
          * \fn void setInverted(bool inverted)noexcept
          * \brief Set the inverted flag of the motor controller
          * \param i Whether to invert motor controller output
@@ -57,144 +127,48 @@ namespace hel{
 
         /**
          * \fn std::string serialize()const
-         * \brief Convert the CANMotorControllerBase to a JSON object
+         * \brief Convert the CANMotorController to a JSON object
          * \return a string representing the data in JSON format
          */
 
-        virtual std::string serialize()const;
+        std::string serialize()const;
 
         /**
-         * \fn static CANMotorControllerBase deserialize(std::string input)
-         * \brief Convert a JSON object string to a CANMotorControllerBase object
+         * \fn static CANMotorController deserialize(std::string input)
+         * \brief Convert a JSON object string to a CANMotorController object
          * \param input the data to parse
-         * \return the generated CANMotorControllerBase object
+         * \return the generated CANMotorController object
          */
 
-      static std::shared_ptr<CANMotorControllerBase> deserialize(std::string);
+        static CANMotorController deserialize(std::string);
 
         /**
-         * Constructor for CANMotorControllerBase
+         * Constructor for CANMotorController
          */
 
-        CANMotorControllerBase()noexcept;
+        CANMotorController()noexcept;
 
         /**
-         * Constructor for CANMotorControllerBase
+         * Constructor for CANMotorController
          * \param source A CANMotorController object to copy
          */
 
-        CANMotorControllerBase(const CANMotorControllerBase&)noexcept;
+        CANMotorController(const CANMotorController&)noexcept;
 
-      /**
-         * Constructor for CANMotorControllerBase
-         * \param device The device information to use
+        /**
+         * Constructor for CANMotorController
+         * \param messageID A CAN message ID to parse device ID and type information from
          */
 
-        CANMotorControllerBase(CANMessageID)noexcept;
+        CANMotorController(uint32_t)noexcept;
+        /**
+         * Constructor for CANMotorController
+         * \param id The device ID to use
+         * \param type The device type to use
+         */
+
+        CANMotorController(uint8_t,CANDevice::Type)noexcept;
     };
-
-    namespace ctre{
-        struct CANMotorController: public CANMotorControllerBase{
-            static constexpr uint32_t HEARTBEAT_ID = 63;
-            static constexpr uint32_t HEARTBEAT_API_ID = 1;
-
-            /**
-             * \brief Interpretation definitions for CAN message data bytes
-             */
-
-            enum MessageData{
-                COMMAND_BYTE = 7,
-                SIZE = 8
-            };
-
-            /**
-             * \brief Interpretation definitions for command byte bitmask
-             */
-
-            enum SendCommandByteMask: uint8_t{
-                INVERT = 6
-            };
-
-            /**
-             * \brief Interpretation definitions for message ID bitmask for CAN frames requesting data
-             */
-
-            enum ReceiveCommandIDMask: uint32_t{
-                GET_POWER_PERCENT = 0b1010000000000
-            };
-
-            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
-
-            std::vector<uint8_t> generateCANPacket(const int32_t&);
-
-            /**
-             * Constructor for CANMotorController
-             */
-
-            CANMotorController()noexcept;
-
-            /**
-             * Constructor for CANMotorController
-             * \param source A CANMotorController object to copy
-             */
-
-            CANMotorController(const CANMotorController&)noexcept;
-
-            /**
-             * Constructor for CANMotorController
-             * \param device The device information to use
-             */
-
-            CANMotorController(CANMessageID)noexcept;
-        };
-    }
-
-    namespace rev{
-        struct CANMotorController: public CANMotorControllerBase{
-            // Firmware version can packet strucute: Major | Minor | Build 2 | Build 1 | Debug | Hardware Revision - REV swaps Build 2 and build 1 bytes when determining build version
-            static constexpr uint32_t MIN_FIRMWARE_VERSION = 0x0101001C;
-            static constexpr bool USE_FIRMWARE_DEBUG_BUILD = false;
-            static constexpr uint8_t HARDWARE_REVISION = 0x00;
-
-            static constexpr uint32_t HEARTBEAT_ID = 0;
-
-            enum CommandAPIID: int32_t{
-                DC_SET = 0x002,
-                SMART_VEL_SET = 0x013,
-                POS_SET = 0x032,
-                VOLT_SET = 0x042,
-                CURRENT_SET = 0x043,
-                SMARTMOTION_SET = 0x052,
-                CLEAR_FAULTS = 0x06E,
-                HEARTBEAT = 0x092,
-                FIRMWARE  = 0x098,
-                PARAM_ACCESS = 0x300 // least significant eight bits of the API ID with this identifier select for the parameter
-            };
-
-            void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
-
-            std::vector<uint8_t> generateCANPacket(const int32_t&);
-
-            /**
-             * Constructor for CANMotorController
-             */
-
-            CANMotorController()noexcept;
-
-            /**
-             * Constructor for CANMotorController
-             * \param source A CANMotorController object to copy
-             */
-
-            CANMotorController(const CANMotorController&)noexcept;
-
-            /**
-             * Constructor for CANMotorController
-             * \param device The device information to use
-             */
-
-            CANMotorController(CANMessageID)noexcept;
-        };
-    }
 }
+
 #endif

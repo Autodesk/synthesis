@@ -70,7 +70,7 @@ namespace hel{
 
     MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t index){
         if(index >= NUM_DIGITAL_MXP_CHANNELS){
-            throw std::out_of_range(makeExceptionMessage("Attempting to check configuration for digital MXP port at digital index " + std::to_string(index)));
+            throw std::out_of_range("Synthesis exception: attempting to check configuration for digital MXP port at digital index " + std::to_string(index));
         }
         if(checkBitHigh(special_func, index)){
             if(
@@ -133,7 +133,8 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        return makeExceptionMessage("Digital IO failed attempting " + asString(expected_configuration) + " but configured for " + asString(configuration) + " on digital port " + std::to_string(port)).c_str();
+        std::string s = "Synthesis exception: digital IO failed attempting " + asString(expected_configuration) + " but configured for " + asString(configuration) + " on digital port " + std::to_string(port);
+        return s.c_str();
     }
 
     DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t index)noexcept:configuration(config), expected_configuration(expected), port(index){}
@@ -244,21 +245,21 @@ namespace hel{
         }
 
         void writePWMDutyCycleA(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleA");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tDIO::writePWMDutyCycleA\n";
         }
 
         uint8_t readPWMDutyCycleA(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleA");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tDIO::readPWMDutyCycleA\n";
             return 0;
         }
 
         void writePWMDutyCycleB(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::writePWMDutyCycleB");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tDIO::writePWMDutyCycleB\n";
             //no need to reimplement writePWMDutyCycleA, they do the same thing
         }
 
         uint8_t readPWMDutyCycleB(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tDIO::readPWMDutyCycleB");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tDIO::readPWMDutyCycleB\n";
             //no need to reimplement readPWMDutyCycleA, they do the same thing
             return 0;
         }
@@ -371,7 +372,7 @@ namespace hel{
         void writePulse(tPulse value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
-                hel::warn("Multiple digital output pulses should not be allowed at once");
+                std::cerr<<"Synthesis warning: multiple digital output pulses should not be allowed at once\n";
                 return;
             }
             try{
@@ -476,7 +477,7 @@ namespace hel{
             for(unsigned i = 0; i < findMostSignificantBit(value); i++){
                 MXPData::Config mxp_config = DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
                 if(mxp_config == MXPData::Config::I2C || mxp_config == MXPData::Config::SPI){
-                    hel::warnUnsupportedFeature("Configuring digital MXP input " + std::to_string(i) + " for " + asString(mxp_config));
+                    std::cerr<<"Synthesis warning: Unsupported feature: Configuring digital MXP input "<<i<<" for "<<asString(mxp_config)<<"\n";
                 }
             }
 
@@ -498,7 +499,7 @@ namespace hel{
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
             if(value > static_cast<uint8_t>(DigitalSystem::MAX_PULSE_LENGTH)){
-                throw makeExceptionMessage("Digital pulse exceeds maximum pulse length (given " + std::to_string(value) + " microseconds when max length is " + std::to_string(DigitalSystem::MAX_PULSE_LENGTH) + " microseconds)");
+                throw "Synthesis exception: Digital pulse exceeds maximum pulse length (given " + std::to_string(value) + " microseconds when max length is " + std::to_string(DigitalSystem::MAX_PULSE_LENGTH) + " microseconds)";
             }
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);

@@ -18,8 +18,7 @@ else
 	-serial null \
 	-serial mon:stdio \
 	-append "console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0" \
-	-gdb tcp::5789 \
-    -net user,hostfwd=tcp::10022-:22,hostfwd=tcp::11000-:11000,hostfwd=tcp::11001-:11001 \
+	-net user,hostfwd=tcp::10022-:22,hostfwd=tcp::11000-:11000,hostfwd=tcp::11001-:11001 \
 	-net nic \
 	-sd vm-package/rootfs.ext4 < /dev/null &> /dev/null; rm -rf ./vm_lock )&
 	printf "VM successfully started. Please wait while it initializes.\n"
