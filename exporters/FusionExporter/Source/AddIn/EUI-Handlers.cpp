@@ -132,30 +132,3 @@ bool EUI::clearHandler<ClosePaletteEventHandler>(Ptr<Palette> palette, ClosePale
 	
 	return closeEvent->remove(closePaletteEventHandler);
 }
-
-template<>
-bool EUI::addHandler<CloseGuideFormEventHandler>(Ptr<Palette> palette)
-{
-	if (closeGuideFormEventHandler == nullptr)
-		closeGuideFormEventHandler = new CloseGuideFormEventHandler(this);
-
-	Ptr<UserInterfaceGeneralEvent> closeGuideEvent = palette->closed();
-
-	if (!closeGuideEvent)
-		return false;
-
-	return closeGuideEvent->add(closeGuideFormEventHandler);
-}
-
-template<>
-bool EUI::clearHandler<CloseGuideFormEventHandler>(Ptr<Palette> palette)
-{
-	if (closeGuideFormEventHandler == nullptr)
-		return false;
-
-	Ptr<UserInterfaceGeneralEvent> closeGuideEvent = palette->closed();
-	if (!closeGuideEvent)
-		return false;
-
-	return closeGuideEvent->remove(closeGuideFormEventHandler);
-}
