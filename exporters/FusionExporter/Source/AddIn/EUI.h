@@ -96,12 +96,12 @@ namespace SynthesisAddIn
 		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
-		Ptr<CommandDefinition> driveTrainType; ///< Export robot button.
-		Ptr<CommandDefinition> driveTrainWeight; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainTypeButton; ///< Export robot button.
+		Ptr<CommandDefinition> driveTrainWeightButton; ///< Export robot button.
 		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
 		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
-		Ptr<CommandDefinition> robotExportGuide; ///< Export robot button.
-		Ptr<CommandDefinition> exportButtonCommand; ///< Export robot button.
+		Ptr<CommandDefinition> robotExportGuideButton; ///< Export robot button.
+		Ptr<CommandDefinition> finishButton; ///< Export robot button.
 
 		// Event Handlers
 		// These handlers are managed in EUI-Handers.cpp.
@@ -112,23 +112,25 @@ namespace SynthesisAddIn
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
 		ReceiveFormDataHandler * receiveFormDataHandler = nullptr;
-		CloseExporterFormEventHandler * closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler * closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
+		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
+		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
+		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainShowPaletteCommandCreatedHandler;
+		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler;
+		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler;
+		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler;
+		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler;
+		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler;
 
-		///
-		/// Add a handler to a UI element.
-		/// \param E Handler to add.
-		/// \param el UI element to add handler to.
-		///
 		template<typename E, typename T>
-		bool addHandler(Ptr<T> el);
-
-		///
-		/// Removes a handler from a UI element.
-		/// \param E Handler to remove.
-		/// \param el UI element to remove handler from.
-		///
+		bool addHandler(Ptr<T> el, E* a);
+		
 		template<typename E, typename T>
-		bool clearHandler(Ptr<T> el);
+		bool clearHandler(Ptr<T> el, E*);
 
 		// UI Creation/Deletion
 		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
@@ -148,6 +150,8 @@ namespace SynthesisAddIn
 
 		void createPanels(); ///< Creates the export robot button.
 		void createButtons(); ///< Creates the export robot button.
+		void deleteButtonCommand(Ptr<CommandDefinition>& buttonCommand,
+		                  ShowPaletteCommandCreatedHandler* buttonHandler);
 		void deleteButtons(); ///< Deletes the export robot button.
 
 		// Thread Information
