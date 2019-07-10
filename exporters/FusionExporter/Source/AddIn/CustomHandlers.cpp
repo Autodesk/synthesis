@@ -23,6 +23,7 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 {
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
+		eui->closeGuidePalette();
 		eui->closeJointEditorPalette();
 		eui->cancelExportRobot();
 	}
@@ -63,7 +64,9 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
+	if (id == SynthesisAddIn::BTN_GUIDE)
+		eui->openGuidePalette();
+	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
 		eui->openJointEditorPalette();
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();

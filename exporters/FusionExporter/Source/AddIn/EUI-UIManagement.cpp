@@ -46,6 +46,7 @@ void EUI::deleteWorkspace()
 	// Delete palettes
 	deleteJointEditorPalette();
 	deleteSensorsPalette();
+	deleteGuidePalette();
 	deleteFinishPalette();
 	deleteProgressPalette();
 
@@ -66,6 +67,7 @@ void EUI::prepareAllPalettes()
 {
 	createJointEditorPalette();
 	createSensorsPalette();
+	createGuidePalette();
 	createFinishPalette();
 	createProgressPalette();
 }
@@ -74,9 +76,9 @@ void EUI::hideAllPalettes()
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
+	guidePalette->isVisible(false);
 	finishPalette->isVisible(false);
 }
-
 
 // Export Palette
 
@@ -160,6 +162,64 @@ void EUI::closeJointEditorPalette()
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
+	editJointsButton->controlDefinition()->isEnabled(true);
+}
+
+// Guide Palette
+
+bool EUI::createGuidePalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	guidePalette = palettes->itemById(PALETTE_GUIDE);
+	if (!guidePalette)
+	{
+		// Create palette
+		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "Palette/guide.html", false, true, true, 300, 150);
+		if (!guidePalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		guidePalette->dockingState(PaletteDockStateRight);
+	}
+
+	return true;
+}
+
+void EUI::deleteGuidePalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	guidePalette = palettes->itemById(PALETTE_GUIDE);
+	if (!guidePalette)
+		return;
+
+	guidePalette->deleteMe();
+	guidePalette = nullptr;
+}
+
+void EUI::openGuidePalette()
+{
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
+		{
+			guidePalette->sendInfoToHTML("guide", "0");
+			guidePalette->isVisible(true);
+			guidePalette->sendInfoToHTML("guide", "0");
+		});
+}
+
+void EUI::closeGuidePalette()
+{
+	guidePalette->isVisible(false);
 	editJointsButton->controlDefinition()->isEnabled(true);
 }
 
