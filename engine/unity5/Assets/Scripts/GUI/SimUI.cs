@@ -349,7 +349,7 @@ namespace Synthesis.GUI
 
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
-            EmulationToolbarState.s = new Serialization();
+            EmulationToolbarState.s = new EmulationClient();
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 

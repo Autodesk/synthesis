@@ -436,7 +436,7 @@ public class DriveJoints
         foreach (JoystickSerializer js in joystickSerializers)
         {
             js.SerializeInputs();
-            Serialization.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
+            EmulationClient.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
         }
     }
 
@@ -450,7 +450,7 @@ public class DriveJoints
             return;
 
         for (int i = 0; i < pwm.Length; i++)
-            motors[i] = (float)Serialization.getPWM(i);
+            motors[i] = (float)EmulationClient.getPWM(i);
 
         foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
             motors[CAN.id + 10] = CAN.inverted == 0 ? CAN.speed : -CAN.speed;
