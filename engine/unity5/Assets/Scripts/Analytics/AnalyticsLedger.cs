@@ -124,7 +124,9 @@ public class AnalyticsLedger
         public const string
             Main = "main",
             MixMatch = "mixAndMatch",
-            Multiplater = "multiplayer";
+            Multiplater = "multiplayer",
+
+            MainSimulator = "inSimulator";
     }
 
     public class TimingVarible
@@ -133,19 +135,22 @@ public class AnalyticsLedger
             Loading = "loading",
             Playing = "playing",
             Customizing = "customizing",
-            Viewing = "viewing";
+            Viewing = "viewing",
+            Starting = "starting";
     }
 
     public class TimingLabel
     {
         public const string
-            ControlPanel = "controlPanel",
             MixAndMatchMenu = "mixMenu",
             MainSimMenu = "mainSimMenu",
             MultiplayerLobbyMenu = "multiplayerLobbyMenu",
-            MixAndMatchSim = "mixSim",
-            MainSim = "mainSim",
-            MultiplayerSim = "multiplayerSim",
+
+            MainSimulator = "mainSimulator",
+            ResetField = "resetField",
+            ChangeField = "changedField",
+            MixAndMatch = "mixAndMatchMode",
+            ReplayMode = "replayMode",
 
             // Help menus
             MainHelp = "mainToolbarHelp";

@@ -58,6 +58,10 @@ namespace Synthesis.States
 
             if (entry != null)
             {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Viewing,
+                    AnalyticsLedger.TimingLabel.ReplayMode);
+
                 splashScreen.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", entry);
                 PlayerPrefs.Save();

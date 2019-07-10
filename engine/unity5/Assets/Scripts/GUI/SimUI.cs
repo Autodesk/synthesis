@@ -357,6 +357,10 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
                 PlayerPrefs.Save();
 
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Playing,
+                    AnalyticsLedger.TimingLabel.ResetField);
+
                 if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
                     Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
                     {
@@ -791,6 +795,11 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                        AnalyticsLedger.TimingVarible.Playing,
+                        AnalyticsLedger.TimingLabel.ResetField);
+
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;

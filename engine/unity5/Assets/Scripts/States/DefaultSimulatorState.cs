@@ -97,6 +97,11 @@ namespace Synthesis.States
                 splashScreen.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 SceneManager.LoadScene("Scene");
+
+                // Start timer and log event when user reloads field
+                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSim,
+                    AnalyticsLedger.TimingVarible.Starting);
+
                 RobotTypeManager.SetProperties(false);
             }
             else
