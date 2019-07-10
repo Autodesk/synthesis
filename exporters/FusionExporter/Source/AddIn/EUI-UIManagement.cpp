@@ -128,6 +128,7 @@ void EUI::openJointEditorPalette()
 {
 	hideAllPalettes();
 	editJointsButton->controlDefinition()->isEnabled(false);
+	robotExportGuide->controlDefinition()->isEnabled(true);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -178,12 +179,15 @@ bool EUI::createGuidePalette()
 	if (!guidePalette)
 	{
 		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "Palette/guide.html", false, true, true, 300, 150);
+		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "Palette/guide.html", false, true, true, 400, 200);
 		if (!guidePalette)
 			return false;
 
 		// Dock the palette to the right side of Fusion window.
 		guidePalette->dockingState(PaletteDockStateRight);
+
+		addHandler<ReceiveFormDataHandler>(guidePalette);
+		addHandler<CloseGuideFormEventHandler>(guidePalette);
 	}
 
 	return true;
@@ -200,12 +204,17 @@ void EUI::deleteGuidePalette()
 	if (!guidePalette)
 		return;
 
+	clearHandler<ReceiveFormDataHandler>(guidePalette);
+	clearHandler<CloseGuideFormEventHandler>(guidePalette);
+
 	guidePalette->deleteMe();
 	guidePalette = nullptr;
 }
 
 void EUI::openGuidePalette()
 {
+	robotExportGuide->controlDefinition()->isEnabled(false);
+
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
@@ -219,8 +228,8 @@ void EUI::openGuidePalette()
 
 void EUI::closeGuidePalette()
 {
+	robotExportGuide->controlDefinition()->isEnabled(true);
 	guidePalette->isVisible(false);
-	editJointsButton->controlDefinition()->isEnabled(true);
 }
 
 // Finish palette

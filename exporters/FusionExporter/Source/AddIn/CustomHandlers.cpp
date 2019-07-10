@@ -99,3 +99,9 @@ void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventAr
 {
 	eui->closeJointEditorPalette();
 }
+
+// Close Guide Form Event
+void CloseGuideFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+{
+	eui->closeGuidePalette();
+}
