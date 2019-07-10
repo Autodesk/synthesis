@@ -44,8 +44,16 @@ public class AnalyticsLedger
             Stopwatch = "stopWatch",
             Ruler = "ruler",
             ControlPanel = "controlPanel",
-            MainHelp = "mainToolbarHelp";
+            MainHelp = "mainToolbarHelp",
 
+            // DPM Toolbar Events
+            DefineIntake = "defineIntake",
+            DefineRelease = "defineRelease",
+            EditTrajectory = "editTrajectory",
+            SetSpawnpoint = "setSpawnpoint",
+            SpawnGamepiece = "spawnGamepiece",
+            ClearGamepiece = "clearGamepiece",
+            DPMHelp = "dpmHelp";
     }
 
     public class EventAction

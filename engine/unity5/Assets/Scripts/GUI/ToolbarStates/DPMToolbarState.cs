@@ -146,6 +146,7 @@ namespace Assets.Scripts.GUI
                 gamepieceDropdownExtension.SetActive(true);
             }
 
+            // REMOVE AFTER GOOGLE ANALYTICS IMPLEMENTED
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
                 Analytics.CustomEvent("Changed Gamepiece", new Dictionary<string, object> //for analytics tracking
@@ -175,6 +176,11 @@ namespace Assets.Scripts.GUI
         public void OnDefineIntakeButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DefineIntake,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Change to release state
@@ -182,6 +188,11 @@ namespace Assets.Scripts.GUI
         public void OnDefineReleaseButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DefineRelease,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Change to gamepiece spawnpoint state
@@ -189,6 +200,11 @@ namespace Assets.Scripts.GUI
         public void OnSetSpawnpointButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SetSpawnpoint,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Spawn gamepiece clone
@@ -201,8 +217,15 @@ namespace Assets.Scripts.GUI
             if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>()); //remove joints from clone
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
-            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;  
+            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
 
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SpawnGamepiece,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+            AnalyticsLedger.getMilliseconds().ToString());
+
+
+            // REMOVE UNITY ANALYTICS AFTER GOOGLE ANALYTICS IMPLEMENTED
             if (PlayerPrefs.GetInt("analytics") == 1)
                 Analytics.CustomEvent("Spawned Gamepiece", new Dictionary<string, object> //for analytics tracking
                 {
@@ -243,6 +266,11 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ClearGamepiece,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+            AnalyticsLedger.getMilliseconds().ToString());
+
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
                 Analytics.CustomEvent("Driver Practice Help Pressed", new Dictionary<string, object> //for analytics tracking
@@ -259,6 +287,11 @@ namespace Assets.Scripts.GUI
             foreach (Transform t in dpmToolbar.transform)
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMHelp,
+                AnalyticsLedger.EventAction.Clicked,
+                "change",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         public override void End()
         {
