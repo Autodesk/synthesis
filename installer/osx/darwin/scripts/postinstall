@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Custermize this for your application
-APPLICATION_FILE_PATH=bin/__PRODUCT__
+APPLICATION_FILE_PATH=bin/__PRODUCT__-__VERSION__
 
 #Parameters
 PRODUCT_HOME=/Library/__PRODUCT__/__VERSION__
