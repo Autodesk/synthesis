@@ -95,9 +95,12 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 }
 
 // Close Exporter Form Event
-void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	eui->closeJointEditorPalette();
+	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
+		eui->closeJointEditorPalette();
+	else if (id == SynthesisAddIn::PALETTE_FINISH)
+		eui->closeFinishPalette();
 }
 
 // Close Guide Form Event
