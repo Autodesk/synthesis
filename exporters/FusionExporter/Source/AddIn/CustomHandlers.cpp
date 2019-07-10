@@ -12,18 +12,19 @@ using namespace SynthesisAddIn;
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->preparePalettes();
+		eui->prepareAllPalettes();
 	}
 }
 
 // Deactivate Workspace Event
 void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->closeExportPalette();
+		eui->closeGuidePalette();
+		eui->closeJointEditorPalette();
 		eui->cancelExportRobot();
 	}
 }
@@ -38,7 +39,7 @@ void ShowPaletteCommandCreatedHandler::notify(const Ptr<CommandCreatedEventArgs>
 
 	// Create handler
 	if (showPaletteCommandExecuteHandler == nullptr)
-		showPaletteCommandExecuteHandler = new ShowPaletteCommandExecuteHandler(eui);
+		showPaletteCommandExecuteHandler = new ShowPaletteCommandExecuteHandler(eui, id);
 
 	Ptr<CommandEvent> exec = command->execute();
 	if (exec)
@@ -63,7 +64,12 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	eui->openExportPalette();
+	if (id == SynthesisAddIn::BTN_GUIDE)
+		eui->openGuidePalette();
+	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
+		eui->openJointEditorPalette();
+	else if (id == SynthesisAddIn::BTN_EXPORT)
+		eui->openFinishPalette();
 }
 
 /// Palette Events
@@ -89,7 +95,12 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 }
 
 // Close Exporter Form Event
-void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	eui->closeExportPalette();
+	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
+		eui->closeJointEditorPalette();
+	else if (id == SynthesisAddIn::PALETTE_FINISH)
+		eui->closeFinishPalette();
+	else if (id == SynthesisAddIn::PALETTE_GUIDE)
+		eui->closeGuidePalette();
 }
