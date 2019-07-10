@@ -176,6 +176,10 @@ namespace Synthesis.MixAndMatch
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             SceneManager.LoadScene("Scene");
 
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                AnalyticsLedger.TimingVarible.Playing,
+                AnalyticsLedger.TimingLabel.MixAndMatch);
+
             if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
             {
                 Analytics.CustomEvent("Started Mix and Match", new Dictionary<string, object>
