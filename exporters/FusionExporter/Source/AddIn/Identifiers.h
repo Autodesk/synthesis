@@ -11,6 +11,7 @@ namespace SynthesisAddIn
 	const std::string PANEL_PRECHECK = "SynthesisPrecheckPanel";
 	const std::string PALETTE_JOINT_EDITOR = "ExporterFormPalette";
 	const std::string PALETTE_SENSORS = "SensorsFormPalette";
+	const std::string PALETTE_GUIDE = "RobotGuidePalette";
 	const std::string PALETTE_PROGRESS = "ProcessFormPalette";
 	const std::string PALETTE_FINISH = "FinishFormPalette";
 	const std::string BTN_DT_TYPE = "DriveTrainTypeButton";
