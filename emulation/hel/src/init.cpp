@@ -1,4 +1,7 @@
 #include "roborio_manager.hpp"
+#include "robot_inputs.hpp"
+#include "robot_outputs.hpp"
+
 #include <cstdio>
 #include <fstream>
 

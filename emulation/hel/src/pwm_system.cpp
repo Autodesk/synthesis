@@ -1,4 +1,6 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
+#include "system_interface.hpp"
 #include "util.hpp"
 
 using namespace nFPGA;

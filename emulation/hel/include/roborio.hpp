@@ -4,9 +4,7 @@
 #include <array>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <vector>
-#include <thread>
 #include <atomic>
 
 #include <grpcpp/grpcpp.h>
@@ -29,14 +27,11 @@
 #include "power.hpp"
 #include "pwm_system.hpp"
 #include "relay_system.hpp"
-#include "robot_inputs.hpp"
-#include "robot_outputs.hpp"
 #include "robot_mode.hpp"
 #include "pcm.hpp"
 #include "pdp.hpp"
 #include "spi_system.hpp"
 #include "sys_watchdog.hpp"
-#include "system_interface.hpp"
 
 /**
  * \mainpage Hardware Emulation Layer

@@ -55,13 +55,13 @@ TEST(UtilTest, containsBits){
 TEST(UtilTest, Maybe){
     hel::Maybe<int> a;
 
-    EXPECT_FALSE(a);
+    EXPECT_FALSE(a.isValid());
     EXPECT_DEATH(a.get(), "Assertion");
 
     constexpr int VAL = 5;
     a = VAL;
 
-    EXPECT_TRUE(a);
+    EXPECT_TRUE(a.isValid());
     EXPECT_EQ(VAL, a.get());
 
     const std::function<int(int)> f = [](int x){ return x + 5; };

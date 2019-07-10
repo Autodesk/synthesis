@@ -37,10 +37,10 @@ struct RobotOutputs {
 	/**
 	 * \brief The interpreted states of all the PWM header outputs
 	 */
-public:
-	BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
-private:
-	/**
+
+    BoundsCheckedArray<double, PWMSystem::NUM_HDRS> pwm_hdrs;
+
+    /**
 	 * \brief The interpreted states of all the relay outputs
 	 */
 
@@ -71,7 +71,7 @@ private:
 	 * \brief All the CAN motor controller outputs
 	 */
 
-	std::map<uint32_t, CANMotorController> can_motor_controllers;
+    std::map<uint32_t, std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
 
 	EmulationService::RobotOutputs output;
 

@@ -1,3 +1,4 @@
+#include "robot_inputs.hpp"
 #include "roborio_manager.hpp"
 #include "util.hpp"
 

@@ -35,16 +35,6 @@ namespace hel{
         solenoids = values;
     }
 
-    std::string PCM::toString()const{
-        std::string s = "(";
-        s += "solenoids:" + asString(
-            solenoids,
-            std::function<std::string(bool)>(static_cast<std::string(*)(bool)>(asString))
-        );
-        s += ")";
-        return s;
-    }
-
     PCM::PCM()noexcept:solenoids(false){}
     PCM::PCM(const PCM& source)noexcept:PCM(){
 #define COPY(NAME) NAME = source.NAME

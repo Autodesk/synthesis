@@ -1,4 +1,6 @@
 #include "roborio_manager.hpp"
+#include "system_interface.hpp"
+
 #include "robot_input_service.hpp"
 #include "robot_output_service.hpp"
 
@@ -116,6 +118,7 @@ tGlobal* tGlobal::create(tRioStatusCode* /*status*/) {
 		// printf("gRPC serving on %s.\n", server_addr.c_str());
 		server->Wait();
 	});
+    grpc_thread.detach();
 	return new hel::GlobalManager();
 }
 }  // namespace nRoboRIO_FPGANamespace

@@ -1,4 +1,5 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
 #include "util.hpp"
 
 using namespace nFPGA;
@@ -53,10 +54,10 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 		auto elem = output.mutable_can_device(i);
 		EmulationService::RobotOutputs::CANDevice can;
 		can.set_can_type(static_cast<EmulationService::RobotOutputs::CANType>(
-			can_motor_controllers[i].getType()));
-		can.set_id(can_motor_controllers[i].getID());
-		can.set_inverted(can_motor_controllers[i].getInverted());
-		can.set_percent_output(can_motor_controllers[i].getPercentOutput());
+			can_motor_controllers[i]->getType()));
+		can.set_id(can_motor_controllers[i]->getID());
+		can.set_inverted(false);
+		can.set_percent_output(can_motor_controllers[i]->getPercentOutput());
 		*elem = can;
 	}
 
@@ -185,10 +186,10 @@ std::string RobotOutputs::toString() const {
 		"can_motor_controllers:" +
 		asString(
 			can_motor_controllers,
-			std::function<std::string(std::pair<uint32_t, CANMotorController>)>(
-				[&](std::pair<uint32_t, CANMotorController> a) {
+			std::function<std::string(std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>>)>(
+                [&](std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>> a) {
 					return "[" + std::to_string(a.first) + ", " +
-						   a.second.toString() + "]";
+						   a.second->toString() + "]";
 				}));
 	s += ")";
 	return s;

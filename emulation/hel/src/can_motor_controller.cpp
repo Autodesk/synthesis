@@ -1,4 +1,5 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
 
 #include <cmath>
 
@@ -35,7 +36,7 @@ namespace hel{
     CANMotorControllerBase::CANMotorControllerBase()noexcept:CANDevice(), percent_output(0.0), inverted(false){}
 
     CANMotorControllerBase::CANMotorControllerBase(CANMessageID message_id)noexcept:CANDevice(message_id), percent_output(0.0), inverted(false){
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
  }

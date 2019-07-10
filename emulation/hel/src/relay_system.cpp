@@ -1,4 +1,5 @@
 #include "roborio_manager.hpp"
+#include "system_interface.hpp"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
@@ -46,7 +47,7 @@ namespace hel{
         case RelaySystem::State::ERROR:
             return "ERROR";
         default:
-            throw UnhandledEnumConstantException("hel::RobotOutputs::RelayState");
+            throw UnhandledEnumConstantException("hel::RelaySystem::State");
         }
     }
 
