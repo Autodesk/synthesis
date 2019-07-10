@@ -27,6 +27,8 @@ namespace BXDJ
 		std::string robotName; ///< Name of the robot. Used for writing to the robot directory.
 		DrivetrainType drivetrainType; ///< The type of the robot's drivetrain.
 
+		std::string tempIconDir;
+
 		///
 		/// Creates a set of config data with no drivers, the name "unnamed," and tank drive.
 		///
@@ -81,7 +83,6 @@ namespace BXDJ
 
 		static std::string toString(DrivetrainType); ///< \return The name of the drivetrain.
 
-	private:
 		/// Constants used for communicating joint motion type
 		enum JointMotionType : int
 		{
@@ -128,6 +129,10 @@ namespace BXDJ
 				return *this;
 			}
 		};
+
+		std::map<std::string, JointConfig> getJoints();
+
+	private:
 
 		std::map<std::string, JointConfig> joints; ///< Map of all documented Fusion joints, accessed by their ID generated from Utility::getUniqueJointID.
 

@@ -13,12 +13,14 @@ ConfigData::ConfigData()
 {
 	robotName = "unnamed";
 	drivetrainType = TANK;
+	tempIconDir = "";
 }
 
 ConfigData::ConfigData(const ConfigData & other)
 {
 	robotName = other.robotName;
 	drivetrainType = other.drivetrainType;
+	tempIconDir = other.tempIconDir;
 
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
 		joints[i->first] = i->second;
@@ -168,6 +170,8 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
 	configJSON.AddMember("drivetrainType", rapidjson::Value((int)drivetrainType), allocator);
 
+	configJSON.AddMember("tempIconDir", rapidjson::Value(tempIconDir.c_str(), tempIconDir.length(), allocator), allocator);
+
 	// Joints
 	rapidjson::Value jointsJSON;
 	jointsJSON.SetArray();
@@ -219,6 +223,9 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
 
+	if (configJSON.HasMember("tempIconDir") && configJSON["tempIconDir"].IsString())
+		tempIconDir = configJSON["tempIconDir"].GetString();
+
 	// Read each joint configuration
 	auto jointsJSON = configJSON["joints"].GetArray();
 	for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
@@ -267,6 +274,11 @@ std::string BXDJ::ConfigData::toString(DrivetrainType type)
 	}
 
 	return "NONE";
+}
+
+std::map<std::string, ConfigData::JointConfig> ConfigData::getJoints()
+{
+	return joints;
 }
 
 ConfigData::JointMotionType ConfigData::internalJointMotion(fusion::JointTypes type)
