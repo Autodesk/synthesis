@@ -79,4 +79,14 @@ namespace SynthesisAddIn
 	private:
 		EUI * eui;
 	};
+
+	/// Notified when the guide robot form is closed.
+	class CloseGuideFormEventHandler : public UserInterfaceGeneralEventHandler
+	{
+	public:
+		CloseGuideFormEventHandler(EUI* eui) : eui(eui) {}
+		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+	};
 }

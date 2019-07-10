@@ -117,6 +117,7 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
 		ReceiveFormDataHandler * receiveFormDataHandler = nullptr;
 		CloseExporterFormEventHandler * closeExporterFormEventHandler = nullptr;
+		CloseGuideFormEventHandler * closeGuideFormEventHandler = nullptr;
 
 		///
 		/// Add a handler to a UI element.
