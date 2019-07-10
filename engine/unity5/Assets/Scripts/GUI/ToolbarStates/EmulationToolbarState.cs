@@ -26,6 +26,7 @@ namespace Assets.Scripts.GUI
 
         bool loaded = false;
         float lastAdditionalDot = 0;
+        int dotCount = 0;
 
         GameObject canvas;
         GameObject tabs;
@@ -62,14 +63,19 @@ namespace Assets.Scripts.GUI
 
                 if (loaded)
                 {
-                    t.text = "Loading.";
+                    t.text = "Loading...";
                     loadingPanel.SetActive(false);
                     loaded = false;
                 } else
                 {
-                    if (Time.unscaledTime >= lastAdditionalDot + 0.5)
+                    if (Time.unscaledTime >= lastAdditionalDot + 0.75)
                     {
-                        t.text += ".";
+                        dotCount = (dotCount + 1) % 4;
+                        t.text = "Loading";
+                        for (int i = 0; i < dotCount; i++)
+                        {
+                            t.text += ".";
+                        }
                         lastAdditionalDot = Time.unscaledTime;
                     }
                 }

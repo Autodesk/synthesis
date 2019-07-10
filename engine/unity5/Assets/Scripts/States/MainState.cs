@@ -194,6 +194,8 @@ namespace Synthesis.States
                 directoryPath = defaultDirectory;
                 isEmulationDownloaded = true;
             }
+
+            MediaManager.getInstance();
         }
 
         /// <summary>

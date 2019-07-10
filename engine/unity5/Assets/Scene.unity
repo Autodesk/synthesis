@@ -45260,17 +45260,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 894274342}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000015594}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1252273339}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.2543996, y: 0}
-  m_AnchorMax: {x: 0.7117603, y: 0.39416125}
-  m_AnchoredPosition: {x: 16, y: -6}
-  m_SizeDelta: {x: -145.20001, y: -49.700012}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 125.649994}
+  m_SizeDelta: {x: 330.5, y: 214.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &894274344
 MonoBehaviour:
@@ -45284,14 +45284,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ea0e660428d1d4bb4a9d88989e879f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frameRate: 60
-  imgs:
-  - {fileID: 21300000, guid: ab1b2400dd7d63449ab5674736be4328, type: 3}
-  - {fileID: 21300000, guid: ace0a9c0a1fd8a940883c543f1912d2e, type: 3}
-  - {fileID: 21300000, guid: 960ecd0f3453411499154639be0d3c22, type: 3}
-  - {fileID: 21300000, guid: a501535c7f1c6dc4f9de34dadecd8bdf, type: 3}
-  - {fileID: 21300000, guid: abf4dde99ec338c418ec7694c2879e29, type: 3}
-  - {fileID: 21300000, guid: d076f692da171f3428799670e44c8a49, type: 3}
+  GifNames:
+  - loveseat
+  - kermit
+  FrameRate: 30
 --- !u!114 &894274345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45312,7 +45308,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6661d9fea6a90d649af75a4d3247620d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd0534e6f3f76d8479c0aa324ae813a0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -101574,7 +101570,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2092006972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000015259}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000017394}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1252273339}
@@ -101582,7 +101578,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015259, y: 0.0000029758}
+  m_AnchoredPosition: {x: -0.000015487, y: 49}
   m_SizeDelta: {x: 457.6, y: 147.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2092006974
