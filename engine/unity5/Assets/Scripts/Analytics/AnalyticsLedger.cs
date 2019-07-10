@@ -78,6 +78,13 @@ public class AnalyticsLedger
             EditGyro = "editGyroSensor",
             RemoveGyro = "removeGyroSensor",
 
+            SensorNode = "sensorNode",
+            SensorAngle = "sensorAngle",
+            SensorRange = "sensorRange",
+            SensorPosition = "sensorPostion",
+            SensorHide = "hideSensor",
+            DeleteSensor = "deleteSensor",
+
             HideOutputs = "hideSensorOutputs",
             SensorHelp = "sensorHelp",
 
