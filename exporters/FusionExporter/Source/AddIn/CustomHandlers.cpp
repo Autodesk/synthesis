@@ -101,10 +101,6 @@ void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& 
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
 		eui->closeFinishPalette();
-}
-
-// Close Guide Form Event
-void CloseGuideFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
-{
-	eui->closeGuidePalette();
+	else if (id == SynthesisAddIn::PALETTE_GUIDE)
+		eui->closeGuidePalette();
 }

@@ -114,21 +114,26 @@ namespace SynthesisAddIn
 
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
+
 		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
-		ReceiveFormDataHandler * receiveFormDataHandler = nullptr;
-		ClosePaletteEventHandler * closeExporterFormEventHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
+
+		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
 		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
-		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
+		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
+
+		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
-		ShowPaletteCommandCreatedHandler* driveTrainShowPaletteCommandCreatedHandler;
-		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler;
-		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler;
-		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler;
-		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler;
-		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler;
+		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
 
 		template<typename E, typename T>
 		bool addHandler(Ptr<T> el, E* a);
