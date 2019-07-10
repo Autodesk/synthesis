@@ -3,6 +3,8 @@
 #include "system_interface.hpp"
 #include "util.hpp"
 
+#include <unistd.h>
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -53,6 +55,38 @@ namespace hel{
         instance.second.unlock();
     }
 
+	void DigitalSystem::setMXPConfig(const unsigned index){
+		mxp_configurations[index] = [&](){
+			if(checkBitHigh(getMXPSpecialFunctionsEnabled(), index)){
+				if(
+				   index == 4 || index == 5 ||
+				   index == 6 || index == 7
+				   ){
+					return MXPData::Config::SPI;
+				}
+				if(index == 14 || index == 15){
+					return MXPData::Config::I2C;
+				}
+				/* One of these must be true if the above are false
+				   index == 0  || index == 1  ||
+				   index == 2  || index == 3  ||
+				   index == 8  || index == 9  ||
+				   index == 10 || index == 11 ||
+				   index == 12 || index == 13
+				*/
+				return MXPData::Config::PWM;
+			}
+			if(checkBitHigh(getEnabledOutputs().MXP,index)){
+				return MXPData::Config::DO;
+			}
+			return MXPData::Config::DI;
+		}();
+	}
+
+	MXPData::Config DigitalSystem::getMXPConfig(const unsigned i)const{
+		return mxp_configurations[i];
+	}
+
     uint8_t DigitalSystem::getPulseLength()const noexcept{
         return pulse_length;
     }
@@ -69,35 +103,6 @@ namespace hel{
         pwm[index] = pulse_width;
     }
 
-    MXPData::Config DigitalSystem::toMXPConfig(uint16_t output_mode, uint16_t special_func, uint8_t index){
-        if(index >= NUM_DIGITAL_MXP_CHANNELS){
-            throw std::out_of_range(makeExceptionMessage("Attempting to check configuration for digital MXP port at digital index " + std::to_string(index)));
-        }
-        if(checkBitHigh(special_func, index)){
-            if(
-                index == 4 || index == 5 ||
-                index == 6 || index == 7
-                ){
-                return MXPData::Config::SPI;
-            }
-            if(index == 14 || index == 15){
-                return MXPData::Config::I2C;
-            }
-            /* One of these must be true if the above are false
-               index == 0  || index == 1  ||
-               index == 2  || index == 3  ||
-               index == 8  || index == 9  ||
-               index == 10 || index == 11 ||
-               index == 12 || index == 13
-            */
-            return MXPData::Config::PWM;
-        }
-        if(checkBitHigh(output_mode,index)){
-            return MXPData::Config::DO;
-        }
-        return MXPData::Config::DI;
-    }
-
     DigitalSystem::DigitalSystem()noexcept:
         outputs(),
         enabled_outputs(),
@@ -105,7 +110,8 @@ namespace hel{
         inputs(),
         mxp_special_functions_enabled(0),
         pulse_length(0),
-        pwm(0)
+        pwm(0),
+		mxp_configurations(MXPData::Config::DI)
     {}
 
     DigitalSystem::DigitalSystem(const DigitalSystem& source)noexcept:DigitalSystem(){
@@ -134,10 +140,10 @@ namespace hel{
     }
 
     const char* DigitalSystem::DIOConfigurationException::what()const throw(){
-        return makeExceptionMessage("Digital IO failed attempting " + asString(expected_configuration) + " but configured for " + asString(configuration) + " on digital port " + std::to_string(port)).c_str();
+        return makeExceptionMessage("Digital IO failed attempting " + asString(expected_configuration) + " but configured for " + asString(actual_configuration) + " on digital port " + std::to_string(port)).c_str();
     }
 
-    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config config, Config expected, uint8_t index)noexcept:configuration(config), expected_configuration(expected), port(index){}
+    DigitalSystem::DIOConfigurationException::DIOConfigurationException(Config expected, Config actual, uint8_t index)noexcept: actual_configuration(actual), expected_configuration(expected), port(index){}
 
     struct DIOManager: public tDIO{
         tSystemInterface* getSystemInterface() override{
@@ -145,41 +151,29 @@ namespace hel{
         }
 
     private:
-        template<typename T, typename S> //note: this is not an Ni FPGA function
-        bool allowOutput(T output,S enabled, bool requires_special_function){
+        template<typename T>
+        void ensureDigitalOutputAllowed(T output){
             auto instance = RoboRIOManager::getInstance();
-            for(int i = 0; i < findMostSignificantBit(output); i++){
-                if(!checkBitHigh(output, i)){ //Ignore if it's not trying to output
-                    continue;
-                }
-                if(requires_special_function && !checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i)){ //If it requires MXP special function, and it isn't set-up that way, don't allow output
-                    instance.second.unlock();
-                    throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, i);
-                    return false;
-                }
-                if(!requires_special_function && !checkBitHigh(enabled, i)){ //If output is set but output is not enabled, don't allow output (don't check if special function is enabled)
-                    instance.second.unlock();
-                    throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DI, DigitalSystem::DIOConfigurationException::Config::DO, i);
-                    return false;
-                }
-            }
-            instance.second.unlock();
-            return true;
-        }
+			for(int i = 0; i <= findMostSignificantBit(output.MXP); i++){
+				if(checkBitHigh(output.MXP, i) && instance.first->digital_system.getMXPConfig(i) != MXPData::Config::DO){
+					printf("Config: %s", asString(instance.first->digital_system.getMXPConfig(i)).c_str());
+					throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, i + DigitalSystem::NUM_DIGITAL_HEADERS);
+				}
+			}
+			for(int i = 0; i <= findMostSignificantBit(output.Headers); i++){
+				if(checkBitHigh(output.Headers, i) && checkBitLow(instance.first->digital_system.getEnabledOutputs().Headers, i)){
+					throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::DI, i);
+				}
+			}
+		}
 
     public:
 
         void writeDO(tDIO::tDO value, tRioStatusCode* /*status*/){
-            auto instance = RoboRIOManager::getInstance();
-            try{
-                if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
-                    instance.first->digital_system.setOutputs(value);
-                }
-                instance.second.unlock();
-            } catch(std::exception& e){
-                instance.second.unlock();
-                throw;
-            }
+			ensureDigitalOutputAllowed(value);
+			auto instance = RoboRIOManager::getInstance();
+			instance.first->digital_system.setOutputs(value);
+			instance.second.unlock();
         }
 
         void writeDO_Headers(uint16_t value, tRioStatusCode* status){
@@ -274,6 +268,9 @@ namespace hel{
         void writeOutputEnable(tDIO::tOutputEnable value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setEnabledOutputs(value);
+            for(int i = 0; i <= findMostSignificantBit(value.MXP); i++){
+				instance.first->digital_system.setMXPConfig(i);
+            }
             instance.second.unlock();
         }
 
@@ -353,17 +350,18 @@ namespace hel{
         }
 
     private:
-        void pulse(tPulse value){
+        void pulse(tPulse value, uint8_t length){
             auto instance = RoboRIOManager::getInstance();
-
             instance.first->digital_system.setPulses(value);
-            uint8_t length = instance.first->digital_system.getPulseLength();
-
             instance.second.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(length * 1000));
-            instance.second.lock();
 
-            instance.first->digital_system.setPulses(*(new tPulse));
+            usleep(length);
+
+			tPulse new_pulse;
+			new_pulse.value = 0;
+
+			instance.second.lock();
+            instance.first->digital_system.setPulses(new_pulse);
             instance.second.unlock();
         }
 
@@ -371,20 +369,13 @@ namespace hel{
 
         void writePulse(tPulse value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
-            if(instance.first->digital_system.getPulses().value != (new tPulse)->value){
-                warn("Multiple digital output pulses should not be allowed at once");
+            if(instance.first->digital_system.getPulses().value != 0){
+                warn("Multiple digital output pulses are not allowed at once");
                 return;
             }
-            try{
-                if(allowOutput(value.value, instance.first->digital_system.getEnabledOutputs().value, false)){
-                    instance.second.unlock();
-                    std::thread(&DIOManager::pulse, this, value).detach();
-                }
-                instance.second.unlock();
-            } catch(std::exception& e){
-                instance.second.unlock();
-                throw;
-            }
+			ensureDigitalOutputAllowed(value);
+			instance.second.unlock();
+			std::thread(&DIOManager::pulse, this, value, instance.first->digital_system.getPulseLength()).detach();
         }
 
         void writePulse_Headers(uint16_t value, tRioStatusCode* status){
@@ -444,7 +435,7 @@ namespace hel{
         tDI readDI(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->digital_system.getInputs();
+			return instance.first->digital_system.getInputs();
         }
 
         uint16_t readDI_Headers(tRioStatusCode* /*status*/){
@@ -474,10 +465,17 @@ namespace hel{
         void writeEnableMXPSpecialFunction(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setMXPSpecialFunctionsEnabled(value);
-            for(int i = 0; i < findMostSignificantBit(value); i++){
-                MXPData::Config mxp_config = DigitalSystem::toMXPConfig(instance.first->digital_system.getEnabledOutputs().MXP, instance.first->digital_system.getMXPSpecialFunctionsEnabled(), i);
-                if(mxp_config == MXPData::Config::I2C || mxp_config == MXPData::Config::SPI){
-                    warnUnsupportedFeature("Configuring digital MXP input " + std::to_string(i) + " for " + asString(mxp_config));
+
+			writeDO_MXP(this->readDO_MXP(nullptr) & ~value, nullptr); // HAL enables MXP special functions for DIOs when they're freed, so here we'll just reset the digital output for them
+
+			for(int i = 0; i <= findMostSignificantBit(value); i++){
+				instance.first->digital_system.setMXPConfig(i);
+				const MXPData::Config& config = instance.first->digital_system.getMXPConfig(i);
+                if(
+				   config == MXPData::Config::I2C ||
+				   config == MXPData::Config::SPI
+				 ){
+					warnUnsupportedFeature("Configuring digital MXP DIO " + std::to_string(i) + " for " + asString(config));
                 }
             }
 
@@ -487,7 +485,7 @@ namespace hel{
         uint16_t readEnableMXPSpecialFunction(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
-            return instance.first->digital_system.getMXPSpecialFunctionsEnabled();
+			return instance.first->digital_system.getMXPSpecialFunctionsEnabled();
         }
 
         void writeFilterSelectMXP(uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){}//unnecessary for emulation
@@ -498,9 +496,6 @@ namespace hel{
         }
 
         void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
-            if(value > static_cast<uint8_t>(DigitalSystem::MAX_PULSE_LENGTH)){
-                throw makeExceptionMessage("Digital pulse exceeds maximum pulse length (given " + std::to_string(value) + " microseconds when max length is " + std::to_string(DigitalSystem::MAX_PULSE_LENGTH) + " microseconds)");
-            }
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);
             instance.second.unlock();

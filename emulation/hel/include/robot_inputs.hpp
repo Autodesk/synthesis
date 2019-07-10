@@ -28,16 +28,13 @@ struct RobotInputs {
 	 * \brief The states of all the digital headers configured in input mode
 	 */
 
-	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS>
-		digital_hdrs;  // TODO capture the third state where the digital headers
-					   // are configured for output
+	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs; // TODO capture the third state where the digital headers are configured for output somehow
 
 	/**
 	 * \brief The states of all the digital MXP pins configured in input mode
 	 */
 
-	BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS>
-		digital_mxp;
+	BoundsCheckedArray<MXPData, DigitalSystem::NUM_DIGITAL_MXP_CHANNELS> digital_mxp;
 
 	/**
 	 * \brief The states of all the joystick inputs set by the engine

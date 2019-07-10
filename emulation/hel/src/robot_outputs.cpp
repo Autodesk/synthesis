@@ -78,9 +78,7 @@ void RobotOutputs::updateShallow() {
 	}
 
 	for (unsigned i = 0; i < digital_mxp.size(); i++) {
-		digital_mxp[i].config = DigitalSystem::toMXPConfig(
-			roborio.digital_system.getEnabledOutputs().MXP,
-			roborio.digital_system.getMXPSpecialFunctionsEnabled(), i);
+		digital_mxp[i].config = roborio.digital_system.getMXPConfig(i);
 
 		switch (digital_mxp[i].config) {
 			case MXPData::Config::DO:
