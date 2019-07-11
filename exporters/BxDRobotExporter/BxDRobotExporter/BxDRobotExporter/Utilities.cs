@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using EditorsLibrary;
 using Inventor;
+using OGLViewer;
 
 namespace BxDRobotExporter
 {
@@ -12,13 +15,13 @@ namespace BxDRobotExporter
         static DockableWindow EmbededJointPane;
         public static DockableWindow EmbededPrecheckPane;
 
+                
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
         /// </summary>
         /// <param name="app"></param>
         public static void CreateDockableWindows(Inventor.Application app)
         {
-            IntPtr[] children = CreateChildDialog();
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
             EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
@@ -28,7 +31,34 @@ namespace BxDRobotExporter
             EmbededJointPane.Height = 250;
             EmbededJointPane.ShowVisibilityCheckBox = false;
             EmbededJointPane.ShowTitleBar = true;
-            EmbededJointPane.AddChild(children[0]);
+            StandardAddInServer.Instance.advancedJointEditor = new JointEditorPane();
+
+            StandardAddInServer.Instance.advancedJointEditor.SetSkeleton(GUI.SkeletonBase);
+            StandardAddInServer.Instance.advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+            StandardAddInServer.Instance.advancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            {
+
+                if (nodes == null || nodes.Count == 0) return;
+
+                foreach (RigidNode_Base node in nodes)
+                {
+                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
+                        node is OGL_RigidNode)
+                    {
+                        (node as OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+
+                        WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                        wheelDriver.center = center;
+                        wheelDriver.radius = radius;
+                        wheelDriver.width = width;
+                        node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
+
+                    }
+                }
+            };
+            EmbededJointPane.AddChild(StandardAddInServer.Instance.advancedJointEditor.Handle);
             #endregion
             
             EmbededJointPane.Visible = true;
@@ -45,7 +75,7 @@ namespace BxDRobotExporter
             EmbededPrecheckPane.Visible = true;
         }
 
-        private static IntPtr[] CreateChildDialog()
+        public static void CreateChildDialog()
         {
             try
             {
@@ -56,8 +86,6 @@ namespace BxDRobotExporter
                 GUI.Show();
                 GUI.Hide();
                 GUI.Opacity = 1.00d;
-
-                return new IntPtr[] { GUI.JointPaneForm.Handle };
             }
             catch (Exception e)
             {

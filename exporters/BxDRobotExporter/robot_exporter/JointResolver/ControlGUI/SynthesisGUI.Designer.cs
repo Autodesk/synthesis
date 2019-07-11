@@ -45,7 +45,6 @@ partial class SynthesisGUI
             this.toolstripHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.helpTutorials = new System.Windows.Forms.ToolStripMenuItem();
             this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -83,7 +82,6 @@ partial class SynthesisGUI
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.jointEditorPane1);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Size = new System.Drawing.Size(590, 722);
@@ -214,17 +212,7 @@ partial class SynthesisGUI
             this.helpAbout.Name = "helpAbout";
             this.helpAbout.Size = new System.Drawing.Size(188, 26);
             this.helpAbout.Text = "About";
-            // 
-            // jointEditorPane1
-            // 
-            this.jointEditorPane1.AutoSize = true;
-            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.jointEditorPane1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.jointEditorPane1.Name = "jointEditorPane1";
-            this.jointEditorPane1.Size = new System.Drawing.Size(590, 238);
-            this.jointEditorPane1.TabIndex = 0;
+
             // 
             // SynthesisGUI
             // 
@@ -269,5 +257,4 @@ partial class SynthesisGUI
     private System.Windows.Forms.ToolStripDropDownButton toolstripHelp;
     private System.Windows.Forms.ToolStripMenuItem helpTutorials;
     private System.Windows.Forms.ToolStripMenuItem helpAbout;
-    public JointEditorPane jointEditorPane1;
 }
