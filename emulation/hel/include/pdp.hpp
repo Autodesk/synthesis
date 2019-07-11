@@ -24,7 +24,7 @@ namespace hel{
 
         void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
-        std::vector<uint8_t> generateCANPacket(const int32_t&);
+        std::vector<uint8_t> generateCANPacket(const int32_t&)const;
 
         /**
          * Constructor for PDP
