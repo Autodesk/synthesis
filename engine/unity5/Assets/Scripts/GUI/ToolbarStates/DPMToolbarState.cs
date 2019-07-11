@@ -211,6 +211,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSpawnButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SpawnGamepiece,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
             GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity); //clone gamepiece - exact clone will keep joints
             gamepieceClone.SetActive(true); //show in case all gamepieces are hidden
@@ -218,12 +223,6 @@ namespace Assets.Scripts.GUI
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SpawnGamepiece,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
-            AnalyticsLedger.getMilliseconds().ToString());
-
 
             // REMOVE UNITY ANALYTICS AFTER GOOGLE ANALYTICS IMPLEMENTED
             if (PlayerPrefs.GetInt("analytics") == 1)

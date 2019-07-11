@@ -24,6 +24,13 @@ public class AnalyticsLedger
             MainSimulator = "mainSimulator",
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
+            // Toolbar tabs
+            HomeTab = "homeTab",
+            DPMTab = "driverPracticeTab",
+            ScoringTab = "scoringTab",
+            SensorTab = "sensorTab",
+            EmulationTab = "emulationTab",
+
             // Main toolbar scene events
             ChangeRobot = "changeRobot",
             ChangeField = "changeField",
@@ -47,13 +54,13 @@ public class AnalyticsLedger
             MainHelp = "mainToolbarHelp",
 
             // DPM toolbar events
-            DefineIntake = "defineIntake",
-            DefineRelease = "defineRelease",
-            EditTrajectory = "editTrajectory",
-            SetSpawnpoint = "setSpawnpoint",
-            SpawnGamepiece = "spawnGamepiece",
-            ClearGamepiece = "clearGamepiece",
-            DPMHelp = "dpmHelp",
+            DefineIntake = "dpm_defineIntake",
+            DefineRelease = "dpm_defineRelease",
+            EditTrajectory = "dpm_editTrajectory",
+            SetSpawnpoint = "dpm_setSpawnpoint",
+            SpawnGamepiece = "dpm_spawnGamepiece",
+            ClearGamepiece = "dpm_clearGamepiece",
+            DPMHelp = "dpm_Help",
 
             // Scoring toolbar events
             ScoreZones = "scoreZone",
@@ -64,34 +71,31 @@ public class AnalyticsLedger
             RobotCamera = "robotCamera",
 
             UltrasonicDropdown = "ultraSensorDropdown",
-            AddUltrasonic = "addUltraSensor",
-            EditUltrasonic = "editUltraSensor",
-            RemoveUltrasonic = "removeUltraSensor",
+            AddUltrasonic = "ultraSensorAdd",
+            EditUltrasonic = "ultraSensorEdit",
 
             BeamBreakDropdown = "beamBreakDropdown",
-            AddBeam = "addBeamBreakSensor",
-            EditBeam = "editBeamBreakSensor",
-            RemoveBeam = "removeBeamSensor",
+            AddBeam = "beamBreakSensorAdd",
+            EditBeam = "beamBreakSensorEdit",
 
-            GyroscopeDropdown = "gyroDropdown",
-            AddGyro = "addGyroSensor",
-            EditGyro = "editGyroSensor",
-            RemoveGyro = "removeGyroSensor",
+            GyroDropdown = "gyroDropdown",
+            AddGyro = "gyroSensorAdd",
+            EditGyro = "gyroSensorEdit",
 
             SensorNode = "sensorNode",
             SensorAngle = "sensorAngle",
             SensorRange = "sensorRange",
             SensorPosition = "sensorPostion",
-            SensorHide = "hideSensor",
-            DeleteSensor = "deleteSensor",
+            SensorHide = "sensorHide",
+            DeleteSensor = "sensorDelete",
 
-            HideOutputs = "hideSensorOutputs",
+            HideOutputs = "sensorHideOutputs",
             SensorHelp = "sensorHelp",
 
             // Emulation toolbar events
-            SelectCode = "selectCode",
+            SelectCode = "emulationSelectCode",
             DriverStation = "emulationDriverStation",
-            RunCode = "runCode",
+            RunCode = "emulationRunCode",
             EmulationHelp = "emulationHelp";
 
     }
@@ -153,6 +157,6 @@ public class AnalyticsLedger
             ReplayMode = "replayMode",
 
             // Help menus
-            MainHelp = "mainToolbarHelp";
+            MainHelp = "helpMain";
     }
 }

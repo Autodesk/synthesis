@@ -160,6 +160,11 @@ namespace Assets.Scripts.GUI
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             ultrasonicDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.UltrasonicDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -198,6 +203,11 @@ namespace Assets.Scripts.GUI
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             beamBreakerDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.BeamBreakDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -236,6 +246,11 @@ namespace Assets.Scripts.GUI
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             gyroDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GyroDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>

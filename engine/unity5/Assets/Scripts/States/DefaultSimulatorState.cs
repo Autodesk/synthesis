@@ -99,7 +99,7 @@ namespace Synthesis.States
                 SceneManager.LoadScene("Scene");
 
                 // Start timer and log event when user reloads field
-                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSim,
+                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSimulator,
                     AnalyticsLedger.TimingVarible.Starting);
 
                 RobotTypeManager.SetProperties(false);
