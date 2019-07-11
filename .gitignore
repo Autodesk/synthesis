@@ -32,6 +32,8 @@ Replays/
 !CER_Utility.dll
 *.pdb
 
+*.signature.p7s
+
 # Ignore NuGet packages
 *.nupkg
 
