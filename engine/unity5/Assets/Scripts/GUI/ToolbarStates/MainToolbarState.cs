@@ -168,7 +168,6 @@ namespace Synthesis.GUI
                         AnalyticsLedger.EventAction.Clicked,
                         "",
                         AnalyticsLedger.getMilliseconds().ToString());
-
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                         AnalyticsLedger.TimingVarible.Playing,
                         AnalyticsLedger.TimingLabel.ResetField);
@@ -371,8 +370,6 @@ namespace Synthesis.GUI
                 AnalyticsLedger.EventAction.Viewed,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
-            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainHelp,
-                AnalyticsLedger.TimingVarible.Viewing);
         }
 
         private void CloseHelpMenu()
