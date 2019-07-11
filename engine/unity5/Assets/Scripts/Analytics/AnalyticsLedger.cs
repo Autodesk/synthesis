@@ -25,6 +25,7 @@ public class AnalyticsLedger
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs
+            ExitTab = "exitTab",
             HomeTab = "homeTab",
             DPMTab = "driverPracticeTab",
             ScoringTab = "scoringTab",
@@ -130,7 +131,13 @@ public class AnalyticsLedger
             MixMatch = "mixAndMatch",
             Multiplater = "multiplayer",
 
-            MainSimulator = "inSimulator";
+            MainSimulator = "inSimulator",
+            HomeTab = "homeTab",
+            DPMTab = "dpmTab",
+            ScoringTab = "scoringTab",
+            SensorTab = "sensorTab",
+            EmulationTab = "emulationTab",
+            Tab = "toolbarTab";
     }
 
     public class TimingVarible
@@ -156,7 +163,10 @@ public class AnalyticsLedger
             MixAndMatch = "mixAndMatchMode",
             ReplayMode = "replayMode",
 
-            // Help menus
-            MainHelp = "helpMain";
+            HomeTab = "homeTab",
+            DPMTab = "dpmTab",
+            ScoringTab = "scoringTab",
+            SensorTab = "sensorTab",
+            EmulationTab = "emulationTab";
     }
 }
