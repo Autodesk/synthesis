@@ -279,7 +279,7 @@ namespace BxDRobotExporter
         {
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
-            Utilities.CreateDockableWindows(MainApplication);
+            Utilities.CreateChildDialog();
             blueHighlightSet = AsmDocument.CreateHighlightSet();
             greenHighlightSet = AsmDocument.CreateHighlightSet();
             redHighlightSet = AsmDocument.CreateHighlightSet();
@@ -292,7 +292,6 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
@@ -308,25 +307,12 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             Utilities.GUI.LoadRobotData(AsmDocument);
-//            if (!Utilities.GUI.LoadRobotData(AsmDocument))
-//            {
-//                Wizard.WizardForm wizard = new Wizard.WizardForm();
-//                wizard.ShowDialog();
-//                if (Properties.Settings.Default.ShowExportOrAdvancedForm)
-//                {
-//                    Form finishDialog = new Wizard.ExportOrAdvancedForm();
-//                    finishDialog.ShowDialog();
-//                }
-//                PendingChanges = true; // Force save button on since no data has been saved to this file
-//            }
-//            else
-//                PendingChanges = false; // No changes are pending if data has been loaded
-
+            
+            Utilities.CreateDockableWindows(MainApplication);
             // Hide non-jointed components;
 
             // Reload panels in UI
             jointForm = new JointForm();
-            Utilities.GUI.ReloadPanels();
             Utilities.HideAdvancedJointEditor();
         }
 
@@ -560,6 +546,8 @@ namespace BxDRobotExporter
         #region Custom Button Events
 
         private bool displayDOF = false;
+        public JointEditorPane advancedJointEditor;
+
         public void DOF_OnExecute(NameValueMap Context)
         {
             displayDOF = !displayDOF;
@@ -625,8 +613,8 @@ namespace BxDRobotExporter
             Utilities.HideAdvancedJointEditor();
             await jointForm.PreShow();
             jointForm.ShowDialog();
-
-            Utilities.GUI.ReloadPanels();
+            
+            advancedJointEditor.SetSkeleton(SynthesisGUI.Instance.SkeletonBase);
         }
 
         private void AdvancedEditJoint_OnExecute(NameValueMap Context)

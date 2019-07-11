@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using EditorsLibrary;
 using JointResolver.ControlGUI;
 using OGLViewer;
-using Inventor;
 
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
@@ -61,11 +54,6 @@ public partial class SynthesisGUI : Form
     public static SynthesisGUI Instance;
 
     public static PluginSettingsForm.PluginSettingsValues PluginSettings;
-
-    public Form JointPaneForm = new Form
-    {
-        FormBorderStyle = FormBorderStyle.None
-    };
     
     private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadRobotData is called.
     public RigidNode_Base SkeletonBase = null;
@@ -75,15 +63,12 @@ public partial class SynthesisGUI : Form
     private SkeletonExporterForm skeletonExporter;
     private LiteExporterForm liteExporter;
 
-    public SynthesisGUI(Inventor.Application MainApplication, bool MakeOwners = false)
+    public SynthesisGUI(Inventor.Application MainApplication)
     {
         InitializeComponent();
         this.MainApplication = MainApplication;
         Instance = this;
-        JointPaneForm.Controls.Add(jointEditorPane1);
-        if (MakeOwners) JointPaneForm.Owner = this;
-        JointPaneForm.FormClosing += Generic_FormClosing;
-        
+
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
             return new OGL_RigidNode(guid);
@@ -98,29 +83,6 @@ public partial class SynthesisGUI : Form
             InventorManager.ReleaseInventor();
         });
 
-        jointEditorPane1.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
-        {
-
-            if (nodes == null || nodes.Count == 0) return;
-
-            foreach (RigidNode_Base node in nodes)
-            {
-                if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
-                    node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
-                    node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
-                    node is OGL_RigidNode)
-                {
-                    (node as OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
-
-                    WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
-                    wheelDriver.center = center;
-                    wheelDriver.radius = radius;
-                    wheelDriver.width = width;
-                    node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
-
-                }
-            }
-        };
     }
 
     private void Generic_FormClosing(object sender, FormClosingEventArgs e)
@@ -136,7 +98,6 @@ public partial class SynthesisGUI : Form
     private void SynthesisGUI_Shown(object sender, EventArgs e)
     {
         Hide();
-        JointPaneForm.Show();
     }
 
     /// <summary>
@@ -708,13 +669,6 @@ public bool ExportRobot()
         return overwriteResult == DialogResult.Yes;
     }
 
-    /// <summary>
-    /// Reload all panels with newly loaded robot data
-    /// </summary>
-    public void ReloadPanels()
-    {
-        jointEditorPane1.SetSkeleton(SkeletonBase);
-    }
 
     protected override void OnResize(EventArgs e)
     {
