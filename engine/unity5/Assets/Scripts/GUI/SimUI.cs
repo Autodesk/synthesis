@@ -20,6 +20,7 @@ using Synthesis.Robot;
 using Assets.Scripts.GUI;
 using Synthesis.Field;
 using System;
+using System.Diagnostics;
 
 namespace Synthesis.GUI
 {
@@ -82,6 +83,8 @@ namespace Synthesis.GUI
 
         private StateMachine tabStateMachine;
         string currentTab;
+
+        public static string updater;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
@@ -204,6 +207,16 @@ namespace Synthesis.GUI
             }
             UpdateSpawnpointWindow();
             UpdateDriverStationPanel();
+        }
+
+        public void CloseUpdatePrompt() {
+            GameObject.Find("UpdatePrompt").SetActive(false);
+        }
+
+        public void UpdateYes() {
+            Process.Start("http://synthesis.autodesk.com");
+            Process.Start(updater);
+            Application.Quit();
         }
 
         #region tab buttons

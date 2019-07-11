@@ -23,6 +23,11 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
 using UnityEngine.Analytics;
+using System.Net;
+using Assets.Scripts;
+using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 //using UnityEditor.Analytics;
 
 namespace Synthesis.States
@@ -101,6 +106,25 @@ namespace Synthesis.States
         public override void Awake()
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
+
+            string CurrentVersion = "4.2.2";
+
+            if (CheckConnection()) {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+                SimUI.updater = update.URL;
+
+                var localVersion = new Version(CurrentVersion);
+                var globalVersion = new Version(update.Version);
+
+                var check = localVersion.CompareTo(globalVersion);
+
+                if (check < 0) {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
+            }
 
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
@@ -290,6 +314,40 @@ namespace Synthesis.States
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
+        }
+
+        public bool CheckConnection() {
+            try {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json")) {
+                    return true;
+                }
+            }
+            catch {
+                return false;
+            }
+        }
+
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None) {
+                for (int i = 0; i < chain.ChainStatus.Length; i++) {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid) {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
         }
 
         public void MovePlane() {
