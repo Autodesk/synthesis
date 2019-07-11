@@ -148,7 +148,7 @@ namespace Synthesis.States
                         return;
                     } else
                     {
-                        //GameObject.Find("Environment").transform.position = new Vector3(0, GameObject.Find("Field").GetComponent<, 0);
+                        MovePlane();
                     }
                 } else {
                     Controls.Load();
@@ -232,6 +232,11 @@ namespace Synthesis.States
                 return;
             }
 
+            if (ActiveRobot.transform.GetChild(0).transform.position.y < -10 || ActiveRobot.transform.GetChild(0).transform.position.y > 60) {
+                BeginRobotReset();
+                EndRobotReset();
+            }
+
             if (reset)
             {
                 BeginRobotReset();
@@ -285,6 +290,20 @@ namespace Synthesis.States
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
+        }
+
+        public void MovePlane() {
+            GameObject plane = GameObject.Find("Environment");
+            MeshRenderer[] aLotOfMeshes = fieldObject.GetComponentsInChildren<MeshRenderer>();
+            float lowPoint = 0;
+            foreach (MeshRenderer singleMesh in aLotOfMeshes) {
+                if (singleMesh.bounds.min.y < lowPoint) {
+                    lowPoint = singleMesh.bounds.min.y;
+                    Debug.Log("LowPoint: " + lowPoint);
+                }
+            }
+
+            plane.transform.position = new Vector3(0, lowPoint, 0);
         }
 
         /// <summary>
