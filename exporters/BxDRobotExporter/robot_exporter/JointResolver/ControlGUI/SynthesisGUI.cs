@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using EditorsLibrary;
 using JointResolver.ControlGUI;
 using OGLViewer;
-using Inventor;
 
 public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
@@ -349,7 +342,7 @@ public partial class SynthesisGUI : Form
 
   
 
-public bool ExportRobot()
+    public bool ExportRobot()
     {
         try
         {
@@ -365,16 +358,7 @@ public bool ExportRobot()
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
             BXDJSkeleton.SetupFileNames(SkeletonBase);
-           
-
-            BXDJSkeletonJson.WriteSkeleton(
-                (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.json",
-                    SkeletonBase
-                );
-
-
-            //XML EXPORTING
-            //BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
+            BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
             for (int i = 0; i < Meshes.Count; i++)
             {

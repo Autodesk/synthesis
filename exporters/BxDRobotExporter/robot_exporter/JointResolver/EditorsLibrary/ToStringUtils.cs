@@ -65,7 +65,7 @@ public static class ToStringUtils
 
     public static string JointTypeString(SkeletalJoint_Base joint)
     {
-        return Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
-               + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(SynthesisGUI.Instance.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
+        return Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true);
+//               + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(SynthesisGUI.Instance.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
     }
 }

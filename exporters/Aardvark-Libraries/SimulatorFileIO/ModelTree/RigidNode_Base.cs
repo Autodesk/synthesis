@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 /// <summary>
 /// Represents a node inside the hierarchy representing how a robot moves.
 /// </summary>
@@ -52,7 +51,6 @@ public class RigidNode_Base
     /// The name of the file holding this node's model.
     /// </summary>
     public string ModelFileName;
-
 
     /// <summary>
     /// The globally unique identifier.

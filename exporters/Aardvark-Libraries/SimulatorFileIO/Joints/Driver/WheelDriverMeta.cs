@@ -37,7 +37,6 @@ public class WheelDriverMeta : JointDriverMeta
     public WheelDriverMeta()
     {
         center = new BXDVector3();
-       
     }
 
     //Writes the position of the wheel to the file.

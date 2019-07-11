@@ -18,12 +18,6 @@ namespace Synthesis.RN
         private const float AngularSleepingThreshold = 0.5f;
         private const float CollisionMargin = 0f;
 
-        
-        /* 
-        public RigidNode(RigidNode_Base parent) : base(parent){
-
-        }
-        */
         public bool CreateMesh(string filePath, bool isMixAndMatch = false, float wheelMass = 1.0f)
         {
             //Debug.Log(filePath);

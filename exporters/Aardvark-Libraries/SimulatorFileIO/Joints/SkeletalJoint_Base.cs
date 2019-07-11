@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+
 /// <summary>
 /// Possible types of skeletal joints.
 /// </summary>
-/// 
-[JsonConverter(typeof(StringEnumConverter))]
 public enum SkeletalJointType : byte
 {
     DEFAULT = 0,
@@ -24,7 +21,6 @@ public enum SkeletalJointType : byte
 
 public abstract class SkeletalJoint_Base
 {
-    public SkeletalJointType typeSave;
     /// <summary>
     /// Generic delegate for creating skeletal joints from a joint type.
     /// </summary>
