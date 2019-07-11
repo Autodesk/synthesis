@@ -221,7 +221,7 @@ namespace Synthesis.GUI
         
         private void LogTabTiming()
         {
-            Debug.Log("Logged Tab Timing");
+            UnityEngine.Debug.Log("Logged Tab Timing");
 
             switch (currentTab)
             {
@@ -229,7 +229,7 @@ namespace Synthesis.GUI
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
                         AnalyticsLedger.TimingVarible.Customizing,
                         AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
-                    Debug.Log("WOW we can log home tab");
+                    UnityEngine.Debug.Log("WOW we can log home tab");
                     break;
                 case "DriverPracticeTab":
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.DPMTab,

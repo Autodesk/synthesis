@@ -14,7 +14,6 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            Debug.Log("You did a good");
             Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
             AppModel.ClearError();
         }
@@ -24,13 +23,11 @@ namespace Synthesis.States
         /// </summary>
         public void OnExitButtonClicked()
         {
-            Debug.Log("EH?");
             if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 
         public void OnBackToSimButtonClicked()
         {
-            Debug.Log("and another good?");
             SceneManager.LoadScene("Scene");
         }
     }
