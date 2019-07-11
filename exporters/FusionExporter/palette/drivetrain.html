@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+    </head>
+    <!-- Override styling when selecting drive train type, because hard to see with previous orange outline -->
+    <style>
+        input:focus, select:focus
+        {
+            outline: none;
+            border: 1px solid rgb(189, 115, 9);
+        }
+    </style>
+    <body>
+        <script src="js/drivetrain.js"></script>
+        <p align="center">Select Drivetrain Type:</p>
+        <div style="text-align:center;">
+            <input name="tank" id="tank" type="image" src="resources/drivetrain.jpg" alt="Tank Drive" width="100" height="100" />
+            <input name="h-drive" id="h-drive" type="image" src="resources/drivetrain.jpg" alt="H-Drive" width="100" height="100" />
+            <input name="other" id="other" type="image" src="resources/drivetrain.jpg" alt="Other" width="100" height="100" />
+        </div>
+        <button id='save' type='button' onclick='sendInfoToFusion()'>Save</button>
+    </body>    
+</html>
