@@ -1,4 +1,4 @@
-﻿//using Synthesis.FSM;
+//﻿using Synthesis.FSM;
 //using Synthesis.GUI;
 //using Synthesis.Network;
 //using Synthesis.Utils;
@@ -150,6 +150,14 @@
 //        /// </summary>
 //        public void OnStartButtonClicked()
 //        {
+//            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Multiplater,
+//                AnalyticsLedger.TimingVarible.Customizing,
+//                AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu);
+//            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerSimulator,
+//                AnalyticsLedger.EventAction.Start,
+//                "",
+//                AnalyticsLedger.getMilliseconds().ToString());
+
 //            MatchManager.Instance.syncing = true;
 //            MatchManager.Instance.AwaitPushState<FetchingMetadataState>();
 //        }
@@ -184,29 +192,7 @@
 //                    break;
 //                case MultiplayerNetwork.ConnectionStatus.Disconnected:
 //                    UserMessageManager.Dispatch("Lost connection to the lobby!", 5f);
-                    
-//                    MultiplayerNetwork network = MultiplayerNetwork.Instance;
-//                    network.ClientConnectionChanged -= OnClientConnectionChanged;
-//                    network.StopClient();
-
-//                    StateMachine.ChangeState(new HostJoinState());
-//                    break;
 //            }
-//        }
-
-//        /// <summary>
-//        /// Returns the local IP address of this machine.
-//        /// </summary>
-//        /// <returns></returns>
-//        private string GetLocalIP()
-//        {
-//            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-
-//            foreach (IPAddress ip in host.AddressList)
-//                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-//                    return ip.ToString();
-
-//            return string.Empty;
 //        }
 //    }
 //}

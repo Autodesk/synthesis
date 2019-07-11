@@ -117,6 +117,11 @@ namespace Assets.Scripts.GUI
         public void OnRobotCameraButtonClicked()
         {
             robotCameraGUI.ToggleCameraWindow();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RobotCamera,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -132,6 +137,11 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
 
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddUltrasonic,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
@@ -143,8 +153,18 @@ namespace Assets.Scripts.GUI
             {
                 sensorManagerGUI.SetUltrasonicAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditUltrasonic,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             ultrasonicDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.UltrasonicDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -160,6 +180,11 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(beamBreakerDropdown, updatedList);
                 numBeamBreakers++;
 
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddBeam,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
@@ -171,8 +196,18 @@ namespace Assets.Scripts.GUI
             {
                 sensorManagerGUI.SetBeamBreakerAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditBeam,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             beamBreakerDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.BeamBreakDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -188,6 +223,11 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(gyroDropdown, updatedList);
                 numGyros++;
 
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddGyro,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 if (PlayerPrefs.GetInt("analytics") == 1)
                 {
                     Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
@@ -199,8 +239,18 @@ namespace Assets.Scripts.GUI
             {
                 sensorManagerGUI.SetGyroAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditGyro,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             gyroDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GyroDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -209,6 +259,11 @@ namespace Assets.Scripts.GUI
         public void OnShowOutputsButtonClicked()
         {
             sensorManagerGUI.ToggleSensorOutput();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HideOutputs,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -257,6 +312,11 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorHelp,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
 
             if (PlayerPrefs.GetInt("analytics") == 1)
             {
