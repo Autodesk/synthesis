@@ -200,6 +200,11 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnMainTab()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             currentTab = "HomeTab";
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -207,6 +212,11 @@ namespace Synthesis.GUI
 
         public void OnDPMTab()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             if (FieldDataHandler.gamepieces.Count > 0)
             {
                 if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
@@ -218,6 +228,11 @@ namespace Synthesis.GUI
 
         public void OnScoringTab()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoringTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             if (FieldDataHandler.gamepieces.Count > 0)
             {
                 if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
@@ -229,6 +244,11 @@ namespace Synthesis.GUI
 
         public void OnSensorTab()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
@@ -236,6 +256,11 @@ namespace Synthesis.GUI
 
         public void OnEmulationTab()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
             EmulationToolbarState.s = new Serialization();
