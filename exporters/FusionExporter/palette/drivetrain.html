@@ -7,20 +7,43 @@
     </head>
     <!-- Override styling when selecting drive train type, because hard to see with previous orange outline -->
     <style>
+        div.images {
+            position: relative;
+        }
         input:focus, select:focus
         {
             outline: none;
             border: 1px solid rgb(189, 115, 9);
         }
+        div.left {
+            position: absolute;
+            top: 135px;
+            left: 13%;
+        }
+        div.middle {
+            position: absolute;
+            top: 135px;
+            left: 45%;
+        }
+        div.right {
+            position: absolute;
+            top: 135px;
+            right: 15%;
+        }
     </style>
     <body>
         <script src="js/drivetrain.js"></script>
         <p align="center">Select Drivetrain Type:</p>
-        <div style="text-align:center;">
+        <div class="images" style="text-align:center">
             <input name="tank" id="tank" type="image" src="resources/drivetrain.jpg" alt="Tank Drive" width="100" height="100" />
             <input name="h-drive" id="h-drive" type="image" src="resources/drivetrain.jpg" alt="H-Drive" width="100" height="100" />
             <input name="other" id="other" type="image" src="resources/drivetrain.jpg" alt="Other" width="100" height="100" />
         </div>
+        <div style="pointer-events: none;" >
+            <div class="left">Tank Drive</div>
+            <div class="middle">H-Drive</div>
+            <div class="right">Other</div>
+        </div>
         <button id='save' type='button' onclick='sendInfoToFusion()'>Save</button>
-    </body>    
+    </body>
 </html>
