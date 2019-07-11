@@ -452,8 +452,9 @@ void EUI::openDriveTypePalette() {
 }
 
 void EUI::closeDriveTypePalette(std::string driveTypeData) {
+
+	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
-	//sensorsPalette->isVisible(false);
 
 	if (driveTypeData.length() > 0)
 	{
