@@ -26,6 +26,11 @@ public class GIFPlayer : MonoBehaviour
         gif = MediaManager.getInstance().GetGif(GifNames[gifInd]);
     }
 
+    public void OnDisable()
+    {
+        img.sprite = null;
+    }
+
     public void Update()
     {
         if (LastFrame + (1 / FrameRate) <= Time.unscaledTime)
