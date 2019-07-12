@@ -9,7 +9,7 @@ using namespace grpc;
 using namespace EmulationService;
 
 Status RobotOutputService::RobotOutputs(
-    ServerContext* /*context*/, const RobotOutputsRequest* /*request*/,
+	ServerContext* /*context*/, const RobotOutputsRequest* /*request*/,
 	ServerWriter<RobotOutputsResponse>* stream) {
 	for (;;) {
 		auto instance = hel::RobotOutputsManager::getInstance();

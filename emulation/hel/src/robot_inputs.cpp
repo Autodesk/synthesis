@@ -7,7 +7,7 @@
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-namespace hel{
+namespace hel {
 
 RobotInputs::RobotInputs()
 	: digital_hdrs(false),
@@ -93,15 +93,15 @@ void RobotInputs::sync(const EmulationService::RobotInputs& req) {
 		joystick->setButtonCount((uint8_t) joystick_data.button_count());
 
 		for (size_t j = 0; j < std::min(joystick->getAxes().size(),
-										(size_t) joystick_data.axis_size());
+										(size_t) joystick_data.axes_size());
 			 j++) {
-			joysticks[i].getAxes()[j] = joystick_data.axis(j);
+			joysticks[i].getAxes()[j] = joystick_data.axes(j);
 		}
 
 		joystick->setAxisCount(joystick_data.axis_count());
 
 		for (size_t j = 0; j < std::min(joystick->getAxisTypes().size(),
-										(size_t) joystick_data.axis_size());
+										(size_t) joystick_data.axes_size());
 			 j++) {
 			joysticks[i].getAxisTypes()[j] = joystick_data.axis_types(j);
 		}
@@ -189,15 +189,15 @@ void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 		joystick->setButtonCount((uint8_t) joystick_data.button_count());
 
 		for (size_t j = 0; j < std::min(joystick->getAxes().size(),
-										(size_t) joystick_data.axis_size());
+										(size_t) joystick_data.axes_size());
 			 j++) {
-			joysticks[i].getAxes()[j] = joystick_data.axis(j);
+			joysticks[i].getAxes()[j] = joystick_data.axes(j);
 		}
 
 		joystick->setAxisCount(joystick_data.axis_count());
 
 		for (size_t j = 0; j < std::min(joystick->getAxisTypes().size(),
-										(size_t) joystick_data.axis_size());
+										(size_t) joystick_data.axes_size());
 			 j++) {
 			joysticks[i].getAxisTypes()[j] = joystick_data.axis_types(j);
 		}
