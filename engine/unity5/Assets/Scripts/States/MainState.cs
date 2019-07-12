@@ -418,11 +418,21 @@ namespace Synthesis.States
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                        AnalyticsLedger.EventAction.ChangedRobot,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
                 else
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
+                        AnalyticsLedger.EventAction.ChangedRobot,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
 
                 robot.FilePath = robotPath;
@@ -443,14 +453,14 @@ namespace Synthesis.States
                 DPMDataHandler.Load(robotPath);
 
                 // Add analytics to identify if robot is exported or mix and match bot
-                //if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
-                //{
-                //    if (PlayerPrefs.GetInt("analytics") == 1)
-                //    {
-                //        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
-                //        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
-                //    }
-                //}
+                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
+                {
+                    if (PlayerPrefs.GetInt("analytics") == 1)
+                    {
+                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                    }
+                }
 
                 return true;
             }

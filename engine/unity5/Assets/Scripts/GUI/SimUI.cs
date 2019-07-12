@@ -830,8 +830,10 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreHelp,
-                AnalyticsLedger.EventAction.Clicked,
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Tutorials,
+                AnalyticsLedger.EventAction.TutorialRequest,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
         }

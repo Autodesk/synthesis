@@ -19,10 +19,12 @@ public class AnalyticsLedger
             SettingsMenu = "settingsMenu",
             MultiplayerMenu = "multiplayerMenu",
             MixAndMatchSimulator = "mixSimulator",
-
-            // Activated scenes 
             MainSimulator = "mainSimulator",
+
+            // Specific events
             Tutorials = "tutorialLink",
+            MaMRobot = "mixAndMatchRobot",
+            ExportedRobot = "exportedRobot",
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs
@@ -111,7 +113,8 @@ public class AnalyticsLedger
             BackedOut = "backedOut",
             Continued = "continued",
             Clicked = "buttonClicked",
-            Viewed = "viewed";
+            Viewed = "viewed",
+            ChangedRobot = "changedRobot";
     }
 
     public class PageView
