@@ -7,12 +7,12 @@ using namespace grpc;
 using namespace EmulationService;
 
 Status RobotInputService::RobotInputs(
-    ServerContext* /*context*/, ServerReader<UpdateRobotInputsRequest>* stream,
+	ServerContext* /*context*/, ServerReader<UpdateRobotInputsRequest>* stream,
 	UpdateRobotInputsResponse* response) {
 	UpdateRobotInputsRequest req;
 	while (stream->Read(&req)) {
 		auto instance = hel::RobotInputsManager::getInstance();
-		instance.first->sync(req.output_data());
+		instance.first->sync(req.input_data());
 		instance.first->updateShallow();
 		instance.second.unlock();
 	}
