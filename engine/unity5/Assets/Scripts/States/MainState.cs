@@ -23,6 +23,11 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
 using UnityEngine.Analytics;
+using System.Net;
+using Assets.Scripts;
+using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 //using UnityEditor.Analytics;
 
 namespace Synthesis.States
@@ -35,6 +40,8 @@ namespace Synthesis.States
     public class MainState : State, IRobotProvider
     {
         private string[] SampleRobotGUIDs = { "ee85355c-6daf-4588-ba47-cdf3f9143922", "fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d", "d7f2959a-f9eb-4581-a4bb-898550193bda", "d1859211-db0f-4b75-866c-2d0e81b6732b", "52eb1ada-b051-461a-9cc4-1b5b74764ce5", "decdc6a1-5f76-4dea-add7-4c358f4a9921", "6b5d4484-db3c-425b-98b8-546c06d8d8bf", "c3bb1b94-dad8-4a8c-aa67-9c09eb9379c1", "ef4e3e2b-8cfb-437d-b63d-8bebc05fa3ba", "7d31cb8a-01e8-4eeb-9086-2955a993a374", "1478855a-60bd-42cb-8841-eece4fa0fbeb", "0b43729a-d8d3-4df2-bcbb-684343933c23", "9f19586c-a26f-4b28-9fb9-e06731178166", "f1225b7a-180e-456b-88d1-7315b0086001" };
+
+        private string robotDirectory;
 
         public static int timesLoaded = 0;
 
@@ -98,6 +105,28 @@ namespace Synthesis.States
         /// </summary>
         public override void Awake()
         {
+            QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
+
+            string CurrentVersion = "4.2.2";
+
+            if (CheckConnection()) {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+                SimUI.updater = update.URL;
+
+                var localVersion = new Version(CurrentVersion);
+                var globalVersion = new Version(update.Version);
+
+                var check = localVersion.CompareTo(globalVersion);
+
+                if (check < 0) {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
+            }
+
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
             //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
@@ -137,16 +166,36 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-                {
-                    AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                    return;
+                if (timesLoaded > 0) {
+                    if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
+                        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                        return;
+                    } else
+                    {
+                        MovePlane();
+                    }
+                } else {
+                    Controls.Load();
+                    timesLoaded++;
                 }
 
-                if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
+                bool result = false;
+
+                try
                 {
-                    AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
-                    return;
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                } catch (Exception e) {
+                    MonoBehaviour.Destroy(GameObject.Find("Robot"));
+                }
+
+                if (!result)
+                {
+                    PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
+                    if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
+                    {
+                        AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nThis is the default bot\nReinstall recommended)");
+                        return;
+                    }
                 }
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
@@ -194,6 +243,8 @@ namespace Synthesis.States
                 directoryPath = defaultDirectory;
                 isEmulationDownloaded = true;
             }
+
+            MediaManager.getInstance();
         }
 
         /// <summary>
@@ -205,6 +256,11 @@ namespace Synthesis.States
             {
                 AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
+            }
+
+            if (ActiveRobot.transform.GetChild(0).transform.position.y < -10 || ActiveRobot.transform.GetChild(0).transform.position.y > 60) {
+                BeginRobotReset();
+                EndRobotReset();
             }
 
             if (reset)
@@ -260,6 +316,54 @@ namespace Synthesis.States
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
+        }
+
+        public bool CheckConnection() {
+            try {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json")) {
+                    return true;
+                }
+            }
+            catch {
+                return false;
+            }
+        }
+
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None) {
+                for (int i = 0; i < chain.ChainStatus.Length; i++) {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid) {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
+        }
+
+        public void MovePlane() {
+            GameObject plane = GameObject.Find("Environment");
+            MeshRenderer[] aLotOfMeshes = fieldObject.GetComponentsInChildren<MeshRenderer>();
+            float lowPoint = 0;
+            foreach (MeshRenderer singleMesh in aLotOfMeshes) {
+                if (singleMesh.bounds.min.y < lowPoint) {
+                    lowPoint = singleMesh.bounds.min.y;
+                    Debug.Log("LowPoint: " + lowPoint);
+                }
+            }
+
+            plane.transform.position = new Vector3(0, lowPoint, 0);
         }
 
         /// <summary>
@@ -338,14 +442,15 @@ namespace Synthesis.States
 
                 DPMDataHandler.Load(robotPath);
 
-                if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
-                {
-                    if (PlayerPrefs.GetInt("analytics") == 1)
-                    {
-                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
-                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
-                    }
-                }
+                // Add analytics to identify if robot is exported or mix and match bot
+                //if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
+                //{
+                //    if (PlayerPrefs.GetInt("analytics") == 1)
+                //    {
+                //        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
+                //        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
+                //    }
+                //}
 
                 return true;
             }

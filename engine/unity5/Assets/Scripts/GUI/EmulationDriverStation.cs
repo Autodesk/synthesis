@@ -90,14 +90,6 @@ namespace Synthesis.GUI
             {
                 emuDriverStationPanel.SetActive(false);
                 InputControl.freeze = false;
-
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Opened Driver Station", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
-
             }
             else
             {
