@@ -364,6 +364,9 @@ namespace Synthesis.GUI
             if (!settingsPanel.activeSelf)
             {
                 tabStateMachine.PushState(new SettingsState());
+            } else
+            {
+                tabStateMachine.PopState();
             }
 
             /*if (settingsPanel.activeSelf)
