@@ -145,14 +145,6 @@ namespace Assets.Scripts.GUI
                 //show panel
                 gamepieceDropdownExtension.SetActive(true);
             }
-
-            // REMOVE AFTER GOOGLE ANALYTICS IMPLEMENTED
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Changed Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
         }
         /// <summary>
         /// Destroys current dropdown and hides it
@@ -223,12 +215,6 @@ namespace Assets.Scripts.GUI
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-
-            // REMOVE UNITY ANALYTICS AFTER GOOGLE ANALYTICS IMPLEMENTED
-            if (PlayerPrefs.GetInt("analytics") == 1)
-                Analytics.CustomEvent("Spawned Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
         }
         /// <summary>
         /// Clear gamepiece clones
@@ -269,14 +255,6 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
             AnalyticsLedger.getMilliseconds().ToString());
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Driver Practice Help Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
         }
         private void CloseHelpMenu()
         {

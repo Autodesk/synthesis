@@ -68,14 +68,6 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Scoring Help Button Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
         }
         private void CloseHelpMenu()
         {

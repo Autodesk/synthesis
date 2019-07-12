@@ -22,6 +22,7 @@ public class AnalyticsLedger
 
             // Activated scenes 
             MainSimulator = "mainSimulator",
+            Tutorials = "tutorialLink",
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs

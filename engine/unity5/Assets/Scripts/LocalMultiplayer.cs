@@ -88,12 +88,8 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     /// </summary>
     public void AddRobot()
     {
-        if (PlayerPrefs.GetInt("analytics") == 1)
-        {
-            Analytics.CustomEvent("Added Robot", new Dictionary<string, object>
-            {
-            });
-        }
+        // may want to add analytics here
+
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))

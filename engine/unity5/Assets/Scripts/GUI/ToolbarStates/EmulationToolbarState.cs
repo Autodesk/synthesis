@@ -170,14 +170,6 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Emulation Help Button Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
         }
 
         internal static Serialization s;

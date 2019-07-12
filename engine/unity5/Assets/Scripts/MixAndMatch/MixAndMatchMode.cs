@@ -148,14 +148,7 @@ namespace Synthesis.MixAndMatch
                 Text txt = infoText.GetComponent<Text>();
                 txt.text = "";
 
-
-
-                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
-                    Analytics.CustomEvent("Opened Mix and Match", new Dictionary<string, object>
-                    {
-                    });
-                }
+                // may want to add analytics here
             }
         }
 
@@ -179,13 +172,6 @@ namespace Synthesis.MixAndMatch
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                 AnalyticsLedger.TimingVarible.Playing,
                 AnalyticsLedger.TimingLabel.MixAndMatch);
-
-            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-            {
-                Analytics.CustomEvent("Started Mix and Match", new Dictionary<string, object>
-                {
-                });
-            }
         }
 
         #region Change or Add MaM Robot
