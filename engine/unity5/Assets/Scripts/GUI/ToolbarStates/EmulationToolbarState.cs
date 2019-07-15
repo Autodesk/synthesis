@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -70,6 +69,11 @@ namespace Assets.Scripts.GUI
                 }
             }
             { }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SelectCode,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -78,12 +82,22 @@ namespace Assets.Scripts.GUI
         public void OnDriverStationButtonClicked()
         {
             emulationDriverStation.OpenDriverStation();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverStation,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public void OnStartRobotCodeButtonClicked()
         {
             emulationDriverStation.ToggleRobotCodeButton();
             //Serialization.RestartThreads("10.140.148.66");
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
+                AnalyticsLedger.EventAction.Start,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         #region Help Button and Menu
@@ -106,13 +120,10 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Emulation Help Button Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationHelp,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         internal static Serialization s;
