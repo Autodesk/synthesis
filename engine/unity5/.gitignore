@@ -221,6 +221,8 @@ pip-log.txt
 ## Folders
 #############
 Assets/BulletUnity
+Assets/BulletUnity.meta
 Assets/Plugins
+Assets/Plugins.meta
 Library/
 Temp/
