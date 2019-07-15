@@ -14,7 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -145,6 +144,11 @@ namespace Assets.Scripts.GUI
                 //show panel
                 gamepieceDropdownExtension.SetActive(true);
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GamepieceDropdown,
+                AnalyticsLedger.EventAction.Changed,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Destroys current dropdown and hides it
@@ -254,7 +258,7 @@ namespace Assets.Scripts.GUI
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ClearGamepiece,
                 AnalyticsLedger.EventAction.Clicked,
                 "",
-            AnalyticsLedger.getMilliseconds().ToString());
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         private void CloseHelpMenu()
         {

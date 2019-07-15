@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.FEA;

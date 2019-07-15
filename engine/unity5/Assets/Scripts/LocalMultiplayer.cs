@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.FSM;
 using System.Linq;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.DriverPractice;
 using Synthesis.GUI.Scrollables;
@@ -88,7 +87,10 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     /// </summary>
     public void AddRobot()
     {
-        // may want to add analytics here
+        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddRobot,
+            AnalyticsLedger.EventAction.Clicked,
+            "",
+            AnalyticsLedger.getMilliseconds().ToString());
 
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;

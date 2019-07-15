@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.FEA;
 

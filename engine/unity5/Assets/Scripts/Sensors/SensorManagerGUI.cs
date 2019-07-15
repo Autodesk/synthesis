@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.FSM;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.Camera;
 using Synthesis.States;
