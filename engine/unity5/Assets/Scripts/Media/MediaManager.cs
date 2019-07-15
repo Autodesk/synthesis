@@ -17,11 +17,11 @@ public class MediaManager
     private MediaManager()
     {
         gifs = new List<GIF>();
-        gifs.Add(new GIF("loveseat", 77));
+        /*gifs.Add(new GIF("loveseat", 77));
         //gifs.Add(new GIF("kermit", 6));
         gifs.Add(new GIF("darts", 59));
         gifs.Add(new GIF("neonsign", 40));
-        gifs.Add(new GIF("pingpong", 35));
+        gifs.Add(new GIF("pingpong", 35));*/
     }
 
     public GIF GetGif(string name)
