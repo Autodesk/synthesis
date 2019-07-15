@@ -53,10 +53,10 @@ namespace Synthesis.Field
                 colliders.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
             });
 
-            Dictionary<string, NetworkElement> networkElements = new Dictionary<string, NetworkElement>();
+            //Dictionary<string, NetworkElement> networkElements = new Dictionary<string, NetworkElement>();
 
-            foreach (NetworkElement ne in Resources.FindObjectsOfTypeAll<NetworkElement>())
-                networkElements[ne.NodeID] = ne;
+            //foreach (NetworkElement ne in Resources.FindObjectsOfTypeAll<NetworkElement>())
+            //    networkElements[ne.NodeID] = ne;
 
             foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
             {
@@ -67,26 +67,27 @@ namespace Synthesis.Field
 
                 GameObject subObject;
 
-                if (multiplayer && propertySet.HasValue && propertySet.Value.Mass != 0)
-                {
-                    if (host)
-                    {
-                        subObject = (GameObject)UnityEngine.Object.Instantiate(Resources.Load("prefabs/NetworkElement"), unityObject.transform);
-                        subObject.GetComponent<NetworkElement>().NodeID = node.NodeID;
-                        subObject.name = node.NodeID;
-                        NetworkServer.Spawn(subObject);
-                    }
-                    else
-                    {
-                        subObject = networkElements[node.NodeID].gameObject;
-                        subObject.name = node.NodeID;
-                    }
-                }
-                else
-                {
-                    subObject = new GameObject(node.NodeID);
-                }
+                //if (multiplayer && propertySet.HasValue && propertySet.Value.Mass != 0)
+                //{
+                //    if (host)
+                //    {
+                //        subObject = (GameObject)UnityEngine.Object.Instantiate(Resources.Load("prefabs/NetworkElement"), unityObject.transform);
+                //        subObject.GetComponent<NetworkElement>().NodeID = node.NodeID;
+                //        subObject.name = node.NodeID;
+                //        NetworkServer.Spawn(subObject);
+                //    }
+                //    else
+                //    {
+                //        subObject = networkElements[node.NodeID].gameObject;
+                //        subObject.name = node.NodeID;
+                //    }
+                //}
+                //else
+                //{
+                //    subObject = new GameObject(node.NodeID);
+                //}
 
+                subObject = new GameObject(node.NodeID);
                 subObject.transform.parent = unityObject.transform;
 
                 GameObject meshObject = new GameObject(node.NodeID + "-mesh");
@@ -207,9 +208,9 @@ namespace Synthesis.Field
                 }
             }
 
-            if (!host)
-                foreach (NetworkElement ne in networkElements.Values)
-                    ne.gameObject.AddComponent<NetworkMesh>();
+            //if (!host)
+            //    foreach (NetworkElement ne in networkElements.Values)
+            //        ne.gameObject.AddComponent<NetworkMesh>();
 
             #region Free mesh
             foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })

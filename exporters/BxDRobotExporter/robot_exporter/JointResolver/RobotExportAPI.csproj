@@ -79,6 +79,12 @@
     <OutputPath>bin\Benchmark\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ControlGUI\ProgressBarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\ProgressBarForm.Designer.cs">
+      <DependentUpon>ProgressBarForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlGUI\LiteExporterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -169,6 +175,7 @@
     <Compile Include="EditorsLibrary\SetWeightForm.Designer.cs">
       <DependentUpon>SetWeightForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorsLibrary\ToStringUtils.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Exporter\Exporter.cs" />
@@ -221,6 +228,9 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ControlGUI\ProgressBarForm.resx">
+      <DependentUpon>ProgressBarForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\LiteExporterForm.resx">
       <DependentUpon>LiteExporterForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -343,7 +353,6 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

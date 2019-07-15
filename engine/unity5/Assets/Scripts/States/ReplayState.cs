@@ -604,15 +604,6 @@ namespace Synthesis.States
         public override void End()
         {
             SelectedBody = null;
-            //(PlayerPrefs.GetInt("analytics") == 1.ToString());
-            //(SimUI.changeAnalytics.ToString());
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
-                {
-                    { "time", Time.time - tStart},
-                });
-            }
 
             foreach (Tracker t in trackers)
             {

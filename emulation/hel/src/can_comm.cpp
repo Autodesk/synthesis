@@ -1,121 +1,197 @@
 #include "roborio_manager.hpp"
 #include "util.hpp"
+#include "FRC_NetworkCommunication/CANSessionMux.h"
 
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
-extern "C"{
-    //Unclear what this CAN address is attempting to communicate. This is used to silence Synthesis warnings about this CAN address not being found since user code tries to communicate to it very frequently, which causes lag with all the warnings
-    static const uint32_t SILENT_UNKNOWN_DEVICE_ID = 262271;
+namespace hel{
 
-    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t /*periodMs*/, int32_t* /*status*/){
-        if(messageID == SILENT_UNKNOWN_DEVICE_ID){
-            return;
-        }
-        hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array{0};
-        if(data != nullptr){
-            std::copy(data, data + dataSize, data_array.begin());
-        }
+    void warnUnsupportedDevice(const CANMessageID& message_id, const std::string& action){
+        warnUnsupportedFeature("Attempting to " + action + " CAN device: " + message_id.toString());
+    }
 
-        hel::CANDevice::Type target_type = hel::CANDevice::pullDeviceType(messageID);
-        switch(target_type){
-        case hel::CANDevice::Type::TALON_SRX:
-        case hel::CANDevice::Type::VICTOR_SPX:
-        {
-            uint8_t controller_id = hel::CANDevice::pullDeviceID(messageID);
-            uint8_t command_byte = data[hel::CANMotorController::MessageData::COMMAND_BYTE];
+    void warnUnconnectedDevice(const CANMessageID& message_id, const std::string& action){
+        warn("Attempting to " + action + " unconnected CAN device: " + message_id.toString());
+    }
 
+    namespace ctre{
+        void parseMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(instance.first->can_motor_controllers.find(controller_id) == instance.first->can_motor_controllers.end()){ //add motor controller to map if one with controller ID is not found
-                instance.first->can_motor_controllers[controller_id] = {controller_id,target_type};
-            }
-            if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT)){
-                instance.first->can_motor_controllers[controller_id].setPercentOutputData(data_array);
-            }
-            if(hel::checkBitHigh(command_byte,hel::CANMotorController::SendCommandByteMask::SET_INVERTED)){
-                instance.first->can_motor_controllers[controller_id].setInverted(true);
-            }
-            instance.second.unlock();
 
-            for(unsigned i = 0; i < 8; i++){ //check for unrecognized command bits
-                if(
-                    i != hel::CANMotorController::SendCommandByteMask::SET_POWER_PERCENT &&
-                    i != hel::CANMotorController::SendCommandByteMask::SET_INVERTED &&
-                    hel::checkBitHigh(command_byte,i)
-                    ){
-                    std::cerr<<"Synthesis warning: Unsupported feature: Writing to CAN motor controller ("<<asString(target_type)<<" with ID "<<((unsigned)controller_id)<<") using unknown command data byte "<<((unsigned)command_byte)<<" (bit "<<i<<")\n";
+            switch(message_id.getType()){
+            case CANMessageID::Type::TALON_SRX:
+            case CANMessageID::Type::VICTOR_SPX:
+                {
+                    if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                        // Add motor controller to map if one with controller ID is not found
+                        instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<ctre::CANMotorController>(message_id);
+                    }
+                    instance.first->can_motor_controllers[message_id.getID()]->parseCANPacket(message_id.getAPIID(), data);
+                    break;
                 }
+            case CANMessageID::Type::PCM:
+                {
+                    instance.first->pcm.parseCANPacket(message_id.getAPIID(), data);
+                    break;
+                }
+            case CANMessageID::Type::UNKNOWN:
+                {
+                    if(message_id.getID() != ctre::CANMotorController::HEARTBEAT_ID || message_id.getAPIID() != ctre::CANMotorController::HEARTBEAT_API_ID){ // Ignore heartbeat
+                        warnUnsupportedDevice(message_id, "write to");
+                    }
+                    break;
+                }
+            case CANMessageID::Type::PDP:
+                warnUnsupportedDevice(message_id, "write to");
+                break;
+            default:
+                throw UnhandledEnumConstantException("hel::CANMessageID::Type");
             }
-            break;
-        }
-        case hel::CANDevice::Type::PCM:
-        {
-            auto instance = hel::RoboRIOManager::getInstance();
-            instance.first->pcm.setSolenoids(data_array[hel::PCM::MessageData::SOLENOIDS]);
+
             instance.second.unlock();
-            break;
         }
-        case hel::CANDevice::Type::UNKNOWN:
-        case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Attempting to write to unsupported CAN device (" + asString(target_type) + ") using message ID "<<messageID<<"\n";
-            break;
-        default:
-            throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");
+
+      std::vector<uint8_t> generateMessage(const CANMessageID& message_id){
+            auto instance = hel::RoboRIOManager::getInstance();
+
+            switch(message_id.getType()){
+            case hel::CANMessageID::Type::TALON_SRX:
+            case hel::CANMessageID::Type::VICTOR_SPX:
+                {
+                    if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                        warnUnconnectedDevice(message_id, "read from");
+                    } else{
+                        instance.second.unlock();
+                        return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
+                    }
+                    break;
+                }
+            default:
+                warnUnsupportedDevice(message_id, "read from");
+                break;
+            }
+            instance.second.unlock();
+            return {};
         }
     }
 
-    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t /*messageIDMask*/, uint8_t* /*data*/, uint8_t* /*dataSize*/, uint32_t* /*timeStamp*/, int32_t* /*status*/){
-        if(messageID != nullptr && *messageID == SILENT_UNKNOWN_DEVICE_ID){
-            return;
-        }
-
-        hel::CANDevice::Type target_type = hel::CANDevice::pullDeviceType(*messageID);
-
-        switch(target_type){
-        case hel::CANDevice::Type::TALON_SRX:
-        case hel::CANDevice::Type::VICTOR_SPX:
-        {
-            uint8_t device_id = hel::CANDevice::pullDeviceID(*messageID);
+    namespace rev{
+        void parseMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
             auto instance = hel::RoboRIOManager::getInstance();
-            if(instance.first->can_motor_controllers.find(device_id) == instance.first->can_motor_controllers.end()){
-                std::cerr<<"Synthesis warning: Attempting to read from missing CAN motor controller (" + asString(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
-            } else{
-                std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN motor controller (" + asString(target_type) + " with ID "<<((unsigned)device_id)<<") using message ID "<<*messageID<<"\n";
-                /*
-                  if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
-                  hel::BoundsCheckedArray<uint8_t, hel::CANMotorController::MessageData::SIZE> data_array = instance.first->can_motor_controllers[device_id].getSpeedData();
-                  std::copy(data_array.begin(), data_array.end(), data);
-                  *dataSize = hel::CANMotorController::MessageData::SIZE;
-                  *timeStamp = hel::Global::getCurrentTime() / 1000;
-                  }
-                */
+
+            switch(message_id.getType()){
+            case CANMessageID::Type::SPARK_MAX:
+                {
+                    if(message_id.getID() != rev::CANMotorController::HEARTBEAT_ID || message_id.getAPIID() != rev::CANMotorController::CommandAPIID::HEARTBEAT){ // Ignore heartbeat
+                        if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                            if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE){
+                                // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller. 
+                                // Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
+                                instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
+                            } else {
+                                warnUnconnectedDevice(message_id, "write to");
+                            }
+                        } else {
+                            instance.first->can_motor_controllers[message_id.getID()]->parseCANPacket(message_id.getAPIID(), data);
+                        }
+                    }
+                    break;
+                }
+            default:
+                warnUnsupportedDevice(message_id, "write to");
+                break;
             }
+
             instance.second.unlock();
-            break;
         }
-        case hel::CANDevice::Type::PCM:
-        case hel::CANDevice::Type::UNKNOWN:
-        case hel::CANDevice::Type::PDP:
-            std::cerr<<"Synthesis warning: Unsupported feature: Attempting to read from CAN device (" + asString(target_type) + ") using message ID "<<*messageID<<"\n";
+
+      std::vector<uint8_t> generateMessage(const CANMessageID& message_id){
+          auto instance = hel::RoboRIOManager::getInstance();
+
+            switch(message_id.getType()){
+            case hel::CANMessageID::Type::SPARK_MAX:
+                if(message_id.getAPIID() == rev::CANMotorController::CommandAPIID::FIRMWARE && instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
+                    // On startup, REV tries to write parameters assuming all CAN IDs are associated with a REV controller.
+                    // Instead of adding controllers it tries to talk to, instead, add controllers it tries to read firmware versions from.
+                    instance.first->can_motor_controllers[message_id.getID()] = std::make_shared<rev::CANMotorController>(message_id);
+                }
+                instance.second.unlock();
+                return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
+            default:
+                warnUnsupportedDevice(message_id, "read from");
+                break;
+            }
+
+            instance.second.unlock();
+            return {};
+        }
+    }
+}
+
+extern "C"{
+    void FRC_NetworkCommunication_CANSessionMux_sendMessage(uint32_t messageID, const uint8_t* data, uint8_t dataSize, int32_t periodMs, int32_t* /*status*/){
+        hel::CANMessageID message_id = hel::CANMessageID::parse(messageID);
+
+        if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
+            hel::warnUnsupportedFeature("Sending repeating CAN message (" + message_id.toString() + " periodMs " + std::to_string(periodMs) + ") -- sending once");
+        }
+
+        std::vector<uint8_t> data_v;
+
+        if(data != nullptr && dataSize != 0){
+            data_v.reserve(dataSize);
+            std::copy(data, data + dataSize, std::back_inserter(data_v));
+        }
+
+        switch(message_id.getManufacturer()){
+        case hel::CANMessageID::Manufacturer::CTRE:
+            hel::ctre::parseMessage(message_id, data_v);
+            break;
+        case hel::CANMessageID::Manufacturer::REV:
+            hel::rev::parseMessage(message_id, data_v);
             break;
         default:
-            throw hel::UnhandledEnumConstantException("hel::CANDevice::Type");
+            hel::warnUnsupportedDevice(message_id, "write to");
+            break;
         }
+    }
+
+    void FRC_NetworkCommunication_CANSessionMux_receiveMessage(uint32_t* messageID, uint32_t messageIDMask, uint8_t* data, uint8_t* dataSize, uint32_t* timeStamp, int32_t* /*status*/){
+        hel::CANMessageID message_id = hel::CANMessageID::parse(*messageID & messageIDMask);
+
+        std::vector<uint8_t> data_v;
+
+        switch(message_id.getManufacturer()){
+        case hel::CANMessageID::Manufacturer::CTRE:
+            data_v = hel::ctre::generateMessage(message_id);
+            break;
+        case hel::CANMessageID::Manufacturer::REV:
+            data_v = hel::rev::generateMessage(message_id);
+            break;
+        default:
+            hel::warnUnsupportedDevice(message_id, "read from");
+            break;
+        }
+
+        std::copy(data_v.begin(), data_v.end(), data);
+        *dataSize = data_v.size();
+        *timeStamp = hel::Global::getCurrentTime() / 1000; // Milliseconds
     }
 
     void FRC_NetworkCommunication_CANSessionMux_openStreamSession(uint32_t* /*sessionHandle*/, uint32_t /*messageID*/, uint32_t /*messageIDMask*/, uint32_t /*maxMessages*/, int32_t* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession\n";
+        hel::warnUnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_openStreamSession");
     }
 
     void FRC_NetworkCommunication_CANSessionMux_closeStreamSession(uint32_t /*sessionHandle*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession\n";
+        hel::warnUnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_closeStreamSession");
     }
 
     void FRC_NetworkCommunication_CANSessionMux_readStreamSession(uint32_t /*sessionHandle*/, struct tCANStreamMessage* /*messages*/, uint32_t /*messagesToRead*/, uint32_t* /*messagesRead*/, int32_t* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession\n";
+        hel::warnUnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_readStreamSession");
     }
 
     void FRC_NetworkCommunication_CANSessionMux_getCANStatus(float* /*percentBusUtilization*/, uint32_t* /*busOffCount*/, uint32_t* /*txFullCount*/, uint32_t* /*receiveErrorCount*/, uint32_t* /*transmitErrorCount*/, int32_t* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus\n";
+        hel::warnUnsupportedFeature("Function call FRC_NetworkCommunication_CANSessionMux_getCANStatus");
     }
 }

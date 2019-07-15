@@ -12,29 +12,29 @@ namespace nFPGA{
     tInterruptManager::~tInterruptManager(){}
 
     void tInterruptManager::registerHandler(tInterruptHandler handler, void* param, tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tInterruptManager::registerHandler\n";
+        hel::warnUnsupportedFeature("Function call tInterruptManager::registerHandler");
         _handler = handler;
         _userParam = param;
         std::thread([&]{ while(true){_handler(_interruptMask, _userParam); }}).detach();
     }
 
     uint32_t tInterruptManager::watch(int32_t /*timeoutInMs*/, bool /*ignorePrevious*/, tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tInterruptManager::watch\n";
+        hel::warnUnsupportedFeature("Function call tInterruptManager::watch");
         return 0;
     }
 
     void tInterruptManager::enable(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tInterruptManager::enable\n";
+        hel::warnUnsupportedFeature("Function call tInterruptManager::enable");
         _enabled = true;
     }
 
     void tInterruptManager::disable(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tInterruptManager::disable\n";
+        hel::warnUnsupportedFeature("Function call tInterruptManager::disable");
         _enabled = false;
     }
 
     bool tInterruptManager::isEnabled(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tInterruptManager::isEnabled\n";
+        hel::warnUnsupportedFeature("Function call tInterruptManager::isEnabled");
         return _enabled;
     }
 }

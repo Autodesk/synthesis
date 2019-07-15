@@ -3,20 +3,35 @@
 
 #include <string>
 #include <cstdint>
+#include <vector>
 
 namespace hel{
 
     /**
-     * \brief Models a CAN device on the CAN bus
+     * \brief Interprets the CAN message IDs created by HAL
      */
 
-    struct CANDevice{
+    struct CANMessageID{
 
-        /**
-         * \brief The various CAN devices Synthesis can recognize
-         */
+        enum class Type{
+            TALON_SRX,
+            VICTOR_SPX,
+            SPARK_MAX,
+            PCM,
+            PDP,
+            UNKNOWN
+        };
 
-        enum class Type{VICTOR_SPX,TALON_SRX,PCM,PDP,UNKNOWN};
+        enum class Manufacturer: int32_t{
+            BROADCAST = 0,
+            NI = 1,
+            LM = 2,
+            DEKA = 3,
+            CTRE = 4,
+            REV = 5,
+            MS = 7,
+            TEAM_USE = 8,
+         };
 
         /**
          * \brief The maximum CAN bus address allowed on the RoboRIO
@@ -26,55 +41,73 @@ namespace hel{
         static constexpr uint8_t MAX_CAN_BUS_ADDRESS = 62;
 
     private:
-        /**
-         * \brief Bit fields to compare CAN message IDs against for identification
-         *
-         * Masks can be used to determine the device type and capture its ID
-         */
+        Type type;
 
-        enum IDMask: uint32_t{
-            DEVICE_ID = 0b00111111,
-            DEVICE_TYPE = 0b1111000001000000000000000000,
-            TALON_SRX_TYPE = 0x02040000,
-            VICTOR_SPX_TYPE = 0x01040000,
-            PCM_TYPE = 0x09041000,
-            PDP_TYPE = 0x08041000
-        };
+        Manufacturer manufacturer;
+
+        int32_t api_id;
+
+        uint8_t id;
 
     public:
-        /**
-         * \brief Captures the target CAN device ID from a CAN message ID
-         * \param message_id The CAN message ID to parse
-         * \return A byte representing the CAN device ID
-         */
+        static CANMessageID parse(uint32_t);
 
-        static uint8_t pullDeviceID(uint32_t)noexcept;
+        static uint32_t generate(Type, Manufacturer, int32_t, uint8_t)noexcept;
 
-        /**
-         * \brief Captures the target CAN device type from a CAN message ID
-         * \param message_id The CAN message ID to parse
-         * \return The type of CAN device
-         */
+      std::string toString()const;
 
-        static Type pullDeviceType(uint32_t)noexcept;
+        Type getType()const noexcept;
+
+        Manufacturer getManufacturer()const noexcept;
+
+        int32_t getAPIID()const noexcept;
+
+        uint8_t getID()const noexcept;
     };
 
-    /**
-     * \fn std::string asString(CANDevice::Type type)
-     * \brief Converts a CANDevice::Type to a string
-     * \param type The CANDevice::Type to convert
-     * \return A string representation of the CANDevice::Type
-     */
+    std::string asString(CANMessageID::Manufacturer);
 
-    std::string asString(CANDevice::Type);
+    std::string asString(CANMessageID::Type);
+
+    CANMessageID::Type s_to_can_device_type(std::string);
 
     /**
-     * \brief Converts a string to a CANDevice::Type
-     * \param input The string to parse
-     * \return The parsed CANDevice::Type
+     * \brief Models a CAN device on the CAN bus
      */
 
-    CANDevice::Type s_to_can_device_type(std::string);
+    struct CANDevice{
+    private:
+
+        /**
+         * \brief The type of CAN device
+         */
+
+        CANMessageID::Type type;
+
+        /**
+         * \brief The CAN device ID
+         */
+
+        uint8_t id;
+
+    public:
+
+        virtual std::string toString()const = 0;
+
+        CANMessageID::Type getType()const noexcept;
+
+        uint8_t getID()const noexcept;
+
+        virtual void parseCANPacket(const int32_t&, const std::vector<uint8_t>&) = 0;
+
+        virtual std::vector<uint8_t> generateCANPacket(const int32_t&)const = 0;
+
+        CANDevice()noexcept;
+
+        CANDevice(const CANDevice&)noexcept;
+
+        CANDevice(CANMessageID)noexcept;
+    };
 }
 
 #endif

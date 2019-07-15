@@ -5,6 +5,7 @@
 std::string BXDJ::CustomJSONObject::toJSONString() const
 {
 	rapidjson::Document doc;
+
 	doc.CopyFrom(getJSONObject(doc.GetAllocator()), doc.GetAllocator());
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);

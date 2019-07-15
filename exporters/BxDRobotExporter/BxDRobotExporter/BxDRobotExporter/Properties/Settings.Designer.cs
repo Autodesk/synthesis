@@ -130,5 +130,17 @@ namespace BxDRobotExporter.Properties {
                 this["ExportToField"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowFirstLaunchInfo {
+            get {
+                return ((bool)(this["ShowFirstLaunchInfo"]));
+            }
+            set {
+                this["ShowFirstLaunchInfo"] = value;
+            }
+        }
     }
 }

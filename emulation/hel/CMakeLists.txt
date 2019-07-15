@@ -21,7 +21,7 @@ SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -76,7 +76,7 @@ else()
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxx86-64debug.zip_4a64a99b7657804f077cb1086b2f7fb5/linux/x86-64/shared
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxx86-64.zip_fe8636d74ac63a8d6fc247de44ba271c/linux/x86-64/shared/
   )
 endif()
 
@@ -106,7 +106,7 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew build WPILib
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary WPILib
   INSTALL_COMMAND "")
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
@@ -132,7 +132,6 @@ ADD_LIBRARY(hel SHARED
   src/analog_output.cpp
   src/pwm_system.cpp
   src/digital_system.cpp
-  src/can_comm.cpp
   src/relay_system.cpp
   src/global.cpp
   src/comm.cpp
@@ -158,6 +157,7 @@ ADD_LIBRARY(hel SHARED
   src/pcm.cpp
   src/can_device.cpp
   src/can_motor_controller.cpp
+  src/can_comm.cpp
   src/pdp.cpp)
 ADD_DEPENDENCIES(hel asio ni-libraries)
 
@@ -172,6 +172,10 @@ else()
 endif()
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+  IF(NOT DEFINED WPILIB)
+    MESSAGE(FATAL_ERROR "Please specify WPILib Version with WPILIB tag")
+  ENDIF()
+
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
     ADD_DEPENDENCIES(FRCUserProgram wpilib ni-libraries)

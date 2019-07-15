@@ -286,8 +286,14 @@ namespace Synthesis.GUI
             //If command line arguments have been passed, start the simulator.
             if (robotDefined && fieldDefined)
             {
+
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Starting,
+                    AnalyticsLedger.TimingLabel.MainSimMenu);
+
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 SceneManager.LoadScene("Scene");
+
                 RobotTypeManager.SetProperties(false);
                 return true;
             }
