@@ -136,7 +136,7 @@ message RobotInputs {
 
 message UpdateRobotInputsRequest {
     string api = 1;
-    RobotInputs output_data = 2;
+    RobotInputs input_data = 2;
 }
 
 message UpdateRobotInputsResponse {

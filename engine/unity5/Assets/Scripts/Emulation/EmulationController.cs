@@ -87,8 +87,8 @@ namespace Synthesis
 
         public void OnDestroy()
         {
-            inputCommander.Send(new StandardMessage.StopMessage());
-            outputCommander.Send(new StandardMessage.StopMessage());
+            inputCommander.Send(new StandardMessage.ExitMessage());
+            outputCommander.Send(new StandardMessage.ExitMessage());
         }
 
         public bool IsConnected()
