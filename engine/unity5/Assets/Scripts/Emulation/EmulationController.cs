@@ -7,27 +7,6 @@ using Synthesis.FSM;
 
 namespace Synthesis
 {
-    /*
-    public static class EmulationControllerManager
-    {
-        static EmulationControllerManager() { }
-        public static EmulationController Instance { get { return EmulationControllerInternal.instance; } set { EmulationControllerInternal.instance = value; } }
-
-        public static void Init()
-        {
-            if(Instance == null)
-            {
-                Instance = new EmulationController();
-            }
-        }
-
-        private class EmulationControllerInternal
-        {
-            static EmulationControllerInternal() { }
-            internal static EmulationController instance = new EmulationController();
-        }
-    }
-    */
     public class EmulationController : MonoBehaviour
     {
         public static EmulationController Get()
@@ -71,7 +50,6 @@ namespace Synthesis
             senderThread.Start();
             receiverThread.Start();
 
-            /*
             ProcessStartInfo startinfo = new ProcessStartInfo
             {
                 CreateNoWindow = true,
@@ -82,13 +60,13 @@ namespace Synthesis
                 Verb = "runas"
             };
             proc = Process.Start(startinfo);
-            */
         }
 
         public void OnDestroy()
         {
             inputCommander.Send(new StandardMessage.ExitMessage());
             outputCommander.Send(new StandardMessage.ExitMessage());
+            proc.Kill();
         }
 
         public bool IsConnected()
