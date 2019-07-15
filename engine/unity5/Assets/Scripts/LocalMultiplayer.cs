@@ -87,6 +87,11 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     /// </summary>
     public void AddRobot()
     {
+        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddRobot,
+            AnalyticsLedger.EventAction.Clicked,
+            "",
+            AnalyticsLedger.getMilliseconds().ToString());
+
         GameObject panel = GameObject.Find("RobotListPanel");
         string directory = PlayerPrefs.GetString("RobotDirectory") + Path.DirectorySeparatorChar + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))

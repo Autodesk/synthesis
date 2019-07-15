@@ -34,8 +34,10 @@ public class AnalyticsLedger
             EmulationTab = "emulationTab",
 
             // Main toolbar scene events
+            AddRobot = "addRobot",
             ChangeRobot = "changeRobot",
-            ChangeRobotMaM = "changeRobotMixAndMatch",
+            MaMRobot = "mixandMatchRobot",  // changed to MaM robot
+            ExportedRobot = "exportedRobot", // changed to pre-exported robot
             ChangeField = "changeField",
 
             ResetDropdown = "resetDropdown",

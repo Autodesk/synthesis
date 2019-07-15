@@ -229,7 +229,7 @@ namespace Synthesis.MixAndMatch
 
             StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobotMaM,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
                 AnalyticsLedger.EventAction.Changed,
                 "mixAndMatch",
                 AnalyticsLedger.getMilliseconds().ToString());
