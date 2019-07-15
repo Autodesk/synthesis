@@ -52,7 +52,7 @@ else
 fi
 
 #forget from pkgutil
-pkgutil --forget "org.$PRODUCT.$VERSION" > /dev/null 2>&1
+pkgutil --forget "com.$PRODUCT.$VERSION" > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
   echo "[2/3] [DONE] Successfully deleted application informations"
@@ -61,7 +61,7 @@ else
 fi
 
 #remove application source distribution
-[ -e "/Library/${PRODUCT}/${VERSION}" ] && rm -rf "/Library/${PRODUCT}/${VERSION}"
+[ -e "/Library/Application Support/${PRODUCT}/${VERISON}" ] && rm -rf "/Library/Application Support/${PRODUCT}/${VERISON}"
 if [ $? -eq 0 ]
 then
   echo "[3/3] [DONE] Successfully deleted application"

@@ -3,3 +3,4 @@ application/*
 An
 Autdoesk
 !application/.gitkeep
+*.pkg

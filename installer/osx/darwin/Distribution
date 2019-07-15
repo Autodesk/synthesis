@@ -16,9 +16,9 @@ function installCheck() {
         my.result.type = 'Fatal';
         return false;
     }
-    if(system.files.fileExistsAtPath('/Library/__PRODUCT__/__VERSION__/')) {
+    if(system.files.fileExistsAtPath('/Library/Application\ Support/__PRODUCT__/__VERSION__/')) {
         my.result.title = 'Previous Installation Detected';
-        my.result.message = 'A previous installation of __PRODUCT__ exists at /Library/__PRODUCT__/__VERSION__/. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';
+        my.result.message = 'A previous installation of __PRODUCT__ exists at /Library/Application Support/__PRODUCT__/__VERSION__/. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';
         my.result.type = 'Warning';
         return false;
     }
