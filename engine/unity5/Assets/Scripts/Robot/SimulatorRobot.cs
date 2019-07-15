@@ -184,6 +184,10 @@ namespace Synthesis.Robot
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 SceneManager.LoadScene("Scene");
+
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Playing,
+                    AnalyticsLedger.TimingLabel.ChangeField);
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
                 !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
