@@ -6,7 +6,6 @@ using BulletUnity;
 using Synthesis.FSM;
 using System.IO;
 using UnityEngine.SceneManagement;
-using UnityEngine.Analytics;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;

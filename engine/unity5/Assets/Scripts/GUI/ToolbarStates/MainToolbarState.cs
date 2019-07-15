@@ -11,7 +11,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Synthesis.GUI;
-using UnityEngine.Analytics;
 using Synthesis.Input;
 using Synthesis.Sensors;
 using Synthesis.Camera;

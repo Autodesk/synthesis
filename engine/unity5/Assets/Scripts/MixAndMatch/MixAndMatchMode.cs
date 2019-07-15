@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.FSM;
 using Synthesis.GUI;
 
@@ -147,8 +146,6 @@ namespace Synthesis.MixAndMatch
                 // Sets info panel to blank
                 Text txt = infoText.GetComponent<Text>();
                 txt.text = "";
-
-                // may want to add analytics here
             }
         }
 
@@ -232,12 +229,10 @@ namespace Synthesis.MixAndMatch
 
             StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
-            if (PlayerPrefs.GetInt("analytics") == 1) //For analytics tracking
-            {
-                Analytics.CustomEvent("Changed Mix and Match Robot", new Dictionary<string, object>
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                AnalyticsLedger.EventAction.Changed,
+                "mixAndMatch",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>

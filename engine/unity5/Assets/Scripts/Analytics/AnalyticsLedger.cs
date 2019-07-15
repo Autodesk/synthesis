@@ -34,7 +34,10 @@ public class AnalyticsLedger
             EmulationTab = "emulationTab",
 
             // Main toolbar scene events
+            AddRobot = "addRobot",
             ChangeRobot = "changeRobot",
+            MaMRobot = "mixandMatchRobot",  // changed to MaM robot
+            ExportedRobot = "exportedRobot", // changed to pre-exported robot
             ChangeField = "changeField",
 
             ResetDropdown = "resetDropdown",
@@ -56,6 +59,7 @@ public class AnalyticsLedger
             MainHelp = "mainToolbarHelp",
 
             // DPM toolbar events
+            GamepieceDropdown = "dpm_changeGamepiece",
             DefineIntake = "dpm_defineIntake",
             DefineRelease = "dpm_defineRelease",
             EditTrajectory = "dpm_editTrajectory",
@@ -111,7 +115,8 @@ public class AnalyticsLedger
             BackedOut = "backedOut",
             Continued = "continued",
             Clicked = "buttonClicked",
-            Viewed = "viewed";
+            Viewed = "viewed",
+            Changed = "changed";
     }
 
     public class PageView

@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Synthesis.FSM;
 using BulletSharp;
 using BulletUnity;
-using UnityEngine.Analytics;
 using Synthesis.Sensors;
 using Synthesis.States;
 using Synthesis.Utils;
