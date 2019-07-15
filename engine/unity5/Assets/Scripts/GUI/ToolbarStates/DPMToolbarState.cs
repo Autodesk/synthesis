@@ -14,7 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -146,13 +145,10 @@ namespace Assets.Scripts.GUI
                 gamepieceDropdownExtension.SetActive(true);
             }
 
-            // REMOVE AFTER GOOGLE ANALYTICS IMPLEMENTED
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Changed Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GamepieceDropdown,
+                AnalyticsLedger.EventAction.Changed,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Destroys current dropdown and hides it
@@ -223,12 +219,6 @@ namespace Assets.Scripts.GUI
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
             gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-
-            // REMOVE UNITY ANALYTICS AFTER GOOGLE ANALYTICS IMPLEMENTED
-            if (PlayerPrefs.GetInt("analytics") == 1)
-                Analytics.CustomEvent("Spawned Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
         }
         /// <summary>
         /// Clear gamepiece clones
@@ -268,15 +258,7 @@ namespace Assets.Scripts.GUI
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ClearGamepiece,
                 AnalyticsLedger.EventAction.Clicked,
                 "",
-            AnalyticsLedger.getMilliseconds().ToString());
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Driver Practice Help Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         private void CloseHelpMenu()
         {

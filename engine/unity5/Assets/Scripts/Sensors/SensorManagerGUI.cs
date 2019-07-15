@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.FSM;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.Camera;
 using Synthesis.States;
@@ -321,13 +320,6 @@ namespace Synthesis.Sensors
                     AnalyticsLedger.EventAction.Clicked,
                     "",
                     AnalyticsLedger.getMilliseconds().ToString());
-
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
             }
             else
             {
@@ -357,13 +349,6 @@ namespace Synthesis.Sensors
                     AnalyticsLedger.EventAction.Clicked,
                     "",
                     AnalyticsLedger.getMilliseconds().ToString());
-
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
             }
             else
             {
@@ -391,13 +376,6 @@ namespace Synthesis.Sensors
                     AnalyticsLedger.EventAction.Clicked,
                     "",
                     AnalyticsLedger.getMilliseconds().ToString());
-
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
             }
             else
             {

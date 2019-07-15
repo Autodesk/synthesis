@@ -22,6 +22,7 @@ public class AnalyticsLedger
 
             // Activated scenes 
             MainSimulator = "mainSimulator",
+            Tutorials = "tutorialLink",
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs
@@ -34,6 +35,7 @@ public class AnalyticsLedger
 
             // Main toolbar scene events
             ChangeRobot = "changeRobot",
+            ChangeRobotMaM = "changeRobotMixAndMatch",
             ChangeField = "changeField",
 
             ResetDropdown = "resetDropdown",
@@ -55,6 +57,7 @@ public class AnalyticsLedger
             MainHelp = "mainToolbarHelp",
 
             // DPM toolbar events
+            GamepieceDropdown = "dpm_changeGamepiece",
             DefineIntake = "dpm_defineIntake",
             DefineRelease = "dpm_defineRelease",
             EditTrajectory = "dpm_editTrajectory",
@@ -110,7 +113,8 @@ public class AnalyticsLedger
             BackedOut = "backedOut",
             Continued = "continued",
             Clicked = "buttonClicked",
-            Viewed = "viewed";
+            Viewed = "viewed",
+            Changed = "changed";
     }
 
     public class PageView

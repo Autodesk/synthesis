@@ -6,7 +6,6 @@ using BulletUnity;
 using Synthesis.FSM;
 using System.IO;
 using UnityEngine.SceneManagement;
-using UnityEngine.Analytics;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
@@ -376,10 +375,10 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 PlayerPrefs.Save();
 
-                                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
                     AnalyticsLedger.EventAction.Clicked,
                     "change",
-                AnalyticsLedger.getMilliseconds().ToString());
+                    AnalyticsLedger.getMilliseconds().ToString());
 
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
@@ -449,15 +448,14 @@ namespace Synthesis.GUI
                     AnalyticsLedger.TimingVarible.Playing,
                     AnalyticsLedger.TimingLabel.ResetField);
 
-                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                    Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
-                    {
-                    });
                 //FieldDataHandler.Load();
                 //DPMDataHandler.Load();
                 //Controls.Init();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
+
+                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ChangeField,
+                    AnalyticsLedger.TimingVarible.Playing); // start timer for current field
             }
             else
             {
@@ -756,12 +754,10 @@ namespace Synthesis.GUI
         public void OpenTutorialLink()
         {
             Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
-            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-            {
-                Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Tutorials,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Activates analytics panel
