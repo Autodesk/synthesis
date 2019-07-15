@@ -83,13 +83,6 @@ namespace Synthesis.States
 
             ReplayExporter.Write(replayNameText.text, fieldPath, trackers, contacts);
             StateMachine.PopState();
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Saved Replay", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
         }
 
         /// <summary>

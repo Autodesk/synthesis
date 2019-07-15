@@ -3,6 +3,8 @@
 #include <Fusion/Fusion/FusionDocument.h>
 #include <functional>
 #include "Data/BXDJ/ConfigData.h"
+#include "Data/BXDJ/JsonWriter.h"
+
 
 using namespace adsk::core;
 using namespace adsk::fusion;

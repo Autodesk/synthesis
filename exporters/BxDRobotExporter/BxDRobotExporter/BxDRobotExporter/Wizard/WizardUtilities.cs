@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Inventor;
-using System.Windows.Forms;
 
 namespace BxDRobotExporter.Wizard
 {
@@ -45,7 +42,7 @@ namespace BxDRobotExporter.Wizard
             {
                 foreach (string s in node.ModelFullID.Split(new string[] { "-_-" }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    names.Add(StandardAddInServer.Instance.GetOccurrence(s));
+                    names.Add(InventorUtils.GetOccurrence(s));
                 }
             }
             return names.ToArray();

@@ -126,7 +126,7 @@ namespace hel{
          * \brief Represents the states of all the CAN motor controllers
          */
 
-        std::map<uint32_t,CANMotorController> can_motor_controllers;
+        std::map<uint32_t,std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
 
         /**
          * \brief Represents the states of all the counters

@@ -10,7 +10,7 @@ namespace hel{
      * \brief Data model for the Pneumatics Control Module (PCM)
      */
 
-    struct PCM{ //TODO add support for other PCM data
+  struct PCM: public CANDevice{ //TODO add support for other PCM data
         /**
          * \brief The maximum number of pneumatic solenoid valves supported by the PCM
          */
@@ -34,6 +34,12 @@ namespace hel{
         BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids;
 
     public:
+        std::string toString()const;
+
+        void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
+
+        std::vector<uint8_t> generateCANPacket(const int32_t&)const;
+
         /**
          * \fn BoundsCheckedArray<bool, NUM_SOLENOIDS> getSolenoids()const noexcept
          * \brief Get the states of the solenoids

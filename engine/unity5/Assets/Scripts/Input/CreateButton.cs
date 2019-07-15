@@ -726,11 +726,21 @@ namespace Synthesis.Input
                     InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
                     Controls.Load();
+                    if (States.MainState.timesLoaded > 1)
+                    {
+                        Controls.UpdateFieldControls(false);
+                    }
+                    Controls.Load();
                     UpdateActiveButtons();
                     break;
                 case 1:  //tank drive slider is ON
                     InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
                     Controls.TankDriveEnabled = true;
+                    Controls.Load();
+                    if (States.MainState.timesLoaded > 1)
+                    {
+                        Controls.UpdateFieldControls(true);
+                    }
                     Controls.Load();
                     UpdateActiveButtons();
                     break;

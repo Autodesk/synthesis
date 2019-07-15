@@ -30,6 +30,7 @@ extern "C" {
                 }
             }
         );
+        ds_spoofer.detach();
         hel::hal_is_initialized.store(true);
         instance.second.unlock();
     }

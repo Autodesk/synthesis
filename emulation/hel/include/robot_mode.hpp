@@ -5,6 +5,11 @@
 
 #include <string>
 
+// For testing, defaulting enabled to true is helpful
+#ifndef HEL_DEFAULT_ENABLED_STATUS
+#define HEL_DEFAULT_ENABLED_STATUS false
+#endif
+
 namespace hel{
 
     /**

@@ -229,6 +229,73 @@ namespace Synthesis.Input
             return null;
         }
 
+        public static void UpdateFieldControls(bool isTank)
+        {
+            for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
+            {
+                buttons[0].pickup = new List<KeyMapping>();
+                buttons[0].release = new List<KeyMapping>();
+                buttons[0].spawnPieces = new List<KeyMapping>();
+                buttons[1].pickup = new List<KeyMapping>();
+                buttons[1].release = new List<KeyMapping>();
+                buttons[1].spawnPieces = new List<KeyMapping>();
+                buttons[2].pickup = new List<KeyMapping>();
+                buttons[2].release = new List<KeyMapping>();
+                buttons[2].spawnPieces = new List<KeyMapping>();
+                buttons[3].pickup = new List<KeyMapping>();
+                buttons[3].release = new List<KeyMapping>();
+                buttons[3].spawnPieces = new List<KeyMapping>();
+                buttons[4].pickup = new List<KeyMapping>();
+                buttons[4].release = new List<KeyMapping>();
+                buttons[4].spawnPieces = new List<KeyMapping>();
+                buttons[5].pickup = new List<KeyMapping>();
+                buttons[5].release = new List<KeyMapping>();
+                buttons[5].spawnPieces = new List<KeyMapping>();
+
+                buttons[0].pickup.Add(InputControl.SetKey("1: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftControl, isTank));
+                buttons[0].release.Add(InputControl.SetKey("1: Release " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftShift, isTank));
+                buttons[0].spawnPieces.Add(InputControl.SetKey("1: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.RightControl, isTank));
+                /*buttons[0].pickup.Add(InputControl.SetKey("1: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftControl, true));
+                buttons[0].release.Add(InputControl.SetKey("1: Release " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.LeftShift, true));
+                buttons[0].spawnPieces.Add(InputControl.SetKey("1: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerOneIndex, KeyCode.RightControl, true));*/
+
+                buttons[1].pickup.Add(InputControl.SetKey("2: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick2), isTank));
+                buttons[1].release.Add(InputControl.SetKey("2: Release " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), isTank));
+                buttons[1].spawnPieces.Add(InputControl.SetKey("2: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), isTank));
+                /*buttons[1].pickup.Add(InputControl.SetKey("2: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick2), true));
+                buttons[1].release.Add(InputControl.SetKey("2: Release " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), true));
+                buttons[1].spawnPieces.Add(InputControl.SetKey("2: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), true));*/
+
+                buttons[2].pickup.Add(InputControl.SetKey("3: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick3), isTank));
+                buttons[2].release.Add(InputControl.SetKey("3: Release " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), isTank));
+                buttons[2].spawnPieces.Add(InputControl.SetKey("3: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), isTank));
+                /*buttons[2].pickup.Add(InputControl.SetKey("3: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick3), true));
+                buttons[2].release.Add(InputControl.SetKey("3: Release " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), true));
+                buttons[2].spawnPieces.Add(InputControl.SetKey("3: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), true));*/
+
+                buttons[3].pickup.Add(InputControl.SetKey("4: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick4), isTank));
+                buttons[3].release.Add(InputControl.SetKey("4: Release " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), isTank));
+                buttons[3].spawnPieces.Add(InputControl.SetKey("4: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), isTank));
+                /*buttons[3].pickup.Add(InputControl.SetKey("4: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick4), true));
+                buttons[3].release.Add(InputControl.SetKey("4: Release " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), true));
+                buttons[3].spawnPieces.Add(InputControl.SetKey("4: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), true));*/
+
+                buttons[4].pickup.Add(InputControl.SetKey("5: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick5), isTank));
+                buttons[4].release.Add(InputControl.SetKey("5: Release " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), isTank));
+                buttons[4].spawnPieces.Add(InputControl.SetKey("5: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), isTank));
+                /*buttons[4].pickup.Add(InputControl.SetKey("5: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick5), true));
+                buttons[4].release.Add(InputControl.SetKey("5: Release " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), true));
+                buttons[4].spawnPieces.Add(InputControl.SetKey("5: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), true));*/
+
+                buttons[5].pickup.Add(InputControl.SetKey("6: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick6), isTank));
+                buttons[5].release.Add(InputControl.SetKey("6: Release " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), isTank));
+                buttons[5].spawnPieces.Add(InputControl.SetKey("6: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), isTank));
+                /*buttons[5].pickup.Add(InputControl.SetKey("6: Pick Up " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button3, Joystick.Joystick6), true));
+                buttons[5].release.Add(InputControl.SetKey("6: Release " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), true));
+                buttons[5].spawnPieces.Add(InputControl.SetKey("6: Spawn " + FieldDataHandler.gamepieces[i].name, PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true));*/
+            }
+        }
+
         /// <summary>
         /// Default settings for ArcadeDrive controls.
         /// Adapted from: https://github.com/Gris87/InputControl

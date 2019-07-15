@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Inventor;
 using System.Windows.Forms;
-using System.Drawing;
-using System.IO;
-using System.Diagnostics;
+using Inventor;
 
 namespace BxDRobotExporter
 {
@@ -17,6 +10,7 @@ namespace BxDRobotExporter
 
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
+        public static DockableWindow EmbededPrecheckPane;
 
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
@@ -27,7 +21,7 @@ namespace BxDRobotExporter
             IntPtr[] children = CreateChildDialog();
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
-            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Robot Joint Editor");
+            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
             
             #region EmbededJointPane
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
@@ -38,6 +32,17 @@ namespace BxDRobotExporter
             #endregion
             
             EmbededJointPane.Visible = true;
+            
+            EmbededPrecheckPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:PrecheckPane", "Robot Export Guide");
+            
+            EmbededPrecheckPane.DockingState = DockingStateEnum.kDockRight;
+            EmbededPrecheckPane.Width = 600;
+            EmbededPrecheckPane.ShowVisibilityCheckBox = false;
+            EmbededPrecheckPane.ShowTitleBar = true;
+            var precheckPanel = new PrecheckPanel.PrecheckPanel();
+            EmbededPrecheckPane.AddChild(precheckPanel.Handle);
+            
+            EmbededPrecheckPane.Visible = true;
         }
 
         private static IntPtr[] CreateChildDialog()
@@ -71,12 +76,24 @@ namespace BxDRobotExporter
                 EmbededJointPane.Visible = false;
                 EmbededJointPane.Delete();
             }
+            if (EmbededPrecheckPane != null)
+            {
+                EmbededPrecheckPane.Visible = false;
+                EmbededPrecheckPane.Delete();
+            }
         }
 
+        public static void ToggleAdvancedJointEditor()
+        {
+            if (EmbededJointPane != null)
+            {
+                EmbededJointPane.Visible = !EmbededJointPane.Visible;
+            }
+        }
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="StandardAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void HideDockableWindows()
+        public static void HideAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {
@@ -87,7 +104,7 @@ namespace BxDRobotExporter
         /// <summary>
         /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="StandardAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void ShowDockableWindows()
+        public static void ShowAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {

@@ -8,24 +8,24 @@ namespace nFPGA{
     tSystem::~tSystem(){}
 
     void tSystem::getFpgaGuid(uint32_t* /*guid_ptr*/, tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getFpgaGuid\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getFpgaGuid");
     }
 
     void tSystem::reset(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::reset\n";
+        hel::warnUnsupportedFeature("Function call tSystem::reset");
     }
 
     void tSystem::NiFpga_SharedOpen_common(const char* /*bitfile*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::NiFpga_SharedOpen_common\n";
+        hel::warnUnsupportedFeature("Function call tSystem::NiFpga_SharedOpen_common");
     }
 
     NiFpga_Status tSystem::NiFpga_SharedOpen(const char* /*bitfile*/, const char* /*signature*/, const char* /*resource*/, uint32_t /*attribute*/, NiFpga_Session* /*session*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::NiFpga_SharedOpen\n";
+        hel::warnUnsupportedFeature("Function call tSystem::NiFpga_SharedOpen");
         return NiFpga_Status_Success;
     }
 
     NiFpga_Status tSystem::NiFpgaLv_SharedOpen(const char* const /*bitfile*/, const char* const /*apiSignature*/, const char* const /*resource*/, const uint32_t /*attribute*/, NiFpga_Session* const /*session*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::NiFpgaLv_SharedOpen\n";
+        hel::warnUnsupportedFeature("Function call tSystem::NiFpgaLv_SharedOpen");
         return NiFpga_Status_Success;
     }
 }

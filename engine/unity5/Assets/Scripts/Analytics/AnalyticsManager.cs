@@ -29,6 +29,8 @@ public class AnalyticsManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
         loggedData = new Queue<KeyValuePair<string, string>>();
         startTimes = new List<KeyValuePair<string, float>>();
+
+        DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
     }
 
     public void LateUpdate()
@@ -97,7 +99,7 @@ public class AnalyticsManager : MonoBehaviour {
     public void LogStandardInfo()
     {
         loggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
-        loggedData.Enqueue(new KeyValuePair<string, string>("tid", TESTING_TRACKING_ID));
+        loggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
         loggedData.Enqueue(new KeyValuePair<string, string>("cid", "555"));
     }
 
@@ -166,8 +168,12 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
-
-            if (!DumpData || loggedData.Count < 1) { Debug.Log("Not Dumping"); return; }
+            if (loggedData.Count < 1 || !DumpData)
+            {
+                loggedData = new Queue<KeyValuePair<string, string>>();
+                Debug.Log("Not Dumping");
+                return;
+            }
 
             Debug.Log("Starting Data Dump");
 
