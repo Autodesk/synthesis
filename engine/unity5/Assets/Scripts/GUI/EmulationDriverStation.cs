@@ -12,10 +12,6 @@ namespace Synthesis.GUI
     {
         public static EmulationDriverStation Instance { get; private set; }
 
-        public EmulationService.RobotInputs.Types.RobotMode.Types.Mode state;
-        public EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID allianceStation;
-
-        public bool isRobotEnabled = false;
         public bool isRunCode = false;
 
         GameObject canvas;
@@ -146,20 +142,20 @@ namespace Synthesis.GUI
             switch (theState)
             {
                 case "auto":
-                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
-                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
                 case "teleop":
                 default:
-                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
@@ -169,14 +165,14 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            isRobotEnabled = true;
+            InputManager.Instance.RobotMode.Enabled = true;
             GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
         }
 
         public void RobotDisabled()
         {
-            isRobotEnabled = false;
+            InputManager.Instance.RobotMode.Enabled = false;
             GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
@@ -190,26 +186,26 @@ namespace Synthesis.GUI
             switch (teamStation)
             {
                 case 1:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
                     break;
                 case 2:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
                     break;
                 case 3:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
                     break;
                 case 4:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
                     break;
                 case 5:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
                     break;
                 case 0:
                 default:
-                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
                     break;
             }
-            Debug.Log(allianceStation);
+            Debug.Log(InputManager.Instance.MatchInfo.AllianceStationId);
         }
 
         /// <summary>

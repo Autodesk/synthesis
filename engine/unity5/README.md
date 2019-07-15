@@ -27,6 +27,8 @@ You will also need to download and import the NuGet asset.
 * Uninstall and Re-Install Grpc.Core
 * Uninstall and Re-Install Grpc.Core.Api
 * Uninstall and Re-Install Grpc.Reflection
+* Uninstall and Re-Install Google.Protobuf
+* Uninstall and Re-Install System.Interactive.Async
 * Import all included assets
 * NuGet should now be integrated within the project
 

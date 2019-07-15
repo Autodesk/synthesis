@@ -437,7 +437,7 @@ public class DriveJoints
         {
             js.SerializeInputs();
             if (js.Id < Synthesis.InputManager.Instance.Joysticks.Count)
-                Synthesis.EmulationController.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
+                Synthesis.EmulationController.UpdateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
         }
     }
 
