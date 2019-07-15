@@ -13,25 +13,25 @@ public class GIF {
 
     public GIF(string Name, int FrameCount)
     {
-        GifName = Name;
-        frames = new List<Sprite>();
-        this.FrameCount = FrameCount;
-        LoadFrames();
+        //GifName = Name;
+        //frames = new List<Sprite>();
+        //this.FrameCount = FrameCount;
+        //LoadFrames();
     }
 
     private void LoadFrames()
     {
         for (int i = 0; i < FrameCount; i++)
         {
-            frames.Add(Resources.Load<Sprite>("Gifs/" + GifName + "/" + i + "_" + GifName));
+            //frames.Add(Resources.Load<Sprite>("Gifs/" + GifName + "/" + i + "_" + GifName));
         }
     }
 
     public Sprite NextFrame()
     {
-        Sprite a = frames[index];
-        index = (index + 1) % FrameCount;
-        return a;
+        //Sprite a = frames[index];
+        //index = (index + 1) % FrameCount;
+        return null;
     }
 
 }
