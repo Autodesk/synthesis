@@ -4,7 +4,7 @@ using namespace SynthesisAddIn;
 
 // Workspace Activated Handler
 template<>
-bool EUI::addHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI)
+bool EUI::addHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI, WorkspaceActivatedHandler* workspaceActivatedHandler)
 {
 	if (workspaceActivatedHandler == nullptr)
 		workspaceActivatedHandler = new WorkspaceActivatedHandler(this);
@@ -17,7 +17,7 @@ bool EUI::addHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI)
 }
 
 template<>
-bool EUI::clearHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI)
+bool EUI::clearHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI, WorkspaceActivatedHandler* workspaceActivatedHandler)
 {
 	if (workspaceActivatedHandler == nullptr)
 		return false;
@@ -31,7 +31,7 @@ bool EUI::clearHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI)
 
 // Workspace Deactivated Handler
 template<>
-bool EUI::addHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI)
+bool EUI::addHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI, WorkspaceDeactivatedHandler* workspaceDeactivatedHandler)
 {
 	if (workspaceDeactivatedHandler == nullptr)
 		workspaceDeactivatedHandler = new WorkspaceDeactivatedHandler(this);
@@ -42,7 +42,7 @@ bool EUI::addHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI)
 }
 
 template<>
-bool EUI::clearHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI)
+bool EUI::clearHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI, WorkspaceDeactivatedHandler* workspaceDeactivatedHandler)
 {
 	if (workspaceDeactivatedHandler == nullptr)
 		return false;
@@ -56,11 +56,11 @@ bool EUI::clearHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI)
 
 // Show Palette Command Created Handler
 template<>
-bool EUI::addHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> commandDef)
+bool EUI::addHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> commandDef, ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler)
 {
 	ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler_;
 	showPaletteCommandCreatedHandler_ = new ShowPaletteCommandCreatedHandler(this, commandDef->id());
-	
+
 
 	Ptr<CommandCreatedEvent> commandEvent = commandDef->commandCreated();
 	if (!commandEvent)
@@ -70,7 +70,7 @@ bool EUI::addHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> co
 }
 
 template<>
-bool EUI::clearHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> commandDef)
+bool EUI::clearHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> commandDef, ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler)
 {
 	if (showPaletteCommandCreatedHandler == nullptr)
 		return false;
@@ -84,7 +84,7 @@ bool EUI::clearHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> 
 
 // Receive Form Data Handler
 template<>
-bool EUI::addHandler<ReceiveFormDataHandler>(Ptr<Palette> palette)
+bool EUI::addHandler<ReceiveFormDataHandler>(Ptr<Palette> palette, ReceiveFormDataHandler* receiveFormDataHandler)
 {
 	if (receiveFormDataHandler == nullptr)
 		receiveFormDataHandler = new ReceiveFormDataHandler(this);
@@ -97,7 +97,7 @@ bool EUI::addHandler<ReceiveFormDataHandler>(Ptr<Palette> palette)
 }
 
 template<>
-bool EUI::clearHandler<ReceiveFormDataHandler>(Ptr<Palette> palette)
+bool EUI::clearHandler<ReceiveFormDataHandler>(Ptr<Palette> palette, ReceiveFormDataHandler* receiveFormDataHandler)
 {
 	if (receiveFormDataHandler == nullptr)
 		return false;
@@ -111,27 +111,27 @@ bool EUI::clearHandler<ReceiveFormDataHandler>(Ptr<Palette> palette)
 
 // Close Exporter Form Handler
 template<>
-bool EUI::addHandler<CloseExporterFormEventHandler>(Ptr<Palette> palette)
+bool EUI::addHandler<ClosePaletteEventHandler>(Ptr<Palette> palette, ClosePaletteEventHandler* closePaletteEventHandler)
 {
-	if (closeExporterFormEventHandler == nullptr)
-		closeExporterFormEventHandler = new CloseExporterFormEventHandler(this);
+	closePaletteEventHandler = new ClosePaletteEventHandler(this, palette->id());
 
 	Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
 	if (!closeEvent)
 		return false;
+	
+	return closeEvent->add(closePaletteEventHandler);
 
-	return closeEvent->add(closeExporterFormEventHandler);
 }
 
 template<>
-bool EUI::clearHandler<CloseExporterFormEventHandler>(Ptr<Palette> palette)
+bool EUI::clearHandler<ClosePaletteEventHandler>(Ptr<Palette> palette, ClosePaletteEventHandler* closePaletteEventHandler)
 {
-	if (closeExporterFormEventHandler == nullptr)
+	if (closePaletteEventHandler == nullptr)
 		return false;
 
 	Ptr<UserInterfaceGeneralEvent> closeEvent = palette->closed();
 	if (!closeEvent)
 		return false;
 	
-	return closeEvent->remove(closeExporterFormEventHandler);
+	return closeEvent->remove(closePaletteEventHandler);
 }

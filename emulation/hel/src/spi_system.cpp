@@ -79,24 +79,24 @@ namespace hel{
         }
 
         uint32_t readDebugIntStatReadCount(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugIntStatReadCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugIntStatReadCount\n";
             return 0;
         }
 
         uint16_t readDebugState(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugState");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugState\n";
             return 0;
         }
 
         void writeAutoTriggerConfig(tAutoTriggerConfig value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setAutoTriggerConfig(value);
             instance.second.unlock();
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_Channel(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_Channel");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_Channel\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.ExternalClockSource_Channel = value;
@@ -105,7 +105,7 @@ namespace hel{
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_Module(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_Module");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_Module\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.ExternalClockSource_Module = value;
@@ -114,7 +114,7 @@ namespace hel{
         }
 
         void writeAutoTriggerConfig_ExternalClockSource_AnalogTrigger(bool value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_AnalogTrigger");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_ExternalClockSource_AnalogTrigger\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.ExternalClockSource_AnalogTrigger = value;
@@ -123,7 +123,7 @@ namespace hel{
         }
 
         void writeAutoTriggerConfig_RisingEdge(bool value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_RisingEdge");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_RisingEdge\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.RisingEdge = value;
@@ -132,7 +132,7 @@ namespace hel{
         }
 
         void writeAutoTriggerConfig_FallingEdge(bool value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_FallingEdge");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_FallingEdge\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.FallingEdge = value;
@@ -141,7 +141,7 @@ namespace hel{
         }
 
         void writeAutoTriggerConfig_ExternalClock(bool value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTriggerConfig_ExternalClock");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTriggerConfig_ExternalClock\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoTriggerConfig config = instance.first->spi_system.getAutoTriggerConfig();
             config.ExternalClock = value;
@@ -150,87 +150,87 @@ namespace hel{
         }
 
         tAutoTriggerConfig readAutoTriggerConfig(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig();
         }
 
         uint8_t readAutoTriggerConfig_ExternalClockSource_Channel(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_ExternalClockSource_Channel");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_ExternalClockSource_Channel\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_Channel;
         }
 
         uint8_t readAutoTriggerConfig_ExternalClockSource_Module(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_ExternalClockSource_Module");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_ExternalClockSource_Module\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_Module;
         }
 
         bool readAutoTriggerConfig_ExternalClockSource_AnalogTrigger(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_ExternalClockSource_AnalogTrigger");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_ExternalClockSource_AnalogTrigger\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().ExternalClockSource_AnalogTrigger;
         }
 
         bool readAutoTriggerConfig_RisingEdge(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_RisingEdge");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_RisingEdge\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().RisingEdge;
         }
 
         bool readAutoTriggerConfig_FallingEdge(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_FallingEdge");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_FallingEdge\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().FallingEdge;
         }
 
         bool readAutoTriggerConfig_ExternalClock(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTriggerConfig_ExternalClock");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTriggerConfig_ExternalClock\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoTriggerConfig().ExternalClock;
         }
 
         void writeAutoChipSelect(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoChipSelect");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoChipSelect\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setAutoChipSelect(value);
             instance.second.unlock();
         }
 
         uint8_t readAutoChipSelect(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoChipSelect");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoChipSelect\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoChipSelect();
         }
 
         uint32_t readDebugRevision(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugRevision");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugRevision\n";
             return 0;
         }
 
         uint32_t readTransferSkippedFullCount(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readTransferSkippedFullCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readTransferSkippedFullCount\n";
             return 0;
         }
 
         void writeAutoByteCount(tAutoByteCount value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setAutoByteCount(value);
             instance.second.unlock();
         }
 
         void writeAutoByteCount_TxByteCount(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoByteCount_TxByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoByteCount_TxByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoByteCount count = instance.first->spi_system.getAutoByteCount();
             count.TxByteCount = value;
@@ -239,7 +239,7 @@ namespace hel{
         }
 
         void writeAutoByteCount_ZeroByteCount(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoByteCount_ZeroByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoByteCount_ZeroByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             tAutoByteCount count = instance.first->spi_system.getAutoByteCount();
             count.ZeroByteCount = value;
@@ -248,92 +248,92 @@ namespace hel{
         }
 
         tAutoByteCount readAutoByteCount(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoByteCount();
         }
 
         uint8_t readAutoByteCount_TxByteCount(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoByteCount_TxByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoByteCount_TxByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoByteCount().TxByteCount;
         }
 
         uint8_t readAutoByteCount_ZeroByteCount(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoByteCount_ZeroByteCount");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoByteCount_ZeroByteCount\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoByteCount().ZeroByteCount;
         }
 
         uint32_t readDebugIntStat(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugIntStat");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugIntStat\n";
             return 0;
         }
 
         uint32_t readDebugEnabled(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugEnabled");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugEnabled\n";
             return 0;
         }
 
         void writeAutoSPI1Select(bool value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoSPI1Select");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoSPI1Select\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setAutoSPI1Select(value);
             instance.second.unlock();
         }
 
         bool readAutoSPI1Select(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoSPI1Select");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoSPI1Select\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoSPI1Select();
         }
 
         uint8_t readDebugSubstate(tRioStatusCode* /*status*/){ //unnecessary for emulation
-            hel::warnUnsupportedFeature("Function call tSPI::readDebugSubstate");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readDebugSubstate\n";
             return 0;
         }
 
         void writeAutoRate(uint32_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoRate");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoRate\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setAutoRate(value);
             instance.second.unlock();
         }
 
         uint32_t readAutoRate(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoRate");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoRate\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getAutoRate();
         }
 
         void writeEnableDIO(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeEnableDIO");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeEnableDIO\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setEnabledDIO(value);
             instance.second.unlock();
         }
 
         uint8_t readEnableDIO(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readEnableDIO");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readEnableDIO\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getEnabledDIO();
         }
 
         void writeChipSelectActiveHigh(tChipSelectActiveHigh value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeChipSelectActiveHigh");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeChipSelectActiveHigh\n";
             auto instance = RoboRIOManager::getInstance();
             instance.first->spi_system.setChipSelectActiveHigh(value);
             instance.second.unlock();
         }
 
         void writeChipSelectActiveHigh_Hdr(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeChipSelectActiveHigh_Hdr");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeChipSelectActiveHigh_Hdr\n";
             auto instance = RoboRIOManager::getInstance();
             tChipSelectActiveHigh select = instance.first->spi_system.getChipSelectActiveHigh();
             select.Hdr = value;
@@ -342,7 +342,7 @@ namespace hel{
         }
 
         void writeChipSelectActiveHigh_MXP(uint8_t value, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeChipSelectActiveHigh_MXP");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeChipSelectActiveHigh_MXP\n";
             auto instance = RoboRIOManager::getInstance();
             tChipSelectActiveHigh select = instance.first->spi_system.getChipSelectActiveHigh();
             select.MXP = value;
@@ -351,38 +351,38 @@ namespace hel{
         }
 
         tChipSelectActiveHigh readChipSelectActiveHigh(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readChipSelectActiveHigh");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readChipSelectActiveHigh\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getChipSelectActiveHigh();
         }
 
         uint8_t readChipSelectActiveHigh_Hdr(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readChipSelectActiveHigh_Hdr");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readChipSelectActiveHigh_Hdr\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getChipSelectActiveHigh().Hdr;
         }
 
         uint8_t readChipSelectActiveHigh_MXP(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readChipSelectActiveHigh_MXP");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readChipSelectActiveHigh_MXP\n";
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->spi_system.getChipSelectActiveHigh().MXP;
         }
 
         void strobeAutoForceOne(tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::strobeAutoForceOne");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::strobeAutoForceOne\n";
             //TODO
         }
 
         void writeAutoTx(uint8_t /*reg_index*/, uint8_t /*bitfield_index*/, uint8_t /*value*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::writeAutoTx");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::writeAutoTx\n";
              //TODO
         }
 
         uint8_t readAutoTx(uint8_t /*reg_index*/, uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){
-            hel::warnUnsupportedFeature("Function call tSPI::readAutoTx");
+            std::cerr<<"Synthesis warning: Unsupported feature: Function call tSPI::readAutoTx\n";
             //TODO
             return 0;
         }

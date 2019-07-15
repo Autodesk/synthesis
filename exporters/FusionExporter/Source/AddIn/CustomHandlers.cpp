@@ -12,18 +12,19 @@ using namespace SynthesisAddIn;
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->preparePalettes();
+		eui->prepareAllPalettes();
 	}
 }
 
 // Deactivate Workspace Event
 void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == K_WORKSPACE)
+	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->closeExportPalette();
+		eui->closeGuidePalette();
+		eui->closeJointEditorPalette();
 		eui->cancelExportRobot();
 	}
 }
@@ -65,29 +66,22 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 {
 	if (id == SynthesisAddIn::K_DT_WEIGHT)
 		eui->openDriveWeightPalette();
-
-
-	//eui->openExportPalette();
+	else if (id == SynthesisAddIn::BTN_GUIDE)
+		eui->openGuidePalette();
+	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
+		eui->openJointEditorPalette();
+	else if (id == SynthesisAddIn::BTN_EXPORT)
+		eui->openFinishPalette();
+	else if (id == SynthesisAddIn::BTN_DOF)
+		eui->toggleDOF();
 }
 
 /// Palette Events
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
-
-	// Update the config state
-	if (eventArgs->action() == "state_update") {
-		eui->saveConfiguration(eventArgs->data());
-	}
-	else if (eventArgs->action() == "export") {
-		eui->saveConfiguration(eventArgs->data());
-		eui->startExportRobot();
-	}
-		
-
-	/*
 	if (eventArgs->action() == "highlight")
-		eui->highlightJoint(eventArgs->data());
+		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 
 	else if (eventArgs->action() == "edit_sensors")
 		eui->openSensorsPalette(eventArgs->data());
@@ -107,11 +101,15 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		if (eventArgs->action() == "export")
 			eui->startExportRobot();
 	}
-	*/
 }
 
 // Close Exporter Form Event
-void CloseExporterFormEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
+void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	eui->closeExportPalette();
+	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
+		eui->closeJointEditorPalette();
+	else if (id == SynthesisAddIn::PALETTE_FINISH)
+		eui->closeFinishPalette();
+	else if (id == SynthesisAddIn::PALETTE_GUIDE)
+		eui->closeGuidePalette();
 }

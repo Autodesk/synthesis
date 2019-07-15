@@ -3,6 +3,7 @@
 #include "send_data.hpp"
 
 #include <unistd.h>
+#include <iostream>
 
 namespace hel {
 
@@ -26,7 +27,7 @@ namespace hel {
                     try {
                         asio::write(socket, asio::buffer(data), asio::transfer_all());
                     } catch(std::system_error&){
-                        warn("Sender socket disconnected. User code will continue to run.");
+                        std::cerr << "Synthesis warning: Sender socket disconnected. User code will continue to run.\n";
                         break;
                     }
                 } else {

@@ -68,15 +68,14 @@ namespace BxDRobotExporter.JointEditor
             // 
             // JointForm
             // 
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(682, 953);
             this.Controls.Add(this.DefinePartsLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(7000, 1000);
+            this.MaximumSize = new System.Drawing.Size(700, 1000);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(700, 1000);
             this.Name = "JointForm";
             this.Text = "Joint Editor";
             this.DefinePartsLayout.ResumeLayout(false);
