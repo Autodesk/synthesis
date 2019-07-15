@@ -73,7 +73,6 @@ namespace Synthesis
         public override void OnCycle()
         {
             base.OnCycle();
-            System.Threading.Thread.Sleep(30); // ms
             if (!IsConnected())
             {
                 Debug.Log("Connection Closed");
@@ -91,6 +90,7 @@ namespace Synthesis
                     Api = "v1",
                     InputData = InputManager.Instance,
                 }).Wait();
+                System.Threading.Thread.Sleep(30);
             }
             catch (Exception e)
             {

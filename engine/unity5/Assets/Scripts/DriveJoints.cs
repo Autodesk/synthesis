@@ -328,14 +328,15 @@ public class DriveJoints
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        for (int i = 0; i < pwm.Length; i++)
-            motors[i] = pwm[i];
-
         if (Synthesis.GUI.EmulationDriverStation.Instance != null && Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
         {
             UpdateEmulationJoysticks();
-            UpdateEmulationMotors(pwm);
+            UpdateEmulationMotors();
             UpdateEmulationSensors(emuList);
+        } else
+        {
+            for (int i = 0; i < pwm.Length; i++)
+                motors[i] = pwm[i];
         }
 
         foreach (RigidNode node in listOfSubNodes.Select(n => n as RigidNode))
@@ -445,13 +446,13 @@ public class DriveJoints
     /// Updates all motor values for emulation.
     /// </summary>
     /// <param name="pwm"></param>
-    private static void UpdateEmulationMotors(float[] pwm)
+    private static void UpdateEmulationMotors()
     {
-        for (int i = 0; i < pwm.Length; i++)
+        for (int i = 0; i < Synthesis.EmulationController.getPWMCount(); i++)
             motors[i] = (float)Synthesis.EmulationController.getPWM(i);
 
         foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
-            motors[CAN.Id + 10] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput;
+            motors[CAN.Id + 10] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput; // first 10 are for PWM outputs
     }
 
     /// <summary>

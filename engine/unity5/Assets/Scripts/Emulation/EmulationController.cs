@@ -37,7 +37,7 @@ namespace Synthesis
 
         private static Process proc;
 
-        public const string DEFAULT_HOST = "10.140.148.131"; // 127.0.0.1
+        public const string DEFAULT_HOST = "10.140.148.24"; // 127.0.0.1
         public const string DEFAULT_PORT = "50051";
 
         private const int TIMEOUT = 5;
@@ -121,7 +121,7 @@ namespace Synthesis
             foreach (var CANMotorController in instance.CanMotorControllers)
                 if (CANMotorController.Id == index)
                     return CANMotorController.PercentOutput;
-            return 0.0f;
+            throw new Exception("Detached emulation CAN output (ID" + index + "\"");
         }
 
         public static void UpdateJoystick(int index, double[] axes, bool[] buttons, double[] povs)

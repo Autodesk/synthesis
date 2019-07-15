@@ -56,11 +56,11 @@ namespace Synthesis
                     case StandardMessage.Stop:
                         OnStop();
                         break;
-                    case StandardMessage.Kill:
+                    case StandardMessage.Exit:
                         OnExit();
                         break;
                     default:
-                        throw new Exception("Unrecognized thread command");
+                        throw new Exception("Unrecognized thread command \"" + currentCommand.Get().GetName() + "\"");
                 }
             }
         }
