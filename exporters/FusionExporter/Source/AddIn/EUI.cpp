@@ -32,11 +32,41 @@ EUI::~EUI()
 
 // UI Controls
 
-void EUI::highlightJoint(std::string jointID)
+void EUI::focusCameraOnGeometry(bool transition, double zoom, Ptr<JointGeometry> geo)
+{
+	// Set camera view
+	Ptr<Camera> ogCam = app->activeViewport()->camera();
+	Ptr<Camera> cam = app->activeViewport()->camera();
+
+	Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
+	eyeLocation->translateBy(Vector3D::create(0, 100, 0));
+
+	cam->target(geo->origin());
+	cam->upVector(Vector3D::create(1, 0, 0));
+	cam->eye(eyeLocation);
+	cam->isFitView(true);
+	cam->isSmoothTransition(false);
+
+	app->activeViewport()->camera(cam);
+
+	// TODO: There must be a better way to find the extents of the robot without calculations
+	auto fitCamera = app->activeViewport()->camera(); // This camera is only used to find the extents of the complete robot
+
+	cam->isFitView(false);
+	cam->viewExtents(fitCamera->viewExtents() * zoom);
+
+	if (transition) { // If smooth transition, move the camera to the original starting place
+		ogCam->isSmoothTransition(false);
+		app->activeViewport()->camera(ogCam);
+		cam->isSmoothTransition(true);
+	}
+
+	app->activeViewport()->camera(cam);
+}
+
+bool EUI::getJointGeometryAndOccurances(std::string jointID, Ptr<JointGeometry>& geo, Ptr<Occurrence>& entity)
 {
 	std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
-
-	Ptr<JointGeometry> geo;
 
 	// Find the joint that was selected
 	Ptr<Joint> highlightedJoint = nullptr;
@@ -57,11 +87,9 @@ void EUI::highlightJoint(std::string jointID)
 			geo = highlightedJoint->geometryOrOriginTwo();
 
 		if (geo == nullptr || geo->origin() == nullptr)
-			return;
+			return true;
 
-		// Highlight the parts of the joint
-		UI->activeSelections()->clear();
-		UI->activeSelections()->add(highlightedJoint->occurrenceOne());
+		entity = highlightedJoint->occurrenceOne();
 	}
 	else
 	{
@@ -81,27 +109,99 @@ void EUI::highlightJoint(std::string jointID)
 
 		// No joint was found, return early
 		if (highlightedAsBuiltJoint == nullptr)
-			return;
+			return true;
 
 		geo = highlightedAsBuiltJoint->geometry();
 
-		// Highlight the parts of the joint
+		entity = highlightedAsBuiltJoint->occurrenceOne();
+	}
+	return false;
+}
+
+void EUI::highlightAndFocusSingleJoint(std::string jointID, bool transition, double zoom)
+{
+	Ptr<JointGeometry> geo;
+	Ptr<Occurrence> entity;
+
+	if (getJointGeometryAndOccurances(jointID, geo, entity)) return;
+
+	dofViewEnabled = false;
+	// Highlight the parts of the joint
+	UI->activeSelections()->clear();
+	UI->activeSelections()->add(entity);
+
+	focusCameraOnGeometry(transition, zoom, geo);
+}
+
+void EUI::highlightJoint(std::string jointID)
+{
+	Ptr<JointGeometry> geo;
+	Ptr<Occurrence> entity;
+
+	if (getJointGeometryAndOccurances(jointID, geo, entity)) return;
+
+	UI->activeSelections()->add(entity);
+}
+
+
+void EUI::toggleDOF()
+{
+	dofViewEnabled = !dofViewEnabled;
+
+	if (!dofViewEnabled)
+	{
 		UI->activeSelections()->clear();
-		UI->activeSelections()->add(highlightedAsBuiltJoint->occurrenceOne());
+		return;
 	}
 
+	focusWholeModel(true, 1.5, app->activeViewport()->camera());
+
+	auto config = Exporter::loadConfiguration(app->activeDocument());
+
+	for (const auto joint : config.getJoints())
+	{
+		EUI::highlightJoint(joint.first);
+	};
+}
+
+void EUI::focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam)
+{
 	// Set camera view
 	Ptr<Camera> cam = app->activeViewport()->camera();
 
-	Ptr<Point3D> eyeLocation = Point3D::create(geo->origin()->x(), geo->origin()->y(), geo->origin()->z());
-	eyeLocation->translateBy(Vector3D::create(0, 100, 0));
+	Ptr<Point3D> eyeLocation = Point3D::create(0, 100, 0); // TODO: Much of this is the same as highlightAndFocusSingleJoint
+	Ptr<Point3D> targetLocation = Point3D::create(0, 0, 0);
 
-	cam->target(geo->origin());
+	cam->target(targetLocation);
 	cam->upVector(Vector3D::create(1, 0, 0));
 	cam->eye(eyeLocation);
 
-	cam->isSmoothTransition(true);
+	cam->isFitView(true);
+	cam->isSmoothTransition(false);
+
 	app->activeViewport()->camera(cam);
+
+	// TODO: There must be a better way to find the extents of the robot without calculations
+	auto fitCamera = app->activeViewport()->camera(); // This camera is only used to find the extents of the complete robot
+
+	auto newCamera = app->activeViewport()->camera();
+	newCamera->viewExtents(fitCamera->viewExtents() * zoom);
+
+	if (transition) { // If smooth transition, move the camera to the original starting place
+		ogCam->isSmoothTransition(false);
+		app->activeViewport()->camera(ogCam);
+		newCamera->isSmoothTransition(true);
+	}
+
+	cam->isSmoothTransition(transition);
+	app->activeViewport()->camera(newCamera);
+}
+
+void EUI::resetHighlightAndFocusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam)
+{
+	UI->activeSelections()->clear();
+
+	focusWholeModel(transition, zoom, ogCam);
 }
 
 // Robot Exporting
@@ -115,8 +215,8 @@ void EUI::saveConfiguration(std::string jsonConfig)
 
 void EUI::startExportRobot()
 {
-	exportPalette->isVisible(false);
-
+	jointEditorPalette->isVisible(false);
+	sensorsPalette->isVisible(false);
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 

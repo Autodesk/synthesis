@@ -1,14 +1,12 @@
 #include "json_util.hpp"
-
-#include "error.hpp"
-
 #include <cassert>
 
 namespace hel{
     JSONParsingException::JSONParsingException(std::string det):details(det){}
 
     const char* JSONParsingException::what()const throw(){
-        return makeExceptionMessage("JSON parsing failed due to malformed data in " + details).c_str();
+        std::string s = "Synthesis exception: JSON parsing failed due to malformed data in " + details;
+        return s.c_str();
     }
 
     std::string quote(const std::string& s){

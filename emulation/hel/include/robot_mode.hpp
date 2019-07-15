@@ -21,8 +21,6 @@ namespace hel{
             AUTONOMOUS,TELEOPERATED,TEST
         };
 
-        static constexpr bool DEFAULT_ENABLED_STATUS = true; // For testing, defaulting enabled to true is helpful
-
     private:
 
         /**

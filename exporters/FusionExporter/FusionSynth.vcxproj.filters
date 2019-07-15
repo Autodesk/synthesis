@@ -141,10 +141,6 @@
     <ClInclude Include="Source\Data\BXDJ\Components\Elevator.h">
       <Filter>Headers\Data\BXDJ\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\json.hpp">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Data\BXDJ\JsonWriter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -243,7 +239,6 @@
     <ClCompile Include="Source\Data\BXDJ\Components\Elevator.cpp">
       <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Data\BXDJ\JsonWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\js\fusionInterface.js">

@@ -124,7 +124,6 @@
     <ClInclude Include="Source\Data\BXDJ\Joints\SliderJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\Joints\RotationalJoint.h" />
     <ClInclude Include="Source\Data\BXDJ\CustomJSONObject.h" />
-    <ClInclude Include="Source\Data\BXDJ\JsonWriter.h" />
     <ClInclude Include="Source\Data\BXDJ\RigidNode.h" />
     <ClInclude Include="Source\Data\BXDJ\JointSensor.h" />
     <ClInclude Include="Source\Data\BXDJ\Utility.h" />
@@ -133,7 +132,6 @@
     <ClInclude Include="Source\Data\Guid.h" />
     <ClInclude Include="Source\Data\Vector3.h" />
     <ClInclude Include="Source\Exporter.h" />
-    <ClInclude Include="Source\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
@@ -159,7 +157,6 @@
     <ClCompile Include="Source\Data\BXDJ\Joints\CylindricalJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\SliderJoint.cpp" />
     <ClCompile Include="Source\Data\BXDJ\Joints\RotationalJoint.cpp" />
-    <ClCompile Include="Source\Data\BXDJ\JsonWriter.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Tree.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode-Mesh.cpp" />
     <ClCompile Include="Source\Data\BXDJ\RigidNode.cpp" />
@@ -172,9 +169,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\css\synthesisExporter.css" />
+    <None Include="palette\export.html" />
     <None Include="Palette\js\fusionInterface.js" />
     <None Include="Palette\js\export.js" />
-    <None Include="palette\export.html" />
+    <None Include="palette\jointEditor.html" />
+    <None Include="palette\js\jointEditor.js" />
     <None Include="palette\js\progress.js" />
     <None Include="palette\js\sensors.js" />
     <None Include="palette\js\utility.js" />

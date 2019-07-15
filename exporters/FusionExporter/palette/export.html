@@ -6,43 +6,12 @@
         <script src="js/utility.js"></script>
 
         <style>
-            #joint-config-template
-            {
-                display: none;
-            }
-
             #basic-info
             {
                 padding-left: 1rem;
-                padding-right: 1rem;
-            }
-
-            #basic-info
-            {
                 padding-right: 1.5rem;
             }
 
-            .joint-config
-            {
-                position: relative;
-            }
-
-            .edit-sensors-button
-            {
-                position: absolute;
-                top: -3px;
-                right: 2.5rem;
-                width: auto;
-            }
-
-            .wheel-side
-            {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-                margin-top: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
         </style>
     </head>
     <body>
@@ -50,14 +19,17 @@
         <div id="export-settings">
             <div id="basic-info">
                 <span class="field-label">Robot Name: </span>
-                <span class="field-input"><input type="text" id="robot-name" value="unnamed" ></span>
+                <span class="field-input"><input type="text" id="name" value="unnamed" onchange="updateSubmitButton()"></span>
+                <input type="checkbox" value="Colors" checked> Export with colors<br>
+                <input type="checkbox" value="Open" checked> Open Synthesis<br>
+                <span class="field-select" style="margin-top: 4px;"><select id="frc-field-options" onchange="updateFieldOptions(this)">
+                        <option value="0">2019 Destination Deep Space</option>
+                    </select>
+                </span>
             </div>
-
         </div>
-        
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save Configuration</button>
-        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
 
-        
+        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
+        <button id='cancel-button' type='button' onclick='cancel()'>Cancel</button>
     </body>
 </html>

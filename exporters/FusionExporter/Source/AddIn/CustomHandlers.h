@@ -71,12 +71,13 @@ namespace SynthesisAddIn
 	};
 
 	/// Notified when the export robot form is closed.
-	class CloseExporterFormEventHandler : public UserInterfaceGeneralEventHandler
+	class ClosePaletteEventHandler : public UserInterfaceGeneralEventHandler
 	{
 	public:
-		CloseExporterFormEventHandler(EUI * eui) : eui(eui) {}
+		ClosePaletteEventHandler(EUI * eui, std::string id_) : eui(eui), id(id_) {}
 		void notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs) override;
 	private:
 		EUI * eui;
+		std::string id;
 	};
 }

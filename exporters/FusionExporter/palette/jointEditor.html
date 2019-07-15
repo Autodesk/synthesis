@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+
+        <style>
+            #joint-config-template
+            {
+                display: none;
+            }
+
+            #basic-info
+            {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            #basic-info
+            {
+                padding-right: 1.5rem;
+            }
+
+            .joint-config
+            {
+                position: relative;
+            }
+
+            .edit-sensors-button
+            {
+                position: absolute;
+                top: -3px;
+                right: 2.5rem;
+                width: auto;
+            }
+
+            .wheel-side
+            {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .joint-config-image {
+                float: left;
+                height: 112px;
+                border-color: #6d6d6d;
+                border-style: solid;
+                margin-right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="js/jointEditor.js"></script>
+        <div id="export-settings">
+            <div id="basic-info">
+                <span class="field-label">Robot Name: </span>
+                <span class="field-input"><input type="text" id="name" value="unnamed" onchange="updateSubmitButton()"></span>
+            </div>
+
+            <fieldset id="joint-config-template" class="joint-config">
+                <legend class="joint-config-legend">Joint</legend>
+
+                <button class="edit-sensors-button" onclick="editSensors(this.parentNode)">Edit Sensors</button>
+
+                <img class="joint-config-image">
+                <div class="driver-div">
+                    <span class="field-label">Driver Type: </span>
+                    <span class="field-select"><select class="driver-type" onchange="updateFieldOptions(this)">
+                        <option value="0">None</option>
+                        <option value="1" class="angular-driver">Motor</option>
+                        <option value="2" class="angular-driver">Servo</option>
+                        <option value="3" class="linear-driver" style="display: none">Worm Screw</option>
+                        <option value="4" class="linear-driver" style="display: none">Bumper Pnuematic</option>
+                        <option value="5" class="linear-driver" style="display: none">Relay Pnuematic</option>
+                        <option value="6" class="angular-driver">Dual Motor</option>
+                        <option value="7" class="linear-driver">Elevator</option>
+                    </select></span>
+
+                    <div class="has-driver-div">
+                        <div class="angular-joint-div">
+                            <span class="field-label">Wheel Type: </span>
+                            <span class="field-select"><select class="wheel-type" onchange="updateFieldOptions(this)">
+                                <option value="0">None</option>
+                                <option value="1">Normal</option>
+                                <option value="2">Omni</option>
+                                <option value="3">Mecanum</option>
+                            </select></span>
+
+                            <div class="has-wheel-div">
+                                <span class="field-label">Is Drive Wheel: </span>
+                                <input type="checkbox" class="field-label is-drive-wheel" onchange="updateFieldOptions(this)" /></span>
+
+                                <select class="wheel-side">
+                                    <option value="1">Left Wheel (PWM 1)</option>
+                                    <option value="0">Right Wheel (PWM 0)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="linear-joint-div">
+                            <div class="pneumatic-div">
+                                <span class="field-label">Width: </span>
+                                <span class="field-select"><select class="pneumatic-width">
+                                    <option value="0">2.5 mm</option>
+                                    <option value="1" selected>5 mm</option>
+                                    <option value="2">10 mm</option>
+                                </select></span>
+                                <span class="field-label">Pressure: </span>
+                                <span class="field-select"><select class="pneumatic-pressure">
+                                    <option value="0">10 PSI</option>
+                                    <option value="1" selected>20 PSI</option>
+                                    <option value="2">60 PSI</option>
+                                </select></span>
+                            </div>
+
+                            <div class="has-elevator-div">
+                                <span class="field-label">Elevator Type: </span>
+                                <span class="field-select"><select class="elevator-type">
+                                    <option value="0">Single Stage</option>
+                                    <option value="1">Stage 1 (Cascading)</option>
+                                    <option value="2">Stage 2 (Cascading)</option>
+                                    <option value="3">Stage 1 (Continuous)</option>
+                                    <option value="4">Stage 2 (Continuous)</option>
+                                </select></span>
+                            </div>
+                        </div>
+
+                        <div class="generic-ports-div">
+                            <select class="field-label port-signal">
+                                <option value="1" data-port-value="1" class="motor-port">PWM</option>
+                                <option value="2" data-port-value="2" class="motor-port">CAN</option>
+                                <option value="3" data-port-value="1" class="pneumatic-port">Solenoid</option>
+                                <option value="4" data-port-value="1" class="relay-port">Relay</option>
+                            </select>
+                            <span class="field-select"><select class="port-number-one">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                            <select class="port-number-two">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select></span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        
+        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save Configuration</button>
+        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
+
+        <script>
+            var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
+        </script>
+    </body>
+</html>

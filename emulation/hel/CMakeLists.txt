@@ -21,7 +21,7 @@ SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14 -DENABLE_SYNTHESIS_WARNINGS")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
 
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -54,7 +54,7 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
     ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-5-linuxathena.zip_78eb9292b9fe0f4ac17c77a461f92bf4/linux/athena/shared/
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxathena.zip_3e38e7c98115770c2774d54027662b61/linux/athena/shared/
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
   )
@@ -76,7 +76,7 @@ else()
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-5-linuxx86-64.zip_bf0f9d1bebb813034a33297957aecb4b/linux/x86-64/shared
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxx86-64debug.zip_4a64a99b7657804f077cb1086b2f7fb5/linux/x86-64/shared
   )
 endif()
 
@@ -132,6 +132,7 @@ ADD_LIBRARY(hel SHARED
   src/analog_output.cpp
   src/pwm_system.cpp
   src/digital_system.cpp
+  src/can_comm.cpp
   src/relay_system.cpp
   src/global.cpp
   src/comm.cpp
@@ -157,7 +158,6 @@ ADD_LIBRARY(hel SHARED
   src/pcm.cpp
   src/can_device.cpp
   src/can_motor_controller.cpp
-  src/can_comm.cpp
   src/pdp.cpp)
 ADD_DEPENDENCIES(hel asio ni-libraries)
 
