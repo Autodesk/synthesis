@@ -755,7 +755,7 @@ namespace Synthesis.GUI
         {
             Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Tutorials,
-                AnalyticsLedger.EventAction.Clicked,
+                AnalyticsLedger.EventAction.TutorialRequest,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
