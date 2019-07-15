@@ -331,7 +331,7 @@ public class DriveJoints
         for (int i = 0; i < pwm.Length; i++)
             motors[i] = pwm[i];
 
-        if (Synthesis.GUI.EmulationDriverStation.Instance != null)
+        if (Synthesis.GUI.EmulationDriverStation.Instance != null && Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
         {
             UpdateEmulationJoysticks();
             UpdateEmulationMotors(pwm);
@@ -436,7 +436,8 @@ public class DriveJoints
         foreach (JoystickSerializer js in joystickSerializers)
         {
             js.SerializeInputs();
-            EmulationClient.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
+            if (js.Id < Synthesis.InputManager.Instance.Joysticks.Count)
+                Synthesis.EmulationController.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
         }
     }
 
@@ -446,14 +447,11 @@ public class DriveJoints
     /// <param name="pwm"></param>
     private static void UpdateEmulationMotors(float[] pwm)
     {
-        if (!Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
-            return;
-
         for (int i = 0; i < pwm.Length; i++)
-            motors[i] = (float)EmulationClient.getPWM(i);
+            motors[i] = (float)Synthesis.EmulationController.getPWM(i);
 
-        foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
-            motors[CAN.id + 10] = CAN.inverted == 0 ? CAN.speed : -CAN.speed;
+        foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
+            motors[CAN.Id + 10] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput;
     }
 
     /// <summary>
@@ -465,23 +463,22 @@ public class DriveJoints
         int iter = 0;
         foreach (Synthesis.Robot.RobotBase.EmuNetworkInfo a in emuList)
         {
-            RigidNode rigidNode = null;
-
-            try
+            if (a.RobotSensor.type == RobotSensorType.ENCODER) // TODO revisit this
             {
-                rigidNode = (RigidNode)(a.wheel);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.StackTrace);
-            }
+                RigidNode rigidNode = null;
 
-            BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+                try
+                {
+                    rigidNode = (RigidNode)(a.wheel);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.StackTrace);
+                }
+                BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 
-            if (a.RobotSensor.type == RobotSensorType.ENCODER)
-            {
                 //BRaycastRobot robot = rigidNode.MainObject.GetComponent<BRaycastRobot>();
-                double wheelRadius = 3 / 39.3701;// robot.RaycastRobot.GetWheelInfo(0).WheelsRadius;
+                double wheelRadius = 3 / 39.3701;// robot.RaycastRobot.GetWheelInfo(0).WheelsRadius
                 Vector3 currentPos = bRaycastWheel.transform.position;
                 //double displacement = (Math.Sqrt(currentPos.x * currentPos.x + currentPos.z * currentPos.z) - (Math.Sqrt(a.previousPosition.x*a.previousPosition.x + a.previousPosition.z * a.previousPosition.z)));
                 double displacement = ((currentPos - a.previousPosition).magnitude) * Math.Sign(bRaycastWheel.GetWheelSpeed());
@@ -491,13 +488,24 @@ public class DriveJoints
 
                 a.previousPosition = currentPos;
 
-                var portAType = a.RobotSensor.conTypePortA.ToString() == "DIO" ? "DI" : a.RobotSensor.conTypePortA.ToString();
-                var portBType = a.RobotSensor.conTypePortB.ToString() == "DIO" ? "DI" : a.RobotSensor.conTypePortB.ToString();
+                if (Synthesis.InputManager.Instance.EncoderManagers[iter] == null)
+                    Synthesis.InputManager.Instance.EncoderManagers[iter] = new EmulationService.RobotInputs.Types.EncoderManager();
 
-                if (InputManager.Instance.Roborio.Encoders[iter] == null)
-                    InputManager.Instance.Roborio.Encoders[iter] = new EncoderData();
-                if (Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
-                    InputManager.Instance.Roborio.Encoders[iter].updateEncoder((int)a.RobotSensor.portA, portAType, (int)a.RobotSensor.portB, portBType, (int)a.encoderTickCount);
+                EmulationService.RobotInputs.Types.EncoderManager.Types.PortType ConvertPortType(SensorConnectionType type)
+                {
+                    if (type == SensorConnectionType.DIO)
+                        return EmulationService.RobotInputs.Types.EncoderManager.Types.PortType.Di;
+                    if (type == SensorConnectionType.ANALOG)
+                        return EmulationService.RobotInputs.Types.EncoderManager.Types.PortType.Ai;
+                    throw new Exception();
+                }
+
+                Synthesis.InputManager.Instance.EncoderManagers[iter].AChannel = (uint)a.RobotSensor.portA;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].AType = ConvertPortType(a.RobotSensor.conTypePortA); ;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].BChannel = (uint)a.RobotSensor.portB;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].BType = ConvertPortType(a.RobotSensor.conTypePortB);;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].Ticks = (int)a.encoderTickCount;
+                
                 iter++;
             }
         }

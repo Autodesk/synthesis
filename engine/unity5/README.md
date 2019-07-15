@@ -23,6 +23,10 @@ You will also need to download and import the NuGet asset.
 * Go to Install a package
 * Uninstall and Re-Install JSON.NET
 * Uninstall and Re-Install SSH.NET
+* Uninstall and Re-Install Grpc
+* Uninstall and Re-Install Grpc.Core
+* Uninstall and Re-Install Grpc.Core.Api
+* Uninstall and Re-Install Grpc.Reflection
 * Import all included assets
 * NuGet should now be integrated within the project
 
