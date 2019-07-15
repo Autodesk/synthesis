@@ -417,20 +417,26 @@ namespace Synthesis.States
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
-                        AnalyticsLedger.EventAction.Changed,
-                        "",
-                        AnalyticsLedger.getMilliseconds().ToString());
+                    if (AnalyticsManager.GlobalInstance != null)
+                    {
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                            AnalyticsLedger.EventAction.Changed,
+                            "",
+                            AnalyticsLedger.getMilliseconds().ToString());
+                    }
                 }
                 else
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
-                        AnalyticsLedger.EventAction.Changed,
-                        "",
-                        AnalyticsLedger.getMilliseconds().ToString());
+                    if (AnalyticsManager.GlobalInstance != null)
+                    {
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
+                            AnalyticsLedger.EventAction.Changed,
+                            "",
+                            AnalyticsLedger.getMilliseconds().ToString());
+                    }
                 }
 
                 robot.FilePath = robotPath;
