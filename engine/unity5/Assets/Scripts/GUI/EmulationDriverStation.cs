@@ -1,14 +1,8 @@
-﻿using Synthesis.FSM;
-using Synthesis.Input;
-using Synthesis.States;
+﻿using Synthesis.Input;
 using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,31 +12,14 @@ namespace Synthesis.GUI
     {
         public static EmulationDriverStation Instance { get; private set; }
 
-        public enum DriveState
-        {
-            Auto,
-            Teleop,
-            Test,
-        };
+        public EmulationService.RobotInputs.Types.RobotMode.Types.Mode state;
+        public EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID allianceStation;
 
-        public enum AllianceStation
-        {
-            Red1,
-            Red2,
-            Red3,
-            Blue1,
-            Blue2,
-            Blue3,
-        };
-
-        public DriveState state;
-        public AllianceStation allianceStation;
-
-        public bool isRobotDisabled = false;
+        public bool isRobotEnabled = false;
         public bool isRunCode = false;
 
         GameObject canvas;
-        InputField gameDataInput;
+        InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
         GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
         GameObject runButton;
@@ -65,7 +42,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             canvas = GameObject.Find("Canvas");
-            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
+            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
@@ -168,26 +145,21 @@ namespace Synthesis.GUI
         {
             switch (theState)
             {
-                case "teleop":
-                    state = DriveState.Teleop;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
-                    break;
                 case "auto":
-                    state = DriveState.Auto;
+                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
-                    state = DriveState.Test;
+                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
+                case "teleop":
                 default:
-                    state = DriveState.Teleop;
+                    state = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
@@ -197,14 +169,14 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            isRobotDisabled = false;
+            isRobotEnabled = true;
             GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
         }
 
         public void RobotDisabled()
         {
-            isRobotDisabled = true;
+            isRobotEnabled = false;
             GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
             GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
         }
@@ -217,34 +189,27 @@ namespace Synthesis.GUI
         {
             switch (teamStation)
             {
-                case 0:
-                    allianceStation = AllianceStation.Red1;
-                    Debug.Log(allianceStation);
-                    break;
                 case 1:
-                    allianceStation = AllianceStation.Red2;
-                    Debug.Log(allianceStation);
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
                     break;
                 case 2:
-                    allianceStation = AllianceStation.Red3;
-                    Debug.Log(allianceStation);
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
                     break;
                 case 3:
-                    allianceStation = AllianceStation.Blue1;
-                    Debug.Log(allianceStation);
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
                     break;
                 case 4:
-                    allianceStation = AllianceStation.Blue2;
-                    Debug.Log(allianceStation);
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
                     break;
                 case 5:
-                    allianceStation = AllianceStation.Blue3;
-                    Debug.Log(allianceStation);
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
                     break;
+                case 0:
                 default:
-                    allianceStation = AllianceStation.Red1;
+                    allianceStation = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
                     break;
             }
+            Debug.Log(allianceStation);
         }
 
         /// <summary>
@@ -252,8 +217,13 @@ namespace Synthesis.GUI
         /// </summary>
         public void GameData()
         {
-            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
-            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
+            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
+            gameSpecificMessage.onValueChanged.AddListener(delegate { Debug.Log(gameSpecificMessage.text.ToString()); });
+        }
+
+        public string GetGameSpecificMessage()
+        {
+            return gameSpecificMessage.text;
         }
     }
 }

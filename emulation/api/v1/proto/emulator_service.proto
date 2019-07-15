@@ -1,5 +1,7 @@
 syntax = "proto3";
+
 package EmulationService;
+
 message MXPData {
     enum MXPConfig {
         INVALID_CONFIG = 0;
@@ -9,14 +11,17 @@ message MXPData {
         SPI            = 4;
         I2C            = 5;
     }
+
     MXPConfig mxp_config = 1;
     double value         = 2;
 }
+
+
 message RobotOutputs {
     enum RelayState {
         INVALID_STATE      = 0;
         FORWARD            = 1;
-        REVERSE            = 2;
+		REVERSE            = 2;
         OFF                = 3;
     }
     enum CANType {
@@ -28,6 +33,7 @@ message RobotOutputs {
         PCM                 = 5;
         PDP                 = 6;
     }
+
     message CANMotorController {
         CANType can_type     = 1;
         int32 id             = 2;
@@ -42,6 +48,7 @@ message RobotOutputs {
     repeated int32 digital_headers                    = 6;
     repeated CANMotorController can_motor_controllers = 7;
 }
+
 message RobotInputs {
     message MatchInfo {
         enum MatchType {
@@ -50,6 +57,7 @@ message RobotInputs {
             QUALIFICATION = 2;
             ELIMINATION = 3;
         }
+
         enum AllianceStationID {
             RED1  = 0;
             RED2  = 1;
@@ -58,6 +66,7 @@ message RobotInputs {
             BLUE2 = 4;
             BLUE3 = 5;
         }
+
         string game_specific_message = 1;
         MatchType match_type = 2;
         string event_name = 3;
@@ -65,7 +74,9 @@ message RobotInputs {
         uint32 replay_number = 5;
         AllianceStationID alliance_station_id = 6;
         double match_time = 7;
+
     }
+
     message Joystick {
         bool is_xbox               = 1;
         sint32 type                = 2;
@@ -81,6 +92,7 @@ message RobotInputs {
         int32 left_rumble          = 12;
         int32 right_rumble         = 13;
     }
+
     message RobotMode {
         enum Mode {
             AUTONOMOUS = 0;
@@ -93,6 +105,7 @@ message RobotInputs {
         bool is_ds_attached       = 4;
         Mode mode                 = 5;
     }
+
     message EncoderManager {
         enum PortType {
             DI = 0;
@@ -103,6 +116,7 @@ message RobotInputs {
             FPGA_ENCODER = 1;
             COUNTER      = 2;
         }
+
         EncoderType type = 1;
         uint32 index     = 2;
         uint32 a_channel = 3;
@@ -111,6 +125,7 @@ message RobotInputs {
         PortType b_type  = 6;
         sint32 ticks     = 7;
     }
+
     repeated bool digital_headers            = 1;
     repeated MXPData mxp_data                = 2;
     repeated Joystick joysticks              = 3;
@@ -118,33 +133,41 @@ message RobotInputs {
     RobotMode robot_mode                     = 5;
     repeated EncoderManager encoder_managers = 6;
 }
+
 message UpdateRobotInputsRequest {
     string api = 1;
-    RobotInputs input_data = 2;
+    RobotInputs output_data = 2;
 }
+
 message UpdateRobotInputsResponse {
      enum ErrorCode {
         INTERAL_ERROR = 0;
     }
+
     string api = 1;
     ErrorCode error_code = 2;
     bool success = 3;
 }
+
 message RobotOutputsRequest {
     string api = 1;
 }
+
 message RobotOutputsResponse {
     enum ErrorCode {
         INTERAL_ERROR = 0;
     }
+
     string api = 1;
     ErrorCode error_code = 2;
     bool success = 3;
     RobotOutputs output_data = 4;
 }
+
 service EmulationWriter {
     rpc RobotInputs(stream UpdateRobotInputsRequest) returns (UpdateRobotInputsResponse) {}
 }
+
 service EmulationReader {
     rpc RobotOutputs(RobotOutputsRequest) returns (stream RobotOutputsResponse) {}
 }

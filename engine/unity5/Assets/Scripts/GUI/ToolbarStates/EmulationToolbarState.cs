@@ -98,8 +98,8 @@ namespace Assets.Scripts.GUI
             }
             else
             {
-                SSHClient.UserProgram userProgram = new SSHClient.UserProgram(selectedFiles[0]);
-                if (userProgram.type == SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                Synthesis.SSHClient.UserProgram userProgram = new Synthesis.SSHClient.UserProgram(selectedFiles[0]);
+                if (userProgram.type == Synthesis.SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
                 {
                     emulationDriverStation.ShowJavaNotSupportedPopUp();
                 }
@@ -171,7 +171,7 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        internal static EmulationClient s;
+        internal static Synthesis.EmulationController s;
 
         private void CloseHelpMenu()
         {
