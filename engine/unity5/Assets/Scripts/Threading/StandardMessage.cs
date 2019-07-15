@@ -15,7 +15,6 @@ namespace Synthesis
         public const string Restart = "Restart";
         public const string Start = "Start";
         public const string Pause = "Pause";
-        public const string Kill = "Kill";
 
         public const string ThreadStopped = "ThreadStopped";
 

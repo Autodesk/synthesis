@@ -81,13 +81,13 @@ namespace Synthesis
             }
             try
             {
-                call.ResponseStream.MoveNext();
+                call.ResponseStream.MoveNext().Wait();
 
                 OutputManager.Instance = call.ResponseStream.Current.OutputData;
             } catch (Exception e)
             {
-                conn = null;
-                // Debug.Log(e.StackTrace);
+                //conn = null;
+                Debug.Log(e.StackTrace);
             }
         }
 

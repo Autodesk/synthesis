@@ -208,10 +208,8 @@
     <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\TrajectoryEditor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
-    <Compile Include="Assets\Scripts\Emulation\Channel.cs" />
     <Compile Include="Assets\Scripts\Emulation\EmulationController.cs" />
     <Compile Include="Assets\Scripts\Emulation\GrpcMessage.cs" />
-    <Compile Include="Assets\Scripts\Emulation\Maybe.cs" />
     <Compile Include="Assets\Scripts\Emulation\ReceiverTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\SenderTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
@@ -367,6 +365,7 @@
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserLinux.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
     <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
+    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\License.txt" />
     <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
     <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.xml" />
@@ -376,11 +375,19 @@
     <None Include="Assets\Packages\Grpc.Core.1.22.0\lib\net45\Grpc.Core.xml" />
     <None Include="Assets\Packages\Grpc.Reflection.1.22.0\lib\net45\Grpc.Reflection.xml" />
     <None Include="Assets\Packages\Grpc.Core.Api.1.22.0\lib\net45\Grpc.Core.Api.xml" />
+    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\lib\net45\Google.Apis.Auth.PlatformServices.xml" />
     <None Include="Assets\BulletUnity\license.txt" />
+    <None Include="Assets\Packages\Grpc.Auth.1.22.0\lib\net45\Grpc.Auth.xml" />
     <None Include="Assets\Packages\System.Interactive.Async.3.2.0\lib\net46\System.Interactive.Async.xml" />
+    <None Include="Assets\Packages\Google.Apis.1.21.0\lib\net45\Google.Apis.PlatformServices.xml" />
+    <None Include="Assets\Packages\Google.Apis.Core.1.21.0\lib\net45\Google.Apis.Core.xml" />
+    <None Include="Assets\Packages\Google.Apis.1.21.0\lib\net45\Google.Apis.xml" />
     <None Include="Assets\NuGet\LICENSE.txt" />
     <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
+    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\lib\net45\Google.Apis.Auth.xml" />
+    <None Include="Assets\Packages\Google.Apis.Core.1.21.0\License.txt" />
     <None Include="Assets\Packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.xml" />
+    <None Include="Assets\Packages\Google.Apis.1.21.0\License.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
@@ -606,8 +613,26 @@
     <Reference Include="EmulationCommunication">
       <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/EmulationCommunication.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Apis">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.PlatformServices">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Core">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Core.1.21.0/lib/net45/Google.Apis.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf">
       <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Protobuf.3.7.0/lib/net45/Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="Grpc.Auth">
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Auth.1.22.0/lib/net45/Grpc.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core">
       <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Core.1.22.0/lib/net45/Grpc.Core.dll</HintPath>
