@@ -38,6 +38,9 @@ fi
 
 #Parameters
 TARGET_DIRECTORY="target"
+APP_DIRECTORY=$HOME/"Library"
+LIB_DIR="Application Support"
+INST_DIR=${APP_DIRECTORY}/LIB_DIR/${PRODUCT}/${VERSION}
 PRODUCT="Synthesis"
 VERSION=${1}
 DATE=`date +%Y-%m-%d`
@@ -123,10 +126,12 @@ copyBuildDirectory() {
 
 function buildPackage() {
     log_info "Apllication installer package building started.(1/3)"
-    pkgbuild --identifier org.${PRODUCT}.${VERSION} \
+    log_info ${APP_DIRECTORY}/"Application Support"/${PRODUCT}/${VERSION}
+    pkgbuild --identifier com.${PRODUCT}.${VERSION} \
+    --install-location ${APP_DIRECTORY}/"Application Support"/${PRODUCT}/${VERSION} \
     --version ${VERSION} \
     --scripts ${TARGET_DIRECTORY}/darwin/scripts \
-    --root ${TARGET_DIRECTORY}/darwinpkg \
+    --root application/Synthesis.app \
     ${TARGET_DIRECTORY}/package/${PRODUCT}.pkg > /dev/null 2>&1
 }
 
