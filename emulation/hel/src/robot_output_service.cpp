@@ -11,10 +11,10 @@ using namespace EmulationService;
 Status RobotOutputService::RobotOutputs(
 	ServerContext* /*context*/, const RobotOutputsRequest* /*request*/,
 	ServerWriter<RobotOutputsResponse>* stream) {
-	for (;;) {
+	for (;true;) {
 		auto instance = hel::RobotOutputsManager::getInstance();
 
-		if (instance.first->hasNewData() || true) {
+		if (instance.first->hasNewData()) {
 			auto data = instance.first->syncShallow();
 			instance.second.unlock();
 			auto res = RobotOutputsResponse{};
@@ -25,7 +25,7 @@ Status RobotOutputService::RobotOutputs(
 		} else {
 			instance.second.unlock();
 		}
-		usleep(300000);
+		usleep(30000);
 	}
 	return Status::OK;
 }
