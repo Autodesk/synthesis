@@ -62,7 +62,6 @@ namespace Synthesis.GUI
 
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
-        GameObject analyticsPanel;
         GameObject settingsPanel;
 
         GameObject exitPanel;
@@ -169,7 +168,6 @@ namespace Synthesis.GUI
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
-            analyticsPanel = Auxiliary.FindObject(canvas, "AnalyticsPanel");
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
@@ -834,22 +832,6 @@ namespace Synthesis.GUI
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
-        /// <summary>
-        /// Activates analytics panel
-        /// </summary>
-        public void ToggleAnalyticsPanel()
-        {
-            if (analyticsPanel.activeSelf)
-            {
-                analyticsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                analyticsPanel.SetActive(true);
-                inputManagerPanel.SetActive(true);
-            }
-        }
 
         /// <summary>
         /// Toggle for analytics
@@ -1010,11 +992,15 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            analyticsPanel.SetActive(false);
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
 
             CancelOrientation();
+
+            if (settingsPanel.activeSelf)
+            {
+                tabStateMachine.PopState();
+            }
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
