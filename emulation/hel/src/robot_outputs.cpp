@@ -7,6 +7,15 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
 
+const inline EmulationService::RobotOutputs generateZeroedOutput() {
+	auto res = EmulationService::RobotOutputs{};
+	for (auto i = 0u; i < PWMSystem::NUM_HDRS; i++) {
+		res.add_pwm_headers(0);
+	}
+	return res;
+}
+
+
 RobotOutputs::RobotOutputs()
 	: new_data(true),
 	  enabled(RobotMode::DEFAULT_ENABLED_STATUS),
@@ -15,17 +24,19 @@ RobotOutputs::RobotOutputs()
 	  analog_outputs(0.0),
 	  digital_mxp({}),
 	  digital_hdrs(false),
-	  can_motor_controllers({}) {
-	output = EmulationService::RobotOutputs();
-	for (auto i = 0u; i < pwm_hdrs.size(); i++) {
-		output.add_pwm_headers(0);
-	}
-}
+	  output(generateZeroedOutput()),
+	  can_motor_controllers({}) {}
 
 bool RobotOutputs::hasNewData() const { return new_data; }
 
 EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 	if (!new_data) {
+		return output;
+	}
+	new_data = false;
+
+	if(!enabled){
+		output = generateZeroedOutput();
 		return output;
 	}
 
@@ -61,7 +72,6 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 		*elem = can;
 	}
 
-	new_data = false;
 	return output;
 }
 
@@ -195,7 +205,7 @@ std::string RobotOutputs::toString() const {
 	return s;
 }
 
-void RobotOutputs::enable(bool e) {
+void RobotOutputs::setEnable(bool e) {
 	if (e != enabled) {
 		new_data = true;
 		enabled = e;

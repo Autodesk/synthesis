@@ -102,7 +102,7 @@ struct RobotOutputs {
 	 * \param e The new value to use for enabled
 	 */
 
-	void enable(bool);
+	void setEnable(bool);
 
 	/**
 	 * \brief Format RobotOutputs as a string

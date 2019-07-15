@@ -13,6 +13,7 @@ Status RobotInputService::RobotInputs(
 	while (stream->Read(&req)) {
 		auto instance = hel::RobotInputsManager::getInstance();
 		instance.first->sync(req.input_data());
+		std::cout << instance.first->toString() << "\n";
 		instance.first->updateShallow();
 		instance.second.unlock();
 	}

@@ -20,7 +20,7 @@ namespace hel{
     void RobotMode::setEnabled(bool e)noexcept{
         enabled = e;
         auto instance = RobotOutputsManager::getInstance();
-        instance.first->enable(e);
+        instance.first->setEnable(e);
         instance.second.unlock();
     }
 
