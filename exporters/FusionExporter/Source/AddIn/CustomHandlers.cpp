@@ -5,6 +5,7 @@
 #include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Driver.h"
 #include "../Data/BXDJ/Components.h"
+#include <sstream>
 
 using namespace SynthesisAddIn;
 
@@ -79,17 +80,21 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
-	if (eventArgs->action() == "highlight")
-		eui->highlightJoint(eventArgs->data(), false, 1);
+	if (eventArgs->action() == "drivetrain_type") {
+		eui->closeDriveTypePalette("");
 
-	else if (eventArgs->action() == "edit_sensors")
+		BXDJ::ConfigData config;
+		config.setDriveType(eventArgs->data());
+
+	} else if (eventArgs->action() == "highlight") {
+		eui->highlightJoint(eventArgs->data(), false, 1);
+	} else if (eventArgs->action() == "edit_sensors") {
 		eui->openSensorsPalette(eventArgs->data());
 
-	else if (eventArgs->action() == "save_sensors")
+	} else if (eventArgs->action() == "save_sensors") {
 		eui->closeSensorsPalette(eventArgs->data());
 
-	else if (eventArgs->action() == "save" || eventArgs->action() == "export")
-	{
+	} else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
 		eui->saveConfiguration(eventArgs->data());
 
 		if (eventArgs->action() == "export")
