@@ -148,12 +148,12 @@ void EUI::openJointEditorPalette()
 	int index = 0;
 	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
 	{
-		EUI::highlightJoint(joint.first, false, 0.6);
+		EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
 		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 200, 200); // TODO: Make this cross-platform
 		index++;
 	};
 
-	EUI::resetHighlight(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
+	EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
 
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
@@ -546,7 +546,7 @@ void EUI::createButtons()
 	editJointsButton = UI->commandDefinitions()->addButtonDefinition(BTN_EDIT_JOINTS, "Edit Joints", "Setup your robot for exporting to Synthesis.", "Resources/JointIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editJointsButton, editJointsShowPaletteCommandCreatedHandler);
 
-	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Edit Degrees of Freedom", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
+	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Toggle Degrees of Freedom Viewer", "Setup your robot for exporting to Synthesis.", "Resources/DOFIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
 
 	robotExportGuideButton = UI->commandDefinitions()->addButtonDefinition(BTN_GUIDE, "Robot Export Guide", "Setup your robot for exporting to Synthesis.", "Resources/PrecheckIcons");
