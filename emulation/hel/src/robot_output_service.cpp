@@ -25,7 +25,7 @@ Status RobotOutputService::RobotOutputs(
 		} else {
 			instance.second.unlock();
 		}
-		usleep(30000);
+		usleep(50000);
 	}
 	return Status::OK;
 }
