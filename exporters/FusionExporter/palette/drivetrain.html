@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+    </head>
+    <!-- NOTE: input & select focus styling was overriden as it was hard to tell which drive train was selected -->
+    <style>
+        div.images {
+            position: relative;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border: 1px solid rgb(189, 115, 9);
+        }
+        div.left {
+            position: absolute;
+            top: 160px;
+            left: 13%;
+        }
+        div.middle {
+            position: absolute;
+            top: 160px;
+            left: 45%;
+        }
+        div.right {
+            position: absolute;
+            top: 160px;
+            right: 15%;
+        }
+        div.save {
+            position: absolute;
+            top: 200px;
+            left: 5%;
+            width: 90%;
+        }
+    </style>
+    <body>
+        <p align="center">Select Drivetrain Type:</p>
+        <div class="images" style="text-align:center">
+            <input name="tank" id="tank" type="image" src="resources/drivetrain.jpg" alt="Tank Drive" width="100" height="100" />
+            <input name="h-drive" id="h-drive" type="image" src="resources/drivetrain.jpg" alt="H-Drive" width="100" height="100" />
+            <input name="other" id="other" type="image" src="resources/drivetrain.jpg" alt="Other" width="100" height="100" />
+        </div>
+        <div style="pointer-events: none;" >
+            <div class="left">Tank Drive</div>
+            <div class="middle">H-Drive</div>
+            <div class="right">Other</div>
+        </div>
+        <div class="save">
+            <button id='save' type='button' onclick='sendInfoToFusion()'>Save</button>
+        </div>
+    </body>    
+</html>

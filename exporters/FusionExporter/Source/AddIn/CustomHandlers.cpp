@@ -23,8 +23,9 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 {
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
-		eui->closeGuidePalette();
+		eui->closeDriveTypePalette("");
 		eui->closeJointEditorPalette();
+		eui->closeGuidePalette();
 		eui->cancelExportRobot();
 	}
 }
@@ -64,7 +65,9 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::BTN_GUIDE)
+	if (id == SynthesisAddIn::BTN_DT_TYPE)
+		eui->openDriveTypePalette();
+	else if (id == SynthesisAddIn::BTN_GUIDE)
 		eui->openGuidePalette();
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
 		eui->openJointEditorPalette();
@@ -99,7 +102,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 // Close Exporter Form Event
 void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
+	if (id == SynthesisAddIn::PALETTE_DT_TYPE)
+		eui->closeDriveTypePalette("");
+	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
 		eui->closeFinishPalette();

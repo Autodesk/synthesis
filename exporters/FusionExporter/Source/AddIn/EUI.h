@@ -44,6 +44,9 @@ namespace SynthesisAddIn
 		void prepareAllPalettes(); ///< Creates all palettes
 		void hideAllPalettes();
 
+		void openDriveTypePalette();
+		void closeDriveTypePalette(std::string data);
+
 		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
@@ -100,6 +103,7 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
+		Ptr<Palette> driveTypePalette; ///< Drive train type configuration palette.
 		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> guidePalette; ///< Robot export guide palette.
@@ -121,25 +125,27 @@ namespace SynthesisAddIn
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
 
-		ShowPaletteCommandCreatedHandler * showPaletteCommandCreatedHandler = nullptr;
-		ShowPaletteCommandCreatedHandler* driveTrainShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* driveTrainTypeShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
-		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler* driveTypeClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
-		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
+		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
 
 		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
-		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* driveTypeReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
 
 		bool dofViewEnabled;
 
@@ -152,6 +158,9 @@ namespace SynthesisAddIn
 		// UI Creation/Deletion
 		bool createWorkspace(); ///< Creates the Synthesis workspace, finishPanel, and controls.
 		void deleteWorkspace(); ///< Deletes the finishPanel and controls.
+
+		bool createDriveTypePalette(); ///< Creates the Drivetrain type configuration palette.
+		void deleteDriveTypePalette(); ///< Deletes the Drivetrain type configuration palette.
 
 		bool createJointEditorPalette(); ///< Creates the robot export configuration palette.
 		void deleteJointEditorPalette(); ///< Deletes the robot export configuration palette.
