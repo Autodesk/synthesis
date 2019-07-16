@@ -88,7 +88,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		config.setDriveType(eventArgs->data());
 
 	} else if (eventArgs->action() == "highlight") {
-		eui->highlightJoint(eventArgs->data(), false, 1);
+		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 	} else if (eventArgs->action() == "edit_sensors") {
 		eui->openSensorsPalette(eventArgs->data());
 
