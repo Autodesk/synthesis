@@ -69252,7 +69252,7 @@ GameObject:
   - component: {fileID: 1368805518}
   - component: {fileID: 1368805517}
   m_Layer: 5
-  m_Name: PathLabelRobot
+  m_Name: PathLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72859,7 +72859,7 @@ GameObject:
   - component: {fileID: 1457777491}
   - component: {fileID: 1457777490}
   m_Layer: 5
-  m_Name: PathLabelField
+  m_Name: PathLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
