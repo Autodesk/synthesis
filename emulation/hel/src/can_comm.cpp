@@ -1,6 +1,5 @@
 #include "roborio_manager.hpp"
 #include "util.hpp"
-
 #include "FRC_NetworkCommunication/CANSessionMux.h"
 
 using namespace nFPGA;
@@ -17,7 +16,7 @@ namespace hel{
     }
 
     namespace ctre{
-        void sendMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
+        void parseMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
             auto instance = hel::RoboRIOManager::getInstance();
 
             switch(message_id.getType()){
@@ -53,7 +52,7 @@ namespace hel{
             instance.second.unlock();
         }
 
-      std::vector<uint8_t> receiveMessage(const CANMessageID& message_id){
+      std::vector<uint8_t> generateMessage(const CANMessageID& message_id){
             auto instance = hel::RoboRIOManager::getInstance();
 
             switch(message_id.getType()){
@@ -63,8 +62,8 @@ namespace hel{
                     if(instance.first->can_motor_controllers.find(message_id.getID()) == instance.first->can_motor_controllers.end()){
                         warnUnconnectedDevice(message_id, "read from");
                     } else{
-                        warnUnsupportedDevice(message_id, "read from");
-                        // return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
+                        instance.second.unlock();
+                        return instance.first->can_motor_controllers[message_id.getID()]->generateCANPacket(message_id.getAPIID());
                     }
                     break;
                 }
@@ -78,7 +77,7 @@ namespace hel{
     }
 
     namespace rev{
-        void sendMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
+        void parseMessage(const CANMessageID& message_id, const std::vector<uint8_t>& data){
             auto instance = hel::RoboRIOManager::getInstance();
 
             switch(message_id.getType()){
@@ -107,7 +106,7 @@ namespace hel{
             instance.second.unlock();
         }
 
-      std::vector<uint8_t> receiveMessage(const CANMessageID& message_id){
+      std::vector<uint8_t> generateMessage(const CANMessageID& message_id){
           auto instance = hel::RoboRIOManager::getInstance();
 
             switch(message_id.getType()){
@@ -135,22 +134,22 @@ extern "C"{
         hel::CANMessageID message_id = hel::CANMessageID::parse(messageID);
 
         if(periodMs != CAN_SEND_PERIOD_NO_REPEAT && periodMs != CAN_SEND_PERIOD_STOP_REPEATING){
-            hel::warnUnsupportedFeature("CANSessionMux repeating message (" + message_id.toString() + " periodMs: " + std::to_string(periodMs) + ")");
+            hel::warnUnsupportedFeature("Sending repeating CAN message (" + message_id.toString() + " periodMs " + std::to_string(periodMs) + ") -- sending once");
         }
 
         std::vector<uint8_t> data_v;
-        data_v.reserve(dataSize);
 
-        if(data != nullptr){
+        if(data != nullptr && dataSize != 0){
+            data_v.reserve(dataSize);
             std::copy(data, data + dataSize, std::back_inserter(data_v));
         }
 
         switch(message_id.getManufacturer()){
         case hel::CANMessageID::Manufacturer::CTRE:
-            hel::ctre::sendMessage(message_id, data_v);
+            hel::ctre::parseMessage(message_id, data_v);
             break;
         case hel::CANMessageID::Manufacturer::REV:
-            hel::rev::sendMessage(message_id, data_v);
+            hel::rev::parseMessage(message_id, data_v);
             break;
         default:
             hel::warnUnsupportedDevice(message_id, "write to");
@@ -165,10 +164,10 @@ extern "C"{
 
         switch(message_id.getManufacturer()){
         case hel::CANMessageID::Manufacturer::CTRE:
-            data_v = hel::ctre::receiveMessage(message_id);
+            data_v = hel::ctre::generateMessage(message_id);
             break;
         case hel::CANMessageID::Manufacturer::REV:
-            data_v = hel::rev::receiveMessage(message_id);
+            data_v = hel::rev::generateMessage(message_id);
             break;
         default:
             hel::warnUnsupportedDevice(message_id, "read from");

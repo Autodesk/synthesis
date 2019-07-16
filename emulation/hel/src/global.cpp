@@ -101,6 +101,8 @@ namespace nFPGA{
                                                   asio::io_service service;
                                                   hel::SyncClient serv(service);
                                               });
+            sync_thread_send.detach();
+            sync_thread_receive.detach();
             return new hel::GlobalManager();
         }
     }

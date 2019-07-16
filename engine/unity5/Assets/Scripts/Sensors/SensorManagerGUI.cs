@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.FSM;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.Camera;
 using Synthesis.States;
@@ -316,12 +315,11 @@ namespace Synthesis.Sensors
 
                 //Add a sensor
                 AddUltrasonic();
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddUltrasonic,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else
             {
@@ -347,12 +345,10 @@ namespace Synthesis.Sensors
 
                 AddBeamBreaker();
 
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddBeam,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else
             {
@@ -376,12 +372,10 @@ namespace Synthesis.Sensors
                 addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
                 //AddGyro();
 
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddGyro,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else
             {
@@ -536,6 +530,11 @@ namespace Synthesis.Sensors
         public void ToggleChangeNode()
         {
             StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(currentSensor), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorNode,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -573,6 +572,11 @@ namespace Synthesis.Sensors
             currentSensor.IsChangingAngle = !currentSensor.IsChangingAngle;
             sensorAnglePanel.SetActive(currentSensor.IsChangingAngle);
             isEditingAngle = currentSensor.IsChangingAngle;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorAngle,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
 
             //if (currentSensor.IsChangingAngle)
             //{
@@ -675,6 +679,11 @@ namespace Synthesis.Sensors
 
             sensorRangePanel.SetActive(currentSensor.IsChangingRange);
 
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorRange,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             //if (!currentSensor.IsChangingRange) SyncSensorRange();
 
             //lockPositionButton.SetActive(currentSensor.IsChangingRange);
@@ -696,6 +705,11 @@ namespace Synthesis.Sensors
         public void ToggleChangePosition()
         {
             StateMachine.SceneGlobal.PushState(new SensorSpawnState(currentSensor.gameObject), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorPosition,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -728,6 +742,11 @@ namespace Synthesis.Sensors
             EndProcesses();
             tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
                 sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DeleteSensor,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -748,6 +767,11 @@ namespace Synthesis.Sensors
                 tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
                     sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DeleteSensor,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Toggle between showing current sensor and hiding it
@@ -756,6 +780,11 @@ namespace Synthesis.Sensors
         {
             currentSensor.ChangeVisibility(!currentSensor.IsVisible);
             Auxiliary.FindObject(configureSensorPanel, "VisibilityButton").GetComponentInChildren<Text>().text = currentSensor.IsVisible ? "Hide" : "Show";
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorHide,
+                AnalyticsLedger.EventAction.Clicked,
+                "changed",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
