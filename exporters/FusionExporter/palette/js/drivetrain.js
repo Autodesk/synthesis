@@ -3,10 +3,9 @@ var driveType = "tank";
 window.fusionJavaScriptHandler = {handle: function(action, data) {
     try {
         if (action === "drivetrain_type") {
-            // read the data and pre-highlight the correct drive train?
-            //driveType = data;
-            //unhighlightAll();
-            //highlightDriveTrain();
+            driveType = data;
+            unhighlightAll();
+            highlightDriveTrain();
         }
     } catch (e) {
         console.log(e);
