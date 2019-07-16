@@ -32,64 +32,8 @@ EUI::~EUI()
 
 // UI Controls
 
-void EUI::highlightJoint(std::string jointID, bool transition, double zoom)
+void EUI::focusCameraOnGeometry(bool transition, double zoom, Ptr<JointGeometry> geo)
 {
-	std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
-	
-	Ptr<JointGeometry> geo;
-
-	// Find the joint that was selected
-	Ptr<Joint> highlightedJoint = nullptr;
-
-	for (Ptr<Joint> joint : joints)
-	{
-		if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
-		{
-			highlightedJoint = joint;
-			break;
-		}
-	}
-
-	if (highlightedJoint != nullptr)
-	{
-		geo = highlightedJoint->geometryOrOriginOne();
-		if (geo == nullptr || geo->origin() == nullptr)
-			geo = highlightedJoint->geometryOrOriginTwo();
-
-		if (geo == nullptr || geo->origin() == nullptr)
-			return;
-
-		// Highlight the parts of the joint
-		UI->activeSelections()->clear();
-		UI->activeSelections()->add(highlightedJoint->occurrenceOne());
-	}
-	else
-	{
-		std::vector<Ptr<AsBuiltJoint>> asBuiltJoints = Exporter::collectAsBuiltJoints(app->activeDocument());
-
-		// Find the as-built joint that was selected
-		Ptr<AsBuiltJoint> highlightedAsBuiltJoint = nullptr;
-
-		for (Ptr<AsBuiltJoint> joint : asBuiltJoints)
-		{
-			if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
-			{
-				highlightedAsBuiltJoint = joint;
-				break;
-			}
-		}
-
-		// No joint was found, return early
-		if (highlightedAsBuiltJoint == nullptr)
-			return;
-
-		geo = highlightedAsBuiltJoint->geometry();
-
-		// Highlight the parts of the joint
-		UI->activeSelections()->clear();
-		UI->activeSelections()->add(highlightedAsBuiltJoint->occurrenceOne());
-	}
-
 	// Set camera view
 	Ptr<Camera> ogCam = app->activeViewport()->camera();
 	Ptr<Camera> cam = app->activeViewport()->camera();
@@ -118,17 +62,114 @@ void EUI::highlightJoint(std::string jointID, bool transition, double zoom)
 	}
 
 	app->activeViewport()->camera(cam);
-
 }
 
-void EUI::resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam)
+bool EUI::getJointGeometryAndOccurances(std::string jointID, Ptr<JointGeometry>& geo, Ptr<Occurrence>& entity)
 {
-	UI->activeSelections()->clear();
+	std::vector<Ptr<Joint>> joints = Exporter::collectJoints(app->activeDocument());
 
+	// Find the joint that was selected
+	Ptr<Joint> highlightedJoint = nullptr;
+
+	for (Ptr<Joint> joint : joints)
+	{
+		if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
+		{
+			highlightedJoint = joint;
+			break;
+		}
+	}
+
+	if (highlightedJoint != nullptr)
+	{
+		geo = highlightedJoint->geometryOrOriginOne();
+		if (geo == nullptr || geo->origin() == nullptr)
+			geo = highlightedJoint->geometryOrOriginTwo();
+
+		if (geo == nullptr || geo->origin() == nullptr)
+			return true;
+
+		entity = highlightedJoint->occurrenceOne();
+	}
+	else
+	{
+		std::vector<Ptr<AsBuiltJoint>> asBuiltJoints = Exporter::collectAsBuiltJoints(app->activeDocument());
+
+		// Find the as-built joint that was selected
+		Ptr<AsBuiltJoint> highlightedAsBuiltJoint = nullptr;
+
+		for (Ptr<AsBuiltJoint> joint : asBuiltJoints)
+		{
+			if (BXDJ::Utility::getUniqueJointID(joint) == jointID)
+			{
+				highlightedAsBuiltJoint = joint;
+				break;
+			}
+		}
+
+		// No joint was found, return early
+		if (highlightedAsBuiltJoint == nullptr)
+			return true;
+
+		geo = highlightedAsBuiltJoint->geometry();
+
+		entity = highlightedAsBuiltJoint->occurrenceOne();
+	}
+	return false;
+}
+
+void EUI::highlightAndFocusSingleJoint(std::string jointID, bool transition, double zoom)
+{
+	Ptr<JointGeometry> geo;
+	Ptr<Occurrence> entity;
+
+	if (getJointGeometryAndOccurances(jointID, geo, entity)) return;
+
+	dofViewEnabled = false;
+	// Highlight the parts of the joint
+	UI->activeSelections()->clear();
+	UI->activeSelections()->add(entity);
+
+	focusCameraOnGeometry(transition, zoom, geo);
+}
+
+void EUI::highlightJoint(std::string jointID)
+{
+	Ptr<JointGeometry> geo;
+	Ptr<Occurrence> entity;
+
+	if (getJointGeometryAndOccurances(jointID, geo, entity)) return;
+
+	UI->activeSelections()->add(entity);
+}
+
+
+void EUI::toggleDOF()
+{
+	dofViewEnabled = !dofViewEnabled;
+
+	if (!dofViewEnabled)
+	{
+		UI->activeSelections()->clear();
+		return;
+	}
+
+	focusWholeModel(true, 1.5, app->activeViewport()->camera());
+
+	auto config = Exporter::loadConfiguration(app->activeDocument());
+
+	for (const auto joint : config.getJoints())
+	{
+		EUI::highlightJoint(joint.first);
+	};
+}
+
+void EUI::focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam)
+{
 	// Set camera view
 	Ptr<Camera> cam = app->activeViewport()->camera();
 
-	Ptr<Point3D> eyeLocation = Point3D::create(0, 100, 0); // TODO: Much of this is the same as highlightJoint
+	Ptr<Point3D> eyeLocation = Point3D::create(0, 100, 0); // TODO: Much of this is the same as highlightAndFocusSingleJoint
 	Ptr<Point3D> targetLocation = Point3D::create(0, 0, 0);
 
 	cam->target(targetLocation);
@@ -154,7 +195,13 @@ void EUI::resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam)
 
 	cam->isSmoothTransition(transition);
 	app->activeViewport()->camera(newCamera);
+}
 
+void EUI::resetHighlightAndFocusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam)
+{
+	UI->activeSelections()->clear();
+
+	focusWholeModel(transition, zoom, ogCam);
 }
 
 // Robot Exporting

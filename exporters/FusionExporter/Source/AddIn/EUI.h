@@ -19,6 +19,7 @@
 #include "Identifiers.h"
 #include "../Data/BXDJ/ConfigData.h"
 #include "../Data/Filesystem.h"
+#include <Fusion/Components/JointGeometry.h>
 
 using namespace adsk::core;
 using namespace adsk::fusion;
@@ -36,6 +37,8 @@ namespace SynthesisAddIn
 		///
 		EUI(Ptr<UserInterface>, Ptr<Application>);
 		~EUI(); ///< Cancels any in-progress export and deletes the workspace.
+		void focusCameraOnGeometry(bool transition, double zoom, Ptr<JointGeometry> geo);
+		bool getJointGeometryAndOccurances(std::string jointID, Ptr<JointGeometry>& geo, Ptr<Occurrence>& entity);
 
 		// UI Management
 		void prepareAllPalettes(); ///< Creates all palettes
@@ -68,8 +71,9 @@ namespace SynthesisAddIn
 		/// Highlights a joint in Fusion.
 		/// \param jointID ID generated from BXDJ::Utility::getUniqueJointID.
 		///
-		void highlightJoint(std::string jointID, bool transition, double zoom);
-		void resetHighlight(bool transition, double zoom, Ptr<Camera> ogCam);
+		void highlightAndFocusSingleJoint(std::string jointID, bool transition, double zoom);
+		void highlightJoint(std::string jointID);
+		void resetHighlightAndFocusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
 		// Robot Exporting
 		///
@@ -86,6 +90,8 @@ namespace SynthesisAddIn
 		/// \param percent Current progress (0 to 1).
 		///
 		void updateProgress(double percent);
+		void toggleDOF();
+		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
@@ -140,6 +146,8 @@ namespace SynthesisAddIn
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+
+		bool dofViewEnabled;
 
 		template<typename E, typename T>
 		bool addHandler(Ptr<T> el, E* a);
