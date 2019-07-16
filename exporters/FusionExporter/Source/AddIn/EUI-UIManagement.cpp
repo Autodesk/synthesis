@@ -44,6 +44,7 @@ void EUI::deleteWorkspace()
 	clearHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
 	// Delete palettes
+	deleteDriveTypePalette();
 	deleteJointEditorPalette();
 	deleteSensorsPalette();
 	deleteGuidePalette();
@@ -65,6 +66,7 @@ void EUI::deleteWorkspace()
 
 void EUI::prepareAllPalettes()
 {
+	createDriveTypePalette();
 	createJointEditorPalette();
 	createSensorsPalette();
 	createGuidePalette();
@@ -74,6 +76,7 @@ void EUI::prepareAllPalettes()
 
 void EUI::hideAllPalettes()
 {
+	driveTypePalette->isVisible(false);
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	guidePalette->isVisible(false);
@@ -128,7 +131,9 @@ void EUI::openJointEditorPalette()
 {
 	hideAllPalettes();
 	editJointsButton->controlDefinition()->isEnabled(false);
+	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
+	
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -386,6 +391,81 @@ void EUI::closeSensorsPalette(std::string sensorsToSave)
 	}
 }
 
+// Drive Type Palette
+
+bool EUI::createDriveTypePalette() {
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	driveTypePalette = palettes->itemById(PALETTE_DT_TYPE);
+	if (!driveTypePalette)
+	{
+		// Create palette
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Select Drive Train Type", "Palette/drivetrain.html", false, true, true, 350, 200);
+		if (!driveTypePalette)
+			return false;
+
+		// Dock the palette to the right side of Fusion window.
+		driveTypePalette->dockingState(PaletteDockStateRight);
+
+		addHandler<ReceiveFormDataHandler>(driveTypePalette, driveTypeReceiveFormDataHandler);
+		addHandler<ClosePaletteEventHandler>(driveTypePalette, driveTypeClosePaletteHandler);
+	}
+
+	return true;
+}
+
+void EUI::deleteDriveTypePalette() {
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette exists
+	driveTypePalette = palettes->itemById(PALETTE_DT_TYPE);
+
+	if (!driveTypePalette)
+		return;
+
+	clearHandler<ReceiveFormDataHandler>(driveTypePalette, driveTypeReceiveFormDataHandler);
+	clearHandler<ClosePaletteEventHandler>(driveTypePalette, driveTypeClosePaletteHandler);
+
+	driveTypePalette->deleteMe();
+	driveTypePalette = nullptr;
+}
+
+void EUI::openDriveTypePalette() {
+	
+	driveTrainTypeButton->controlDefinition()->isEnabled(false);
+
+	// In some cases, sending info to the HTML of a palette on the same thread causes issues
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this](std::string configJSON)
+		{
+			driveTypePalette->sendInfoToHTML("state", configJSON);
+			driveTypePalette->isVisible(true);
+			driveTypePalette->sendInfoToHTML("state", configJSON);
+		}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+}
+
+void EUI::closeDriveTypePalette(std::string driveTypeData) {
+
+	driveTrainTypeButton->controlDefinition()->isEnabled(true);
+	driveTypePalette->isVisible(false);
+
+	if (driveTypeData.length() > 0)
+	{
+		static std::thread* uiThread = nullptr;
+		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+		// Pass the weight value to the export palette as it store all the export data.
+		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrainType", driveTypeData); }, driveTypeData);
+	}
+}
+
 // Progress Palette
 
 bool EUI::createProgressPalette()
@@ -458,7 +538,7 @@ void EUI::createPanels()
 void EUI::createButtons()
 {
 	driveTrainTypeButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Type", "Setup your robot for exporting to Synthesis.", "Resources/DriveIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainTypeButton, driveTrainShowPaletteCommandCreatedHandler);
+	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainTypeButton, driveTrainTypeShowPaletteCommandCreatedHandler);
 
 	driveTrainWeightButton = UI->commandDefinitions()->addButtonDefinition(BTN_WEIGHT, "Drive Train Weight", "Setup your robot for exporting to Synthesis.", "Resources/WeightIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
@@ -519,7 +599,7 @@ void EUI::deleteButtons()
 		return;
 
 	// Delete btn commands
-	deleteButtonCommand(driveTrainTypeButton, driveTrainShowPaletteCommandCreatedHandler);
+	deleteButtonCommand(driveTrainTypeButton, driveTrainTypeShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(editJointsButton, editJointsShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
