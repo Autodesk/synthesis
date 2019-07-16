@@ -35,7 +35,7 @@ namespace Synthesis.GUI
 
         public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Autodesk\Synthesis\Emulator\");
 
-        private void Start()
+        public void Start()
         {
             canvas = GameObject.Find("Canvas");
             gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
@@ -48,7 +48,7 @@ namespace Synthesis.GUI
             GameData();
         }
 
-        private void Awake()
+        public void Awake()
         {
             Instance = this;
         }
@@ -205,7 +205,6 @@ namespace Synthesis.GUI
                     InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
                     break;
             }
-            Debug.Log(InputManager.Instance.MatchInfo.AllianceStationId);
         }
 
         /// <summary>
@@ -214,7 +213,7 @@ namespace Synthesis.GUI
         public void GameData()
         {
             gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
-            gameSpecificMessage.onValueChanged.AddListener(delegate { Debug.Log(gameSpecificMessage.text.ToString()); });
+            gameSpecificMessage.onValueChanged.AddListener(delegate { InputManager.Instance.MatchInfo.GameSpecificMessage = gameSpecificMessage.text; });
         }
 
         public string GetGameSpecificMessage()

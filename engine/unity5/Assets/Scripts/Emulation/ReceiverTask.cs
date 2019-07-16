@@ -1,95 +1,52 @@
-﻿using System;
+﻿using EmulationService;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Synthesis
 {
-    class ReceiverTask : ManagedTask
+    class ReceiverTask : GrpcTask
     {
-        private Grpc.Core.Channel conn = null;
-        private EmulationService.EmulationReader.EmulationReaderClient client = null;
-        private Grpc.Core.AsyncServerStreamingCall<EmulationService.RobotOutputsResponse> call;
-
-        string ip;
-        string port;
-        double? timeout = null;
-        uint? retries = null;
-        int connectionAttempts = 0;
-
-        public bool IsConnected()
-        {
-            return conn != null && conn.State != Grpc.Core.ChannelState.TransientFailure && conn.State != Grpc.Core.ChannelState.Shutdown;
-        }
-
+        protected EmulationReader.EmulationReaderClient client = null;
+        private Grpc.Core.AsyncServerStreamingCall<RobotOutputsResponse> call;
         public ReceiverTask(
             Channel<IMessage> sender,
             Channel<IMessage> receiver,
             string ip,
             string port,
             double? timeout = null,
-            uint? retries = null): base(sender, receiver)
-        {
-            this.ip = ip;
-            this.port = port;
-            this.timeout = timeout;
-            this.retries = retries;
-        }
+            uint? retries = null): base(sender, receiver, ip, port, timeout, retries){}
 
-        private void Connect()
+        protected override void Connect()
         {
-            conn = new Grpc.Core.Channel(ip + ":" + port, Grpc.Core.ChannelCredentials.Insecure);
-            if (timeout != null)
+            base.Connect();
+            if (SSHClient.IsVMConnected() && !IsConnected() && client == null)
             {
-                try
-                {
-                    conn.ConnectAsync(DateTime.UtcNow.AddSeconds(timeout.Value)).Wait();
-                    connectionAttempts = 0;
-                }
-                catch (Exception e)
-                {
-                    connectionAttempts++;
-                    if (retries != null && connectionAttempts > retries.Value)
-                    {
-                        stateChannel.Send(new GrpcMessage.ConnectionError());
-                        stateChannel.Send(new StandardMessage.ThreadStoppedMessage());
-                        connectionAttempts = 0;
-                        Debug.Log(e.Message);
-                        Pause();
-                        return;
-                    }
-                }
+                client = new EmulationReader.EmulationReaderClient(conn);
+                call = client.RobotOutputs(new RobotOutputsRequest { });
             }
-            client = new EmulationService.EmulationReader.EmulationReaderClient(conn);
-            call = client.RobotOutputs(new EmulationService.RobotOutputsRequest { });
-        }
-
-        public override void OnStart()
-        {
-            Connect();
-            base.OnStart();
         }
 
         public override void OnCycle()
         {
             base.OnCycle();
-            if (!IsConnected())
-            {
-                Debug.Log("Connection Closed");
-                stateChannel.Send(new GrpcMessage.ConnectionError());
-                commandChannel.Send(new StandardMessage.StopMessage());
-                Connect();
-            }
+            Connect();
             try
             {
                 call.ResponseStream.MoveNext().Wait();
 
                 OutputManager.Instance = call.ResponseStream.Current.OutputData;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                //conn = null;
-                Debug.Log(e.StackTrace);
+                if(e is Grpc.Core.RpcException)
+                {
+                    Debug.Log(e.ToString());
+                } else
+                {
+                    Debug.Log(e.ToString());
+                }
             }
         }
-
     }
 }
