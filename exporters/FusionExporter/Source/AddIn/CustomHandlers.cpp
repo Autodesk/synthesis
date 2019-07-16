@@ -5,7 +5,6 @@
 #include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Driver.h"
 #include "../Data/BXDJ/Components.h"
-#include <sstream>
 
 using namespace SynthesisAddIn;
 
