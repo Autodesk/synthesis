@@ -171,8 +171,6 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        internal static Synthesis.EmulationController s;
-
         private void CloseHelpMenu()
         {
             helpMenu.SetActive(false);

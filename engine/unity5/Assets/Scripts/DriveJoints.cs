@@ -330,9 +330,12 @@ public class DriveJoints
 
         if (Synthesis.GUI.EmulationDriverStation.Instance != null && Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
         {
-            UpdateEmulationJoysticks();
-            UpdateEmulationMotors();
-            UpdateEmulationSensors(emuList);
+            if (Synthesis.EmulationController.Get().IsConnected())
+            {
+                UpdateEmulationJoysticks();
+                UpdateEmulationMotors();
+                UpdateEmulationSensors(emuList);
+            }
         } else
         {
             for (int i = 0; i < pwm.Length; i++)
@@ -448,8 +451,8 @@ public class DriveJoints
     /// <param name="pwm"></param>
     private static void UpdateEmulationMotors()
     {
-        for (int i = 0; i < Synthesis.EmulationController.getPWMCount(); i++)
-            motors[i] = (float)Synthesis.EmulationController.getPWM(i);
+        for (int i = 0; i < Synthesis.EmulationController.GetPWMCount(); i++)
+            motors[i] = (float)Synthesis.EmulationController.GetPWM(i);
 
         foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
             motors[CAN.Id + 10] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput; // first 10 are for PWM outputs

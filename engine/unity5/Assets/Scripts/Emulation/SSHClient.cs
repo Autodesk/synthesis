@@ -7,9 +7,13 @@ namespace Synthesis
 {
     public class SSHClient
     {
-        //@"C:\Program Files (x86)\Autodesk\Synthesis"
+        private const int DEFAULT_PORT = 10022;
 
-        private static int DEFAULT_PORT = 10022;
+        private const string USER = "lvuser";
+        private const string PASSWORD = "";
+
+        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1;";
+        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh</dev/null >/dev/null 2>&1 &";
 
         public class UserProgram
         {
@@ -48,16 +52,14 @@ namespace Synthesis
         {
             try
             {
-                //choofdlog.Multiselect = true
-
-                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, "lvuser", ""))
+                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, USER, PASSWORD))
                 {
                     client.Connect();
                     client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
                     client.Disconnect();
                 }
 
-                using (ScpClient client = new ScpClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, "lvuser", ""))
+                using (ScpClient client = new ScpClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, USER, PASSWORD))
                 {
                     client.Connect();
                     using (Stream localFile = File.OpenRead(userProgram.fullFileName))
@@ -77,7 +79,7 @@ namespace Synthesis
             {
                 try
                 {
-                    using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, "lvuser", ""))
+                    using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, USER, PASSWORD))
                     {
                         client.Connect();
                         VMConnected = client.IsConnected;
@@ -112,10 +114,10 @@ namespace Synthesis
         {
             new Thread(() =>
             {
-                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, "lvuser", ""))
+                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, USER, PASSWORD))
                 {
                     client.Connect();
-                    client.RunCommand("sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1;");
+                    client.RunCommand(STOP_COMMAND);
                     client.Disconnect();
                 }
             }).Start();
@@ -125,10 +127,10 @@ namespace Synthesis
         {
             new Thread(() =>
             {
-                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, "lvuser", ""))
+                using (SshClient client = new SshClient(EmulationController.DEFAULT_HOST, DEFAULT_PORT, USER, PASSWORD))
                 {
                     client.Connect();
-                    //client.RunCommand("sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1; nohup /home/lvuser/frc_program_chooser.sh </dev/null >/dev/null 2>&1 &");
+                    //client.RunCommand(STOP_COMMAND + START_COMMAND);
                     client.Disconnect();
                 }
             }).Start();

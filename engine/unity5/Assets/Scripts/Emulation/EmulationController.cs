@@ -3,15 +3,16 @@ using System.Diagnostics;
 using Synthesis.GUI;
 using EmulationService;
 using UnityEngine;
-using Synthesis.FSM;
 
 namespace Synthesis
 {
     public class EmulationController : MonoBehaviour
     {
+
+        private static EmulationController instance = null;
         public static EmulationController Get()
         {
-            return GameObject.Find("EmulationController").GetComponent<EmulationController>();
+            return instance;
         }
 
         private static Process proc;
@@ -19,8 +20,8 @@ namespace Synthesis
         public const string DEFAULT_HOST = "10.140.148.24"; // 127.0.0.1
         public const string DEFAULT_PORT = "50051";
 
-        private const int TIMEOUT = 5;
-        private const int RETRIES = 5;
+        private int? TIMEOUT = null;
+        private uint? RETRIES = 5;
 
         public string Ip = DEFAULT_HOST;
         public string Port = DEFAULT_PORT;
@@ -37,6 +38,7 @@ namespace Synthesis
 
         public void Awake()
         {
+            instance = this;
 
             (inputCommander, inputListener) = Channel<IMessage>.CreateOneshot<IMessage>();
             (outputCommander, outputListener) = Channel<IMessage>.CreateOneshot<IMessage>();
@@ -59,14 +61,14 @@ namespace Synthesis
                 Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EmulationDriverStation.emulationDir + "zImage" + " -dtb " + EmulationDriverStation.emulationDir + "zynq-zed.dtb" + " -display none -serial null -serial mon:stdio -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" -net user,hostfwd=tcp::10022-:22,hostfwd=tcp::11000-:11000,hostfwd=tcp::11001-:11001,hostfwd=tcp::2354-:2354 -net nic -sd " + EmulationDriverStation.emulationDir + "rootfs.ext4",
                 Verb = "runas"
             };
-            proc = Process.Start(startinfo);
+            //proc = Process.Start(startinfo);
         }
 
         public void OnDestroy()
         {
             inputCommander.Send(new StandardMessage.ExitMessage());
             outputCommander.Send(new StandardMessage.ExitMessage());
-            proc.Kill();
+            //proc.Kill();
         }
 
         public bool IsConnected()
@@ -74,13 +76,23 @@ namespace Synthesis
             return sender.IsConnected() && receiver.IsConnected();
         }
 
-        public static int getPWMCount()
+        public void SendOutputMessage(IMessage message)
+        {
+            outputCommander.Send(message);
+        }
+
+        public void SendInputMessage(IMessage message)
+        {
+            inputCommander.Send(message);
+        }
+
+        public static int GetPWMCount()
         {
             var instance = OutputManager.Instance;
             return instance.PwmHeaders.Count;
         }
 
-        public static double getPWM(int index)
+        public static double GetPWM(int index)
         {
             var instance = OutputManager.Instance;
 
@@ -90,7 +102,7 @@ namespace Synthesis
 
         }
 
-        public static double getCAN(int index)
+        public static double GetCAN(int index)
         {
             var instance = OutputManager.Instance;
 
