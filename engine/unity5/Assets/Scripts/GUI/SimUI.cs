@@ -412,7 +412,7 @@ namespace Synthesis.GUI
                 {
                     t.gameObject.GetComponent<Image>().sprite = highlightButton;
                 }
-                else t.gameObject.GetComponent<Image>().sprite = normalButton;
+                else { try { t.gameObject.GetComponent<Image>().sprite = normalButton; } catch (Exception e) { } }
             }
         }
         #endregion

@@ -106,6 +106,7 @@ namespace Synthesis.States
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
 
             string CurrentVersion = "4.2.2";
+            GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection()) {
                 WebClient client = new WebClient();
