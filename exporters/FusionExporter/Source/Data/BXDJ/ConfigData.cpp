@@ -26,6 +26,18 @@ ConfigData::ConfigData(const ConfigData & other)
 		joints[i->first] = i->second;
 }
 
+void ConfigData::setDriveType(std::string type) {
+	if (type == "tank") {
+		drivetrainType = TANK;
+	} else if (type == "h-drive") {
+		drivetrainType = H_DRIVE;
+	} else if (type == "other") {
+		drivetrainType = CUSTOM;
+	} else {
+		drivetrainType = TANK; // default
+	}
+}
+
 std::unique_ptr<Driver> ConfigData::getDriver(core::Ptr<fusion::Joint> joint) const
 {
 	std::string id = BXDJ::Utility::getUniqueJointID(joint);
