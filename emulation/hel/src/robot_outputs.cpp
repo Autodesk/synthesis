@@ -24,8 +24,9 @@ RobotOutputs::RobotOutputs()
 	  analog_outputs(0.0),
 	  digital_mxp({}),
 	  digital_hdrs(false),
-	  output(generateZeroedOutput()),
-	  can_motor_controllers({}) {}
+	  can_motor_controllers({}) {
+		  output = generateZeroedOutput();
+	  }
 
 bool RobotOutputs::hasNewData() const { return new_data; }
 
