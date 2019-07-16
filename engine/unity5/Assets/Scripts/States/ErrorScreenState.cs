@@ -2,6 +2,7 @@
 using Synthesis.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.States
 {
@@ -13,7 +14,6 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-
             Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
             AppModel.ClearError();
         }
@@ -21,9 +21,14 @@ namespace Synthesis.States
         /// <summary>
         /// Exits this <see cref="State"/> when the OK button is pressed.
         /// </summary>
-        public void OnOkButtonClicked()
+        public void OnExitButtonClicked()
         {
-            StateMachine.ChangeState(new HomeTabState());
+            if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
+
+        public void OnBackToSimButtonClicked()
+        {
+            SceneManager.LoadScene("Scene");
         }
     }
 }

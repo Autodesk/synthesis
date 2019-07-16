@@ -18,6 +18,8 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Assets.Scripts.GUI;
 using Synthesis.Field;
+using System;
+using System.Diagnostics;
 
 namespace Synthesis.GUI
 {
@@ -60,7 +62,7 @@ namespace Synthesis.GUI
 
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
-        GameObject analyticsPanel;
+        GameObject settingsPanel;
 
         GameObject exitPanel;
         GameObject loadingPanel;
@@ -80,11 +82,24 @@ namespace Synthesis.GUI
         private StateMachine tabStateMachine;
         string currentTab;
 
+        public static string updater;
+
         public Sprite normalButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
 
         GameObject helpMenu;
         GameObject overlay;
+
+        private static SimUI instance = null;
+
+        private void Start()
+        {
+            instance = this;
+        }
+
+        public static SimUI getSimUI() { return instance; }
+
+        public StateMachine getTabStateMachine() { return tabStateMachine; }
 
         private void Update()
         {
@@ -153,7 +168,6 @@ namespace Synthesis.GUI
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
-            analyticsPanel = Auxiliary.FindObject(canvas, "AnalyticsPanel");
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
@@ -164,6 +178,7 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
+            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -191,17 +206,24 @@ namespace Synthesis.GUI
             UpdateDriverStationPanel();
         }
 
+        public void CloseUpdatePrompt() {
+            GameObject.Find("UpdatePrompt").SetActive(false);
+        }
+
+        public void UpdateYes() {
+            Process.Start("http://synthesis.autodesk.com");
+            Process.Start(updater);
+            Application.Quit();
+        }
+        
         private void LogTabTiming()
         {
-            Debug.Log("Logged Tab Timing");
-
             switch (currentTab)
             {
                 case "HomeTab":
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
                         AnalyticsLedger.TimingVarible.Customizing,
                         AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
-                    Debug.Log("WOW we can log home tab");
                     break;
                 case "DriverPracticeTab":
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.DPMTab,
@@ -331,6 +353,28 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 
+        public void OnSettingsTab()
+        {
+            if (!settingsPanel.activeSelf)
+            {
+                tabStateMachine.PushState(new SettingsState());
+            } else
+            {
+                tabStateMachine.PopState();
+            }
+
+            /*if (settingsPanel.activeSelf)
+            {
+                settingsPanel.SetActive(false);
+            }
+            else
+            {
+                EndOtherProcesses();
+                //settingsPanel.SetActive(true);
+                tabStateMachine.ChangeState(new OptionsTabState());
+            }*/
+        }
+
         private void CloseHelpMenu(string currentID = " ")
         {
             string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
@@ -345,6 +389,18 @@ namespace Synthesis.GUI
             }
         }
 
+        public void ShowError(string msg)
+        {
+            GameObject errorScreen = Auxiliary.FindGameObject("ErrorScreen");
+            errorScreen.transform.Find("ErrorText").GetComponent<Text>().text = msg;
+            errorScreen.SetActive(true);
+        }
+
+        public void CloseErrorScreen()
+        {
+            Auxiliary.FindGameObject("ErrorScreen").SetActive(false);
+        }
+
         /// <summary>
         /// Performs a sprite swap for the active tab.
         /// </summary>
@@ -356,7 +412,7 @@ namespace Synthesis.GUI
                 {
                     t.gameObject.GetComponent<Image>().sprite = highlightButton;
                 }
-                else t.gameObject.GetComponent<Image>().sprite = normalButton;
+                else { try { t.gameObject.GetComponent<Image>().sprite = normalButton; } catch (Exception e) { } }
             }
         }
         #endregion
@@ -427,7 +483,14 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
+                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("Robot", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
             }
+        }
+
+        public void ChangeRobotDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseRobotState());
         }
 
         public void ChangeField()
@@ -477,8 +540,16 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
+                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
         }
+
+        public void ChangeFieldDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseFieldState());
+        }
+
         public void TogglePanel(GameObject panel)
         {
             if (panel.activeSelf == true)
@@ -753,27 +824,10 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Tutorials,
-                AnalyticsLedger.EventAction.TutorialRequest,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreHelp,
+                AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
-        }
-        /// <summary>
-        /// Activates analytics panel
-        /// </summary>
-        public void ToggleAnalyticsPanel()
-        {
-            if (analyticsPanel.activeSelf)
-            {
-                analyticsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                analyticsPanel.SetActive(true);
-                inputManagerPanel.SetActive(true);
-            }
         }
 
         /// <summary>
@@ -879,6 +933,7 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                    MainState.timesLoaded--;
 
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                         AnalyticsLedger.TimingVarible.Playing,
@@ -906,7 +961,7 @@ namespace Synthesis.GUI
                     break;
                 case "exit":
                     LogTabTiming();
-                    SceneManager.LoadScene("MainMenu");
+                    if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
                     break;
                 case "cancel":
                     exitPanel.SetActive(false);
@@ -934,11 +989,15 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            analyticsPanel.SetActive(false);
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
 
             CancelOrientation();
+
+            if (settingsPanel.activeSelf)
+            {
+                tabStateMachine.PopState();
+            }
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();

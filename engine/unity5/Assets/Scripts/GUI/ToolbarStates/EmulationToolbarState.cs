@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace Assets.Scripts.GUI
 {
@@ -18,11 +19,18 @@ namespace Assets.Scripts.GUI
     /// </summary>
     public class EmulationToolbarState : State
     {
+        public static bool exiting = false;
+
         EmulationDriverStation emulationDriverStation;
+
+        bool loaded = false;
+        float lastAdditionalDot = 0;
+        int dotCount = 0;
 
         GameObject canvas;
         GameObject tabs;
         GameObject emulationToolbar;
+        GameObject loadingPanel = null;
 
         GameObject helpMenu;
         GameObject overlay;
@@ -35,6 +43,7 @@ namespace Assets.Scripts.GUI
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
+            loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
 
             helpMenu = Auxiliary.FindObject(canvas, "Help");
             overlay = Auxiliary.FindObject(canvas, "Overlay");
@@ -45,12 +54,43 @@ namespace Assets.Scripts.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
+        public override void FixedUpdate()
+        {
+            if (loadingPanel.activeSelf)
+            {
+                Text t = loadingPanel.transform.Find("Text").GetComponent<Text>();
+
+                if (loaded)
+                {
+                    t.text = "Loading...";
+                    loadingPanel.SetActive(false);
+                    loaded = false;
+                } else
+                {
+                    if (Time.unscaledTime >= lastAdditionalDot + 0.75)
+                    {
+                        dotCount = (dotCount + 1) % 4;
+                        t.text = "Loading";
+                        for (int i = 0; i < dotCount; i++)
+                        {
+                            t.text += ".";
+                        }
+                        lastAdditionalDot = Time.unscaledTime;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Selects robot code and starts VM. 
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
+            LoadCode();
+        }
 
+        public async void LoadCode()
+        {
             string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
             if (selectedFiles.Length != 1)
             {
@@ -65,10 +105,15 @@ namespace Assets.Scripts.GUI
                 }
                 else
                 {
-                    SSHClient.SCPFileSender(userProgram);
+                    loadingPanel.SetActive(true);
+                    Task Upload = Task.Factory.StartNew(() =>
+                    {
+                        SSHClient.SCPFileSender(userProgram);
+                        loaded = true;
+                    });
+                    await Upload;
                 }
             }
-            { }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SelectCode,
                 AnalyticsLedger.EventAction.Clicked,
@@ -140,5 +185,6 @@ namespace Assets.Scripts.GUI
             }
         }
         #endregion
+
     }
 }
