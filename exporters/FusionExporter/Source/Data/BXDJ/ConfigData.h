@@ -42,6 +42,8 @@ namespace BXDJ
 		/// Copy constructor.
 		ConfigData(const ConfigData & other);
 
+		void ConfigData::setDriveType(std::string type);
+
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const; ///< \return The driver assigned to a Fusion joint.
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::AsBuiltJoint>) const; ///< \return The driver assigned to a Fusion as-built joint.
 
