@@ -67,17 +67,29 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
 	if (id == SynthesisAddIn::BTN_WEIGHT)
+	{
 		eui->openDriveWeightPalette();
+	}
     else if (id == SynthesisAddIn::BTN_DT_TYPE)
-        eui->openDriveTypePalette();
+    {
+		eui->openDriveTypePalette();
+    }
 	else if (id == SynthesisAddIn::BTN_GUIDE)
+	{
 		eui->openGuidePalette();
+	}
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
+	{
 		eui->openJointEditorPalette();
+	}
 	else if (id == SynthesisAddIn::BTN_EXPORT)
+	{
 		eui->openFinishPalette();
+	}
 	else if (id == SynthesisAddIn::BTN_DOF)
+	{
 		eui->toggleDOF();
+	}
 }
 
 /// Palette Events
