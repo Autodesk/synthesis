@@ -441,6 +441,8 @@ public partial class SynthesisGUI : Form
             if (propertySet == null)
                 return false;
 
+            joint.weight = Utilities.GetProperty(propertySet, "weight", 10);
+
             // Get joint properties from set
             // Get driver information
             if (Utilities.GetProperty(propertySet, "has-driver", false))
@@ -543,7 +545,7 @@ public partial class SynthesisGUI : Form
             Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
             Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
             Utilities.SetProperty(propertySet, "robot-driveTrainType", (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType);
-
+          
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
         }
@@ -577,7 +579,7 @@ public partial class SynthesisGUI : Form
             // Save driver information
             JointDriver driver = joint.cDriver;
             Utilities.SetProperty(propertySet, "has-driver", driver != null);
-
+            Utilities.SetProperty(propertySet, "weight", joint.weight);
             if (driver != null)
             {
                 Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());

@@ -183,7 +183,12 @@ namespace Synthesis.Robot
             else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                MainState.timesLoaded--;
                 SceneManager.LoadScene("Scene");
+
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Playing,
+                    AnalyticsLedger.TimingLabel.ChangeField);
             }
             else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
                 !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
@@ -213,11 +218,12 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
-            {
-                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
-                BeginReset();
-                EndReset();
+            if (GameObject.Find("Field") != null) {
+                if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2) {
+                    if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                    BeginReset();
+                    EndReset();
+                }
             }
 
             #region Encoder Calculations

@@ -84,6 +84,7 @@ public abstract class SkeletalJoint_Base
     public void WriteBinaryJoint(System.IO.BinaryWriter writer)
     {
         writer.Write((byte) ((int) GetJointType()));
+        writer.Write((double)((double)weight));
         WriteBinaryJointInternal(writer);
 
         writer.Write(cDriver != null);
@@ -104,6 +105,7 @@ public abstract class SkeletalJoint_Base
     /// <param name="reader">Input stream</param>
     public void ReadBinaryJoint(System.IO.BinaryReader reader)
     {
+        weight = reader.ReadDouble();
         // ID is already read
         ReadBinaryJointInternal(reader);
 
