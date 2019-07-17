@@ -26,7 +26,6 @@ namespace BXDJ
 
 		std::string robotName; ///< Name of the robot. Used for writing to the robot directory.
 		DrivetrainType drivetrainType; ///< The type of the robot's drivetrain.
-
 		std::string tempIconDir;
 
 		///
@@ -37,7 +36,8 @@ namespace BXDJ
 		/// Copy constructor.
 		ConfigData(const ConfigData & other);
 
-		void ConfigData::setDriveType(std::string type);
+		// Drive Stuff
+		void ConfigData::setDriveType(const std::string type);
 
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::Joint>) const; ///< \return The driver assigned to a Fusion joint.
 		std::unique_ptr<Driver> getDriver(core::Ptr<fusion::AsBuiltJoint>) const; ///< \return The driver assigned to a Fusion as-built joint.

@@ -1,6 +1,7 @@
 #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "EUI.h"
+#include "../Data/BXDJ/Utility.h"
 #include "../Exporter.h"
 #include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Driver.h"
@@ -82,10 +83,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
 	if (eventArgs->action() == "drivetrain_type") {
-		eui->closeDriveTypePalette("");
-
-		BXDJ::ConfigData config;
-		config.setDriveType(eventArgs->data());
+		eui->closeDriveTypePalette(eventArgs->data());
 
 	} else if (eventArgs->action() == "highlight") {
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
@@ -106,9 +104,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 // Close Exporter Form Event
 void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::PALETTE_DT_TYPE)
-		eui->closeDriveTypePalette("");
-	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
+	//if (id == SynthesisAddIn::PALETTE_DT_TYPE)
+		//eui->closeDriveTypePalette("");
+	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
 		eui->closeFinishPalette();
