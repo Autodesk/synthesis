@@ -247,10 +247,16 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
 
-	auto weightJson = configJSON["weight"].GetObject();
+	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {
+		const auto weightJson = configJSON["weight"].GetObject();
 
-	if (weightJson.HasMember("value"))
-		weight.value = weightJson["value"].GetDouble();
+		if (weightJson.HasMember("value")) {
+			weight.value = weightJson["value"].GetDouble();
+			if (weightJson.HasMember("unit") && weightJson["unit"].GetInt() == 0)
+				weight.value /= 2.20462f;
+		}
+	}
+
 	if (configJSON.HasMember("tempIconDir") && configJSON["tempIconDir"].IsString())
 		tempIconDir = configJSON["tempIconDir"].GetString();
 

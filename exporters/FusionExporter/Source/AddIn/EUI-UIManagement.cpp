@@ -358,7 +358,7 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(false);
+	// finishButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;

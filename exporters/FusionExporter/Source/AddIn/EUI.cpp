@@ -248,7 +248,7 @@ void EUI::startExportRobot()
 	}, &killExportThread);
 #endif
 
-	UI->messageBox("Your exported robot can be found at: " + Filesystem::getCurrentRobotDirectory(config.robotName));
+	// UI->messageBox("Your exported robot can be found at: " + Filesystem::getCurrentRobotDirectory(config.robotName));
 }
 
 void EUI::cancelExportRobot()
