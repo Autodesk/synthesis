@@ -8,8 +8,7 @@ namespace BxDRobotExporter.Messages
         {
             InitializeComponent();
         }
-
-        private void DismissButton_Click(object sender, System.EventArgs e)
+        private void SubmitButton_Click(object sender, System.EventArgs e)
         {
             Close();
 
@@ -51,6 +50,11 @@ namespace BxDRobotExporter.Messages
             }
             // If selecting the "Other" (should be last item in list) make a text box visible to create your own reason
             otherTextBox.Visible = (e.Index == (reasonTextList.Items.Count - 1));
+        }
+
+        private void SkipButton_Click(object sender, System.EventArgs e)
+        {
+            Close();
         }
     }
 }
