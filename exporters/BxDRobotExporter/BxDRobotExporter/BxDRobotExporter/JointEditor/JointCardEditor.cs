@@ -24,6 +24,7 @@ namespace BxDRobotExporter.JointEditor
         {
             this.nodes = nodes;
             this.jointCard = jointCard;
+            AnalyticUtils.LogEvent("Joint Card Editor", "System", "Init");
         }
 
         private void EnableLiveSave(Control control)
@@ -33,6 +34,8 @@ namespace BxDRobotExporter.JointEditor
             {
                 EnableLiveSave(subControl);
             }
+
+            AnalyticUtils.LogEvent("Joint Card Editor", "System", "EnableLiveSave");
         }
 
         public void LoadValues() // TODO: Settings saving and loading should be done in a dedicated class
@@ -379,6 +382,7 @@ namespace BxDRobotExporter.JointEditor
         /// <param name="e"></param>
         private void SaveChanges(object sender, EventArgs e) // TODO: Settings saving and loading should be done in a dedicated class
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "System", "SaveChanges");
             if (disableAutoSave)
             {
                 return;
@@ -541,6 +545,7 @@ namespace BxDRobotExporter.JointEditor
 
         private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "WheelType", cmbWheelType.SelectedIndex);
             if ((WheelType) cmbWheelType.SelectedIndex == WheelType.NOT_A_WHEEL)
             {
                 lblFriction.Visible = false;
@@ -555,6 +560,7 @@ namespace BxDRobotExporter.JointEditor
 
         private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Competetion", RobotCompetitionDropDown.SelectedIndex);
             switch (RobotCompetitionDropDown.SelectedItem.ToString()) // TODO: Use some kind of motor definition file
             {
                 case "GENERIC":
@@ -609,21 +615,25 @@ namespace BxDRobotExporter.JointEditor
         }
         private void rbCAN_CheckedChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "CAN", rbCAN.Checked ? 0 : 1);
             UpdateLayout();
         }
 
         private void chkBoxDriveWheel_CheckedChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Drive Wheel", chkBoxDriveWheel.Checked ? 0 : 1);
             UpdateLayout();
         }
         
         private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Joint Driver", cmbJointDriver.SelectedIndex);
             UpdateLayout();
         }
 
         private void CalculatedWeightCheck_CheckedChanged(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Calculate Weight", CalculatedWeightCheck.Checked ? 0 : 1) ;
             UpdateLayout();
         }
     }

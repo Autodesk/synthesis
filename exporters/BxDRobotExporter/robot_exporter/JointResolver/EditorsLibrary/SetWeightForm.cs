@@ -18,7 +18,7 @@ namespace EditorsLibrary
         public SetWeightForm()
         {
             InitializeComponent();
-
+            AnalyticUtils.LogPage("SetWeightForm");
             TotalWeightKg = SynthesisGUI.Instance.RMeta.TotalWeightKg;
             PreferMetric = SynthesisGUI.Instance.RMeta.PreferMetric;
 

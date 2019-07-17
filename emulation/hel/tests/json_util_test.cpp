@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
+#include "testing.hpp"
 #include "json_util.hpp"
-#include <iostream>
 
 struct Joystick{
     bool is_xbox;
