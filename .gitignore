@@ -31,3 +31,20 @@ Replays/
 *.dll
 !CER_Utility.dll
 *.pdb
+
+*.signature.p7s
+
+# Ignore NuGet packages
+*.nupkg
+
+# Packages folder can be ignored because of package restore
+**/[Pp]ackages/*
+
+# Other ignorable NuGet files
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.assets.json
+
+# Ignore obj folder which can regenerate with no issues
+/exporters/BxDRobotExporter/RobotExporterTests/obj

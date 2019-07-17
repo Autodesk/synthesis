@@ -6,7 +6,7 @@ WPILIB_DIR="./lib/wpilib/src/wpilib"
 OPENCV_DIR="${WPILIB_DIR}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxathenadebug.zip_fb1838f89a18efba82e3c679b6ef0c3b/linux/athena/shared"
 
 deploy(){
-    if [ -f $1 ]; then
+    if [ -f $1 ] || [ -d $1 ]; then
         printf "Copying $1\n"
         scp -r -P 10022 $1 lvuser@localhost:/home/lvuser
     else

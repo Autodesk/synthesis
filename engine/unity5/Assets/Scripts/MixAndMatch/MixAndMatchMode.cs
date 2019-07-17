@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.FSM;
 using Synthesis.GUI;
 
@@ -147,15 +146,6 @@ namespace Synthesis.MixAndMatch
                 // Sets info panel to blank
                 Text txt = infoText.GetComponent<Text>();
                 txt.text = "";
-
-
-
-                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
-                    Analytics.CustomEvent("Opened Mix and Match", new Dictionary<string, object>
-                    {
-                    });
-                }
             }
         }
 
@@ -176,12 +166,9 @@ namespace Synthesis.MixAndMatch
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             SceneManager.LoadScene("Scene");
 
-            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-            {
-                Analytics.CustomEvent("Started Mix and Match", new Dictionary<string, object>
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                AnalyticsLedger.TimingVarible.Playing,
+                AnalyticsLedger.TimingLabel.MixAndMatch);
         }
 
         #region Change or Add MaM Robot
@@ -242,12 +229,10 @@ namespace Synthesis.MixAndMatch
 
             StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
-            if (PlayerPrefs.GetInt("analytics") == 1) //For analytics tracking
-            {
-                Analytics.CustomEvent("Changed Mix and Match Robot", new Dictionary<string, object>
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                AnalyticsLedger.EventAction.Changed,
+                "mixAndMatch",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>

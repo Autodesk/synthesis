@@ -22,8 +22,6 @@ using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
-using UnityEngine.Analytics;
-//using UnityEditor.Analytics;
 
 namespace Synthesis.States
 {
@@ -314,11 +312,21 @@ namespace Synthesis.States
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                        AnalyticsLedger.EventAction.Changed,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
                 else
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
+                        AnalyticsLedger.EventAction.Changed,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
 
                 robot.FilePath = robotPath;
@@ -340,11 +348,10 @@ namespace Synthesis.States
 
                 if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
                 {
-                    if (PlayerPrefs.GetInt("analytics") == 1)
-                    {
-                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
-                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
-                    }
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+                        AnalyticsLedger.EventAction.Changed,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
 
                 return true;
