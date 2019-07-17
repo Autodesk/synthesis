@@ -186,7 +186,7 @@ namespace SynthesisAddIn
 		// Thread Information
 		std::thread * exportRobotThread; ///< Pointer to any active robot export thread.
 		bool killExportThread; ///< If set to true, the exportRobotThread will stop early.
-		
+
 		///
 		/// Used with threading to export the robot.
 		/// \param config Configuration to export the robot with.

@@ -456,13 +456,17 @@ void EUI::closeDriveTypePalette(std::string driveTypeData) {
 	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
 
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+	config.setDriveType(driveTypeData);
+	Exporter::saveConfiguration(config, app->activeDocument());
+
 	if (driveTypeData.length() > 0)
 	{
 		static std::thread* uiThread = nullptr;
 		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrainType", driveTypeData); }, driveTypeData);
+		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrain_type", driveTypeData); }, driveTypeData);
 	}
 }
 
