@@ -140,7 +140,8 @@ namespace BxDRobotExporter
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
                     fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC"
+                    defaultRobotCompetition = "GENERIC",
+                    useAnalytics = true
                 };
             }
             else
@@ -152,7 +153,8 @@ namespace BxDRobotExporter
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
                     fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition
+                    defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition,
+                    useAnalytics = Properties.Settings.Default.UseAnalytics
                 };
             }
         }
