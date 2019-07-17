@@ -3,7 +3,6 @@ using Renci.SshNet;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
-using Synthesis.GUI;
 
 namespace Synthesis
 {
@@ -20,6 +19,7 @@ namespace Synthesis
         private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh</dev/null >/dev/null 2>&1 &";
 
         private static bool isRunningRobotCode = false;
+        private static bool frcUserProgramPresent = false;
 
         private static Process qemuProcess = null;
 
@@ -38,14 +38,18 @@ namespace Synthesis
 
         public static bool IsVMRunning()
         {
+            if (qemuProcess != null && qemuProcess.HasExited)
+                qemuProcess = null;
             return qemuProcess != null;
         }
 
         public static void KillEmulator()
         {
-
-            qemuProcess.Kill();
-            qemuProcess = null;
+            if (qemuProcess != null)
+            {
+                qemuProcess.Kill();
+                qemuProcess = null;
+            }
         }
 
         public class UserProgram
@@ -85,10 +89,13 @@ namespace Synthesis
         {
             try
             {
+                if (IsRunningRobotCode())
+                    StopRobotCode();
                 using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, DEFAULT_SSH_PORT, USER, PASSWORD))
                 {
                     client.Connect();
                     client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                    frcUserProgramPresent = false;
                     client.Disconnect();
                 }
 
@@ -98,6 +105,7 @@ namespace Synthesis
                     using (Stream localFile = File.OpenRead(userProgram.fullFileName))
                     {
                         client.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
+                        frcUserProgramPresent = true;
                     }
                     client.Disconnect();
                 }
@@ -106,9 +114,10 @@ namespace Synthesis
         }
 
         private static bool VMConnected = false; // Last connection status
+
         private static Thread TestVMConnectionThread = new Thread(() =>
         {
-            while (IsVMRunning())
+            while (true)
             {
                 try
                 {
@@ -116,21 +125,17 @@ namespace Synthesis
                     {
                         client.Connect();
                         VMConnected = client.IsConnected;
+                        frcUserProgramPresent = client.RunCommand("[ -f FRCUserProgram ] || [ -f FRCUserProgram.jar ]").ExitStatus == 0;
                         client.Disconnect();
                     }
                 }
                 catch
                 {
                     VMConnected = false;
+                    frcUserProgramPresent = false;
+                    isRunningRobotCode = false;
                 }
-                if (VMConnected) // Sleep longer if connected since it's less vital to check for disconnects
-                {
-                    Thread.Sleep(15000); // ms
-                }
-                else
-                {
-                    Thread.Sleep(3000); // ms
-                }
+                Thread.Sleep(1000); // ms
             }
         });
 
@@ -142,9 +147,15 @@ namespace Synthesis
 
         public static bool IsVMConnected()
         {
+
             if (!TestVMConnectionThread.IsAlive)
                 TestVMConnectionThread.Start();
             return VMConnected;
+        }
+
+        public static bool IsFRCUserProgramPresent()
+        {
+            return frcUserProgramPresent;
         }
 
         public static void StopRobotCode()
