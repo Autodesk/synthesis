@@ -14,6 +14,7 @@ namespace BxDRobotExporter.Messages
             Close();
 
             Properties.Settings.Default.TrackAnalytics = analyticsCheckBox.Checked;
+            Properties.Settings.Default.ShowFirstLaunchInfo = false;
             Properties.Settings.Default.Save();
 
             if (Properties.Settings.Default.TrackAnalytics)
