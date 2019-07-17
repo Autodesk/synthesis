@@ -1,13 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
-using Synthesis.Input;
 using Synthesis.Utils;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
@@ -52,6 +46,11 @@ namespace Assets.Scripts.GUI
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
+
+            if (Synthesis.EmulatorManager.IsVMRunning()) // If the emulator is already running, begin tracking connection right away
+            {
+                emulationDriverStation.BeginTrackingVMConnectionStatus();
+            }
         }
 
         public override void FixedUpdate()
@@ -86,6 +85,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
+            if (!Synthesis.EmulatorManager.IsVMConnected())
+            {
+                return;
+            }
             LoadCode();
         }
 
@@ -98,8 +101,8 @@ namespace Assets.Scripts.GUI
             }
             else
             {
-                Synthesis.SSHClient.UserProgram userProgram = new Synthesis.SSHClient.UserProgram(selectedFiles[0]);
-                if (userProgram.type == Synthesis.SSHClient.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                Synthesis.EmulatorManager.UserProgram userProgram = new Synthesis.EmulatorManager.UserProgram(selectedFiles[0]);
+                if (userProgram.type == Synthesis.EmulatorManager.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
                 {
                     emulationDriverStation.ShowJavaNotSupportedPopUp();
                 }
@@ -119,6 +122,9 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
+                    Synthesis.EmulatorManager.SCPFileSender(userProgram);
+                }
+            }
         }
 
         /// <summary>
@@ -136,13 +142,25 @@ namespace Assets.Scripts.GUI
 
         public void OnStartRobotCodeButtonClicked()
         {
+            if (!Synthesis.EmulatorManager.IsVMConnected())
+            {
+                return;
+            }
             emulationDriverStation.ToggleRobotCodeButton();
-            //Serialization.RestartThreads("10.140.148.66");
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
                 AnalyticsLedger.EventAction.Start,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
+        }
+
+        public void OnVMConnectionStatusClicked()
+        {
+            if (!Synthesis.EmulatorManager.IsVMRunning())
+            {
+                Synthesis.EmulatorManager.StartEmulator();
+                emulationDriverStation.BeginTrackingVMConnectionStatus();
+            }
         }
 
         #region Help Button and Menu

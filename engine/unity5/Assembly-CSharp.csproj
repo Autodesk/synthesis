@@ -208,13 +208,13 @@
     <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\TrajectoryEditor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
-    <Compile Include="Assets\Scripts\Emulation\EmulationController.cs" />
+    <Compile Include="Assets\Scripts\Emulation\EmulatorManager.cs" />
+    <Compile Include="Assets\Scripts\Emulation\EmulatorNetworkConnection.cs" />
     <Compile Include="Assets\Scripts\Emulation\GrpcMessage.cs" />
     <Compile Include="Assets\Scripts\Emulation\GrpcTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\ReceiverTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\SenderTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
-    <Compile Include="Assets\Scripts\Emulation\SSHClient.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />

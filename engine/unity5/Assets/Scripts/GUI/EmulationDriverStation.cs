@@ -12,14 +12,12 @@ namespace Synthesis.GUI
     {
         public static EmulationDriverStation Instance { get; private set; }
 
-        public bool isRunCode = false;
-
         GameObject canvas;
         InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
         GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
         GameObject runButton;
-        UnityEngine.UI.Text VMConnectionStatusMessage;
+        Text VMConnectionStatusMessage;
 
         // Sprites for emulation coloring details
         // Tethered in Unity > Simulator > Attached to the EmulationDriverStation script
@@ -27,13 +25,13 @@ namespace Synthesis.GUI
         public Sprite DefaultColor;
         public Sprite EnableColor;
         public Sprite DisableColor;
+        public Sprite StartEmulator;
+        public Sprite EmulatorConnection;
         public Sprite StartCode;
         public Sprite StopCode;
 
         Image startImage;
         Image stopImage;
-
-        public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Autodesk\Synthesis\Emulator\");
 
         public void Start()
         {
@@ -44,7 +42,6 @@ namespace Synthesis.GUI
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
 
-            StartCoroutine(UpdateVMConnectionStatus());
             GameData();
         }
 
@@ -95,17 +92,33 @@ namespace Synthesis.GUI
         {
             while (true)
             {
-                if (SSHClient.IsVMConnected())
+                if (!EmulatorManager.IsVMRunning())
                 {
-                    VMConnectionStatusMessage.text = "Connected";
-                    yield return new WaitForSeconds(15.0f); // s
+                    VMConnectionStatusMessage.text = "Booting";
+                    yield return new WaitForSeconds(3.0f); // s
                 }
                 else
                 {
-                    VMConnectionStatusMessage.text = "Connecting";
-                    yield return new WaitForSeconds(3.0f); // s
+                    if (EmulatorManager.IsVMConnected())
+                    {
+                        VMConnectionStatusMessage.text = "Connected";
+                        yield return new WaitForSeconds(15.0f); // s
+                    }
+                    else
+                    {
+                        VMConnectionStatusMessage.text = "Connecting";
+                        yield return new WaitForSeconds(1.0f); // s
+                    }
                 }
             }
+        }
+
+        public void BeginTrackingVMConnectionStatus()
+        {
+            StartCoroutine(UpdateVMConnectionStatus());
+            Debug.Log("Run Tracker");
+            GameObject.Find("VMConnectionStatusImage").GetComponentInChildren<Image>().sprite = EmulatorConnection;
+
         }
 
         /// <summary>
@@ -113,23 +126,21 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if(!SSHClient.IsVMConnected())
+            if(!EmulatorManager.IsVMConnected())
             {
                 return;
             }
-            if (!isRunCode) // Start robot code
+            if (!EmulatorManager.IsRunningRobotCode()) // Start robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StopCode;
-                isRunCode = true;
-                SSHClient.StartRobotCode();
+                EmulatorManager.StartRobotCode();
             }
             else // Stop robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Run Code";
                 GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StartCode;
-                isRunCode = false;
-                SSHClient.StopRobotCode();
+                EmulatorManager.StopRobotCode();
             }
         }
 

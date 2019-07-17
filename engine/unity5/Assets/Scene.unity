@@ -72318,6 +72318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1434899039}
   - component: {fileID: 1434899042}
+  - component: {fileID: 1434899043}
   - component: {fileID: 1434899041}
   - component: {fileID: 1434899040}
   m_Layer: 5
@@ -81678,7 +81679,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Connnecting
+  m_Text: Start Emulator
 --- !u!222 &1637874584
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -86264,11 +86265,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb785a0939d116b4398db5048b4d5f29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isRunCode: 0
   HighlightColor: {fileID: 21300000, guid: 9cdd6b7722466e64083dd4c14a283718, type: 3}
   DefaultColor: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
   EnableColor: {fileID: 21300000, guid: 92bc3e38b05d3f94bb655136bdbce040, type: 3}
   DisableColor: {fileID: 21300000, guid: ca4e7be085c03f54193d4bd46547ee66, type: 3}
+  StartEmulator: {fileID: 21300000, guid: 48c7eb39547636d46a171be4edb5ba4d, type: 3}
+  EmulatorConnection: {fileID: 21300000, guid: 987afd4216cca6e4082914852ef16fed, type: 3}
   StartCode: {fileID: 21300000, guid: 48c7eb39547636d46a171be4edb5ba4d, type: 3}
   StopCode: {fileID: 21300000, guid: ce2e1332c5a15af408165f7a2d91ed0b, type: 3}
 --- !u!1 &1748589304
@@ -87685,7 +87687,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 987afd4216cca6e4082914852ef16fed, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 48c7eb39547636d46a171be4edb5ba4d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -106252,8 +106254,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47916ac4e4887d84d82dc3c9fbb7178a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ip: 10.140.148.24
-  Port: 50051
 --- !u!4 &2108712950
 Transform:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ namespace Synthesis
     class SenderTask : GrpcTask
     {
         private EmulationWriter.EmulationWriterClient client = null;
+        private Grpc.Core.AsyncClientStreamingCall<UpdateRobotInputsRequest, UpdateRobotInputsResponse> call = null;
 
         public SenderTask(
             Channel<IMessage> sender,
@@ -15,43 +16,55 @@ namespace Synthesis
             string ip,
             string port,
             double? timeout = null,
-            uint? retries = null) : base(sender, receiver, ip, port, timeout, retries){}
+            uint? retries = null) : base(sender, receiver, ip, port, timeout, retries) { }
 
         protected override void Connect()
         {
             base.Connect();
-            if (SSHClient.IsVMConnected() && !IsConnected() && client == null)
+            if (EmulatorManager.IsVMConnected() && client == null)
             {
                 client = new EmulationWriter.EmulationWriterClient(conn);
             }
         }
 
-        public override void OnCycle()
+        public override async void OnCycle()
         {
             base.OnCycle();
             Connect();
-            try
-            {
-                var a = InputManager.Instance;
-                //Debug.Log(a.Joysticks[0].ToString());
+            if (IsConnected())
+            { 
+                if(call == null)
+                {
+                    call = client.RobotInputs();
+                }
+                try
+                {
+                    var a = InputManager.Instance;
+                    //Debug.Log(a.Joysticks[0].ToString());
 
-                client.RobotInputs().RequestStream.WriteAsync(new UpdateRobotInputsRequest
+                    await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
+                    {
+                        Api = "v1",
+                        InputData = InputManager.Instance,
+                    });
+                    System.Threading.Thread.Sleep(30);
+                }
+                catch (Exception e)
                 {
-                    Api = "v1",
-                    InputData = InputManager.Instance,
-                }).Wait();
-                System.Threading.Thread.Sleep(30);
+                    if (e is Grpc.Core.RpcException)
+                    {
+                        Debug.Log(e.ToString());
+                    }
+                    else
+                    {
+                        Debug.Log(e.ToString());
+                    }
+                    System.Threading.Thread.Sleep(100);
+                }
             }
-            catch (Exception e)
+            if (conn.State == Grpc.Core.ChannelState.TransientFailure)
             {
-                if (e is Grpc.Core.RpcException)
-                {
-                    Debug.Log(e.ToString());
-                }
-                else
-                {
-                    Debug.Log(e.ToString());
-                }
+                client = null;
             }
         }
     }
