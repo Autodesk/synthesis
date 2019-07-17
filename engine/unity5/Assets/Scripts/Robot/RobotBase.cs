@@ -81,7 +81,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// The calculated weight of the robot.
         /// </summary>
-        public float Weight { get; protected set; }
+        public float Weight { get; set; }
 
         /// <summary>
         /// The calculated angular velocity of the robot.
