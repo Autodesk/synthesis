@@ -13,6 +13,22 @@ namespace hel{
         config = value;
     }
 
+    bool PWMSystem::getHdrZeroLatch(uint8_t index)const{
+        return hdr[index].zero_latch;
+    }
+
+    void PWMSystem::setHdrZeroLatch(uint8_t index, bool value){
+        hdr[index].zero_latch = value;
+    }
+
+    bool PWMSystem::getMXPZeroLatch(uint8_t index)const{
+        return mxp[index].zero_latch;
+    }
+
+    void PWMSystem::setMXPZeroLatch(uint8_t index, uint32_t value){
+        mxp[index].zero_latch = value;
+    }
+
     uint32_t PWMSystem::getHdrPeriodScale(uint8_t index)const{
         return hdr[index].period_scale;
     }
@@ -52,7 +68,6 @@ namespace hel{
     }
 
     double PWMSystem::getPercentOutput(uint32_t pulse_width)noexcept{
-        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         if (pulse_width == 0) {
             return 0.0;
         } else if (pulse_width > pwm_pulse_width::MAX) {
@@ -67,9 +82,10 @@ namespace hel{
         return 0.0;
     }
 
-    PWMSystem::PWM::PWM()noexcept:period_scale(0), pulse_width(0){}
+    PWMSystem::PWM::PWM()noexcept: zero_latch(false), period_scale(0), pulse_width(0){}
     PWMSystem::PWM::PWM(const PWM& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
+        COPY(zero_latch);
         COPY(period_scale);
         COPY(pulse_width);
 #undef COPY
@@ -166,10 +182,25 @@ namespace hel{
             return instance.first->pwm_system.getHdrPeriodScale(bitfield_index);
         }
 
-        void writeZeroLatch(uint8_t /*bitfield_index*/, bool /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
+        void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            if(bitfield_index < tPWM::kNumHdrRegisters){
+                instance.first->pwm_system.setHdrZeroLatch(bitfield_index, value);
+            } else {
+                instance.first->pwm_system.setMXPZeroLatch(bitfield_index - tPWM::kNumHdrRegisters, value);
+            }
+            instance.second.unlock();
+        }
 
-        bool readZeroLatch(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){ //unnecessary for emulation
-            return false;
+        bool readZeroLatch(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            if(bitfield_index < tPWM::kNumHdrRegisters){
+                instance.second.unlock();
+                return instance.first->pwm_system.getHdrZeroLatch(bitfield_index);
+            } else {
+                instance.second.unlock();
+                return instance.first->pwm_system.getMXPZeroLatch(bitfield_index - tPWM::kNumHdrRegisters);
+            }
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){

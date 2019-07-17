@@ -12,6 +12,7 @@ namespace BxDRobotExporter.JointEditor
 
         public JointForm()
         {
+            AnalyticUtils.LogPage("Joint Editor");
             InitializeComponent();
             SuspendLayout();
 
@@ -37,8 +38,6 @@ namespace BxDRobotExporter.JointEditor
 
             Activated += (sender, args) => // Every time the form is displayed
             {
-                CollapseAllCards();
-                jointCards.ForEach(card => card.LoadValuesRecursive());
                 progressBar.Hide();
                 progressBar.SetProgress("Loading Joint Parameters...", 0, 5);
             };
@@ -46,6 +45,8 @@ namespace BxDRobotExporter.JointEditor
 
         public async Task PreShow()
         {
+            CollapseAllCards();
+            jointCards.ForEach(card => card.LoadValuesRecursive());
             progressBar.SetProgress("Loading Joint Parameters...", 4, 5);
             progressBar.Show();
             await Task.Delay(500); // Wait for progress bar to fully load

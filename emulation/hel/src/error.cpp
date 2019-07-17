@@ -80,7 +80,7 @@ namespace hel{
     }
 
     void warn(const std::string& message){
-#ifdef ENABLE_SYNTHESIS_WARNINGS
+#ifdef HEL_ENABLE_WARNINGS
         std::cerr << makeWarningMessage(message);
 #endif
     }

@@ -74,21 +74,22 @@ namespace hel{
 //#undef COPY
         }
 
-        void CANMotorController::parseCANPacket(const int32_t& /*API_ID*/, const std::vector<uint8_t>& DATA){
-            assert(DATA.size() == MessageData::SIZE);
+        void CANMotorController::parseCANPacket(const int32_t& API_ID, const std::vector<uint8_t>& DATA){
+            if(DATA.size() != MessageData::SIZE){
+                warnUnsupportedFeature("Writing to CAN motor controller (" + asString(getType()) + " with ID " + std::to_string((unsigned)getID()) + ") with API ID " + std::to_string(API_ID) + " and data " + asString(DATA, std::function<std::string(uint8_t)>(static_cast<std::string(*)(int)>(std::to_string))) + "\n");
+                return;
+            }
 
             uint8_t command_byte = DATA[MessageData::COMMAND_BYTE];
 
             /*
                 From testing with CTRE motor controllers:
                 DATA[x] - DATA[0] results in the number with the correct sign
-                DATA[1] - DATA[0] is the number of 256*256's
-                DATA[2] - DATA[0] is the number of 256's
-                DATA[3] - DATA[0] is the number of 1's
-                divide by (256*256*4) to scale from the range -256*256*4 to 256*256*4 to the range -1.0 to 1.0
+                DATA[1] is the first byte of the number and DATA[2] is the second
+                Dividing by 0x0400 scales the value to the proper -1.0 to 1.0
             */
-            setPercentOutput(((double)( (DATA[1] - DATA[0])*256*256 + (DATA[2] - DATA[0])*256 + (DATA[3] - DATA[0])) ) / (256*256*4));
-            setInverted(hel::checkBitHigh(command_byte,SendCommandByteMask::INVERT));
+            setPercentOutput((double)(((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400);
+            setInverted(checkBitHigh(command_byte,SendCommandByteMask::INVERT));
 
             for(unsigned i = 0; i < 8; i++){ //check for unrecognized command bits
                 if(
@@ -100,10 +101,14 @@ namespace hel{
             }
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& /*API_ID*/){
-          // if(hel::compareBits(*messageID, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT, hel::CANMotorController::ReceiveCommandIDMask::GET_POWER_PERCENT)){
-          // }
-            return {}; // TODO
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID)const{
+            std::vector<uint8_t> data;
+            switch(API_ID){
+            case CommandAPIID::GET_PERCENT_OUTPUT:
+            default:
+                warnUnsupportedFeature("Receiving CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+            }
+            return data;
         }
     }
 
@@ -138,11 +143,11 @@ namespace hel{
             case CommandAPIID::FIRMWARE:
               break;
             default:
-                warnUnsupportedFeature("Sending CAN packet to REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Sending CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
         }
 
-        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID){
+        std::vector<uint8_t> CANMotorController::generateCANPacket(const int32_t& API_ID)const{
             std::vector<uint8_t> data;
             switch(API_ID){
             case CommandAPIID::FIRMWARE:
@@ -158,7 +163,7 @@ namespace hel{
                     break;
                 }
             default:
-                warnUnsupportedFeature("Receiving CAN packet from REV Spark MAX with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
+                warnUnsupportedFeature("Receiving CAN packet from " + asString(getType()) + " with ID " + std::to_string(getID()) + " and API ID " + std::to_string(API_ID));
             }
 
             return data;

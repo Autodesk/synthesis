@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -117,6 +116,11 @@ namespace Assets.Scripts.GUI
         public void OnRobotCameraButtonClicked()
         {
             robotCameraGUI.ToggleCameraWindow();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RobotCamera,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -132,19 +136,27 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
 
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Ultrasonic Sensor", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddUltrasonic,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
             {
                 sensorManagerGUI.SetUltrasonicAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditUltrasonic,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             ultrasonicDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.UltrasonicDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -160,19 +172,27 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(beamBreakerDropdown, updatedList);
                 numBeamBreakers++;
 
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Beam Breaker", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddBeam,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
             {
                 sensorManagerGUI.SetBeamBreakerAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditBeam,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             beamBreakerDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.BeamBreakDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -188,19 +208,27 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(gyroDropdown, updatedList);
                 numGyros++;
 
-                if (PlayerPrefs.GetInt("analytics") == 1)
-                {
-                    Analytics.CustomEvent("Added Gyro", new Dictionary<string, object> //for analytics tracking
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddGyro,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
             {
                 sensorManagerGUI.SetGyroAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditGyro,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             gyroDropdown.value = 0;
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GyroDropdown,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -209,6 +237,11 @@ namespace Assets.Scripts.GUI
         public void OnShowOutputsButtonClicked()
         {
             sensorManagerGUI.ToggleSensorOutput();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HideOutputs,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -258,13 +291,10 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Sensor Help Button Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorHelp,
+                AnalyticsLedger.EventAction.Clicked,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
