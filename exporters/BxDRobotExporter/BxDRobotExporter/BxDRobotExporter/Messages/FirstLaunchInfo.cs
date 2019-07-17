@@ -13,11 +13,11 @@ namespace BxDRobotExporter.Messages
         {
             Close();
 
-            Properties.Settings.Default.TrackAnalytics = analyticsCheckBox.Checked;
+            Properties.Settings.Default.UseAnalytics = analyticsCheckBox.Checked;
             Properties.Settings.Default.ShowFirstLaunchInfo = false;
             Properties.Settings.Default.Save();
 
-            if (Properties.Settings.Default.TrackAnalytics)
+            if (Properties.Settings.Default.UseAnalytics)
             {
                 if (teamTextBox.TextLength > 0)
                 {
