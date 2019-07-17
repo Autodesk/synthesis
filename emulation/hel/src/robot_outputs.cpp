@@ -12,6 +12,9 @@ const inline EmulationService::RobotOutputs generateZeroedOutput() {
 	for (auto i = 0u; i < PWMSystem::NUM_HDRS; i++) {
 		res.add_pwm_headers(0);
 	}
+	for (auto i = 0u; i < RoboRIOManager::getInstance().first->can_motor_controllers.size(); i++) {
+		res.add_can_motor_controllers();
+	}
 	return res;
 }
 
@@ -48,7 +51,7 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 		switch (digital_mxp[i].config) {
 			case MXPData::Config::PWM:
 			case MXPData::Config::DO: {
-				auto elem = output.mutable_mxp_data(i);
+				auto elem = output.mutable_mxp_data(i); // TODO add to repeated field first for all of these
 				EmulationService::MXPData mxp;
 				mxp.set_mxp_config(
 					static_cast<EmulationService::MXPData::MXPConfig>(
@@ -63,14 +66,13 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 	}
 
 	for (auto i = 0u; i < can_motor_controllers.size(); i++) {
-		auto elem = output.mutable_can_motor_controllers(i);
 		EmulationService::RobotOutputs::CANMotorController can;
 		can.set_can_type(static_cast<EmulationService::RobotOutputs::CANType>(
 			can_motor_controllers[i]->getType()));
 		can.set_id(can_motor_controllers[i]->getID());
 		can.set_inverted(false);
 		can.set_percent_output(can_motor_controllers[i]->getPercentOutput());
-		*elem = can;
+		*output.mutable_can_motor_controllers(i) = can;
 	}
 
 	return output;
