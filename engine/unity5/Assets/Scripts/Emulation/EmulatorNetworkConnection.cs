@@ -16,7 +16,7 @@ namespace Synthesis
         public const string DEFAULT_PORT = "50051";
 
         private const int LOOP_DELAY = 50; // ms
-        private const int ERROR_DELAY = 500; // ms
+        private const int ERROR_DELAY = 100; // ms
 
         private bool senderConnected = false, receiverConnected = false;
 

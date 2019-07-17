@@ -1,8 +1,6 @@
 ﻿using Synthesis.Input;
 using Synthesis.Utils;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,13 +9,20 @@ namespace Synthesis.GUI
     class EmulationDriverStation : MonoBehaviour
     {
         public static EmulationDriverStation Instance { get; private set; }
+        private bool VMConnectionCoroutineRunning = false;
 
         GameObject canvas;
         InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
         GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
         GameObject runButton;
+
         Text VMConnectionStatusMessage;
+
+        Image VMConnectionStatusImage;
+        Image runRobotCodeImage;
+        Image enableRobotImage;
+        Image disableRobotImage;
 
         // Sprites for emulation coloring details
         // Tethered in Unity > Simulator > Attached to the EmulationDriverStation script
@@ -30,18 +35,24 @@ namespace Synthesis.GUI
         public Sprite StartCode;
         public Sprite StopCode;
 
-        Image startImage;
-        Image stopImage;
-
         public void Start()
         {
             canvas = GameObject.Find("Canvas");
             gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
-            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
-            VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
 
+            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
+            runRobotCodeImage = Auxiliary.FindObject(canvas, "CodeImage").GetComponentInChildren<Image>();
+
+            VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
+            VMConnectionStatusImage = Auxiliary.FindObject(canvas, "VMConnectionStatusImage").GetComponentInChildren<Image>();
+
+            enableRobotImage = Auxiliary.FindObject(canvas, "Enable").GetComponentInChildren<Image>();
+            disableRobotImage = Auxiliary.FindObject(canvas, "Disable").GetComponentInChildren<Image>();
+
+            RobotDisabled();
+            BeginTrackingVMConnectionStatus();
             GameData();
         }
 
@@ -53,19 +64,18 @@ namespace Synthesis.GUI
         /// <summary>
         /// Opens the emulation driver station
         /// </summary>
-        public void OpenDriverStation()
+        public void ToggleDriverStation()
         {
-            if (emuDriverStationPanel.activeSelf == true)
+            if (emuDriverStationPanel.activeSelf == true) // Close it
             {
                 emuDriverStationPanel.SetActive(false);
                 InputControl.freeze = false;
             }
-            else
+            else // Open it
             {
                 emuDriverStationPanel.SetActive(true);
                 InputControl.freeze = true;
                 RobotState("teleop");
-                RobotDisabled();
             }
         }
 
@@ -88,37 +98,39 @@ namespace Synthesis.GUI
         /// <summary>
         /// Indicator for VM connection status
         /// </summary>
-        public System.Collections.IEnumerator UpdateVMConnectionStatus()
+        private System.Collections.IEnumerator UpdateVMConnectionStatus()
         {
             while (true)
             {
-                if (!EmulatorManager.IsVMRunning())
+                if (EmulatorManager.IsVMConnected())
                 {
-                    VMConnectionStatusMessage.text = "Booting";
-                    yield return new WaitForSeconds(3.0f); // s
-                }
-                else
-                {
-                    if (EmulatorManager.IsVMConnected())
-                    {
+                    VMConnectionStatusImage.sprite = EmulatorConnection;
+                    if(EmulatorNetworkConnection.Instance.IsConnected())
                         VMConnectionStatusMessage.text = "Connected";
-                        yield return new WaitForSeconds(15.0f); // s
-                    }
                     else
-                    {
-                        VMConnectionStatusMessage.text = "Connecting";
-                        yield return new WaitForSeconds(1.0f); // s
-                    }
+                        VMConnectionStatusMessage.text = "Initialized";
                 }
+                else if(EmulatorManager.IsVMRunning())
+                {
+                    VMConnectionStatusImage.sprite = EmulatorConnection;
+                    VMConnectionStatusMessage.text = "Initializing";
+                    ToggleRobotCodeButton();
+                } else
+                {
+                    VMConnectionStatusImage.sprite = StartEmulator;
+                    VMConnectionStatusMessage.text = "Start Emulator";
+                    ToggleRobotCodeButton();
+                }
+                yield return new WaitForSeconds(1.0f); // s
             }
         }
 
         public void BeginTrackingVMConnectionStatus()
         {
-            StartCoroutine(UpdateVMConnectionStatus());
-            Debug.Log("Run Tracker");
-            GameObject.Find("VMConnectionStatusImage").GetComponentInChildren<Image>().sprite = EmulatorConnection;
-
+            if (!VMConnectionCoroutineRunning){
+                StartCoroutine(UpdateVMConnectionStatus());
+                VMConnectionCoroutineRunning = true;
+            }
         }
 
         /// <summary>
@@ -126,21 +138,20 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if(!EmulatorManager.IsVMConnected())
-            {
-                return;
-            }
-            if (!EmulatorManager.IsRunningRobotCode()) // Start robot code
+            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode()) // Start robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
-                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StopCode;
+                runRobotCodeImage.sprite = StopCode;
                 EmulatorManager.StartRobotCode();
             }
             else // Stop robot code
             {
                 runButton.GetComponentInChildren<Text>().text = "Run Code";
-                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StartCode;
-                EmulatorManager.StopRobotCode();
+                runRobotCodeImage.sprite = StartCode;
+                if (EmulatorManager.IsRunningRobotCode())
+                    EmulatorManager.StopRobotCode();
+                if(emuDriverStationPanel.activeSelf == true)
+                    RobotDisabled();
             }
         }
 
@@ -176,16 +187,19 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            InputManager.Instance.RobotMode.Enabled = true;
-            GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
-            GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
+            if (EmulatorNetworkConnection.Instance.IsConnected())
+            {
+                InputManager.Instance.RobotMode.Enabled = true;
+                enableRobotImage.sprite = EnableColor;
+                disableRobotImage.sprite = DefaultColor;
+            }
         }
 
         public void RobotDisabled()
         {
             InputManager.Instance.RobotMode.Enabled = false;
-            GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
-            GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
+            enableRobotImage.sprite = DefaultColor;
+            disableRobotImage.sprite = DisableColor;
         }
 
         /// <summary>

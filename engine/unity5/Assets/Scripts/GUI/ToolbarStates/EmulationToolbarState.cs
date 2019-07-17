@@ -33,7 +33,6 @@ namespace Assets.Scripts.GUI
         public override void Start()
         {
             emulationDriverStation = StateMachine.SceneGlobal.GetComponent<EmulationDriverStation>();
-
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
@@ -46,11 +45,6 @@ namespace Assets.Scripts.GUI
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
-
-            if (Synthesis.EmulatorManager.IsVMRunning()) // If the emulator is already running, begin tracking connection right away
-            {
-                emulationDriverStation.BeginTrackingVMConnectionStatus();
-            }
         }
 
         public override void FixedUpdate()
@@ -95,9 +89,10 @@ namespace Assets.Scripts.GUI
         public async void LoadCode()
         {
             string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
+            string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code Executable", "C:\\", "", false);
             if (selectedFiles.Length != 1)
             {
-                UnityEngine.Debug.Log("No files selected for robot code upload");
+                Debug.Log("No files selected for robot code upload");
             }
             else
             {
@@ -132,7 +127,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnDriverStationButtonClicked()
         {
-            emulationDriverStation.OpenDriverStation();
+            emulationDriverStation.ToggleDriverStation();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverStation,
                 AnalyticsLedger.EventAction.Clicked,
@@ -142,10 +137,6 @@ namespace Assets.Scripts.GUI
 
         public void OnStartRobotCodeButtonClicked()
         {
-            if (!Synthesis.EmulatorManager.IsVMConnected())
-            {
-                return;
-            }
             emulationDriverStation.ToggleRobotCodeButton();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
@@ -156,7 +147,7 @@ namespace Assets.Scripts.GUI
 
         public void OnVMConnectionStatusClicked()
         {
-            if (!Synthesis.EmulatorManager.IsVMRunning())
+            if (!Synthesis.EmulatorManager.IsVMRunning() && !Synthesis.EmulatorManager.IsVMConnected())
             {
                 Synthesis.EmulatorManager.StartEmulator();
                 emulationDriverStation.BeginTrackingVMConnectionStatus();

@@ -328,7 +328,7 @@ public class DriveJoints
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        if (Synthesis.EmulatorManager.IsRunningRobotCode())
+        if (Synthesis.EmulatorManager.IsRunningRobotCode()) // Use emulator
         {
             if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
             {
@@ -336,7 +336,7 @@ public class DriveJoints
                 UpdateEmulationMotors();
                 UpdateEmulationSensors(emuList);
             }
-        } else
+        } else // Use regular controls
         {
             for (int i = 0; i < pwm.Length; i++)
                 motors[i] = pwm[i];
