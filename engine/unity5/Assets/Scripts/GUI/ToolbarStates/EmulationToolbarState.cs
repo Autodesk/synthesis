@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using System.Threading.Tasks;
 
 namespace Assets.Scripts.GUI
 {
@@ -88,7 +89,6 @@ namespace Assets.Scripts.GUI
 
         public async void LoadCode()
         {
-            string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code", "C:\\", "", false);
             string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code Executable", "C:\\", "", false);
             if (selectedFiles.Length != 1)
             {
@@ -106,7 +106,7 @@ namespace Assets.Scripts.GUI
                     loadingPanel.SetActive(true);
                     Task Upload = Task.Factory.StartNew(() =>
                     {
-                        SSHClient.SCPFileSender(userProgram);
+                        Synthesis.EmulatorManager.SCPFileSender(userProgram);
                         loaded = true;
                     });
                     await Upload;
@@ -117,9 +117,6 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
-                    Synthesis.EmulatorManager.SCPFileSender(userProgram);
-                }
-            }
         }
 
         /// <summary>
