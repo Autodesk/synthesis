@@ -32,7 +32,7 @@ namespace BxDRobotExporter.Messages
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FirstLaunchInfo));
-            this.dismissButton = new System.Windows.Forms.Button();
+            this.submitButton = new System.Windows.Forms.Button();
             this.analyticsCheckBox = new System.Windows.Forms.CheckBox();
             this.reasonTextList = new System.Windows.Forms.CheckedListBox();
             this.reasonLabel = new System.Windows.Forms.Label();
@@ -40,20 +40,21 @@ namespace BxDRobotExporter.Messages
             this.teamLabel = new System.Windows.Forms.Label();
             this.instructionsLabel = new System.Windows.Forms.Label();
             this.otherTextBox = new System.Windows.Forms.TextBox();
+            this.skipButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // dismissButton
+            // submitButton
             // 
-            this.dismissButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.dismissButton.Location = new System.Drawing.Point(135, 289);
-            this.dismissButton.Margin = new System.Windows.Forms.Padding(2);
-            this.dismissButton.Name = "dismissButton";
-            this.dismissButton.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.dismissButton.Size = new System.Drawing.Size(93, 30);
-            this.dismissButton.TabIndex = 3;
-            this.dismissButton.Text = "Dismiss";
-            this.dismissButton.UseVisualStyleBackColor = true;
-            this.dismissButton.Click += new System.EventHandler(this.DismissButton_Click);
+            this.submitButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.submitButton.Location = new System.Drawing.Point(205, 289);
+            this.submitButton.Margin = new System.Windows.Forms.Padding(2);
+            this.submitButton.Name = "submitButton";
+            this.submitButton.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.submitButton.Size = new System.Drawing.Size(93, 30);
+            this.submitButton.TabIndex = 3;
+            this.submitButton.Text = "Submit";
+            this.submitButton.UseVisualStyleBackColor = true;
+            this.submitButton.Click += new System.EventHandler(this.SubmitButton_Click);
             // 
             // analyticsCheckBox
             // 
@@ -134,13 +135,24 @@ namespace BxDRobotExporter.Messages
             this.otherTextBox.TabIndex = 10;
             this.otherTextBox.Visible = false;
             // 
+            // skipButton
+            // 
+            this.skipButton.Location = new System.Drawing.Point(84, 291);
+            this.skipButton.Name = "skipButton";
+            this.skipButton.Size = new System.Drawing.Size(88, 28);
+            this.skipButton.TabIndex = 11;
+            this.skipButton.Text = "Skip";
+            this.skipButton.UseVisualStyleBackColor = true;
+            this.skipButton.Click += new System.EventHandler(this.SkipButton_Click);
+            // 
             // FirstLaunchInfo
             // 
-            this.AcceptButton = this.dismissButton;
+            this.AcceptButton = this.submitButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(367, 330);
+            this.Controls.Add(this.skipButton);
             this.Controls.Add(this.otherTextBox);
             this.Controls.Add(this.instructionsLabel);
             this.Controls.Add(this.teamLabel);
@@ -148,7 +160,7 @@ namespace BxDRobotExporter.Messages
             this.Controls.Add(this.reasonLabel);
             this.Controls.Add(this.reasonTextList);
             this.Controls.Add(this.analyticsCheckBox);
-            this.Controls.Add(this.dismissButton);
+            this.Controls.Add(this.submitButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -165,7 +177,7 @@ namespace BxDRobotExporter.Messages
         }
 
         #endregion
-        private System.Windows.Forms.Button dismissButton;
+        private System.Windows.Forms.Button submitButton;
         private System.Windows.Forms.CheckBox analyticsCheckBox;
         private System.Windows.Forms.CheckedListBox reasonTextList;
         private System.Windows.Forms.Label reasonLabel;
@@ -173,5 +185,6 @@ namespace BxDRobotExporter.Messages
         private System.Windows.Forms.Label teamLabel;
         private System.Windows.Forms.Label instructionsLabel;
         private System.Windows.Forms.TextBox otherTextBox;
+        private System.Windows.Forms.Button skipButton;
     }
 }
