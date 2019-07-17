@@ -146,12 +146,12 @@ namespace BxDRobotExporter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TrackAnalytics {
+        public bool UseAnalytics {
             get {
-                return ((bool)(this["TrackAnalytics"]));
+                return ((bool)(this["UseAnalytics"]));
             }
             set {
-                this["TrackAnalytics"] = value;
+                this["UseAnalytics"] = value;
             }
         }
     }
