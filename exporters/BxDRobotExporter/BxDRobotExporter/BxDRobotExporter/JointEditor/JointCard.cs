@@ -19,7 +19,7 @@ namespace BxDRobotExporter.JointEditor
             this.node = node;
 
             InitializeComponent();
-
+            AnalyticUtils.LogEvent("Joint Editor", "System", "Init");
             jointEditor.Initialize(new List<RigidNode_Base> {node}, this);
 
             AddHighlightAction(this);
@@ -42,6 +42,7 @@ namespace BxDRobotExporter.JointEditor
 
         private void HighlightSelf()
         {
+            AnalyticUtils.LogEvent("Joint Editor", "System", "Highlight");
             if (isHighlighted)
             {
                 return;
@@ -92,10 +93,13 @@ namespace BxDRobotExporter.JointEditor
         {
             jointForm.CollapseAllCards(this);
             SetCollapsed(!IsCollapsed());
+
+
         }
 
         public void SetCollapsed(bool collapse)
         {
+            AnalyticUtils.LogEvent("Joint Editor", "System", "SetCollapsed", collapse ? 0: 1);
             jointEditor.Visible = !collapse;
         }
 
@@ -107,6 +111,8 @@ namespace BxDRobotExporter.JointEditor
 
         private void editButton_Click(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Editor", "Control Clicked", "Edit Button");
+
             ToggleCollapsed();
             if (!hasLoadedEditor)
             {
@@ -119,12 +125,14 @@ namespace BxDRobotExporter.JointEditor
 
         private void constraintsButton_Click(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Editor", "Control Clicked", "Constraints Button");
             var limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
             limitEditor.ShowDialog(ParentForm);
         }
 
         private void sensorsButton_Click(object sender, EventArgs e)
         {
+            AnalyticUtils.LogEvent("Joint Editor", "Control Clicked", "Sensors Button");
             var listForm = new SensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog(ParentForm);
         }

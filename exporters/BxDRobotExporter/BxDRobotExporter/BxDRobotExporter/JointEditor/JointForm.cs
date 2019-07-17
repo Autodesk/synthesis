@@ -12,6 +12,7 @@ namespace BxDRobotExporter.JointEditor
 
         public JointForm()
         {
+            AnalyticUtils.LogPage("Joint Editor");
             InitializeComponent();
             SuspendLayout();
 

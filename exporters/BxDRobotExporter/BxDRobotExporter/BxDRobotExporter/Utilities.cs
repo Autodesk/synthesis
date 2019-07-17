@@ -130,7 +130,7 @@ namespace BxDRobotExporter
             // Old configurations get overriden (version numbers below 1)
             if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 2)
                 Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-            
+
             if (Properties.Settings.Default.ConfigVersion < 3)
             {
                 SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
@@ -156,5 +156,10 @@ namespace BxDRobotExporter
                 };
             }
         }
+
+
+        // Analytics
+
+        
     }
 }

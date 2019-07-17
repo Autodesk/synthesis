@@ -16,6 +16,7 @@ namespace EditorsLibrary
 
         public SensorListForm(SkeletalJoint_Base passJoint)
         {
+            AnalyticUtils.LogPage("SensorListForm");
             InitializeComponent();
 
             joint = passJoint;
