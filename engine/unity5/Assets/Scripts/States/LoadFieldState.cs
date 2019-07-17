@@ -32,7 +32,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Fields"));
+            fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
             mixAndMatchModeScript = Auxiliary.FindGameObject("MixAndMatchModeScript");
             splashScreen = Auxiliary.FindGameObject("LoadSplash");
             fieldList = GameObject.Find("SimLoadFieldList").GetComponent<SelectScrollable>();
@@ -55,6 +55,11 @@ namespace Synthesis.States
         /// </summary>
         public void OnBackButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.TimingCatagory.MixMatch,
+                AnalyticsLedger.EventAction.BackedOut,
+                "notCompletely",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             StateMachine.PopState();
         }
 
@@ -74,6 +79,15 @@ namespace Synthesis.States
 
                 if (StateMachine.FindState<MixAndMatchState>() != null) //Starts the MixAndMatch scene
                 {
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MixMatch,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MixAndMatchMenu);
+
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MixAndMatchSimulator,
+                        AnalyticsLedger.EventAction.Start,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString());
+
                     PlayerPrefs.SetString("simSelectedField", simSelectedField);
                     PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
                     fieldList.SetActive(false);

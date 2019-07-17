@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit, bool useAnalytics);
 
     public partial class PluginSettingsForm : Form
     {
@@ -44,7 +44,9 @@ namespace EditorsLibrary
         private void LoadValues()
         {
             Values = SynthesisGUI.PluginSettings;
+
             ChildHighlight.BackColor = Values.InventorChildColor;
+            checkBox1.Checked = Values.useAnalytics;
         }
         
         /// <summary>
@@ -53,6 +55,7 @@ namespace EditorsLibrary
         private void SaveValues()
         {
             Values.InventorChildColor = ChildHighlight.BackColor;
+            Values.useAnalytics = checkBox1.Checked;
             Values.OnSettingsChanged();
         }
 
@@ -66,7 +69,8 @@ namespace EditorsLibrary
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = true,
-                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots"
+                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots",
+                useAnalytics = true
             };
         }
 
@@ -79,7 +83,7 @@ namespace EditorsLibrary
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition, useAnalytics);
             }
 
             //General
@@ -88,6 +92,7 @@ namespace EditorsLibrary
             public string fieldName;
             public String defaultRobotCompetition;
             public bool openSynthesis;
+            public bool useAnalytics;
             //Inventor
             public Color InventorChildColor;
         }
@@ -116,5 +121,9 @@ namespace EditorsLibrary
             }
         }
 
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Values.useAnalytics = checkBox1.Checked;
+        }
     }
 }

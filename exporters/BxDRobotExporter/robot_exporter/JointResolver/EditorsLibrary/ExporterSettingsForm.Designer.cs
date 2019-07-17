@@ -34,26 +34,27 @@
             this.ChildHighlight = new System.Windows.Forms.Button();
             this.ChildLabel = new System.Windows.Forms.Label();
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.MainLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(3, 35);
-            this.buttonCancel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonCancel.Location = new System.Drawing.Point(2, 28);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(160, 36);
+            this.buttonCancel.Size = new System.Drawing.Size(120, 29);
             this.buttonCancel.TabIndex = 5;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(169, 35);
-            this.buttonOK.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonOK.Location = new System.Drawing.Point(126, 28);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(160, 36);
+            this.buttonOK.Size = new System.Drawing.Size(120, 29);
             this.buttonOK.TabIndex = 0;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -63,10 +64,9 @@
             this.ChildHighlight.BackColor = System.Drawing.Color.Black;
             this.ChildHighlight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChildHighlight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ChildHighlight.Location = new System.Drawing.Point(170, 4);
-            this.ChildHighlight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ChildHighlight.Location = new System.Drawing.Point(127, 3);
             this.ChildHighlight.Name = "ChildHighlight";
-            this.ChildHighlight.Size = new System.Drawing.Size(158, 25);
+            this.ChildHighlight.Size = new System.Drawing.Size(118, 20);
             this.ChildHighlight.TabIndex = 9;
             this.ChildHighlight.UseVisualStyleBackColor = false;
             this.ChildHighlight.Click += new System.EventHandler(this.ChildHighlight_Click);
@@ -76,10 +76,10 @@
             this.ChildLabel.AutoSize = true;
             this.ChildLabel.Dock = System.Windows.Forms.DockStyle.Left;
             this.ChildLabel.ForeColor = System.Drawing.Color.Black;
-            this.ChildLabel.Location = new System.Drawing.Point(4, 4);
-            this.ChildLabel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ChildLabel.Location = new System.Drawing.Point(3, 3);
+            this.ChildLabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.ChildLabel.Name = "ChildLabel";
-            this.ChildLabel.Size = new System.Drawing.Size(100, 25);
+            this.ChildLabel.Size = new System.Drawing.Size(75, 20);
             this.ChildLabel.TabIndex = 6;
             this.ChildLabel.Text = "Highlight Color";
             this.ChildLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -95,28 +95,39 @@
             this.MainLayout.Controls.Add(this.buttonCancel, 0, 1);
             this.MainLayout.Controls.Add(this.ChildLabel, 0, 0);
             this.MainLayout.Controls.Add(this.buttonOK, 1, 1);
-            this.MainLayout.Location = new System.Drawing.Point(4, 4);
-            this.MainLayout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MainLayout.Location = new System.Drawing.Point(3, 3);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.RowCount = 2;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.Size = new System.Drawing.Size(332, 73);
+            this.MainLayout.Size = new System.Drawing.Size(248, 59);
             this.MainLayout.TabIndex = 13;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(3, 66);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(96, 17);
+            this.checkBox1.TabIndex = 14;
+            this.checkBox1.Text = "Send Analytics";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // PluginSettingsForm
             // 
             this.AcceptButton = this.buttonOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(369, 142);
+            this.ClientSize = new System.Drawing.Size(277, 115);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PluginSettingsForm";
@@ -135,5 +146,6 @@
         private System.Windows.Forms.Button ChildHighlight;
         private System.Windows.Forms.Label ChildLabel;
         private System.Windows.Forms.TableLayoutPanel MainLayout;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

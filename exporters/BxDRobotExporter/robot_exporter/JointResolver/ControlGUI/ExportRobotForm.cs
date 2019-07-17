@@ -22,6 +22,7 @@ namespace JointResolver.ControlGUI
 
             RobotNameTextBox.Text = initialRobotName;
             ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
+            
         }
 
         /// <summary>
