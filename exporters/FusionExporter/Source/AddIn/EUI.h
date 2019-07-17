@@ -142,6 +142,7 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
 		ClosePaletteEventHandler* driveTypeClosePaletteHandler = nullptr;
+		ClosePaletteEventHandler* driveWeightClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
@@ -150,6 +151,7 @@ namespace SynthesisAddIn
 
 		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* driveTypeReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* driveWeightReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;

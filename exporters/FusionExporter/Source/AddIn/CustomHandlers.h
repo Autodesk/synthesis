@@ -50,7 +50,6 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler(EUI* eui, std::string id_) : eui(eui), id(id_) {  }
 		~ShowPaletteCommandCreatedHandler();
 		void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override;
-		void setId(std::string id_) { id = id_; }
 	private:
 		EUI * eui;
 		std::string id;

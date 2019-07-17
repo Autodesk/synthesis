@@ -66,7 +66,7 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::K_DT_WEIGHT)
+	if (id == SynthesisAddIn::BTN_WEIGHT)
 		eui->openDriveWeightPalette();
     else if (id == SynthesisAddIn::BTN_DT_TYPE)
         eui->openDriveTypePalette();
