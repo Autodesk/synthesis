@@ -151,7 +151,7 @@ namespace Synthesis.Robot
             robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && !File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
                 return false;
 
             OnInitializeRobot();
@@ -189,6 +189,8 @@ namespace Synthesis.Robot
                                 emuList.Add(emuStruct);
                             }
                         }
+
+                       
                     }
                 }
                 catch (Exception e)
@@ -207,8 +209,9 @@ namespace Synthesis.Robot
             {
                 r.RaycastRobot.OverrideMass = collectiveMass;
                 r.RaycastRobot.RootRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+                
             }
-
+           
             OnRobotSetup();
 
             RotateRobot(robotStartOrientation);
