@@ -527,6 +527,27 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
+        /// Reset to the empty grid
+        /// </summary>
+        public void LoadEmptyGrid()
+        {
+            MainState.timesLoaded = 0;
+            
+            changeFieldPanel.SetActive(false);
+            loadingPanel.SetActive(true);
+            FieldDataHandler.Load("");
+
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                AnalyticsLedger.TimingVarible.Playing,
+                AnalyticsLedger.TimingLabel.ResetField);
+
+            SceneManager.LoadScene("Scene");
+
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ChangeField,
+                AnalyticsLedger.TimingVarible.Playing); // start timer for current field
+        }
+
+        /// <summary>
         /// These toggle, change, and add functions are tethered in Unity
         /// </summary>
         public void ToggleChangeFieldPanel()
