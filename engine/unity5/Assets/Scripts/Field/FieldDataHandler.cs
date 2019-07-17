@@ -121,7 +121,11 @@ namespace Synthesis.Field
                 robotSpawn = getRobotSpawn();
                 gamepieceIndex = 0;
             }
-            else WriteField(); //creates dummy file - allows robot spawn point functionality (No gamepieces)
+            else
+            {
+                gamepieces = new List<Gamepiece>();
+                WriteField(); //creates dummy file - allows robot spawn point functionality (No gamepieces)
+            }
         }
         /// <summary>
         /// Gets gamepiece as list of Gamepiece objects from field_data.xml
