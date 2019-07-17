@@ -20,32 +20,44 @@ namespace Synthesis
         protected override void Connect()
         {
             base.Connect();
-            if (SSHClient.IsVMConnected() && !IsConnected() && client == null)
+            if (EmulatorManager.IsVMConnected() && client == null)
             {
                 client = new EmulationReader.EmulationReaderClient(conn);
-                call = client.RobotOutputs(new RobotOutputsRequest { });
             }
         }
 
-        public override void OnCycle()
+        public override async void OnCycle()
         {
             base.OnCycle();
             Connect();
-            try
+            if (IsConnected())
             {
-                call.ResponseStream.MoveNext().Wait();
-
-                OutputManager.Instance = call.ResponseStream.Current.OutputData;
-            }
-            catch (Exception e)
-            {
-                if(e is Grpc.Core.RpcException)
+                if (call == null)
                 {
-                    Debug.Log(e.ToString());
-                } else
-                {
-                    Debug.Log(e.ToString());
+                    call = client.RobotOutputs(new RobotOutputsRequest { });
                 }
+                try
+                {
+                    await call.ResponseStream.MoveNext();
+
+                    OutputManager.Instance = call.ResponseStream.Current.OutputData;
+                }
+                catch (Exception e)
+                {
+                    if (e is Grpc.Core.RpcException)
+                    {
+                        Debug.Log(e.ToString());
+                    }
+                    else
+                    {
+                        Debug.Log(e.ToString());
+                    }
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            if (conn.State == Grpc.Core.ChannelState.TransientFailure)
+            {
+                client = null;
             }
         }
     }

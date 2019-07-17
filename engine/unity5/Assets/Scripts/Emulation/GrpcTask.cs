@@ -18,7 +18,12 @@ namespace Synthesis
         public bool IsConnected()
         {
             Debug.Log("Connection status(" + System.Threading.Thread.CurrentThread.ManagedThreadId + "): " + (conn == null ? "null" : conn.State.ToString()));
-            return conn != null && (conn.State == Grpc.Core.ChannelState.Ready || conn.State == Grpc.Core.ChannelState.Connecting || conn.State == Grpc.Core.ChannelState.Idle);
+            return conn != null && (conn.State == Grpc.Core.ChannelState.Ready || conn.State == Grpc.Core.ChannelState.Idle);
+        }
+
+        public bool IsConnecting()
+        {
+            return conn != null && conn.State == Grpc.Core.ChannelState.Connecting;
         }
 
         public GrpcTask(
@@ -98,8 +103,9 @@ namespace Synthesis
         public override void OnCycle()
         {
             base.OnCycle();
+            Connect();
             /*
-            if (SSHClient.IsVMConnected() && !IsConnected()) // Ensure it connected once already
+            if (SSHClient.IsVMConnected() && !IsConnected())
             {
                 Debug.Log("Connection Closed");
                 stateChannel.Send(new GrpcMessage.ConnectionErrorMessage());
