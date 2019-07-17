@@ -85,17 +85,17 @@ bool EUI::createDriveWeightPalette() {
 		return false;
 
 	// Check if palette already exists
-	driveWeightPalette = palettes->itemById(K_DRIVE_WEIGHT_PALETTE);
+	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(K_DRIVE_WEIGHT_PALETTE, "Robot Drivetrain Weight Form", "Palette/dt_weight.html", false, true, true, 300, 150);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Robot Drivetrain Weight Form", "Palette/dt_weight.html", false, true, true, 300, 150);
 		if (!driveWeightPalette)
 			return false;
 
 		driveWeightPalette->dockingState(PaletteDockingStates::PaletteDockStateRight);
 
-		addHandler<ReceiveFormDataHandler>(driveWeightPalette);
-		addHandler<CloseExporterFormEventHandler>(driveWeightPalette);
+		addHandler<ReceiveFormDataHandler>(driveWeightPalette, driveWeightReceiveFormDataHandler);
+		addHandler<ClosePaletteEventHandler>(driveWeightPalette, driveWeightClosePaletteHandler);
 	}
 
 	return true;
@@ -107,13 +107,13 @@ void EUI::deleteDriveWeightPalette() {
 		return;
 
 	// Check if palette exists
-	driveWeightPalette = palettes->itemById(K_DRIVE_WEIGHT_PALETTE);
+	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 
 	if (!driveWeightPalette)
 		return;
 
-	clearHandler<ReceiveFormDataHandler>(driveWeightPalette);
-	clearHandler<CloseExporterFormEventHandler>(driveWeightPalette);
+	clearHandler<ReceiveFormDataHandler>(driveWeightPalette, driveWeightReceiveFormDataHandler);
+	clearHandler<ClosePaletteEventHandler>(driveWeightPalette, driveWeightClosePaletteHandler);
 
 	driveWeightPalette->deleteMe();
 	driveWeightPalette = nullptr;

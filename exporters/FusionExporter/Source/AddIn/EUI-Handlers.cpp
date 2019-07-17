@@ -58,15 +58,13 @@ bool EUI::clearHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI, Works
 template<>
 bool EUI::addHandler<ShowPaletteCommandCreatedHandler>(Ptr<CommandDefinition> commandDef, ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler)
 {
-	ShowPaletteCommandCreatedHandler* showPaletteCommandCreatedHandler_;
-	showPaletteCommandCreatedHandler_ = new ShowPaletteCommandCreatedHandler(this, commandDef->id());
-
+	showPaletteCommandCreatedHandler = new ShowPaletteCommandCreatedHandler(this, commandDef->id());
 
 	Ptr<CommandCreatedEvent> commandEvent = commandDef->commandCreated();
 	if (!commandEvent)
 		return false;
-	
-	return commandEvent->add(showPaletteCommandCreatedHandler_);
+
+	return commandEvent->add(showPaletteCommandCreatedHandler);
 }
 
 template<>
@@ -120,7 +118,6 @@ bool EUI::addHandler<ClosePaletteEventHandler>(Ptr<Palette> palette, ClosePalett
 		return false;
 	
 	return closeEvent->add(closePaletteEventHandler);
-
 }
 
 template<>
