@@ -56651,7 +56651,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Load Empty
+  m_Text: Load Default Plane
 --- !u!222 &1096703296
 CanvasRenderer:
   m_ObjectHideFlags: 0
