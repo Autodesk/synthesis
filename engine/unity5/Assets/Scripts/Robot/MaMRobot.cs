@@ -28,7 +28,7 @@ namespace Synthesis.Robot
         public bool RobotHasManipulator { get; set; }
         
 
-        private RigidNode_Base manipulatorNode;
+        private RigidNode manipulatorNode;
 
         private string wheelPath;
 

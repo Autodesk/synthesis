@@ -1,9 +1,27 @@
 ﻿using UnityEngine;
-
+using System.IO;
+using Synthesis.RN;
 namespace Synthesis.Utils
 {
     public static class BXDExtensions
     {
+
+        public static RigidNode_Base ReadSkeletonSafe(string path){
+            string jsonPath = path + ".json";
+            string xmlPath = path + ".bxdj";
+             RigidNode_Base node = null;
+            if(File.Exists(jsonPath)){
+                //Load JSON
+                Debug.Log("Loading JSON robot: " + jsonPath);
+                node = BXDJSkeletonJson.ReadSkeleton(jsonPath);
+            }else{
+               node =  BXDJSkeleton.ReadSkeleton(xmlPath);
+            }
+
+            return node;
+            
+        }
+
         public static T GetDriverMeta<T>(this RigidNode_Base node) where T : JointDriverMeta
         {
             return node != null && node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null ? node.GetSkeletalJoint().cDriver.GetInfo<T>() : null;

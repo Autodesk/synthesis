@@ -23,7 +23,7 @@ using BulletSharp;
 using Synthesis.GUI;
 using UnityEngine.Networking;
 using Synthesis.Field;
-
+using Newtonsoft.Json;
 namespace Synthesis.Robot
 {
     /// <summary>
@@ -164,6 +164,7 @@ namespace Synthesis.Robot
             RootNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode;
 
             RootNode.ListAllNodes(nodes);
+            
 
             Debug.Log(RootNode.driveTrainType.ToString());
 
