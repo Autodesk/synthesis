@@ -148,7 +148,7 @@ namespace hel{
      * \brief A generic exception for when user code attempts to access a feature unsupported by Synthesis
      */
 
-    struct UnsupportedFeature: std::exception{ //TODO rename to UnsupportedFeatureException
+    struct UnsupportedFeatureException: std::exception{
     private:
         /**
          * \brief Details about the unsupported feature
@@ -165,17 +165,17 @@ namespace hel{
         const char* what()const throw();
 
         /**
-         * Constructor for UnsupportedFeature
+         * Constructor for UnsupportedFeatureException
          */
 
-        UnsupportedFeature()noexcept;
+        UnsupportedFeatureException()noexcept;
 
         /**
-         * Constructor for UnsupportedFeature
+         * Constructor for UnsupportedFeatureException
          * \param details Details about the unsupported feature to include in the exception message
          */
 
-        UnsupportedFeature(std::string)noexcept;
+        UnsupportedFeatureException(std::string)noexcept;
     };
 
     /**

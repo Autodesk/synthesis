@@ -349,7 +349,6 @@ namespace Synthesis.GUI
 
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
-            EmulationToolbarState.s = new Serialization();
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 
@@ -524,6 +523,27 @@ namespace Synthesis.GUI
             {
                 UserMessageManager.Dispatch("Field directory not found!", 5);
             }
+        }
+
+        /// <summary>
+        /// Reset to the empty grid
+        /// </summary>
+        public void LoadEmptyGrid()
+        {
+            MainState.timesLoaded = 0;
+            
+            changeFieldPanel.SetActive(false);
+            loadingPanel.SetActive(true);
+            FieldDataHandler.Load("");
+
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                AnalyticsLedger.TimingVarible.Playing,
+                AnalyticsLedger.TimingLabel.ResetField);
+
+            SceneManager.LoadScene("Scene");
+
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ChangeField,
+                AnalyticsLedger.TimingVarible.Playing); // start timer for current field
         }
 
         /// <summary>

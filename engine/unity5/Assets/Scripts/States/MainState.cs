@@ -91,7 +91,7 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = File.Exists(EmulationDriverStation.emulationDir+"zImage") && File.Exists(EmulationDriverStation.emulationDir + "rootfs.ext4") && File.Exists(EmulationDriverStation.emulationDir + "zynq-zed.dtb");
+        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
         //public bool isEmulationDownloaded = true;
 
         bool reset;
@@ -105,7 +105,7 @@ namespace Synthesis.States
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
 
-            string CurrentVersion = "4.2.2";
+            string CurrentVersion = "4.2.3";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection()) {
@@ -120,9 +120,9 @@ namespace Synthesis.States
 
                 var check = localVersion.CompareTo(globalVersion);
 
-                if (check < 0) {
-                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-                }
+                //if (check < 0) {
+                //    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                //}
             }
 
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));

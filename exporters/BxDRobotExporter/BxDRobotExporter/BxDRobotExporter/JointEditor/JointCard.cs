@@ -51,7 +51,7 @@ namespace BxDRobotExporter.JointEditor
             jointForm.ResetAllHighlight();
             isHighlighted = true;
 
-            InventorUtils.FocusAndHighlightNode(node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.5);
+            InventorUtils.FocusAndHighlightNode(node, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
         }
 
         public void LoadPreviewIcon()

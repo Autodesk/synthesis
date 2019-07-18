@@ -1,14 +1,5 @@
-﻿using Synthesis.FSM;
-using Synthesis.Input;
-using Synthesis.States;
+﻿using Synthesis.Input;
 using Synthesis.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,36 +8,20 @@ namespace Synthesis.GUI
     class EmulationDriverStation : MonoBehaviour
     {
         public static EmulationDriverStation Instance { get; private set; }
-
-        public enum DriveState
-        {
-            Auto,
-            Teleop,
-            Test,
-        };
-
-        public enum AllianceStation
-        {
-            Red1,
-            Red2,
-            Red3,
-            Blue1,
-            Blue2,
-            Blue3,
-        };
-
-        public DriveState state;
-        public AllianceStation allianceStation;
-
-        public bool isRobotDisabled = false;
-        public bool isRunCode = false;
+        private bool VMConnectionCoroutineRunning = false;
 
         GameObject canvas;
-        InputField gameDataInput;
+        InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
         GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
         GameObject runButton;
-        UnityEngine.UI.Text VMConnectionStatusMessage;
+
+        Text VMConnectionStatusMessage;
+
+        Image VMConnectionStatusImage;
+        Image runRobotCodeImage;
+        Image enableRobotImage;
+        Image disableRobotImage;
 
         // Sprites for emulation coloring details
         // Tethered in Unity > Simulator > Attached to the EmulationDriverStation script
@@ -54,48 +29,66 @@ namespace Synthesis.GUI
         public Sprite DefaultColor;
         public Sprite EnableColor;
         public Sprite DisableColor;
+        public Sprite StartEmulator;
+        public Sprite EmulatorConnection;
         public Sprite StartCode;
         public Sprite StopCode;
 
-        Image startImage;
-        Image stopImage;
-
-        public static string emulationDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Autodesk\Synthesis\Emulator\");
-
-        private void Start()
+        public void Start()
         {
             canvas = GameObject.Find("Canvas");
-            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
-            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
-            VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
 
-            StartCoroutine(UpdateVMConnectionStatus());
-            GameData();
+            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
+
+            runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
+            runRobotCodeImage = Auxiliary.FindObject(canvas, "CodeImage").GetComponentInChildren<Image>();
+
+            VMConnectionStatusMessage = Auxiliary.FindObject(canvas, "VMConnectionStatus").GetComponentInChildren<Text>();
+            VMConnectionStatusImage = Auxiliary.FindObject(canvas, "VMConnectionStatusImage").GetComponentInChildren<Image>();
+
+            enableRobotImage = Auxiliary.FindObject(canvas, "Enable").GetComponentInChildren<Image>();
+            disableRobotImage = Auxiliary.FindObject(canvas, "Disable").GetComponentInChildren<Image>();
+
+            RobotDisabled();
+            StopRobotCode();
+            BeginTrackingVMConnectionStatus();
         }
 
-        private void Awake()
+        public void Awake()
         {
             Instance = this;
+        }
+
+        public void DisableDrag()
+        {
+            DynamicCamera.MovementEnabled = false;
+        }
+
+        public void EnableDrag()
+        {
+            DynamicCamera.MovementEnabled = true;
+        }
+
+        public void Update()
+        {
+            InputControl.freeze = gameSpecificMessage.isFocused;
         }
 
         /// <summary>
         /// Opens the emulation driver station
         /// </summary>
-        public void OpenDriverStation()
+        public void ToggleDriverStation()
         {
-            if (emuDriverStationPanel.activeSelf == true)
+            if (emuDriverStationPanel.activeSelf == true) // Close it
             {
                 emuDriverStationPanel.SetActive(false);
-                InputControl.freeze = false;
             }
-            else
+            else // Open it
             {
                 emuDriverStationPanel.SetActive(true);
-                InputControl.freeze = true;
                 RobotState("teleop");
-                RobotDisabled();
             }
         }
 
@@ -118,21 +111,58 @@ namespace Synthesis.GUI
         /// <summary>
         /// Indicator for VM connection status
         /// </summary>
-        public System.Collections.IEnumerator UpdateVMConnectionStatus()
+        private System.Collections.IEnumerator UpdateVMConnectionStatus()
         {
             while (true)
             {
-                if (SSHClient.IsVMConnected())
+                if (EmulatorManager.IsVMConnected())
                 {
-                    VMConnectionStatusMessage.text = "Connected";
-                    yield return new WaitForSeconds(15.0f); // s
+                    VMConnectionStatusImage.sprite = EmulatorConnection;
+                    if (EmulatorNetworkConnection.Instance.IsConnected())
+                        VMConnectionStatusMessage.text = "Connected";
+                    else
+                        VMConnectionStatusMessage.text = "Ready";
                 }
-                else
+                else if(EmulatorManager.IsVMRunning())
                 {
-                    VMConnectionStatusMessage.text = "Connecting";
-                    yield return new WaitForSeconds(3.0f); // s
+                    VMConnectionStatusImage.sprite = EmulatorConnection;
+                    VMConnectionStatusMessage.text = "Starting";
+                    StopRobotCode();
+                } else
+                {
+                    VMConnectionStatusImage.sprite = StartEmulator;
+                    VMConnectionStatusMessage.text = "Start Emulator";
+                    StopRobotCode();
                 }
+                yield return new WaitForSeconds(1.0f); // s
             }
+        }
+
+        public void BeginTrackingVMConnectionStatus()
+        {
+            if (!VMConnectionCoroutineRunning){
+                StartCoroutine(UpdateVMConnectionStatus());
+                VMConnectionCoroutineRunning = true;
+            }
+        }
+
+        public void RunRobotCode()
+        {
+            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
+            {
+                runButton.GetComponentInChildren<Text>().text = "Stop Code";
+                runRobotCodeImage.sprite = StopCode;
+                EmulatorManager.StartRobotCode();
+            }
+        }
+
+        public void StopRobotCode()
+        {
+            runButton.GetComponentInChildren<Text>().text = "Run Code";
+            runRobotCodeImage.sprite = StartCode;
+            if (EmulatorManager.IsRunningRobotCode())
+                EmulatorManager.StopRobotCode();
+            RobotDisabled();
         }
 
         /// <summary>
@@ -140,23 +170,13 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if(!SSHClient.IsVMConnected())
+            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
             {
-                return;
+                RunRobotCode();
             }
-            if (!isRunCode) // Start robot code
+            else
             {
-                runButton.GetComponentInChildren<Text>().text = "Stop Code";
-                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StopCode;
-                isRunCode = true;
-                SSHClient.StartRobotCode();
-            }
-            else // Stop robot code
-            {
-                runButton.GetComponentInChildren<Text>().text = "Run Code";
-                GameObject.Find("CodeImage").GetComponentInChildren<Image>().sprite = StartCode;
-                isRunCode = false;
-                SSHClient.StopRobotCode();
+                StopRobotCode();
             }
         }
 
@@ -168,26 +188,21 @@ namespace Synthesis.GUI
         {
             switch (theState)
             {
-                case "teleop":
-                    state = DriveState.Teleop;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
-                    break;
                 case "auto":
-                    state = DriveState.Auto;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
                 case "test":
-                    state = DriveState.Test;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
                     break;
+                case "teleop":
                 default:
-                    state = DriveState.Teleop;
+                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
                     GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
                     GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
@@ -197,16 +212,19 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            isRobotDisabled = false;
-            GameObject.Find("Enable").GetComponent<Image>().sprite = EnableColor;
-            GameObject.Find("Disable").GetComponent<Image>().sprite = DefaultColor;
+            if (EmulatorNetworkConnection.Instance.IsConnected())
+            {
+                InputManager.Instance.RobotMode.Enabled = true;
+                enableRobotImage.sprite = EnableColor;
+                disableRobotImage.sprite = DefaultColor;
+            }
         }
 
         public void RobotDisabled()
         {
-            isRobotDisabled = true;
-            GameObject.Find("Enable").GetComponent<Image>().sprite = DefaultColor;
-            GameObject.Find("Disable").GetComponent<Image>().sprite = DisableColor;
+            InputManager.Instance.RobotMode.Enabled = false;
+            enableRobotImage.sprite = DefaultColor;
+            disableRobotImage.sprite = DisableColor;
         }
 
         /// <summary>
@@ -217,43 +235,36 @@ namespace Synthesis.GUI
         {
             switch (teamStation)
             {
-                case 0:
-                    allianceStation = AllianceStation.Red1;
-                    Debug.Log(allianceStation);
-                    break;
                 case 1:
-                    allianceStation = AllianceStation.Red2;
-                    Debug.Log(allianceStation);
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
                     break;
                 case 2:
-                    allianceStation = AllianceStation.Red3;
-                    Debug.Log(allianceStation);
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
                     break;
                 case 3:
-                    allianceStation = AllianceStation.Blue1;
-                    Debug.Log(allianceStation);
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
                     break;
                 case 4:
-                    allianceStation = AllianceStation.Blue2;
-                    Debug.Log(allianceStation);
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
                     break;
                 case 5:
-                    allianceStation = AllianceStation.Blue3;
-                    Debug.Log(allianceStation);
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
                     break;
+                case 0:
                 default:
-                    allianceStation = AllianceStation.Red1;
+                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
                     break;
             }
         }
 
-        /// <summary>
-        /// A game specific message specified by the user
-        /// </summary>
-        public void GameData()
+        public void FinishGameSpecificMessage()
         {
-            gameDataInput = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
-            gameDataInput.onValueChanged.AddListener(delegate { Debug.Log(gameDataInput.text.ToString()); });
+            InputManager.Instance.MatchInfo.GameSpecificMessage = gameSpecificMessage.text;
+        }
+
+        public string GetGameSpecificMessage()
+        {
+            return gameSpecificMessage.text;
         }
     }
 }

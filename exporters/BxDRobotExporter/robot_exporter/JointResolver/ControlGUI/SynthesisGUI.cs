@@ -365,12 +365,12 @@ public bool ExportRobot()
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
             BXDJSkeleton.SetupFileNames(SkeletonBase);
-           
 
-            BXDJSkeletonJson.WriteSkeleton(
-                (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.json",
-                    SkeletonBase
-                );
+
+            BXDJSkeleton.WriteSkeleton(
+           (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj",
+               SkeletonBase
+           );
 
 
             //XML EXPORTING

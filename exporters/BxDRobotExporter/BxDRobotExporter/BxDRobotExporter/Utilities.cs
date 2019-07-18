@@ -83,21 +83,35 @@ namespace BxDRobotExporter
             }
         }
 
+        public static bool IsAdvancedJointEditorVisible()
+        {
+            if (EmbededJointPane == null) return false;
+            return EmbededJointPane.Visible;
+        }
+
         public static void ToggleAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {
-                EmbededJointPane.Visible = !EmbededJointPane.Visible;
+                if (IsAdvancedJointEditorVisible())
+                {
+                    HideAdvancedJointEditor();
+                }
+                else
+                {
+                    ShowAdvancedJointEditor();
+                }
             }
         }
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="StandardAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void HideAdvancedJointEditor()
+        public static void HideAdvancedJointEditor() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
         {
             if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = false;
+                InventorUtils.FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
             }
         }
 
