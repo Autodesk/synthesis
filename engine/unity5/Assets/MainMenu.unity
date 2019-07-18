@@ -7506,6 +7506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetFilename: definition.bxdf
+  TargetExtensions: []
   ErrorMessage: No fields found in directory!
 --- !u!114 &1033060840
 MonoBehaviour:
@@ -14101,7 +14102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d145b415ed39e4385bb50127127d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetFilename: skeleton.bxdj
+  TargetFilename: skeleton
+  TargetExtensions:
+  - .json
+  - .bxdj
   ErrorMessage: No robots found in directory!
 --- !u!114 &1797455041
 MonoBehaviour:
