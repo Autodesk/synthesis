@@ -214,57 +214,6 @@
     </Compile>
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Wizard\Components\DefinePartPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\DefinePartPanel.Designer.cs">
-      <DependentUpon>DefinePartPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Pages\DefineMovingPartsPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Pages\DefineMovingPartsPage.Designer.cs">
-      <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Data\WizardData.cs" />
-    <Compile Include="Wizard\Pages\DefineWheelsPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Pages\DefineWheelsPage.Designer.cs">
-      <DependentUpon>DefineWheelsPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\IWizardPage.cs" />
-    <Compile Include="Wizard\Components\WheelSetupPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\WheelSetupPanel.Designer.cs">
-      <DependentUpon>WheelSetupPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Wizard\Pages\ExportOrAdvancedForm.Designer.cs">
-      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\WizardForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Wizard\WizardForm.Designer.cs">
-      <DependentUpon>WizardForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Components\WizardNavigator.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\WizardNavigator.Designer.cs">
-      <DependentUpon>WizardNavigator.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\Components\WizardPageControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Wizard\Components\WizardPageControl.Designer.cs">
-      <DependentUpon>WizardPageControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Wizard\WizardUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -307,30 +256,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\DefinePartPanel.resx">
-      <DependentUpon>DefinePartPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Pages\DefineMovingPartsPage.resx">
-      <DependentUpon>DefineMovingPartsPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Pages\DefineWheelsPage.resx">
-      <DependentUpon>DefineWheelsPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\WheelSetupPanel.resx">
-      <DependentUpon>WheelSetupPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Pages\ExportOrAdvancedForm.resx">
-      <DependentUpon>ExportOrAdvancedForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\WizardForm.resx">
-      <DependentUpon>WizardForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\WizardNavigator.resx">
-      <DependentUpon>WizardNavigator.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Wizard\Components\WizardPageControl.resx">
-      <DependentUpon>WizardPageControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
