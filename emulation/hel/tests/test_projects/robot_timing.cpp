@@ -21,7 +21,7 @@
 	printf("\"%s\" took:%f milliseconds\n",#X,(NOW - start)/1E6)
 
 
-class Robot : public frc::IterativeRobot {
+class Robot : public frc::TimedRobot {
     frc::Spark spark{0};
     frc::Joystick joy{0};
     frc::DigitalOutput dio{11};

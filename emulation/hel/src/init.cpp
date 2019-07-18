@@ -1,6 +1,7 @@
 #include "roborio_manager.hpp"
-#include "send_data.hpp"
-#include "receive_data.hpp"
+#include "robot_inputs.hpp"
+#include "robot_outputs.hpp"
+
 #include <cstdio>
 #include <fstream>
 
@@ -11,12 +12,12 @@ namespace hel{
     std::atomic<bool> hal_is_initialized{false};
 
     std::shared_ptr<RoboRIO> RoboRIOManager::instance = nullptr;
-    std::shared_ptr<SendData> SendDataManager::instance = nullptr;
-    std::shared_ptr<ReceiveData> ReceiveDataManager::instance = nullptr;
+    std::shared_ptr<RobotOutputs> RobotOutputsManager::instance = nullptr;
+    std::shared_ptr<RobotInputs> RobotInputsManager::instance = nullptr;
 
     std::recursive_mutex RoboRIOManager::roborio_mutex;
-    std::recursive_mutex SendDataManager::send_data_mutex;
-    std::recursive_mutex ReceiveDataManager::receive_data_mutex;
+    std::recursive_mutex RobotOutputsManager::send_data_mutex;
+    std::recursive_mutex RobotInputsManager::receive_data_mutex;
 
     void __attribute__((constructor)) printVersionInfo() {
         std::ifstream vm_info;
@@ -32,7 +33,9 @@ namespace hel{
         std::getline(vm_info, nilib_version);
 
         printf("Synthesis Emulation Startup Info: \n\tHEL Version: %s\n\tVirtual Machine Version: %s\n\tWPILib Version: %s\n\tNI Libraries Version: %s\n\n", LIBHEL_VERSION, vm_version.c_str(), wpilib_version.c_str(), nilib_version.c_str());
+        RoboRIOManager::getInstance().first->robot_mode.setEnabled(HEL_DEFAULT_ENABLED_STATUS);
     }
+    
 }
 namespace nFPGA {
     namespace nRoboRIO_FPGANamespace {

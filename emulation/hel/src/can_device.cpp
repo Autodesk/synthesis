@@ -117,7 +117,7 @@ namespace hel{
             return 2;
         case CANMessageID::Type::UNKNOWN:
         default:
-            assert(0);
+            throw UnhandledEnumConstantException("hel::CANMessageID::Type");
         }
     }
 
