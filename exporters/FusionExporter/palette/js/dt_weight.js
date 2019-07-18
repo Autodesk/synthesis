@@ -52,11 +52,8 @@ function applyConfigData(dt_weight)
 // Outputs currently entered data as a JSON object
 function readConfigData()
 {
-    
-
     lastPacket.value = parseFloat(document.getElementById("dt-weight-value").value);
     lastPacket.unit = parseFloat(document.getElementById("dt-weight-unit").value);
-    console.log("sending: " + readConfigData());
     return lastPacket;
 }
 

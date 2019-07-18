@@ -109,6 +109,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	} else if (eventArgs->action() == "save_sensors") {
 		eui->closeSensorsPalette(eventArgs->data());
 	} else if (eventArgs->action() == "dt_weight_save") {
+		eui->closeDriveWeightPalette("");
 	} else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
 		eui->saveConfiguration(eventArgs->data());
 
