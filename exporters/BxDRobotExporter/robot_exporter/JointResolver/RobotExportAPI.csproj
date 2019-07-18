@@ -98,12 +98,6 @@
     <Compile Include="ControlGUI\ExportRobotForm.Designer.cs">
       <DependentUpon>ExportRobotForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\NodeEditorPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\NodeEditorPane.Designer.cs">
-      <DependentUpon>NodeEditorPane.cs</DependentUpon>
-    </Compile>
     <Compile Include="ControlGUI\SkeletonExporterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -225,9 +219,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\ExportRobotForm.resx">
       <DependentUpon>ExportRobotForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
-      <DependentUpon>NodeEditorPane.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
       <DependentUpon>SkeletonExporterForm.cs</DependentUpon>
