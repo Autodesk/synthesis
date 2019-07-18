@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
+using BxDRobotExporter.Properties;
 using EditorsLibrary;
 using Inventor;
 using JointResolver.EditorsLibrary;
@@ -111,26 +112,23 @@ namespace BxDRobotExporter
 
             #region Load Images
 
-            stdole.IPictureDisp EditJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32)); //these are still here at request of QA
-            stdole.IPictureDisp EditJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.JointEditor32));
+            stdole.IPictureDisp EditJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
+            stdole.IPictureDisp EditJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
 
-            stdole.IPictureDisp NewJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced16)); //these are still here at request of QA
-            stdole.IPictureDisp NewJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Advanced32));
+            stdole.IPictureDisp DrivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)); //these are still here at request of QA
+            stdole.IPictureDisp DrivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32));
 
-            stdole.IPictureDisp DrivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32)); //these are still here at request of QA
-            stdole.IPictureDisp DrivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.DrivetrainType32));
+            stdole.IPictureDisp PrecheckIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32)); //these are still here at request of QA
+            stdole.IPictureDisp PrecheckIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32));
 
-            stdole.IPictureDisp PrecheckIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32)); //these are still here at request of QA
-            stdole.IPictureDisp PrecheckIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Guide32));
+            stdole.IPictureDisp DrivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
+            stdole.IPictureDisp DrivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
 
-            stdole.IPictureDisp DrivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
-            stdole.IPictureDisp DrivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.RobotWeight32));
+            stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo16));
+            stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32));
 
-            stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
-            stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
-
-            stdole.IPictureDisp GearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
-            stdole.IPictureDisp GearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
+            stdole.IPictureDisp GearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
+            stdole.IPictureDisp GearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
 
             #endregion
 

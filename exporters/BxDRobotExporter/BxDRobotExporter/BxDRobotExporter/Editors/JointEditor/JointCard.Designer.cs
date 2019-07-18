@@ -1,3 +1,5 @@
+using BxDRobotExporter.Properties;
+
 namespace BxDRobotExporter.Editors.JointEditor
 {
     sealed partial class JointCard
@@ -79,7 +81,7 @@ namespace BxDRobotExporter.Editors.JointEditor
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = global::BxDRobotExporter.Resource.EditDrivers32;
+            this.pictureBox1.Image = Resources.JointEditor32;
             this.pictureBox1.InitialImage = null;
             this.pictureBox1.Location = new System.Drawing.Point(4, 4);
             this.pictureBox1.Name = "pictureBox1";
