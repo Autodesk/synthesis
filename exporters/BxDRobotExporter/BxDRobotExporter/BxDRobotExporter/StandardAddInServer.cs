@@ -65,6 +65,7 @@ namespace BxDRobotExporter
         RibbonPanel DriveTrainPanel;
         RibbonPanel JointPanel;
         RibbonPanel ChecklistPanel;
+        RibbonPanel PluginPanel;
         RibbonPanel ExitPanel;
 
         //Standalone Buttons
@@ -77,9 +78,11 @@ namespace BxDRobotExporter
 
         ButtonDefinition PreCheckButton;
         ButtonDefinition DOFButton;
+        ButtonDefinition SettingsButton;
 
-//        ButtonDefinition QuitButton;
+        //        ButtonDefinition QuitButton;
         ButtonDefinition ExportButton;
+
 
         //Highlighting
         public HighlightSet ChildHighlight;
@@ -100,7 +103,8 @@ namespace BxDRobotExporter
                 AddInSiteObject
                     .Application; //Gets the application object, which is used in many different ways throughout this whole process
             string ClientID = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
-
+            AnalyticUtils.SetUser(MainApplication.UserName);
+            AnalyticUtils.LogPage("Inventor");
             Utilities.LoadSettings();
 
             #region Add Parallel Environment
@@ -125,6 +129,9 @@ namespace BxDRobotExporter
             stdole.IPictureDisp SynthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo16));
             stdole.IPictureDisp SynthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.SynthesisLogo32));
 
+            stdole.IPictureDisp GearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears16));
+            stdole.IPictureDisp GearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resource.Gears32));
+
             #endregion
 
             #region UI Creation
@@ -146,6 +153,8 @@ namespace BxDRobotExporter
             JointPanel = ExporterTab.RibbonPanels.Add("Joint Setup", "BxD:RobotExporter:JointPanel", ClientID);
             ChecklistPanel =
                 ExporterTab.RibbonPanels.Add("Robot Setup Checklist", "BxD:RobotExporter:ChecklistPanel", ClientID);
+            PluginPanel =
+                ExporterTab.RibbonPanels.Add("Plugin", "BxD:RobotExporter:PluginSettings", ClientID);
             ExitPanel = ExporterTab.RibbonPanels.Add("Finish", "BxD:RobotExporter:ExitPanel", ClientID);
 
             // Reset positioning of panels
@@ -200,6 +209,12 @@ namespace BxDRobotExporter
             DOFButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(DOFButton, true);
 
+            SettingsButton = ControlDefs.AddButtonDefinition("Plugin Settings", "BxD:RobotExporter:Settings",
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", GearLogoSmall, GearLogoLarge);
+            SettingsButton.OnExecute += Settings_OnExecute;
+            SettingsButton.OnHelp += _OnHelp;
+            PluginPanel.CommandControls.AddButton(SettingsButton, true);
+
             #endregion
 
             #endregion
@@ -228,7 +243,11 @@ namespace BxDRobotExporter
 
             Instance = this;
         }
-
+        private void Settings_OnExecute(NameValueMap context)
+        {
+            PluginSettingsForm settingsForm = new PluginSettingsForm();
+            settingsForm.ShowDialog();
+        }
         private void DriveTrainType_OnExecute(NameValueMap context)
         {
             DriveTrainTypeForm driveTrainTypeForm = new DriveTrainTypeForm();
@@ -243,7 +262,7 @@ namespace BxDRobotExporter
             Marshal.ReleaseComObject(MainApplication);
             MainApplication = null;
             ExporterEnv.Delete();
-
+           
             GC.WaitForPendingFinalizers();
             GC.Collect();
         }
@@ -277,6 +296,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void OpeningExporter()
         {
+            AnalyticUtils.StartSession();
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
             Utilities.CreateDockableWindows(MainApplication);
@@ -335,6 +355,7 @@ namespace BxDRobotExporter
         /// </summary>
         private void ClosingExporter()
         {
+            AnalyticUtils.EndSession();
             SaveRobotData(null);
 
             DialogResult exportResult = MessageBox.Show(
@@ -562,6 +583,9 @@ namespace BxDRobotExporter
         private bool displayDOF = false;
         public void DOF_OnExecute(NameValueMap Context)
         {
+
+            AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
+
             displayDOF = !displayDOF;
 
             if (displayDOF)
@@ -619,6 +643,7 @@ namespace BxDRobotExporter
 
         public void EditJoint_OnExecute(NameValueMap Context)
         {
+            AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
             if (jointForm.Visible)
             {
                 jointForm.Hide();
@@ -635,6 +660,7 @@ namespace BxDRobotExporter
 
         private void AdvancedEditJoint_OnExecute(NameValueMap Context)
         {
+            AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
             Utilities.ToggleAdvancedJointEditor();
             if (Utilities.IsAdvancedJointEditorVisible())
             {
@@ -648,6 +674,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SaveRobotData(NameValueMap Context)
         {
+           
             if (Utilities.GUI.SaveRobotData())
                 PendingChanges = false;
         }
@@ -676,6 +703,7 @@ namespace BxDRobotExporter
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)
         {
+            AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
             if (Utilities.GUI.PromptRobotWeight())
                 PendingChanges = true;
         }
@@ -702,10 +730,10 @@ namespace BxDRobotExporter
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
         private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors,
-            string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition)
+            string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
-
+            AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings", 0);
             //Update Application
             Properties.Settings.Default.ExportToField = openSynthesis;
             Properties.Settings.Default.SelectedField = fieldLocation;
@@ -713,6 +741,7 @@ namespace BxDRobotExporter
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
             Properties.Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
+            Properties.Settings.Default.UseAnalytics = useAnalytics;
             Properties.Settings.Default.ConfigVersion =
                 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
