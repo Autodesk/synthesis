@@ -67,7 +67,7 @@ namespace BxDRobotExporter.JointEditor
 
             if (joint.cDriver != null)
             {
-                cmbDriveSide.SelectedItem = ToStringUtils.DriveTrainSideString(joint);
+                cmbDriveSide.SelectedItem = JointDataStringUtils.DriveTrainSideString(joint);
 
                 cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 

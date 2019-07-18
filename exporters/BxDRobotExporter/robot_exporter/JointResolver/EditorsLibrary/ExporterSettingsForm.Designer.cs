@@ -1,6 +1,6 @@
 ﻿namespace EditorsLibrary
 {
-    partial class PluginSettingsForm
+    partial class ExporterSettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginSettingsForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterSettingsForm));
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.ChildHighlight = new System.Windows.Forms.Button();
@@ -130,7 +130,7 @@
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "PluginSettingsForm";
+            this.Name = "ExporterSettingsForm";
             this.Text = "Exporter Settings";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();

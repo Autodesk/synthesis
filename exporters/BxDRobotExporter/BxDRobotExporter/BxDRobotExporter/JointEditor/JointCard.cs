@@ -28,10 +28,10 @@ namespace BxDRobotExporter.JointEditor
         public void LoadValues()
         {
             var joint = node.GetSkeletalJoint();
-            jointName.Text = ToStringUtils.NodeNameString(node);
-            jointTypeValue.Text = ToStringUtils.JointTypeString(joint);
-            driverValue.Text = ToStringUtils.DriverString(joint);
-            wheelTypeValue.Text = ToStringUtils.WheelTypeString(joint);
+            jointName.Text = JointDataStringUtils.NodeNameString(node);
+            jointTypeValue.Text = JointDataStringUtils.JointTypeString(joint);
+            driverValue.Text = JointDataStringUtils.DriverString(joint);
+            wheelTypeValue.Text = JointDataStringUtils.WheelTypeString(joint);
         }
 
         public void LoadValuesRecursive()
@@ -126,14 +126,14 @@ namespace BxDRobotExporter.JointEditor
         private void constraintsButton_Click(object sender, EventArgs e)
         {
             AnalyticUtils.LogEvent("Joint Editor", "Control Clicked", "Constraints Button");
-            var limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
+            var limitEditor = new JointLimitEditorForm(node.GetSkeletalJoint());// show the limit editor form
             limitEditor.ShowDialog(ParentForm);
         }
 
         private void sensorsButton_Click(object sender, EventArgs e)
         {
             AnalyticUtils.LogEvent("Joint Editor", "Control Clicked", "Sensors Button");
-            var listForm = new SensorListForm(node.GetSkeletalJoint());
+            var listForm = new JointSensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog(ParentForm);
         }
     }

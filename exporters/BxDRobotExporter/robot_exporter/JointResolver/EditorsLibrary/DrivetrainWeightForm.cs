@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public partial class SetWeightForm : Form
+    public partial class DrivetrainWeightForm : Form
     {
         public float TotalWeightKg = 0;
         public bool PreferMetric = false;
 
-        public SetWeightForm()
+        public DrivetrainWeightForm()
         {
             InitializeComponent();
             AnalyticUtils.LogPage("SetWeightForm");

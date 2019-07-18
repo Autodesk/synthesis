@@ -1,7 +1,7 @@
 ﻿using System;
 namespace EditorsLibrary
 {
-    partial class EditLimits
+    partial class JointLimitEditorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace EditorsLibrary
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditLimits));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointLimitEditorForm));
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOkay = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -397,7 +397,7 @@ namespace EditorsLibrary
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "EditLimits";
+            this.Name = "JointLimitEditorForm";
             this.Text = "Edit Limits";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.Angular_Group_Box.ResumeLayout(false);

@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class ExportRobotForm : Form
+    public partial class RobotSettingsForm : Form
     {
         static Dictionary<string, string> fields = new Dictionary<string, string>();
 
-        public ExportRobotForm(string initialRobotName)
+        public RobotSettingsForm(string initialRobotName)
         {
             InitializeComponent();
             InitializeFields();
@@ -55,20 +50,20 @@ namespace JointResolver.ControlGUI
         {
             try
             {
-                ExportRobotForm form = new ExportRobotForm(initialRobotName);
-                form.ShowDialog();
-                robotName = form.RobotNameTextBox.Text;
-                colors = form.ColorBox.Checked;
-                openSynthesis = form.OpenSynthesisBox.Checked;
-                SynthesisGUI.PluginSettings.fieldName = (string)form.FieldSelectComboBox.SelectedItem;
-                SynthesisGUI.PluginSettings.openSynthesis = form.OpenSynthesisBox.Checked;
+                RobotSettingsForm settingsForm = new RobotSettingsForm(initialRobotName);
+                settingsForm.ShowDialog();
+                robotName = settingsForm.RobotNameTextBox.Text;
+                colors = settingsForm.ColorBox.Checked;
+                openSynthesis = settingsForm.OpenSynthesisBox.Checked;
+                SynthesisGUI.PluginSettings.fieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
+                SynthesisGUI.PluginSettings.openSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
                 
-                if (form.OpenSynthesisBox.Checked && form.FieldSelectComboBox.SelectedItem != null)
-                    field = fields[(string)form.FieldSelectComboBox.SelectedItem];
+                if (settingsForm.OpenSynthesisBox.Checked && settingsForm.FieldSelectComboBox.SelectedItem != null)
+                    field = fields[(string)settingsForm.FieldSelectComboBox.SelectedItem];
 
-                return form.DialogResult;
+                return settingsForm.DialogResult;
             }
             catch (Exception e)
             {

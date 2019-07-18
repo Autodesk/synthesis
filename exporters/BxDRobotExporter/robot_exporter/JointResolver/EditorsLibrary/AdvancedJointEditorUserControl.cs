@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public partial class JointEditorPane : UserControl
+    public partial class AdvancedJointEditorUserControl : UserControl
     {
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace EditorsLibrary
         /// <summary>
         /// Dialog for choosing a joint driver
         /// </summary>
-        private DriveChooser driveChooserDialog = new DriveChooser();
+        private JointDriverEditorForm jointDriverEditorFormDialog = new JointDriverEditorForm();
 
         /// <summary>
         /// The list of nodes to be attached as metadata
@@ -45,7 +45,7 @@ namespace EditorsLibrary
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
         /// </summary>
-        public JointEditorPane()
+        public AdvancedJointEditorUserControl()
         {
             InitializeComponent();
             this.DoLayout(null, null);
@@ -61,7 +61,7 @@ namespace EditorsLibrary
                         RigidNode_Base node = nodes[0];
                         if (node != null && node.GetSkeletalJoint() != null)// prevents the user from trying to edit a null joint
                         {
-                            EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());// show the limit editor form
+                            JointLimitEditorForm limitEditor = new JointLimitEditorForm(node.GetSkeletalJoint());// show the limit editor form
                             limitEditor.ShowDialog(ParentForm);
                         }
                     }
@@ -145,7 +145,7 @@ namespace EditorsLibrary
         }
 
         /// <summary>
-        /// The <see cref="JointEditorEvent"/> to open up a <see cref="SensorListForm"/>
+        /// The <see cref="JointEditorEvent"/> to open up a <see cref="JointSensorListForm"/>
         /// </summary>
         /// <param name="node">The node connected to the joint to edit the sensors on</param>
         private void ListSensors_Internal(List<RigidNode_Base> nodes)
@@ -156,7 +156,7 @@ namespace EditorsLibrary
             if (node == null) return;
 
             currentlyEditing = true;
-            SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
+            JointSensorListForm listForm = new JointSensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog(ParentForm);
             ModifiedJoint?.Invoke(nodes);
             this.UpdateJointList();
@@ -164,7 +164,7 @@ namespace EditorsLibrary
         }
 
         /// <summary>
-        /// The <see cref="JointEditorEvent"/> to open up a <see cref="DriveChooser"/> dialog
+        /// The <see cref="JointEditorEvent"/> to open up a <see cref="JointDriverEditorForm"/> dialog
         /// </summary>
         /// <param name="node">The node connected to the joint with a driver to edit</param>
         private void EditDriver_Internal(List<RigidNode_Base> nodes)
@@ -173,9 +173,9 @@ namespace EditorsLibrary
 
             currentlyEditing = true;
 
-            driveChooserDialog.ShowDialog(nodes[0].GetSkeletalJoint(), nodes, ParentForm);
+            jointDriverEditorFormDialog.ShowDialog(nodes[0].GetSkeletalJoint(), nodes, ParentForm);
 
-            if (ModifiedJoint != null && driveChooserDialog.Saved)
+            if (ModifiedJoint != null && jointDriverEditorFormDialog.Saved)
             {
                 ModifiedJoint(nodes);
             }
@@ -247,7 +247,7 @@ namespace EditorsLibrary
                     if (joint != null)
                     {
                         ListViewItem item = new ListViewItem(new string[] {
-                            ToStringUtils.JointTypeString(joint), ToStringUtils.NodeNameString(node), ToStringUtils.DriverString(joint), ToStringUtils.WheelTypeString(joint), ToStringUtils.SensorCountString(joint)})
+                            JointDataStringUtils.JointTypeString(joint), JointDataStringUtils.NodeNameString(node), JointDataStringUtils.DriverString(joint), JointDataStringUtils.WheelTypeString(joint), JointDataStringUtils.SensorCountString(joint)})
                         {
                             Tag = node
                         };

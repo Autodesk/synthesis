@@ -1,6 +1,6 @@
 ﻿namespace JointResolver.ControlGUI
 {
-    partial class ExportRobotForm
+    partial class RobotSettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportRobotForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RobotSettingsForm));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.RobotNameLabel = new System.Windows.Forms.Label();
             this.RobotNameTextBox = new System.Windows.Forms.TextBox();
@@ -204,7 +204,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ExportRobotForm";
+            this.Name = "RobotSettingsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Export Robot to Synthesis";

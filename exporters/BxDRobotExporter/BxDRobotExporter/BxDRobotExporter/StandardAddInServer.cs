@@ -245,13 +245,13 @@ namespace BxDRobotExporter
         }
         private void Settings_OnExecute(NameValueMap context)
         {
-            PluginSettingsForm settingsForm = new PluginSettingsForm();
+            ExporterSettingsForm settingsForm = new ExporterSettingsForm();
             settingsForm.ShowDialog();
         }
         private void DriveTrainType_OnExecute(NameValueMap context)
         {
-            DriveTrainTypeForm driveTrainTypeForm = new DriveTrainTypeForm();
-            driveTrainTypeForm.ShowDialog();
+            DrivetrainTypeForm drivetrainTypeForm = new DrivetrainTypeForm();
+            drivetrainTypeForm.ShowDialog();
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
+            ExporterSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
 
@@ -567,7 +567,7 @@ namespace BxDRobotExporter
         #region Custom Button Events
 
         private bool displayDOF = false;
-        public JointEditorPane advancedJointEditor;
+        public AdvancedJointEditorUserControl AdvancedAdvancedJointEditor;
 
         public void DOF_OnExecute(NameValueMap Context)
         {
@@ -643,7 +643,7 @@ namespace BxDRobotExporter
 //                Utilities.HideAdvancedJointEditor();
                 jointForm.OnShowButtonClick();
                 jointForm.ShowDialog();
-                advancedJointEditor.SetSkeleton(SynthesisGUI.Instance.SkeletonBase);
+                AdvancedAdvancedJointEditor.SetSkeleton(SynthesisGUI.Instance.SkeletonBase);
             }
         }
 
@@ -687,7 +687,7 @@ namespace BxDRobotExporter
 
         //Settings
         /// <summary>
-        /// Opens the <see cref="SetWeightForm"/> form to allow the user to set the weight of their robot.
+        /// Opens the <see cref="DrivetrainWeightForm"/> form to allow the user to set the weight of their robot.
         /// </summary>
         /// <param name="Context"></param>
         private void SetWeight_OnExecute(NameValueMap Context)

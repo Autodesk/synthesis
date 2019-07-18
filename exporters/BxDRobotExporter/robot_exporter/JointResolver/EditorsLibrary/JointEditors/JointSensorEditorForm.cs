@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public partial class EditSensorForm : Form
+    public partial class JointSensorEditorForm : Form
     {
         SkeletalJoint_Base joint;
         int sourceIndex = 0;
         RobotSensorType[] sensorTypeOptions;
 
-        public EditSensorForm(SkeletalJoint_Base passJoint, int sourceIndex = -1)
+        public JointSensorEditorForm(SkeletalJoint_Base passJoint, int sourceIndex = -1)
         {
             InitializeComponent();
             AnalyticUtils.LogPage("EditSensorForm");

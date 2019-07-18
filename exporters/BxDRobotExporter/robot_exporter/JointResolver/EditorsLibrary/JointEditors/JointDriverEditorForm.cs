@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
 using System.Globalization;
+using System.Linq;
+using System.Windows.Forms;
 
-
-public partial class DriveChooser : Form
+public partial class JointDriverEditorForm : Form
 {
-    public DriveChooser()
+    public JointDriverEditorForm()
     {
         InitializeComponent();
     }
