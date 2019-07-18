@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Net;
 using System.Threading.Tasks;
 using System;
+using System.Threading;
 
 public class AnalyticsManager : MonoBehaviour {
 
@@ -16,19 +17,25 @@ public class AnalyticsManager : MonoBehaviour {
     public const float DUMP_DELAY = 5;
     public bool DumpData = true;
 
+    public static Mutex mutex;
+
     private WebClient client;
     private Queue<KeyValuePair<string, string>> loggedData;
     private List<KeyValuePair<string, float>> startTimes;
 
     private float LastDump = 0;
+    private bool lastEnd = false;
 
     public void Awake()
     {
+        mutex = new Mutex();
         GlobalInstance = this;
         LastDump = Time.time;
         DontDestroyOnLoad(gameObject);
         loggedData = new Queue<KeyValuePair<string, string>>();
         startTimes = new List<KeyValuePair<string, float>>();
+
+        DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
     }
 
     public void LateUpdate()
@@ -105,6 +112,7 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "event"));
 
@@ -113,7 +121,7 @@ public class AnalyticsManager : MonoBehaviour {
             if (Label != null) loggedData.Enqueue(new KeyValuePair<string, string>("el", Label));
             if (Label != null) loggedData.Enqueue(new KeyValuePair<string, string>("ev", Value));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
-
+            mutex.ReleaseMutex();
             Debug.Log("Event Logged");
         });
     }
@@ -122,13 +130,15 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "screenname"));
 
             //ScreenName = ScreenName.Replace(" ", "%20");
 
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "https://www.google.com/index.html"));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Screenname Logged");
         });
     }
@@ -137,11 +147,13 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "pageview"));
 
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "http://test.com/" + Title));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Pageview Logged");
         });
     }
@@ -150,6 +162,7 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "timing"));
 
@@ -157,7 +170,8 @@ public class AnalyticsManager : MonoBehaviour {
             loggedData.Enqueue(new KeyValuePair<string, string>("utv", Vari));
             loggedData.Enqueue(new KeyValuePair<string, string>("utt", Time.ToString()));
             loggedData.Enqueue(new KeyValuePair<string, string>("utl", Label));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Timing Logged");
         });
     }
@@ -166,8 +180,13 @@ public class AnalyticsManager : MonoBehaviour {
     {
         return Task.Factory.StartNew(() =>
         {
-
-            if (!DumpData || loggedData.Count < 1) { Debug.Log("Not Dumping"); return; }
+            mutex.WaitOne();
+            if (loggedData.Count < 1 || !DumpData)
+            {
+                loggedData = new Queue<KeyValuePair<string, string>>();
+                Debug.Log("Not Dumping");
+                return;
+            }
 
             Debug.Log("Starting Data Dump");
 
@@ -175,6 +194,7 @@ public class AnalyticsManager : MonoBehaviour {
 
             Queue<KeyValuePair<string, string>> loggedCopy = new Queue<KeyValuePair<string, string>>(loggedData);
             loggedData.Clear();
+            mutex.ReleaseMutex();
 
             bool batchSend = false;
 
@@ -182,18 +202,22 @@ public class AnalyticsManager : MonoBehaviour {
             {
                 KeyValuePair<string, string> pair = loggedCopy.Dequeue();
                 //Debug.Log(pair.Key + " " + pair.Value);
-                if (pair.Key.Equals("NEW"))
+                if (pair.Key != null)
                 {
-                    data += "\n";
-                    batchSend = true;
-                }
-                else
-                {
-                    if ((data != "") && (data != "\n")) data += "&";
+                    if (pair.Key.Equals("NEW"))
+                    {
+                        data += "\n";
+                        batchSend = true;
+                        lastEnd = true;
+                    }
+                    else
+                    {
+                        if ((data != "") && !lastEnd) data += "&";
 
-                    data += pair.Key + "=" + pair.Value;
+                        data += pair.Key + "=" + pair.Value;
+                        lastEnd = false;
+                    }
                 }
-
 
             }
 

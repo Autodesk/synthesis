@@ -160,6 +160,7 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);
                     Auxiliary.FindObject(canvas, "LoadingPanel").SetActive(true);
+                    MainState.timesLoaded--;
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
 
