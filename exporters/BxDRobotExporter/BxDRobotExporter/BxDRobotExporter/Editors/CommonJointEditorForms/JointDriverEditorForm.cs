@@ -1,74 +1,57 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.Editors.JointEditor
+namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
-    public partial class JointCardEditor : UserControl // TODO: Use this UserControl in the DriveChooser form and remove the save button in DriveChooser
+    public partial class JointDriverEditorForm : Form
     {
-        private bool disableAutoSave;
-        private SkeletalJoint_Base joint;
-        private JointCard jointCard;
-        private List<RigidNode_Base> nodes;
-        private JointDriverType[] typeOptions;
-
-        public JointCardEditor()
+        public JointDriverEditorForm()
         {
             InitializeComponent();
-            WinFormsUtils.DisableScrollSelection(this);
-            EnableLiveSave(this);
         }
 
-        public void Initialize(List<RigidNode_Base> nodes, JointCard jointCard)
-        {
-            this.nodes = nodes;
-            this.jointCard = jointCard;
-            AnalyticUtils.LogEvent("Joint Card Editor", "System", "Init");
-        }
+        public bool Saved;
 
-        private void EnableLiveSave(Control control)
+        private JointDriverType[] typeOptions;
+        private SkeletalJoint_Base joint;
+        private List<RigidNode_Base> nodes;
+
+        public void ShowDialog(SkeletalJoint_Base baseJoint, List<RigidNode_Base> nodes, Form owner)
         {
-            WinFormsUtils.AddChangeListener(control, SaveChanges);
-            foreach (Control subControl in control.Controls)
+            Saved = false;
+
+            if (nodes.Count > 1)
             {
-                EnableLiveSave(subControl);
+                bool same = true;
+
+                foreach (RigidNode_Base node in nodes)
+                {
+                    JointDriver driver = node.GetSkeletalJoint().cDriver;
+                    if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0) 
+                        same = false;
+                }
+
+                if (same) joint = baseJoint;
+                else joint = SkeletalJoint_Base.JOINT_FACTORY(baseJoint.GetJointType());
             }
-
-            AnalyticUtils.LogEvent("Joint Card Editor", "System", "EnableLiveSave");
-        }
-
-        public void LoadValues() // TODO: Settings saving and loading should be done in a dedicated class
-        {
-            disableAutoSave = true;
-
-            joint = nodes[0].GetSkeletalJoint();
-            typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
+            else joint = baseJoint;
+            this.nodes = nodes;
+            typeOptions = JointDriver.GetAllowedDrivers(joint);
 
             // Used for capitalization
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
-            
-            CalculatedWeightCheck.Checked = joint.weight <= 0;
-            UnitBox.SelectedIndex = SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 0;
-            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
-            
-            cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
-            cmbDriveSide.Items.Add("Left");
-            cmbDriveSide.Items.Add("Right");
-            cmbDriveSide.Items.Add("Other");
 
             cmbJointDriver.Items.Clear();
             cmbJointDriver.Items.Add("No Driver");
             foreach (JointDriverType type in typeOptions)
             {
-                cmbJointDriver.Items.Add(textInfo.ToTitleCase(Enum.GetName(typeof(JointDriverType), type)
-                    .Replace('_', ' ').ToLowerInvariant()));
+                cmbJointDriver.Items.Add(textInfo.ToTitleCase(Enum.GetName(typeof(JointDriverType), type).Replace('_', ' ').ToLowerInvariant()));
             }
-
             if (joint.cDriver != null)
             {
-                cmbDriveSide.SelectedItem = JointDataStringUtils.DriveTrainSideString(joint);
-
                 cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 
                 if (joint.cDriver.port1 < txtPort1.Minimum)
@@ -85,44 +68,35 @@ namespace BxDRobotExporter.Editors.JointEditor
                 else
                     txtPort2.Value = joint.cDriver.port2;
 
-                txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
-                txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
+                txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
+                txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
 
                 rbPWM.Checked = !joint.cDriver.isCan;
                 rbCAN.Checked = joint.cDriver.isCan;
                 chkBoxHasBrake.Checked = joint.cDriver.hasBrake;
-                if (joint.cDriver.OutputGear == 0
-                ) // prevents output gear from being 0 //TODO: should be enforced via form limits
+                if (joint.cDriver.OutputGear == 0)// prevents output gear from being 0
                 {
                     joint.cDriver.OutputGear = 1;
                 }
-
-                if (joint.cDriver.InputGear == 0
-                ) // prevents input gear from being 0//TODO: should be enforced via form limits
+                if (joint.cDriver.InputGear == 0)// prevents input gear from being 0
                 {
                     joint.cDriver.InputGear = 1;
                 }
-
-                OutputGeartxt.Value =
-                    (decimal) joint.cDriver
-                        .OutputGear; // reads the existing gearing and writes it to the input field so the user sees their existing value
-                InputGeartxt.Value =
-                    (decimal) joint.cDriver
-                        .InputGear; // reads the existing gearing and writes it to the input field so the user sees their existing value
+                OutputGeartxt.Value = (decimal) joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
+                InputGeartxt.Value = (decimal) joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
                 #region Meta info recovery
-
                 {
                     PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                     if (pneumaticMeta != null)
                     {
-                        numericUpDownPnuDia.Value = (decimal) pneumaticMeta.width;
-                        cmbPneumaticPressure.SelectedIndex = (int) pneumaticMeta.pressureEnum;
+                        numericUpDownPnuDia.Value = (decimal)pneumaticMeta.width;
+                        cmbPneumaticPressure.SelectedIndex = (int)pneumaticMeta.pressureEnum;
                     }
                     else
                     {
-                        numericUpDownPnuDia.Value = (decimal) 1.0;
-                        cmbPneumaticPressure.SelectedIndex = (int) PneumaticPressure.HIGH;
+                        numericUpDownPnuDia.Value = (decimal)1.0;
+                        cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.HIGH;
                     }
                 }
                 {
@@ -131,16 +105,16 @@ namespace BxDRobotExporter.Editors.JointEditor
                     {
                         try
                         {
-                            cmbWheelType.SelectedIndex = (int) wheelMeta.type;
-                            cmbFrictionLevel.SelectedIndex = (int) wheelMeta.GetFrictionLevel();
+                            cmbWheelType.SelectedIndex = (int)wheelMeta.type;
+                            cmbFrictionLevel.SelectedIndex = (int)wheelMeta.GetFrictionLevel();
                         }
                         catch
                         {
                             // If an exception was thrown (System.ArguementOutOfRangeException) it means
                             // the user did not choose a wheel type when they were configuring the 
                             // wheel joint
-                            cmbWheelType.SelectedIndex = (int) WheelType.NORMAL;
-                            cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
+                            cmbWheelType.SelectedIndex = (int)WheelType.NORMAL;
+                            cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                         }
 
                         chkBoxDriveWheel.Checked = wheelMeta.isDriveWheel;
@@ -148,19 +122,19 @@ namespace BxDRobotExporter.Editors.JointEditor
                     }
                     else
                     {
-                        cmbWheelType.SelectedIndex = (int) WheelType.NOT_A_WHEEL;
-                        cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
+                        cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
+                        cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                     }
                 }
                 {
                     ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                
                 }
                 {
-                    switch (joint.cDriver.motor) // TODO: Use motor definition file
+                    switch (joint.cDriver.motor)
                     {
                         case MotorType.GENERIC:
-                            RobotCompetitionDropDown.SelectedItem =
-                                SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
+                            RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -265,7 +239,6 @@ namespace BxDRobotExporter.Editors.JointEditor
                             break;
                     }
                 }
-
                 #endregion
             }
             else //Default values
@@ -282,33 +255,76 @@ namespace BxDRobotExporter.Editors.JointEditor
 
                 chkBoxHasBrake.Checked = false;
 
-                numericUpDownPnuDia.Value = (decimal) 0.5;
-                cmbPneumaticPressure.SelectedIndex = (int) PneumaticPressure.MEDIUM;
+                numericUpDownPnuDia.Value = (decimal)0.5;
+                cmbPneumaticPressure.SelectedIndex = (int)PneumaticPressure.MEDIUM;
 
-                cmbWheelType.SelectedIndex = (int) WheelType.NOT_A_WHEEL;
-                cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
+                cmbWheelType.SelectedIndex = (int)WheelType.NOT_A_WHEEL;
+                cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
                 RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
-            UpdateLayout();
+            PrepLayout();
             base.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - base.Height - 10);
+            this.ShowDialog(owner);
+        }
 
-            disableAutoSave = false;
+        private bool ShouldSave()
+        {
+            if (joint.cDriver == null) return true;
+
+            double inputGear = 1, outputGear = 1;
+        
+            inputGear = (double) InputGeartxt.Value;
+            outputGear = (double)OutputGeartxt.Value;
+                
+            PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+            WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+            ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+            Enum.TryParse(MotorTypeDropDown.SelectedItem.ToString(), out MotorType motor);
+            if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
+                txtPort1.Value != joint.cDriver.port1 ||
+                txtPort2.Value != joint.cDriver.port2 ||
+                txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
+                txtHighLimit.Value != (decimal) joint.cDriver.upperLimit ||
+                inputGear != joint.cDriver.InputGear || outputGear != joint.cDriver.OutputGear || 
+                rbCAN.Checked != joint.cDriver.isCan || chkBoxHasBrake.Checked != joint.cDriver.hasBrake ||
+                motor != joint.cDriver.motor)
+                return true;
+
+            if (pneumatic != null && 
+                (numericUpDownPnuDia.Value != (decimal)pneumatic.width ||
+                 cmbPneumaticPressure.SelectedIndex != (int)pneumatic.pressureEnum))
+                return true;
+
+            if (wheel != null &&
+                (cmbWheelType.SelectedIndex != (int)wheel.type ||
+                 cmbFrictionLevel.SelectedIndex != (int)wheel.GetFrictionLevel() ||
+                 chkBoxDriveWheel.Checked != wheel.isDriveWheel))
+                return true;
+
+            if (elevator != null)
+                return true;
+
+            //If going from "NOT A WHEEL" to a wheel
+            if (cmbWheelType.SelectedIndex != 0 && wheel == null && joint.cDriver.GetDriveType() == JointDriverType.MOTOR)
+                return true;
+
+            return false;
         }
 
         /// <summary>
         /// Changes the position of window elements based on the type of driver.
         /// </summary>
-        private void UpdateLayout()
+        void PrepLayout()
         {
-            WeightBox.Enabled = !CalculatedWeightCheck.Checked;
-            
             chkBoxDriveWheel.Hide();
+            rbCAN.Hide();
+            rbPWM.Hide();
 
-            if (cmbJointDriver.SelectedIndex <= 0) //If the joint is not driven
+            if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
             {
                 grpDriveOptions.Visible = false;
                 tabsMeta.TabPages.Clear();
@@ -318,12 +334,9 @@ namespace BxDRobotExporter.Editors.JointEditor
                 JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
                 lblPort.Text = cType.GetPortType(rbCAN.Checked) + " Port" + (cType.HasTwoPorts() ? "s" : "");
                 txtPort2.Visible = cType.HasTwoPorts();
-
+            
                 txtPort1.Maximum = txtPort2.Maximum = cType.GetPortMax(rbCAN.Checked);
                 grpDriveOptions.Visible = true;
-
-                txtPort1.Enabled = true;
-                txtPort1.Minimum = 3;
 
                 if (cType.IsMotor())
                 {
@@ -333,10 +346,7 @@ namespace BxDRobotExporter.Editors.JointEditor
                     tabsMeta.TabPages.Add(metaGearing);
                     tabsMeta.TabPages.Add(metaBrake);
                     tabsMeta.TabPages.Add(metaMotorType);
-                    chkBoxDriveWheel.Visible = !cType.HasTwoPorts();
-                    cmbDriveSide.Visible = !cType.HasTwoPorts() && chkBoxDriveWheel.Checked;
-                    grpDriveOptions.Visible = !chkBoxDriveWheel.Checked;
-
+                    chkBoxDriveWheel.Show();
                     rbCAN.Show();
                     rbPWM.Show();
                 }
@@ -346,8 +356,6 @@ namespace BxDRobotExporter.Editors.JointEditor
                     tabsMeta.TabPages.Clear();
                     tabsMeta.TabPages.Add(metaPneumatic);
                     tabsMeta.TabPages.Add(metaBrake);
-                    rbCAN.Hide();
-                    rbPWM.Hide();
                 }
                 else if (cType.IsElevator())
                 {
@@ -370,9 +378,13 @@ namespace BxDRobotExporter.Editors.JointEditor
                     tabsMeta.Visible = false;
                 }
             }
-
             // Set window size
             tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
+        }
+
+        private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PrepLayout();
         }
 
         /// <summary>
@@ -380,24 +392,13 @@ namespace BxDRobotExporter.Editors.JointEditor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SaveChanges(object sender, EventArgs e) // TODO: Settings saving and loading should be done in a dedicated class
+        private void SaveButton_Click(object sender, EventArgs e)
         {
-            AnalyticUtils.LogEvent("Joint Card Editor", "System", "SaveChanges");
-            if (disableAutoSave)
+            bool canClose = true;
+            if (!ShouldSave())
             {
+                Close();
                 return;
-            }
-            
-            var preferMetric = UnitBox.SelectedIndex == 1;
-
-            if (CalculatedWeightCheck.Checked)
-                joint.weight = -1;
-            else
-            {
-                if (!preferMetric)
-                    joint.weight = (float)WeightBox.Value / 2.20462f;
-                else
-                    joint.weight = (float)WeightBox.Value;
             }
 
             if (cmbJointDriver.SelectedIndex <= 0)
@@ -408,35 +409,20 @@ namespace BxDRobotExporter.Editors.JointEditor
             {
                 JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
-                var inputGear = (double) InputGeartxt.Value;
-                var outputGear = (double) OutputGeartxt.Value;
+                double inputGear = 1, outputGear = 1;
 
-                var port1Value = (int) txtPort1.Value;
-                if (chkBoxDriveWheel.Checked)
-                {
-                    switch (cmbDriveSide.SelectedItem)
-                    {
-                        case "Right":
-                            port1Value = 0;
-                            break;
-                        case "Left":
-                            port1Value = 1;
-                            break;
-                        case "Other":
-                            port1Value = 2;
-                            break;
-                    }
-                }
+                inputGear = (double)InputGeartxt.Value;
+
+                outputGear = (double)OutputGeartxt.Value;// tries to parse the double from the output gear
 
                 joint.cDriver = new JointDriver(cType)
                 {
-                    port1 = port1Value,
-                    port2 = (int) txtPort2.Value,
-                    InputGear = inputGear, // writes the input gear to the internal joint driver so it can be exported
-                    OutputGear =
-                        outputGear, // writes the output gear to the internal joint driver so it can be exported
-                    lowerLimit = (float) txtLowLimit.Value,
-                    upperLimit = (float) txtHighLimit.Value,
+                    port1 = (int)txtPort1.Value,
+                    port2 = (int)txtPort2.Value,
+                    InputGear = inputGear,// writes the input gear to the internal joint driver so it can be exported
+                    OutputGear = outputGear,// writes the output gear to the internal joint driver so it can be exported
+                    lowerLimit = (float)txtLowLimit.Value,
+                    upperLimit = (float)txtHighLimit.Value,
                     isCan = rbCAN.Checked,
                     hasBrake = chkBoxHasBrake.Checked
                 };
@@ -446,28 +432,23 @@ namespace BxDRobotExporter.Editors.JointEditor
                     {
                         motor = MotorType.GENERIC;
                     }
-
                     joint.cDriver.motor = motor;
-                    SynthesisGUI.PluginSettings.defaultRobotCompetition =
-                        RobotCompetitionDropDown.SelectedItem.ToString();
+                    SynthesisGUI.PluginSettings.defaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
                 }
-
                 //Only need to store wheel driver if run by motor and is a wheel.
-                if (cType.IsMotor() && (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
+                if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
                 {
                     #region WHEEL_SAVING
-
                     WheelDriverMeta wheelDriver = new WheelDriverMeta()
                     {
-                        type = (WheelType) cmbWheelType.SelectedIndex,
+                        type = (WheelType)cmbWheelType.SelectedIndex,
                         isDriveWheel = chkBoxDriveWheel.Checked
                     }; //The info about the wheel attached to the joint.
                     //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
 
-                    wheelDriver.SetFrictionLevel((FrictionLevel) cmbFrictionLevel.SelectedIndex);
+                    wheelDriver.SetFrictionLevel((FrictionLevel)cmbFrictionLevel.SelectedIndex);
 
                     joint.cDriver.AddInfo(wheelDriver);
-
                     #endregion
                 }
                 else
@@ -478,14 +459,12 @@ namespace BxDRobotExporter.Editors.JointEditor
                 if (cType.IsPneumatic())
                 {
                     #region PNEUMATIC_SAVING
-
                     PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                     {
-                        pressureEnum = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex,
-                        width = (double) numericUpDownPnuDia.Value
+                        pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
+                        width = (double)numericUpDownPnuDia.Value
                     }; //The info about the wheel attached to the joint.
                     joint.cDriver.AddInfo(pneumaticDriver);
-
                     #endregion
                 }
                 else
@@ -496,13 +475,11 @@ namespace BxDRobotExporter.Editors.JointEditor
                 if (cType.IsElevator())
                 {
                     #region ELEVATOR_SAVING
-
                     ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                     {
                         type = ElevatorType.NOT_MULTI
                     };
                     joint.cDriver.AddInfo(elevatorDriver);
-
                     #endregion
                 }
                 else
@@ -538,15 +515,17 @@ namespace BxDRobotExporter.Editors.JointEditor
                 }
             }
 
-            jointCard?.LoadValues(); // TODO: Use event listener for change events
-
-            disableAutoSave = false;
+            if (canClose)// make sure there are no outstanding issues for the user to fix before we save
+            {
+                Saved = true;
+                LegacyInterchange.LegacyEvents.OnRobotModified();
+                Close();
+            }
         }
 
         private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "WheelType", cmbWheelType.SelectedIndex);
-            if ((WheelType) cmbWheelType.SelectedIndex == WheelType.NOT_A_WHEEL)
+            if ((WheelType)cmbWheelType.SelectedIndex == WheelType.NOT_A_WHEEL)
             {
                 lblFriction.Visible = false;
                 cmbFrictionLevel.Visible = false;
@@ -558,10 +537,39 @@ namespace BxDRobotExporter.Editors.JointEditor
             }
         }
 
+        private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
+        {
+            /*if (chkBoxHasBrake.Checked)
+        {
+            lblBrakePort.Enabled = true;
+            brakePort1.Enabled = true;
+            brakePort2.Enabled = true;
+        }
+        else
+        {
+            lblBrakePort.Enabled = false;
+            brakePort1.Enabled = false;
+            brakePort2.Enabled = false;
+        }*/
+        }
+
+        private void rbCAN_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbCAN.Checked)
+            {
+                lblPort.Text = "CAN Port";
+
+            }
+            else
+            {
+                lblPort.Text = "PWM Port";
+            }
+            PrepLayout();
+        }
+
         private void RobotCompetitionDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Competetion", RobotCompetitionDropDown.SelectedIndex);
-            switch (RobotCompetitionDropDown.SelectedItem.ToString()) // TODO: Use some kind of motor definition file
+            switch (RobotCompetitionDropDown.SelectedItem.ToString())
             {
                 case "GENERIC":
                     MotorTypeDropDown.Items.Clear();
@@ -610,31 +618,17 @@ namespace BxDRobotExporter.Editors.JointEditor
                     MotorTypeDropDown.Items.Add("VEX_393_TURBO_GEAR_SET");
                     break;
             }
-
             MotorTypeDropDown.SelectedItem = "GENERIC";
         }
-        private void rbCAN_CheckedChanged(object sender, EventArgs e)
+
+        private void LblPort_Click(object sender, EventArgs e)
         {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "CAN", rbCAN.Checked ? 0 : 1);
-            UpdateLayout();
+
         }
 
-        private void chkBoxDriveWheel_CheckedChanged(object sender, EventArgs e)
+        private void TxtPort1_ValueChanged(object sender, EventArgs e)
         {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Drive Wheel", chkBoxDriveWheel.Checked ? 0 : 1);
-            UpdateLayout();
-        }
-        
-        private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Joint Driver", cmbJointDriver.SelectedIndex);
-            UpdateLayout();
-        }
 
-        private void CalculatedWeightCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            AnalyticUtils.LogEvent("Joint Card Editor", "Option", "Calculate Weight", CalculatedWeightCheck.Checked ? 0 : 1) ;
-            UpdateLayout();
         }
     }
 }

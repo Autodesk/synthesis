@@ -1,6 +1,6 @@
 namespace BxDRobotExporter.Editors.JointEditor
 {
-    partial class JointCardEditor
+    partial class JointDriverEditorUserControl
     {
         /// <summary>
         /// Required designer variable.
@@ -871,7 +871,7 @@ namespace BxDRobotExporter.Editors.JointEditor
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.ConfigJointLayout);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.Name = "JointCardEditor";
+            this.Name = "JointDriverEditorUserControl";
             this.Size = new System.Drawing.Size(530, 375);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
