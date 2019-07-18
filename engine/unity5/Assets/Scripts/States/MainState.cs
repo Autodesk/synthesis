@@ -91,7 +91,7 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = File.Exists(EmulationDriverStation.emulationDir+"zImage") && File.Exists(EmulationDriverStation.emulationDir + "rootfs.ext4") && File.Exists(EmulationDriverStation.emulationDir + "zynq-zed.dtb");
+        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
         //public bool isEmulationDownloaded = true;
 
         bool reset;

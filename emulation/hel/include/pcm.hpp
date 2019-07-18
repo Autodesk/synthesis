@@ -34,8 +34,6 @@ namespace hel{
         BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids;
 
     public:
-        std::string toString()const;
-
         void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
 
         std::vector<uint8_t> generateCANPacket(const int32_t&)const;
@@ -70,6 +68,13 @@ namespace hel{
          */
 
         void setSolenoids(const BoundsCheckedArray<bool,NUM_SOLENOIDS>&);
+
+        /**
+         * \brief Format the PCM object as a string
+         * \return A string containing the PCM information
+         */
+
+        std::string toString()const;
 
         /**
          * Constructor for PCM

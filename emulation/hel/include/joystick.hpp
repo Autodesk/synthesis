@@ -303,21 +303,6 @@ namespace hel{
         void setRightRumble(uint16_t)noexcept;
 
         /**
-         * \brief Format the joystick data as a JSON string
-         * \return The joystick data in JSON format
-         */
-
-        std::string serialize()const;
-
-        /**
-         * \brief Convert a JSON joystick object to a Joystick object
-         * \param input The JSON string to parse
-         * \return The parsed Joystick object
-         */
-
-        static Joystick deserialize(std::string);
-
-        /**
          * \brief Format the Joystick data as a string
          * \return The Joystick data in string format
          */

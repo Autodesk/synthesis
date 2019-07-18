@@ -30,15 +30,21 @@ TEST(UtilTest, checkBitHigh){
 }
 
 TEST(UtilTest, setBit){
-    constexpr unsigned I = 3;
+    constexpr unsigned I1 = 3, I2 = 4;
     uint32_t a = 0;
-    a = hel::setBit(a, true, I);
 
-    EXPECT_TRUE(hel::checkBitHigh(a, I));
+	a = hel::setBit(a, true, I1);
 
-    a = hel::setBit(a, false, I);
+    EXPECT_TRUE(hel::checkBitHigh(a, I1));
 
-    EXPECT_TRUE(hel::checkBitLow(a, I));
+	a = hel::setBit(a, true, I2);
+
+    EXPECT_TRUE(hel::checkBitHigh(a, I1));
+    EXPECT_TRUE(hel::checkBitHigh(a, I2));
+
+    a = hel::setBit(a, false, I1);
+
+    EXPECT_TRUE(hel::checkBitLow(a, I1));
 }
 
 TEST(UtilTest, containsBits){
@@ -55,13 +61,13 @@ TEST(UtilTest, containsBits){
 TEST(UtilTest, Maybe){
     hel::Maybe<int> a;
 
-    EXPECT_FALSE(a);
+    EXPECT_FALSE(a.isValid());
     EXPECT_DEATH(a.get(), "Assertion");
 
     constexpr int VAL = 5;
     a = VAL;
 
-    EXPECT_TRUE(a);
+    EXPECT_TRUE(a.isValid());
     EXPECT_EQ(VAL, a.get());
 
     const std::function<int(int)> f = [](int x){ return x + 5; };

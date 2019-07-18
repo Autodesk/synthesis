@@ -170,21 +170,6 @@ namespace hel{
         void setMatchTime(double)noexcept;
 
         /**
-         * \brief Deserialize a JSON string into a MatchInfo object
-         * \param input The JSON to parse
-         * \return The parsed MatchInfo object
-         */
-
-        static MatchInfo deserialize(std::string);
-
-        /**
-         * \brief Format the match information as JSON
-         * \return The match information in JSON format
-         */
-
-        std::string serialize()const;
-
-        /**
          * \brief Convert the match information to string format
          * \return A string containing the match info
          */

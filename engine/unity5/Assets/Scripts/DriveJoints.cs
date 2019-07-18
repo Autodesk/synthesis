@@ -328,14 +328,18 @@ public class DriveJoints
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        for (int i = 0; i < pwm.Length; i++)
-            motors[i] = pwm[i];
-
-        if (Synthesis.GUI.EmulationDriverStation.Instance != null)
+        if (Synthesis.EmulatorManager.IsRunningRobotCode()) // Use emulator
         {
-            UpdateEmulationJoysticks();
-            UpdateEmulationMotors(pwm);
-            UpdateEmulationSensors(emuList);
+            if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
+            {
+                UpdateEmulationJoysticks();
+                UpdateEmulationMotors();
+                UpdateEmulationSensors(emuList);
+            }
+        } else // Use regular controls
+        {
+            for (int i = 0; i < pwm.Length; i++)
+                motors[i] = pwm[i];
         }
 
         foreach (RigidNode node in listOfSubNodes.Select(n => n as RigidNode))
@@ -358,62 +362,31 @@ public class DriveJoints
             }
             else if (joint.cDriver.GetDriveType().IsMotor() && node.MainObject.GetComponent<BHingedConstraint>() != null)
             {
-                if (!joint.cDriver.isCan)
+                float maxSpeed = 0f;
+                float impulse = 0f;
+                float friction = 0f;
+                float output = joint.cDriver.isCan ? motors[joint.cDriver.port1 - 10] : motors[joint.cDriver.port1 - 1];
+
+                if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                    impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                if (node.HasDriverMeta<WheelDriverMeta>())
                 {
-                    float maxSpeed = 0f;
-                    float impulse = 0f;
-                    float friction = 0f;
-                    float output = motors[joint.cDriver.port1 - 1];
-
-                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                    if (node.HasDriverMeta<WheelDriverMeta>())
-                    {
-                        maxSpeed = WheelMaxSpeed;
-                        impulse = WheelMotorImpulse;
-                        friction = WheelCoastFriction;
-                    }
-                    else
-                    {
-                        maxSpeed = HingeMaxSpeed;
-                        impulse = HingeMotorImpulse;
-                        friction = HingeCostFriction;
-                    }
-
-                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
-                    hingedConstraint.enableMotor = true;
-                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
-                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                    maxSpeed = WheelMaxSpeed;
+                    impulse = WheelMotorImpulse;
+                    friction = WheelCoastFriction;
                 }
                 else
                 {
-                    float maxSpeed = 0f;
-                    float impulse = 0f;
-                    float friction = 0f;
-                    float output = motors[joint.cDriver.port1 - 10];
-
-                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                    if (node.HasDriverMeta<WheelDriverMeta>())
-                    {
-                        maxSpeed = WheelMaxSpeed;
-                        impulse = WheelMotorImpulse;
-                        friction = WheelCoastFriction;
-                    }
-                    else
-                    {
-                        maxSpeed = HingeMaxSpeed;
-                        impulse = HingeMotorImpulse;
-                        friction = HingeCostFriction;
-                    }
-
-                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
-                    hingedConstraint.enableMotor = true;
-                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
-                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                    maxSpeed = HingeMaxSpeed;
+                    impulse = HingeMotorImpulse;
+                    friction = HingeCostFriction;
                 }
+
+                BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
+                hingedConstraint.enableMotor = true;
+                hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
+                hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
             }
             else if (joint.cDriver.GetDriveType().IsElevator() && node.HasDriverMeta<ElevatorDriverMeta>())
             {
@@ -433,10 +406,29 @@ public class DriveJoints
     /// </summary>
     private static void UpdateEmulationJoysticks()
     {
+        var instance = Synthesis.InputManager.Instance;
         foreach (JoystickSerializer js in joystickSerializers)
         {
             js.SerializeInputs();
-            Serialization.updateJoystick(js.Id, js.Axes, js.Buttons, js.Povs);
+            if (js.Id < instance.Joysticks.Count)
+            {
+                if (js.Id > instance.Joysticks.Count)
+                    throw new IndexOutOfRangeException();
+
+                if (js.Axes.Length > instance.Joysticks[js.Id].AxisCount)
+                    throw new Exception();
+                if (js.Povs.Length > instance.Joysticks[js.Id].PovCount)
+                    throw new Exception();
+
+                for (int i = 0; i < js.Axes.Length; i++)
+                    instance.Joysticks[js.Id].Axes[i] = ((int)(js.Axes[i] * 128) >= 128 ? 127 : (int)(js.Axes[i] * 128));
+                uint buttonValue = 0;
+                for (int i = 0; i < js.Buttons.Length && i < 32; i++)
+                    buttonValue += (js.Buttons[i] ? 1u : 0u) << i;
+                instance.Joysticks[js.Id].Buttons = buttonValue;
+                for (int i = 0; i < js.Povs.Length; i++)
+                    instance.Joysticks[js.Id].Povs[i] = (int)js.Povs[i];
+            }
         }
     }
 
@@ -444,16 +436,13 @@ public class DriveJoints
     /// Updates all motor values for emulation.
     /// </summary>
     /// <param name="pwm"></param>
-    private static void UpdateEmulationMotors(float[] pwm)
+    private static void UpdateEmulationMotors()
     {
-        if (!Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
-            return;
+        for (int i = 0; i < Synthesis.OutputManager.Instance.PwmHeaders.Count(); i++)
+            motors[i] = (float)Synthesis.OutputManager.Instance.PwmHeaders[i];
 
-        for (int i = 0; i < pwm.Length; i++)
-            motors[i] = (float)Serialization.getPWM(i);
-
-        foreach (var CAN in OutputManager.Instance.Roborio.CANDevices)
-            motors[CAN.id + 10] = CAN.inverted == 0 ? CAN.speed : -CAN.speed;
+        foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
+            motors[CAN.Id + 10] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput; // first 10 are for PWM outputs
     }
 
     /// <summary>
@@ -465,23 +454,22 @@ public class DriveJoints
         int iter = 0;
         foreach (Synthesis.Robot.RobotBase.EmuNetworkInfo a in emuList)
         {
-            RigidNode rigidNode = null;
-
-            try
+            if (a.RobotSensor.type == RobotSensorType.ENCODER) // TODO revisit this
             {
-                rigidNode = (RigidNode)(a.wheel);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.StackTrace);
-            }
+                RigidNode rigidNode = null;
 
-            BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+                try
+                {
+                    rigidNode = (RigidNode)(a.wheel);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.StackTrace);
+                }
+                BRaycastWheel bRaycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
 
-            if (a.RobotSensor.type == RobotSensorType.ENCODER)
-            {
                 //BRaycastRobot robot = rigidNode.MainObject.GetComponent<BRaycastRobot>();
-                double wheelRadius = 3 / 39.3701;// robot.RaycastRobot.GetWheelInfo(0).WheelsRadius;
+                double wheelRadius = 3 / 39.3701;// robot.RaycastRobot.GetWheelInfo(0).WheelsRadius
                 Vector3 currentPos = bRaycastWheel.transform.position;
                 //double displacement = (Math.Sqrt(currentPos.x * currentPos.x + currentPos.z * currentPos.z) - (Math.Sqrt(a.previousPosition.x*a.previousPosition.x + a.previousPosition.z * a.previousPosition.z)));
                 double displacement = ((currentPos - a.previousPosition).magnitude) * Math.Sign(bRaycastWheel.GetWheelSpeed());
@@ -491,13 +479,24 @@ public class DriveJoints
 
                 a.previousPosition = currentPos;
 
-                var portAType = a.RobotSensor.conTypePortA.ToString() == "DIO" ? "DI" : a.RobotSensor.conTypePortA.ToString();
-                var portBType = a.RobotSensor.conTypePortB.ToString() == "DIO" ? "DI" : a.RobotSensor.conTypePortB.ToString();
+                if (Synthesis.InputManager.Instance.EncoderManagers[iter] == null)
+                    Synthesis.InputManager.Instance.EncoderManagers[iter] = new EmulationService.RobotInputs.Types.EncoderManager();
 
-                if (InputManager.Instance.Roborio.Encoders[iter] == null)
-                    InputManager.Instance.Roborio.Encoders[iter] = new EncoderData();
-                if (Synthesis.GUI.EmulationDriverStation.Instance.isRunCode)
-                    InputManager.Instance.Roborio.Encoders[iter].updateEncoder((int)a.RobotSensor.portA, portAType, (int)a.RobotSensor.portB, portBType, (int)a.encoderTickCount);
+                EmulationService.RobotInputs.Types.EncoderManager.Types.PortType ConvertPortType(SensorConnectionType type)
+                {
+                    if (type == SensorConnectionType.DIO)
+                        return EmulationService.RobotInputs.Types.EncoderManager.Types.PortType.Di;
+                    if (type == SensorConnectionType.ANALOG)
+                        return EmulationService.RobotInputs.Types.EncoderManager.Types.PortType.Ai;
+                    throw new Exception();
+                }
+
+                Synthesis.InputManager.Instance.EncoderManagers[iter].AChannel = (uint)a.RobotSensor.portA;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].AType = ConvertPortType(a.RobotSensor.conTypePortA); ;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].BChannel = (uint)a.RobotSensor.portB;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].BType = ConvertPortType(a.RobotSensor.conTypePortB);;
+                Synthesis.InputManager.Instance.EncoderManagers[iter].Ticks = (int)a.encoderTickCount;
+                
                 iter++;
             }
         }

@@ -52,10 +52,10 @@ namespace hel{
       return makeExceptionMessage("Unhandled case").c_str();
     }
 
-    UnsupportedFeature::UnsupportedFeature(std::string s)noexcept:details(s){}
-    UnsupportedFeature::UnsupportedFeature()noexcept:UnsupportedFeature(""){}
+    UnsupportedFeatureException::UnsupportedFeatureException(std::string s)noexcept:details(s){}
+    UnsupportedFeatureException::UnsupportedFeatureException()noexcept:UnsupportedFeatureException(""){}
 
-    const char* UnsupportedFeature::what()const throw(){
+    const char* UnsupportedFeatureException::what()const throw(){
       std::string s = makeExceptionMessage("Unsupported feature", false);
         if(!details.empty()){
             s += ": " + details;
