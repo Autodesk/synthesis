@@ -16,8 +16,6 @@ namespace Assets.Scripts.GUI
     {
         public static bool exiting = false;
 
-        EmulationDriverStation emulationDriverStation;
-
         bool loaded = false;
         float lastAdditionalDot = 0;
         int dotCount = 0;
@@ -33,7 +31,6 @@ namespace Assets.Scripts.GUI
 
         public override void Start()
         {
-            emulationDriverStation = StateMachine.SceneGlobal.GetComponent<EmulationDriverStation>();
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
@@ -46,6 +43,12 @@ namespace Assets.Scripts.GUI
             Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(CloseHelpMenu);
+        }
+
+        public void OnDestroy()
+        {
+            if (Synthesis.EmulatorManager.IsRunningRobotCode())
+                EmulationDriverStation.Instance.StopRobotCode();
         }
 
         public override void FixedUpdate()
@@ -99,12 +102,12 @@ namespace Assets.Scripts.GUI
                 Synthesis.EmulatorManager.UserProgram userProgram = new Synthesis.EmulatorManager.UserProgram(selectedFiles[0]);
                 if (userProgram.type == Synthesis.EmulatorManager.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
                 {
-                    emulationDriverStation.ShowJavaNotSupportedPopUp();
+                    EmulationDriverStation.Instance.ShowJavaNotSupportedPopUp();
                 }
                 else
                 {
                     if(Synthesis.EmulatorManager.IsRunningRobotCode())
-                        emulationDriverStation.ToggleRobotCodeButton();
+                        EmulationDriverStation.Instance.ToggleRobotCodeButton();
                     loadingPanel.SetActive(true);
                     Task Upload = Task.Factory.StartNew(() =>
                     {
@@ -126,7 +129,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnDriverStationButtonClicked()
         {
-            emulationDriverStation.ToggleDriverStation();
+            EmulationDriverStation.Instance.ToggleDriverStation();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverStation,
                 AnalyticsLedger.EventAction.Clicked,
@@ -136,7 +139,7 @@ namespace Assets.Scripts.GUI
 
         public void OnStartRobotCodeButtonClicked()
         {
-            emulationDriverStation.ToggleRobotCodeButton();
+            EmulationDriverStation.Instance.ToggleRobotCodeButton();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
                 AnalyticsLedger.EventAction.Start,
@@ -149,7 +152,7 @@ namespace Assets.Scripts.GUI
             if (!Synthesis.EmulatorManager.IsVMRunning() && !Synthesis.EmulatorManager.IsVMConnected())
             {
                 Synthesis.EmulatorManager.StartEmulator();
-                emulationDriverStation.BeginTrackingVMConnectionStatus();
+                EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
             }
         }
 

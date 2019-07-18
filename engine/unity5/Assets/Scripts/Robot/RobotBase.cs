@@ -126,7 +126,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
         /// </summary>
-        void FixedUpdate()
+        public void FixedUpdate()
         {
             if (RootNode != null)
                 UpdateMotors();
@@ -351,9 +351,9 @@ namespace Synthesis.Robot
         /// <summary>
         /// Updates all motors on the robot.
         /// </summary>
-        protected virtual void UpdateMotors(float[] pwm = null)
+        protected virtual void UpdateMotors()
         {
-            DriveJoints.UpdateAllMotors(RootNode, pwm ?? DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
+            DriveJoints.UpdateAllMotors(RootNode, DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
         }
 
         /// <summary>

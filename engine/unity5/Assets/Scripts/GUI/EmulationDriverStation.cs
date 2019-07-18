@@ -1,6 +1,5 @@
 ﻿using Synthesis.Input;
 using Synthesis.Utils;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,9 +37,10 @@ namespace Synthesis.GUI
         public void Start()
         {
             canvas = GameObject.Find("Canvas");
-            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
             javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
+
+            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
 
             runButton = Auxiliary.FindObject(canvas, "StartRobotCodeButton");
             runRobotCodeImage = Auxiliary.FindObject(canvas, "CodeImage").GetComponentInChildren<Image>();
@@ -52,13 +52,28 @@ namespace Synthesis.GUI
             disableRobotImage = Auxiliary.FindObject(canvas, "Disable").GetComponentInChildren<Image>();
 
             RobotDisabled();
+            StopRobotCode();
             BeginTrackingVMConnectionStatus();
-            GameData();
         }
 
         public void Awake()
         {
             Instance = this;
+        }
+
+        public void DisableDrag()
+        {
+            DynamicCamera.MovementEnabled = false;
+        }
+
+        public void EnableDrag()
+        {
+            DynamicCamera.MovementEnabled = true;
+        }
+
+        public void Update()
+        {
+            InputControl.freeze = gameSpecificMessage.isFocused;
         }
 
         /// <summary>
@@ -69,12 +84,10 @@ namespace Synthesis.GUI
             if (emuDriverStationPanel.activeSelf == true) // Close it
             {
                 emuDriverStationPanel.SetActive(false);
-                InputControl.freeze = false;
             }
             else // Open it
             {
                 emuDriverStationPanel.SetActive(true);
-                InputControl.freeze = true;
                 RobotState("teleop");
             }
         }
@@ -105,21 +118,21 @@ namespace Synthesis.GUI
                 if (EmulatorManager.IsVMConnected())
                 {
                     VMConnectionStatusImage.sprite = EmulatorConnection;
-                    if(EmulatorNetworkConnection.Instance.IsConnected())
+                    if (EmulatorNetworkConnection.Instance.IsConnected())
                         VMConnectionStatusMessage.text = "Connected";
                     else
-                        VMConnectionStatusMessage.text = "Initialized";
+                        VMConnectionStatusMessage.text = "Ready";
                 }
                 else if(EmulatorManager.IsVMRunning())
                 {
                     VMConnectionStatusImage.sprite = EmulatorConnection;
-                    VMConnectionStatusMessage.text = "Initializing";
-                    ToggleRobotCodeButton();
+                    VMConnectionStatusMessage.text = "Starting";
+                    StopRobotCode();
                 } else
                 {
                     VMConnectionStatusImage.sprite = StartEmulator;
                     VMConnectionStatusMessage.text = "Start Emulator";
-                    ToggleRobotCodeButton();
+                    StopRobotCode();
                 }
                 yield return new WaitForSeconds(1.0f); // s
             }
@@ -133,25 +146,37 @@ namespace Synthesis.GUI
             }
         }
 
-        /// <summary>
-        /// Toggle button for run/stop code toolbar button
-        /// </summary>
-        public void ToggleRobotCodeButton()
+        public void RunRobotCode()
         {
-            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode()) // Start robot code
+            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 runRobotCodeImage.sprite = StopCode;
                 EmulatorManager.StartRobotCode();
             }
-            else // Stop robot code
+        }
+
+        public void StopRobotCode()
+        {
+            runButton.GetComponentInChildren<Text>().text = "Run Code";
+            runRobotCodeImage.sprite = StartCode;
+            if (EmulatorManager.IsRunningRobotCode())
+                EmulatorManager.StopRobotCode();
+            RobotDisabled();
+        }
+
+        /// <summary>
+        /// Toggle button for run/stop code toolbar button
+        /// </summary>
+        public void ToggleRobotCodeButton()
+        {
+            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
             {
-                runButton.GetComponentInChildren<Text>().text = "Run Code";
-                runRobotCodeImage.sprite = StartCode;
-                if (EmulatorManager.IsRunningRobotCode())
-                    EmulatorManager.StopRobotCode();
-                if(emuDriverStationPanel.activeSelf == true)
-                    RobotDisabled();
+                RunRobotCode();
+            }
+            else
+            {
+                StopRobotCode();
             }
         }
 
@@ -232,13 +257,9 @@ namespace Synthesis.GUI
             }
         }
 
-        /// <summary>
-        /// A game specific message specified by the user
-        /// </summary>
-        public void GameData()
+        public void FinishGameSpecificMessage()
         {
-            gameSpecificMessage = Auxiliary.FindObject(canvas, "InputField").GetComponent<InputField>();
-            gameSpecificMessage.onValueChanged.AddListener(delegate { InputManager.Instance.MatchInfo.GameSpecificMessage = gameSpecificMessage.text; });
+            InputManager.Instance.MatchInfo.GameSpecificMessage = gameSpecificMessage.text;
         }
 
         public string GetGameSpecificMessage()
