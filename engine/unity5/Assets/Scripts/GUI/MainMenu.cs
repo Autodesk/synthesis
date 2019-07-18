@@ -66,33 +66,7 @@ namespace Synthesis.GUI
 
         private void Awake()
         {
-            string CurrentVersion = "4.2.2";
 
-            if (CheckConnection())
-            {
-                WebClient client = new WebClient();
-                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
-                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
-                updater = update.URL;
-
-               
-                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
-
-                var localVersion = new Version(CurrentVersion);
-                var globalVersion = new Version(update.Version);
-
-                var check = localVersion.CompareTo(globalVersion);
-
-                if (check < 0)
-                {
-                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-                }
-            }
-            else
-            {
-                Auxiliary.FindObject(gameObject, "ReleaseNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
-            }
         }
 
         public bool CheckConnection()
