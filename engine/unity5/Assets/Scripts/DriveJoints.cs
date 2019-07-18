@@ -362,62 +362,31 @@ public class DriveJoints
             }
             else if (joint.cDriver.GetDriveType().IsMotor() && node.MainObject.GetComponent<BHingedConstraint>() != null)
             {
-                if (!joint.cDriver.isCan)
+                float maxSpeed = 0f;
+                float impulse = 0f;
+                float friction = 0f;
+                float output = joint.cDriver.isCan ? motors[joint.cDriver.port1 - 10] : motors[joint.cDriver.port1 - 1];
+
+                if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
+                    impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
+
+                if (node.HasDriverMeta<WheelDriverMeta>())
                 {
-                    float maxSpeed = 0f;
-                    float impulse = 0f;
-                    float friction = 0f;
-                    float output = motors[joint.cDriver.port1 - 1];
-
-                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                    if (node.HasDriverMeta<WheelDriverMeta>())
-                    {
-                        maxSpeed = WheelMaxSpeed;
-                        impulse = WheelMotorImpulse;
-                        friction = WheelCoastFriction;
-                    }
-                    else
-                    {
-                        maxSpeed = HingeMaxSpeed;
-                        impulse = HingeMotorImpulse;
-                        friction = HingeCostFriction;
-                    }
-
-                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
-                    hingedConstraint.enableMotor = true;
-                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
-                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                    maxSpeed = WheelMaxSpeed;
+                    impulse = WheelMotorImpulse;
+                    friction = WheelCoastFriction;
                 }
                 else
                 {
-                    float maxSpeed = 0f;
-                    float impulse = 0f;
-                    float friction = 0f;
-                    float output = motors[joint.cDriver.port1 - 10];
-
-                    if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
-                        impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
-
-                    if (node.HasDriverMeta<WheelDriverMeta>())
-                    {
-                        maxSpeed = WheelMaxSpeed;
-                        impulse = WheelMotorImpulse;
-                        friction = WheelCoastFriction;
-                    }
-                    else
-                    {
-                        maxSpeed = HingeMaxSpeed;
-                        impulse = HingeMotorImpulse;
-                        friction = HingeCostFriction;
-                    }
-
-                    BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
-                    hingedConstraint.enableMotor = true;
-                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
-                    hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
+                    maxSpeed = HingeMaxSpeed;
+                    impulse = HingeMotorImpulse;
+                    friction = HingeCostFriction;
                 }
+
+                BHingedConstraint hingedConstraint = node.MainObject.GetComponent<BHingedConstraint>();
+                hingedConstraint.enableMotor = true;
+                hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
+                hingedConstraint.maxMotorImpulse = node.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
             }
             else if (joint.cDriver.GetDriveType().IsElevator() && node.HasDriverMeta<ElevatorDriverMeta>())
             {
