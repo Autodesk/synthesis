@@ -193,20 +193,6 @@ namespace hel{
         void update();
 
         /**
-         * \brief Serialize the EncoderManager data as a JSON string
-         * \return The EncoderManager data as JSON
-         */
-
-        std::string serialize()const;
-
-        /**
-         * \brief Deserialize a JSON string as an EncoderManager
-         * \param input The JSON string to parse
-         */
-
-        static EncoderManager deserialize(std::string);
-
-        /**
          * \brief Format the EncoderManager data as a string
          * \return The EncoderManager data in string format
          */

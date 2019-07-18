@@ -1,9 +1,12 @@
 #ifndef _UTIL_HPP_
 #define _UTIL_HPP_
 
-#include <functional>
-#include <vector>
 #include <cassert>
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #define NYI {                                             \
         printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");  \
@@ -120,12 +123,19 @@ namespace hel{
             assert(_is_valid);
             return _data;
         }
+
         void set(T data){
             _data = data;
             _is_valid = true;
         }
 
-        constexpr operator bool()const noexcept{
+        Maybe& operator=(const T& t)noexcept {
+            _data = t;
+            _is_valid = true;
+            return *this;
+        }
+
+        constexpr bool isValid()const noexcept{
             return _is_valid;
         }
 
@@ -227,6 +237,6 @@ namespace hel{
     constexpr bool containsBits(uint32_t a, uint32_t bit_mask){
         return (a & bit_mask) == bit_mask;
     }
-}
+}  // namespace hel
 
 #endif

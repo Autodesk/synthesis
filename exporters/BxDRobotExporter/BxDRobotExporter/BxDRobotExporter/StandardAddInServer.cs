@@ -312,7 +312,7 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
@@ -644,19 +644,28 @@ namespace BxDRobotExporter
         public void EditJoint_OnExecute(NameValueMap Context)
         {
             AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
-            if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
-                return;
-
-            Utilities.HideAdvancedJointEditor();
-            jointForm.PreShow();
-            jointForm.ShowDialog();
-            Utilities.GUI.ReloadPanels();
+            if (jointForm.Visible)
+            {
+                jointForm.Hide();
+            }
+            else
+            {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                    return;
+                Utilities.HideAdvancedJointEditor();
+                jointForm.OnShowButtonClick();
+                jointForm.ShowDialog();
+            }
         }
 
         private void AdvancedEditJoint_OnExecute(NameValueMap Context)
         {
             AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
             Utilities.ToggleAdvancedJointEditor();
+            if (Utilities.IsAdvancedJointEditorVisible())
+            {
+                jointForm.Hide();
+            }
         }
 
         /// <summary>

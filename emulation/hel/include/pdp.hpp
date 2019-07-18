@@ -10,7 +10,7 @@ namespace hel{
      * Currently unsupported by Synthesis
      */
 
-    struct PDP: public CANDevice{ //TODO handle emulated data
+    struct PDP: public CANDevice{
 
         /**
          * \brief Interpretation definitions for CAN message data bytes

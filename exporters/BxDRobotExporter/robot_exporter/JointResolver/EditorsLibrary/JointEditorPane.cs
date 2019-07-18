@@ -39,6 +39,8 @@ namespace EditorsLibrary
         /// The list of nodes to be attached as metadata
         /// </summary>
         private List<RigidNode_Base> nodeList = null;
+        
+        private Timer selectionFinishedTimeout = new Timer();
 
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
@@ -75,6 +77,9 @@ namespace EditorsLibrary
 
                     EditDriver_Internal(GetSelectedNodes());
                 };
+
+            selectionFinishedTimeout.Tick += FinishedSelecting;
+            selectionFinishedTimeout.Interval = 55; // minimum accuracy of winforms timers
         }
 
         /// <summary>
@@ -185,6 +190,13 @@ namespace EditorsLibrary
         /// <param name="e"></param>
         private void LstJoints_SelectedIndexChanged(object sender, EventArgs e)
         {
+            selectionFinishedTimeout.Start(); // TODO: Find less hacky way to detect when selection is finished
+
+        }
+        
+        private void FinishedSelecting(object sender, EventArgs e)
+        {
+            selectionFinishedTimeout.Stop();
             foreach (ListViewItem item in lstJoints.Items.OfType<ListViewItem>())
             {
                 item.BackColor = Control.DefaultBackColor;
