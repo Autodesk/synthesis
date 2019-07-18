@@ -83,11 +83,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            if (!Synthesis.EmulatorManager.IsVMConnected())
+            if (Synthesis.EmulationWarnings.CheckRequirement((Synthesis.EmulationWarnings.Requirement.VMConnected)))
             {
-                return;
+                LoadCode();
             }
-            LoadCode();
         }
 
         public async void LoadCode()
@@ -107,7 +106,7 @@ namespace Assets.Scripts.GUI
                 else
                 {
                     if(Synthesis.EmulatorManager.IsRunningRobotCode())
-                        EmulationDriverStation.Instance.ToggleRobotCodeButton();
+                        EmulationDriverStation.Instance.StopRobotCode();
                     loadingPanel.SetActive(true);
                     Task Upload = Task.Factory.StartNew(() =>
                     {
