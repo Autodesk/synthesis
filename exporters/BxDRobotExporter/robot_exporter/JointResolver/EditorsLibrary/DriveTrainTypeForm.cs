@@ -16,6 +16,7 @@ namespace JointResolver.EditorsLibrary
 
         public DriveTrainTypeForm()
         {
+            AnalyticUtils.LogPage("DriveTrainTypeForm");
             InitializeComponent();
 
             controls.Add(RigidNode_Base.DriveTrainType.TANK, tankOption);

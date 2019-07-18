@@ -19,6 +19,7 @@ namespace EditorsLibrary
         public EditSensorForm(SkeletalJoint_Base passJoint, int sourceIndex = -1)
         {
             InitializeComponent();
+            AnalyticUtils.LogPage("EditSensorForm");
             this.sourceIndex = sourceIndex;
             joint = passJoint;
             typeBox.Items.Clear();

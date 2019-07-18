@@ -32,79 +32,135 @@ namespace BxDRobotExporter.Messages
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FirstLaunchInfo));
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.submitButton = new System.Windows.Forms.Button();
+            this.analyticsCheckBox = new System.Windows.Forms.CheckBox();
+            this.reasonTextList = new System.Windows.Forms.CheckedListBox();
+            this.reasonLabel = new System.Windows.Forms.Label();
+            this.teamTextBox = new System.Windows.Forms.TextBox();
+            this.teamLabel = new System.Windows.Forms.Label();
+            this.instructionsLabel = new System.Windows.Forms.Label();
+            this.otherTextBox = new System.Windows.Forms.TextBox();
+            this.skipButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label2
+            // submitButton
             // 
-            this.label2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.label2.Location = new System.Drawing.Point(0, 23);
-            this.label2.Margin = new System.Windows.Forms.Padding(0);
-            this.label2.Name = "label2";
-            this.label2.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Size = new System.Drawing.Size(303, 34);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "To begin the export process, select the \"Robot Export\" button under the \"Environm" +
-    "ents\" tab.";
+            this.submitButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.submitButton.Location = new System.Drawing.Point(205, 289);
+            this.submitButton.Margin = new System.Windows.Forms.Padding(2);
+            this.submitButton.Name = "submitButton";
+            this.submitButton.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.submitButton.Size = new System.Drawing.Size(93, 30);
+            this.submitButton.TabIndex = 3;
+            this.submitButton.Text = "Submit";
+            this.submitButton.UseVisualStyleBackColor = true;
+            this.submitButton.Click += new System.EventHandler(this.SubmitButton_Click);
             // 
-            // label1
+            // analyticsCheckBox
             // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Margin = new System.Windows.Forms.Padding(0);
-            this.label1.Name = "label1";
-            this.label1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.label1.Size = new System.Drawing.Size(303, 23);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "The Synthesis robot exporter add-in has been added.";
+            this.analyticsCheckBox.AutoSize = true;
+            this.analyticsCheckBox.Checked = true;
+            this.analyticsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.analyticsCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.analyticsCheckBox.Location = new System.Drawing.Point(18, 263);
+            this.analyticsCheckBox.Name = "analyticsCheckBox";
+            this.analyticsCheckBox.Size = new System.Drawing.Size(322, 21);
+            this.analyticsCheckBox.TabIndex = 4;
+            this.analyticsCheckBox.Text = "Track additional analytics to improve Synthesis";
+            this.analyticsCheckBox.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // reasonTextList
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Cursor = System.Windows.Forms.Cursors.No;
-            this.checkBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.checkBox1.Location = new System.Drawing.Point(0, 57);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
-            this.checkBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.checkBox1.Size = new System.Drawing.Size(303, 19);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Don\'t show this message again.";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.reasonTextList.BackColor = System.Drawing.SystemColors.Control;
+            this.reasonTextList.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.reasonTextList.CheckOnClick = true;
+            this.reasonTextList.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.reasonTextList.FormattingEnabled = true;
+            this.reasonTextList.Items.AddRange(new object[] {
+            "To test designs before creating our robot",
+            "To test our code",
+            "To give our drivers practice before competition",
+            "To formulate a strategy or tour the field",
+            "Other"});
+            this.reasonTextList.Location = new System.Drawing.Point(19, 147);
+            this.reasonTextList.Name = "reasonTextList";
+            this.reasonTextList.Size = new System.Drawing.Size(288, 90);
+            this.reasonTextList.TabIndex = 5;
+            this.reasonTextList.UseCompatibleTextRendering = true;
+            this.reasonTextList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ReasonTextList_ItemCheck);
             // 
-            // button1
+            // reasonLabel
             // 
-            this.button1.Location = new System.Drawing.Point(92, 77);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.button1.Size = new System.Drawing.Size(93, 22);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "OK";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.reasonLabel.AutoSize = true;
+            this.reasonLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.reasonLabel.Location = new System.Drawing.Point(16, 127);
+            this.reasonLabel.Name = "reasonLabel";
+            this.reasonLabel.Size = new System.Drawing.Size(282, 17);
+            this.reasonLabel.TabIndex = 6;
+            this.reasonLabel.Text = "Why does your team mainly use Synthesis?";
+            // 
+            // teamTextBox
+            // 
+            this.teamTextBox.Location = new System.Drawing.Point(246, 88);
+            this.teamTextBox.Name = "teamTextBox";
+            this.teamTextBox.Size = new System.Drawing.Size(67, 21);
+            this.teamTextBox.TabIndex = 7;
+            // 
+            // teamLabel
+            // 
+            this.teamLabel.AutoSize = true;
+            this.teamLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.teamLabel.Location = new System.Drawing.Point(16, 88);
+            this.teamLabel.Name = "teamLabel";
+            this.teamLabel.Size = new System.Drawing.Size(224, 17);
+            this.teamLabel.TabIndex = 8;
+            this.teamLabel.Text = "What FRC team are you a part of?";
+            // 
+            // instructionsLabel
+            // 
+            this.instructionsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.instructionsLabel.Location = new System.Drawing.Point(16, 9);
+            this.instructionsLabel.MaximumSize = new System.Drawing.Size(500, 500);
+            this.instructionsLabel.Name = "instructionsLabel";
+            this.instructionsLabel.Size = new System.Drawing.Size(334, 58);
+            this.instructionsLabel.TabIndex = 9;
+            this.instructionsLabel.Text = "The Synthesis robot exporter plugin has been added. To access the exporter, selec" +
+    "t the \"Robot Export\" under the \"Environments\" tab.";
+            // 
+            // otherTextBox
+            // 
+            this.otherTextBox.Location = new System.Drawing.Point(84, 218);
+            this.otherTextBox.Name = "otherTextBox";
+            this.otherTextBox.Size = new System.Drawing.Size(223, 21);
+            this.otherTextBox.TabIndex = 10;
+            this.otherTextBox.Visible = false;
+            // 
+            // skipButton
+            // 
+            this.skipButton.Location = new System.Drawing.Point(84, 291);
+            this.skipButton.Name = "skipButton";
+            this.skipButton.Size = new System.Drawing.Size(88, 28);
+            this.skipButton.TabIndex = 11;
+            this.skipButton.Text = "Skip";
+            this.skipButton.UseVisualStyleBackColor = true;
+            this.skipButton.Click += new System.EventHandler(this.SkipButton_Click);
             // 
             // FirstLaunchInfo
             // 
-            this.AcceptButton = this.button1;
+            this.AcceptButton = this.submitButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(303, 116);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(367, 330);
+            this.Controls.Add(this.skipButton);
+            this.Controls.Add(this.otherTextBox);
+            this.Controls.Add(this.instructionsLabel);
+            this.Controls.Add(this.teamLabel);
+            this.Controls.Add(this.teamTextBox);
+            this.Controls.Add(this.reasonLabel);
+            this.Controls.Add(this.reasonTextList);
+            this.Controls.Add(this.analyticsCheckBox);
+            this.Controls.Add(this.submitButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -113,7 +169,7 @@ namespace BxDRobotExporter.Messages
             this.MinimizeBox = false;
             this.Name = "FirstLaunchInfo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Synthesis Robot Exporter Plugin Loaded";
+            this.Text = "Successfully loaded Synthesis plugin";
             this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -121,10 +177,14 @@ namespace BxDRobotExporter.Messages
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button submitButton;
+        private System.Windows.Forms.CheckBox analyticsCheckBox;
+        private System.Windows.Forms.CheckedListBox reasonTextList;
+        private System.Windows.Forms.Label reasonLabel;
+        private System.Windows.Forms.TextBox teamTextBox;
+        private System.Windows.Forms.Label teamLabel;
+        private System.Windows.Forms.Label instructionsLabel;
+        private System.Windows.Forms.TextBox otherTextBox;
+        private System.Windows.Forms.Button skipButton;
     }
 }
