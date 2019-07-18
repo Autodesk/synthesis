@@ -105,7 +105,7 @@ namespace Synthesis.States
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
 
-            string CurrentVersion = "4.2.2";
+            string CurrentVersion = "4.2.3";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection()) {
@@ -120,9 +120,9 @@ namespace Synthesis.States
 
                 var check = localVersion.CompareTo(globalVersion);
 
-                if (check < 0) {
-                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-                }
+                //if (check < 0) {
+                //    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                //}
             }
 
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
