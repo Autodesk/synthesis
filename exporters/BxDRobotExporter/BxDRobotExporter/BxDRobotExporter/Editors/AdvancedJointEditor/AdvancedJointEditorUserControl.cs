@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using EditorsLibrary;
 
-namespace EditorsLibrary
+namespace BxDRobotExporter
 {
     public partial class AdvancedJointEditorUserControl : UserControl
     {

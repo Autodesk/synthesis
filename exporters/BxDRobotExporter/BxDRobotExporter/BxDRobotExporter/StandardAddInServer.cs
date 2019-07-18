@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.JointEditor;
+using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
 using EditorsLibrary;
 using Inventor;

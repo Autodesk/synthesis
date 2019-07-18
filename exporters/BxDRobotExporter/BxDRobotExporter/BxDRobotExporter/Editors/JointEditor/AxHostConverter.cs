@@ -1,21 +1,20 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     internal class AxHostConverter : AxHost
-
     {
         private AxHostConverter() : base("")
         {
         }
 
-        static public stdole.IPictureDisp ImageToPictureDisp(Image image)
+        public static stdole.IPictureDisp ImageToPictureDisp(Image image)
         {
             return (stdole.IPictureDisp) GetIPictureDispFromPicture(image);
         }
 
-        static public Image PictureDispToImage(stdole.IPictureDisp pictureDisp)
+        public static Image PictureDispToImage(stdole.IPictureDisp pictureDisp)
         {
             return GetPictureFromIPicture(pictureDisp);
         }

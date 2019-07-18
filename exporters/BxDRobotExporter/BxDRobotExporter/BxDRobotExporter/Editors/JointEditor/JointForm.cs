@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     public partial class JointForm : Form
     {

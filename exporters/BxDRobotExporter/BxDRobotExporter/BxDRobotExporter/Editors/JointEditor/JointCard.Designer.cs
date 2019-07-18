@@ -1,4 +1,4 @@
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     sealed partial class JointCard
     {
@@ -45,7 +45,7 @@ namespace BxDRobotExporter.JointEditor
             this.jointTypeValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.jointEditor = new BxDRobotExporter.JointEditor.JointCardEditor();
+            this.jointEditor = new JointCardEditor();
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();

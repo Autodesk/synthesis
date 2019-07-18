@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace EditorsLibrary
+namespace BxDRobotExporter
 {
     public partial class AdvancedJointEditorUserControl
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using EditorsLibrary;
+using BxDRobotExporter.ExportGuide;
 using Inventor;
 using OGLViewer;
 
@@ -69,7 +69,7 @@ namespace BxDRobotExporter
             EmbededPrecheckPane.Width = 600;
             EmbededPrecheckPane.ShowVisibilityCheckBox = false;
             EmbededPrecheckPane.ShowTitleBar = true;
-            var precheckPanel = new PrecheckPanel.PrecheckPanel();
+            var precheckPanel = new ExportGuidePanel();
             EmbededPrecheckPane.AddChild(precheckPanel.Handle);
             
             EmbededPrecheckPane.Visible = true;
