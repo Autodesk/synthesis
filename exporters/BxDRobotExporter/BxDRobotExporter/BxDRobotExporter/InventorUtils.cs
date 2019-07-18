@@ -16,6 +16,9 @@ namespace BxDRobotExporter
         {
             if (nodes == null)
             {
+                ClearHighlight();
+                camera.Fit();
+                camera.ApplyWithoutTransition();
                 return;
             }
             var occurrences = GetComponentOccurrencesFromNodes(nodes);
@@ -63,6 +66,12 @@ namespace BxDRobotExporter
             {
                 StandardAddInServer.Instance.ChildHighlight.AddItem(componentOccurrence);
             }
+        }
+        
+        public static void ClearHighlight()
+        {
+            StandardAddInServer.Instance.ClearDOFHighlight();
+            StandardAddInServer.Instance.ChildHighlight.Clear();
         }
 
         public static List<ComponentOccurrence> GetComponentOccurrencesFromNodes(List<RigidNode_Base> nodes)
@@ -145,7 +154,7 @@ namespace BxDRobotExporter
             camera.Fit(); // TODO: Determine model size properly
             camera.GetExtents(out var width, out var height);
 
-            SetCameraView(focus, viewDistance, height * zoom * 3, height * zoom, camera, viewDirection, animate);
+            SetCameraView(focus, viewDistance, height * zoom, height * zoom, camera, viewDirection, animate);
         }
         
         /// <summary>
