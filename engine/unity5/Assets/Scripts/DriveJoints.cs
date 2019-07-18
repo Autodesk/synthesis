@@ -8,7 +8,6 @@ using BulletSharp;
 using Synthesis.BUExtensions;
 using Synthesis.Input;
 using Synthesis.RN;
-using Synthesis.StatePacket;
 using Synthesis.Utils;
 
 public class DriveJoints
@@ -61,21 +60,10 @@ public class DriveJoints
     /// <param name="skeleton"></param>
     /// <param name="dioModules"></param>
     /// <param name="controlIndex"></param>
-    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex)
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, int controlIndex)
     {
-        float[] pwm;
-        float[] can;
-
-        if (dioModules[0] != null)
-        {
-            pwm = dioModules[0].pwmValues;
-            can = dioModules[0].canValues;
-        }
-        else
-        {
-            pwm = new float[10];
-            can = new float[10];
-        }
+        float[] pwm = new float[10];
+        float[] can = new float[10];
 
         pwm[4] +=
              (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SpeedArrowPwm);
@@ -155,29 +143,17 @@ public class DriveJoints
     }
 
     /// <summary>
-    /// Updates PWM values from the given <see cref="UnityPacket.OutputStatePacket.DIOModule"/>s, and control index.
+    /// Updates PWM values from joysticks.
     /// </summary>
-    /// <param name="dioModules"></param>
     /// <param name="controlIndex"></param>
     /// <param name="mecanum"></param>
     /// <returns></returns>
-    public static float[] GetPwmValues(UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
+    public static float[] GetPwmValues(int controlIndex, bool mecanum)
     {
         bool IsMecanum = mecanum;
 
-        float[] pwm;
-        float[] can;
-
-        if (dioModules[0] != null)
-        {
-            pwm = dioModules[0].pwmValues;
-            can = dioModules[0].canValues;
-        }
-        else
-        {
-            pwm = new float[10];
-            can = new float[10];
-        }
+        float[] pwm = new float[10];
+        float[] can = new float[10];
 
         if (IsMecanum)
         {
