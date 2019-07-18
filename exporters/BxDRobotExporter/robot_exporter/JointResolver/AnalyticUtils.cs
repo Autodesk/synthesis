@@ -10,7 +10,7 @@ using System.Security.Cryptography;
     public class AnalyticUtils
     {
         public static string BASE_URL = "https://www.google-analytics.com/collect";
-        public static string TRACKING = "UA-73624215-5";
+        public static string TRACKING = "UA-81892961-4";
         public static string USER_ID = "unknown";
         private static readonly HttpClient client = new HttpClient();
         public static void SetUser(string user)
