@@ -2,11 +2,11 @@
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)
 
-set(CMAKE_FIND_ROOT_PATH /usr/arm-frc-linux-gnueabi)
+set(CMAKE_FIND_ROOT_PATH /usr/arm-frc2019-linux-gnueabi)
 
 # Cross compiler
-SET(CMAKE_C_COMPILER   /usr/bin/arm-frc-linux-gnueabi-gcc)
-SET(CMAKE_CXX_COMPILER /usr/bin/arm-frc-linux-gnueabi-g++)
+SET(CMAKE_C_COMPILER   /usr/bin/arm-frc2019-linux-gnueabi-gcc)
+SET(CMAKE_CXX_COMPILER /usr/bin/arm-frc2019-linux-gnueabi-g++)
 
 # Search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

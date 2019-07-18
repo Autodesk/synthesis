@@ -1,6 +1,5 @@
 #include "mxp_data.hpp"
 #include "util.hpp"
-#include "json_util.hpp"
 #include "error.hpp"
 
 namespace hel{
@@ -52,20 +51,5 @@ namespace hel{
         s += "config:" + asString(config) + ", ";
         s += "value:" + std::to_string(value) + ")";
         return s;
-    }
-
-    std::string MXPData::serialize()const{
-        std::string s = "{";
-        s += "\"config\":" + quote(asString(config)) + ", ";
-        s += "\"value\":" + std::to_string(value);
-        s += "}";
-        return s;
-    }
-
-    MXPData MXPData::deserialize(std::string s){
-        MXPData m;
-        m.config = s_to_mxp_config(unquote(pullObject("\"config\"",s)));
-        m.value = std::stod(pullObject("\"value\"",s));
-        return m;
     }
 }

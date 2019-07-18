@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Synthesis.States
 {
@@ -8,7 +9,7 @@ namespace Synthesis.States
         /// Initializes a new <see cref="BrowseFieldState"/> instance.
         /// </summary>
         public BrowseFieldState() : base("FieldDirectory",
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\synthesis\Fields")
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields")
         {
 
         }

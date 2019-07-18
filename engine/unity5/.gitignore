@@ -130,8 +130,10 @@ publish/
 *.publishproj
 
 # NuGet Packages Directory
-## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+Assets/Packages
+Assets/Packages.meta
+Assets/NuGet
+Assets/NuGet.meta
 
 # Windows Azure Build Output
 csx
@@ -219,6 +221,8 @@ pip-log.txt
 ## Folders
 #############
 Assets/BulletUnity
+Assets/BulletUnity.meta
 Assets/Plugins
+Assets/Plugins.meta
 Library/
 Temp/

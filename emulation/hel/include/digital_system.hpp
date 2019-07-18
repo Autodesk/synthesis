@@ -37,7 +37,7 @@ namespace hel{
         /**
          * \brief The maximum length of a digital pulse in microseconds
          *
-         * Since the Ni FPGA manages pulse length as a byte, it is impossible to try to set pulses longer than this
+         * Since the Ni FPGA manages pulse length as a byte, it is impossible to try to set pulses even this long. So, this value isn't actually used.
          */
 
         static constexpr uint16_t MAX_PULSE_LENGTH = 1600;
@@ -91,6 +91,8 @@ namespace hel{
 
         BoundsCheckedArray<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm;
 
+        BoundsCheckedArray<MXPData::Config, NUM_DIGITAL_MXP_CHANNELS> mxp_configurations;
+
     public:
         /**
          * \brief An exception for mismatch of digital function and port configuration
@@ -102,13 +104,13 @@ namespace hel{
              * \brief Represents the different possible digital port configurations
              */
 
-            enum class Config{DI,DO,MXP_SPECIAL_FUNCTION}; //TODO: use MXPData::Config instead?
+            enum class Config{DI,DO,MXP_SPECIAL_FUNCTION};
         private:
             /**
-             * \brief The set configuration of the digital port
+             * \brief The actual set configuration of the digital port
              */
 
-            Config configuration;
+            Config actual_configuration;
 
             /**
              * \brief The expected configuration for the digital port to use the digital functionality
@@ -131,8 +133,8 @@ namespace hel{
 
             /**
              * Constructor for a DIOConfigurationException
-             * \param config The set configuration
              * \param expected The expected configuration necessary for the digital IO action
+             * \param config The actual set configuration
              * \param index The digital port with the misconfiguration
              */
 
@@ -212,6 +214,10 @@ namespace hel{
          */
 
         void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI)noexcept;
+
+		MXPData::Config getMXPConfig(const unsigned)const;
+
+		void setMXPConfig(const unsigned);
 
         /**
          * \brief Get the set pulse length

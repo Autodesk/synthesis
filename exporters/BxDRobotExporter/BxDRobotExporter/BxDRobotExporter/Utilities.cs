@@ -111,21 +111,35 @@ namespace BxDRobotExporter
             }
         }
 
+        public static bool IsAdvancedJointEditorVisible()
+        {
+            if (EmbededJointPane == null) return false;
+            return EmbededJointPane.Visible;
+        }
+
         public static void ToggleAdvancedJointEditor()
         {
             if (EmbededJointPane != null)
             {
-                EmbededJointPane.Visible = !EmbededJointPane.Visible;
+                if (IsAdvancedJointEditorVisible())
+                {
+                    HideAdvancedJointEditor();
+                }
+                else
+                {
+                    ShowAdvancedJointEditor();
+                }
             }
         }
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="StandardAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public static void HideAdvancedJointEditor()
+        public static void HideAdvancedJointEditor() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
         {
             if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = false;
+                InventorUtils.FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
             }
         }
 
@@ -158,7 +172,7 @@ namespace BxDRobotExporter
             // Old configurations get overriden (version numbers below 1)
             if (Properties.Settings.Default.SaveLocation == "" || Properties.Settings.Default.SaveLocation == "firstRun" || Properties.Settings.Default.ConfigVersion < 2)
                 Properties.Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-            
+
             if (Properties.Settings.Default.ConfigVersion < 3)
             {
                 SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
@@ -168,7 +182,8 @@ namespace BxDRobotExporter
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
                     fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC"
+                    defaultRobotCompetition = "GENERIC",
+                    useAnalytics = true
                 };
             }
             else
@@ -180,9 +195,15 @@ namespace BxDRobotExporter
                     GeneralUseFancyColors = Properties.Settings.Default.FancyColors,
                     openSynthesis = Properties.Settings.Default.ExportToField,
                     fieldName = Properties.Settings.Default.SelectedField,
-                    defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition
+                    defaultRobotCompetition = Properties.Settings.Default.DefaultRobotCompetition,
+                    useAnalytics = Properties.Settings.Default.UseAnalytics
                 };
             }
         }
+
+
+        // Analytics
+
+        
     }
 }

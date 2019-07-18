@@ -81,7 +81,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// The calculated weight of the robot.
         /// </summary>
-        public float Weight { get; protected set; }
+        public float Weight { get; set; }
 
         /// <summary>
         /// The calculated angular velocity of the robot.
@@ -126,7 +126,7 @@ namespace Synthesis.Robot
         /// <summary>
         /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
         /// </summary>
-        void FixedUpdate()
+        public void FixedUpdate()
         {
             if (RootNode != null)
                 UpdateMotors();
@@ -151,7 +151,7 @@ namespace Synthesis.Robot
             robotStartPosition = FieldDataHandler.robotSpawn != new Vector3(99999, 99999, 99999) ? FieldDataHandler.robotSpawn : robotStartPosition;
             transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.bxdj") && !File.Exists(directory + Path.DirectorySeparatorChar + "skeleton.json"))
                 return false;
 
             OnInitializeRobot();
@@ -189,6 +189,8 @@ namespace Synthesis.Robot
                                 emuList.Add(emuStruct);
                             }
                         }
+
+                       
                     }
                 }
                 catch (Exception e)
@@ -207,8 +209,9 @@ namespace Synthesis.Robot
             {
                 r.RaycastRobot.OverrideMass = collectiveMass;
                 r.RaycastRobot.RootRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+                
             }
-
+           
             OnRobotSetup();
 
             RotateRobot(robotStartOrientation);
@@ -351,9 +354,9 @@ namespace Synthesis.Robot
         /// <summary>
         /// Updates all motors on the robot.
         /// </summary>
-        protected virtual void UpdateMotors(float[] pwm = null)
+        protected virtual void UpdateMotors()
         {
-            DriveJoints.UpdateAllMotors(RootNode, pwm ?? DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
+            DriveJoints.UpdateAllMotors(RootNode, DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
         }
 
         /// <summary>

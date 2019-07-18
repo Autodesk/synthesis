@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.FEA;
 
@@ -83,13 +82,6 @@ namespace Synthesis.States
 
             ReplayExporter.Write(replayNameText.text, fieldPath, trackers, contacts);
             StateMachine.PopState();
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Saved Replay", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
         }
 
         /// <summary>
