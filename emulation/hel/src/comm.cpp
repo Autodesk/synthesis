@@ -1,4 +1,10 @@
 #include "roborio_manager.hpp"
+
+#include <unistd.h>
+#include <thread>
+
+std::thread ds_spoofer;
+
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -26,9 +32,24 @@ extern "C" {
 
     int setNewDataOccurRef(uint32_t refnum){
         auto instance = hel::RoboRIOManager::getInstance();
+
         instance.first->net_comm.ref_num = refnum;
+        auto& occurFunction = instance.first->net_comm.occurFunction;
 
         instance.second.unlock();
+
+        // Call the occur function repeatably in the background to signal HAL that the Driver Station has new data for it; this way it won't block and will actually receive HEL DS data
+        ds_spoofer = std::thread(
+			[occurFunction, refnum](){
+				while(true){
+					occurFunction(refnum);
+					usleep(10000);
+				}
+			}
+		);
+        ds_spoofer.detach();
+
+        hel::hal_is_initialized.store(true);
         return 0;
     }
 

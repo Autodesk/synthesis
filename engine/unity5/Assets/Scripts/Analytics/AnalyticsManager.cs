@@ -4,10 +4,9 @@ using UnityEngine;
 using System.Net;
 using System.Threading.Tasks;
 using System;
+using System.Threading;
 
-public class AnalyticsManager : MonoBehaviour
-{
-    public const bool DEBUG = false;
+public class AnalyticsManager : MonoBehaviour {
 
     public static AnalyticsManager GlobalInstance { get; set; }
 
@@ -16,20 +15,27 @@ public class AnalyticsManager : MonoBehaviour
     public const string TESTING_TRACKING_ID = "UA-142391571-1";
     public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
     public const float DUMP_DELAY = 5;
+    public bool DumpData = true;
+
+    public static Mutex mutex;
 
     private WebClient client;
     private Queue<KeyValuePair<string, string>> loggedData;
     private List<KeyValuePair<string, float>> startTimes;
 
     private float LastDump = 0;
+    private bool lastEnd = false;
 
     public void Awake()
     {
+        mutex = new Mutex();
         GlobalInstance = this;
         LastDump = Time.time;
         DontDestroyOnLoad(gameObject);
         loggedData = new Queue<KeyValuePair<string, string>>();
         startTimes = new List<KeyValuePair<string, float>>();
+
+        DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
     }
 
     public void LateUpdate()
@@ -41,20 +47,20 @@ public class AnalyticsManager : MonoBehaviour
         }
     }
 
-    public void StartTime(string name)
+    public void StartTime(string label, string varible)
     {
-        startTimes.Add(new KeyValuePair<string, float>(name, Time.unscaledTime));
+        startTimes.Add(new KeyValuePair<string, float>(label + "|" + varible, Time.unscaledTime));
     }
 
-    public float GetElapsedTime(string name)
+    public float GetElapsedTime(string label, string varible)
     {
-        float a = startTimes.Find(x => x.Key.Equals(name)).Value;
-        return Time.unscaledTime - a;
+        float a = startTimes.Find(x => x.Key.Equals(label + "|" + varible)).Value;
+        return (Time.unscaledTime - a) * 1000;
     }
 
-    public void RemoveTime(string name)
+    public void RemoveTime(string label, string varible)
     {
-        startTimes.Remove(startTimes.Find(x => x.Key.Equals(name)));
+        startTimes.Remove(startTimes.Find(x => x.Key.Equals(label + "|" + varible)));
     }
 
     #region AsyncMethods
@@ -74,6 +80,13 @@ public class AnalyticsManager : MonoBehaviour
         await LogPageView(Title);
     }
 
+    public void LogTimingAsync(string Catagory, string Vari, string Label)
+    {
+        int milli = (int)GetElapsedTime(Label, Vari);
+        RemoveTime(Label, Vari);
+        LogTimingAsync(Catagory, Vari, milli, Label);
+    }
+
     public async void LogTimingAsync(string Catagory, string Vari, int Time, string Label)
     {
         await LogTiming(Catagory, Vari, Time, Label);
@@ -91,7 +104,7 @@ public class AnalyticsManager : MonoBehaviour
     public void LogStandardInfo()
     {
         loggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
-        loggedData.Enqueue(new KeyValuePair<string, string>("tid", TESTING_TRACKING_ID));
+        loggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
         loggedData.Enqueue(new KeyValuePair<string, string>("cid", "555"));
     }
 
@@ -99,6 +112,7 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "event"));
 
@@ -107,7 +121,7 @@ public class AnalyticsManager : MonoBehaviour
             if (Label != null) loggedData.Enqueue(new KeyValuePair<string, string>("el", Label));
             if (Label != null) loggedData.Enqueue(new KeyValuePair<string, string>("ev", Value));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
-
+            mutex.ReleaseMutex();
             Debug.Log("Event Logged");
         });
     }
@@ -116,13 +130,15 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "screenname"));
 
             //ScreenName = ScreenName.Replace(" ", "%20");
 
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "https://www.google.com/index.html"));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Screenname Logged");
         });
     }
@@ -131,11 +147,13 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "pageview"));
 
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "http://test.com/" + Title));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Pageview Logged");
         });
     }
@@ -144,6 +162,7 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Task.Factory.StartNew(() =>
         {
+            mutex.WaitOne();
             LogStandardInfo();
             loggedData.Enqueue(new KeyValuePair<string, string>("t", "timing"));
 
@@ -151,7 +170,8 @@ public class AnalyticsManager : MonoBehaviour
             loggedData.Enqueue(new KeyValuePair<string, string>("utv", Vari));
             loggedData.Enqueue(new KeyValuePair<string, string>("utt", Time.ToString()));
             loggedData.Enqueue(new KeyValuePair<string, string>("utl", Label));
-
+            loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+            mutex.ReleaseMutex();
             Debug.Log("Timing Logged");
         });
     }
@@ -160,8 +180,13 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Task.Factory.StartNew(() =>
         {
-
-            if (DEBUG || loggedData.Count < 1) { Debug.Log("Not Dumping"); return; }
+            mutex.WaitOne();
+            if (loggedData.Count < 1 || !DumpData)
+            {
+                loggedData = new Queue<KeyValuePair<string, string>>();
+                Debug.Log("Not Dumping");
+                return;
+            }
 
             Debug.Log("Starting Data Dump");
 
@@ -169,6 +194,7 @@ public class AnalyticsManager : MonoBehaviour
 
             Queue<KeyValuePair<string, string>> loggedCopy = new Queue<KeyValuePair<string, string>>(loggedData);
             loggedData.Clear();
+            mutex.ReleaseMutex();
 
             bool batchSend = false;
 
@@ -176,18 +202,22 @@ public class AnalyticsManager : MonoBehaviour
             {
                 KeyValuePair<string, string> pair = loggedCopy.Dequeue();
                 //Debug.Log(pair.Key + " " + pair.Value);
-                if (pair.Key.Equals("NEW"))
+                if (pair.Key != null)
                 {
-                    data += "\n";
-                    batchSend = true;
-                }
-                else
-                {
-                    if ((data != "") && (data != "\n")) data += "&";
+                    if (pair.Key.Equals("NEW"))
+                    {
+                        data += "\n";
+                        batchSend = true;
+                        lastEnd = true;
+                    }
+                    else
+                    {
+                        if ((data != "") && !lastEnd) data += "&";
 
-                    data += pair.Key + "=" + pair.Value;
+                        data += pair.Key + "=" + pair.Value;
+                        lastEnd = false;
+                    }
                 }
-
 
             }
 

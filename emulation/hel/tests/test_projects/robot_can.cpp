@@ -12,7 +12,7 @@
 #include <unistd.h>
 //#include "ctre/Phoenix.h"
 
-class Robot : public frc::IterativeRobot {
+class Robot : public frc::TimedRobot {
     // ctre::phoenix::motorcontrol::can::WPI_TalonSRX talon{1};
 
     bool current_state = false;

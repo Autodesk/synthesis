@@ -12,19 +12,18 @@ Open the engine/unity5 project folder within Unity. Because we switched from the
 PhysX physics engine to Bullet Physics, you will need to download and import that asset first. Here
 are the steps to do so:
 * On the navigation bar, go to Window -> Asset Store
-* Search 'Bullet Physics' and download and import 'Bullet Physics for Unity'
+* Search for, download, and import 'Bullet Physics for Unity'
 * Import all included assets and ignore warning message
-* Bullet Physics should now be integrated within the project!
 
-You will also need to download and import the NuGet asset.
-* Search 'NuGet' and download and import 'NuGet for Unity'
+Bullet Physics should now be integrated within the project.
+
+You will also need to download and import NuGet to install more packages.
+* Search for, download, and import 'NuGet for Unity'
 * Restart Unity
-* Select the NuGet tab at the top of the screen
-* Go to Install a package
-* Uninstall and Re-Install JSON.NET
-* Uninstall and Re-Install SSH.NET
-* Import all included assets
-* NuGet should now be integrated within the project
+* NuGet should automatically install the necessary pacakges. If not, from the navigation bar, select NugGet -> Restore Packages
+* The NuGet packages should now be integrated within the project
+
+Lastly, a naming issue prevents Unity from linking against one of the gRPC libraries. To fix this, rename `grpc_csharp_ext.x64.dll` to `grpc_csharp_ext.dll`. This file can be found in the Windows gRPC core runtime in the Nuget for Unity packages folder.
 
 If you want to test, you will need to open the MainMenu.unity scene by double clicking the scene or dragging the scene to the 'Hiearchy' (the upper left hand column.) You can run it from there as you will need to select and load a robot and field for the simulator to properly intialize.
 

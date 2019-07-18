@@ -326,12 +326,12 @@ public bool ExportRobot()
             if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                 LoadMeshes();
             BXDJSkeleton.SetupFileNames(SkeletonBase);
-           
 
-            BXDJSkeletonJson.WriteSkeleton(
-                (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.json",
-                    SkeletonBase
-                );
+
+            BXDJSkeleton.WriteSkeleton(
+           (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj",
+               SkeletonBase
+           );
 
 
             //XML EXPORTING
@@ -417,6 +417,8 @@ public bool ExportRobot()
             // If the property set does not exist, stop loading data
             if (propertySet == null)
                 return false;
+
+            joint.weight = Utilities.GetProperty(propertySet, "weight", 10);
 
             // Get joint properties from set
             // Get driver information
@@ -520,7 +522,7 @@ public bool ExportRobot()
             Utilities.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
             Utilities.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
             Utilities.SetProperty(propertySet, "robot-driveTrainType", (int)SynthesisGUI.Instance.SkeletonBase.driveTrainType);
-
+          
             // Save joint data
             return SaveJointData(propertySets, SkeletonBase);
         }
@@ -554,7 +556,7 @@ public bool ExportRobot()
             // Save driver information
             JointDriver driver = joint.cDriver;
             Utilities.SetProperty(propertySet, "has-driver", driver != null);
-
+            Utilities.SetProperty(propertySet, "weight", joint.weight);
             if (driver != null)
             {
                 Utilities.SetProperty(propertySet, "driver-type", (int)driver.GetDriveType());

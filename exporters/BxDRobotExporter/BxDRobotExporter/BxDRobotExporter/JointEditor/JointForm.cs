@@ -1,17 +1,15 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using JointResolver.ControlGUI;
 
 namespace BxDRobotExporter.JointEditor
 {
     public partial class JointForm : Form
     {
         private readonly List<JointCard> jointCards = new List<JointCard>();
-        private readonly ProgressBarForm progressBar = new ProgressBarForm("Loading Joint Editor");
 
         public JointForm()
         {
+            AnalyticUtils.LogPage("Joint Editor");
             InitializeComponent();
             SuspendLayout();
 
@@ -35,20 +33,23 @@ namespace BxDRobotExporter.JointEditor
                 jointCards.ForEach(card => card.LoadPreviewIcon());
             };
 
-            Activated += (sender, args) => // Every time the form is displayed
+            Closing += (sender, e) => // Every close
             {
-                progressBar.Hide();
-                progressBar.SetProgress("Loading Joint Parameters...", 0, 5);
+                InventorUtils.FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
+                Utilities.GUI.ReloadPanels();
+            };
+
+            FormClosing += (sender, e) =>
+            {
+                Hide();
+                e.Cancel = true; // this cancels the close event.
             };
         }
 
-        public async Task PreShow()
+        public void OnShowButtonClick()
         {
             CollapseAllCards();
             jointCards.ForEach(card => card.LoadValuesRecursive());
-            progressBar.SetProgress("Loading Joint Parameters...", 4, 5);
-            progressBar.Show();
-            await Task.Delay(500); // Wait for progress bar to fully load
         }
 
         public void CollapseAllCards(JointCard besides = null)

@@ -16,7 +16,8 @@ namespace EditorsLibrary
         {
             this.joint = joint;// read in the joint base so we can access the correspodinig Inventor Joint to see/ edit the limits
             InitializeComponent();
-            if(!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
+            AnalyticUtils.LogPage("EditLimits");
+            if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||// if the joint is a rotational then enable the rotation stuff and disable the linear
                     ((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
             {
                 this.LinearGroup.Enabled = false;

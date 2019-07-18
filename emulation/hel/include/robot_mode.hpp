@@ -26,6 +26,8 @@ namespace hel{
             AUTONOMOUS,TELEOPERATED,TEST
         };
 
+		static const bool DEFAULT_ENABLED_STATUS = false; // For testing, defaulting enabled to true is helpful
+
     private:
 
         /**
@@ -136,21 +138,6 @@ namespace hel{
          */
 
         ControlWord_t toControlWord()const noexcept;
-
-        /**
-         * \brief Deserialize a RobotMode object from a JSON string
-         * \param input The JSON string to parse
-         * \return The parsed RobotMode object
-         */
-
-        static RobotMode deserialize(std::string);
-
-        /**
-         * \brief Serialize RobotMode as a JSON string
-         * \return The serialized string
-         */
-
-        std::string serialize()const;
 
         /**
          * \brief Format RobotMode data as a string

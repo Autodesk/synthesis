@@ -1,5 +1,5 @@
 #include "roborio_manager.hpp"
-#include "json_util.hpp"
+#include "robot_outputs.hpp"
 
 #include <cmath>
 
@@ -15,23 +15,9 @@ namespace hel{
         return s;
     }
 
-    std::string CANMotorControllerBase::serialize()const {
-        std::string s = "{";
-        s += "\"type\":" + quote(asString(getType())) + ", ";
-        s += "\"id\":" + std::to_string(getID()) + ", ";
-        s += "\"percent_output\":" + std::to_string(percent_output) + ", ";
-        s += "\"inverted\":" + std::to_string(inverted);
-        s += "}";
-        return s;
-    }
-
-    std::shared_ptr<CANMotorControllerBase> CANMotorControllerBase::deserialize(std::string /*input*/){
-        return std::make_shared<ctre::CANMotorController>(); // Need for deserialization removed in other pull request
-    }
-
     void CANMotorControllerBase::setPercentOutput(double out)noexcept{
         percent_output = out;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -42,7 +28,7 @@ namespace hel{
 
     void CANMotorControllerBase::setInverted(bool i)noexcept{
         inverted = i;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -50,7 +36,7 @@ namespace hel{
     CANMotorControllerBase::CANMotorControllerBase()noexcept:CANDevice(), percent_output(0.0), inverted(false){}
 
     CANMotorControllerBase::CANMotorControllerBase(CANMessageID message_id)noexcept:CANDevice(message_id), percent_output(0.0), inverted(false){
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
  }
