@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Inventor;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Forms;
 
 public class Exporter
 {
@@ -35,17 +31,17 @@ public class Exporter
     {
         if (occurrences.Count == 0) throw new Exception("No components selected!");
 
-        SynthesisGUI.Instance.ExporterSetOverallText("Centering joints");
+//        SynthesisGUI.Instance.ExporterSetOverallText("Centering joints");
 
-        SynthesisGUI.Instance.ExporterReset();
-        SynthesisGUI.Instance.ExporterSetSubText("Centering 0 / 0");
-        SynthesisGUI.Instance.ExporterSetProgress(0);
-        SynthesisGUI.Instance.ExporterSetMeshes(2);
+//        SynthesisGUI.Instance.ExporterReset();
+//        SynthesisGUI.Instance.ExporterSetSubText("Centering 0 / 0");
+//        SynthesisGUI.Instance.ExporterSetProgress(0);
+//        SynthesisGUI.Instance.ExporterSetMeshes(2);
 
         int numOccurrences = occurrences.Count;
 
-        SynthesisGUI.Instance.ExporterStepOverall();
-        SynthesisGUI.Instance.ExporterSetOverallText("Getting rigid info");
+//        SynthesisGUI.Instance.ExporterStepOverall();
+//        SynthesisGUI.Instance.ExporterSetOverallText("Getting rigid info");
 
         Console.WriteLine("Get rigid info...");
         //Group components into rigid bodies.
@@ -64,8 +60,6 @@ public class Exporter
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
-
-        SynthesisGUI.Instance.ExporterStepOverall();
 
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
@@ -87,12 +81,10 @@ public class Exporter
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
-        SynthesisGUI.Instance.ExporterSetMeshes(nodes.Count);
-
         List<BXDAMesh> meshes = new List<BXDAMesh>();
         foreach (RigidNode_Base node in nodes)
         {
-            SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.ModelFileName);
+//            SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.ModelFileName);
 
             if (node is RigidNode && node.GetModel() != null && node.ModelFileName != null && node.GetModel() is CustomRigidGroup)
             {
@@ -100,14 +92,14 @@ public class Exporter
 
                 try
                 {
-                    SynthesisGUI.Instance.ExporterReset();
+//                    SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
                     Console.WriteLine("Exporting meshes...");
                     BXDAMesh output = surfs.ExportAll(group, node.GUID, (long progress, long total) =>
                     {
                         double totalProgress = (((double)progress / (double)total) * 100.0);
-                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("Export {1} / {2}", Math.Round(totalProgress, 2), progress, total));
-                        SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
+//                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("Export {1} / {2}", Math.Round(totalProgress, 2), progress, total));
+//                        SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
                     Console.WriteLine("Output: " + output.meshes.Count + " meshes");
@@ -124,7 +116,7 @@ public class Exporter
                 }
             }
 
-            SynthesisGUI.Instance.ExporterStepOverall();
+//            SynthesisGUI.Instance.ExporterStepOverall();
         }
 
         return meshes;

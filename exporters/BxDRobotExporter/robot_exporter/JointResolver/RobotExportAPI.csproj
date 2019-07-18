@@ -116,18 +116,6 @@
     <Compile Include="ControlGUI\SynthesisGUI.Designer.cs">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\ExporterForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\ExporterForm.Designer.cs">
-      <DependentUpon>ExporterForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlGUI\InventorChooserPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\InventorChooserPane.Designer.cs">
-      <DependentUpon>InventorChooserPane.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\DriveChooser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,12 +234,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\ExporterForm.resx">
-      <DependentUpon>ExporterForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\InventorChooserPane.resx">
-      <DependentUpon>InventorChooserPane.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>

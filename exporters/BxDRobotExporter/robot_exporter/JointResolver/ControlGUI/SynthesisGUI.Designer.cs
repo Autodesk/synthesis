@@ -205,7 +205,6 @@ partial class SynthesisGUI
             this.helpTutorials.Name = "helpTutorials";
             this.helpTutorials.Size = new System.Drawing.Size(188, 26);
             this.helpTutorials.Text = "Online Tutorials";
-            this.helpTutorials.Click += new System.EventHandler(this.HelpTutorials_Click);
             // 
             // helpAbout
             // 
