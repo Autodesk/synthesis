@@ -146,9 +146,9 @@ namespace Synthesis.GUI
             }
         }
 
-        public void RunRobotCode()
+        public void StartRobotCode()
         {
-            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramPresent)) && !EmulatorManager.IsRunningRobotCode())
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 runRobotCodeImage.sprite = StopCode;
@@ -170,9 +170,9 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if (EmulatorManager.IsFRCUserProgramPresent() && !EmulatorManager.IsRunningRobotCode())
+            if (!EmulatorManager.IsRunningRobotCode())
             {
-                RunRobotCode();
+                StartRobotCode();
             }
             else
             {
@@ -212,7 +212,7 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            if (EmulatorNetworkConnection.Instance.IsConnected())
+            if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramConnected)))
             {
                 InputManager.Instance.RobotMode.Enabled = true;
                 enableRobotImage.sprite = EnableColor;
