@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+    </head>
+    <body>
+        <style>
+            h1{
+                font-size: 18pt;
+            }
+        .dt-weight-title{
+            margin-bottom: 15px;
+        }
+        .dt-weight-input{
+            width: 100%;
+            text-align: center;
+        }
+        #dt-weight-value{
+            width: 100px;
+        }
+        </style>
+        <script src="js/dt_weight.js"></script>
+        <div id="dt-weight">
+            <div class="dt-weight-title">
+                    <p>
+                        Enter the weight of the drive base of the robot, not including the weight of jointed components such as wheels and subsystems:
+                    </p>
+        
+                    <hr/>
+            </div>
+            <div class="dt-weight-input"><input id="dt-weight-value" type="number" value="40.56">
+                <select id="dt-weight-unit">
+    
+                        <option value="0" selected="selected"> Metric (kgs) </option>
+                        <option value="1">Imperal (lbs)</option>
+                    </select>
+            </div>
+           
+        </div>
+        <br/>
+        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save</button>
+
+     
+    </body>
+</html>

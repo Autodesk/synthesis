@@ -47,6 +47,12 @@ namespace SynthesisAddIn
 		void openDriveTypePalette();
 		void closeDriveTypePalette(std::string data);
 
+		void openDriveWeightPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
+		void closeDriveWeightPalette(std::string data); ///< Closes the robot exporter configuration palette. Enables the export button.
+
+		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
+		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
+
 		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
@@ -108,6 +114,8 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
 
 		Ptr<Palette> driveTypePalette; ///< Drive train type configuration palette.
+		Ptr<Palette> driveWeightPalette; ///< Robot export configuration palette.
+		Ptr<Palette> exportPalette; ///< Robot export configuration palette.
 		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> guidePalette; ///< Robot export guide palette.
@@ -141,6 +149,7 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
 		ClosePaletteEventHandler* driveTypeClosePaletteHandler = nullptr;
+		ClosePaletteEventHandler* driveWeightClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* keyClosePaletteEventHandler = nullptr;
@@ -150,6 +159,7 @@ namespace SynthesisAddIn
 
 		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* driveTypeReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* driveWeightReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
@@ -168,6 +178,12 @@ namespace SynthesisAddIn
 
 		bool createDriveTypePalette(); ///< Creates the Drivetrain type configuration palette.
 		void deleteDriveTypePalette(); ///< Deletes the Drivetrain type configuration palette.
+
+		bool createDriveWeightPalette(); ///< Creates the robot export configuration palette.
+		void deleteDriveWeightPalette(); ///< Deletes the robot export configuration palette.
+
+		bool createExportPalette(); ///< Creates the robot export configuration palette.
+		void deleteExportPalette(); ///< Deletes the robot export configuration palette.
 
 		bool createJointEditorPalette(); ///< Creates the robot export configuration palette.
 		void deleteJointEditorPalette(); ///< Deletes the robot export configuration palette.
