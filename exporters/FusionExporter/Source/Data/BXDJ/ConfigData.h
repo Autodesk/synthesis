@@ -11,6 +11,10 @@ using namespace adsk;
 
 namespace BXDJ
 {
+	struct WeightData {
+		double value;
+		int type; //0 = Metric, 1 = Imperial
+	};
 	/// Stores the user's configuration for drivers, wheels, pneumatics, etc.
 	/// All data is relative to a Joint.
 	class ConfigData : public CustomJSONObject
@@ -26,6 +30,8 @@ namespace BXDJ
 
 		std::string robotName; ///< Name of the robot. Used for writing to the robot directory.
 		DrivetrainType drivetrainType; ///< The type of the robot's drivetrain.
+		WeightData weight; /// Weight of the subsystem
+
 		std::string tempIconDir;
 
 		///

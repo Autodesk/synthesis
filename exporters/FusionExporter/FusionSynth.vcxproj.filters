@@ -268,5 +268,19 @@
     <None Include="palette\js\utility.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
+    <None Include="palette\jointEditor.html" />
+    <None Include="palette\js\jointEditor.js" />
+    <None Include="palette\dt_weight.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\dt_weight.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\drivetrain.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\drivetrain.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
   </ItemGroup>
 </Project>

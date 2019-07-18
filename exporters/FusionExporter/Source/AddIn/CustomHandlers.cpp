@@ -16,6 +16,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
 		eui->prepareAllPalettes();
+		eui->openGuidePalette();
 	}
 }
 
@@ -66,16 +67,30 @@ ShowPaletteCommandCreatedHandler::~ShowPaletteCommandCreatedHandler()
 // Show Palette Button Event
 void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& eventArgs)
 {
-	if (id == SynthesisAddIn::BTN_DT_TYPE)
+	if (id == SynthesisAddIn::BTN_WEIGHT)
+	{
+		eui->openDriveWeightPalette();
+	}
+    else if (id == SynthesisAddIn::BTN_DT_TYPE)
+    {
 		eui->openDriveTypePalette();
+    }
 	else if (id == SynthesisAddIn::BTN_GUIDE)
+	{
 		eui->openGuidePalette();
+	}
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
+	{
 		eui->openJointEditorPalette();
+	}
 	else if (id == SynthesisAddIn::BTN_EXPORT)
+	{
 		eui->openFinishPalette();
+	}
 	else if (id == SynthesisAddIn::BTN_DOF)
+	{
 		eui->toggleDOF();
+	}
 }
 
 /// Palette Events
@@ -89,10 +104,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 	} else if (eventArgs->action() == "edit_sensors") {
 		eui->openSensorsPalette(eventArgs->data());
-
 	} else if (eventArgs->action() == "save_sensors") {
 		eui->closeSensorsPalette(eventArgs->data());
-
+	} else if (eventArgs->action() == "dt_weight_save") {
+		eui->closeDriveWeightPalette("");
 	} else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
 		eui->saveConfiguration(eventArgs->data());
 
