@@ -14,6 +14,7 @@ ConfigData::ConfigData()
 {
 	robotName = "unnamed";
 	drivetrainType = TANK;
+	weight.value = 10;
 	tempIconDir = "";
 }
 
@@ -183,6 +184,15 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
 	configJSON.AddMember("drivetrainType", rapidjson::Value((int)drivetrainType), allocator);
 
+	// Weight
+
+	rapidjson::Value weightJSON;
+	weightJSON.SetObject();
+	weightJSON.AddMember("value", rapidjson::Value(weight.value), allocator);
+
+
+	configJSON.AddMember("weight", weightJSON, allocator);
+
 	configJSON.AddMember("tempIconDir", rapidjson::Value(tempIconDir.c_str(), tempIconDir.length(), allocator), allocator);
 
 	// Joints
@@ -202,6 +212,8 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), allocator), allocator);
 		jointJSON.AddMember("asBuilt", jointConfig.asBuilt, allocator);
 		jointJSON.AddMember("type", rapidjson::Value((int)jointConfig.motion), allocator);
+
+
 
 		// Driver Information
 		rapidjson::Value driverJSON;
@@ -235,6 +247,16 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
+
+	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {
+		const auto weightJson = configJSON["weight"].GetObject();
+
+		if (weightJson.HasMember("value")) {
+			weight.value = weightJson["value"].GetDouble();
+			if (weightJson.HasMember("unit") && weightJson["unit"].GetInt() == 0)
+				weight.value /= 2.20462f;
+		}
+	}
 
 	if (configJSON.HasMember("tempIconDir") && configJSON["tempIconDir"].IsString())
 		tempIconDir = configJSON["tempIconDir"].GetString();
