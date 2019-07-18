@@ -114,6 +114,7 @@
       <HintPath>..\..\packages\Costura.Fody.1.6.2\lib\dotnet\Costura.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic.Compatibility" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -152,20 +153,55 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs" />
+    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Editors\JointEditor\AxHostConverter.cs" />
-    <Compile Include="Editors\JointEditor\JointCard.cs" />
+    <Compile Include="Editors\CommonJointEditorForms\JointDataStringUtils.cs" />
+    <Compile Include="Editors\CommonJointEditorForms\JointDriverEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointDriverEditorForm.Designer.cs">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointLimitEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointLimitEditorForm.Designer.cs">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorEditorForm.Designer.cs">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorListForm.Designer.cs">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Editors\JointEditor\JointCard.Designer.cs">
       <DependentUpon>JointCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Editors\JointEditor\JointCardEditor.cs" />
-    <Compile Include="Editors\JointEditor\JointCardEditor.Designer.cs">
-      <DependentUpon>JointCardEditor.cs</DependentUpon>
+    <Compile Include="Editors\JointEditor\JointDriverEditorUserControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Editors\JointEditor\JointForm.cs" />
+    <Compile Include="Editors\JointEditor\JointCardEditor.Designer.cs">
+      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Editors\JointEditor\JointForm.Designer.cs">
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
@@ -223,11 +259,23 @@
     <EmbeddedResource Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointDriverEditorForm.resx">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointLimitEditorForm.resx">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointSensorEditorForm.resx">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointSensorListForm.resx">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editors\JointEditor\JointCard.resx">
       <DependentUpon>JointCard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\JointEditor\JointCardEditor.resx">
-      <DependentUpon>JointCardEditor.cs</DependentUpon>
+      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
@@ -241,6 +289,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -321,9 +370,6 @@
       <Project>{352cde72-aee2-4085-adc5-99a860ea0768}</Project>
       <Name>RobotExportAPI</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Editors" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

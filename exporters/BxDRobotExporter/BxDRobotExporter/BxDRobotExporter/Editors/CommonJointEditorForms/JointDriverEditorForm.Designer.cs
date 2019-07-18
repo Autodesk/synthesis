@@ -1,31 +1,33 @@
-﻿partial class JointDriverEditorForm
+﻿namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
-
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
+    partial class JointDriverEditorForm
     {
-        if (disposing && (components != null))
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
         {
-            components.Dispose();
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
         }
-        base.Dispose(disposing);
-    }
 
-    #region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent()
-    {
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointDriverEditorForm));
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
@@ -168,17 +170,17 @@
             this.txtHighLimit.DecimalPlaces = 4;
             this.txtHighLimit.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtHighLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+                1,
+                0,
+                0,
+                65536});
             this.txtHighLimit.Location = new System.Drawing.Point(139, 64);
             this.txtHighLimit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtHighLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+                100,
+                0,
+                0,
+                -2147483648});
             this.txtHighLimit.Name = "txtHighLimit";
             this.txtHighLimit.Size = new System.Drawing.Size(133, 20);
             this.txtHighLimit.TabIndex = 4;
@@ -199,17 +201,17 @@
             this.txtLowLimit.DecimalPlaces = 4;
             this.txtLowLimit.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtLowLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+                1,
+                0,
+                0,
+                65536});
             this.txtLowLimit.Location = new System.Drawing.Point(2, 64);
             this.txtLowLimit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtLowLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+                100,
+                0,
+                0,
+                -2147483648});
             this.txtLowLimit.Name = "txtLowLimit";
             this.txtLowLimit.Size = new System.Drawing.Size(133, 20);
             this.txtLowLimit.TabIndex = 3;
@@ -224,10 +226,10 @@
             this.txtPort1.Size = new System.Drawing.Size(133, 20);
             this.txtPort1.TabIndex = 1;
             this.txtPort1.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             // 
             // txtPort2
             // 
@@ -238,10 +240,10 @@
             this.txtPort2.Size = new System.Drawing.Size(133, 20);
             this.txtPort2.TabIndex = 2;
             this.txtPort2.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             // 
             // lblLimits
             // 
@@ -313,10 +315,10 @@
             this.cmbWheelType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbWheelType.FormattingEnabled = true;
             this.cmbWheelType.Items.AddRange(new object[] {
-            "Not a Wheel",
-            "Normal",
-            "Omni",
-            "Mecanum"});
+                "Not a Wheel",
+                "Normal",
+                "Omni",
+                "Mecanum"});
             this.cmbWheelType.Location = new System.Drawing.Point(2, 21);
             this.cmbWheelType.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbWheelType.Name = "cmbWheelType";
@@ -331,9 +333,9 @@
             this.cmbPneumaticPressure.FormattingEnabled = true;
             this.cmbPneumaticPressure.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.cmbPneumaticPressure.Items.AddRange(new object[] {
-            "60 psi",
-            "20 psi",
-            "10 psi"});
+                "60 psi",
+                "20 psi",
+                "10 psi"});
             this.cmbPneumaticPressure.Location = new System.Drawing.Point(191, 21);
             this.cmbPneumaticPressure.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
@@ -403,9 +405,9 @@
             this.cmbFrictionLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFrictionLevel.FormattingEnabled = true;
             this.cmbFrictionLevel.Items.AddRange(new object[] {
-            "High",
-            "Medium",
-            "Low"});
+                "High",
+                "Medium",
+                "Low"});
             this.cmbFrictionLevel.Location = new System.Drawing.Point(128, 21);
             this.cmbFrictionLevel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbFrictionLevel.Name = "cmbFrictionLevel";
@@ -474,10 +476,10 @@
             this.numericUpDownPnuDia.Location = new System.Drawing.Point(2, 2);
             this.numericUpDownPnuDia.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDownPnuDia.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+                10,
+                0,
+                0,
+                0});
             this.numericUpDownPnuDia.Name = "numericUpDownPnuDia";
             this.numericUpDownPnuDia.Size = new System.Drawing.Size(134, 20);
             this.numericUpDownPnuDia.TabIndex = 0;
@@ -553,23 +555,23 @@
             this.OutputGeartxt.Location = new System.Drawing.Point(191, 25);
             this.OutputGeartxt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.OutputGeartxt.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
+                1000,
+                0,
+                0,
+                0});
             this.OutputGeartxt.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             this.OutputGeartxt.Name = "OutputGeartxt";
             this.OutputGeartxt.Size = new System.Drawing.Size(154, 20);
             this.OutputGeartxt.TabIndex = 16;
             this.OutputGeartxt.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             // 
             // lblOutputGear
             // 
@@ -598,23 +600,23 @@
             this.InputGeartxt.Location = new System.Drawing.Point(2, 25);
             this.InputGeartxt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.InputGeartxt.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
+                1000,
+                0,
+                0,
+                0});
             this.InputGeartxt.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             this.InputGeartxt.Name = "InputGeartxt";
             this.InputGeartxt.Size = new System.Drawing.Size(154, 20);
             this.InputGeartxt.TabIndex = 15;
             this.InputGeartxt.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                1,
+                0,
+                0,
+                0});
             // 
             // metaBrake
             // 
@@ -692,10 +694,10 @@
             this.RobotCompetitionDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.RobotCompetitionDropDown.FormattingEnabled = true;
             this.RobotCompetitionDropDown.Items.AddRange(new object[] {
-            "GENERIC",
-            "FRC",
-            "FTC",
-            "VEX"});
+                "GENERIC",
+                "FRC",
+                "FTC",
+                "VEX"});
             this.RobotCompetitionDropDown.Location = new System.Drawing.Point(2, 26);
             this.RobotCompetitionDropDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RobotCompetitionDropDown.Name = "RobotCompetitionDropDown";
@@ -816,53 +818,54 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        #endregion
+
+        private System.Windows.Forms.ComboBox cmbJointDriver;
+        private System.Windows.Forms.GroupBox grpChooseDriver;
+        private System.Windows.Forms.GroupBox grpDriveOptions;
+        private System.Windows.Forms.NumericUpDown txtPort2;
+        private System.Windows.Forms.Label lblPort;
+        private System.Windows.Forms.NumericUpDown txtPort1;
+        private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.ComboBox cmbWheelType;
+        private System.Windows.Forms.ComboBox cmbPneumaticPressure;
+        private System.Windows.Forms.TabControl tabsMeta;
+        private System.Windows.Forms.TabPage metaWheel;
+        private System.Windows.Forms.TabPage metaPneumatic;
+        private System.Windows.Forms.ComboBox cmbFrictionLevel;
+        private System.Windows.Forms.Label lblDiameter;
+        private System.Windows.Forms.TabPage metaGearing;
+        private System.Windows.Forms.Label lblInputGear;
+        private System.Windows.Forms.Label lblPressure;
+        private System.Windows.Forms.Label lblOutputGear;
+        private System.Windows.Forms.NumericUpDown txtHighLimit;
+        private System.Windows.Forms.Label lblLimits;
+        private System.Windows.Forms.NumericUpDown txtLowLimit;
+        private System.Windows.Forms.Label lblFriction;
+        private System.Windows.Forms.Label lblType;
+        private System.Windows.Forms.TabPage metaBrake;
+        private System.Windows.Forms.CheckBox chkBoxHasBrake;
+        private System.Windows.Forms.CheckBox chkBoxDriveWheel;
+        private System.Windows.Forms.RadioButton rbPWM;
+        private System.Windows.Forms.RadioButton rbCAN;
+        private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
+        private System.Windows.Forms.TableLayoutPanel JointOptionsLayout;
+        private System.Windows.Forms.TableLayoutPanel WheelLayout;
+        private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
+        private System.Windows.Forms.TableLayoutPanel GearLayout;
+        private System.Windows.Forms.TableLayoutPanel BreakLayout;
+        private System.Windows.Forms.NumericUpDown InputGeartxt;
+        private System.Windows.Forms.NumericUpDown OutputGeartxt;
+        private System.Windows.Forms.TabPage metaMotorType;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label MotorTypeLabel;
+        private System.Windows.Forms.ComboBox RobotCompetitionDropDown;
+        private System.Windows.Forms.ComboBox MotorTypeDropDown;
+        private System.Windows.Forms.Label RobotCompetitonLabel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
+        private System.Windows.Forms.Label PnuDiaUnits;
     }
-
-    #endregion
-
-    private System.Windows.Forms.ComboBox cmbJointDriver;
-    private System.Windows.Forms.GroupBox grpChooseDriver;
-    private System.Windows.Forms.GroupBox grpDriveOptions;
-    private System.Windows.Forms.NumericUpDown txtPort2;
-    private System.Windows.Forms.Label lblPort;
-    private System.Windows.Forms.NumericUpDown txtPort1;
-    private System.Windows.Forms.Button SaveButton;
-    private System.Windows.Forms.ComboBox cmbWheelType;
-    private System.Windows.Forms.ComboBox cmbPneumaticPressure;
-    private System.Windows.Forms.TabControl tabsMeta;
-    private System.Windows.Forms.TabPage metaWheel;
-    private System.Windows.Forms.TabPage metaPneumatic;
-    private System.Windows.Forms.ComboBox cmbFrictionLevel;
-    private System.Windows.Forms.Label lblDiameter;
-    private System.Windows.Forms.TabPage metaGearing;
-    private System.Windows.Forms.Label lblInputGear;
-    private System.Windows.Forms.Label lblPressure;
-    private System.Windows.Forms.Label lblOutputGear;
-    private System.Windows.Forms.NumericUpDown txtHighLimit;
-    private System.Windows.Forms.Label lblLimits;
-    private System.Windows.Forms.NumericUpDown txtLowLimit;
-    private System.Windows.Forms.Label lblFriction;
-    private System.Windows.Forms.Label lblType;
-    private System.Windows.Forms.TabPage metaBrake;
-    private System.Windows.Forms.CheckBox chkBoxHasBrake;
-    private System.Windows.Forms.CheckBox chkBoxDriveWheel;
-    private System.Windows.Forms.RadioButton rbPWM;
-    private System.Windows.Forms.RadioButton rbCAN;
-    private System.Windows.Forms.TableLayoutPanel ConfigJointLayout;
-    private System.Windows.Forms.TableLayoutPanel JointOptionsLayout;
-    private System.Windows.Forms.TableLayoutPanel WheelLayout;
-    private System.Windows.Forms.TableLayoutPanel PneumaticLayout;
-    private System.Windows.Forms.TableLayoutPanel GearLayout;
-    private System.Windows.Forms.TableLayoutPanel BreakLayout;
-    private System.Windows.Forms.NumericUpDown InputGeartxt;
-    private System.Windows.Forms.NumericUpDown OutputGeartxt;
-    private System.Windows.Forms.TabPage metaMotorType;
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-    private System.Windows.Forms.Label MotorTypeLabel;
-    private System.Windows.Forms.ComboBox RobotCompetitionDropDown;
-    private System.Windows.Forms.ComboBox MotorTypeDropDown;
-    private System.Windows.Forms.Label RobotCompetitonLabel;
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-    private System.Windows.Forms.NumericUpDown numericUpDownPnuDia;
-    private System.Windows.Forms.Label PnuDiaUnits;
 }

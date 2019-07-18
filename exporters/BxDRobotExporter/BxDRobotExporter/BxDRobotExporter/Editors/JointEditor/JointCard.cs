@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using EditorsLibrary;
+using BxDRobotExporter.Editors.CommonJointEditorForms;
 
 namespace BxDRobotExporter.Editors.JointEditor
 {
@@ -20,7 +20,7 @@ namespace BxDRobotExporter.Editors.JointEditor
 
             InitializeComponent();
             AnalyticUtils.LogEvent("Joint Editor", "System", "Init");
-            jointEditor.Initialize(new List<RigidNode_Base> {node}, this);
+            jointEditorUserControl.Initialize(new List<RigidNode_Base> {node}, this);
 
             AddHighlightAction(this);
         }
@@ -100,13 +100,13 @@ namespace BxDRobotExporter.Editors.JointEditor
         public void SetCollapsed(bool collapse)
         {
             AnalyticUtils.LogEvent("Joint Editor", "System", "SetCollapsed", collapse ? 0: 1);
-            jointEditor.Visible = !collapse;
+            jointEditorUserControl.Visible = !collapse;
         }
 
 
         public bool IsCollapsed()
         {
-            return !jointEditor.Visible;
+            return !jointEditorUserControl.Visible;
         }
 
         private void editButton_Click(object sender, EventArgs e)
@@ -117,9 +117,9 @@ namespace BxDRobotExporter.Editors.JointEditor
             if (!hasLoadedEditor)
             {
                 hasLoadedEditor = true;
-                jointEditor.SuspendLayout();
-                jointEditor.LoadValues();
-                jointEditor.ResumeLayout();
+                jointEditorUserControl.SuspendLayout();
+                jointEditorUserControl.LoadValues();
+                jointEditorUserControl.ResumeLayout();
             }
         }
 

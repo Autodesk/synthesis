@@ -98,19 +98,6 @@
     <Compile Include="ControlGUI\DepricatedStandaloneGUI.Designer.cs">
       <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointDataStringUtils.cs" />
-    <Compile Include="EditorsLibrary\JointEditors\JointDriverEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointDriverEditorForm.Designer.cs">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointLimitEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointLimitEditorForm.Designer.cs">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\DrivetrainTypeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,23 +110,11 @@
     <Compile Include="EditorsLibrary\ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointSensorEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointSensorEditorForm.Designer.cs">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\DrivetrainWeightForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EditorsLibrary\DrivetrainWeightForm.Designer.cs">
       <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointSensorListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\JointEditors\JointSensorListForm.Designer.cs">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorsLibrary\RobotSettingsForm.cs">
       <SubType>Form</SubType>
@@ -208,26 +183,14 @@
     <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
       <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\JointEditors\JointDriverEditorForm.resx">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\JointEditors\JointLimitEditorForm.resx">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\ExporterSettingsForm.resx">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\JointEditors\JointSensorEditorForm.resx">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\DrivetrainWeightForm.resx">
       <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\DrivetrainTypeForm.resx">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\JointEditors\JointSensorListForm.resx">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\RobotSettingsForm.resx">
       <DependentUpon>RobotSettingsForm.cs</DependentUpon>
@@ -309,6 +272,9 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EditorsLibrary\JointEditors" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

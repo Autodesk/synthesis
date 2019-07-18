@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using Inventor;
 
-namespace EditorsLibrary
+namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
     public partial class JointLimitEditorForm : Form
     {

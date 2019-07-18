@@ -1,4 +1,4 @@
-﻿namespace EditorsLibrary
+﻿namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
     partial class JointSensorEditorForm
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace EditorsLibrary
+namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
     public partial class JointSensorListForm : Form
     {
