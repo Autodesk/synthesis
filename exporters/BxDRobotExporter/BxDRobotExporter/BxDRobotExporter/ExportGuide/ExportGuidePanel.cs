@@ -1,10 +1,10 @@
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.PrecheckPanel
+namespace BxDRobotExporter.ExportGuide
 {
-    public partial class PrecheckPanel : UserControl
+    public partial class ExportGuidePanel : UserControl
     {
-        public PrecheckPanel()
+        public ExportGuidePanel()
         {
             InitializeComponent();
 

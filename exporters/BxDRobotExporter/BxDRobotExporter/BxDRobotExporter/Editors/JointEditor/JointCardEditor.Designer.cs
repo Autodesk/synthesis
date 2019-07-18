@@ -1,4 +1,4 @@
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     partial class JointCardEditor
     {

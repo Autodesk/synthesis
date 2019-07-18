@@ -152,49 +152,39 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InventorUtils.cs" />
-    <Compile Include="JointEditor\AxHostConverter.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs" />
+    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
+      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="JointEditor\JointCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="JointEditor\JointCard.Designer.cs">
+    <Compile Include="Editors\JointEditor\AxHostConverter.cs" />
+    <Compile Include="Editors\JointEditor\JointCard.cs" />
+    <Compile Include="Editors\JointEditor\JointCard.Designer.cs">
       <DependentUpon>JointCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="JointEditor\JointCardEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="JointEditor\JointCardEditor.Designer.cs">
+    <Compile Include="Editors\JointEditor\JointCardEditor.cs" />
+    <Compile Include="Editors\JointEditor\JointCardEditor.Designer.cs">
       <DependentUpon>JointCardEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="JointEditor\JointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="JointEditor\JointForm.Designer.cs">
+    <Compile Include="Editors\JointEditor\JointForm.cs" />
+    <Compile Include="Editors\JointEditor\JointForm.Designer.cs">
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="JointEditor\WinFormsUtils.cs" />
+    <Compile Include="Editors\JointEditor\WinFormsUtils.cs" />
+    <Compile Include="InventorUtils.cs" />
     <Compile Include="Messages\FirstLaunchInfo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Messages\FirstLaunchInfo.Designer.cs">
       <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
     </Compile>
-    <Compile Include="PrecheckPanel\PrecheckPanel.cs">
+    <Compile Include="ExportGuide\ExportGuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PrecheckPanel\PrecheckPanel.Designer.cs">
-      <DependentUpon>PrecheckPanel.cs</DependentUpon>
+    <Compile Include="ExportGuide\PrecheckPanel.Designer.cs">
+      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\DebugHighlightForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DebugHighlightForm.Designer.cs">
-      <DependentUpon>DebugHighlightForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PictureDispConverter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -230,23 +220,23 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\DebugHighlightForm.resx">
-      <DependentUpon>DebugHighlightForm.cs</DependentUpon>
+    <EmbeddedResource Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
+      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="JointEditor\JointCard.resx">
+    <EmbeddedResource Include="Editors\JointEditor\JointCard.resx">
       <DependentUpon>JointCard.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="JointEditor\JointCardEditor.resx">
+    <EmbeddedResource Include="Editors\JointEditor\JointCardEditor.resx">
       <DependentUpon>JointCardEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="JointEditor\JointForm.resx">
+    <EmbeddedResource Include="Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Messages\FirstLaunchInfo.resx">
       <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PrecheckPanel\PrecheckPanel.resx">
-      <DependentUpon>PrecheckPanel.cs</DependentUpon>
+    <EmbeddedResource Include="ExportGuide\PrecheckPanel.resx">
+      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -262,7 +252,7 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="PrecheckPanel\ExportGuide.html" />
+    <Content Include="ExportGuide\ExportGuide.html" />
     <None Include="Resources\Tank.PNG" />
     <None Include="Resources\hDrive.PNG" />
     <None Include="Resources\SynButton32.bmp" />
@@ -331,6 +321,9 @@
       <Project>{352cde72-aee2-4085-adc5-99a860ea0768}</Project>
       <Name>RobotExportAPI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Editors" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

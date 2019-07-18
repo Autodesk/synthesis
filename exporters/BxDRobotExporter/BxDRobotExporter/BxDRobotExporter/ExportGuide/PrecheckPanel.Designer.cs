@@ -1,8 +1,8 @@
 using System.ComponentModel;
 
-namespace BxDRobotExporter.PrecheckPanel
+namespace BxDRobotExporter.ExportGuide
 {
-    partial class PrecheckPanel
+    partial class ExportGuidePanel
     {
         /// <summary> 
         /// Required designer variable.
@@ -55,7 +55,7 @@ namespace BxDRobotExporter.PrecheckPanel
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(355, 701);
             this.Controls.Add(this.webBrowser1);
-            this.Name = "PrecheckPanel";
+            this.Name = "ExportGuidePanel";
             this.ResumeLayout(false);
 
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using EditorsLibrary;
 
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     public sealed partial class JointCard : UserControl
     {

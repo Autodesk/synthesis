@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.JointEditor
+namespace BxDRobotExporter.Editors.JointEditor
 {
     public partial class JointCardEditor : UserControl // TODO: Use this UserControl in the DriveChooser form and remove the save button in DriveChooser
     {

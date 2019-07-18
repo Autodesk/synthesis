@@ -120,12 +120,6 @@
     <Compile Include="EditorsLibrary\ExporterSettingsForm.Designer.cs">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorsLibrary\AdvancedJointEditorUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\AdvancedJointEditorUserControl.Designer.cs">
-      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorsLibrary\ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,9 +216,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\ExporterSettingsForm.resx">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\AdvancedJointEditorUserControl.resx">
-      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorsLibrary\JointEditors\JointSensorEditorForm.resx">
       <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
