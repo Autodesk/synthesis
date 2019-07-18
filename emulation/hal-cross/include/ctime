@@ -1,6 +1,0 @@
-#ifndef _HEL_CTIME_H
-#define _HEL_CTIME_H
-
-#include "sys/time.h"
-
-#endif
