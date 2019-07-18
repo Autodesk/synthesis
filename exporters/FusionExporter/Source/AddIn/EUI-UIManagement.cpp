@@ -70,6 +70,7 @@ void EUI::prepareAllPalettes()
 	createJointEditorPalette();
 	createSensorsPalette();
 	createGuidePalette();
+	createKeyPalette();
 	createFinishPalette();
 	createProgressPalette();
 }
@@ -80,6 +81,7 @@ void EUI::hideAllPalettes()
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	guidePalette->isVisible(false);
+	keyPalette->isVisible(false);
 	finishPalette->isVisible(false);
 }
 
@@ -235,6 +237,63 @@ void EUI::closeGuidePalette()
 {
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
 	guidePalette->isVisible(false);
+}
+
+// Key Palette
+
+bool EUI::createKeyPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	keyPalette = palettes->itemById(PALETTE_KEY);
+	if (!keyPalette)
+	{
+		// Create palette
+		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "Palette/dofkey.html", false, false, false, 220, 110);
+		if (!keyPalette)
+			return false;
+
+		// Dock the palette to float
+		keyPalette->dockingState(PaletteDockStateFloating);
+		keyPalette->setPosition(500, 500);
+
+		addHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+		addHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+	}
+
+	return true;
+}
+
+void EUI::deleteKeyPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	keyPalette = palettes->itemById(PALETTE_KEY);
+	if (!keyPalette)
+		return;
+
+	clearHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+	clearHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+
+	keyPalette->deleteMe();
+	keyPalette = nullptr;
+}
+
+void EUI::toggleKeyPalette()
+{
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
+		{
+			keyPalette->isVisible(dofViewEnabled);
+	});
 }
 
 // Finish palette

@@ -74,8 +74,10 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		eui->openJointEditorPalette();
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
-	else if (id == SynthesisAddIn::BTN_DOF)
+	else if (id == SynthesisAddIn::BTN_DOF) {
 		eui->toggleDOF();
+		eui->toggleKeyPalette();
+	}
 }
 
 /// Palette Events
