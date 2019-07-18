@@ -18,7 +18,6 @@ using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.Camera;
 using Synthesis.Sensors;
-using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
@@ -50,8 +49,6 @@ namespace Synthesis.States
 
         public bool Tracking { get; private set; }
         private bool awaitingReplay;
-
-        private UnityPacket unityPacket;
 
         /// <summary>
         /// The active robot in this state.
@@ -134,7 +131,6 @@ namespace Synthesis.States
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);
-            unityPacket = new UnityPacket();
             SpawnedRobots = new List<SimulatorRobot>();
         }
 
@@ -154,9 +150,6 @@ namespace Synthesis.States
             //setting up raycast robot tick callback
             BPhysicsTickListener.Instance.OnTick -= BRobotManager.Instance.UpdateRaycastRobots;
             BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
-
-            //starts a new instance of unity packet which receives packets from the driver station
-            unityPacket.Start();
 
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
@@ -315,8 +308,6 @@ namespace Synthesis.States
                 AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
             }
-
-            SendRobotPackets();
         }
 
         /// <summary>
@@ -848,17 +839,6 @@ namespace Synthesis.States
         public void CancelRobotOrientation()
         {
             ActiveRobot.CancelRobotOrientation();
-        }
-        /// <summary>
-        /// Sends the received packets to the active robot
-        /// </summary>
-        private void SendRobotPackets()
-        {
-            ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (SimulatorRobot robot in SpawnedRobots)
-            {
-                if (robot != ActiveRobot) robot.Packet = null;
-            }
         }
         #endregion
     }
