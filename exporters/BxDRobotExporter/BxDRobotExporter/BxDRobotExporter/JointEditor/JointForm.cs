@@ -36,7 +36,6 @@ namespace BxDRobotExporter.JointEditor
             Closing += (sender, e) => // Every close
             {
                 InventorUtils.FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
-                Utilities.GUI.ReloadPanels();
             };
 
             FormClosing += (sender, e) =>

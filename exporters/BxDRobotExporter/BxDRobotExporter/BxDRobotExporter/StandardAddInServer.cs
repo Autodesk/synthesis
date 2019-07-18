@@ -312,7 +312,6 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
@@ -330,6 +329,7 @@ namespace BxDRobotExporter
             Utilities.GUI.LoadRobotData(AsmDocument);
             
             Utilities.CreateDockableWindows(MainApplication);
+            advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             // Hide non-jointed components;
 
             // Reload panels in UI
