@@ -48,18 +48,28 @@ RUN ${ENTER_HEL} && \
 RUN ${ENTER_HEL} && \
     ./scripts/download_vm.sh 
 
-RUN ${ENTER_HEL}/../hal-cross && \
+RUN ${ENTER_HEL}/../wpi-cross && \
     git clone https://github.com/wpilibsuite/allwpilib --branch ${WPILIB_VERSION} --depth=1 && \
     cd allwpilib && \
     rm -rf hal/src/main/native/sim && \
     cp ../../hel/lib/ni-libraries/src/ni-libraries/src/include hal/src/main/native/ -r && \
     cp wpiutil/src/main/native/include hal/src/main/native/ -r && \
+    cp ../shim.cpp hal/src/main/native/sim/ && \
     mv hal/src/main/native/athena hal/src/main/native/sim && \
     ./gradlew tasks && \
     ./gradlew halBaseReleaseSharedLibrary halJNISharedReleaseSharedLibrary :wpilibj:assemble
 
 RUN ${ENTER_HEL}/../ && \
-    find . -regex ".*\.\(so\|jar\)\(\.[0-9]*\)*" -exec cp {} /home/lvuser \;
+    find . -regex ".*\.\(so\|jar\)\([0-9]*\)*" -exec cp {} /home/lvuser \;
+
+RUN ${ENTER_HEL} && \
+    ln -s libhel.so /lib/libFRC_NetworkCommunication.so.19.0.0 && \
+    ln -s libhel.so /lib/libNiFpga.18.0.0 && \
+    ln -s libhel.so /lib/libniriodevenum.so.18.0.0 && \
+    ln -s libhel.so /lib/libniriosessions.so.18.0.0 && \
+    ln -s libhel.so /lib/libvisa.so && \
+    ln -s libhel.so /lib/libNiRioSrv.so.19.0.0 && \
+    mv -n ./*.so* /lib
 
 EXPOSE 50051
 EXPOSE 10022
