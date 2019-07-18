@@ -33,7 +33,7 @@ namespace BxDRobotExporter.JointEditor
             };
         }
 
-        public void PreShow()
+        public void OnShowButtonClick()
         {
             CollapseAllCards();
             jointCards.ForEach(card => card.LoadValuesRecursive());

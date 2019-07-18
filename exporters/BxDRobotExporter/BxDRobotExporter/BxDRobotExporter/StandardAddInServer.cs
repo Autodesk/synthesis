@@ -619,18 +619,27 @@ namespace BxDRobotExporter
 
         public void EditJoint_OnExecute(NameValueMap Context)
         {
-            if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
-                return;
-
-            Utilities.HideAdvancedJointEditor();
-            jointForm.PreShow();
-            jointForm.ShowDialog();
-            Utilities.GUI.ReloadPanels();
+            if (jointForm.Visible)
+            {
+                jointForm.Hide();
+            }
+            else
+            {
+                if (Utilities.GUI.SkeletonBase == null && !Utilities.GUI.LoadRobotSkeleton())
+                    return;
+                Utilities.HideAdvancedJointEditor();
+                jointForm.OnShowButtonClick();
+                jointForm.ShowDialog();
+            }
         }
 
         private void AdvancedEditJoint_OnExecute(NameValueMap Context)
         {
             Utilities.ToggleAdvancedJointEditor();
+            if (Utilities.IsAdvancedJointEditorVisible())
+            {
+                jointForm.Hide();
+            }
         }
 
         /// <summary>
