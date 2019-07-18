@@ -329,7 +329,6 @@ namespace BxDRobotExporter
             Utilities.GUI.LoadRobotData(AsmDocument);
             
             Utilities.CreateDockableWindows(MainApplication);
-            advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             // Hide non-jointed components;
 
             // Reload panels in UI

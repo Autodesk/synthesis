@@ -34,7 +34,7 @@ namespace BxDRobotExporter
             StandardAddInServer.Instance.advancedJointEditor = new JointEditorPane();
 
             StandardAddInServer.Instance.advancedJointEditor.SetSkeleton(GUI.SkeletonBase);
-            StandardAddInServer.Instance.advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+            StandardAddInServer.Instance.advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
             StandardAddInServer.Instance.advancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
 
