@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using Inventor;
-using System.Linq;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class SkeletonExporterForm : Form
+    public partial class LoadingSkeletonForm : Form
     {
-        public SkeletonExporterForm()
+        public LoadingSkeletonForm()
         {
             InitializeComponent();
 

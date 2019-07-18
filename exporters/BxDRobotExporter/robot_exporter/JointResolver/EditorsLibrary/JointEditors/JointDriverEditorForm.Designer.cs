@@ -1,4 +1,4 @@
-﻿partial class DriveChooser
+﻿partial class JointDriverEditorForm
 {
     /// <summary>
     /// Required designer variable.
@@ -26,7 +26,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DriveChooser));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointDriverEditorForm));
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
@@ -773,7 +773,7 @@
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "DriveChooser";
+            this.Name = "JointDriverEditorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Driver Configuration";
             this.grpChooseDriver.ResumeLayout(false);

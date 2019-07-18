@@ -1,6 +1,6 @@
 using System;
 
-public static class ToStringUtils
+public static class JointDataStringUtils
 {
     public static string SensorCountString(SkeletalJoint_Base joint)
     {

@@ -31,11 +31,11 @@ namespace BxDRobotExporter
             EmbededJointPane.Height = 250;
             EmbededJointPane.ShowVisibilityCheckBox = false;
             EmbededJointPane.ShowTitleBar = true;
-            StandardAddInServer.Instance.advancedJointEditor = new JointEditorPane();
+            StandardAddInServer.Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
 
-            StandardAddInServer.Instance.advancedJointEditor.SetSkeleton(GUI.SkeletonBase);
-            StandardAddInServer.Instance.advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
-            StandardAddInServer.Instance.advancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.SetSkeleton(GUI.SkeletonBase);
+            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
+            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
 
                 if (nodes == null || nodes.Count == 0) return;
@@ -58,7 +58,7 @@ namespace BxDRobotExporter
                     }
                 }
             };
-            EmbededJointPane.AddChild(StandardAddInServer.Instance.advancedJointEditor.Handle);
+            EmbededJointPane.AddChild(StandardAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
             #endregion
             
             EmbededJointPane.Visible = true;
@@ -175,7 +175,7 @@ namespace BxDRobotExporter
 
             if (Properties.Settings.Default.ConfigVersion < 3)
             {
-                SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
+                SynthesisGUI.PluginSettings = EditorsLibrary.ExporterSettingsForm.Values = new EditorsLibrary.ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Properties.Settings.Default.ChildColor,
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
@@ -188,7 +188,7 @@ namespace BxDRobotExporter
             }
             else
             {
-                SynthesisGUI.PluginSettings = EditorsLibrary.PluginSettingsForm.Values = new EditorsLibrary.PluginSettingsForm.PluginSettingsValues
+                SynthesisGUI.PluginSettings = EditorsLibrary.ExporterSettingsForm.Values = new EditorsLibrary.ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Properties.Settings.Default.ChildColor,
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,

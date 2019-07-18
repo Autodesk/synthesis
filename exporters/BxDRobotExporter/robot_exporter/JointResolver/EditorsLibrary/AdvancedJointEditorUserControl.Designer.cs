@@ -2,7 +2,7 @@
 
 namespace EditorsLibrary
 {
-    public partial class JointEditorPane
+    public partial class AdvancedJointEditorUserControl
     {
 
         private System.ComponentModel.IContainer components;
@@ -77,7 +77,7 @@ namespace EditorsLibrary
             // JointEditorPane
             // 
             this.Controls.Add(this.lstJoints);
-            this.Name = "JointEditorPane";
+            this.Name = "AdvancedJointEditorUserControl";
             this.Size = new System.Drawing.Size(800, 551);
             this.ResumeLayout(false);
         }

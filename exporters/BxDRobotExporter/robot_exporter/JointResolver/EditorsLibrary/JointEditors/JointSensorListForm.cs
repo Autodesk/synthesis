@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public partial class SensorListForm : Form
+    public partial class JointSensorListForm : Form
     {
         SkeletalJoint_Base joint;
 
-        public SensorListForm(SkeletalJoint_Base passJoint)
+        public JointSensorListForm(SkeletalJoint_Base passJoint)
         {
             AnalyticUtils.LogPage("SensorListForm");
             InitializeComponent();
@@ -67,11 +60,11 @@ namespace EditorsLibrary
 
         private void addSensorButton_Click(object sender, EventArgs e)
         {
-            EditSensorForm sensorForm = new EditSensorForm(joint, joint.attachedSensors.IndexOf(
+            JointSensorEditorForm sensorEditorForm = new JointSensorEditorForm(joint, joint.attachedSensors.IndexOf(
                 sensorListView.SelectedItems.Count > 0 &&
                 sensorListView.SelectedItems[0].Tag is RobotSensor ?
                 (RobotSensor) sensorListView.SelectedItems[0].Tag : null));
-            sensorForm.ShowDialog(this);
+            sensorEditorForm.ShowDialog(this);
             this.UpdateSensorList();
         }
 

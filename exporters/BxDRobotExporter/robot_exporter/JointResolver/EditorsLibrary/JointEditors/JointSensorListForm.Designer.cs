@@ -1,6 +1,6 @@
 ﻿namespace EditorsLibrary
 {
-    partial class SensorListForm
+    partial class JointSensorListForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SensorListForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointSensorListForm));
             this.typeColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.moduleColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.portColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -113,7 +113,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(549, 298);
-            this.Name = "SensorListForm";
+            this.Name = "JointSensorListForm";
             this.Text = "Sensor List";
             this.Activated += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
             this.Deactivate += new System.EventHandler(this.sensorListView_SelectedIndexChanged);

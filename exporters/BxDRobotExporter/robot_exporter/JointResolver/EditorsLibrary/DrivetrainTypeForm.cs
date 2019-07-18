@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace JointResolver.EditorsLibrary
 {
-    public partial class DriveTrainTypeForm : Form
+    public partial class DrivetrainTypeForm : Form
     {
         private static readonly Color SelectedColor = Color.FromArgb(239, 195, 154);
         private static readonly Color HoverColor = Color.FromArgb(239, 217, 192);
@@ -14,7 +14,7 @@ namespace JointResolver.EditorsLibrary
         private readonly Dictionary<RigidNode_Base.DriveTrainType, Control> controls = new Dictionary<RigidNode_Base.DriveTrainType, Control>();
         private RigidNode_Base.DriveTrainType driveTrainType;
 
-        public DriveTrainTypeForm()
+        public DrivetrainTypeForm()
         {
             AnalyticUtils.LogPage("DriveTrainTypeForm");
             InitializeComponent();

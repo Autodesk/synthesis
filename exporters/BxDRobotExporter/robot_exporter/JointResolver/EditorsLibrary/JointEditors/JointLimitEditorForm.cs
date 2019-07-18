@@ -4,7 +4,7 @@ using Inventor;
 
 namespace EditorsLibrary
 {
-    public partial class EditLimits : Form
+    public partial class JointLimitEditorForm : Form
     {
         //UnitsOfMeasure measure;
         SkeletalJoint_Base joint;
@@ -12,7 +12,7 @@ namespace EditorsLibrary
         bool canClose = true;
         double currentPosition = 0, startLimit = 0, endLimit = 0;
         bool writeCurrentPosition = false, writeStartLimit = false, writeEndLimit = false;
-        public EditLimits(SkeletalJoint_Base joint)
+        public JointLimitEditorForm(SkeletalJoint_Base joint)
         {
             this.joint = joint;// read in the joint base so we can access the correspodinig Inventor Joint to see/ edit the limits
             InitializeComponent();

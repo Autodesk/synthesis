@@ -53,14 +53,14 @@ public partial class SynthesisGUI : Form
 
     public static SynthesisGUI Instance;
 
-    public static PluginSettingsForm.PluginSettingsValues PluginSettings;
+    public static ExporterSettingsForm.PluginSettingsValues PluginSettings;
     
     private Inventor.AssemblyDocument AsmDocument = null; // Set when LoadRobotData is called.
     public RigidNode_Base SkeletonBase = null;
     public List<BXDAMesh> Meshes = null;
     public bool MeshesAreColored = false;
     public Inventor.Application MainApplication;
-    private SkeletonExporterForm skeletonExporter;
+    private LoadingSkeletonForm loadingSkeleton;
     private LiteExporterForm liteExporter;
 
     public SynthesisGUI(Inventor.Application MainApplication)
@@ -157,8 +157,8 @@ public partial class SynthesisGUI : Form
         {
             var exporterThread = new Thread(() =>
             {
-                skeletonExporter = new SkeletonExporterForm();
-                skeletonExporter.ShowDialog();
+                loadingSkeleton = new LoadingSkeletonForm();
+                loadingSkeleton.ShowDialog();
             });
 
             exporterThread.SetApartmentState(ApartmentState.STA);
@@ -198,8 +198,8 @@ public partial class SynthesisGUI : Form
             {
                 if (SkeletonBase == null)
                 {
-                    skeletonExporter = new SkeletonExporterForm();
-                    skeletonExporter.ShowDialog();
+                    loadingSkeleton = new LoadingSkeletonForm();
+                    loadingSkeleton.ShowDialog();
                 }
 
                 if (SkeletonBase != null)
@@ -251,7 +251,7 @@ public partial class SynthesisGUI : Form
     /// <returns>True if user pressed okay, false if they pressed cancel</returns>
     public bool PromptExportSettings()
     {
-        if (ExportRobotForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+        if (RobotSettingsForm.Prompt(RMeta.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
         {
             RMeta.UseSettingsDir = true;
             RMeta.ActiveDir = null;
@@ -683,14 +683,14 @@ public bool ExportRobot()
     }
 
     /// <summary>
-    /// Opens the <see cref="SetWeightForm"/> form
+    /// Opens the <see cref="DrivetrainWeightForm"/> form
     /// </summary>
     /// <returns>True if robot weight was changed.</returns>
     public bool PromptRobotWeight()
     {
         try
         {
-            SetWeightForm weightForm = new SetWeightForm();
+            DrivetrainWeightForm weightForm = new DrivetrainWeightForm();
 
             weightForm.ShowDialog();
 
@@ -711,7 +711,7 @@ public bool ExportRobot()
     }
 
     /// <summary>
-    /// Opens the <see cref="PluginSettingsForm"/> form
+    /// Opens the <see cref="ExporterSettingsForm"/> form
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -720,12 +720,12 @@ public bool ExportRobot()
         try
         {
             //TODO: Implement Value saving and loading
-            PluginSettingsForm eSettingsForm = new PluginSettingsForm();
+            ExporterSettingsForm eSettingsForm = new ExporterSettingsForm();
     
             eSettingsForm.ShowDialog();
     
             //BXDSettings.Instance.AddSettingsObject("Plugin Settings", ExporterSettingsForm.values);
-            PluginSettings = PluginSettingsForm.Values;
+            PluginSettings = ExporterSettingsForm.Values;
         }
         catch (Exception ex)
         {
