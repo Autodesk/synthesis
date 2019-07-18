@@ -31,6 +31,18 @@ namespace BxDRobotExporter.JointEditor
             {
                 jointCards.ForEach(card => card.LoadPreviewIcon());
             };
+
+            Closing += (sender, e) => // Every close
+            {
+                InventorUtils.FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
+                Utilities.GUI.ReloadPanels();
+            };
+
+            FormClosing += (sender, e) =>
+            {
+                Hide();
+                e.Cancel = true; // this cancels the close event.
+            };
         }
 
         public void OnShowButtonClick()

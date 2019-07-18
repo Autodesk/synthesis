@@ -292,7 +292,7 @@ namespace BxDRobotExporter
             WheelHighlight.Color = Utilities.GetInventorColor(System.Drawing.Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
-            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+            Utilities.GUI.jointEditorPane1.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             PluginSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             EnvironmentEnabled = true;
