@@ -153,6 +153,25 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyticUtils.cs" />
+    <Compile Include="ControlGUI\DepricatedStandaloneGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\DepricatedStandaloneGUI.Designer.cs">
+      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\ExportingRobotLoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\ExportingRobotLoadingForm.Designer.cs">
+      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
+      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonLoadingBarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -190,6 +209,18 @@
     <Compile Include="Editors\DrivetrainTypeForm.Designer.cs">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Editors\DrivetrainWeightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DrivetrainWeightForm.Designer.cs">
+      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\ExporterSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\ExporterSettingsForm.Designer.cs">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editors\JointEditor\AxHostConverter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -212,6 +243,20 @@
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Editors\JointEditor\WinFormsUtils.cs" />
+    <Compile Include="Editors\RobotSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\RobotSettingsForm.Designer.cs">
+      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExportApiUtilities.cs" />
+    <Compile Include="Exporter\AssetProperties.cs" />
+    <Compile Include="Exporter\ConvexHullCalculator.cs" />
+    <Compile Include="Exporter\Exporter.cs" />
+    <Compile Include="Exporter\InventorManager.cs" />
+    <Compile Include="Exporter\SurfaceExporter_Access.cs" />
+    <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
+    <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
     <Compile Include="InventorUtils.cs" />
     <Compile Include="Messages\FirstLaunchInfoForm.cs">
       <SubType>Form</SubType>
@@ -225,6 +270,13 @@
     <Compile Include="ExportGuide\PrecheckPanel.Designer.cs">
       <DependentUpon>ExportGuidePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="OGLViewer\InventorCamera.cs" />
+    <Compile Include="OGLViewer\OGLDrawing.cs" />
+    <Compile Include="OGLViewer\OGL_RigidNode.cs" />
+    <Compile Include="OGLViewer\OpenTK_Math_Ext.cs" />
+    <Compile Include="OGLViewer\SelectManager.cs" />
+    <Compile Include="OGLViewer\ShaderLoader.cs" />
+    <Compile Include="OGLViewer\VBOMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -239,6 +291,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
+    <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
+    <Compile Include="RigidAnalyzer\RigidNode.cs" />
+    <Compile Include="SkeletalStructure\BallJoint.cs" />
+    <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
+    <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
+    <Compile Include="SkeletalStructure\LinearJoint.cs" />
+    <Compile Include="SkeletalStructure\MotionLimits.cs" />
+    <Compile Include="SkeletalStructure\PlanarJoint.cs" />
+    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
+    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
     <Compile Include="StandardAddInServer.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
@@ -261,6 +326,15 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
+      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\ExportingRobotLoadingForm.resx">
+      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
+      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -279,6 +353,12 @@
     <EmbeddedResource Include="Editors\DrivetrainTypeForm.resx">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DrivetrainWeightForm.resx">
+      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\ExporterSettingsForm.resx">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editors\JointEditor\JointCard.resx">
       <DependentUpon>JointCard.cs</DependentUpon>
     </EmbeddedResource>
@@ -287,6 +367,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\RobotSettingsForm.resx">
+      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Messages\FirstLaunchInfoForm.resx">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>

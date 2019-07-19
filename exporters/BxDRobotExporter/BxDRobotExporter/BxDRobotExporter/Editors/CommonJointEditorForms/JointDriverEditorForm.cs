@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using BxDRobotExporter.ControlGUI;
 
 namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
@@ -518,7 +519,7 @@ namespace BxDRobotExporter.Editors.CommonJointEditorForms
             if (canClose)// make sure there are no outstanding issues for the user to fix before we save
             {
                 Saved = true;
-                LegacyInterchange.LegacyEvents.OnRobotModified();
+                LegacyEvents.OnRobotModified();
                 Close();
             }
         }

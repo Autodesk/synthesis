@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using BxDRobotExporter.SkeletalStructure;
 using Inventor;
 
 namespace BxDRobotExporter.Editors.CommonJointEditorForms
@@ -182,7 +183,7 @@ namespace BxDRobotExporter.Editors.CommonJointEditorForms
             }
             if (canClose)
             {
-                LegacyInterchange.LegacyEvents.OnRobotModified();
+                LegacyEvents.OnRobotModified();
                 Close();
             }
         }

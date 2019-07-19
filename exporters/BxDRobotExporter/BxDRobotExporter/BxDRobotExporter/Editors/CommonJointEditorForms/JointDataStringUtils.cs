@@ -1,4 +1,5 @@
 using System;
+using BxDRobotExporter.ControlGUI;
 
 namespace BxDRobotExporter.Editors.CommonJointEditorForms
 {
@@ -57,17 +58,17 @@ namespace BxDRobotExporter.Editors.CommonJointEditorForms
 
         public static string NodeNameString(RigidNode_Base node)
         {
-            return global::Utilities.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
+            return global::BxDRobotExporter.ExportApiUtilities.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
         }
 
         public static string ParentNameString(RigidNode_Base node)
         {
-            return global::Utilities.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
+            return global::BxDRobotExporter.ExportApiUtilities.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
         }
 
         public static string JointTypeString(SkeletalJoint_Base joint)
         {
-            return global::Utilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
+            return global::BxDRobotExporter.ExportApiUtilities.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
                    + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(SynthesisGUI.Instance.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
         }
     }
