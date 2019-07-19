@@ -81,11 +81,13 @@ namespace Synthesis.GUI
 
         private StateMachine tabStateMachine;
         string currentTab;
+        string lastTab = "MainMenuTab"; // Is only used for specific buttons such as settings
 
         public static string updater;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
+        private Sprite hoverHighlight;
 
         GameObject helpMenu;
         GameObject overlay;
@@ -95,6 +97,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             instance = this;
+            hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
         }
 
         public static SimUI getSimUI() { return instance; }
@@ -357,9 +360,14 @@ namespace Synthesis.GUI
             if (!settingsPanel.activeSelf)
             {
                 tabStateMachine.PushState(new SettingsState());
+                lastTab = currentTab;
+                UnityEngine.Debug.Log("Last tab: " + lastTab);
+                currentTab = "SettingsTab";
             } else
             {
                 tabStateMachine.PopState();
+                currentTab = lastTab;
+                UnityEngine.Debug.Log("Current tab: " + currentTab);
             }
 
             /*if (settingsPanel.activeSelf)
@@ -409,9 +417,22 @@ namespace Synthesis.GUI
             {
                 if (t.gameObject.name.Equals(currentTab))
                 {
+                    // Showing it was choosen
                     t.gameObject.GetComponent<Image>().sprite = highlightButton;
+
+                    // Disabling orange hover color
+                    SpriteState s = new SpriteState();
+                    s.highlightedSprite = null;
+                    t.gameObject.GetComponent<Button>().spriteState = s;
                 }
-                else { try { t.gameObject.GetComponent<Image>().sprite = normalButton; } catch (Exception e) { } }
+                else {
+                    try {
+                        t.gameObject.GetComponent<Image>().sprite = normalButton;
+                        SpriteState s = new SpriteState();
+                        s.highlightedSprite = hoverHighlight;
+                        t.gameObject.GetComponent<Button>().spriteState = s;
+                    } catch (Exception e) { }
+                }
             }
         }
         #endregion
