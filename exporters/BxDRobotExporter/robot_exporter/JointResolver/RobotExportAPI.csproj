@@ -99,10 +99,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Content Include="BXDJ File Format.txt" />
-    <None Include="Resources\LogoButWhiteAndFaster.gif" />
-    <None Include="Resources\shader.frag" />
-    <None Include="Resources\shader.vert" />
     <None Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </None>
