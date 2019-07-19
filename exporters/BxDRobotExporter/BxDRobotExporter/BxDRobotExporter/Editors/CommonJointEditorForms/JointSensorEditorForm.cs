@@ -93,7 +93,7 @@ namespace BxDRobotExporter.Editors.CommonJointEditorForms
                 joint.attachedSensors.Add(addedSensor);
             }
 
-            LegacyInterchange.LegacyEvents.OnRobotModified();
+            LegacyEvents.OnRobotModified();
             Close();
         }
         

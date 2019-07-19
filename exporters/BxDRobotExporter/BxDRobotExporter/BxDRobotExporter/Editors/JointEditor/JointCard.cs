@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using BxDRobotExporter.Editors.CommonJointEditorForms;
+using BxDRobotExporter.Exporter;
 
 namespace BxDRobotExporter.Editors.JointEditor
 {

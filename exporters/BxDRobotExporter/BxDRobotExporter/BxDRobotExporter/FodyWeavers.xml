@@ -2,8 +2,8 @@
 <Weavers>
   <Costura>
     <IncludeAssemblies>
-      OpenTK
-      OpenTK.GLControl
+      <!-- OpenTK -->
+      <!-- OpenTK.GLControl -->
       <!-- SimulatorAPI -->
       <!-- RobotExportAPI -->
     </IncludeAssemblies>

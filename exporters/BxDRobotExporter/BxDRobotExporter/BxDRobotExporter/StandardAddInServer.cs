@@ -5,11 +5,11 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Editors;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
 using BxDRobotExporter.Properties;
-using EditorsLibrary;
 using Inventor;
 
 namespace BxDRobotExporter
@@ -233,7 +233,7 @@ namespace BxDRobotExporter
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
-            LegacyInterchange.LegacyEvents.RobotModified += new Action(() => { PendingChanges = true; });
+            LegacyEvents.RobotModified += new Action(() => { PendingChanges = true; });
 
             #endregion
 

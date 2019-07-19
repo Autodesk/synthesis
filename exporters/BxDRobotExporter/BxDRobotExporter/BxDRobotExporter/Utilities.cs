@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using BxDRobotExporter.ControlGUI;
+using BxDRobotExporter.Editors;
 using BxDRobotExporter.ExportGuide;
+using BxDRobotExporter.OGLViewer;
 using Inventor;
-using OGLViewer;
 
 namespace BxDRobotExporter
 {
@@ -175,7 +177,7 @@ namespace BxDRobotExporter
 
             if (Properties.Settings.Default.ConfigVersion < 3)
             {
-                SynthesisGUI.PluginSettings = EditorsLibrary.ExporterSettingsForm.Values = new EditorsLibrary.ExporterSettingsForm.PluginSettingsValues
+                SynthesisGUI.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Properties.Settings.Default.ChildColor,
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,
@@ -188,7 +190,7 @@ namespace BxDRobotExporter
             }
             else
             {
-                SynthesisGUI.PluginSettings = EditorsLibrary.ExporterSettingsForm.Values = new EditorsLibrary.ExporterSettingsForm.PluginSettingsValues
+                SynthesisGUI.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Properties.Settings.Default.ChildColor,
                     GeneralSaveLocation = Properties.Settings.Default.SaveLocation,

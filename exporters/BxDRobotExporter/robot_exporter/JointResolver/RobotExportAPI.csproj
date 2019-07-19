@@ -79,73 +79,12 @@
     <OutputPath>bin\Benchmark\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AnalyticUtils.cs" />
-    <Compile Include="ControlGUI\ExportingRobotLoadingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\ExportingRobotLoadingForm.Designer.cs">
-      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlGUI\SkeletonLoadingBarForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
-      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlGUI\DepricatedStandaloneGUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\DepricatedStandaloneGUI.Designer.cs">
-      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\ExporterSettingsForm.Designer.cs">
-      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\ExporterSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\DrivetrainWeightForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\DrivetrainWeightForm.Designer.cs">
-      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EditorsLibrary\RobotSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EditorsLibrary\RobotSettingsForm.Designer.cs">
-      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Exporter\AssetProperties.cs" />
-    <Compile Include="Exporter\ConvexHullCalculator.cs" />
-    <Compile Include="Exporter\Exporter.cs" />
-    <Compile Include="Exporter\InventorManager.cs" />
-    <Compile Include="Exporter\SurfaceExporter_Access.cs" />
-    <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
-    <Compile Include="OGLViewer\InventorCamera.cs" />
-    <Compile Include="OGLViewer\OGLDrawing.cs" />
-    <Compile Include="OGLViewer\OGL_RigidNode.cs" />
-    <Compile Include="OGLViewer\OpenTK_Math_Ext.cs" />
-    <Compile Include="OGLViewer\SelectManager.cs" />
-    <Compile Include="OGLViewer\ShaderLoader.cs" />
-    <Compile Include="OGLViewer\VBOMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
-    <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
-    <Compile Include="SkeletalStructure\BallJoint.cs" />
-    <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
-    <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
-    <Compile Include="SkeletalStructure\LinearJoint.cs" />
-    <Compile Include="SkeletalStructure\MotionLimits.cs" />
-    <Compile Include="SkeletalStructure\PlanarJoint.cs" />
-    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
-    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
-    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -156,51 +95,14 @@
     <None Include="RobotExporterKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="RigidAnalyzer\RigidNode.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ControlGUI\ExportingRobotLoadingForm.resx">
-      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
-      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
-      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\ExporterSettingsForm.resx">
-      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\DrivetrainWeightForm.resx">
-      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EditorsLibrary\RobotSettingsForm.resx">
-      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="BXDJ File Format.txt" />
     <None Include="Resources\LogoButWhiteAndFaster.gif" />
-    <None Include="Resources\LogoButFaster.gif" />
-    <None Include="Resources\SyntheMation350x350.gif" />
     <None Include="Resources\shader.frag" />
     <None Include="Resources\shader.vert" />
-    <None Include="Resources\SmallIcon.png" />
-    <None Include="Resources\icon.png" />
-    <None Include="Resources\load.gif" />
     <None Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
     </None>
