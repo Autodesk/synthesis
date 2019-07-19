@@ -324,7 +324,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
