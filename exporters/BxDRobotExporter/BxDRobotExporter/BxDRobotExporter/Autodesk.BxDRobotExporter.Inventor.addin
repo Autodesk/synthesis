@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <Addin Type="Standard">
-  <!--Created for Autodesk Inventor Version 21.0-->
   <ClassId>{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}</ClassId>
   <ClientId>{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}</ClientId>
   <DisplayName>Synthesis Robot Exporter</DisplayName>
