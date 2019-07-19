@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace JointResolver.EditorsLibrary
+namespace BxDRobotExporter.Editors
 {
     public partial class DrivetrainTypeForm : Form
     {

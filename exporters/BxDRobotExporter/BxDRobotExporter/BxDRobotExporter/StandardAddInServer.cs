@@ -5,12 +5,12 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BxDRobotExporter.Editors;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
 using BxDRobotExporter.Properties;
 using EditorsLibrary;
 using Inventor;
-using JointResolver.EditorsLibrary;
 
 namespace BxDRobotExporter
 {

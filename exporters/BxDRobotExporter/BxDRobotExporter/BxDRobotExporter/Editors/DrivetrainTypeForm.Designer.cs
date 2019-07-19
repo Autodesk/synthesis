@@ -1,4 +1,4 @@
-﻿namespace JointResolver.EditorsLibrary
+﻿namespace BxDRobotExporter.Editors
 {
     partial class DrivetrainTypeForm
     {
@@ -94,7 +94,6 @@
             this.pictureBox3.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.pictureBox3.BackColor = System.Drawing.SystemColors.Control;
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.InitialImage = global::JointResolver.Properties.Resources.LoadAnimation;
             this.pictureBox3.Location = new System.Drawing.Point(11, 11);
             this.pictureBox3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
             this.pictureBox3.Name = "pictureBox3";
@@ -139,7 +138,6 @@
             this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.pictureBox2.BackColor = System.Drawing.SystemColors.Control;
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.InitialImage = global::JointResolver.Properties.Resources.LoadAnimation;
             this.pictureBox2.Location = new System.Drawing.Point(11, 11);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
             this.pictureBox2.Name = "pictureBox2";
@@ -184,7 +182,6 @@
             this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.InitialImage = global::JointResolver.Properties.Resources.LoadAnimation;
             this.pictureBox1.Location = new System.Drawing.Point(11, 11);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
             this.pictureBox1.Name = "pictureBox1";
