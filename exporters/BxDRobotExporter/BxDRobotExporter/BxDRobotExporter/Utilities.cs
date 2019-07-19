@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using BxDRobotExporter.PrecheckPanel;
 using Inventor;
 
 namespace BxDRobotExporter
@@ -11,6 +12,7 @@ namespace BxDRobotExporter
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
         public static DockableWindow EmbededPrecheckPane;
+        public static DockableWindow EmbededKeyPane;
 
         /// <summary>
         /// Creates a <see cref="DockableWindow"/> containing all of the components of the SynthesisGUI object
@@ -32,16 +34,24 @@ namespace BxDRobotExporter
             #endregion
             
             EmbededJointPane.Visible = true;
-            
+
+            EmbededKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");
+            EmbededKeyPane.DockingState = DockingStateEnum.kDockRight;
+            EmbededKeyPane.Width = 260;
+            EmbededKeyPane.Height = 100;
+            EmbededKeyPane.ShowVisibilityCheckBox = false;
+            EmbededKeyPane.ShowTitleBar = true;
+            var keyPanel = new DOFKeyPane();
+            EmbededKeyPane.AddChild(keyPanel.Handle);
+            EmbededKeyPane.Visible = false;
+
             EmbededPrecheckPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:PrecheckPane", "Robot Export Guide");
-            
             EmbededPrecheckPane.DockingState = DockingStateEnum.kDockRight;
             EmbededPrecheckPane.Width = 600;
             EmbededPrecheckPane.ShowVisibilityCheckBox = false;
             EmbededPrecheckPane.ShowTitleBar = true;
             var precheckPanel = new PrecheckPanel.PrecheckPanel();
             EmbededPrecheckPane.AddChild(precheckPanel.Handle);
-            
             EmbededPrecheckPane.Visible = true;
         }
 

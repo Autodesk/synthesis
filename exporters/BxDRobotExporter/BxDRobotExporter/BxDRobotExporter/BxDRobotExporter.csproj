@@ -181,6 +181,18 @@
     <Compile Include="Messages\FirstLaunchInfo.Designer.cs">
       <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="PrecheckPanel\DOFKey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PrecheckPanel\DOFKey.Designer.cs">
+      <DependentUpon>DOFKey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PrecheckPanel\DOFKeyPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PrecheckPanel\DOFKeyPane.Designer.cs">
+      <DependentUpon>DOFKeyPane.cs</DependentUpon>
+    </Compile>
     <Compile Include="PrecheckPanel\PrecheckPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -296,12 +308,19 @@
     <EmbeddedResource Include="Messages\FirstLaunchInfo.resx">
       <DependentUpon>FirstLaunchInfo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PrecheckPanel\DOFKey.resx">
+      <DependentUpon>DOFKey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PrecheckPanel\DOFKeyPane.resx">
+      <DependentUpon>DOFKeyPane.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PrecheckPanel\PrecheckPanel.resx">
       <DependentUpon>PrecheckPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -337,7 +356,9 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="PrecheckPanel\dofkey.html" />
     <Content Include="PrecheckPanel\ExportGuide.html" />
+    <None Include="Resources\dofkey.html.bmp" />
     <None Include="Resources\Tank.PNG" />
     <None Include="Resources\hDrive.PNG" />
     <None Include="Resources\SynButton32.bmp" />
