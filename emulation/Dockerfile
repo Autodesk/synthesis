@@ -48,7 +48,7 @@ RUN ${ENTER_HEL} && \
 RUN ${ENTER_HEL} && \
     ./scripts/download_vm.sh 
 
-RUN ${ENTER_HEL}/../wpi-cross && \
+RUN ${ENTER_HEL}/../wpi_cross && \
     git clone https://github.com/wpilibsuite/allwpilib --branch ${WPILIB_VERSION} --depth=1 && \
     cd allwpilib && \
     rm -rf hal/src/main/native/sim && \
