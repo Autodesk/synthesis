@@ -73,6 +73,80 @@ void EUI::prepareAllPalettes()
 	createKeyPalette();
 	createFinishPalette();
 	createProgressPalette();
+	createDriveWeightPalette();
+
+	 	// DEBUG PURPOSE = 
+}
+
+// Drivetrain Weight Palette
+
+bool EUI::createDriveWeightPalette() {
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
+	if (!driveWeightPalette)
+	{
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "Palette/dt_weight.html", false, true, true, 300, 150);
+		if (!driveWeightPalette)
+			return false;
+
+		driveWeightPalette->dockingState(PaletteDockingStates::PaletteDockStateRight);
+
+		addHandler<ReceiveFormDataHandler>(driveWeightPalette, driveWeightReceiveFormDataHandler);
+		addHandler<ClosePaletteEventHandler>(driveWeightPalette, driveWeightClosePaletteHandler);
+	}
+
+	return true;
+}
+
+void EUI::deleteDriveWeightPalette() {
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette exists
+	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
+
+	if (!driveWeightPalette)
+		return;
+
+	clearHandler<ReceiveFormDataHandler>(driveWeightPalette, driveWeightReceiveFormDataHandler);
+	clearHandler<ClosePaletteEventHandler>(driveWeightPalette, driveWeightClosePaletteHandler);
+
+	driveWeightPalette->deleteMe();
+	driveWeightPalette = nullptr;
+}
+
+void EUI::openDriveWeightPalette() {
+	//exportButtonCommand->controlDefinition()->isEnabled(false);
+
+	// In some cases, sending info to the HTML of a palette on the same thread causes issues
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this](std::string configJSON)
+	{
+		driveWeightPalette->sendInfoToHTML("state", configJSON);
+		driveWeightPalette->isVisible(true);
+		driveWeightPalette->sendInfoToHTML("state", configJSON);
+	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+}
+
+void EUI::closeDriveWeightPalette(std::string weightData) {
+	driveWeightPalette->isVisible(false);
+	//sensorsPalette->isVisible(false);
+
+	if (weightData.length() > 0)
+	{
+		static std::thread* uiThread = nullptr;
+		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+		//Pass the weight value to the export palette as it store all the export data.
+		uiThread = new std::thread([this](std::string weightData) { driveWeightPalette->sendInfoToHTML("dt_weight", weightData); }, weightData);
+	}
 }
 
 void EUI::hideAllPalettes()
@@ -308,6 +382,7 @@ bool EUI::createFinishPalette()
 	finishPalette = palettes->itemById(PALETTE_FINISH);
 	if (!finishPalette)
 	{
+
 		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "Palette/export.html", false, true, true, 250, 200);
 		if (!finishPalette)
 			return false;
@@ -342,7 +417,7 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(false);
+	// finishButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -462,7 +537,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Select Drive Train Type", "Palette/drivetrain.html", false, true, true, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "Palette/drivetrain.html", false, true, true, 350, 200);
 		if (!driveTypePalette)
 			return false;
 
