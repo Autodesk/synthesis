@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotExportAPI", "robot_exporter\JointResolver\RobotExportAPI.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "..\Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIConvexHull", "..\Aardvark-Libraries\MIConvexHull\MIConvexHull.csproj", "{2337776D-7D0C-40AA-A439-C26C3CE24FAB}"
@@ -20,12 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Benchmark|Any CPU.ActiveCfg = Benchmark|Any CPU
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Benchmark|Any CPU.Build.0 = Benchmark|Any CPU
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Benchmark|Any CPU.ActiveCfg = Benchmark|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Benchmark|Any CPU.Build.0 = Benchmark|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
