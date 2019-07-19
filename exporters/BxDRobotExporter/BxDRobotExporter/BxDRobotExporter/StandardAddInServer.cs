@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.JointEditor;
 using BxDRobotExporter.Messages;
+using BxDRobotExporter.PrecheckPanel;
 using EditorsLibrary;
 using Inventor;
 using JointResolver.EditorsLibrary;
@@ -563,6 +564,7 @@ namespace BxDRobotExporter
         public void DOF_OnExecute(NameValueMap Context)
         {
             displayDOF = !displayDOF;
+            Utilities.EmbededKeyPane.Visible = displayDOF;
 
             if (displayDOF)
             {
@@ -597,6 +599,7 @@ namespace BxDRobotExporter
             else
             {
                 ClearDOFHighlight();
+
             }
         }
 
