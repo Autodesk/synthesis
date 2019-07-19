@@ -110,6 +110,16 @@ namespace BxDRobotExporter.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] fragShader {
+            get {
+                object obj = ResourceManager.GetObject("fragShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Gears16 {
@@ -192,10 +202,30 @@ namespace BxDRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap SynthesisLogoLoading {
+            get {
+                object obj = ResourceManager.GetObject("SynthesisLogoLoading", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap TankDriveIcon {
             get {
                 object obj = ResourceManager.GetObject("TankDriveIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] vertShader {
+            get {
+                object obj = ResourceManager.GetObject("vertShader", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

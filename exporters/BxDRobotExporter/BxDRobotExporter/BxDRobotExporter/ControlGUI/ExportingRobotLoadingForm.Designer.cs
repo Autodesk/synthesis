@@ -1,4 +1,6 @@
-﻿namespace BxDRobotExporter.ControlGUI
+﻿using BxDRobotExporter.Properties;
+
+namespace BxDRobotExporter.ControlGUI
 {
     partial class LiteExporterForm
     {
@@ -75,7 +77,7 @@
             // LoadingAnimation
             // 
             this.LoadingAnimation.BackColor = System.Drawing.Color.Transparent;
-            this.LoadingAnimation.Image = global::JointResolver.Properties.Resources.LoadAnimationNewLogo;
+            this.LoadingAnimation.Image = Resources.SynthesisLogoLoading;
             this.LoadingAnimation.Location = new System.Drawing.Point(12, 12);
             this.LoadingAnimation.Name = "LoadingAnimation";
             this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);

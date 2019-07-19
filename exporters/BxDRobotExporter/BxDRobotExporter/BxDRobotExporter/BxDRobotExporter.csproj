@@ -313,8 +313,11 @@
     <None Include="BxDRobotExporter.X.manifest" />
     <None Include="Resources\Branding\SynthesisLogo16.bmp" />
     <None Include="Resources\Branding\SynthesisLogo32.bmp" />
+    <None Include="Resources\LoadingAnimations\SynthesisLogoLoading.gif" />
     <None Include="Resources\RibbonIcons\Gears16.png" />
     <None Include="Resources\RibbonIcons\Gears32.png" />
+    <None Include="Resources\Shaders\shader.frag" />
+    <None Include="Resources\Shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
@@ -387,6 +390,7 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="BXDJ File Format.txt" />
     <Content Include="ExportGuide\ExportGuide.html" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />
