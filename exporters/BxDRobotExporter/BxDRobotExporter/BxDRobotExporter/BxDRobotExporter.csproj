@@ -308,7 +308,6 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="BxD.StrongNameKey.snk" />
     <None Include="BxDRobotExporter.X.manifest" />
     <None Include="Resources\Branding\SynthesisLogo16.bmp" />
