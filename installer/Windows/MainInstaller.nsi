@@ -181,7 +181,7 @@ Section "Fusion Exporter Plugin" fExporter
 
 SectionEnd
 
-Section "Robot Files" RoboFiles
+Section "Robot Files" RobotFiles
 
   ; Set extraction path for preloaded robot files
   SetOutPath $APPDATA\Autodesk\Synthesis\Robots
@@ -190,21 +190,45 @@ Section "Robot Files" RoboFiles
 
 SectionEnd
 
+Section "Code Emulator" Emulator
+
+	; INetC.dll must be installed to proper NSIS Plugins x86 directories
+	inetc::get "https://qemu.weilnetz.de/w64/2019/qemu-w64-setup-20190717.exe" "$PLUGINSDIR\qemu-w64-setup-20190717.exe"
+	Pop $R0 ;Get the return value
+	
+	${If} $R0 == "OK"  ;Return value should be "OK"
+	  RMDir /r $INSTDIR\Emulator
+	  SetOutPath $INSTDIR\Emulator
+	  HideWindow
+	  File /r "Emulator\rootfs.ext4"
+	  File /r "Emulator\zImage"
+	  File /r "Emulator\zynq-zed.dtb"
+	  HideWindow
+	  ExecWait '"$PLUGINSDIR\qemu-w64-setup-20190717.exe"'
+	  ShowWindow hwnd show_state
+	${Else}
+	  MessageBox mb_iconstop "Error: $R0" ;Show cancel/error message
+	${EndIf}
+		
+SectionEnd
+
 ;--------------------------------
 ;Component Descriptions
 
   LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
   LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
-  LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator."
-  LangString DESC_RoboFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
+  LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
+  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
+  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
   !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
-  !insertmacro MUI_DESCRIPTION_TEXT ${RoboFiles} $(DESC_RoboFiles)
+  !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
