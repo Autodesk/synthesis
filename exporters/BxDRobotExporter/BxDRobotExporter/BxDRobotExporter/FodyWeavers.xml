@@ -4,8 +4,8 @@
     <IncludeAssemblies>
       OpenTK
       OpenTK.GLControl
-      SimulatorAPI
-      RobotExportAPI
+      <!-- SimulatorAPI -->
+      <!-- RobotExportAPI -->
     </IncludeAssemblies>
   </Costura>
 </Weavers>
