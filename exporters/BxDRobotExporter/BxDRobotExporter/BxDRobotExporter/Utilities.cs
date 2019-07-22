@@ -36,9 +36,9 @@ namespace BxDRobotExporter
             EmbededJointPane.Visible = true;
 
             EmbededKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");
-            EmbededKeyPane.DockingState = DockingStateEnum.kDockRight;
+            EmbededKeyPane.DockingState = DockingStateEnum.kFloat;
             EmbededKeyPane.Width = 260;
-            EmbededKeyPane.Height = 100;
+            EmbededKeyPane.Height = 130;
             EmbededKeyPane.ShowVisibilityCheckBox = false;
             EmbededKeyPane.ShowTitleBar = true;
             var keyPanel = new DOFKeyPane();
