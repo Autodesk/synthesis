@@ -25,12 +25,6 @@ namespace Synthesis.Input
         private static List<KeyMapping> mKeysList = new List<KeyMapping>();
         private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
-        /// Set of players (player keys are declared in the <see cref="Player"/>)
-        public static Player[] mPlayerList = new Player[6];
-
-        // Variable to keep track of the active player
-        public static int activePlayerIndex;
-
         // Set of main axes
         private static List<Axis> mAxesList = new List<Axis>();
         private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
@@ -167,9 +161,9 @@ namespace Synthesis.Input
         //Contructor: Initialize players and player controls
         static InputControl()
         {
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < Controls.Players.Length; i++)
             {
-                mPlayerList[i] = new Player();
+                Controls.Players[i] = new Player();
             }
         }
 
@@ -186,12 +180,12 @@ namespace Synthesis.Input
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
         public static KeyMapping SetKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
         }
 
         public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
         }
 
         /// <summary>
@@ -206,7 +200,7 @@ namespace Synthesis.Input
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
         public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), ArgToInput(secondary), isTankDrive);
+            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), ArgToInput(secondary), isTankDrive);
         }
 
         /// <summary>
@@ -216,7 +210,7 @@ namespace Synthesis.Input
         public static ReadOnlyCollection<KeyMapping> GetKeysList()
         {
             mKeysList.Clear();
-            foreach (Player player in mPlayerList)
+            foreach (Player player in Controls.Players)
             {
                 foreach (KeyMapping key in player.GetActiveList())
                 {
@@ -224,27 +218,6 @@ namespace Synthesis.Input
                 }
             }
             return mKeysList.AsReadOnly();
-        }
-
-        /// <summary>
-        /// Gets the list of a specific player's keys (player specified by controlIndex).
-        /// </summary>
-        /// <param name="controlIndex"></param>
-        /// <returns>List of a player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetPlayerKeys(int controlIndex)
-        {
-            // Set the activePlayerIndex equal to the selected player (controlIndex)
-            activePlayerIndex = controlIndex;
-            return mPlayerList[controlIndex].GetActiveList();
-        }
-
-        /// <summary>
-        /// Gets the list of the active player's keys. 
-        /// </summary>
-        /// <returns>The list of the active player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetActivePlayerKeys()
-        {
-            return mPlayerList[activePlayerIndex].GetActiveList();
         }
 
         #endregion
@@ -262,7 +235,7 @@ namespace Synthesis.Input
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
         public static Axis SetAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
         {
-            return mPlayerList[controlIndex].SetAxis(name, negative, positive, isTankDrive);
+            return Controls.Players[controlIndex].SetAxis(name, negative, positive, isTankDrive);
         }
 
         #endregion

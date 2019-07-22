@@ -30,96 +30,25 @@ namespace Synthesis.Input
         private Transform namesTransform; //The string name of the control (the first column of the control panel; non-button)
         private Transform keysTransform; //The buttons of the controls (column 2 and column 3 of the control panel)
 
-        // Use this for initialization
-        void Start()
+        public void Awake()
         {
-            DestroyList();
-
             tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
 
-            //Can change the default measurement HERE and also change the default value in the slider game object in main menu
-            PlayerPrefs.SetString("Measure", "Metric");
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-
             namesTransform = transform.Find("Names");
             keysTransform = transform.Find("Keys");
+        }
 
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            //Defaults to player one's keys at Start
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(0);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //==============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight); //Controls the height on the control panel
-
-            //Updates the current active player's button (at start, we default to player one.)
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
+        // Use this for initialization
+        public void Start()
+        {
+            DestroyList();
+            //Can change the default measurement HERE and also change the default value in the slider game object in main menu
+            PlayerPrefs.SetString("Measure", "Metric");
 
             //Loads controls (if changed in another scene) and updates their button text.
-            Controls.Load();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
 
@@ -131,16 +60,14 @@ namespace Synthesis.Input
         // list can be called with this index 0 (player one) - index 5 (player six).
         //==============================================================================================
 
-        #region Update Active Buttons
-        public void UpdateActiveButtons()
+        public void UpdateButtons() // TODO rename to CreateButtons and limit number of calls? Replace with UpdateAllText?
         {
             DestroyList();
-
             float maxNameWidth = 0;
             float contentHeight = 4;
 
             //Retrieves and updates the active player's keys
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetActivePlayerKeys();
+            ReadOnlyCollection<KeyMapping> keys = Controls.Players[SettingsMode.activePlayerIndex].GetActiveList();
 
             foreach (KeyMapping key in keys)
             {
@@ -182,7 +109,7 @@ namespace Synthesis.Input
                 keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
                 keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
 
-                for (int i = 0; i < 2; ++i)
+                for (int i = 0; i < keyButtons.transform.childCount; ++i) // 3 - primary, secondary, tertiary
                 {
                     KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
 
@@ -207,469 +134,6 @@ namespace Synthesis.Input
 
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
         }
-        #endregion
-
-        #region Update Player One Keys
-        public void UpdatePlayerOneButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(0);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //==============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
-
-        #region Update Player Two Keys
-        public void UpdatePlayerTwoButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(1);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //==============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
-
-        #region Update Player Three Keys
-        public void UpdatePlayerThreeButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(2);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //===============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
-
-        #region Update Player Four Keys
-        public void UpdatePlayerFourButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(3);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //=============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
-
-        #region Update Player Five Keys
-        public void UpdatePlayerFiveButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(4);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //===============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
-
-        #region Update Player Six Keys
-        public void UpdatePlayerSixButtons()
-        {
-            DestroyList();
-
-            float maxNameWidth = 0;
-            float contentHeight = 4;
-
-            ReadOnlyCollection<KeyMapping> keys = InputControl.GetPlayerKeys(5);
-
-            foreach (KeyMapping key in keys)
-            {
-                //========================================================================================
-                //                                   Key Text vs Key Buttons
-                //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
-                //Key Buttons: The buttons in the second and third column of the Input Manager menu
-                //========================================================================================
-
-                //Source: https://github.com/Gris87/InputControl
-                #region Key text
-                GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-                keyNameText.name = key.name;
-
-                RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
-
-                keyNameTextRectTransform.transform.SetParent(namesTransform);
-                keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
-
-                Text keyText = keyNameText.GetComponentInChildren<Text>();
-                keyText.text = key.name;
-
-                float keyNameWidth = keyText.preferredWidth + 8;
-
-                if (keyNameWidth > maxNameWidth)
-                {
-                    maxNameWidth = keyNameWidth;
-                }
-                #endregion
-
-                #region Key buttons
-                GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-                keyButtons.name = key.name;
-
-                RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
-
-                keyButtonsRectTransform.transform.SetParent(keysTransform);
-                keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
-                keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
-
-                    buttonScript.keyMapping = key;
-                    buttonScript.keyIndex = i;
-
-                    buttonScript.UpdateText();
-                }
-                #endregion
-                //==============================================
-
-                contentHeight += 28;
-            }
-
-            RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
-            RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
-            RectTransform rectTransform = GetComponent<RectTransform>();
-
-            namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
-            keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
-            rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
-        }
-        #endregion
 
         /// <summary>
         /// Destroys control lists.
@@ -699,8 +163,8 @@ namespace Synthesis.Input
         /// </summary>
         public void ResetTankDrive()
         {
-            InputControl.mPlayerList[InputControl.activePlayerIndex].ResetTank();
-            UpdateActiveButtons();
+            Controls.Players[SettingsMode.activePlayerIndex].ResetTank();
+            UpdateButtons();
         }
 
         /// <summary>
@@ -709,8 +173,8 @@ namespace Synthesis.Input
         /// </summary>
         public void ResetArcadeDrive()
         {
-            InputControl.mPlayerList[InputControl.activePlayerIndex].ResetArcade();
-            UpdateActiveButtons();
+            Controls.Players[SettingsMode.activePlayerIndex].ResetArcade();
+            UpdateButtons();
         }
 
         /// <summary>
@@ -723,34 +187,30 @@ namespace Synthesis.Input
             switch (i)
             {
                 case 0:  //tank drive slider is OFF
-                    InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
                     Controls.Load();
                     if (States.MainState.timesLoaded > 1)
                     {
                         Controls.UpdateFieldControls(false);
                     }
-                    Controls.Load();
-                    UpdateActiveButtons();
                     break;
                 case 1:  //tank drive slider is ON
-                    InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+                    Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
                     Controls.TankDriveEnabled = true;
-                    Controls.Load();
                     if (States.MainState.timesLoaded > 1)
                     {
                         Controls.UpdateFieldControls(true);
                     }
                     Controls.Load();
-                    UpdateActiveButtons();
                     break;
                 default: //defaults to arcade drive
-                    InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
-                    Controls.Load();
-                    UpdateActiveButtons();
                     break;
             }
+            Controls.Load();
+            UpdateButtons();
         }
 
         /// <summary>
@@ -777,7 +237,7 @@ namespace Synthesis.Input
         {
             //Tank drive slider
             tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
-            tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+            tankDriveSwitch.GetComponent<Slider>().value = Controls.Players[SettingsMode.activePlayerIndex].isTankDrive ? 1 : 0;
 
             //Measurement slider
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
@@ -790,7 +250,7 @@ namespace Synthesis.Input
         public void UpdateTankSlider()
         {
             //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
-            tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+            tankDriveSwitch.GetComponent<Slider>().value = Controls.Players[SettingsMode.activePlayerIndex].isTankDrive ? 1 : 0;
         }
     }
 }

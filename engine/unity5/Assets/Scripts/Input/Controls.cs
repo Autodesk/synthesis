@@ -9,6 +9,10 @@ namespace Synthesis.Input
 {
     public class Controls
     {
+        public static int PLAYER_COUNT = 6;
+        public static Player[] Players = new Player[PLAYER_COUNT];
+
+
         public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
 
         ///Player indexes (for initializing and creating separate player key lists) <see cref="InputControl"/>
@@ -140,7 +144,6 @@ namespace Synthesis.Input
         public static bool CheckIfSaved()
         {
             ReadOnlyCollection<KeyMapping> currentKeys = InputControl.GetKeysList();
-            ReadOnlyCollection<KeyMapping> inputKeys = InputControl.GetActivePlayerKeys();
 
             foreach (KeyMapping key in currentKeys)
             {

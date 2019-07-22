@@ -23,12 +23,6 @@ namespace Synthesis.Input
             activeList = arcadeDriveList;
         }
 
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
         //Checks if tank drive is enabled
         public bool isTankDrive;
 

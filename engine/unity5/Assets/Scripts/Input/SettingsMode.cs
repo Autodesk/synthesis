@@ -20,10 +20,12 @@ namespace Synthesis.Input
 
         public State CurrentState { get; set; }
 
-        // Update is called once per frame
-        void Update()
-        {
+        // Variable to keep track which player controls are being edited in the control panel
+        public static int activePlayerIndex;
 
+        public void Awake()
+        {
+            activePlayerIndex = 0;
         }
 
         /// <summary>
@@ -75,16 +77,15 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            if (InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive)
+            if (Controls.Players[activePlayerIndex].isTankDrive)
             {
                 GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-                Controls.Save();
             }
             else
             {
                 GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
-                Controls.Save();
             }
+            Controls.Save();
         }
 
         /// <summary>
@@ -100,54 +101,20 @@ namespace Synthesis.Input
         // Creates and updates a specific player and their control's list. Checks for possible
         // toggle updates and if controls were saved.
         //=========================================================================================
-        #region Player Buttons
-        public void OnPlayerOne()
+
+        public void OnPlayerSelect(int index)
         {
+            activePlayerIndex = index;
             //Creates and generates player one's keys and control buttons
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
 
             //Checks if the tank drive toggle/slider needs to be updated (according to the player)
             GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
 
             //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
             GetLastSavedControls();
+            UpdateButtonStyle();
         }
-
-        public void OnPlayerTwo()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerThree()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerFour()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerFive()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerSix()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-        #endregion
 
         /// <summary>
         /// Updates the active player button to the active button style. This makes the button
@@ -155,67 +122,12 @@ namespace Synthesis.Input
         /// </summary>
         public void UpdateButtonStyle()
         {
-            switch (InputControl.activePlayerIndex)
-            {
-                #region Active and Default Button Styles
-                case 0:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 1:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 2:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 3:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 4:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 5:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    break;
-                default: //Default to player one as active
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                    #endregion
-            }
+            GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = (activePlayerIndex == 0) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = (activePlayerIndex == 1) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = (activePlayerIndex == 2) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = (activePlayerIndex == 3) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = (activePlayerIndex == 4) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = (activePlayerIndex == 5) ? ActiveButtonImage : DefaultButtonImage;
         }
 
         /// <summary>
