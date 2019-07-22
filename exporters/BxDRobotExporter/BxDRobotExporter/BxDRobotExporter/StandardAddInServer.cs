@@ -375,6 +375,7 @@ namespace BxDRobotExporter
 
             // Close add-in
             Utilities.DisposeDockableWindows();
+            ForceQuitExporter(AsmDocument);
 
             // Dispose of document
             if (AsmDocument != null)
