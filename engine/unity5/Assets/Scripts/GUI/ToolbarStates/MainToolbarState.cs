@@ -403,7 +403,11 @@ namespace Synthesis.GUI
 
             foreach (BRigidBody br in GameObject.Find("Robot").GetComponentsInChildren<BRigidBody>()) {
                 if (part == br) {
+                    Vector3 closestPoint = br.GetComponent<MeshRenderer>().bounds.ClosestPoint(point.ToUnity());
+                    Ray normalRay = new Ray(point.ToUnity(), closestPoint - point.ToUnity());
+
                     part.AddImpulseAtPosition(ray.direction.normalized * impulse, point.ToUnity());
+                    // part.AddImpulseAtPosition(normalRay.direction.normalized * impulse, normalRay.origin);
                 }
             }
         }
