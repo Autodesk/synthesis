@@ -9,6 +9,7 @@ using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Editors;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
+using BxDRobotExporter.PrecheckPanel;
 using BxDRobotExporter.Properties;
 using Inventor;
 
@@ -573,6 +574,7 @@ namespace BxDRobotExporter
             AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
 
             displayDOF = !displayDOF;
+            Utilities.EmbededKeyPane.Visible = displayDOF;
 
             if (displayDOF)
             {
@@ -607,6 +609,7 @@ namespace BxDRobotExporter
             else
             {
                 ClearDOFHighlight();
+
             }
         }
 
