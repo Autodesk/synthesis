@@ -259,6 +259,13 @@ namespace Synthesis.GUI
         /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
         /// specific states. 
         /// </summary>
+        public void onMenuTab()
+        {
+            if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
+            currentTab = "MenuTab";
+            tabStateMachine.ChangeState(new MenuToolbarState());
+        }
+        
         public void OnMainTab()
         {
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
@@ -1038,6 +1045,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void LinkToolbars()
         {
+            LinkToolbar<MenuToolbarState>("MenuPanel");
             LinkToolbar<MainToolbarState>("MainToolbar");
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
