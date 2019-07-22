@@ -60,19 +60,21 @@ namespace Synthesis.Input
         //=================================================================================================
 
         #region setKey() and SetAxis() Functions
-        /// <summary>
-        /// Creates new <see cref="KeyMapping"/> with specified name, primary KeyCode, and secondary CustomInput.
-        /// </summary>
-        /// <returns>Created KeyMapping.</returns>
-        /// <param name="name">KeyMapping name.</param>
-        /// <param name="primary">Primary input.</param>
-        /// <param name="secondary">Secondary input.</param>
-        public KeyMapping setKey(string name, KeyCode primary, CustomInput secondary)
+
+        public KeyMapping SetKey(string name, JoystickInput primary = null, bool isTankDrive = false)
         {
-            return SetKey(name, argToInput(primary), argToInput(secondary));
+            return SetKey(name, argToInput(primary), null, isTankDrive);
         }
 
+        public KeyMapping SetKey(string name, KeyCode? primary = null, bool isTankDrive = false)
+        {
+            return SetKey(name, argToInput(primary), null, isTankDrive);
+        }
 
+        public KeyMapping SetKey(string name, KeyCode? primary = null, KeyCode? secondary = null, bool isTankDrive = false)
+        {
+            return SetKey(name, argToInput(primary), argToInput(secondary), isTankDrive);
+        }
 
         /// <summary>
         /// Creates new <see cref="KeyMapping"/> with specified name, primary CustomInput, and secondary CustomInput.
@@ -198,9 +200,11 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(KeyCode arg)
+        private static CustomInput argToInput(KeyCode? arg)
         {
-            return new KeyboardInput(arg);
+            if (arg == null)
+                return null;
+            return new KeyboardInput(arg.Value);
         }
         #endregion
 
