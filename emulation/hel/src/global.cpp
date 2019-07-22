@@ -14,6 +14,7 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
+	int gRPCPort = 50051;
 constexpr const float TIME_CONSTANT =
 	1.13;  // This is the offset from local time to real world time
 Global::Global() noexcept { fpga_start_time = getCurrentTime(); }
@@ -105,7 +106,7 @@ namespace nFPGA {
 namespace nRoboRIO_FPGANamespace {
 tGlobal* tGlobal::create(tRioStatusCode* /*status*/) {
 	grpc_thread = std::thread([] {
-		std::string server_addr("0.0.0.0:50051");
+		std::string server_addr("0.0.0.0:" + std::to_string(hel::gRPCPort));
 		RobotInputService inputs;
 		RobotOutputService outputs;
 

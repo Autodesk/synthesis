@@ -6,13 +6,24 @@ set -o pipefail
 
 cd $1 # GRPC folder
 
-TOOLCHAIN=arm-frc2019-linux-gnueabi
-
 ADDITIONAL_FLAGS="-Wno-error"
 export CXXFLAGS="$CXXFLAGS $ADDITIONAL_FLAGS"
 export CFLAGS="$CFLAGS $ADDITIONAL_FLAGS"
 
+TARGET_TRIPLE=$(${TOOLCHAIN}gcc -dumpmachine)
+
 git submodule update --init
+
+if [[ "${TOOLCHAIN}" == "" ]] ; then 
+    cd third_party/protobuf && \
+        ./autogen.sh && \
+        ./configure && \
+        make
+    pwd
+    mkdir -p ../../libs/opt
+    cp ./src/.libs/libprotobuf.a ../../libs/opt/
+    cd ../../
+fi
 
 if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
@@ -24,21 +35,22 @@ else
     printf "Native gRPC installed. Skipping native build.\n\n"
 fi
 
-printf "Cross-compiling and installing gRPC\n\n"
-
 export GRPC_CROSS_COMPILE=true
-export GRPC_CROSS_AROPTS="cr --target=elf32-little"
+if [[ ${TOOLCHAIN} != "" ]] ; then 
+    printf "Cross-compiling and installing gRPC\n\n"
 
+    export GRPC_CROSS_AROPTS="cr --target=elf32-little"
+fi
 make plugins static -j10 \
      HAS_PKG_CONFIG=false \
-     CC=$TOOLCHAIN-gcc \
-     CXX=$TOOLCHAIN-g++ \
-     CPP=$TOOLCHAIN-cpp \
-     RANLIB=$TOOLCHAIN-ranlib \
-     LD=$TOOLCHAIN-ld \
-     LDXX=$TOOLCHAIN-g++ \
-     HOSTLD=$TOOLCHAIN-ld \
-     AR=$TOOLCHAIN-ar \
-     AS=$TOOLCHAIN-as \
+     CC=${TOOLCHAIN}gcc \
+     CXX=${TOOLCHAIN}g++ \
+     CPP=${TOOLCHAIN}cpp \
+     RANLIB=${TOOLCHAIN}ranlib \
+     LD=${TOOLCHAIN}ld \
+     LDXX=${TOOLCHAIN}g++ \
+     HOSTLD=${TOOLCHAIN}ld \
+     AR=${TOOLCHAIN}ar \
+     AS=${TOOLCHAIN}as \
      AROPTS='-r' \
-     PROTOBUF_CONFIG_OPTS="--host=$TOOLCHAIN --with-protoc=$(find . -name protoc -print -quit)"
+     PROTOBUF_CONFIG_OPTS="--host=${TARGET_TRIPLE} --with-protoc=$(find . -name protoc -print -quit)"

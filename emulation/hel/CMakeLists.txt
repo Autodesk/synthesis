@@ -49,6 +49,16 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
   SET(CMAKE_C_COMPILER arm-frc2019-linux-gnueabi-gcc)
   SET(CMAKE_CXX_COMPILER arm-frc2019-linux-gnueabi-g++)
 
+
+  ExternalProject_ADD(grpc
+    PREFIX lib/grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    GIT_TAG ${GRPC}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" " ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
+    INSTALL_COMMAND "")
+
+
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
     ${CMAKE_BINARY_DIR}/lib/lib
@@ -72,6 +82,15 @@ else()
     MESSAGE(WARNING "No architecture specified; defaulting to x86.")
     SET(ARCH "x86_64")
   endif()
+  
+  ExternalProject_ADD(grpc
+    PREFIX lib/grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    GIT_TAG ${GRPC}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
+    INSTALL_COMMAND "")
+
   SET(CMAKE_C_COMPILER gcc)
   SET(CMAKE_CXX_COMPILER g++)
 
@@ -80,6 +99,8 @@ else()
     ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${NILIB_DIRECTORY}/src/lib
+    ${GRPC_DIRECTORY}/libs/opt
+    ${GRPC_DIRECTORY}/libs/opt/protobuf
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/release
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64/release
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
@@ -100,7 +121,6 @@ EXTERNALPROJECT_ADD(ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
   GIT_TAG ${NILIB}
   CONFIGURE_COMMAND ""
-  PATCH_COMMAND patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/win_frc_comm.patch
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
 
@@ -135,14 +155,6 @@ ADD_DEPENDENCIES(wpilibj wpilib)
 #   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh CRTE ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a "./gradlew arm:cpp:CTRE_PhoenixStaticLibrary"
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
-
-ExternalProject_ADD(grpc
-  PREFIX lib/grpc
-  GIT_REPOSITORY https://github.com/grpc/grpc.git
-  GIT_TAG ${GRPC}
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
-  INSTALL_COMMAND "")
 
 FILE(GLOB PROTOBUF_SOURCE_FILES ${PROTOBUF_SOURCE_DIR}/*)
 SET(GENERATED_FILES ${GRPC_GEN_DIR}/emulator_service.grpc.pb.cc ${GRPC_GEN_DIR}/emulator_service.grpc.pb.h ${GRPC_GEN_DIR}/emulator_service.pb.cc ${GRPC_GEN_DIR}/emulator_service.pb.h)
@@ -203,7 +215,7 @@ ADD_LIBRARY(hel SHARED
   ${GENERATED_FILES}
 )
 ADD_DEPENDENCIES(hel ni-libraries grpc_gen)
-TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
+TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libgrpc++.a)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"
@@ -295,12 +307,10 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-  	"${GRPC_DIRECTORY}/include"
-	"${GRPC_DIRECTORY}/third_party/protobuf/src"
-  	"${CMAKE_BINARY_DIR}/lib/gen"
-	"${NILIB_DIRECTORY}/src/include"
-        # "${CTRE_DIRECTORY}/cpp/include/"
-        # "${CTRE_DIRECTORY}/libraries/driver/include"
+  	    "${GRPC_DIRECTORY}/include"
+	      "${GRPC_DIRECTORY}/third_party/protobuf/src"
+  	    "${CMAKE_BINARY_DIR}/lib/gen"
+	      "${NILIB_DIRECTORY}/src/include"
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
 

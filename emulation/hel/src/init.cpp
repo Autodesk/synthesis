@@ -7,6 +7,7 @@
 
 #define LIBHEL_VERSION "1.1.0" // Major, minor, patch
 #define VIRTUAL_MACHINE_INFO_PATH "/home/lvuser/.vminfo"
+#define SERVER_CONFIG_PATH "/home/lvuser/.grpc_config"
 
 namespace hel{
     std::atomic<bool> hal_is_initialized{false};
@@ -32,6 +33,15 @@ namespace hel{
         std::string nilib_version;
         std::getline(vm_info, nilib_version);
 
+        std::ifstream server_config;
+        server_config.open(SERVER_CONFIG_PATH);
+        try {
+        std::string port;
+            std::getline(server_config, port);
+            hel::gRPCPort = std::stoi(port);
+        } catch (std::invalid_argument s) {
+            hel::gRPCPort = 50051;
+        }
         printf("Synthesis Emulation Startup Info: \n\tHEL Version: %s\n\tVirtual Machine Version: %s\n\tWPILib Version: %s\n\tNI Libraries Version: %s\n\n", LIBHEL_VERSION, vm_version.c_str(), wpilib_version.c_str(), nilib_version.c_str());
         RoboRIOManager::getInstance().first->robot_mode.setEnabled(HEL_DEFAULT_ENABLED_STATUS);
     }
