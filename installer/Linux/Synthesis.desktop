@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Icon[en_US]=synthesis
+Terminal=false
+Name[en_US]=Synthesis
+Exec=/usr/share/Autodesk/Synthesis/Synthesis.x86_64
+Name=Synthesis
+Icon=synthesis
