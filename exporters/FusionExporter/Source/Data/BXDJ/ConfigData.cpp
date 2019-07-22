@@ -5,6 +5,7 @@
 #include <Fusion/Components/AsBuiltJoint.h>
 #include <rapidjson/document.h>
 #include "Utility.h"
+#include <string>
 
 using namespace adsk;
 using namespace BXDJ;
@@ -27,7 +28,7 @@ ConfigData::ConfigData(const ConfigData & other)
 		joints[i->first] = i->second;
 }
 
-void ConfigData::setDriveType(std::string type) {
+void ConfigData::setDriveType(const std::string type) {
 	if (type == "tank") {
 		drivetrainType = TANK;
 	} else if (type == "h-drive") {

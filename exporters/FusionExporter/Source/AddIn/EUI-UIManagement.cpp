@@ -70,6 +70,7 @@ void EUI::prepareAllPalettes()
 	createJointEditorPalette();
 	createSensorsPalette();
 	createGuidePalette();
+	createKeyPalette();
 	createFinishPalette();
 	createProgressPalette();
 	createDriveWeightPalette();
@@ -154,6 +155,7 @@ void EUI::hideAllPalettes()
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	guidePalette->isVisible(false);
+	keyPalette->isVisible(false);
 	finishPalette->isVisible(false);
 }
 
@@ -309,6 +311,63 @@ void EUI::closeGuidePalette()
 {
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
 	guidePalette->isVisible(false);
+}
+
+// Key Palette
+
+bool EUI::createKeyPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return false;
+
+	// Check if palette already exists
+	keyPalette = palettes->itemById(PALETTE_KEY);
+	if (!keyPalette)
+	{
+		// Create palette
+		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "Palette/dofkey.html", false, true, false, 220, 165);
+		if (!keyPalette)
+			return false;
+
+		// Dock the palette to float
+		keyPalette->dockingState(PaletteDockStateFloating);
+		keyPalette->setPosition(500, 500);
+
+		addHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+		addHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+	}
+
+	return true;
+}
+
+void EUI::deleteKeyPalette()
+{
+	Ptr<Palettes> palettes = UI->palettes();
+	if (!palettes)
+		return;
+
+	// Check if palette already exists
+	keyPalette = palettes->itemById(PALETTE_KEY);
+	if (!keyPalette)
+		return;
+
+	clearHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+	clearHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+
+	keyPalette->deleteMe();
+	keyPalette = nullptr;
+}
+
+void EUI::toggleKeyPalette()
+{
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
+		{
+			keyPalette->isVisible(dofViewEnabled);
+	});
 }
 
 // Finish palette
@@ -531,13 +590,17 @@ void EUI::closeDriveTypePalette(std::string driveTypeData) {
 	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
 
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
+	config.setDriveType(driveTypeData);
+	Exporter::saveConfiguration(config, app->activeDocument());
+
 	if (driveTypeData.length() > 0)
 	{
 		static std::thread* uiThread = nullptr;
 		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrainType", driveTypeData); }, driveTypeData);
+		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrain_type", driveTypeData); }, driveTypeData);
 	}
 }
 
