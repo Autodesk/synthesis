@@ -16,7 +16,7 @@ git submodule update --init
 
 if [[ "${TOOLCHAIN}" == "" ]] ; then 
     cd third_party/protobuf && \
-        ./configure && \
+        bash ./configure && \
         make
     pwd
     mkdir -p ../../libs/opt
