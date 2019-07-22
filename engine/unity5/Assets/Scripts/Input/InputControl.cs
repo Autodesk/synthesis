@@ -158,15 +158,6 @@ namespace Synthesis.Input
 
         #region Synthesis
 
-        //Contructor: Initialize players and player controls
-        static InputControl()
-        {
-            for (int i = 0; i < Controls.Players.Length; i++)
-            {
-                Controls.Players[i] = new Player();
-            }
-        }
-
         #region Synthesis Setup Keys
 
         /// <summary>
