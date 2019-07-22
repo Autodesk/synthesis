@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
-        <script src="js/fusionInterface.js"></script>
-        <script src="js/utility.js"></script>
-    </head>
     <style>
-        img.color {
-            position: absolute;
-            left: 5%;
-        }
         p.label {
             position: absolute;
-            left: 17%;
+            font-family: Arial,sans-serif;
+            left: 38px;
+            font-size: 12px;
+        }
+        .square {
+            position: absolute;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+        }
+        .blue {
+            background: dodgerblue;
+        }
+        .green {
+            background: lawngreen;
+        }
+        .red {
+            background: red;
         }
     </style>
     <body>
-        <img src="resources/blue.png" class="color" style="top: 10%" width=20 height=20 >
-        <img src="resources/green.jpg" class="color" style="top: 39%" width=20 height=20 >
-        <img src="resources/red.png" class="color" style="bottom: 10%" width=20 height=20 >
-        <p class="label" style="bottom: 55%" >Blue - Fixed object / drivetrain</p>
-        <p class="label" style="top: 28%" >Green - Jointed object</p>
-        <p class="label" style="top: 57%" >Red - Joint without driver</p>
+        <img class="square blue" style="top: 30px" width=20 height=20 >
+        <img class="square green" style="top: 55px" width=20 height=20 >
+        <img class="square red" style="top: 80px" width=20 height=20 >
+        <p class="label" style="top: 1px; left: 10px" >View the status of all robot joints.</p>
+        <p class="label" style="top: 20px" >Blue - Fixed object / drivetrain</p>
+        <p class="label" style="top: 45px" >Green - Jointed object</p>
+        <p class="label" style="top: 70px" >Red - Joint without driver</p>
     </body>
 </html>

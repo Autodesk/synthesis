@@ -326,7 +326,7 @@ bool EUI::createKeyPalette()
 	if (!keyPalette)
 	{
 		// Create palette
-		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "Palette/dofkey.html", false, true, false, 220, 150);
+		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "Palette/dofkey.html", false, true, false, 220, 165);
 		if (!keyPalette)
 			return false;
 
