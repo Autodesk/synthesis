@@ -400,6 +400,10 @@ namespace Synthesis.GUI
             Auxiliary.FindGameObject("ErrorScreen").SetActive(false);
         }
 
+        public void ClosePointImpulse() {
+            Auxiliary.FindGameObject("PointImpulsePanel").SetActive(false);
+        }
+
         /// <summary>
         /// Performs a sprite swap for the active tab.
         /// </summary>
