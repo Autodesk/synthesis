@@ -71,6 +71,37 @@ namespace BxDRobotExporter.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///    &lt;style&gt;
+        ///        p.label {
+        ///            position: absolute;
+        ///            font-family: Arial,sans-serif;
+        ///            left: 38px;
+        ///            font-size: 12px;
+        ///        }
+        ///        .square {
+        ///            position: absolute;
+        ///            left: 10px;
+        ///            width: 20px;
+        ///            height: 20px;
+        ///        }
+        ///        .blue {
+        ///            background: dodgerblue;
+        ///        }
+        ///        .green {
+        ///            background: lawngreen;
+        ///        }
+        ///        .red {
+        ///            background: r [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string dofkey {
+            get {
+                return ResourceManager.GetString("dofkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap DrivetrainType32 {
