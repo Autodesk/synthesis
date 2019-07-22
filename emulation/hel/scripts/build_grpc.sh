@@ -16,7 +16,6 @@ git submodule update --init
 
 if [[ "${TOOLCHAIN}" == "" ]] ; then 
     cd third_party/protobuf && \
-        ./autogen.sh && \
         ./configure && \
         make
     pwd
