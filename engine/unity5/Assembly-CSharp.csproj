@@ -316,8 +316,6 @@
     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
     <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
     <Compile Include="Assets\Scripts\SimStart.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
     <Compile Include="Assets\Scripts\States\AnalyzingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
