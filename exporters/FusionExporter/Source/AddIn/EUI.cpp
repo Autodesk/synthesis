@@ -208,9 +208,13 @@ void EUI::resetHighlightAndFocusWholeModel(bool transition, double zoom, Ptr<Cam
 
 void EUI::saveConfiguration(std::string jsonConfig)
 {
-	BXDJ::ConfigData config;
-	config.fromJSONString(jsonConfig);
+	//BXDJ::ConfigData config;		removed these lines as they were creating a new ConfigData instance
+	//config.fromJSONString(jsonConfig);
+	//Exporter::saveConfiguration(config, app->activeDocument());
+
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // load the current config and apply changes, not generate new one
 	Exporter::saveConfiguration(config, app->activeDocument());
+
 }
 
 void EUI::startExportRobot()

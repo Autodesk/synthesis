@@ -66,6 +66,8 @@ namespace SynthesisAddIn
 		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
 		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
 
+		void toggleKeyPalette();
+
 		void openFinishPalette();
 		void closeFinishPalette();
 
@@ -99,6 +101,8 @@ namespace SynthesisAddIn
 		void toggleDOF();
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
+		bool dofViewEnabled;
+
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
 		Ptr<UserInterface> UI; ///< Active Fusion user interface.
@@ -115,6 +119,7 @@ namespace SynthesisAddIn
 		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> guidePalette; ///< Robot export guide palette.
+		Ptr<Palette> keyPalette; ///< Degree of Freedom color key dialog
 		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
@@ -122,6 +127,7 @@ namespace SynthesisAddIn
 		Ptr<CommandDefinition> driveTrainWeightButton; ///< Export robot button.
 		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
 		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
+		Ptr<CommandDefinition> keyDOFButton; ///< Export robot button.
 		Ptr<CommandDefinition> robotExportGuideButton; ///< Export robot button.
 		Ptr<CommandDefinition> finishButton; ///< Export robot button.
 
@@ -138,6 +144,7 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* keyShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
@@ -145,6 +152,7 @@ namespace SynthesisAddIn
 		ClosePaletteEventHandler* driveWeightClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
+		ClosePaletteEventHandler* keyClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
 		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
 		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
@@ -155,9 +163,8 @@ namespace SynthesisAddIn
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
+		ReceiveFormDataHandler* keyCloseFormDataEventHandler = nullptr;
 		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
-
-		bool dofViewEnabled;
 
 		template<typename E, typename T>
 		bool addHandler(Ptr<T> el, E* a);
@@ -190,6 +197,8 @@ namespace SynthesisAddIn
 		bool createGuidePalette(); ///< Creates the robot export guide configuration palette.
 		void deleteGuidePalette(); ///< Deletes the robot export guide configuration palette.
 
+		bool createKeyPalette(); ///< Creates the DOF color key palette
+		void deleteKeyPalette(); ///< Deletes the DOF color key palette
 
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
@@ -203,7 +212,7 @@ namespace SynthesisAddIn
 		// Thread Information
 		std::thread * exportRobotThread; ///< Pointer to any active robot export thread.
 		bool killExportThread; ///< If set to true, the exportRobotThread will stop early.
-		
+
 		///
 		/// Used with threading to export the robot.
 		/// \param config Configuration to export the robot with.
