@@ -62,6 +62,32 @@ namespace BxDRobotExporter.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///    &lt;head&gt;
+        ///        &lt;link href=&quot;css/synthesisExporter.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+        ///    &lt;/head&gt;
+        ///    &lt;style&gt;
+        ///        img.color {
+        ///            position: absolute;
+        ///            left: 5%;
+        ///        }
+        ///        p.label {
+        ///            position: absolute;
+        ///            left: 17%;
+        ///        }
+        ///    &lt;/style&gt;
+        ///    &lt;body&gt;
+        ///        &lt;!-- &lt;img src=&quot;resources/blue.png&quot; class=&quot;color&quot; style=&quot;top: 10%&quot; width=20 height=20 &gt; --&gt;
+        ///        &lt;!-- &lt;img src=&quot;resources/green.jpg&quot; class=&quot;color&quot; style=&quot;t [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string dofkey {
+            get {
+                return ResourceManager.GetString("dofkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;html lang=&quot;en&quot;&gt;
         ///&lt;head&gt;
         ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
