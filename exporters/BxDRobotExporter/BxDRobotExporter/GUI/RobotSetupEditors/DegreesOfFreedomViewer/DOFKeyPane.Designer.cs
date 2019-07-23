@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.PrecheckPanel
+﻿namespace BxDRobotExporter.GUI.RobotSetupEditors.DegreesOfFreedomViewer
 {
     partial class DOFKeyPane
     {

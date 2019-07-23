@@ -4,8 +4,8 @@ using System.Windows.Forms;
 using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Editors;
 using BxDRobotExporter.ExportGuide;
+using BxDRobotExporter.GUI.RobotSetupEditors.DegreesOfFreedomViewer;
 using BxDRobotExporter.OGLViewer;
-using BxDRobotExporter.PrecheckPanel;
 using Inventor;
 
 namespace BxDRobotExporter
