@@ -192,8 +192,20 @@ namespace Synthesis.States
                     PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
                     if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                     {
-                        AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nThis is the default bot\nReinstall recommended)");
-                        return;
+                        bool loadedBot = false;
+
+                        string[] robots = Directory.GetDirectories(robotDirectory);
+                        foreach (string robot in robots) {
+                            if (LoadRobot(robot, RobotTypeManager.IsMixAndMatch)) {
+                                PlayerPrefs.SetString("simSelectedRobot", robot);
+                                loadedBot = true;
+                            }
+                        }
+
+                        if (!loadedBot) {
+                            AppModel.ErrorToMenu("Could not load any robots in default directory:\n" + robotDirectory);
+                            return;
+                        }
                     }
                 }
 
@@ -406,6 +418,25 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
+            bool b = true;
+
+            if (!Directory.Exists(directory)) {
+                return false;
+            }
+            else {
+                string[] files = Directory.GetFiles(directory);
+                foreach (string a in files) {
+                    string name = Path.GetFileName(a);
+                    if (name.Substring(0, 8).ToLower().Equals("skeleton")) {
+                        b = false;
+                    }
+                }
+            }
+
+            if (b) {
+                return false;
+            }
+
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
                 GameObject robotObject = new GameObject("Robot");
