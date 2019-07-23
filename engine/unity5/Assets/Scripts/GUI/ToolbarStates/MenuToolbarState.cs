@@ -28,10 +28,12 @@ namespace Assets.Scripts.GUI
         GameObject toolbar;
         GameObject overlay;
         GameObject tabs;
+        private StateMachine tabStateMachine;
 
         Text helpBodyText;
 
         public GameObject currentMenuOpen;
+        private bool popWhenSwitch;
 
         public override void Start()
         {
@@ -50,14 +52,24 @@ namespace Assets.Scripts.GUI
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
+            tabStateMachine = tabs.GetComponent<StateMachine>();
+            popWhenSwitch = false;
 
             currentMenuOpen = controlPanel;
             currentMenuOpen.SetActive(true);
+
         }
 
         public void SwitchMenu(GameObject newMenu)
         {
             currentMenuOpen.SetActive(false);
+
+            if (popWhenSwitch)
+            {
+                tabStateMachine.PopState();
+            }
+            popWhenSwitch = false;
+
             newMenu.SetActive(true);
             currentMenuOpen = newMenu;
         }
@@ -76,6 +88,9 @@ namespace Assets.Scripts.GUI
         public void OnSettingsButtonClicked()
         {
             SwitchMenu(settingsPanel);
+            tabStateMachine.PushState(new SettingsState());
+            popWhenSwitch = true;
+
         }
 
         /// <summary>
