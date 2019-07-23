@@ -6,7 +6,7 @@ using BxDRobotExporter.Exporter;
 
 namespace BxDRobotExporter.Editors
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit, bool useAnalytics);
+    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string defaultRobotCompetit, bool useAnalytics);
 
     public partial class ExporterSettingsForm : Form
     {
@@ -78,13 +78,12 @@ namespace BxDRobotExporter.Editors
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition, useAnalytics);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, defaultRobotCompetition, useAnalytics);
             }
 
             //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
-            public string fieldName;
             public String defaultRobotCompetition;
             public bool openSynthesis;
             public bool useAnalytics;

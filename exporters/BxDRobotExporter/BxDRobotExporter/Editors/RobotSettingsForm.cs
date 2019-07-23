@@ -26,24 +26,6 @@ namespace BxDRobotExporter.Editors
         /// </summary>
         public void InitializeFields()
         {
-            if (fields.Count == 0)
-            {
-                var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Fields");
-
-                foreach (var dir in dirs)
-                {
-                    fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
-                    FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
-                }
-            }
-            else
-            {
-                foreach(KeyValuePair<string, string> pair in fields)
-                {
-                    FieldSelectComboBox.Items.Add(pair.Key);
-                }
-            }
-            this.FieldSelectComboBox.SelectedItem = SynthesisGUI.PluginSettings.fieldName;
             this.OpenSynthesisBox.Checked = SynthesisGUI.PluginSettings.openSynthesis;
         }
 
@@ -56,13 +38,9 @@ namespace BxDRobotExporter.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                SynthesisGUI.PluginSettings.fieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
                 SynthesisGUI.PluginSettings.openSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
-                
-                if (settingsForm.OpenSynthesisBox.Checked && settingsForm.FieldSelectComboBox.SelectedItem != null)
-                    field = fields[(string)settingsForm.FieldSelectComboBox.SelectedItem];
 
                 return settingsForm.DialogResult;
             }
@@ -100,32 +78,16 @@ namespace BxDRobotExporter.Editors
 
         private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (OpenSynthesisBox.Checked)
-            {
-                FieldLabel.Enabled = true;
-                FieldSelectComboBox.Enabled = true;
-            }
-            else
-            {
-                FieldLabel.Enabled = false;
-                FieldSelectComboBox.Enabled = false;
-            }
-
             CheckFormIsValid();
         }
 
         private bool CheckFormIsValid()
         {
-            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked || FieldSelectComboBox.SelectedItem != null);
+            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0;
             return ButtonOk.Enabled;
         }
 
         private void RobotNameTextBox_TextChanged(object sender, EventArgs e)
-        {
-            CheckFormIsValid();
-        }
-
-        private void FieldSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckFormIsValid();
         }

@@ -9,7 +9,6 @@ using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Editors;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
-using BxDRobotExporter.PrecheckPanel;
 using BxDRobotExporter.Properties;
 using Inventor;
 
@@ -682,7 +681,7 @@ namespace BxDRobotExporter
         public void PromptExportToSynthesis()
         {
             if (Utilities.GUI.PromptExportSettings())
-                if (Utilities.GUI.ExportRobot() && Utilities.GUI.RMeta.FieldName != null)
+                if (Utilities.GUI.ExportRobot())
 
                     Utilities.GUI.OpenSynthesis();
         }
@@ -721,13 +720,12 @@ namespace BxDRobotExporter
         /// <param name="UseFancyColors"></param>
         /// <param name="SaveLocation"></param>
         private void ExporterSettings_SettingsChanged(System.Drawing.Color Child, bool UseFancyColors,
-            string SaveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
+            string SaveLocation, bool openSynthesis, string defaultRobotCompetition, bool useAnalytics)
         {
             ChildHighlight.Color = Utilities.GetInventorColor(Child);
             AnalyticUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings", 0);
             //Update Application
             Properties.Settings.Default.ExportToField = openSynthesis;
-            Properties.Settings.Default.SelectedField = fieldLocation;
             Properties.Settings.Default.ChildColor = Child;
             Properties.Settings.Default.FancyColors = UseFancyColors;
             Properties.Settings.Default.SaveLocation = SaveLocation;
