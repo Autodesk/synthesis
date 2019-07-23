@@ -206,8 +206,8 @@ namespace Synthesis.Input
         /// <summary>
         /// Checks if the user has saved their control settings by comparing strings.
         /// </summary>
-        /// <returns>True: If user did not save their controls
-        ///          False: If the user saved their controls.
+        /// <returns>True: If user did save their controls
+        ///          False: If the user hasn't saved their controls.
         /// </returns>
         public static bool CheckIfSaved()
         {
@@ -223,7 +223,7 @@ namespace Synthesis.Input
 
                 if (inputString != lastString)
                 {
-                    return true;
+                    return false;
                 }
 
                 lastString = PlayerPrefs.GetString("Controls." + key.name + ".secondary");
@@ -231,10 +231,10 @@ namespace Synthesis.Input
 
                 if (inputString != lastString)
                 {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Synthesis.Input
         /// </summary>
         private static void TankControls()
         {
-            var controlProfile = Player.ControlProfile.TankKeyboard;
+            var controlProfile = Player.ControlProfile.TankJoystick;
             #region Player 1 Controls
             //Tank controls
             buttons[0].tankFrontLeft = Players[0].SetKey(controlProfile, "1: Tank Front Left", new JoystickInput(JoystickAxis.Axis2Negative, Joystick.Joystick1));

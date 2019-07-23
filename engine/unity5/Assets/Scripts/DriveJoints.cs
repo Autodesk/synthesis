@@ -175,7 +175,7 @@ public class DriveJoints
             {
                 switch(Controls.Players[controlIndex].controlProfile)
                 {
-                    case Player.ControlProfile.TankKeyboard:
+                    case Player.ControlProfile.TankJoystick:
                         pwm[0] =
                            (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SpeedArrowPwm);
 

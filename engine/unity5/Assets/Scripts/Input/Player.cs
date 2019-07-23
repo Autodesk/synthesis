@@ -23,8 +23,8 @@ namespace Synthesis.Input
             ArcadeKeyboard,
             // MecanumJoystick,
             // MecanumKeyboard,
-            // TankJoystick,
-            TankKeyboard
+            TankJoystick,
+            // TankKeyboard
             // Custom1,
             // Custom2,
             // Custom3
@@ -47,26 +47,20 @@ namespace Synthesis.Input
 
         //Set of arcade drive keys
         private List<KeyMapping> arcadeDriveList = new List<KeyMapping>();
-        private Dictionary<string, KeyMapping> arcadeDriveMap = new Dictionary<string, KeyMapping>();
 
         //Set of tank drive keys
         private List<KeyMapping> tankDriveList = new List<KeyMapping>();
-        private Dictionary<string, KeyMapping> tankDriveMap = new Dictionary<string, KeyMapping>();
 
         //Set of tank drive defaults
         private List<KeyMapping> resetTankDriveList = new List<KeyMapping>();
-        private Dictionary<string, KeyMapping> resetTankDriveMap = new Dictionary<string, KeyMapping>();
 
         //Set of arcade drive defaults
         private List<KeyMapping> resetArcadeDriveList = new List<KeyMapping>();
-        private Dictionary<string, KeyMapping> resetArcadeDriveMap = new Dictionary<string, KeyMapping>();
 
         //Set of arcade drive axes
         private List<Axis> arcadeAxesList = new List<Axis>();
-        private Dictionary<string, Axis> arcadeAxesMap = new Dictionary<string, Axis>();
 
         //Set of tank drive axes
-        private Dictionary<string, Axis> tankAxesMap = new Dictionary<string, Axis>();
         private List<Axis> tankAxesList = new List<Axis>();
 
         //=================================================================================================
@@ -109,49 +103,51 @@ namespace Synthesis.Input
             switch (controlProfile)
             {
                 case ControlProfile.ArcadeKeyboard:
-                    if (arcadeDriveMap.TryGetValue(name, out outKey) && resetArcadeDriveMap.TryGetValue(name, out outKey))
                     {
-                        outKey.primaryInput = primary;
-                        outKey.secondaryInput = secondary;
+                        var key_i = arcadeDriveList.FindIndex(x => x.name == name);
+                        var default_key_i = resetArcadeDriveList.FindIndex(x => x.name == name);
+                        if (key_i != -1 && default_key_i != -1)
+                        {
+                            outKey = resetArcadeDriveList[default_key_i];
+                            outKey.primaryInput = primary;
+                            outKey.secondaryInput = secondary;
+                        }
+                        else
+                        {
+                            //Sets controls to the main key list (outKey) and the default list 
+                            //(defaultKey stores controls (defaults) at initialization)
+                            outKey = new KeyMapping(name, primary, secondary);
+                            defaultKey = new KeyMapping(name, primary, secondary);
+
+                            //Assigns each list with correct key
+                            arcadeDriveList.Add(outKey);
+                            resetArcadeDriveList.Add(defaultKey);
+                        }
+                        break;
                     }
-                    else
+                case ControlProfile.TankJoystick:
                     {
-                        //Sets controls to the main key list (outKey) and the default list 
-                        //(defaultKey stores controls (defaults) at initialization)
-                        outKey = new KeyMapping(name, primary, secondary);
-                        defaultKey = new KeyMapping(name, primary, secondary);
+                        var key_i = tankDriveList.FindIndex(x => x.name == name);
+                        var default_key_i = resetTankDriveList.FindIndex(x => x.name == name);
+                        if (key_i != -1 && default_key_i != -1)
+                        {
+                            outKey = resetTankDriveList[default_key_i];
+                            outKey.primaryInput = primary;
+                            outKey.secondaryInput = secondary;
+                        }
+                        else
+                        {
+                            //Sets controls to the main key list (outKey) and the default list 
+                            //(defaultKey stores controls (defaults) at initialization)
+                            outKey = new KeyMapping(name, primary, secondary);
+                            defaultKey = new KeyMapping(name, primary, secondary);
 
-                        //Assigns each list with correct key
-                        arcadeDriveList.Add(outKey);
-                        resetArcadeDriveList.Add(defaultKey);
-
-                        //Assigns each key map with the correct name and key (dependent on the list)
-                        arcadeDriveMap.Add(name, outKey);
-                        resetArcadeDriveMap.Add(name, defaultKey);
+                            //Assigns each list with correct key
+                            tankDriveList.Add(outKey);
+                            resetTankDriveList.Add(defaultKey);
+                        }
+                        break;
                     }
-                    break;
-                case ControlProfile.TankKeyboard:
-                    if (tankDriveMap.TryGetValue(name, out outKey) && resetTankDriveMap.TryGetValue(name, out outKey))
-                    {
-                        outKey.primaryInput = primary;
-                        outKey.secondaryInput = secondary;
-                    }
-                    else
-                    {
-                        //Sets controls to the main key list (outKey) and the default list 
-                        //(defaultKey stores controls (defaults) at initialization)
-                        outKey = new KeyMapping(name, primary, secondary);
-                        defaultKey = new KeyMapping(name, primary, secondary);
-
-                        //Assigns each list with correct key
-                        tankDriveList.Add(outKey);
-                        resetTankDriveList.Add(defaultKey);
-
-                        //Assigns each key map with the correct name and key (dependent on the list)
-                        tankDriveMap.Add(name, outKey);
-                        resetTankDriveMap.Add(name, defaultKey);
-                    }
-                    break;
                 default:
                     throw new System.Exception("Unsupported control profile " + controlProfile);
             }
@@ -173,31 +169,37 @@ namespace Synthesis.Input
             switch (controlProfile)
             {
                 case ControlProfile.ArcadeKeyboard:
-                    if (arcadeAxesMap.TryGetValue(name, out outAxis))
                     {
-                        outAxis.set(negative, positive);
-                    }
-                    else
-                    {
-                        outAxis = new Axis(name, negative, positive);
+                        var key_i = arcadeAxesList.FindIndex(x => x.Name == name);
+                        if (key_i != -1)
+                        {
+                            outAxis = arcadeAxesList[key_i];
+                            outAxis.set(negative, positive);
+                        }
+                        else
+                        {
+                            outAxis = new Axis(name, negative, positive);
 
-                        arcadeAxesList.Add(outAxis);
-                        arcadeAxesMap.Add(name, outAxis);
+                            arcadeAxesList.Add(outAxis);
+                        }
+                        break;
                     }
-                    break;
-                case ControlProfile.TankKeyboard:
-                    if (tankAxesMap.TryGetValue(name, out outAxis))
+                case ControlProfile.TankJoystick:
                     {
-                        outAxis.set(negative, positive);
-                    }
-                    else
-                    {
-                        outAxis = new Axis(name, negative, positive);
+                        var key_i = tankAxesList.FindIndex(x => x.Name == name);
+                        if (key_i != -1)
+                        {
+                            outAxis = tankAxesList[key_i];
+                            outAxis.set(negative, positive);
+                        }
+                        else
+                        {
+                            outAxis = new Axis(name, negative, positive);
 
-                        tankAxesList.Add(outAxis);
-                        tankAxesMap.Add(name, outAxis);
+                            tankAxesList.Add(outAxis);
+                        }
+                        break;
                     }
-                    break;
                 default:
                     throw new System.Exception("Unsupported control profile " + controlProfile);
             }
@@ -238,13 +240,24 @@ namespace Synthesis.Input
         {
             for(int i = 0; i < activeList.Count; i++)
             {
-                if (activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn "))
-                    if (FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
+                if ((activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn ")) &&
+                    FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
+                {
+                    switch (controlProfile) // Remove gamepiece controls when field changes
                     {
-                        if (controlProfile == ControlProfile.ArcadeKeyboard) { arcadeDriveMap.Remove(activeList[i].name); resetArcadeDriveMap.Remove(activeList[i].name); }
-                        else { tankDriveMap.Remove(activeList[i].name); resetTankDriveMap.Remove(activeList[i].name); }
-                        activeList.RemoveAt(i);
+                        case ControlProfile.ArcadeKeyboard:
+                            arcadeDriveList.Remove(activeList[i]);
+                            resetArcadeDriveList.Remove(activeList[i]);
+                            break;
+                        case ControlProfile.TankJoystick:
+                            tankDriveList.Remove(activeList[i]);
+                            resetTankDriveList.Remove(activeList[i]);
+                            break;
+                        default:
+                            throw new System.Exception("Unsupported control profile");
                     }
+                    activeList.RemoveAt(i);
+                }
             }
             return activeList.AsReadOnly();
         }
@@ -300,7 +313,7 @@ namespace Synthesis.Input
         /// </summary>
         public void SetTankDrive()
         {
-            controlProfile = ControlProfile.TankKeyboard;
+            controlProfile = ControlProfile.TankJoystick;
             activeList = tankDriveList;
         }
 
