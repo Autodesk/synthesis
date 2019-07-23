@@ -17,6 +17,7 @@ namespace Synthesis.Input
 {
     public class Player
     {
+        public const int PLAYER_COUNT = 6;
         public enum ControlProfile // Order must correspond to that in the dropdown list within Unity
         {
             // ArcadeJoystick,
@@ -32,15 +33,127 @@ namespace Synthesis.Input
 
         public const ControlProfile DEFAULT_CONTROL_PROFILE = ControlProfile.ArcadeKeyboard;
 
+        /// <summary>
+        /// <see cref="Buttons"/> is a set of user defined buttons.
+        /// </summary>
+        public class Buttons
+        {
+            //Basic robot controls
+            public KeyMapping forward;
+            public KeyMapping backward;
+            public KeyMapping left;
+            public KeyMapping right;
+
+            //Tank drive controls
+            public KeyMapping tankFrontLeft;
+            public KeyMapping tankBackLeft;
+            public KeyMapping tankFrontRight;
+            public KeyMapping tankBackRight;
+
+            //Remaining PWM Controls
+            public KeyMapping[] pwmPos;
+            public KeyMapping[] pwmNeg;
+
+            //Other controls
+            public KeyMapping resetRobot;
+            public KeyMapping resetField;
+            public KeyMapping cameraToggle;
+            public KeyMapping scoreboard;
+            public KeyMapping trajectory;
+            public KeyMapping replayMode;
+            public KeyMapping duplicateRobot;
+            public KeyMapping switchActiveRobot;
+
+            //driver practice controls
+            public List<KeyMapping> pickup;
+            public List<KeyMapping> release;
+            public List<KeyMapping> spawnPieces;
+
+            public Buttons()
+            {
+                forward = new KeyMapping();
+                backward = new KeyMapping();
+                left = new KeyMapping();
+                right = new KeyMapping();
+
+                tankFrontLeft = new KeyMapping();
+                tankBackLeft = new KeyMapping();
+                tankFrontRight = new KeyMapping();
+                tankBackRight = new KeyMapping();
+
+                pwmPos = new KeyMapping[DriveJoints.PWM_COUNT - DriveJoints.PWM_OFFSET];
+                for (var i = 0; i < pwmPos.Length; i++)
+                    pwmPos[i] = new KeyMapping();
+
+                pwmNeg = new KeyMapping[DriveJoints.PWM_COUNT - DriveJoints.PWM_OFFSET];
+                for (var i = 0; i < pwmNeg.Length; i++)
+                    pwmNeg[i] = new KeyMapping();
+
+                resetRobot = new KeyMapping();
+                resetField = new KeyMapping();
+                cameraToggle = new KeyMapping();
+                scoreboard = new KeyMapping();
+                trajectory = new KeyMapping();
+                replayMode = new KeyMapping();
+                duplicateRobot = new KeyMapping();
+                switchActiveRobot = new KeyMapping();
+
+                pickup = new List<KeyMapping>();
+                release = new List<KeyMapping>();
+                spawnPieces = new List<KeyMapping>();
+            }
+        }
+
+        /// <summary>
+        /// <see cref="Axes"/> is a set of user defined axes.
+        /// </summary>
+        public class Axes
+        {
+            //Arcade Axes
+            public Axis vertical;
+            public Axis horizontal;
+
+            //Tank Axes
+            public Axis tankLeftAxes;
+            public Axis tankRightAxes;
+
+            //PWM Axes
+
+            public Axis[] pwmAxes;
+
+            public Axes()
+            {
+                vertical = null;
+                horizontal = null;
+                tankLeftAxes = null;
+                tankRightAxes = null;
+
+                pwmAxes = new Axis[DriveJoints.PWM_COUNT - DriveJoints.PWM_OFFSET];
+            }
+        }
+
+
+        /// <summary>
+        /// Set of buttons.
+        /// </summary>
+        public Buttons buttons;
+
+        /// <summary>
+        /// Set of axes.
+        /// </summary>
+        public Axes axes;
+
         public Player()
         {
-            //Constructor: defaults the active player to Arcade Drive
-            controlProfile = DEFAULT_CONTROL_PROFILE;
+            SetControlProfile(DEFAULT_CONTROL_PROFILE);
             activeList = arcadeDriveList;
+
+            buttons = new Buttons();
+            axes = new Axes();
         }
 
         //Checks if tank drive is enabled
-        public ControlProfile controlProfile;
+        private ControlProfile controlProfile;
 
         //The list and controls called on the current player
         private List<KeyMapping> activeList;
@@ -243,7 +356,7 @@ namespace Synthesis.Input
                 if ((activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn ")) &&
                     FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
                 {
-                    switch (controlProfile) // Remove gamepiece controls when field changes
+                    switch (controlProfile) // Remove gamepiece controls when field changes // TODO only do when field changes
                     {
                         case ControlProfile.ArcadeKeyboard:
                             arcadeDriveList.Remove(activeList[i]);
@@ -308,22 +421,25 @@ namespace Synthesis.Input
             return arcadeAxesList.AsReadOnly();
         }
 
-        /// <summary>
-        /// Sets the activeList to tank drive.
-        /// </summary>
-        public void SetTankDrive()
+        public void SetControlProfile(ControlProfile p)
         {
-            controlProfile = ControlProfile.TankJoystick;
-            activeList = tankDriveList;
+            controlProfile = p;
+            switch (p)
+            {
+                case ControlProfile.ArcadeKeyboard:
+                    activeList = arcadeDriveList;
+                    break;
+                case ControlProfile.TankJoystick:
+                    activeList = tankDriveList;
+                    break;
+                default:
+                    throw new System.Exception("Unsupported control profile");
+            }
         }
 
-        /// <summary>
-        /// Sets the activeList to arcade drive.
-        /// </summary>
-        public void SetArcadeDrive()
+        public ControlProfile GetControlProfile()
         {
-            controlProfile = ControlProfile.ArcadeKeyboard;
-            activeList = arcadeDriveList;
+            return controlProfile;
         }
 
         /// <summary>
@@ -337,12 +453,11 @@ namespace Synthesis.Input
                 {
                     if (key.name.Equals(defaultKey.name))
                     {
-                        key.primaryInput = defaultKey.primaryInput;
-                        key.secondaryInput = defaultKey.secondaryInput;
+                        key.set(defaultKey);
                     }
                 }
             }
-            SetTankDrive();
+            SetControlProfile(ControlProfile.TankJoystick);
         }
 
         /// <summary>
@@ -356,12 +471,11 @@ namespace Synthesis.Input
                 {
                     if (key.name.Equals(defaultKey.name))
                     {
-                        key.primaryInput = defaultKey.primaryInput;
-                        key.secondaryInput = defaultKey.secondaryInput;
+                        key.set(defaultKey);
                     }
                 }
             }
-            SetArcadeDrive();
+            SetControlProfile(ControlProfile.ArcadeKeyboard);
         }
     }
 }
