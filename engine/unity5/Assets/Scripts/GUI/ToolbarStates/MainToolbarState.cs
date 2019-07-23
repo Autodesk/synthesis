@@ -328,7 +328,8 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state
         /// </summary>
-        public void OnInfoButtonClicked() {
+        public void OnControlsButtonClicked()
+        {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,

@@ -898,10 +898,9 @@ namespace Synthesis.GUI
             if (canvas != null)
             {
                 unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-                int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-                State.IsMetric = (i == 1 ? true : false);
-                PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
-                //Debug.Log("Metric: " + main.IsMetric);
+                State.IsMetric = (int)unitConversionSwitch.GetComponent<Slider>().value == 0;
+                PlayerPrefs.SetString("Measure", State.IsMetric ? "Metric" : "Imperial");
+                // UnityEngine.Debug.Log("Metric: " + State.IsMetric);
             }
         }
 
