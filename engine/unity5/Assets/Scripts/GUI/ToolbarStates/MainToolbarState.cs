@@ -330,7 +330,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnControlsButtonClicked()
         {
-            simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
+            simUI.ShowControlPanel();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,
                 AnalyticsLedger.EventAction.Clicked,

@@ -783,10 +783,9 @@ namespace Synthesis.GUI
         #endregion
         #region control panel and analytics functions
         /// <summary>
-        /// Toggle the control panel ON/OFF based on the boolean passed.
+        /// Toggle the control panel ON/OFF based on its current state.
         /// </summary>
-        /// <param name="show"></param>
-        public void ShowControlPanel(bool alreadySaved)
+        public void ShowControlPanel()
         {
             if (!inputManagerPanel.activeSelf)
             {
@@ -807,25 +806,22 @@ namespace Synthesis.GUI
                 inputPanelOn = false;
                 ToggleHotKeys(false);
 
-                if (!alreadySaved && Controls.CheckIfSaved())
-                {
-                    checkSavePanel.SetActive(true);
-                }
+                CheckUnsavedControls();
             }
         }
 
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state
-        /// </summary>
-        public void ShowControlPanel()
+        public void CheckUnsavedControls()
         {
-            ShowControlPanel(!inputManagerPanel.activeSelf);
+            if (!Controls.CheckIfSaved())
+            {
+                checkSavePanel.SetActive(true);
+            }
         }
 
         public void SaveAndClose()
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            inputManagerPanel.SetActive(false);
+            ShowControlPanel();
         }
 
         /// <summary>
@@ -856,10 +852,8 @@ namespace Synthesis.GUI
                     break;
                 case "no":
                     Controls.Load();
-                    inputManagerPanel.SetActive(false);
                     break;
                 case "cancel":
-                    inputManagerPanel.SetActive(true);
                     break;
             }
         }

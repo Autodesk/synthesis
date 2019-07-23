@@ -24,10 +24,11 @@ namespace Synthesis.Input
 
         public State CurrentState { get; set; }
 
+
         // Variable to keep track which player controls are being edited in the control panel
         public static int activePlayerIndex;
 
-        Player.ControlProfile activeControlProfile;
+        private Player.ControlProfile activeControlProfile;
 
         public void Awake()
         {
@@ -104,7 +105,7 @@ namespace Synthesis.Input
         {
             switch (Controls.Players[activePlayerIndex].controlProfile)
             {
-                case Player.ControlProfile.TankKeyboard:
+                case Player.ControlProfile.TankJoystick:
                     GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
                     break;
                 case Player.ControlProfile.ArcadeKeyboard:
@@ -123,6 +124,7 @@ namespace Synthesis.Input
         {
             if (activeControlProfile != (Player.ControlProfile)value)
             {
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
                 activeControlProfile = (Player.ControlProfile)value;
                 switch (activeControlProfile)
                 {
@@ -133,7 +135,7 @@ namespace Synthesis.Input
                             Controls.UpdateFieldControls(activeControlProfile);
                         }
                         break;
-                    case Player.ControlProfile.TankKeyboard:
+                    case Player.ControlProfile.TankJoystick:
                         Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
                         if (MainState.timesLoaded > 1)
                         {
@@ -158,16 +160,20 @@ namespace Synthesis.Input
 
         public void OnPlayerSelect(int index)
         {
-            activePlayerIndex = index;
-            //Creates and generates player one's keys and control buttons
-            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+            if (index != activePlayerIndex)
+            {
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
+                activePlayerIndex = index;
+                //Creates and generates player one's keys and control buttons
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
 
-            //Checks if the profile selection needs to be updated (according to the player)
-            UpdateProfileSelection();
+                //Checks if the profile selection needs to be updated (according to the player)
+                UpdateProfileSelection();
 
-            //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
-            GetLastSavedControls();
-            UpdatePlayerButtonStyle();
+                //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
+                GetLastSavedControls();
+                UpdatePlayerButtonStyle();
+            }
         }
 
         /// <summary>

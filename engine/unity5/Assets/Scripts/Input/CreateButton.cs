@@ -41,6 +41,8 @@ namespace Synthesis.Input
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
 
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
+
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
         }
 
         //==============================================================================================
@@ -122,8 +124,6 @@ namespace Synthesis.Input
             namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
             keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
             rectTransform.sizeDelta = new Vector2(0, contentHeight);
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
         }
 
         /// <summary>
