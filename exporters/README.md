@@ -21,6 +21,3 @@ This is the new Fusion 360 Exporter
 
 ## field_exporter
 This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields
-
-## robot_exporter
-This is the old robot exporter, it has been deprecated in favor of the BxDRobotExporter. It is a plugin that can hook into the Inventor Instance and read the model data from Inventor to allow users to export their robots
