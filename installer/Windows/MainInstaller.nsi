@@ -193,18 +193,15 @@ SectionEnd
 Section "Code Emulator" Emulator
 
 	; INetC.dll must be installed to proper NSIS Plugins x86 directories
-	inetc::get "https://qemu.weilnetz.de/w64/2019/qemu-w64-setup-20190717.exe" "$PLUGINSDIR\qemu-w64-setup-20190717.exe"
+	inetc::get "https://github.com/docker/toolbox/releases/download/v18.09.3/DockerToolbox-18.09.3.exe" "$PLUGINSDIR\DockerToolbox-18.09.3.exe"
 	Pop $R0 ;Get the return value
 	
 	${If} $R0 == "OK"  ;Return value should be "OK"
 	  RMDir /r $INSTDIR\Emulator
 	  SetOutPath $INSTDIR\Emulator
 	  HideWindow
-	  File /r "Emulator\rootfs.ext4"
-	  File /r "Emulator\zImage"
-	  File /r "Emulator\zynq-zed.dtb"
-	  HideWindow
-	  ExecWait '"$PLUGINSDIR\qemu-w64-setup-20190717.exe"'
+	  ExecWait '"$PLUGINSDIR\DockerToolbox-18.09.3.exe" /SILENT'
+	  ExecWait '"$PROGRAMFILES64\Docker Toolbox\docker.exe" run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel'
 	  ShowWindow hwnd show_state
 	${Else}
 	  MessageBox mb_iconstop "Error: $R0" ;Show cancel/error message
@@ -220,7 +217,7 @@ SectionEnd
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
+  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator (Installs Docker Toolbox)"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
