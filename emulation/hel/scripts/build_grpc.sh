@@ -18,7 +18,7 @@ if [[ "${TOOLCHAIN}" == "" ]] ; then
     cd third_party/protobuf && \
         ./autogen.sh && \
         ./configure && \
-        make
+        make && sudo make install && sudo ldconfig
     pwd
     mkdir -p ../../libs/opt
     cp ./src/.libs/libprotobuf.a ../../libs/opt/
