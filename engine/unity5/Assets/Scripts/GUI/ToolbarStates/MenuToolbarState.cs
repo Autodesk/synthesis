@@ -52,6 +52,7 @@ namespace Assets.Scripts.GUI
             State = StateMachine.SceneGlobal.CurrentState as MainState;
 
             currentMenuOpen = controlPanel;
+            currentMenuOpen.SetActive(true);
         }
 
         public void SwitchMenu(GameObject newMenu)
@@ -96,6 +97,11 @@ namespace Assets.Scripts.GUI
         public void OnViewReplaysButtonClicked()
         {
             SwitchMenu(viewReplaysPanel);
+        }
+
+        public override void End()
+        {
+            currentMenuOpen.SetActive(false);
         }
 
     }
