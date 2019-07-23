@@ -92,13 +92,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication)// pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
-                {
-                    Opacity = 0.00d
-                };
-                GUI.Show();
-                GUI.Hide();
-                GUI.Opacity = 1.00d;
+                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
             }
             catch (Exception e)
             {

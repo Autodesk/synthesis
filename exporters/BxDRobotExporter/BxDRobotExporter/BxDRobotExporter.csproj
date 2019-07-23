@@ -146,9 +146,6 @@
     <Compile Include="ControlGUI\DepricatedStandaloneGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\DepricatedStandaloneGUI.Designer.cs">
-      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
-    </Compile>
     <Compile Include="ControlGUI\ExportingRobotLoadingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -315,9 +312,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
-      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\ExportingRobotLoadingForm.resx">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
     </EmbeddedResource>

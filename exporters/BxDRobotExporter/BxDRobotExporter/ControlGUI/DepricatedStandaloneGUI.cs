@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.Editors;
-using BxDRobotExporter.Exporter;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
 
@@ -16,7 +15,7 @@ namespace BxDRobotExporter.ControlGUI
     public delegate bool ValidationAction(RigidNode_Base baseNode, out string message);
 
     [Guid("ec18f8d4-c13e-4c86-8148-7414efb6e1e2")]
-    public partial class SynthesisGUI : Form
+    public class SynthesisGUI
     {
         //public event Action ExportFinished;
         //public void OnExportFinished()
@@ -68,7 +67,6 @@ namespace BxDRobotExporter.ControlGUI
 
         public SynthesisGUI(Inventor.Application MainApplication)
         {
-            InitializeComponent();
             this.MainApplication = MainApplication;
             Instance = this;
 
@@ -76,52 +74,6 @@ namespace BxDRobotExporter.ControlGUI
             {
                 return new OGL_RigidNode(guid);
             };
-
-            settingsExporter.Click += SettingsExporter_OnClick;
-
-            Shown += SynthesisGUI_Shown;
-
-            FormClosing += new FormClosingEventHandler(delegate (object sender, FormClosingEventArgs e)
-            {
-                InventorManager.ReleaseInventor();
-            });
-
-        }
-
-        private void Generic_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            foreach (Form f in OwnedForms)
-            {
-                if(f.Visible)
-                    f.Close();
-            }
-            Close();
-        }
-
-        private void SynthesisGUI_Shown(object sender, EventArgs e)
-        {
-            Hide();
-        }
-
-        /// <summary>
-        /// Removes all configuration from the current skeleton.
-        /// </summary>
-        public void ClearConfiguration()
-        {
-            ClearConfiguration(SkeletonBase);
-        }
-        /// <summary>
-        /// Removes all configuration from the current skeleton (recursive utility).
-        /// </summary>
-        private void ClearConfiguration(RigidNode_Base baseNode)
-        {
-            SkeletalJoint_Base joint = baseNode.GetSkeletalJoint();
-
-            if (joint != null)
-                joint.ClearConfiguration();
-
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseNode.Children)
-                ClearConfiguration(child.Value);
         }
 
         /// <summary>
@@ -207,13 +159,8 @@ namespace BxDRobotExporter.ControlGUI
 
                     if (SkeletonBase != null)
                     {
-#if LITEMODE
                         liteExporter = new LiteExporterForm();
                         liteExporter.ShowDialog(); // Remove node building
-#else
-                    exporter = new ExporterForm(PluginSettings);
-                    exporter.ShowDialog();
-#endif
                     }
                 });
 
@@ -355,7 +302,6 @@ namespace BxDRobotExporter.ControlGUI
             }
         }
 
-        #region Joint Data Management
         /// <summary>
         /// Loads the joint information from the Inventor assembly file. Returns false if fails.
         /// </summary>
@@ -635,55 +581,6 @@ namespace BxDRobotExporter.ControlGUI
             // Save was successful
             return allSuccessful;
         }
-        #endregion
-
-        /// <summary>
-        /// Get the desired folder to open from or save to
-        /// </summary>
-        /// <returns>The full path of the selected folder</returns>
-        private string OpenFolderPath()
-        {
-            string dirPath = null;
-
-            var dialogThread = new Thread(() =>
-            {
-                FolderBrowserDialog openDialog = new FolderBrowserDialog()
-                {
-                    Description = "Select a Robot Folder"
-                };
-                DialogResult openResult = openDialog.ShowDialog();
-
-                if (openResult == DialogResult.OK) dirPath = openDialog.SelectedPath;
-            });
-
-            dialogThread.SetApartmentState(ApartmentState.STA);
-            dialogThread.Start();
-            dialogThread.Join();
-
-            return dirPath;
-        }
-
-        /// <summary>
-        /// Warn the user that they are about to overwrite existing data
-        /// </summary>
-        /// <returns>Whether the user wishes to overwrite the data</returns>
-        private bool WarnOverwrite()
-        {
-            DialogResult overwriteResult = MessageBox.Show("Overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
-
-            return overwriteResult == DialogResult.Yes;
-        }
-
-
-        protected override void OnResize(EventArgs e)
-        {
-            SuspendLayout();
-
-            base.OnResize(e);
-            splitContainer1.Height = ClientSize.Height - 27;
-
-            ResumeLayout();
-        }
 
         /// <summary>
         /// Opens the <see cref="BxDRobotExporter.Editors.DrivetrainWeightForm"/> form
@@ -711,46 +608,6 @@ namespace BxDRobotExporter.ControlGUI
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Opens the <see cref="BxDRobotExporter.Editors.ExporterSettingsForm"/> form
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void SettingsExporter_OnClick(object sender, System.EventArgs e)
-        {
-            try
-            {
-                //TODO: Implement Value saving and loading
-                ExporterSettingsForm eSettingsForm = new ExporterSettingsForm();
-    
-                eSettingsForm.ShowDialog();
-    
-                //BXDSettings.Instance.AddSettingsObject("Plugin Settings", ExporterSettingsForm.values);
-                PluginSettings = ExporterSettingsForm.Values;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Runs the standalone Robot Viewer with and tells it to view the current robot
-        /// </summary>
-        /// <param name="settingsDir"></param>
-        public void PreviewRobot(string settingsDir = null)
-        {
-            if(RMeta.ActiveDir != null)
-            {
-                Process.Start(ExportApiUtilities.VIEWER_PATH, "-path \"" + RMeta.ActiveDir + "\"");
-            }
-            else
-            {
-                Process.Start(ExportApiUtilities.VIEWER_PATH, "-path \"" + settingsDir + "\\" + RMeta.ActiveRobotName + "\"");
-            }
         }
 
         /// <summary>
