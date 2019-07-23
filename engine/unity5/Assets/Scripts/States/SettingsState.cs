@@ -112,7 +112,7 @@ public class SettingsState : State {
 
     public void OnCloseSettingsPanelClicked()
     {
-        SimUI.getSimUI().getTabStateMachine().PopState();
+        SimUI.getSimUI().OnSettingsTab();
     }
 
     public override void End()
