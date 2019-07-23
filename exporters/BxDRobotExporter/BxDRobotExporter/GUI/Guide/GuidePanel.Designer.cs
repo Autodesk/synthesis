@@ -48,7 +48,7 @@ namespace BxDRobotExporter.ExportGuide
             this.webBrowser1.Url = new System.Uri("http://google.com", System.UriKind.Absolute);
             this.webBrowser1.WebBrowserShortcutsEnabled = false;
             // 
-            // PrecheckPanel
+            // GuidePanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

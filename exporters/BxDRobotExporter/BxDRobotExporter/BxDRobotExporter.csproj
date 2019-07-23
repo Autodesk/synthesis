@@ -149,11 +149,11 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\Guide\ExportGuidePanel.cs">
+    <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Guide\PrecheckPanel.Designer.cs">
-      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
+    <Compile Include="GUI\Guide\GuidePanel.Designer.cs">
+      <DependentUpon>GuidePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Loading\ExportingRobotLoadingForm.cs">
       <SubType>Form</SubType>
@@ -313,8 +313,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Guide\PrecheckPanel.resx">
-      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
+      <DependentUpon>GuidePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Loading\ExportingRobotLoadingForm.resx">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
@@ -371,7 +371,7 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="GUI\Guide\ExportGuide.html" />
+    <Content Include="GUI\Guide\Guide.html" />
     <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKey.html" />
     <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.resx" />
     <Content Include="packages.config" />

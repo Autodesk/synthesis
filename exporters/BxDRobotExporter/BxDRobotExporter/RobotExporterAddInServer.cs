@@ -69,7 +69,7 @@ namespace BxDRobotExporter
         ButtonDefinition AdvancedEditJointButton;
         ButtonDefinition EditJointButton;
 
-        ButtonDefinition PreCheckButton;
+        ButtonDefinition GuideButton;
         ButtonDefinition DOFButton;
         ButtonDefinition SettingsButton;
 
@@ -102,8 +102,8 @@ namespace BxDRobotExporter
             stdole.IPictureDisp DrivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)); //these are still here at request of QA
             stdole.IPictureDisp DrivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32));
 
-            stdole.IPictureDisp PrecheckIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32)); //these are still here at request of QA
-            stdole.IPictureDisp PrecheckIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32));
+            stdole.IPictureDisp GuideIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32)); //these are still here at request of QA
+            stdole.IPictureDisp GuideIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32));
 
             stdole.IPictureDisp DrivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
             stdole.IPictureDisp DrivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
@@ -169,15 +169,15 @@ namespace BxDRobotExporter
             JointPanel.CommandControls.AddButton(EditJointButton, true);
 
             // ChecklistPanel buttons
-            PreCheckButton = ControlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:PreCheck",
+            GuideButton = ControlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
                 CommandTypesEnum.kNonShapeEditCmdType, ClientID, null,
-                "View a checklist of all tasks necessary prior to export.", PrecheckIconSmall, PrecheckIconLarge);
-            PreCheckButton.OnExecute += delegate {InventorUtils.EmbededPrecheckPane.Visible = !InventorUtils.EmbededPrecheckPane.Visible; };
-            PreCheckButton.OnHelp += _OnHelp;
-            ChecklistPanel.CommandControls.AddButton(PreCheckButton, true);
+                "View a checklist of all tasks necessary prior to export.", GuideIconSmall, GuideIconLarge);
+            GuideButton.OnExecute += delegate {InventorUtils.EmbededGuidePane.Visible = !InventorUtils.EmbededGuidePane.Visible; };
+            GuideButton.OnHelp += _OnHelp;
+            ChecklistPanel.CommandControls.AddButton(GuideButton, true);
 
             DOFButton = ControlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", PrecheckIconSmall, PrecheckIconLarge);
+                CommandTypesEnum.kNonShapeEditCmdType, ClientID, null, "View degrees of freedom.", GuideIconSmall, GuideIconLarge);
             DOFButton.OnExecute += DOF_OnExecute;
             DOFButton.OnHelp += _OnHelp;
             ChecklistPanel.CommandControls.AddButton(DOFButton, true);
