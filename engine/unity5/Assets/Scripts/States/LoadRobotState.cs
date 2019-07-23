@@ -1,9 +1,11 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
+using Synthesis.Utils;
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Synthesis.States
 {
@@ -28,11 +30,13 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            MainState.timesLoaded--;
+            Auxiliary.FindGameObject("SimLoadRobot").SetActive(true);
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
 
             robotList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
-            robotList.ListTextColor = Color.black;
+            robotList.ListTextColor = Color.white;
         }
 
         /// <summary>
@@ -48,7 +52,8 @@ namespace Synthesis.States
         /// </summary>
         public void OnBackButtonClicked()
         {
-            StateMachine.PopState();
+            Auxiliary.FindGameObject("SimLoadRobot").SetActive(false);
+            StateMachine.ChangeState(new ErrorScreenState());
         }
 
         /// <summary>
@@ -64,6 +69,9 @@ namespace Synthesis.States
             {
                 string simSelectedRobotName = robotList.GetComponent<SelectScrollable>().selectedEntry;
 
+                robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+
                 PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + simSelectedRobotName + Path.DirectorySeparatorChar);
                 PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
 
@@ -76,6 +84,11 @@ namespace Synthesis.States
             {
                 UserMessageManager.Dispatch("No Robot Selected!", 2);
             }
+
+            Auxiliary.FindGameObject("LoadSplash").SetActive(true);
+            Auxiliary.FindGameObject("SimLoadRobot").SetActive(false);
+            // StateMachine.ChangeState(new ErrorScreenState());
+            SceneManager.LoadScene("Scene");
         }
 
         /// <summary>

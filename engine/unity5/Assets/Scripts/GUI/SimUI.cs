@@ -482,7 +482,7 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
-                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("Robot", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             }
         }
@@ -560,7 +560,7 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
-                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
         }

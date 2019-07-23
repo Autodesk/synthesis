@@ -13,5 +13,6 @@ public class ErrorMenu : MonoBehaviour
         UICallbackManager.RegisterDropdownCallbacks(StateMachine.SceneGlobal, gameObject);
 
         StateMachine.SceneGlobal.ChangeState(new ErrorScreenState());
+        // StateMachine.SceneGlobal.ChangeState(new LoadRobotState());
     }
 }
