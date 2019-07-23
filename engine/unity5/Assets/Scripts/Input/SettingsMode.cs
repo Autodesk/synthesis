@@ -16,7 +16,7 @@ namespace Synthesis.Input
     public class SettingsMode : MonoBehaviour
     {
         //Toggle Switches
-        public GameObject tankDriveSwitch;
+        public Dropdown profileDropdown;
         public GameObject unitConversionSwitch;
 
         public Sprite DefaultButtonImage;
@@ -31,7 +31,7 @@ namespace Synthesis.Input
 
         public void Awake()
         {
-            tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
+            profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
 
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
             //Can change the default measurement HERE and also change the default value in the slider game object in main menu
@@ -45,13 +45,12 @@ namespace Synthesis.Input
         /// </summary>
         public void OnEnable()
         {
-            //Tank drive slider
-            tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
-            tankDriveSwitch.GetComponent<Slider>().value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
+            profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
+            profileDropdown.value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
 
             //Measurement slider
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
+            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace Synthesis.Input
         }
 
         /// <summary>
-        /// Resets ALL player controls to tank drive or arcade drive defaults when clicked.
+        /// Resets ALL player controls to the profile defaults when clicked.
         /// </summary>
         public void OnReset()
         {
@@ -118,42 +117,37 @@ namespace Synthesis.Input
         }
 
         /// <summary>
-        /// Updates the tank slider. Called on the active player to check for each player's individual preferances.
+        /// Allows the player to switch their control profile.
         /// </summary>
-        public void UpdateTankSlider()
+        public void OnProfileSelect(int value)
         {
-            tankDriveSwitch.GetComponent<Slider>().value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
-        }
-
-        /// <summary>
-        /// Allows the player to toggle their drive preferences between arcade and tank drive.
-        /// </summary>
-        public void OnTankToggle()
-        {
-            activeControlProfile = (Player.ControlProfile)((int)tankDriveSwitch.GetComponent<Slider>().value);
-            switch ((int)tankDriveSwitch.GetComponent<Slider>().value)
+            if (activeControlProfile != (Player.ControlProfile)value)
             {
-                case 0:  //tank drive slider is OFF
-                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
-                    if (MainState.timesLoaded > 1)
-                    {
-                        Controls.UpdateFieldControls(activeControlProfile);
-                    }
-                    break;
-                case 1:  //tank drive slider is ON
-                    Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
-                    if (MainState.timesLoaded > 1)
-                    {
-                        Controls.UpdateFieldControls(activeControlProfile);
-                    }
-                    break;
-                default: //defaults to arcade drive
-                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
-                    break;
-            }
-            Controls.Load();
+                activeControlProfile = (Player.ControlProfile)value;
+                switch (activeControlProfile)
+                {
+                    case Player.ControlProfile.ArcadeKeyboard:
+                        Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
+                        if (MainState.timesLoaded > 1)
+                        {
+                            Controls.UpdateFieldControls(activeControlProfile);
+                        }
+                        break;
+                    case Player.ControlProfile.TankKeyboard:
+                        Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
+                        if (MainState.timesLoaded > 1)
+                        {
+                            Controls.UpdateFieldControls(activeControlProfile);
+                        }
+                        break;
+                    default: //defaults to arcade drive
+                        Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
+                        break;
+                }
+                Controls.Load();
 
-            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+            }
         }
 
         //=========================================================================================
@@ -168,8 +162,8 @@ namespace Synthesis.Input
             //Creates and generates player one's keys and control buttons
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
 
-            //Checks if the tank drive toggle/slider needs to be updated (according to the player)
-            UpdateTankSlider();
+            //Checks if the profile selection needs to be updated (according to the player)
+            UpdateProfileSelection();
 
             //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
             GetLastSavedControls();
@@ -188,6 +182,18 @@ namespace Synthesis.Input
             GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = (activePlayerIndex == 3) ? ActiveButtonImage : DefaultButtonImage;
             GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = (activePlayerIndex == 4) ? ActiveButtonImage : DefaultButtonImage;
             GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = (activePlayerIndex == 5) ? ActiveButtonImage : DefaultButtonImage;
+        }
+
+        /// <summary>
+        /// Updates the control profile selection. Called on the active player to check for each player's individual preferances.
+        /// </summary>
+        public void UpdateProfileSelection()
+        {
+            if (profileDropdown.value != (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile)
+            {
+                profileDropdown.value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
+                profileDropdown.RefreshShownValue();
+            }
         }
 
         /// <summary>
