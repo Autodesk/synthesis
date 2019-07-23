@@ -19,11 +19,11 @@ namespace BxDRobotExporter
     /// This is where the magic happens. All top-level event handling, UI creation, and inventor communication is handled here.
     /// </summary>
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
-    public class StandardAddInServer : ApplicationAddInServer
+    public class RobotExporterAddInServer : ApplicationAddInServer
     {
         #region Variables 
 
-        public static StandardAddInServer Instance { get; set; }
+        public static RobotExporterAddInServer Instance { get; set; }
 
         public bool PendingChanges
         {
@@ -88,7 +88,7 @@ namespace BxDRobotExporter
         #region ApplicationAddInServer Methods
 
         /// <summary>
-        /// Called when the <see cref="StandardAddInServer"/> is being loaded
+        /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
         /// </summary>
         /// <param name="AddInSiteObject"></param>
         /// <param name="FirstTime"></param>
@@ -247,7 +247,7 @@ namespace BxDRobotExporter
         }
 
         /// <summary>
-        /// Called when the <see cref="StandardAddInServer"/> is being unloaded
+        /// Called when the <see cref="RobotExporterAddInServer"/> is being unloaded
         /// </summary>
         public void Deactivate()
         {

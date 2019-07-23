@@ -37,11 +37,11 @@ namespace BxDRobotExporter
             EmbededJointPane.Height = 250;
             EmbededJointPane.ShowVisibilityCheckBox = false;
             EmbededJointPane.ShowTitleBar = true;
-            StandardAddInServer.Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
+            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
 
-            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.SetSkeleton(GUI.SkeletonBase);
-            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => FocusAndHighlightNodes(nodes, StandardAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
-            StandardAddInServer.Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.SetSkeleton(GUI.SkeletonBase);
+            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => FocusAndHighlightNodes(nodes, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
+            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
 
                 if (nodes == null || nodes.Count == 0) return;
@@ -64,7 +64,7 @@ namespace BxDRobotExporter
                     }
                 }
             };
-            EmbededJointPane.AddChild(StandardAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
+            EmbededJointPane.AddChild(RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
             #endregion
             
             EmbededJointPane.Visible = true;
@@ -94,7 +94,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI(StandardAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+                GUI = new SynthesisGUI(RobotExporterAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
             }
             catch (Exception e)
             {
@@ -147,19 +147,19 @@ namespace BxDRobotExporter
             }
         }
         /// <summary>
-        /// Hides the dockable windows. Used when switching documents. Called in <see cref="StandardAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
+        /// Hides the dockable windows. Used when switching documents. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
         public static void HideAdvancedJointEditor() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
         {
             if (EmbededJointPane != null)
             {
                 EmbededJointPane.Visible = false;
-                FocusAndHighlightNodes(null, StandardAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
+                FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
             }
         }
 
         /// <summary>
-        /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="StandardAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
+        /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
         public static void ShowAdvancedJointEditor()
         {
@@ -176,7 +176,7 @@ namespace BxDRobotExporter
         /// <returns></returns>
         public static Color GetInventorColor(System.Drawing.Color color)
         {
-            return StandardAddInServer.Instance.MainApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
+            return RobotExporterAddInServer.Instance.MainApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
         }
 
         /// <summary>
@@ -241,9 +241,9 @@ namespace BxDRobotExporter
                 return;
             }
             
-            StandardAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, zoom, StandardAddInServer.ViewDirection.Y);
+            FocusCameraOnOccurrences(occurrences, 15, camera, zoom, RobotExporterAddInServer.ViewDirection.Y);
             HighlightOccurrences(occurrences);
         }
 
@@ -265,27 +265,27 @@ namespace BxDRobotExporter
                 return;
             }
             
-            StandardAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, StandardAddInServer.ViewDirection.Y);
+            FocusCameraOnOccurrences(occurrences, 15, camera, RobotExporterAddInServer.ViewDirection.Y);
             HighlightOccurrences(occurrences);
         }
 
         public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
         {
-            StandardAddInServer.Instance.ClearDOFHighlight();
-            StandardAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.ClearDOFHighlight();
+            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
 
             foreach (var componentOccurrence in occurrences)
             {
-                StandardAddInServer.Instance.ChildHighlight.AddItem(componentOccurrence);
+                RobotExporterAddInServer.Instance.ChildHighlight.AddItem(componentOccurrence);
             }
         }
 
         public static void ClearHighlight()
         {
-            StandardAddInServer.Instance.ClearDOFHighlight();
-            StandardAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.ClearDOFHighlight();
+            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
         }
 
         public static List<ComponentOccurrence> GetComponentOccurrencesFromNodes(List<RigidNode_Base> nodes)
@@ -345,7 +345,7 @@ namespace BxDRobotExporter
         /// <returns></returns>
         public static ComponentOccurrence GetOccurrence(string name)
         {
-            foreach (ComponentOccurrence component in StandardAddInServer.Instance.AsmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AsmDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return component;
@@ -363,7 +363,7 @@ namespace BxDRobotExporter
         /// <param name="zoom"></param>
         /// <param name="viewDirection">Direction to view the point from.</param>
         /// <param name="animate">True to animate movement of camera.</param>
-        public static void SetCameraView(Vector focus, double viewDistance, Camera camera, double zoom, StandardAddInServer.ViewDirection viewDirection = StandardAddInServer.ViewDirection.Y, bool animate = true)
+        public static void SetCameraView(Vector focus, double viewDistance, Camera camera, double zoom, RobotExporterAddInServer.ViewDirection viewDirection = RobotExporterAddInServer.ViewDirection.Y, bool animate = true)
         {
             camera.Fit(); // TODO: Determine model size properly
             camera.GetExtents(out var width, out var height);
@@ -383,7 +383,7 @@ namespace BxDRobotExporter
         public static void SetCameraView(Vector focus, Box boundingBox, double viewDistance, Camera camera, bool animate = true)
         {
             var boxVector = boundingBox.MinPoint.VectorTo(boundingBox.MaxPoint);
-            SetCameraView(focus, viewDistance, boxVector.X, boxVector.Z, camera, StandardAddInServer.ViewDirection.Y, animate);
+            SetCameraView(focus, viewDistance, boxVector.X, boxVector.Z, camera, RobotExporterAddInServer.ViewDirection.Y, animate);
         }
 
         /// <summary>
@@ -395,40 +395,40 @@ namespace BxDRobotExporter
         /// <param name="zoom"></param>
         /// <param name="viewDirection">Direction to view the point from.</param>
         /// <param name="animate">True to animate movement of camera.</param>
-        public static void SetCameraView(Vector focus, double viewDistance, double width, double height, Camera camera, StandardAddInServer.ViewDirection viewDirection = StandardAddInServer.ViewDirection.Y, bool animate = true)
+        public static void SetCameraView(Vector focus, double viewDistance, double width, double height, Camera camera, RobotExporterAddInServer.ViewDirection viewDirection = RobotExporterAddInServer.ViewDirection.Y, bool animate = true)
         {
-            Point focusPoint = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
+            Point focusPoint = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
 
             camera.SetExtents(width, height);
 
             camera.Target = focusPoint;
 
             // Flip view for negative direction
-            if ((viewDirection & StandardAddInServer.ViewDirection.Negative) == StandardAddInServer.ViewDirection.Negative)
+            if ((viewDirection & RobotExporterAddInServer.ViewDirection.Negative) == RobotExporterAddInServer.ViewDirection.Negative)
                 viewDistance = -viewDistance;
 
             UnitVector up = null;
 
             // Find camera position and upwards direction
-            if ((viewDirection & StandardAddInServer.ViewDirection.X) == StandardAddInServer.ViewDirection.X)
+            if ((viewDirection & RobotExporterAddInServer.ViewDirection.X) == RobotExporterAddInServer.ViewDirection.X)
             {
                 focus.X += viewDistance;
-                up = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
+                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
-            if ((viewDirection & StandardAddInServer.ViewDirection.Y) == StandardAddInServer.ViewDirection.Y)
+            if ((viewDirection & RobotExporterAddInServer.ViewDirection.Y) == RobotExporterAddInServer.ViewDirection.Y)
             {
                 focus.Y += viewDistance;
-                up = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
+                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
 
-            if ((viewDirection & StandardAddInServer.ViewDirection.Z) == StandardAddInServer.ViewDirection.Z)
+            if ((viewDirection & RobotExporterAddInServer.ViewDirection.Z) == RobotExporterAddInServer.ViewDirection.Z)
             {
                 focus.Z += viewDistance;
-                up = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
+                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
-            camera.Eye = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
+            camera.Eye = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
             camera.UpVector = up;
 
             // Apply settings
@@ -448,7 +448,7 @@ namespace BxDRobotExporter
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public static void FocusCameraOnOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, Camera camera, double zoom,
-            StandardAddInServer.ViewDirection viewDirection = StandardAddInServer.ViewDirection.Y, bool animate = false)
+            RobotExporterAddInServer.ViewDirection viewDirection = RobotExporterAddInServer.ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;
@@ -468,7 +468,7 @@ namespace BxDRobotExporter
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public static void FocusCameraOnOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, Camera camera,
-            StandardAddInServer.ViewDirection viewDirection = StandardAddInServer.ViewDirection.Y, bool animate = false)
+            RobotExporterAddInServer.ViewDirection viewDirection = RobotExporterAddInServer.ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;
@@ -493,7 +493,7 @@ namespace BxDRobotExporter
             }
 
 
-            Vector translation = StandardAddInServer.Instance.MainApplication.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
+            Vector translation = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
             return translation;
         }
 
