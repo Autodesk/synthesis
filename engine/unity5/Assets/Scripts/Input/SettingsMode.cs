@@ -106,21 +106,21 @@ namespace Synthesis.Input
         {
             activePlayerIndex = index;
             //Creates and generates player one's keys and control buttons
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
 
             //Checks if the tank drive toggle/slider needs to be updated (according to the player)
             GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
 
             //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
             GetLastSavedControls();
-            UpdateButtonStyle();
+            UpdatePlayerButtonStyle();
         }
 
         /// <summary>
         /// Updates the active player button to the active button style. This makes the button
         /// appear highlighted (and stay highlighted) when the player clicks on a specific button.
         /// </summary>
-        public void UpdateButtonStyle()
+        public void UpdatePlayerButtonStyle()
         {
             GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = (activePlayerIndex == 0) ? ActiveButtonImage : DefaultButtonImage;
             GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = (activePlayerIndex == 1) ? ActiveButtonImage : DefaultButtonImage;
@@ -137,13 +137,13 @@ namespace Synthesis.Input
         public void GetLastSavedControls()
         {
             Controls.Load();
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
         }
 
         /// <summary>
         /// Updates all the key/control buttons.
         /// </summary>
-        public void UpdateAllText()
+        public void UpdateButtons()
         {
             KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();
 

@@ -291,7 +291,7 @@ namespace Synthesis.Robot
             base.UpdateMotors();
 
             if (RobotHasManipulator)
-                DriveJoints.UpdateManipulatorMotors(manipulatorNode, ControlIndex);
+                DriveJoints.UpdateManipulatorMotors(manipulatorNode, DriveJoints.GetPwmValues(ControlIndex, false));
         }
 
         /// <summary>

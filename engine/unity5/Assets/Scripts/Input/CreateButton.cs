@@ -47,9 +47,9 @@ namespace Synthesis.Input
             PlayerPrefs.SetString("Measure", "Metric");
 
             //Loads controls (if changed in another scene) and updates their button text.
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
 
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
         }
 
         //==============================================================================================
@@ -60,7 +60,7 @@ namespace Synthesis.Input
         // list can be called with this index 0 (player one) - index 5 (player six).
         //==============================================================================================
 
-        public void UpdateButtons() // TODO rename to CreateButtons and limit number of calls? Replace with UpdateAllText?
+        public void CreateButtons() // TODO rename to CreateButtons and limit number of calls? Replace with UpdateAllText?
         {
             DestroyList();
             float maxNameWidth = 0;
@@ -132,7 +132,7 @@ namespace Synthesis.Input
             keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
             rectTransform.sizeDelta = new Vector2(0, contentHeight);
 
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtonStyle();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Synthesis.Input
         public void ResetTankDrive()
         {
             Controls.Players[SettingsMode.activePlayerIndex].ResetTank();
-            UpdateButtons();
+            CreateButtons();
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace Synthesis.Input
         public void ResetArcadeDrive()
         {
             Controls.Players[SettingsMode.activePlayerIndex].ResetArcade();
-            UpdateButtons();
+            CreateButtons();
         }
 
         /// <summary>
@@ -182,14 +182,11 @@ namespace Synthesis.Input
         /// </summary>
         public void TankSlider()
         {
-            int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
-
-            switch (i)
+            switch ((int)tankDriveSwitch.GetComponent<Slider>().value)
             {
                 case 0:  //tank drive slider is OFF
                     Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
                     Controls.TankDriveEnabled = false;
-                    Controls.Load();
                     if (States.MainState.timesLoaded > 1)
                     {
                         Controls.UpdateFieldControls(false);
@@ -202,7 +199,6 @@ namespace Synthesis.Input
                     {
                         Controls.UpdateFieldControls(true);
                     }
-                    Controls.Load();
                     break;
                 default: //defaults to arcade drive
                     Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
@@ -210,7 +206,7 @@ namespace Synthesis.Input
                     break;
             }
             Controls.Load();
-            UpdateButtons();
+            CreateButtons();
         }
 
         /// <summary>
