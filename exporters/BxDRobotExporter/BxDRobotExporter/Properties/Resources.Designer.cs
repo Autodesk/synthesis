@@ -95,9 +95,9 @@ namespace BxDRobotExporter.Properties {
         ///        .red {
         ///            background: r [rest of string was truncated]&quot;;.
         /// </summary>
-        public static string dofkey {
+        public static string DOFKey {
             get {
-                return ResourceManager.GetString("dofkey", resourceCulture);
+                return ResourceManager.GetString("DOFKey", resourceCulture);
             }
         }
         

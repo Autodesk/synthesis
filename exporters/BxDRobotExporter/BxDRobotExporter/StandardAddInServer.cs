@@ -9,7 +9,6 @@ using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Editors;
 using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Messages;
-using BxDRobotExporter.PrecheckPanel;
 using BxDRobotExporter.Properties;
 using Inventor;
 
