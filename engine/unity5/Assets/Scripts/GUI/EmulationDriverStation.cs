@@ -186,6 +186,7 @@ namespace Synthesis.GUI
         /// <param name="theState"></param>
         public void RobotState(string theState)
         {
+            EmulationService.RobotInputs.Types.RobotMode.Types.Mode last_mode = InputManager.Instance.RobotMode.Mode;
             switch (theState)
             {
                 case "auto":
@@ -208,6 +209,8 @@ namespace Synthesis.GUI
                     GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
                     break;
             }
+            if(InputManager.Instance.RobotMode.Mode != last_mode)
+                RobotDisabled();
         }
 
         public void RobotEnabled()
