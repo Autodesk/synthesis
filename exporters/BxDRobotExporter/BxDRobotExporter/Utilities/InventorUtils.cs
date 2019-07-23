@@ -18,7 +18,7 @@ namespace BxDRobotExporter
     {
         static internal SynthesisGUI GUI;
         static DockableWindow EmbededJointPane;
-        public static DockableWindow EmbededPrecheckPane;
+        public static DockableWindow EmbededGuidePane;
         public static DockableWindow EmbededKeyPane;
 
                 
@@ -78,14 +78,14 @@ namespace BxDRobotExporter
             EmbededKeyPane.AddChild(keyPanel.Handle);
             EmbededKeyPane.Visible = false;
 
-            EmbededPrecheckPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:PrecheckPane", "Robot Export Guide");
-            EmbededPrecheckPane.DockingState = DockingStateEnum.kDockRight;
-            EmbededPrecheckPane.Width = 600;
-            EmbededPrecheckPane.ShowVisibilityCheckBox = false;
-            EmbededPrecheckPane.ShowTitleBar = true;
-            var precheckPanel = new ExportGuidePanel();
-            EmbededPrecheckPane.AddChild(precheckPanel.Handle);
-            EmbededPrecheckPane.Visible = true;
+            EmbededGuidePane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:GuidePane", "Robot Export Guide");
+            EmbededGuidePane.DockingState = DockingStateEnum.kDockRight;
+            EmbededGuidePane.Width = 600;
+            EmbededGuidePane.ShowVisibilityCheckBox = false;
+            EmbededGuidePane.ShowTitleBar = true;
+            var guidePanel = new ExportGuidePanel();
+            EmbededGuidePane.AddChild(guidePanel.Handle);
+            EmbededGuidePane.Visible = true;
         }
 
         public static void CreateChildDialog()
@@ -111,10 +111,10 @@ namespace BxDRobotExporter
                 EmbededJointPane.Visible = false;
                 EmbededJointPane.Delete();
             }
-            if (EmbededPrecheckPane != null)
+            if (EmbededGuidePane != null)
             {
-                EmbededPrecheckPane.Visible = false;
-                EmbededPrecheckPane.Delete();
+                EmbededGuidePane.Visible = false;
+                EmbededGuidePane.Delete();
             }
 
             if (EmbededKeyPane != null)
