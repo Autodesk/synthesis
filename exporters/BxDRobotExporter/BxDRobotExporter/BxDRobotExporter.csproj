@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="NUnit" Version="3.12.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="OpenTK" Version="2.0.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" Condition="'$(TargetFramework)' == 'net452'" />
+  </ItemGroup>
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3DC284CE-6572-439D-ADA3-E703FF8498B6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyOriginatorKeyFile>BxD.StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BxDRobotExporter</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>3</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>Bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;LITEMODE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>pdbonly</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>BxDRobotExporter</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Benchmark|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Benchmark\</OutputPath>
+    <DefineConstants>TRACE;LITEMODE, BENCHMARK</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="autodesk.inventor.interop, Version=21.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_21.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic.Compatibility" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.InteropServices">
+      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Runtime.InteropServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.XML" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnalyticUtils.cs" />
+    <Compile Include="ControlGUI\DepricatedStandaloneGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\DepricatedStandaloneGUI.Designer.cs">
+      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\ExportingRobotLoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\ExportingRobotLoadingForm.Designer.cs">
+      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonExporterForm.Designer.cs">
+      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SkeletonLoadingBarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
+      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointDataStringUtils.cs" />
+    <Compile Include="Editors\CommonJointEditorForms\JointDriverEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointDriverEditorForm.Designer.cs">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointLimitEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointLimitEditorForm.Designer.cs">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorEditorForm.Designer.cs">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\CommonJointEditorForms\JointSensorListForm.Designer.cs">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DrivetrainTypeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DrivetrainTypeForm.Designer.cs">
+      <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DrivetrainWeightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DrivetrainWeightForm.Designer.cs">
+      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\ExporterSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\ExporterSettingsForm.Designer.cs">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointCard.Designer.cs">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointDriverEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointCardEditor.Designer.cs">
+      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\JointEditor\JointForm.Designer.cs">
+      <DependentUpon>JointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\JointEditor\WinFormsUtils.cs" />
+    <Compile Include="Editors\RobotSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\RobotSettingsForm.Designer.cs">
+      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExportApiUtilities.cs" />
+    <Compile Include="Exporter\AssetProperties.cs" />
+    <Compile Include="Exporter\ConvexHullCalculator.cs" />
+    <Compile Include="Exporter\Exporter.cs" />
+    <Compile Include="Exporter\InventorManager.cs" />
+    <Compile Include="Exporter\SurfaceExporter_Access.cs" />
+    <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
+    <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
+    <Compile Include="ExportGuide\DOFKeyPane.cs" />
+    <Compile Include="ExportGuide\DOFKeyPane.Designer.cs" />
+    <Compile Include="InventorUtils.cs" />
+    <Compile Include="Messages\FirstLaunchInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Messages\FirstLaunchInfoForm.Designer.cs">
+      <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExportGuide\ExportGuidePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExportGuide\PrecheckPanel.Designer.cs">
+      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OGLViewer\InventorCamera.cs" />
+    <Compile Include="OGLViewer\OGLDrawing.cs" />
+    <Compile Include="OGLViewer\OGL_RigidNode.cs" />
+    <Compile Include="OGLViewer\OpenTK_Math_Ext.cs" />
+    <Compile Include="OGLViewer\SelectManager.cs" />
+    <Compile Include="OGLViewer\ShaderLoader.cs" />
+    <Compile Include="OGLViewer\VBOMesh.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PictureDispConverter.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
+    <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
+    <Compile Include="RigidAnalyzer\RigidNode.cs" />
+    <Compile Include="SkeletalStructure\BallJoint.cs" />
+    <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
+    <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
+    <Compile Include="SkeletalStructure\LinearJoint.cs" />
+    <Compile Include="SkeletalStructure\MotionLimits.cs" />
+    <Compile Include="SkeletalStructure\PlanarJoint.cs" />
+    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
+    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
+    <Compile Include="StandardAddInServer.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BxDRobotExporter.X.manifest" />
+    <None Include="Resources\Branding\SynthesisLogo16.bmp" />
+    <None Include="Resources\Branding\SynthesisLogo32.bmp" />
+    <None Include="Resources\LoadingAnimations\SynthesisLogoLoading.gif" />
+    <None Include="Resources\RibbonIcons\Gears16.png" />
+    <None Include="Resources\RibbonIcons\Gears32.png" />
+    <None Include="Resources\Shaders\shader.frag" />
+    <None Include="Resources\Shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ControlGUI\DepricatedStandaloneGUI.resx">
+      <DependentUpon>DepricatedStandaloneGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\ExportingRobotLoadingForm.resx">
+      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SkeletonExporterForm.resx">
+      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
+      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointDriverEditorForm.resx">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointLimitEditorForm.resx">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointSensorEditorForm.resx">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\CommonJointEditorForms\JointSensorListForm.resx">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DrivetrainTypeForm.resx">
+      <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DrivetrainWeightForm.resx">
+      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\ExporterSettingsForm.resx">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\JointEditor\JointCard.resx">
+      <DependentUpon>JointCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\JointEditor\JointCardEditor.resx">
+      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\JointEditor\JointForm.resx">
+      <DependentUpon>JointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\RobotSettingsForm.resx">
+      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Messages\FirstLaunchInfoForm.resx">
+      <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportGuide\PrecheckPanel.resx">
+      <DependentUpon>ExportGuidePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ExportGuide\dofkey.html" />
+    <Content Include="ExportGuide\DOFKeyPane.resx" />
+    <Content Include="ExportGuide\ExportGuide.html" />
+    <Content Include="packages.config" />
+    <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
+    <Content Include="Resources\RibbonIcons\Book32.png" />
+    <Content Include="Resources\RibbonIcons\JointEditor32.png" />
+    <Content Include="Resources\RibbonIcons\Checklist32.png" />
+    <Content Include="Resources\RibbonIcons\Weight32.png" />
+    <None Include="Resources\DrivetrainTypeIcons\HDriveIcon.png" />
+    <None Include="Resources\DrivetrainTypeIcons\TankDriveIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aardvark-Libraries\MIConvexHull\MIConvexHull.csproj">
+      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
+      <Name>MIConvexHull</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj">
+      <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
+      <Name>SimulatorAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
+    <ProgramFiles64 Condition="$(ProgramFiles64) == ''">$(ProgramFiles)</ProgramFiles64>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>XCopy "$(TargetDir)*" "$(ProgramFiles64)\Autodesk\Synthesis\Exporter\" /Y /R /S /I
+XCopy "$(ProjectDir)Autodesk.BxDRobotExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>
