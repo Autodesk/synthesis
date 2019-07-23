@@ -36,7 +36,6 @@ namespace BxDRobotExporter.ControlGUI
                 set => _totalWeightKg = (value > 0) ? value : 0; // Prevent negative weight values
             }
             public bool PreferMetric;
-            public string FieldName;
 
             public static RuntimeMeta CreateRuntimeMeta()
             {
@@ -47,7 +46,6 @@ namespace BxDRobotExporter.ControlGUI
                     ActiveRobotName = null,
                     TotalWeightKg = 0,
                     PreferMetric = false,
-                    FieldName = null
                 };
             }
         }
@@ -128,7 +126,7 @@ namespace BxDRobotExporter.ControlGUI
         /// Open Synthesis to a specific robot and field.
         /// </summary>
         /// <param name="node"></param>
-        public void OpenSynthesis(string robotName = null, string fieldName = null)
+        public void OpenSynthesis(string robotName = null)
         {
             if (robotName == null)
             {
@@ -138,17 +136,8 @@ namespace BxDRobotExporter.ControlGUI
 
                 robotName = RMeta.ActiveRobotName;
             }
-
-            if (fieldName == null)
-            {
-                // Cancel if no field name is given
-                if (RMeta.FieldName == null)
-                    return;
-
-                fieldName = RMeta.FieldName;
-            }
         
-            Process.Start(ExportApiUtilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+            Process.Start(ExportApiUtilities.SYNTHESIS_PATH, string.Format("-robot \"{0}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName));
         }
 
         /// <summary>
@@ -259,7 +248,6 @@ namespace BxDRobotExporter.ControlGUI
                 RMeta.UseSettingsDir = true;
                 RMeta.ActiveDir = null;
                 RMeta.ActiveRobotName = robotName;
-                RMeta.FieldName = field;
             
                 PluginSettings.GeneralUseFancyColors = colors;
                 PluginSettings.OnSettingsChanged();
