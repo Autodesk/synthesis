@@ -47,7 +47,7 @@ namespace Synthesis.Input
         public void OnEnable()
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
-            profileDropdown.value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
+            profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetControlProfile();
 
             //Measurement slider
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
@@ -103,7 +103,7 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            switch (Controls.Players[activePlayerIndex].controlProfile)
+            switch (Controls.Players[activePlayerIndex].GetControlProfile())
             {
                 case Player.ControlProfile.TankJoystick:
                     GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
@@ -126,25 +126,24 @@ namespace Synthesis.Input
             {
                 GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
                 activeControlProfile = (Player.ControlProfile)value;
+
+                Controls.Players[activePlayerIndex].SetControlProfile((Player.ControlProfile)value);
                 switch (activeControlProfile)
                 {
                     case Player.ControlProfile.ArcadeKeyboard:
-                        Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
                         if (MainState.timesLoaded > 1)
                         {
                             Controls.UpdateFieldControls(activeControlProfile);
                         }
                         break;
                     case Player.ControlProfile.TankJoystick:
-                        Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
                         if (MainState.timesLoaded > 1)
                         {
                             Controls.UpdateFieldControls(activeControlProfile);
                         }
                         break;
                     default: //defaults to arcade drive
-                        Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
-                        break;
+                        throw new System.Exception("Unsupported control profile");
                 }
                 Controls.Load();
 
@@ -195,9 +194,9 @@ namespace Synthesis.Input
         /// </summary>
         public void UpdateProfileSelection()
         {
-            if (profileDropdown.value != (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile)
+            if (profileDropdown.value != (int)Controls.Players[activePlayerIndex].GetControlProfile())
             {
-                profileDropdown.value = (int)Controls.Players[SettingsMode.activePlayerIndex].controlProfile;
+                profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetControlProfile();
                 profileDropdown.RefreshShownValue();
             }
         }
