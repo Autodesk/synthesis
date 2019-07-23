@@ -4,7 +4,7 @@
 
   <assemblyIdentity name="BxDRobotExporter" version="1.0.0.0"></assemblyIdentity>
 
-  <clrClass clsid="{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}" progid="BxDRobotExporter.StandardAddInServer" threadingModel="Both" name="BxDRobotExporter.StandardAddInServer" runtimeVersion="1.0.0.0"></clrClass>
+  <clrClass clsid="{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}" progid="BxDRobotExporter.RobotExporterAddInServer" threadingModel="Both" name="BxDRobotExporter.RobotExporterAddInServer" runtimeVersion="1.0.0.0"></clrClass>
 
   <file name="BxDRobotExporter.dll" hashalg="SHA1"></file>
 

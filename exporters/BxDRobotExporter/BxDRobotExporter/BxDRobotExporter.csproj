@@ -213,7 +213,7 @@
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
     <Compile Include="SkeletalStructure\RotationalJoint.cs" />
     <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
-    <Compile Include="SynthesisAddInServer.cs" />
+    <Compile Include="RobotExporterAddInServer.cs" />
     <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
