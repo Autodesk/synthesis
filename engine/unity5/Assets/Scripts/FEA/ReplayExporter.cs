@@ -32,7 +32,7 @@ namespace Synthesis.FEA
                 writer.WriteAttributeString("length", Tracker.Length.ToString());
 
                 List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.EndsWith("(Clone)")).ToList();
-                List<Tracker> fieldTrackers = GameObject.Find("Field").GetComponentsInChildren<Tracker>().Except(gamePieceTrackers).ToList();
+                List<Tracker> fieldTrackers = GameObject.Find("Field") == null ? new List<Tracker>() : GameObject.Find("Field").GetComponentsInChildren<Tracker>().Except(gamePieceTrackers).ToList();
 
                 WriteField(writer, fieldPath, fieldTrackers);
 
