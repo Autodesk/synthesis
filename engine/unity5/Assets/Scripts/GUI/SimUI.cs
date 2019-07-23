@@ -797,7 +797,7 @@ namespace Synthesis.GUI
                 inputPanelOn = true;
 
                 Controls.Load();
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
             }
             else
             {
