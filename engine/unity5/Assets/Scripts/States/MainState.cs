@@ -189,7 +189,7 @@ namespace Synthesis.States
 
                 if (!result)
                 {
-                    PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
+                    /*PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
                     if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
                     {
                         bool loadedBot = false;
@@ -206,7 +206,9 @@ namespace Synthesis.States
                             AppModel.ErrorToMenu("Could not load any robots in default directory:\n" + robotDirectory);
                             return;
                         }
-                    }
+                    }*/
+                    AppModel.ErrorToMenu("ROBOT_SELECT");
+                    return;
                 }
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
