@@ -119,8 +119,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 // Close Exporter Form Event
 void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
-	//if (id == SynthesisAddIn::PALETTE_DT_TYPE)
-		//eui->closeDriveTypePalette("");
+	if (id == SynthesisAddIn::PALETTE_DT_TYPE)
+		eui->closeDriveTypePalette("");
 	if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
