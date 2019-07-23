@@ -142,11 +142,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalyticUtils.cs" />
-    <Compile Include="ControlGUI\DepricatedStandaloneGUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExportApiUtilities.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Exporter\Exporter.cs" />
@@ -154,31 +149,36 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\ExportGuide\ExportGuidePanel.cs" />
-    <Compile Include="GUI\ExportGuide\PrecheckPanel.Designer.cs">
+    <Compile Include="GUI\Guide\ExportGuidePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Guide\PrecheckPanel.Designer.cs">
       <DependentUpon>ExportGuidePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\LoadingWindows\ExportingRobotLoadingForm.cs">
+    <Compile Include="GUI\Loading\ExportingRobotLoadingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\LoadingWindows\ExportingRobotLoadingForm.Designer.cs">
+    <Compile Include="GUI\Loading\ExportingRobotLoadingForm.Designer.cs">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\LoadingWindows\SkeletonExporterForm.Designer.cs">
+    <Compile Include="GUI\Loading\SkeletonExporterForm.Designer.cs">
       <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\LoadingWindows\SkeletonLoadingBarForm.cs">
+    <Compile Include="GUI\Loading\SkeletonLoadingBarForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Messages\FirstLaunchInfoForm.cs" />
+    <Compile Include="GUI\Messages\FirstLaunchInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.Designer.cs">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\DegreesOfFreedomViewer\DOFKeyPane.cs" />
-    <Compile Include="GUI\RobotSetupEditors\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
+    <Compile Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
       <DependentUpon>DOFKeyPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="InventorUtils.cs" />
     <Compile Include="OGLViewer\InventorCamera.cs" />
     <Compile Include="OGLViewer\OGLDrawing.cs" />
     <Compile Include="OGLViewer\OGL_RigidNode.cs" />
@@ -189,7 +189,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PictureDispConverter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -205,6 +204,7 @@
     <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
+    <Compile Include="RobotDataManager.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
@@ -213,59 +213,88 @@
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
     <Compile Include="SkeletalStructure\RotationalJoint.cs" />
     <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
-    <Compile Include="StandardAddInServer.cs" />
-    <Compile Include="Utilities.cs" />
-    <Compile Include="GUI\RobotSetupEditors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs" />
-    <Compile Include="GUI\RobotSetupEditors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
+    <Compile Include="SynthesisAddInServer.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointDataStringUtils.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointDriverEditorForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointDriverEditorForm.Designer.cs">
+    <Compile Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.Designer.cs">
       <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointLimitEditorForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointLimitEditorForm.Designer.cs">
+    <Compile Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.Designer.cs">
       <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorEditorForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorEditorForm.Designer.cs">
+    <Compile Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.Designer.cs">
       <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorListForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorListForm.Designer.cs">
+    <Compile Include="GUI\Editors\JointSubEditors\JointSensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointSubEditors\JointSensorListForm.Designer.cs">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\DrivetrainTypeForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\DrivetrainTypeForm.Designer.cs">
+    <Compile Include="GUI\Editors\DrivetrainTypeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DrivetrainTypeForm.Designer.cs">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\DrivetrainWeightForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\DrivetrainWeightForm.Designer.cs">
+    <Compile Include="GUI\Editors\DrivetrainWeightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DrivetrainWeightForm.Designer.cs">
       <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\ExporterSettingsForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\ExporterSettingsForm.Designer.cs">
+    <Compile Include="GUI\Editors\ExporterSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ExporterSettingsForm.Designer.cs">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\AxHostConverter.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointCard.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointCard.Designer.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\JointCard.Designer.cs">
       <DependentUpon>JointCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointCardEditor.Designer.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointCardEditor.Designer.cs">
       <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointDriverEditorUserControl.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\JointForm.Designer.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointDriverEditorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\JointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\JointForm.Designer.cs">
       <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RobotSetupEditors\JointEditor\WinFormsUtils.cs" />
-    <Compile Include="GUI\RobotSetupEditors\RobotSettingsForm.cs" />
-    <Compile Include="GUI\RobotSetupEditors\RobotSettingsForm.Designer.cs">
-      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
+    <Compile Include="GUI\Editors\ExportForm.cs">
+      <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\Editors\RobotSettingsForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\AnalyticsUtils.cs" />
+    <Compile Include="Utilities\ImageFormat\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utilities\ImageFormat\PictureDispConverter.cs" />
+    <Compile Include="Utilities\InventorDocumentIOUtils.cs" />
+    <Compile Include="Utilities\InventorUtils.cs" />
+    <Compile Include="Utilities\Synthesis\JointToStringUtils.cs" />
+    <Compile Include="Utilities\WinFormsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BxDRobotExporter.X.manifest" />
@@ -284,13 +313,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\ExportGuide\PrecheckPanel.resx">
+    <EmbeddedResource Include="GUI\Guide\PrecheckPanel.resx">
       <DependentUpon>ExportGuidePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\LoadingWindows\ExportingRobotLoadingForm.resx">
+    <EmbeddedResource Include="GUI\Loading\ExportingRobotLoadingForm.resx">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\LoadingWindows\SkeletonExporterForm.resx">
+    <EmbeddedResource Include="GUI\Loading\SkeletonExporterForm.resx">
       <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
@@ -298,53 +327,53 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
+    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointSubEditors\JointDriverEditorForm.resx">
+    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.resx">
       <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointSubEditors\JointLimitEditorForm.resx">
+    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.resx">
       <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorEditorForm.resx">
+    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.resx">
       <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointSubEditors\JointSensorListForm.resx">
+    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointSensorListForm.resx">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\DrivetrainTypeForm.resx">
+    <EmbeddedResource Include="GUI\Editors\DrivetrainTypeForm.resx">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\DrivetrainWeightForm.resx">
+    <EmbeddedResource Include="GUI\Editors\DrivetrainWeightForm.resx">
       <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\ExporterSettingsForm.resx">
+    <EmbeddedResource Include="GUI\Editors\ExporterSettingsForm.resx">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointEditor\JointCard.resx">
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCard.resx">
       <DependentUpon>JointCard.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointEditor\JointCardEditor.resx">
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCardEditor.resx">
       <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\JointEditor\JointForm.resx">
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RobotSetupEditors\RobotSettingsForm.resx">
-      <DependentUpon>RobotSettingsForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\RobotSettingsForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="GUI\ExportGuide\ExportGuide.html" />
-    <Content Include="GUI\RobotSetupEditors\DegreesOfFreedomViewer\DOFKey.html" />
-    <Content Include="GUI\RobotSetupEditors\DegreesOfFreedomViewer\DOFKeyPane.resx" />
+    <Content Include="GUI\Guide\ExportGuide.html" />
+    <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKey.html" />
+    <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.resx" />
     <Content Include="packages.config" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />

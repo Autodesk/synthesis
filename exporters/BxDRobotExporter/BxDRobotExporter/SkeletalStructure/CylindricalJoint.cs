@@ -74,7 +74,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
                 float step = 0.1f; // cm
                 Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
-                float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(ExportApiUtilities.ToInventorVector(axis));
+                float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(InventorDocumentIOUtils.ToInventorVector(axis));
                 Console.WriteLine("Max linear offset: " + maxOffset);
 
                 driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
@@ -135,13 +135,13 @@ namespace BxDRobotExporter.SkeletalStructure
         {
             if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
             {
-                axis = ExportApiUtilities.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
-                basePoint = ExportApiUtilities.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
+                axis = InventorDocumentIOUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
+                basePoint = InventorDocumentIOUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
             }
             else
             {
-                axis = ExportApiUtilities.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
-                basePoint = ExportApiUtilities.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+                axis = InventorDocumentIOUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+                basePoint = InventorDocumentIOUtils.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
 
             currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
