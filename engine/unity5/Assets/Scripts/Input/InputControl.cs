@@ -165,18 +165,18 @@ namespace Synthesis.Input
         /// and drive type.
         /// </summary>
         /// <returns>Created KeyMapping.</returns>
+        /// <param name="controlProfile">Control profile to save to.</param>
         /// <param name="name">KeyMapping name.</param>
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
-        /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping SetKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
+        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, CustomInput primary)
         {
-            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
-        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
+        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary)
         {
-            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
         /// <summary>
@@ -185,13 +185,13 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Created KeyMapping.</returns>
         /// <param name="name">KeyMapping name.</param>
+        /// <param name="controlProfile">Control profile to save to.</param>
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
+        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary, CustomInput secondary)
         {
-            return Controls.Players[controlIndex].SetKey(name, ArgToInput(primary), ArgToInput(secondary), isTankDrive);
+            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -224,9 +224,9 @@ namespace Synthesis.Input
         /// <param name="negative">Name of negative KeyMapping.</param>
         /// <param name="positive">Name of positive KeyMapping.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static Axis SetAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
+        public static Axis SetAxis(Player.ControlProfile controlProfile, string name, int controlIndex, KeyMapping negative, KeyMapping positive)
         {
-            return Controls.Players[controlIndex].SetAxis(name, negative, positive, isTankDrive);
+            return Controls.Players[controlIndex].SetAxis(controlProfile, name, negative, positive);
         }
 
         #endregion

@@ -394,7 +394,7 @@ namespace Synthesis.States
             Controls.Load();
             if (timesLoaded > 1)
             {
-                Controls.UpdateFieldControls(false);
+                Controls.UpdateFieldControls(Player.DEFAULT_CONTROL_PROFILE);
             }
 
             string loadResult;

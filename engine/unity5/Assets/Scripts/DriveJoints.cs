@@ -171,29 +171,31 @@ public class DriveJoints
 
                 #endregion
             }
-            else if (Controls.TankDriveEnabled)
-            {
-                #region Tank Drive
-                pwm[0] +=
-                   (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SpeedArrowPwm);
-
-                pwm[1] +=
-                   (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxes) * SpeedArrowPwm);
-
-                #endregion
-            }
             else
             {
-                #region Arcade Drive
-                pwm[0] +=
-                    (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SpeedArrowPwm);
+                switch(Controls.Players[controlIndex].controlProfile)
+                {
+                    case Player.ControlProfile.TankKeyboard:
+                        pwm[0] =
+                           (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SpeedArrowPwm);
 
-                pwm[1] +=
-                    (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SpeedArrowPwm);
+                        pwm[1] =
+                           (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxes) * SpeedArrowPwm);
 
-                #endregion
+                        break;
+                    case Player.ControlProfile.ArcadeKeyboard:
+                        pwm[0] =
+                            (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SpeedArrowPwm) +
+                            (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SpeedArrowPwm);
+
+                        pwm[1] =
+                            (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SpeedArrowPwm) +
+                            (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SpeedArrowPwm);
+
+                        break;
+                    default:
+                        throw new System.Exception("Unsupported control profile");
+                }
             }
         }
 

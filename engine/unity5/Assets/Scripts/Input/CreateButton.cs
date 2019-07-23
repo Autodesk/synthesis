@@ -20,10 +20,6 @@ namespace Synthesis.Input
 {
     public class CreateButton : MonoBehaviour
     {
-        //Toggle Switches
-        public GameObject tankDriveSwitch;
-        public GameObject unitConversionSwitch;
-
         public GameObject keyNamePrefab;
         public GameObject keyButtonsPrefab;
 
@@ -32,9 +28,6 @@ namespace Synthesis.Input
 
         public void Awake()
         {
-            tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-
             namesTransform = transform.Find("Names");
             keysTransform = transform.Find("Keys");
         }
@@ -43,8 +36,6 @@ namespace Synthesis.Input
         public void Start()
         {
             DestroyList();
-            //Can change the default measurement HERE and also change the default value in the slider game object in main menu
-            PlayerPrefs.SetString("Measure", "Metric");
 
             //Loads controls (if changed in another scene) and updates their button text.
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
@@ -175,78 +166,6 @@ namespace Synthesis.Input
         {
             Controls.Players[SettingsMode.activePlayerIndex].ResetArcade();
             CreateButtons();
-        }
-
-        /// <summary>
-        /// Toggles the tankDriveSwitch/slider between arcade/tank drive for each player.
-        /// </summary>
-        public void TankSlider()
-        {
-            switch ((int)tankDriveSwitch.GetComponent<Slider>().value)
-            {
-                case 0:  //tank drive slider is OFF
-                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
-                    Controls.TankDriveEnabled = false;
-                    if (States.MainState.timesLoaded > 1)
-                    {
-                        Controls.UpdateFieldControls(false);
-                    }
-                    break;
-                case 1:  //tank drive slider is ON
-                    Controls.Players[SettingsMode.activePlayerIndex].SetTankDrive();
-                    Controls.TankDriveEnabled = true;
-                    if (States.MainState.timesLoaded > 1)
-                    {
-                        Controls.UpdateFieldControls(true);
-                    }
-                    break;
-                default: //defaults to arcade drive
-                    Controls.Players[SettingsMode.activePlayerIndex].SetArcadeDrive();
-                    Controls.TankDriveEnabled = false;
-                    break;
-            }
-            Controls.Load();
-            CreateButtons();
-        }
-
-        /// <summary>
-        /// Sets the player preference for measurement units
-        /// </summary>
-        public void UnitConversionSlider()
-        {
-            int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-
-            switch (i)
-            {
-                case 0:  //unit conversion slider is OFF
-                    PlayerPrefs.SetString("Measure", "Imperial");
-                    break;
-                case 1:  //unit conversion slider is ON
-                    PlayerPrefs.SetString("Measure", "Metric");
-                    break;
-            }
-        }
-        /// <summary>
-        /// Updates the toggles/sliders when changing scenes.
-        /// </summary>
-        public void OnEnable()
-        {
-            //Tank drive slider
-            tankDriveSwitch = Auxiliary.FindObject("TankDriveSwitch");
-            tankDriveSwitch.GetComponent<Slider>().value = Controls.Players[SettingsMode.activePlayerIndex].isTankDrive ? 1 : 0;
-
-            //Measurement slider
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 1 : 0;
-        }
-
-        /// <summary>
-        /// Updates the tank slider. Called on the active player to check for each player's individual preferances.
-        /// </summary>
-        public void UpdateTankSlider()
-        {
-            //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
-            tankDriveSwitch.GetComponent<Slider>().value = Controls.Players[SettingsMode.activePlayerIndex].isTankDrive ? 1 : 0;
         }
     }
 }
