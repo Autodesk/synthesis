@@ -15,6 +15,8 @@ using Synthesis.Input;
 using Synthesis.Sensors;
 using Synthesis.Camera;
 using Synthesis.Field;
+using BulletUnity;
+using BulletSharp;
 
 namespace Synthesis.GUI
 {
@@ -26,8 +28,7 @@ namespace Synthesis.GUI
     /// -Button/Dropdowns for toolbar functions
     /// -Help menu
     /// </summary>
-    public class MainToolbarState : State
-    {
+    public class MainToolbarState : State {
         GameObject canvas;
 
         DynamicCamera camera;
@@ -54,14 +55,14 @@ namespace Synthesis.GUI
         GameObject toolbar;
         GameObject overlay;
         GameObject tabs;
+        GameObject pointImpulsePanel;
 
         Text helpBodyText;
 
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
 
-        public override void Start()
-        {
+        public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
 
@@ -76,6 +77,7 @@ namespace Synthesis.GUI
             changePanel = Auxiliary.FindObject(canvas, "ChangePanel");
             addPanel = Auxiliary.FindObject(canvas, "AddPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
+            pointImpulsePanel = Auxiliary.FindObject(canvas, "PointImpulsePanel");
 
             resetDropdown = GameObject.Find("ResetRobotDropdown");
             multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
@@ -86,7 +88,7 @@ namespace Synthesis.GUI
 
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-            
+
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
@@ -101,17 +103,24 @@ namespace Synthesis.GUI
             helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
+        public override void Update() {
+            if (pointImpulsePanel.activeSelf) {
+                if (UnityEngine.Input.GetKey(KeyCode.LeftControl)) {
+                    if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0)) {
+                        ApplyForce();
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Change robot button callback. Note: Buttons register with "On...Pressed"
         /// </summary>
-        public void OnChangeRobotButtonClicked()
-        {
-            if (changePanel.activeSelf == true)
-            {
+        public void OnChangeRobotButtonClicked() {
+            if (changePanel.activeSelf == true) {
                 changePanel.SetActive(false);
             }
-            else
-            {
+            else {
                 changePanel.SetActive(true);
                 addPanel.SetActive(false);
 
@@ -127,15 +136,13 @@ namespace Synthesis.GUI
         /// naming conventions.
         /// </summary>
         /// <param name="i"></param>
-        public void OnResetRobotDropdownValueChanged(int i)
-        {
+        public void OnResetRobotDropdownValueChanged(int i) {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetDropdown,
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
 
-            switch (i)
-            {
+            switch (i) {
                 case 1:
                     State.BeginRobotReset();
                     State.EndRobotReset();
@@ -178,8 +185,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Resets the robot when the reset button is clicked.
         /// </summary>
-        public void OnResetRobotButtonClicked()
-        {
+        public void OnResetRobotButtonClicked() {
             //MultiplayerState multiplayerState = StateMachine.SceneGlobal.CurrentState as MultiplayerState;
 
             //if (multiplayerState != null)
@@ -192,15 +198,13 @@ namespace Synthesis.GUI
         /// Toggles between different dynamic camera states
         /// </summary>
         /// <param name="mode"></param>
-        public void OnCameraDropdownValueChanged(int mode)
-        {
+        public void OnCameraDropdownValueChanged(int mode) {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraDropdown,
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
 
-            switch (mode)
-            {
+            switch (mode) {
                 case 1:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
                     DynamicCamera.ControlEnabled = true;
@@ -243,15 +247,12 @@ namespace Synthesis.GUI
         /// <summary>
         /// Change field button callback
         /// </summary>
-        public void OnChangeFieldButtonClicked()
-        {
-            if (changeFieldPanel.activeSelf)
-            {
+        public void OnChangeFieldButtonClicked() {
+            if (changeFieldPanel.activeSelf) {
                 changeFieldPanel.SetActive(false);
                 DynamicCamera.ControlEnabled = true;
             }
-            else
-            {
+            else {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
 
@@ -265,8 +266,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Enters replay mode
         /// </summary>
-        public void OnReplayModeButtonClicked()
-        {
+        public void OnReplayModeButtonClicked() {
             State.EnterReplayState();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ReplayMode,
@@ -278,14 +278,11 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggles the multiplayer window
         /// </summary>
-        public void OnMultiplayerButtonClicked()
-        {
-            if (multiplayerPanel.activeSelf)
-            {
+        public void OnMultiplayerButtonClicked() {
+            if (multiplayerPanel.activeSelf) {
                 multiplayerPanel.SetActive(false);
             }
-            else
-            {
+            else {
                 EndOtherProcesses();
                 multiplayerPanel.SetActive(true);
                 multiplayer.UpdateUI();
@@ -300,8 +297,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the stopwatch window on/off according to its current state
         /// </summary>
-        public void OnStopwatchClicked()
-        {
+        public void OnStopwatchClicked() {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Stopwatch,
@@ -313,16 +309,14 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the toolkit window on/off according to its current state
         /// </summary>
-        public void OnStatsClicked()
-        {
+        public void OnStatsClicked() {
             toolkit.ToggleStatsWindow(!statsWindow.activeSelf);
         }
 
         /// <summary>
         /// Toggle the ruler window on/off according to its current state
         /// </summary>
-        public void OnRulerClicked()
-        {
+        public void OnRulerClicked() {
             toolkit.ToggleRulerWindow(!rulerWindow.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Ruler,
@@ -334,8 +328,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state
         /// </summary>
-        public void OnInfoButtonClicked()
-        {
+        public void OnInfoButtonClicked() {
             simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,
@@ -347,8 +340,7 @@ namespace Synthesis.GUI
         /// <summary>
         /// Help button and menu text.
         /// </summary>
-        public void OnHelpButtonClicked()
-        {
+        public void OnHelpButtonClicked() {
             helpMenu.SetActive(true);
 
             helpBodyText.GetComponent<Text>().text = "\n\nTutorials: synthesis.autodesk.com" +
@@ -360,8 +352,7 @@ namespace Synthesis.GUI
             Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
             overlay.SetActive(true);
             tabs.transform.Translate(new Vector3(300, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
+            foreach (Transform t in toolbar.transform) {
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
                 else t.gameObject.SetActive(false);
             }
@@ -372,15 +363,52 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        private void CloseHelpMenu()
-        {
+        private void CloseHelpMenu() {
             helpMenu.SetActive(false);
             overlay.SetActive(false);
             tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
+            foreach (Transform t in toolbar.transform) {
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
+            }
+        }
+
+        public void OnPointImpulseButtonClicked() {
+            if (pointImpulsePanel.activeSelf) {
+                pointImpulsePanel.SetActive(false);
+            } else {
+                EndOtherProcesses();
+                pointImpulsePanel.SetActive(true);
+            }
+        }
+
+        public void ApplyForce() {
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
+
+            float impulse;
+            float.TryParse(GameObject.Find("AmountOfYeet").GetComponent<InputField>().text, out impulse);
+
+            Vector3 a = ray.origin + (ray.direction * 1000);
+
+            BulletSharp.Math.Vector3 from = new BulletSharp.Math.Vector3(ray.origin.x, ray.origin.y, ray.origin.z),
+                to = new BulletSharp.Math.Vector3(a.x, a.y, a.z);
+
+            ClosestRayResultCallback callback = new ClosestRayResultCallback(ref from, ref to);
+
+            BPhysicsWorld world = BPhysicsWorld.Get();
+            world.world.RayTest(from, to, callback);
+
+            BulletSharp.Math.Vector3 point = callback.HitNormalWorld;
+            BRigidBody part = (BRigidBody)callback.CollisionObject.UserObject;
+
+            foreach (BRigidBody br in GameObject.Find("Robot").GetComponentsInChildren<BRigidBody>()) {
+                if (part == br) {
+                    Vector3 closestPoint = br.GetComponent<MeshRenderer>().bounds.ClosestPoint(point.ToUnity());
+                    Ray normalRay = new Ray(point.ToUnity(), closestPoint - point.ToUnity());
+
+                    part.AddImpulseAtPosition(ray.direction.normalized * impulse, point.ToUnity());
+                    // part.AddImpulseAtPosition(normalRay.direction.normalized * impulse, normalRay.origin);
+                }
             }
         }
 
@@ -394,6 +422,7 @@ namespace Synthesis.GUI
             changePanel.SetActive(false);
             addPanel.SetActive(false);
             inputManagerPanel.SetActive(false);
+            pointImpulsePanel.SetActive(false);
 
             simUI.CancelOrientation();
             
