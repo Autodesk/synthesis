@@ -35,6 +35,8 @@ public class AnalyticsManager : MonoBehaviour {
         loggedData = new Queue<KeyValuePair<string, string>>();
         startTimes = new List<KeyValuePair<string, float>>();
 
+        Application.quitting += CleanUp;
+
         DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
     }
 
@@ -247,4 +249,9 @@ public class AnalyticsManager : MonoBehaviour {
     }
 
     #endregion
+
+    public void CleanUp() {
+        mutex.Close();
+        Debug.Log("Closed mutex");
+    }
 }
