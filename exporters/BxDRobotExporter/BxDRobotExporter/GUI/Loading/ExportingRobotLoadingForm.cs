@@ -161,14 +161,12 @@ namespace BxDRobotExporter.ControlGUI
             else if (e.Error != null)
             {
                 ProgressLabel.Text = "An error occurred.";
-                #region DEBUG SWITCH
 #if DEBUG
                 MessageBox.Show(e.Error.ToString());
 #else
             MessageBox.Show(e.Error.Message);
 #endif
-            } 
-            #endregion
+            }
             else
             {
                 DialogResult = DialogResult.OK;

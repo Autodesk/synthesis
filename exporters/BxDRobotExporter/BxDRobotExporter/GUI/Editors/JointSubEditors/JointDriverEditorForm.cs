@@ -86,7 +86,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                 OutputGeartxt.Value = (decimal) joint.cDriver.OutputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
                 InputGeartxt.Value = (decimal) joint.cDriver.InputGear;// reads the existing gearing and writes it to the input field so the user sees their existing value
 
-                #region Meta info recovery
                 {
                     PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                     if (pneumaticMeta != null)
@@ -240,7 +239,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                             break;
                     }
                 }
-                #endregion
             }
             else //Default values
             {
@@ -439,7 +437,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                 //Only need to store wheel driver if run by motor and is a wheel.
                 if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
                 {
-                    #region WHEEL_SAVING
                     WheelDriverMeta wheelDriver = new WheelDriverMeta()
                     {
                         type = (WheelType)cmbWheelType.SelectedIndex,
@@ -450,7 +447,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                     wheelDriver.SetFrictionLevel((FrictionLevel)cmbFrictionLevel.SelectedIndex);
 
                     joint.cDriver.AddInfo(wheelDriver);
-                    #endregion
                 }
                 else
                 {
@@ -459,14 +455,12 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
 
                 if (cType.IsPneumatic())
                 {
-                    #region PNEUMATIC_SAVING
                     PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta()
                     {
                         pressureEnum = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex,
                         width = (double)numericUpDownPnuDia.Value
                     }; //The info about the wheel attached to the joint.
                     joint.cDriver.AddInfo(pneumaticDriver);
-                    #endregion
                 }
                 else
                 {
@@ -475,13 +469,11 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
 
                 if (cType.IsElevator())
                 {
-                    #region ELEVATOR_SAVING
                     ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta()
                     {
                         type = ElevatorType.NOT_MULTI
                     };
                     joint.cDriver.AddInfo(elevatorDriver);
-                    #endregion
                 }
                 else
                 {

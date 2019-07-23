@@ -21,8 +21,6 @@ namespace BxDRobotExporter
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
     public class RobotExporterAddInServer : ApplicationAddInServer
     {
-        #region Variables 
-
         public static RobotExporterAddInServer Instance { get; set; }
 
         public bool PendingChanges
@@ -83,10 +81,6 @@ namespace BxDRobotExporter
         public HighlightSet ChildHighlight;
         HighlightSet WheelHighlight;
 
-        #endregion
-
-        #region ApplicationAddInServer Methods
-
         /// <summary>
         /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
         /// </summary>
@@ -101,10 +95,6 @@ namespace BxDRobotExporter
             AnalyticsUtils.SetUser(MainApplication.UserName);
             AnalyticsUtils.LogPage("Inventor");
             InventorUtils.LoadSettings();
-
-            #region Add Parallel Environment
-
-            #region Load Images
 
             stdole.IPictureDisp EditJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
             stdole.IPictureDisp EditJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
@@ -123,12 +113,6 @@ namespace BxDRobotExporter
 
             stdole.IPictureDisp GearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
             stdole.IPictureDisp GearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
-
-            #endregion
-
-            #region UI Creation
-
-            #region Setup New Environment and Ribbon
 
             Environments environments = MainApplication.UserInterfaceManager.Environments;
             ExporterEnv = environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, SynthesisLogoSmall,
@@ -154,9 +138,6 @@ namespace BxDRobotExporter
             ChecklistPanel.Reposition("BxD:RobotExporter:JointPanel", false);
             ExitPanel.Reposition("BxD:RobotExporter:ChecklistPanel", false);
 
-            #endregion
-
-            #region Setup Buttons 
             // TODO: Delete these region things
 
             //Drive Train panel buttons
@@ -207,20 +188,10 @@ namespace BxDRobotExporter
             SettingsButton.OnHelp += _OnHelp;
             PluginPanel.CommandControls.AddButton(SettingsButton, true);
 
-            #endregion
-
-            #endregion
-
-            #region Final Environment Setup
-
             ExporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
             MainApplication.UserInterfaceManager.ParallelEnvironments.Add(ExporterEnv);
             ExporterEnv.DisabledCommandList.Add(
                 MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
-
-            #endregion
-
-            #region Event Handler Assignment
 
             MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange +=
                 UIEvents_OnEnvironmentChange;
@@ -228,10 +199,6 @@ namespace BxDRobotExporter
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
             LegacyEvents.RobotModified += new Action(() => { PendingChanges = true; });
-
-            #endregion
-
-            #endregion
 
             Instance = this;
         }
@@ -278,10 +245,6 @@ namespace BxDRobotExporter
                 return null;
             }
         }
-
-        #endregion
-
-        #region Environment Switching
 
         /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
@@ -363,8 +326,6 @@ namespace BxDRobotExporter
             EnvironmentEnabled = false;
         }
 
-        #region Force Quit Functions
-
         /// <summary>
         /// Causes the exporter to close.
         /// </summary>
@@ -404,14 +365,6 @@ namespace BxDRobotExporter
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
             document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
         }
-
-        #endregion
-
-        #endregion
-
-        #region Event Callbacks and Button Commands
-
-        #region Application, Document, UI Event Handlers
 
         /// <summary>
         /// Makes the dockable windows invisible when the document switches. This avoids data loss. 
@@ -554,10 +507,6 @@ namespace BxDRobotExporter
         private HighlightSet blueHighlightSet;
         private HighlightSet greenHighlightSet;
         private HighlightSet redHighlightSet;
-
-        #endregion
-
-        #region Custom Button Events
 
         private bool displayDOF = false;
         public AdvancedJointEditorUserControl AdvancedAdvancedJointEditor;
@@ -703,10 +652,6 @@ namespace BxDRobotExporter
             HandlingCode = HandlingCodeEnum.kEventHandled;
         }
 
-        #endregion
-
-        #region RobotExportAPI Events
-
         /// <summary>
         /// Called when the user presses 'OK' in the settings menu
         /// </summary>
@@ -730,12 +675,6 @@ namespace BxDRobotExporter
                 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Properties.Settings.Default.Save();
         }
-
-        #endregion
-
-        #endregion
-
-        #region Miscellaneous Methods and Nested Classes
 
         /// <summary>
         /// Disables all components in a document that are not connected to another component by a joint.
@@ -932,7 +871,5 @@ namespace BxDRobotExporter
             Z = 0b00000100,
             Negative = 0b00001000
         }
-
-        #endregion
     }
 }
