@@ -31,8 +31,7 @@ namespace BxDRobotExporter
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
             EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
-            
-            #region EmbededJointPane
+
             EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
             EmbededJointPane.Height = 250;
             EmbededJointPane.ShowVisibilityCheckBox = false;
@@ -65,8 +64,7 @@ namespace BxDRobotExporter
                 }
             };
             EmbededJointPane.AddChild(RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
-            #endregion
-            
+
             EmbededJointPane.Visible = true;
 
             EmbededKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");

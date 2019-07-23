@@ -129,7 +129,6 @@ namespace BxDRobotExporter.Exporter
 
             simplFace.Sort();
 
-            #region FANCY_SIMPLIFY_GRAPHICS
 #if FANCY_SIMPLIFY_GRAPHICS
         double[] major, minor;
         GraphicsCoordinateSet majorCoordSet, minorCoordSet;
@@ -209,7 +208,6 @@ namespace BxDRobotExporter.Exporter
             }
             Exporter.INVENTOR_APPLICATION.ActiveView.Update();
 #endif
-            #endregion
 
             // Time for shenanigans!  We are going to naively pick the shortest edge and then remove it.  Destroys two faces per loop typically.
             // Give it 2000 tries at most.
@@ -221,7 +219,6 @@ namespace BxDRobotExporter.Exporter
                     bFace.verts[bFace.minEdge], bFace.verts[(bFace.minEdge + 1) % bFace.verts.Length] };
 
 
-                #region FANCY_SIMPLIFY_GRAPHICS
 #if FANCY_SIMPLIFY_GRAPHICS
                 // Highlight
                 Array.Copy(bFace.verts[0].pos, 0, minor, 0, 3);
@@ -230,7 +227,6 @@ namespace BxDRobotExporter.Exporter
                 minorCoordSet.PutCoordinates(minor);
                 Exporter.INVENTOR_APPLICATION.ActiveView.Update();
 #endif
-                #endregion
 
                 // Find the center point of the edge.  One edge -> one vertex
                 float[] center = new float[3];
@@ -255,14 +251,12 @@ namespace BxDRobotExporter.Exporter
                         {
                             face.verts[j] = newVertex;
 
-                            #region FANCY_SIMPLIFY_GRAPHICS
 #if FANCY_SIMPLIFY_GRAPHICS
                             Array.Copy(face.verts[j].pos, 0, major, face.tmpHead + (3 * j), 3);
                             int index = (face.tmpHead / 3) + j + 1;
                             majorCoordSet.Remove(index);
                             majorCoordSet.Add(index, Exporter.INVENTOR_APPLICATION.TransientGeometry.CreatePoint(face.verts[j].pos[0], face.verts[j].pos[1], face.verts[j].pos[2]));
 #endif
-                            #endregion
 
                             if (matched == 0)
                             {

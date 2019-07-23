@@ -115,8 +115,7 @@ namespace BxDRobotExporter.ControlGUI
             {
                 throw new Exporter.Exporter.EmptyAssemblyException();
             }
-            
-            #region Build Models
+
             //Getting Rigid Body Info...
             SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
             NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
@@ -134,9 +133,7 @@ namespace BxDRobotExporter.ControlGUI
             RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
 
             //Building Model...Done
-            #endregion
 
-            #region Cleaning Up
             //Cleaning Up...
             SetProgress("Cleaning up...", occurrences.Count + 2, occurrences.Count + 3);
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
@@ -148,7 +145,6 @@ namespace BxDRobotExporter.ControlGUI
                 node.ModelFullID = node.GetModelID();
             }
             //Cleaning Up...Done
-            #endregion
             SetProgress("Done", occurrences.Count + 3, occurrences.Count + 3);
             return baseNode;
         }

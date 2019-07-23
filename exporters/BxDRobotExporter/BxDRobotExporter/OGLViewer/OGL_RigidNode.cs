@@ -236,7 +236,6 @@ namespace BxDRobotExporter.OGLViewer
             if (moveJoints) timeStep += 0.005f;
             else timeStep = 0.0f;
 
-            #region INIT_POSITION
             if (!initialPositions && GetSkeletalJoint() != null)
             {
                 initialPositions = true;
@@ -260,7 +259,6 @@ namespace BxDRobotExporter.OGLViewer
                         break;
                 }
             }
-            #endregion
 
             myTrans = Matrix4.Identity;
             if (GetSkeletalJoint() != null)
@@ -311,7 +309,6 @@ namespace BxDRobotExporter.OGLViewer
             }
         }
 
-        #region OUTDATED
         ///// <summary>
         ///// Render the node and tint it based on any highlights it may have
         ///// </summary>
@@ -590,7 +587,6 @@ namespace BxDRobotExporter.OGLViewer
         //    // Revert Debug Settings
         //    GL.Enable(EnableCap.Lighting);
         //} 
-        #endregion
 
         /// <summary>
         /// Get the visual representation of the model
