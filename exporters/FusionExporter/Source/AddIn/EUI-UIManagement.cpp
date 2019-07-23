@@ -49,6 +49,7 @@ void EUI::deleteWorkspace()
 	deleteSensorsPalette();
 	deleteGuidePalette();
 	deleteFinishPalette();
+	deleteKeyPalette();
 	deleteProgressPalette();
 
 	// Delete buttons
@@ -361,13 +362,15 @@ void EUI::deleteKeyPalette()
 
 void EUI::toggleKeyPalette()
 {
-	static std::thread* uiThread = nullptr;
-	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+	keyPalette->isVisible(dofViewEnabled);
 
-	uiThread = new std::thread([this]()
-		{
-			keyPalette->isVisible(dofViewEnabled);
-	});
+	//static std::thread* uiThread = nullptr;
+	//if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	//uiThread = new std::thread([this]()
+	//	{
+	//		keyPalette->isVisible(dofViewEnabled);
+	//});
 }
 
 // Finish palette

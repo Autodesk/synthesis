@@ -101,7 +101,7 @@ namespace SynthesisAddIn
 		void toggleDOF();
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
-		bool dofViewEnabled;
+		bool dofViewEnabled = false;
 
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
