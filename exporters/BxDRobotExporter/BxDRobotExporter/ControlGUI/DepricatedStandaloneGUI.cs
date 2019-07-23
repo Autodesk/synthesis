@@ -331,8 +331,8 @@ namespace BxDRobotExporter.ControlGUI
                 BXDJSkeleton.SetupFileNames(SkeletonBase);
 
 
-                BXDJSkeleton.WriteSkeleton(
-                    (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj",
+                BXDJSkeletonJson.WriteSkeleton(
+                    (RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.json",
                     SkeletonBase
                 );
 
