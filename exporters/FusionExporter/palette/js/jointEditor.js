@@ -68,8 +68,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action == 'joints')
                 {
-                    console.log("Receiving joint info...");
-                    console.log(data);
+                    console.log("Input Joint Data Data: ", JSON.parse(data));
                     applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'sensors')
@@ -111,6 +110,7 @@ var delayHover = function (elem, callback) {
 // Populates the form with joints
 function applyConfigData(configData)
 {
+    console.log("ApplConfig", configData);
     document.getElementById('name').value = configData.name;
 
     var joints = configData.joints;
@@ -406,8 +406,9 @@ function sendInfoToFusion()
         alert("Please enter a name.");
         return;
     }
-    
-    adsk.fusionSendData('save', JSON.stringify(readConfigData()));
+    var result = JSON.stringify(readConfigData());
+    console.log("Saving Data: ", result);
+    adsk.fusionSendData('save', result);
 }
 
 // Sends the data to the Fusion add-in
