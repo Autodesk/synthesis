@@ -176,7 +176,7 @@ public class DriveJoints
             }
             else
             {
-                switch(Controls.Players[controlIndex].GetControlProfile())
+                switch(Controls.Players[controlIndex].GetActiveControlProfile())
                 {
                     case Player.ControlProfile.TankJoystick:
                         pwm[0] =

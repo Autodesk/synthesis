@@ -12,7 +12,7 @@ namespace Synthesis.Input
         private string mName;
         private CustomInput mPrimaryInput;
         private CustomInput mSecondaryInput;
-        private CustomInput mThirdInput;
+        private CustomInput mTertiaryInput;
 
 
 
@@ -93,18 +93,18 @@ namespace Synthesis.Input
         {
             get
             {
-                return mThirdInput;
+                return mTertiaryInput;
             }
 
             set
             {
                 if (value == null)
                 {
-                    mThirdInput = new KeyboardInput();
+                    mTertiaryInput = new KeyboardInput();
                 }
                 else
                 {
-                    mThirdInput = value;
+                    mTertiaryInput = value;
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace Synthesis.Input
         {
             mPrimaryInput = another.mPrimaryInput;
             mSecondaryInput = another.mSecondaryInput;
-            mThirdInput = another.mThirdInput;
+            mTertiaryInput = another.mTertiaryInput;
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Synthesis.Input
                 res = cur;
             }
 
-            cur = mThirdInput.getInput(exactKeyModifiers, axis, device);
+            cur = mTertiaryInput.getInput(exactKeyModifiers, axis, device);
 
             if (cur > res)
             {
@@ -213,7 +213,7 @@ namespace Synthesis.Input
                 res = cur;
             }
 
-            cur = mThirdInput.getInputDown(exactKeyModifiers, axis, device);
+            cur = mTertiaryInput.getInputDown(exactKeyModifiers, axis, device);
 
             if (cur > res)
             {
@@ -249,7 +249,7 @@ namespace Synthesis.Input
                 res = cur;
             }
 
-            cur = mThirdInput.getInputUp(exactKeyModifiers, axis, device);
+            cur = mTertiaryInput.getInputUp(exactKeyModifiers, axis, device);
 
             if (cur > res)
             {
