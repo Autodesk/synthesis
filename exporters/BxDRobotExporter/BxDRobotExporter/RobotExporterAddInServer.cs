@@ -34,7 +34,7 @@ namespace BxDRobotExporter
 
         public AssemblyDocument AsmDocument;
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
-        
+
         // -- UI FIELDS
         // Environment
         private Environment exporterEnv;
@@ -56,7 +56,7 @@ namespace BxDRobotExporter
         private ButtonDefinition guideButton;
         private ButtonDefinition dofButton;
         private ButtonDefinition settingsButton;
-        
+
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly DOFKey dofKey = new DOFKey();
@@ -64,13 +64,13 @@ namespace BxDRobotExporter
 
         // UI elements
         private JointForm jointForm;
-        
+
         // ???? (Weird flags which should be deleted)
         private bool exporterBlocked = false;
         private bool hiddenExporter = false;
         private bool environmentEnabled = false;
 
-        
+
         /// <summary>
         /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
         /// </summary>
@@ -102,11 +102,9 @@ namespace BxDRobotExporter
             var gearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
             var gearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
 
-            var environments = MainApplication.UserInterfaceManager.Environments;
-            exporterEnv = environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall, synthesisLogoLarge);
+            exporterEnv = MainApplication.UserInterfaceManager.Environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall, synthesisLogoLarge);
 
-            var assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
-            var exporterTab = assemblyRibbon.RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab", clientId, "", false, true);
+            var exporterTab = MainApplication.UserInterfaceManager.Ribbons["Assembly"].RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab", clientId, "", false, true);
 
             var controlDefs = MainApplication.CommandManager.ControlDefinitions;
 
@@ -132,22 +130,16 @@ namespace BxDRobotExporter
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Assign the weight of the drivetrain.", drivetrainWeightIconSmall, drivetrainWeightIconLarge);
-            drivetrainWeightButton.OnExecute += context =>
-            {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
-                RobotDataManager.PromptRobotWeight();
-            };
+            drivetrainWeightButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight");
+            drivetrainWeightButton.OnExecute += context => RobotDataManager.PromptRobotWeight();
             drivetrainWeightButton.OnHelp += _OnHelp;
             driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
 
             // Joint panel buttons
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", editJointIconSmall, editJointIconLarge);
-            advancedEditJointButton.OnExecute += context =>
-            {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
-                advancedJointEditor.Toggle();
-            };
+            advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
+            advancedEditJointButton.OnExecute += context => advancedJointEditor.Toggle();
             advancedEditJointButton.OnHelp += _OnHelp;
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
@@ -155,7 +147,7 @@ namespace BxDRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", editJointIconSmall, editJointIconLarge);
             editJointButton.OnExecute += context =>
             {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
                 jointForm.ShowDialog();
                 advancedJointEditor.UpdateSkeleton(RobotDataManager.Instance.SkeletonBase);
             };
@@ -166,7 +158,7 @@ namespace BxDRobotExporter
             guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "View a checklist of all tasks necessary prior to export.", guideIconSmall, guideIconLarge);
-            guideButton.OnExecute += delegate {guide.Visible = !guide.Visible; };
+            guideButton.OnExecute += context => guide.Visible = !guide.Visible;
             guideButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(guideButton, true);
 
@@ -174,7 +166,7 @@ namespace BxDRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", guideIconSmall, guideIconLarge);
             dofButton.OnExecute += context =>
             {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF");
                 HighlightManager.ToggleDofHighlight(RobotDataManager);
                 dofKey.Visible = HighlightManager.DisplayDof;
             };
@@ -207,7 +199,7 @@ namespace BxDRobotExporter
             Marshal.ReleaseComObject(MainApplication);
             MainApplication = null;
             exporterEnv.Delete();
-           
+
             GC.WaitForPendingFinalizers();
             GC.Collect();
         }
@@ -224,8 +216,8 @@ namespace BxDRobotExporter
             AnalyticsUtils.StartSession();
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
-            CreateChildDialog();
-            
+            RobotDataManager = new RobotDataManager();
+
             HighlightManager.EnvironmentOpening(AsmDocument);
 
 
@@ -247,7 +239,7 @@ namespace BxDRobotExporter
             RobotDataManager.LoadRobotData(AsmDocument);
 
             UserInterfaceManager uiMan = MainApplication.UserInterfaceManager;
-            
+
             advancedJointEditor.CreateDockableWindow(uiMan, RobotDataManager.SkeletonBase);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
@@ -339,7 +331,8 @@ namespace BxDRobotExporter
                         hiddenExporter = false;
                     }
                 }
-            } else if (beforeOrAfter == EventTimingEnum.kAfter)
+            }
+            else if (beforeOrAfter == EventTimingEnum.kAfter)
             {
                 if (Settings.Default.ShowFirstLaunchInfo)
                 {
@@ -453,7 +446,7 @@ namespace BxDRobotExporter
             string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
         {
             HighlightManager.SetJointHighlightColor(child);
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings", 0);
+            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings");
             //Update Application
             Settings.Default.ExportToField = openSynthesis;
             Settings.Default.SelectedField = fieldLocation;
@@ -466,24 +459,11 @@ namespace BxDRobotExporter
             Settings.Default.Save();
         }
 
-        
-        public void CreateChildDialog()
-        {
-            try
-            {
-                RobotDataManager = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-                throw;
-            }
-        }
 
         /// <summary>
         /// Initializes all of the <see cref="Managers.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
         /// </summary>
-        public static void LoadSettings()
+        private static void LoadSettings()
         {
             // Old configurations get overriden (version numbers below 1)
             if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
