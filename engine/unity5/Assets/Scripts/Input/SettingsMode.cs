@@ -32,6 +32,8 @@ namespace Synthesis.Input
 
         public void Awake()
         {
+            Controls.Load();
+
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
 
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
@@ -91,14 +93,6 @@ namespace Synthesis.Input
         }
 
         /// <summary>
-        /// Loads ALL player controls when clicked.
-        /// </summary>
-        public void OnLoadClick()
-        {
-            Controls.Load();
-        }
-
-        /// <summary>
         /// Resets ALL player controls to the profile defaults when clicked.
         /// </summary>
         public void OnReset()
@@ -128,11 +122,7 @@ namespace Synthesis.Input
                 activeControlProfile = (Player.ControlProfile)value;
 
                 Controls.Players[activePlayerIndex].SetControlProfile((Player.ControlProfile)value);
-                if (MainState.timesLoaded > 1)
-                {
-                    Controls.UpdateFieldControls(activeControlProfile);
-                }
-                Controls.Load();
+                Controls.Players[activePlayerIndex].LoadActiveProfile();
 
                 GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
             }

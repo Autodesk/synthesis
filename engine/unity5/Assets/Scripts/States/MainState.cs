@@ -278,18 +278,18 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
-                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].buttons.duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].buttons.switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
 
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.Players[0].buttons.cameraToggle)) &&
+            if ((InputControl.GetButtonDown(Controls.Players[0].GetButtons().cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].buttons.replayMode))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -392,10 +392,7 @@ namespace Synthesis.States
             FieldDataHandler.Load(fieldPath);
             timesLoaded++;
             Controls.Load();
-            if (timesLoaded > 1)
-            {
-                Controls.UpdateFieldControls(Player.DEFAULT_CONTROL_PROFILE);
-            }
+            Controls.UpdateFieldControls();
 
             string loadResult;
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);

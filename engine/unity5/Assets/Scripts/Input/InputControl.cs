@@ -171,12 +171,12 @@ namespace Synthesis.Input
         /// <param name="primary">Primary input.</param>
         public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, CustomInput primary)
         {
-            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
         public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary)
         {
-            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Synthesis.Input
         /// <param name="secondary">Secondary input.</param>
         public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary, CustomInput secondary)
         {
-            return Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Synthesis.Input
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
         public static Axis SetAxis(Player.ControlProfile controlProfile, string name, int controlIndex, KeyMapping negative, KeyMapping positive)
         {
-            return Controls.Players[controlIndex].SetAxis(controlProfile, name, negative, positive);
+            return null; // Controls.Players[controlIndex].SetAxis(controlProfile, name, negative, positive);
         }
 
         #endregion
