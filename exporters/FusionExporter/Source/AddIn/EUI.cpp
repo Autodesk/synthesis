@@ -311,6 +311,7 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 	}
 
 	//UI->messageBox("Robot Exported successfully to: " + Filesystem::getCurrentRobotDirectory("name"));
-	
+
+	progressPalette->sendInfoToHTML("progress", std::to_string(0));
 	closeProgressPalette();
 }
