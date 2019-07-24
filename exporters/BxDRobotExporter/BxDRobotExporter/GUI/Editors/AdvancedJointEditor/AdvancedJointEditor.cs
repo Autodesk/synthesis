@@ -7,6 +7,23 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
     {
         private DockableWindow embeddedAdvancedJointEditorPane;
         private AdvancedJointEditorUserControl advancedJointEditorUserControl;
+        
+        public bool Visible
+        {
+            get => embeddedAdvancedJointEditorPane.Visible;
+            set
+            {
+                if (embeddedAdvancedJointEditorPane == null) return;
+                if (value)
+                {
+                    Hide();
+                }
+                else
+                {
+                    Show();
+                }
+            }
+        }
 
         public void CreateDockableWindow(UserInterfaceManager uiMan, RigidNode_Base skeletonBase)
         {
@@ -34,45 +51,21 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         {
             advancedJointEditorUserControl.UpdateSkeleton(instanceSkeletonBase);
         }
-        
-        
-        public bool IsVisible()
-        {
-            if (embeddedAdvancedJointEditorPane == null) return false;
-            return embeddedAdvancedJointEditorPane.Visible;
-        }
-
-        public void Toggle()
-        {
-            if (embeddedAdvancedJointEditorPane != null)
-            {
-                if (IsVisible())
-                {
-                    Hide();
-                }
-                else
-                {
-                    Show();
-                }
-            }
-        }
 
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public void Hide() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
+        private void Hide() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
         {
-            if (embeddedAdvancedJointEditorPane != null)
-            {
-                embeddedAdvancedJointEditorPane.Visible = false;
-                InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
-            }
+            if (embeddedAdvancedJointEditorPane == null) return;
+            embeddedAdvancedJointEditorPane.Visible = false;
+            InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
         }
 
         /// <summary>
         /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        public void Show()
+        private void Show()
         {
             if (embeddedAdvancedJointEditorPane != null)
             {

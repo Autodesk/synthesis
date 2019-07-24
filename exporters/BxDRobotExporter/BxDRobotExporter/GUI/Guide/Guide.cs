@@ -7,7 +7,11 @@ namespace BxDRobotExporter.GUI.Guide
     {
         private DockableWindow embeddedGuidePane;
 
-        public bool Visible { get; set; }
+        public bool Visible
+        {
+            get => embeddedGuidePane.Visible;
+            set => embeddedGuidePane.Visible = value;
+        }
 
         public void CreateDockableWindow(UserInterfaceManager uiMan)
         {
