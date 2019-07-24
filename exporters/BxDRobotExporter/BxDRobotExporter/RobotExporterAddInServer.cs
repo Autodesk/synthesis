@@ -488,11 +488,10 @@ namespace BxDRobotExporter
 
         private void DOF_OnExecute(NameValueMap context)
         {
-
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
 
-            embeddedKeyPane.Visible = highlightManager.DisplayDof;
             highlightManager.ToggleDofHighlight(RobotDataManager);
+            embeddedKeyPane.Visible = highlightManager.DisplayDof;
 
         }
         private void EditJoint_OnExecute(NameValueMap context)
