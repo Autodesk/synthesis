@@ -7,7 +7,7 @@ namespace BxDRobotExporter.GUI.DegreesOfFreedomViewer
     {
         private DockableWindow embeddedDofKeyPane;
 
-        public bool Enabled
+        public bool Visible
         {
             get => embeddedDofKeyPane.Visible;
             set => embeddedDofKeyPane.Visible = value;
