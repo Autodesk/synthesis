@@ -14,17 +14,6 @@ TARGET_TRIPLE=$(${TOOLCHAIN}gcc -dumpmachine)
 
 git submodule update --init
 
-if [[ "${TOOLCHAIN}" == "" ]] ; then 
-    cd third_party/protobuf && \
-        ./autogen.sh && \
-        ./configure "CFLAGS=-fPIC" "CLAGS=-fPIC" && \
-        make && sudo make install
-    pwd
-    mkdir -p ../../libs/opt
-    cp ./src/.libs/libprotobuf.a ../../libs/opt/
-    cd ../../
-fi
-
 if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
     make -j10 && \
