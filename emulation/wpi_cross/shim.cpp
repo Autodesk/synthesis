@@ -6,6 +6,9 @@ namespace nFPGA {
         unsigned int g_currentTargetClass; //Ni FPGA declares this as extern, so define it here
     }
 }
+
+#include<jni.h>
+
 namespace sim{
 	jint SimOnLoad(JavaVM* vm, void* reserved){
 		return JNI_VERSION_1_6;
