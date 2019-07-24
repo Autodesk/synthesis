@@ -54,13 +54,13 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             jointForm.ResetAllHighlight();
             isHighlighted = true;
 
-            InventorUtils.FocusAndHighlightNode(node, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera, 0.8);
+            InventorUtils.FocusAndHighlightNode(node, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 0.8);
         }
 
         public void LoadPreviewIcon()
         {
             var iconCamera = InventorManager.Instance.TransientObjects.CreateCamera();
-            iconCamera.SceneObject = RobotExporterAddInServer.Instance.AsmDocument.ComponentDefinition;
+            iconCamera.SceneObject = RobotExporterAddInServer.Instance.AssemblyDocument.ComponentDefinition;
 
             const double zoom = 0.6; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
             
@@ -75,8 +75,8 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
 
             pictureBox1.Image = AxHostConverter.PictureDispToImage(
                 iconCamera.CreateImage(pictureBox1.Height * widthConst, pictureBox1.Height,
-                    RobotExporterAddInServer.Instance.MainApplication.TransientObjects.CreateColor(210, 222, 239),
-                    RobotExporterAddInServer.Instance.MainApplication.TransientObjects.CreateColor(175, 189, 209)));
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
         }
 
         public void ResetHighlight()

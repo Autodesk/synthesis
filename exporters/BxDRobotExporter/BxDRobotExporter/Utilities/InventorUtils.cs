@@ -15,7 +15,7 @@ namespace BxDRobotExporter
         /// <returns></returns>
         public static Color GetInventorColor(System.Drawing.Color color)
         {
-            return RobotExporterAddInServer.Instance.MainApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
+            return RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(color.R, color.G, color.B);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace BxDRobotExporter
         /// <returns></returns>
         public static ComponentOccurrence GetOccurrence(string name)
         {
-            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AsmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AssemblyDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return component;
@@ -188,7 +188,7 @@ namespace BxDRobotExporter
         /// <param name="animate">True to animate movement of camera.</param>
         public static void SetCameraView(Vector focus, double viewDistance, double width, double height, Camera camera, InventorUtils.ViewDirection viewDirection = InventorUtils.ViewDirection.Y, bool animate = true)
         {
-            Point focusPoint = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
+            Point focusPoint = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
 
             camera.SetExtents(width, height);
 
@@ -204,22 +204,22 @@ namespace BxDRobotExporter
             if ((viewDirection & InventorUtils.ViewDirection.X) == InventorUtils.ViewDirection.X)
             {
                 focus.X += viewDistance;
-                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
+                up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
             if ((viewDirection & InventorUtils.ViewDirection.Y) == InventorUtils.ViewDirection.Y)
             {
                 focus.Y += viewDistance;
-                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 0, 1);
+                up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
 
             if ((viewDirection & InventorUtils.ViewDirection.Z) == InventorUtils.ViewDirection.Z)
             {
                 focus.Z += viewDistance;
-                up = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateUnitVector(0, 1, 0);
+                up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
-            camera.Eye = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
+            camera.Eye = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
             camera.UpVector = up;
 
             // Apply settings
@@ -284,7 +284,7 @@ namespace BxDRobotExporter
             }
 
 
-            Vector translation = RobotExporterAddInServer.Instance.MainApplication.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
+            Vector translation = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateVector((xSum / i), (ySum / i), (zSum / i));
             return translation;
         }
 
@@ -458,7 +458,7 @@ namespace BxDRobotExporter
         /// <returns></returns>
         private static bool CheckForOccurrence(string name)
         {
-            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AsmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AssemblyDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return true;
