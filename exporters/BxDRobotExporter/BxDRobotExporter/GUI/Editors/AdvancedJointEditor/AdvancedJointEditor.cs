@@ -7,12 +7,14 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
     {
         private DockableWindow embeddedAdvancedJointEditorPane;
         private readonly AdvancedJointEditorUserControl advancedJointEditorUserControl = new AdvancedJointEditorUserControl();
-        
+
+        private bool visible;
         public bool Visible
         {
-            get => embeddedAdvancedJointEditorPane.Visible;
+            get => visible;
             set
             {
+                visible = value;
                 if (embeddedAdvancedJointEditorPane == null) return;
                 if (value)
                 {
@@ -25,6 +27,11 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             }
         }
 
+        public AdvancedJointEditor(bool startVisible)
+        {
+            visible = startVisible;
+        }
+
         public void CreateDockableWindow(UserInterfaceManager uiMan)
         {
             DestroyDockableWindow();
@@ -34,7 +41,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             embeddedAdvancedJointEditorPane.ShowVisibilityCheckBox = false;
             embeddedAdvancedJointEditorPane.ShowTitleBar = true;
             embeddedAdvancedJointEditorPane.AddChild(advancedJointEditorUserControl.Handle);
-            embeddedAdvancedJointEditorPane.Visible = false;
+            embeddedAdvancedJointEditorPane.Visible = visible;
         }
 
         public void DestroyDockableWindow()
@@ -72,6 +79,11 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             {
                 embeddedAdvancedJointEditorPane.Visible = true;
             }
+        }
+
+        public void TemporaryHide()
+        {
+            Hide();
         }
     }
 }

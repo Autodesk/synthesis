@@ -56,9 +56,9 @@ namespace BxDRobotExporter
         private ButtonDefinition settingsButton;
 
         // Dockable window managers
-        private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
+        private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor(false);
         private readonly DOFKey dofKey = new DOFKey();
-        private readonly Guide guide = new Guide();
+        private readonly Guide guide = new Guide(true);
 
         // UI elements
         private JointForm jointForm = new JointForm();
@@ -268,12 +268,30 @@ namespace BxDRobotExporter
 
             environmentIsOpen = false;
         }
+        
+        
+        private void OnEnvironmentHide()
+        {
+            // Hide dockable windows when switching to a different document 
+            advancedJointEditor.TemporaryHide();
+            dofKey.TemporaryHide();
+            guide.TemporaryHide();
+        }
+        
+        private void OnEnvironmentShow()
+        {
+            // Restore visible state of dockable windows
+            advancedJointEditor.Visible = advancedJointEditor.Visible;
+            dofKey.Visible = dofKey.Visible;
+            guide.Visible = guide.Visible;
+        }
+
 
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         { 
             if (beforeOrAfter == EventTimingEnum.kAfter)
             {
-                if (NewExporterEnvironmentAllowed(documentObject))
+                if (IsNewExporterEnvironmentAllowed(documentObject))
                 {
                     InventorUtils.EnableEnvironment(Application, exporterEnv);
                     if (Settings.Default.ShowFirstLaunchInfo)
@@ -281,6 +299,11 @@ namespace BxDRobotExporter
                 }
                 else
                     InventorUtils.DisableEnvironment(Application, exporterEnv);
+
+                if (IsDocumentOpenInTheExporter(documentObject))
+                {
+                    OnEnvironmentShow();
+                }
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
@@ -288,20 +311,15 @@ namespace BxDRobotExporter
 
         private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen)
-            {
-                // Hide dockable windows when switching to a different document 
-                advancedJointEditor.Visible = false;
-                dofKey.Visible = false;
-                guide.Visible = false;
-            }
+            if (beforeOrAfter == EventTimingEnum.kBefore && IsDocumentOpenInTheExporter(documentObject))
+                OnEnvironmentHide();
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
         private void ApplicationEvents_OnCloseDocument(_Document documentObject, string fullDocumentName, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
             // If the robot export environment is open and the document that is about to be closed is the assembly document with the robot exporter opened
-            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen && DocumentIsExporterDocument(documentObject))
+            if (beforeOrAfter == EventTimingEnum.kBefore && IsDocumentOpenInTheExporter(documentObject))
                 OnEnvironmentClose();
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
@@ -316,17 +334,17 @@ namespace BxDRobotExporter
                 // If the exporter environment is opening
                 if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState)
                 {
-                    if (NewExporterEnvironmentAllowed(documentObject))
+                    if (IsNewExporterEnvironmentAllowed(documentObject))
                         OnEnvironmentOpen();
                     else
                     {
-                        MessageBox.Show("The Robot Exporter only supports assembly documents.",
+                        MessageBox.Show("The Robot Exporter only supports assembly documents.", // or, the environment is already open, but the env button hiding seems to work in that case
                             "Unsupported Document Type", MessageBoxButtons.OK);
                         InventorUtils.ForceQuitExporter(documentObject);
                     }
                 }
                 // If the exporter environment is closing
-                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && DocumentIsExporterDocument(documentObject))
+                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && IsDocumentOpenInTheExporter(documentObject))
                     OnEnvironmentClose();
             }
 
@@ -334,14 +352,14 @@ namespace BxDRobotExporter
         }
         
         // User may not open documents other than assemblies or open multiple documents in the exporter
-        private bool NewExporterEnvironmentAllowed(object documentObject)
+        private bool IsNewExporterEnvironmentAllowed(object documentObject)
         {
-            return documentObject is AssemblyDocument && !environmentIsOpen;
+            return !environmentIsOpen && documentObject is AssemblyDocument;
         }
         
-        private bool DocumentIsExporterDocument(object documentObject)
+        private bool IsDocumentOpenInTheExporter(object documentObject)
         {
-            return AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
+            return environmentIsOpen && AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
         }
     }
 }

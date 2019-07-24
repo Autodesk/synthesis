@@ -7,10 +7,20 @@ namespace BxDRobotExporter.GUI.DegreesOfFreedomViewer
     {
         private DockableWindow embeddedDofKeyPane;
 
+        private bool visible;
         public bool Visible
         {
-            get => embeddedDofKeyPane.Visible;
-            set => embeddedDofKeyPane.Visible = value;
+            get => visible;
+            set
+            {
+                visible = value;
+                SoftSetVisibility(value);
+            }
+        }
+
+        private void SoftSetVisibility(bool value)
+        {
+            if (embeddedDofKeyPane!= null) embeddedDofKeyPane.Visible = value;
         }
 
         public void CreateDockableWindow(UserInterfaceManager uiMan)
@@ -36,6 +46,11 @@ namespace BxDRobotExporter.GUI.DegreesOfFreedomViewer
                 embeddedDofKeyPane.Delete();
                 embeddedDofKeyPane = null;
             }
+        }
+
+        public void TemporaryHide()
+        {
+            SoftSetVisibility(false);
         }
     }
 }
