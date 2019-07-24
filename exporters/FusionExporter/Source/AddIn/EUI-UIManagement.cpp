@@ -327,7 +327,7 @@ bool EUI::createKeyPalette()
 	if (!keyPalette)
 	{
 		// Create palette
-		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "Palette/dofkey.html", false, true, false, 220, 165);
+		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "palette/dofkey.html", false, true, false, 220, 165);
 		if (!keyPalette)
 			return false;
 
@@ -363,14 +363,6 @@ void EUI::deleteKeyPalette()
 void EUI::toggleKeyPalette()
 {
 	keyPalette->isVisible(dofViewEnabled);
-
-	//static std::thread* uiThread = nullptr;
-	//if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-	//uiThread = new std::thread([this]()
-	//	{
-	//		keyPalette->isVisible(dofViewEnabled);
-	//});
 }
 
 // Finish palette
@@ -386,7 +378,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, true, true, 300, 200);
 		if (!finishPalette)
 			return false;
 
@@ -471,7 +463,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Sensors", "Palette/sensors.html", false, true, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Sensors", "palette/sensors.html", false, true, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
@@ -540,7 +532,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "Palette/drivetrain.html", false, true, true, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain.html", false, true, true, 350, 200);
 		if (!driveTypePalette)
 			return false;
 
@@ -620,7 +612,7 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(PALETTE_PROGRESS, "Loading", "Palette/progress.html", false, false, false, 150, 150);
+		progressPalette = palettes->add(PALETTE_PROGRESS, "Loading", "palette/progress.html", false, false, false, 150, 150);
 		if (!progressPalette)
 			return false;
 
