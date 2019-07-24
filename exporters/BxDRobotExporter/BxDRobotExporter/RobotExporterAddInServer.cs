@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
@@ -21,7 +20,7 @@ namespace BxDRobotExporter
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
     public class RobotExporterAddInServer : ApplicationAddInServer
     {
-        public static RobotExporterAddInServer Instance { get; set; }
+        public static RobotExporterAddInServer Instance { get; private set; }
 
         public Inventor.Application MainApplication;
 
@@ -62,57 +61,48 @@ namespace BxDRobotExporter
         /// <param name="firstTime"></param>
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            MainApplication =
-                addInSiteObject
-                    .Application; //Gets the application object, which is used in many different ways throughout this whole process
-            string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
+            MainApplication = addInSiteObject.Application;
+            const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(MainApplication.UserName);
             AnalyticsUtils.LogPage("Inventor");
             InventorUtils.LoadSettings();
 
-            stdole.IPictureDisp editJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
-            stdole.IPictureDisp editJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
+            var editJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
+            var editJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
 
-            stdole.IPictureDisp drivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)); //these are still here at request of QA
-            stdole.IPictureDisp drivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32));
+            var drivetrainTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)); //these are still here at request of QA
+            var drivetrainTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.DrivetrainType32));
 
-            stdole.IPictureDisp guideIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32)); //these are still here at request of QA
-            stdole.IPictureDisp guideIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32));
+            var guideIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32)); //these are still here at request of QA
+            var guideIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Guide32));
 
-            stdole.IPictureDisp drivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
-            stdole.IPictureDisp drivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
+            var drivetrainWeightIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
+            var drivetrainWeightIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.RobotWeight32));
 
-            stdole.IPictureDisp synthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo16));
-            stdole.IPictureDisp synthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32));
+            var synthesisLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo16));
+            var synthesisLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32));
 
-            stdole.IPictureDisp gearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
-            stdole.IPictureDisp gearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
+            var gearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
+            var gearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
 
-            Environments environments = MainApplication.UserInterfaceManager.Environments;
-            exporterEnv = environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall,
-                synthesisLogoLarge);
+            var environments = MainApplication.UserInterfaceManager.Environments;
+            exporterEnv = environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall, synthesisLogoLarge);
 
-            Ribbon assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
-            RibbonTab exporterTab = assemblyRibbon.RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab",
-                clientId, "", false, true);
+            var assemblyRibbon = MainApplication.UserInterfaceManager.Ribbons["Assembly"];
+            var exporterTab = assemblyRibbon.RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab", clientId, "", false, true);
 
-            ControlDefinitions controlDefs = MainApplication.CommandManager.ControlDefinitions;
+            var controlDefs = MainApplication.CommandManager.ControlDefinitions;
 
-            driveTrainPanel =
-                exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
+            driveTrainPanel = exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
             jointPanel = exporterTab.RibbonPanels.Add("Joint Setup", "BxD:RobotExporter:JointPanel", clientId);
-            checklistPanel =
-                exporterTab.RibbonPanels.Add("Robot Setup Checklist", "BxD:RobotExporter:ChecklistPanel", clientId);
-            pluginPanel =
-                exporterTab.RibbonPanels.Add("Plugin", "BxD:RobotExporter:PluginSettings", clientId);
+            checklistPanel = exporterTab.RibbonPanels.Add("Robot Setup Checklist", "BxD:RobotExporter:ChecklistPanel", clientId);
+            pluginPanel = exporterTab.RibbonPanels.Add("Plugin", "BxD:RobotExporter:PluginSettings", clientId);
             exitPanel = exporterTab.RibbonPanels.Add("Finish", "BxD:RobotExporter:ExitPanel", clientId);
 
             // Reset positioning of panels
             jointPanel.Reposition("BxD:RobotExporter:DriveTrainPanel", false);
             checklistPanel.Reposition("BxD:RobotExporter:JointPanel", false);
             exitPanel.Reposition("BxD:RobotExporter:ChecklistPanel", false);
-
-            // TODO: Delete these region things
 
             //Drive Train panel buttons
             driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nType",
@@ -164,11 +154,9 @@ namespace BxDRobotExporter
 
             exporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
             MainApplication.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
-            exporterEnv.DisabledCommandList.Add(
-                MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            exporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
 
-            MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange +=
-                UIEvents_OnEnvironmentChange;
+            MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
@@ -177,12 +165,12 @@ namespace BxDRobotExporter
         }
         private void Settings_OnExecute(NameValueMap context)
         {
-            ExporterSettingsForm settingsForm = new ExporterSettingsForm();
+            var settingsForm = new ExporterSettingsForm();
             settingsForm.ShowDialog();
         }
         private void DriveTrainType_OnExecute(NameValueMap context)
         {
-            DrivetrainTypeForm drivetrainTypeForm = new DrivetrainTypeForm();
+            var drivetrainTypeForm = new DrivetrainTypeForm();
             drivetrainTypeForm.ShowDialog();
         }
 
@@ -199,25 +187,9 @@ namespace BxDRobotExporter
             GC.Collect();
         }
 
-        public void ExecuteCommand(int commandId)
-        {
-            // Note:this method is now obsolete, you should use the 
-            // ControlDefinition functionality for implementing commands.
-        }
-
-        public object Automation
-        {
-            // This property is provided to allow the AddIn to expose an API 
-            // of its own to other programs. Typically, this  would be done by
-            // implementing the AddIn's API interface in a class and returning 
-            // that class object through this property.
-
-            get
-            {
-                // TODO: Add ApplicationAddInServer.Automation getter implementation
-                return null;
-            }
-        }
+        // For ApplicationAddInServer interface
+        public void ExecuteCommand(int commandId) {}
+        public object Automation => null;
 
         /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
@@ -247,12 +219,12 @@ namespace BxDRobotExporter
             // Load robot skeleton and prepare UI
             if (!InventorUtils.Gui.LoadRobotSkeleton())
             {
-                ForceQuitExporter(AsmDocument);
+                InventorUtils.ForceQuitExporter(AsmDocument);
                 return;
             }
 
             disabledAssemblyOccurences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurences.AddRange(DisableUnconnectedComponents(AsmDocument));
+            disabledAssemblyOccurences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             InventorUtils.Gui.LoadRobotData(AsmDocument);
             
@@ -272,7 +244,7 @@ namespace BxDRobotExporter
             AnalyticsUtils.EndSession();
             SaveRobotData(null);
 
-            DialogResult exportResult = MessageBox.Show(
+            var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
                 "Robot Configuration Complete",
                 MessageBoxButtons.YesNo);
@@ -283,13 +255,12 @@ namespace BxDRobotExporter
             }
 
             // Re-enable disabled components
-            if (disabledAssemblyOccurences != null)
-                EnableComponents(disabledAssemblyOccurences);
+            if (disabledAssemblyOccurences != null) InventorUtils.EnableComponents(disabledAssemblyOccurences);
             disabledAssemblyOccurences = null;
 
             // Close add-in
             InventorUtils.DisposeDockableWindows();
-            ForceQuitExporter(AsmDocument);
+            InventorUtils.ForceQuitExporter(AsmDocument);
 
             // Dispose of document
             if (AsmDocument != null)
@@ -297,46 +268,6 @@ namespace BxDRobotExporter
             AsmDocument = null;
 
             environmentEnabled = false;
-        }
-
-        /// <summary>
-        /// Causes the exporter to close.
-        /// </summary>
-        /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(AssemblyDocument document)
-        {
-            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
-        }
-
-        /// <summary>
-        /// Causes the exporter to close.
-        /// </summary>
-        /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(DrawingDocument document)
-        {
-            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
-        }
-
-        /// <summary>
-        /// Causes the exporter to close.
-        /// </summary>
-        /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(PartDocument document)
-        {
-            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
-        }
-
-        /// <summary>
-        /// Causes the exporter to close.
-        /// </summary>
-        /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
-        private async void ForceQuitExporter(PresentationDocument document)
-        {
-            await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
-            document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
         }
 
         /// <summary>
@@ -383,7 +314,7 @@ namespace BxDRobotExporter
                 }
             } else if (beforeOrAfter == EventTimingEnum.kAfter)
             {
-                if (Properties.Settings.Default.ShowFirstLaunchInfo)
+                if (Settings.Default.ShowFirstLaunchInfo)
                 {
                     var firstLaunchInfo = new FirstLaunchInfo();
                     firstLaunchInfo.ShowDialog();
@@ -444,11 +375,10 @@ namespace BxDRobotExporter
 
                         // Quit the exporter
                         if (context.Item["Document"] is DrawingDocument drawing)
-                            ForceQuitExporter(drawing);
+                            InventorUtils.ForceQuitExporter(drawing);
                         else if (context.Item["Document"] is PartDocument part)
-                            ForceQuitExporter(part);
-                        else if (context.Item["Document"] is PresentationDocument presentation)
-                            ForceQuitExporter(presentation);
+                            InventorUtils.ForceQuitExporter(part);
+                        else if (context.Item["Document"] is PresentationDocument presentation) InventorUtils.ForceQuitExporter(presentation);
                     }
                     // User may not open multiple documents in the exporter
                     else if (environmentEnabled)
@@ -458,7 +388,7 @@ namespace BxDRobotExporter
                                         "\" to continue.",
                             "Too Many Assemblies", MessageBoxButtons.OK);
                         exporterBlocked = true;
-                        ForceQuitExporter(assembly);
+                        InventorUtils.ForceQuitExporter(assembly);
                     }
                     else
                         OpeningExporter();
@@ -484,7 +414,7 @@ namespace BxDRobotExporter
         private bool displayDof = false;
         public AdvancedJointEditorUserControl AdvancedAdvancedJointEditor;
 
-        public void DOF_OnExecute(NameValueMap context)
+        private void DOF_OnExecute(NameValueMap context)
         {
 
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
@@ -501,7 +431,7 @@ namespace BxDRobotExporter
                 var jointedNodes = new List<RigidNode_Base>();
                 var problemNodes = new List<RigidNode_Base>();
 
-                foreach (RigidNode_Base node in InventorUtils.Gui.SkeletonBase.ListAllNodes())
+                foreach (var node in InventorUtils.Gui.SkeletonBase.ListAllNodes())
                 {
                     if (node == InventorUtils.Gui.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                     {
@@ -518,9 +448,9 @@ namespace BxDRobotExporter
                 }
 
                 ChildHighlight.Clear();
-                CreateHighlightSet(rootNodes, blueHighlightSet);
-                CreateHighlightSet(jointedNodes, greenHighlightSet);
-                CreateHighlightSet(problemNodes, redHighlightSet);
+                InventorUtils.CreateHighlightSet(rootNodes, blueHighlightSet);
+                InventorUtils.CreateHighlightSet(jointedNodes, greenHighlightSet);
+                InventorUtils.CreateHighlightSet(problemNodes, redHighlightSet);
             }
             else
             {
@@ -537,16 +467,7 @@ namespace BxDRobotExporter
             displayDof = false;
         }
 
-        private void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
-        {
-            highlightSet.Clear();
-            foreach (var componentOccurrence in InventorUtils.GetComponentOccurrencesFromNodes(nodes))
-            {
-                highlightSet.AddItem(componentOccurrence);
-            }
-        }
-
-        public void EditJoint_OnExecute(NameValueMap context)
+        private void EditJoint_OnExecute(NameValueMap context)
         {
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
             if (jointForm.Visible)
@@ -583,20 +504,10 @@ namespace BxDRobotExporter
             InventorUtils.Gui.SaveRobotData();
         }
 
-        /// <summary>
-        /// Saves the active robot to the active directory
-        /// </summary>
-        /// <param name="context"></param>
-        private void ExportButtonOnExecute(NameValueMap context)
-        {
-            PromptExportToSynthesis();
-        }
-
-        public void PromptExportToSynthesis()
+        private void PromptExportToSynthesis()
         {
             if (InventorUtils.Gui.PromptExportSettings())
                 if (InventorUtils.Gui.ExportRobot() && InventorUtils.Gui.RMeta.FieldName != null)
-
                     InventorUtils.Gui.OpenSynthesis();
         }
 
@@ -634,212 +545,16 @@ namespace BxDRobotExporter
             ChildHighlight.Color = InventorUtils.GetInventorColor(child);
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings", 0);
             //Update Application
-            Properties.Settings.Default.ExportToField = openSynthesis;
-            Properties.Settings.Default.SelectedField = fieldLocation;
-            Properties.Settings.Default.ChildColor = child;
-            Properties.Settings.Default.FancyColors = useFancyColors;
-            Properties.Settings.Default.SaveLocation = saveLocation;
-            Properties.Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
-            Properties.Settings.Default.UseAnalytics = useAnalytics;
-            Properties.Settings.Default.ConfigVersion =
+            Settings.Default.ExportToField = openSynthesis;
+            Settings.Default.SelectedField = fieldLocation;
+            Settings.Default.ChildColor = child;
+            Settings.Default.FancyColors = useFancyColors;
+            Settings.Default.SaveLocation = saveLocation;
+            Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
+            Settings.Default.UseAnalytics = useAnalytics;
+            Settings.Default.ConfigVersion =
                 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
-            Properties.Settings.Default.Save();
-        }
-
-        /// <summary>
-        /// Disables all components in a document that are not connected to another component by a joint.
-        /// </summary>
-        /// <param name="asmDocument">Document to traverse.</param>
-        /// <returns>List of disabled components.</returns>
-        private List<ComponentOccurrence> DisableUnconnectedComponents(AssemblyDocument asmDocument)
-        {
-            // Find all components in the assembly that are connected to a joint
-            List<ComponentOccurrence> jointedAssemblyOccurences = new List<ComponentOccurrence>();
-            foreach (AssemblyJoint joint in asmDocument.ComponentDefinition.Joints)
-            {
-                if (!joint.Definition.JointType.Equals(AssemblyJointTypeEnum.kRigidJointType))
-                {
-                    jointedAssemblyOccurences.Add(joint.AffectedOccurrenceOne);
-                    jointedAssemblyOccurences.Add(joint.AffectedOccurrenceTwo);
-                }
-            }
-
-            // Hide any components not associated with a joint
-            List<ComponentOccurrence> disabledAssemblyOccurences = new List<ComponentOccurrence>();
-            foreach (ComponentOccurrence c in asmDocument.ComponentDefinition.Occurrences)
-            {
-                if (!jointedAssemblyOccurences.Contains(c) || c.Grounded)
-                {
-                    try
-                    {
-                        //accounts for components that can't be disabled
-                        disabledAssemblyOccurences.Add(c);
-                        c.Enabled = false;
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
-
-            return disabledAssemblyOccurences;
-        }
-
-        /// <summary>
-        /// Enables all components in a list.
-        /// </summary>
-        /// <param name="components">Components to enable.</param>
-        private void EnableComponents(List<ComponentOccurrence> components)
-        {
-            foreach (ComponentOccurrence c in components)
-            {
-                try
-                {
-                    //accounts for components that can't be disabled
-                    c.Enabled = true;
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks if a baseNode matches up with the assembly. Passed as a <see cref="ValidationAction"/> to
-        /// </summary>
-        /// <param name="baseNode"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private bool ValidateAssembly(RigidNode_Base baseNode, out string message)
-        {
-            int validationCount = 0;
-            int failedCount = 0;
-            List<RigidNode_Base> nodes = baseNode.ListAllNodes();
-            foreach (RigidNode_Base node in nodes)
-            {
-                bool failedValidation = false;
-                foreach (string componentName in node.ModelFullID.Split(new string[] {"-_-"},
-                    StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (!CheckForOccurrence(componentName))
-                    {
-                        failedCount++;
-                        failedValidation = true;
-                    }
-                }
-
-                if (!failedValidation)
-                {
-                    validationCount++;
-                }
-            }
-
-            if (validationCount == nodes.Count)
-            {
-                message = string.Format("The assembly validated successfully. {0} / {1} nodes checked out.",
-                    validationCount, nodes.Count);
-                return true;
-            }
-            else
-            {
-                message = string.Format(
-                    "The assembly failed to validate. {0} / {1} nodes checked out. {2} parts/assemblies were not found.",
-                    validationCount, nodes.Count, failedCount);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Checks to see if a <see cref="ComponentOccurrence"/> of the specified name exists
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private bool CheckForOccurrence(string name)
-        {
-            foreach (ComponentOccurrence component in AsmDocument.ComponentDefinition.Occurrences)
-            {
-                if (component.Name == name)
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Adds a <see cref="ComponentOccurrence"/> with the specified name to the specified <see cref="HighlightSet"/>
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="jointNodeType"></param>
-        private void SelectNode(string name)
-        {
-            foreach (ComponentOccurrence occ in AsmDocument.ComponentDefinition.Occurrences)
-            {
-                if (occ.Name == name)
-                {
-                    ChildHighlight.AddItem(occ);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds the specified <see cref="ComponentOccurrence"/> with the <see cref="HighlightSet"/> specified in <paramref name="jointNodeType"/>
-        /// </summary>
-        /// <param name="occurrence"></param>
-        /// <param name="jointNodeType"></param>
-        private void SelectNode(ComponentOccurrence occurrence)
-        {
-            ChildHighlight.AddItem(occurrence);
-        }
-
-        /// <summary>
-        /// Sets the tooltip of a <see cref="ButtonDefinition"/>
-        /// </summary>
-        /// <param name="button">The <see cref="ButtonDefinition"/> the tool tip is being applied to</param>
-        /// <param name="description">The description of the command which the <paramref name="button"/> executes</param>
-        /// <param name="expandedDescription">The expanded description of the command which appears after hovering the cursor over the button for a few seconds</param>
-        /// <param name="picture">The image that appears along side the <paramref name="expandedDescription"/></param>
-        /// <param name="title">The bolded title appearing at the top of the tooltip</param>
-        public void ToolTip(ButtonDefinition button, string title, string description,
-            string expandedDescription = null, stdole.IPictureDisp picture = null)
-        {
-            if (description != null)
-                button.ProgressiveToolTip.Description = description;
-            if (expandedDescription != null)
-            {
-                button.ProgressiveToolTip.ExpandedDescription = expandedDescription;
-                button.ProgressiveToolTip.IsProgressive = true;
-            }
-
-            if (picture != null)
-            {
-                button.ProgressiveToolTip.Image = picture;
-                button.ProgressiveToolTip.IsProgressive = true;
-            }
-
-            button.ProgressiveToolTip.Title = title;
-        }
-
-        /// <summary>
-        /// <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, <see cref="ViewDirection.Z"/> position the camera right of, in front of, and above the target relative to the front of the robot.
-        /// Bitwise OR <see cref="ViewDirection.X"/>, <see cref="ViewDirection.Y"/>, or <see cref="ViewDirection.Z"/> with <see cref="ViewDirection.Negative"/> to invert these (make them left of, behind or above the robot).
-        /// </summary>
-        public enum ViewDirection : byte
-        {
-            /// <summary>
-            /// Positions the camera to the right of the robot.
-            /// </summary>
-            X = 0b00000001,
-
-            /// <summary>
-            /// Positions the camera above the robot.
-            /// </summary>
-            Y = 0b00000010,
-
-            /// <summary>
-            /// Positions the robot in front of the robot.
-            /// </summary>
-            Z = 0b00000100,
-            Negative = 0b00001000
+            Settings.Default.Save();
         }
     }
 }
