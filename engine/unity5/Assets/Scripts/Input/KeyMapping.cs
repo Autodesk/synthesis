@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Synthesis.Input.Enums;
 using Synthesis.Input.Inputs;
 
@@ -9,11 +10,17 @@ namespace Synthesis.Input
     /// </summary>
     public class KeyMapping
     {
+        [JsonProperty]
         private string mName;
-        private CustomInput mPrimaryInput;
-        private CustomInput mSecondaryInput;
-        private CustomInput mTertiaryInput;
 
+        [JsonProperty]
+        private CustomInput mPrimaryInput;
+
+        [JsonProperty]
+        private CustomInput mSecondaryInput;
+
+        //[JsonProperty]
+        private CustomInput mTertiaryInput;
 
 
         #region Properties
@@ -23,6 +30,7 @@ namespace Synthesis.Input
         /// Gets the <see cref="KeyMapping"/> name.
         /// </summary>
         /// <value>KeyMapping name.</value>
+        [JsonIgnore]
         public string name
         {
             get
@@ -37,6 +45,7 @@ namespace Synthesis.Input
         /// Gets or sets the primary input. Please note that if you set null value it will create KeyboardInput with KeyCode.None
         /// </summary>
         /// <value>Primary input.</value>
+        [JsonIgnore]
         public CustomInput primaryInput
         {
             get
@@ -63,6 +72,7 @@ namespace Synthesis.Input
         /// Gets or sets the secondary input. Please note that if you set null value it will create KeyboardInput with KeyCode.None
         /// </summary>
         /// <value>Secondary input.</value>
+        [JsonIgnore]
         public CustomInput secondaryInput
         {
             get
@@ -89,6 +99,7 @@ namespace Synthesis.Input
         /// Gets or sets the third input. Please note that if you set null value it will create KeyboardInput with KeyCode.None
         /// </summary>
         /// <value>Third input.</value>
+        [JsonIgnore]
         public CustomInput thirdInput
         {
             get
@@ -112,7 +123,24 @@ namespace Synthesis.Input
 
         #endregion
 
+        #region argToInput Helper Functions for setKey() and SetAxis()
 
+        /// <summary>
+        /// Convert argument to <see cref="CustomInput"/>.
+        /// </summary>
+        /// <returns>Converted CustomInput.</returns>
+        /// <param name="arg">Some kind of argument.</param>
+        private static CustomInput argToInput(UnityEngine.KeyCode? arg)
+        {
+            if (arg == null)
+                return null;
+            return new KeyboardInput(arg.Value);
+        }
+        #endregion
+
+        public KeyMapping(string name, UnityEngine.KeyCode primaryInput, UnityEngine.KeyCode? secondaryInput = null, UnityEngine.KeyCode? tertiaryInput = null) :
+            this(name, argToInput(primaryInput), argToInput(secondaryInput), argToInput(tertiaryInput))
+        { }
 
         /// <summary>
         /// Create a new instance of <see cref="KeyMapping"/> with 3 specified <see cref="CustomInput"/>.
@@ -121,7 +149,8 @@ namespace Synthesis.Input
         /// <param name="primaryCustomInput">Primary input.</param>
         /// <param name="secondaryCustomInput">Secondary input.</param>
         /// <param name="thirdCustomInput">Third input.</param>
-        public KeyMapping(string name = "", CustomInput primaryCustomInput = null, CustomInput secondaryCustomInput = null, CustomInput thirdCustomInput = null)
+        [JsonConstructor]
+        public KeyMapping(string name, CustomInput primaryCustomInput = null, CustomInput secondaryCustomInput = null, CustomInput thirdCustomInput = null)
         {
             mName = name;
             primaryInput = primaryCustomInput;
@@ -135,8 +164,6 @@ namespace Synthesis.Input
         /// <param name="another">Another KeyMapping instance.</param>
         public KeyMapping(KeyMapping another)
         {
-            mName = another.mName;
-
             set(another);
         }
 
@@ -146,6 +173,7 @@ namespace Synthesis.Input
         /// <param name="another">Another KeyMapping instance.</param>
         public void set(KeyMapping another)
         {
+            mName = another.mName;
             mPrimaryInput = another.mPrimaryInput;
             mSecondaryInput = another.mSecondaryInput;
             mTertiaryInput = another.mTertiaryInput;

@@ -65,7 +65,22 @@ namespace Synthesis.Input.Inputs
 
         #endregion
 
+        [Newtonsoft.Json.JsonConstructor]
+        public JoystickInput(JoystickAxis axis = JoystickAxis.None, JoystickButton button = JoystickButton.None, Joystick target = Joystick.AllJoysticks, KeyModifier modifiers = KeyModifier.NoModifier)
+        {
+            if ((axis == JoystickAxis.None) == (button == JoystickButton.None))
+            {
+                Debug.LogError("Either axis or button must be None, not both or neither");
+            }
 
+            mAxis = axis;
+            mButton = button;
+            mTarget = target;
+            mModifiers = modifiers;
+
+            mCachedToString = null;
+            mCachedInputName = null;
+        }
 
         /// <summary>
         /// Create a new instance of <see cref="JoystickInput"/> that handles specified joystick axis for a target joystick.

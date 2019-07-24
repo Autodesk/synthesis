@@ -33,6 +33,10 @@ namespace Synthesis.GUI
         // Update is called once per frame
         void OnGUI()
         {
+            if (mKeyText == null)
+            {
+                mKeyText = GetComponentInChildren<Text>();
+            }
             //Implement style preferances; (some assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
             mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
             mKeyText.color = Color.white;

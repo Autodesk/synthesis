@@ -146,31 +146,31 @@ public class DriveJoints
         if (!InputControl.freeze)
         {
             for (int i = PWM_OFFSET; i < PWM_COUNT; i++)
-                pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].axes.pwmAxes[i - PWM_OFFSET]) * SpeedArrowPwm;
+                pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i - PWM_OFFSET]) * SpeedArrowPwm;
 
             if (isMecanum)
             {
                 #region Mecanum Drive
                 pwm[(int)MecanumPorts.FrontRight] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.pwmAxes[0]) * -SpeedArrowPwm);
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * -SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * -SpeedArrowPwm);
 
                 pwm[(int)MecanumPorts.FrontLeft] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.pwmAxes[0]) * -SpeedArrowPwm);
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * -SpeedArrowPwm);
 
                 //For some reason, giving the back wheels 0.25 power instead of 0.5 works for strafing
                 pwm[(int)MecanumPorts.BackRight] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.pwmAxes[0]) * 0.25f);
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * -SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * 0.25f);
 
                 pwm[(int)MecanumPorts.BackLeft] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].axes.pwmAxes[0]) * 0.25f);
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm) +
+                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * 0.25f);
 
                 #endregion
             }
@@ -180,20 +180,20 @@ public class DriveJoints
                 {
                     case Player.ControlProfile.TankJoystick:
                         pwm[0] =
-                           (InputControl.GetAxis(Controls.Players[controlIndex].axes.tankRightAxes) * SpeedArrowPwm);
+                           (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankRightAxes) * SpeedArrowPwm);
 
                         pwm[1] =
-                           (InputControl.GetAxis(Controls.Players[controlIndex].axes.tankLeftAxes) * SpeedArrowPwm);
+                           (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankLeftAxes) * SpeedArrowPwm);
 
                         break;
                     case Player.ControlProfile.ArcadeKeyboard:
                         pwm[0] =
-                            (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * -SpeedArrowPwm) +
-                            (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * SpeedArrowPwm);
+                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
+                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm);
 
                         pwm[1] =
-                            (InputControl.GetAxis(Controls.Players[controlIndex].axes.vertical) * SpeedArrowPwm) +
-                            (InputControl.GetAxis(Controls.Players[controlIndex].axes.horizontal) * SpeedArrowPwm);
+                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
+                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm);
 
                         break;
                     default:
