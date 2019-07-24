@@ -1,10 +1,11 @@
 package v1
 
 import (
-	"io"
 	"context"
 	"fmt"
-	"github.com/autodesk/synthesis/emulation/bridge/pkg/api/v1"
+	"io"
+
+	v1 "github.com/autodesk/synthesis/emulation/bridge/pkg/api/v1"
 	"google.golang.org/grpc"
 )
 
@@ -13,15 +14,15 @@ type ServInfo struct {
 }
 
 type EmulationBridgeService struct {
-	clientInfo []ServInfo
+	clientInfo      []ServInfo
 	defaultHandlers map[string]string
-	activeConns map[string]*grpc.ClientConn
+	activeConns     map[string]*grpc.ClientConn
 }
 
 func NewEmulationBridgeService() *EmulationBridgeService {
 	return &EmulationBridgeService{
-		clientInfo: make([]ServInfo, 0),
-		activeConns: make(map[string]*grpc.ClientConn),
+		clientInfo:      make([]ServInfo, 0),
+		activeConns:     make(map[string]*grpc.ClientConn),
 		defaultHandlers: make(map[string]string),
 	}
 }
@@ -60,7 +61,7 @@ func (eb *EmulationBridgeService) ActivateClient(name string, isDefault bool) er
 			}
 		}
 	}
-	eb.activeConns[name] = conn 
+	eb.activeConns[name] = conn
 	if isDefault {
 		eb.defaultHandlers[servInfo.Type] = name
 	}
@@ -103,6 +104,7 @@ func (eb *EmulationBridgeService) RobotOutputs(req *v1.RobotOutputsRequest, stea
 		if err != nil {
 			return err
 		}
+		fmt.Printf("%v\n", robotOutputs)
 		steam.Send(robotOutputs)
 	}
 }
@@ -118,6 +120,9 @@ func (eb *EmulationBridgeService) RobotInputs(stream v1.EmulationWriter_RobotInp
 			stream.SendAndClose(&v1.UpdateRobotInputsResponse{
 				Api: "v1",
 			})
+			return nil
+		} else if err != nil {
+			return err
 		}
 		if writer == nil {
 			switch inputs.TargetPlatform {

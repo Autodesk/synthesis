@@ -1,17 +1,18 @@
-FROM ubuntu:18.04
+FROM ubuntu:19.04
 
 ENV WPILIB_VERSION v2019.4.1
 ENV SYNTHESIS_BRANCH 953-java-emulation
 ENV ENTER_HEL cd /home/lvuser/synthesis/emulation/hel
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
-
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     git \
     vim \
     gdb \
+    automake \
+    libtool \
     gdb-multiarch \
     gdbserver \
     openjdk-11-jdk \
@@ -38,11 +39,23 @@ RUN git config --global user.email "no-reply@gmail.com"
 RUN git config --global user.name "no-reply"
 
 RUN cd /home/lvuser && \
-    cd /home/lvuser && \
+    git clone https://github.com/protocolbuffers/protobuf.git --branch v3.7.0 && \
+    cd protobuf && \
+    git submodule update --init --recursive && \
+    ./autogen.sh && \
+    ./configure "CFLAGS=-fPIC" "CXXFLAGS=-fPIC" && \
+    make -j12 && make check && \
+    sudo make install && \
+    sudo ldconfig
+
+RUN echo "test"
+RUN echo "test"
+
+RUN cd /home/lvuser && \
     git clone https://github.com/Autodesk/synthesis.git --branch ${SYNTHESIS_BRANCH} --depth=1
 
 RUN ${ENTER_HEL} && \
-    cmake . -DTESTING=FALSE -DARCH=X86_64 -DWPILIB=${WPILIB_VERSION} && \
+    cmake . -DARCH=X86_64 -DWPILIB=${WPILIB_VERSION} && \
     make hel -j12
 
 RUN ${ENTER_HEL} && \
@@ -54,21 +67,21 @@ RUN ${ENTER_HEL}/../wpi_cross && \
     rm -rf hal/src/main/native/sim && \
     cp ../../hel/lib/ni-libraries/src/ni-libraries/src/include hal/src/main/native/ -r && \
     cp wpiutil/src/main/native/include hal/src/main/native/ -r && \
-    cp ../shim.cpp hal/src/main/native/sim/ && \
     mv hal/src/main/native/athena hal/src/main/native/sim && \
-    ./gradlew tasks && \
+    cat ../shim.cpp >> hal/src/main/native/cpp/jni/HALUtil.cpp && \
     ./gradlew halBaseReleaseSharedLibrary halJNISharedReleaseSharedLibrary :wpilibj:assemble
 
 RUN ${ENTER_HEL}/../ && \
     find . -regex ".*\.\(so\|jar\)\([0-9]*\)*" -exec cp {} /home/lvuser \;
 
-RUN ${ENTER_HEL} && \
+RUN cd /home/lvuser && \
     ln -s libhel.so /lib/libFRC_NetworkCommunication.so.19.0.0 && \
     ln -s libhel.so /lib/libNiFpga.18.0.0 && \
     ln -s libhel.so /lib/libniriodevenum.so.18.0.0 && \
     ln -s libhel.so /lib/libniriosessions.so.18.0.0 && \
     ln -s libhel.so /lib/libvisa.so && \
     ln -s libhel.so /lib/libNiRioSrv.so.19.0.0 && \
+    ls && \
     mv -n ./*.so* /lib
 
 EXPOSE 50051
@@ -76,7 +89,6 @@ EXPOSE 10022
 EXPOSE 10023
 
 RUN mkdir /run/sshd
-RUN chown -R lvuser:lvuser /home/lvuser
 
 CMD /usr/sbin/sshd && \
     ${ENTER_HEL} && \ 
