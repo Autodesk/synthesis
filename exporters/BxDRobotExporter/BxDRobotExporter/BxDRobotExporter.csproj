@@ -149,6 +149,10 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
+    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.cs" />
+    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
+      <DependentUpon>DOFKeyPane.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -172,12 +176,6 @@
     </Compile>
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.Designer.cs">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
-      <DependentUpon>DOFKeyPane.cs</DependentUpon>
     </Compile>
     <Compile Include="Managers\HighlightManager.cs" />
     <Compile Include="Managers\RobotDataManager.cs" />
@@ -372,9 +370,9 @@
     <Content Include="Autodesk.BxDRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="GUI\DegreesOfFreedomViewer\DOFKey.html" />
+    <Content Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.resx" />
     <Content Include="GUI\Guide\Guide.html" />
-    <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKey.html" />
-    <Content Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.resx" />
     <Content Include="packages.config" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />

@@ -6,12 +6,15 @@ namespace BxDRobotExporter.Managers
 {
     public class HighlightManager
     {
+        // Joint editor highlight
+        private HighlightSet jointEditorHighlight;
+        
+        // Degrees of freedom highlight
+        public bool DisplayDof { get; private set; }
         private HighlightSet blueHighlightSet;
         private HighlightSet greenHighlightSet;
         private HighlightSet redHighlightSet;
 
-        private HighlightSet jointEditorHighlight;
-        private HighlightSet wheelHighlight;
 
         public void EnvironmentOpening(AssemblyDocument asmDocument)
         {
@@ -24,11 +27,7 @@ namespace BxDRobotExporter.Managers
 
             jointEditorHighlight = asmDocument.CreateHighlightSet();
             jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotDataManager.PluginSettings.InventorChildColor);
-            wheelHighlight = asmDocument.CreateHighlightSet();
-            wheelHighlight.Color = InventorUtils.GetInventorColor(Color.Green);
         }
-
-        public bool DisplayDof { get; private set; }
 
         public void EnableDofHighlight(RobotDataManager robotDataManager)
         {

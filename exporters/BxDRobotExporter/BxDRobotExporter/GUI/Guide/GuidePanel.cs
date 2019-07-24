@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.ExportGuide
+namespace BxDRobotExporter.GUI.Guide
 {
     public partial class ExportGuidePanel : UserControl
     {

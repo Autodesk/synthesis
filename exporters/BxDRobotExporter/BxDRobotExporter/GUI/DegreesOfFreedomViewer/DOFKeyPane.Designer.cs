@@ -1,4 +1,4 @@
-﻿namespace BxDRobotExporter.GUI.Editors.DegreesOfFreedomViewer
+﻿namespace BxDRobotExporter.GUI.DegreesOfFreedomViewer
 {
     partial class DofKeyPane
     {
