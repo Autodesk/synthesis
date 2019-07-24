@@ -18,7 +18,7 @@ namespace SynthesisAddIn
 	const std::string PALETTE_PROGRESS = "ProcessFormPalette";
 	const std::string PALETTE_FINISH = "FinishFormPalette";
 	const std::string BTN_DT_TYPE = "DriveTrainTypeButton";
-	const std::string BTN_WEIGHT = "DriveTrainWeightButton";
+	const std::string BTN_DT_WEIGHT = "DriveTrainWeightButton";
 	const std::string BTN_EDIT_JOINTS = "EditJointsButton";
 	const std::string BTN_DOF = "DOFButton";
 	const std::string BTN_GUIDE = "GuideButton";

@@ -75,8 +75,16 @@ void EUI::prepareAllPalettes()
 	createFinishPalette();
 	createProgressPalette();
 	createDriveWeightPalette();
+}
 
-	 	// DEBUG PURPOSE = 
+void EUI::closeAllPalettes()
+{
+	closeDriveTypePalette("");
+	closeDriveWeightPalette("");
+	closeJointEditorPalette();
+	closeGuidePalette();
+	closeSensorsPalette();
+	cancelExportRobot();
 }
 
 // Drivetrain Weight Palette
@@ -90,7 +98,7 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "Palette/dt_weight.html", false, true, true, 300, 150);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/dt_weight.html", false, true, true, 300, 150);
 		if (!driveWeightPalette)
 			return false;
 
@@ -122,7 +130,7 @@ void EUI::deleteDriveWeightPalette() {
 }
 
 void EUI::openDriveWeightPalette() {
-	//exportButtonCommand->controlDefinition()->isEnabled(false);
+	driveTrainWeightButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread* uiThread = nullptr;
@@ -138,7 +146,7 @@ void EUI::openDriveWeightPalette() {
 
 void EUI::closeDriveWeightPalette(std::string weightData) {
 	driveWeightPalette->isVisible(false);
-	//sensorsPalette->isVisible(false);
+	driveTrainWeightButton->controlDefinition()->isEnabled(true);
 
 	if (weightData.length() > 0)
 	{
@@ -153,6 +161,7 @@ void EUI::closeDriveWeightPalette(std::string weightData) {
 void EUI::hideAllPalettes()
 {
 	driveTypePalette->isVisible(false);
+	driveWeightPalette->isVisible(false);
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	guidePalette->isVisible(false);
@@ -172,7 +181,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "Palette/jointEditor.html", false, true, true, 370, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, true, true, 370, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -261,7 +270,7 @@ bool EUI::createGuidePalette()
 	if (!guidePalette)
 	{
 		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "Palette/guide.html", false, true, true, 400, 200);
+		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "palette/guide.html", false, true, true, 400, 200);
 		if (!guidePalette)
 			return false;
 
@@ -296,16 +305,7 @@ void EUI::deleteGuidePalette()
 void EUI::openGuidePalette()
 {
 	robotExportGuideButton->controlDefinition()->isEnabled(false);
-
-	static std::thread* uiThread = nullptr;
-	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-	uiThread = new std::thread([this]()
-		{
-			guidePalette->sendInfoToHTML("guide", "0");
-			guidePalette->isVisible(true);
-			guidePalette->sendInfoToHTML("guide", "0");
-		});
+	guidePalette->isVisible(true);
 }
 
 void EUI::closeGuidePalette()
@@ -386,7 +386,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "Palette/export.html", false, true, true, 250, 200);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "Palette/export.html", false, true, true, 300, 200);
 		if (!finishPalette)
 			return false;
 
@@ -420,7 +420,7 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
-	// finishButton->controlDefinition()->isEnabled(false);
+	finishButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -681,7 +681,7 @@ void EUI::createButtons()
 	driveTrainTypeButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Type", "Select your drivetrain type (tank, H-drive, or other).", "Resources/DriveIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainTypeButton, driveTrainTypeShowPaletteCommandCreatedHandler);
 
-	driveTrainWeightButton = UI->commandDefinitions()->addButtonDefinition(BTN_WEIGHT, "Drive Train Weight", "Assign the weight of the drivetrain.", "Resources/WeightIcons");
+	driveTrainWeightButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_WEIGHT, "Drive Train Weight", "Assign the weight of the drivetrain.", "Resources/WeightIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
 
 	editJointsButton = UI->commandDefinitions()->addButtonDefinition(BTN_EDIT_JOINTS, "Edit Joints", "Edit existing joints.", "Resources/JointIcons");

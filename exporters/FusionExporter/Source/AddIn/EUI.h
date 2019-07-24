@@ -43,6 +43,7 @@ namespace SynthesisAddIn
 		// UI Management
 		void prepareAllPalettes(); ///< Creates all palettes
 		void hideAllPalettes();
+		void closeAllPalettes();
 
 		void openDriveTypePalette();
 		void closeDriveTypePalette(std::string data);
