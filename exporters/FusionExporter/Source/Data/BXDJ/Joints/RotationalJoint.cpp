@@ -107,3 +107,23 @@ void RotationalJoint::write(XmlWriter & output) const
 	// Write driver information
 	Joint::write(output);
 }
+
+
+nlohmann::json RotationalJoint::GetJson() {
+	nlohmann::json jointJson;
+	jointJson["$type"] = "RotationalJoint, RobotExportAPI";
+	jointJson["axis"] = getAxisOfRotation().GetJson();
+	jointJson["basePoint"] = getChildBasePoint().GetJson();
+	jointJson["currentAngularPosition"] = getCurrentAngle();
+	jointJson["hasAngularLimit"] = hasLimits();
+	jointJson["angularLimitLow"] = getMinAngle();
+	jointJson["angularLimitHigh"] = getMaxAngle();
+	jointJson["typeSave"] = "ROTATIONAL";
+	jointJson["weight"] = getWeightData() || 10;
+
+	nlohmann::json driverJson;
+
+	jointJson["cDrive"] = driverJson;
+
+	return jointJson;
+}

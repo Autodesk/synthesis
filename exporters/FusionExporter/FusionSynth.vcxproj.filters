@@ -282,5 +282,6 @@
     <None Include="palette\drivetrain.html">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

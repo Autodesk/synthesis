@@ -149,19 +149,41 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 
 	// Write robot to file
 	Filesystem::createDirectory(Filesystem::getCurrentRobotDirectory(config.robotName));
-
+	
 	// Write BXDJ file
-	std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
-	BXDJ::XmlWriter xml(filenameBXDJ, false);
+	if (false) {
+		std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.bxdj";
+		BXDJ::XmlWriter xml(filenameBXDJ, false);
 
-	xml.startElement("BXDJ");
-	xml.writeAttribute("Version", CURRENT_VERSION);
+		xml.startElement("BXDJ");
+		xml.writeAttribute("Version", CURRENT_VERSION);
 
-	xml.write(*rootNode);
+		xml.write(*rootNode);
 
-	xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.drivetrainType));
-	xml.writeElement("SoftwareExportedWith", "FUSION_360");
-	xml.endElement();
+		xml.writeElement("DriveTrainType", BXDJ::ConfigData::toString(config.drivetrainType));
+		xml.writeElement("SoftwareExportedWith", "FUSION_360");
+		xml.endElement();
+	}
+	else {
+		
+		std::string filenameBXDJ = Filesystem::getCurrentRobotDirectory(config.robotName) + "skeleton.json";
+		
+		nlohmann::json baseJson;
+		baseJson["Version"] = CURRENT_VERSION;
+		baseJson["DriveTrainType"] = BXDJ::ConfigData::toString(config.drivetrainType);
+		baseJson["SoftwareExportedWith"] = "FUSION_360";
+
+		nlohmann::json nodes = nlohmann::json::array();
+
+
+		baseJson["nodes"] = nodes;
+
+		std::ofstream writeStream(filenameBXDJ);
+
+		std::string jsonStr = baseJson.dump(1); // 1 = Indent
+		writeStream << jsonStr << std::endl;
+		writeStream.close();
+	}
 
 	// Write BXDA files
 	int completedOccurrences = 0;

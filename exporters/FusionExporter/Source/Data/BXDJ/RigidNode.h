@@ -6,6 +6,7 @@
 #include <Fusion/Components/Component.h>
 #include <Fusion/Components/Occurrence.h>
 #include "XmlWriter.h"
+#include <nlohmann/json.hpp>
 #include "../Guid.h"
 
 using namespace adsk;
@@ -129,6 +130,9 @@ namespace BXDJ
 		void addJoint(core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
 		
 		void write(XmlWriter &) const;
+
+		nlohmann::json GetJson();
+		
 
 	};
 };

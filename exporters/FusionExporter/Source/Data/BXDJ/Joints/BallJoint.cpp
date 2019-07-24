@@ -49,3 +49,10 @@ void BallJoint::write(XmlWriter & output) const
 	// Write driver information
 	// Joint::write(output); // No drivers are compatible with ball joint
 }
+
+
+nlohmann::json BallJoint::GetJson() {
+	nlohmann::json jointJson;
+
+	return jointJson;
+}
