@@ -23,27 +23,6 @@ namespace BxDRobotExporter
     {
         public static RobotExporterAddInServer Instance { get; set; }
 
-        public bool PendingChanges
-        {
-            get
-            {
-                if (InventorUtils.Gui.SkeletonBase == null)
-                    return false;
-                else
-                    return pendingChanges;
-            }
-            set
-            {
-//                if (QuitButton != null)
-//                {
-//                    QuitButton.Enabled = value; // Disable save button if changes have been saved
-//                }
-                pendingChanges = value;
-            }
-        }
-
-        private bool pendingChanges = false;
-
         public Inventor.Application MainApplication;
 
         public AssemblyDocument AsmDocument;
@@ -64,7 +43,6 @@ namespace BxDRobotExporter
         //Standalone Buttons
         private ButtonDefinition driveTrainTypeButton;
         private ButtonDefinition drivetrainWeightButton;
-        private ButtonDefinition wheelAssignmentButton;
 
         private ButtonDefinition advancedEditJointButton;
         private ButtonDefinition editJointButton;
@@ -72,10 +50,6 @@ namespace BxDRobotExporter
         private ButtonDefinition guideButton;
         private ButtonDefinition dofButton;
         private ButtonDefinition settingsButton;
-
-        //        ButtonDefinition QuitButton;
-        private ButtonDefinition exportButton;
-
 
         //Highlighting
         public HighlightSet ChildHighlight;
@@ -198,7 +172,6 @@ namespace BxDRobotExporter
             MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
-            LegacyEvents.RobotModified += new Action(() => { PendingChanges = true; });
 
             Instance = this;
         }
@@ -607,9 +580,7 @@ namespace BxDRobotExporter
         /// <param name="context"></param>
         private void SaveRobotData(NameValueMap context)
         {
-           
-            if (InventorUtils.Gui.SaveRobotData())
-                PendingChanges = false;
+            InventorUtils.Gui.SaveRobotData();
         }
 
         /// <summary>
@@ -637,8 +608,7 @@ namespace BxDRobotExporter
         private void SetWeight_OnExecute(NameValueMap context)
         {
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
-            if (InventorUtils.Gui.PromptRobotWeight())
-                PendingChanges = true;
+            InventorUtils.Gui.PromptRobotWeight();
         }
 
         /// <summary>
