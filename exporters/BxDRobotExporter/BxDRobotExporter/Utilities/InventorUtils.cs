@@ -28,7 +28,7 @@ namespace BxDRobotExporter
         {
             if (nodes == null)
             {
-                RobotExporterAddInServer.Instance.highlightManager.ClearAllHighlight();
+                RobotExporterAddInServer.Instance.HighlightManager.ClearAllHighlight();
                 camera.Fit();
                 camera.ApplyWithoutTransition();
                 return;
@@ -39,7 +39,7 @@ namespace BxDRobotExporter
                 return;
             }
             
-            RobotExporterAddInServer.Instance.highlightManager.ClearJointHighlight();
+            RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
             FocusCameraOnOccurrences(occurrences, 15, camera, zoom, InventorUtils.ViewDirection.Y);
             HighlightOccurrences(occurrences);
@@ -63,7 +63,7 @@ namespace BxDRobotExporter
                 return;
             }
             
-            RobotExporterAddInServer.Instance.highlightManager.ClearJointHighlight();
+            RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
             FocusCameraOnOccurrences(occurrences, 15, camera, InventorUtils.ViewDirection.Y);
             HighlightOccurrences(occurrences);
@@ -71,11 +71,11 @@ namespace BxDRobotExporter
 
         public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
         {
-            RobotExporterAddInServer.Instance.highlightManager.ClearAllHighlight();
+            RobotExporterAddInServer.Instance.HighlightManager.ClearAllHighlight();
 
             foreach (var componentOccurrence in occurrences)
             {
-                RobotExporterAddInServer.Instance.highlightManager.HighlightJoint(componentOccurrence);
+                RobotExporterAddInServer.Instance.HighlightManager.HighlightJoint(componentOccurrence);
             }
         }
 
