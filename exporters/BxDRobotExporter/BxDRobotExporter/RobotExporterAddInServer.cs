@@ -27,18 +27,18 @@ namespace BxDRobotExporter
     public class RobotExporterAddInServer : ApplicationAddInServer
     {
         public static RobotExporterAddInServer Instance { get; private set; }
-        
-        internal static RobotDataManager RobotDataManager;
+
+        public readonly HighlightManager HighlightManager = new HighlightManager();
+        public RobotDataManager RobotDataManager;
 
         public Application MainApplication;
 
         public AssemblyDocument AsmDocument;
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
+        
+        // -- UI FIELDS
+        // Environment
         private Environment exporterEnv;
-        private bool environmentEnabled = false;
-
-        //Makes sure that the application doesn't create a bunch of dockable windows. Nobody wants that crap.
-        private bool hiddenExporter = false;
 
         //Ribbon Pannels
         private RibbonPanel driveTrainPanel;
@@ -63,6 +63,16 @@ namespace BxDRobotExporter
         private static DockableWindow embeddedGuidePane;
         private static DockableWindow embeddedKeyPane;
 
+        // UI elements
+        private JointForm jointForm;
+        private AdvancedJointEditorUserControl advancedJointEditor;
+        
+        // ???? (Weird flags which should be deleted)
+        private bool exporterBlocked = false;
+        private bool hiddenExporter = false;
+        private bool environmentEnabled = false;
+
+        
         /// <summary>
         /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
         /// </summary>
@@ -210,7 +220,7 @@ namespace BxDRobotExporter
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
             CreateChildDialog();
             
-            highlightManager.EnvironmentOpening(AsmDocument);
+            HighlightManager.EnvironmentOpening(AsmDocument);
 
 
             //Sets up events for selecting and deselecting parts in inventor
@@ -237,11 +247,11 @@ namespace BxDRobotExporter
             embeddedJointPane.Height = 250;
             embeddedJointPane.ShowVisibilityCheckBox = false;
             embeddedJointPane.ShowTitleBar = true;
-            Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
+            Instance.advancedJointEditor = new AdvancedJointEditorUserControl();
 
-            Instance.AdvancedAdvancedJointEditor.SetSkeleton(RobotDataManager.SkeletonBase);
-            Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
-            Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            Instance.advancedJointEditor.SetSkeleton(RobotDataManager.SkeletonBase);
+            Instance.advancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
+            Instance.advancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
 
                 if (nodes == null || nodes.Count == 0) return;
@@ -264,7 +274,7 @@ namespace BxDRobotExporter
                     }
                 }
             };
-            embeddedJointPane.AddChild(Instance.AdvancedAdvancedJointEditor.Handle);
+            embeddedJointPane.AddChild(Instance.advancedJointEditor.Handle);
 
             embeddedJointPane.Visible = true;
 
@@ -479,19 +489,12 @@ namespace BxDRobotExporter
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
-        private bool exporterBlocked = false;
-        private JointForm jointForm;
-
-        public HighlightManager highlightManager = new HighlightManager();
-
-        public AdvancedJointEditorUserControl AdvancedAdvancedJointEditor;
-
         private void DOF_OnExecute(NameValueMap context)
         {
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
 
-            highlightManager.ToggleDofHighlight(RobotDataManager);
-            embeddedKeyPane.Visible = highlightManager.DisplayDof;
+            HighlightManager.ToggleDofHighlight(RobotDataManager);
+            embeddedKeyPane.Visible = HighlightManager.DisplayDof;
 
         }
         private void EditJoint_OnExecute(NameValueMap context)
@@ -508,7 +511,7 @@ namespace BxDRobotExporter
 //                Utilities.HideAdvancedJointEditor();
                 jointForm.OnShowButtonClick();
                 jointForm.ShowDialog();
-                AdvancedAdvancedJointEditor.SetSkeleton(RobotDataManager.Instance.SkeletonBase);
+                advancedJointEditor.SetSkeleton(RobotDataManager.Instance.SkeletonBase);
             }
         }
 
@@ -569,7 +572,7 @@ namespace BxDRobotExporter
         private void ExporterSettings_SettingsChanged(Color child, bool useFancyColors,
             string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
         {
-            highlightManager.SetJointHighlightColor(child);
+            HighlightManager.SetJointHighlightColor(child);
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings", 0);
             //Update Application
             Settings.Default.ExportToField = openSynthesis;
@@ -627,11 +630,11 @@ namespace BxDRobotExporter
             }
         }
         
-        public static void CreateChildDialog()
+        public void CreateChildDialog()
         {
             try
             {
-                RobotExporterAddInServer.RobotDataManager = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+                RobotDataManager = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
             }
             catch (Exception e)
             {
