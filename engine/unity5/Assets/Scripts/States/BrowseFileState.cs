@@ -26,6 +26,9 @@ namespace Synthesis.States
         protected BrowseFileState(string prefsKey, string directory)
         {
             this.prefsKey = prefsKey;
+            if (!Directory.Exists(directory)) {
+                Directory.CreateDirectory(directory);
+            }
             this.directory = directory;
         }
 
