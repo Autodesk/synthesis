@@ -269,36 +269,28 @@ namespace BxDRobotExporter
             environmentIsOpen = false;
         }
 
-        private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
-            NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            if (beforeOrAfter == EventTimingEnum.kBefore)
+        private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
+        { 
+            if (beforeOrAfter == EventTimingEnum.kAfter)
             {
-                if (!(documentObject is AssemblyDocument) || environmentIsOpen)
-                {
-                    InventorUtils.DisableEnvironment(Application, exporterEnv);
-                }
-                else
+                if (NewExporterEnvironmentAllowed(documentObject))
                 {
                     InventorUtils.EnableEnvironment(Application, exporterEnv);
+                    if (Settings.Default.ShowFirstLaunchInfo)
+                        new FirstLaunchInfo().ShowDialog();
                 }
-            }
-            else if (beforeOrAfter == EventTimingEnum.kAfter)
-            {
-                if (Settings.Default.ShowFirstLaunchInfo)
-                {
-                    new FirstLaunchInfo().ShowDialog();
-                }
+                else
+                    InventorUtils.DisableEnvironment(Application, exporterEnv);
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
-        private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
-            NameValueMap context, out HandlingCodeEnum handlingCode)
+        private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            if (environmentIsOpen && beforeOrAfter == EventTimingEnum.kBefore)
+            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen)
             {
+                // Hide dockable windows when switching to a different document 
                 advancedJointEditor.Visible = false;
                 dofKey.Visible = false;
                 guide.Visible = false;
@@ -306,75 +298,50 @@ namespace BxDRobotExporter
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
-        /// <summary>
-        /// Called when the user closes a document. Used to release exporter when a document is closed.
-        /// </summary>
-        /// <param name="documentObject"></param>
-        /// <param name="fullDocumentName"></param>
-        /// <param name="beforeOrAfter"></param>
-        /// <param name="context"></param>
-        /// <param name="handlingCode"></param>
-        private void ApplicationEvents_OnCloseDocument(_Document documentObject, string fullDocumentName,
-            EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
+        private void ApplicationEvents_OnCloseDocument(_Document documentObject, string fullDocumentName, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            // Quit the exporter if the closing document has the exporter open
-            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen)
-            {
-                if (documentObject is AssemblyDocument assembly)
-                {
-                    if (AssemblyDocument != null && assembly == AssemblyDocument)
-                    {
-                        OnEnvironmentClose();
-                    }
-                }
-            }
+            // If the robot export environment is open and the document that is about to be closed is the assembly document with the robot exporter opened
+            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen && DocumentIsExporterDocument(documentObject))
+                OnEnvironmentClose();
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
-        /// <summary>
-        /// Checks to make sure that you are in an assembly document and then readies for environment changing
-        /// </summary>
-        /// <param name="environment"></param>
-        /// <param name="environmentState"></param>
-        /// <param name="beforeOrAfter"></param>
-        /// <param name="context"></param>
-        /// <param name="handlingCode"></param>
-        private void UIEvents_OnEnvironmentChange(Environment environment,
-            EnvironmentStateEnum environmentState, EventTimingEnum beforeOrAfter, NameValueMap context,
-            out HandlingCodeEnum handlingCode)
+        private void UIEvents_OnEnvironmentChange(Environment environment, EnvironmentStateEnum environmentState, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            if (environment.Equals(exporterEnv) && beforeOrAfter == EventTimingEnum.kBefore)
+            // If the environment changing is the exporter environment
+            if (beforeOrAfter == EventTimingEnum.kBefore && environment.Equals(exporterEnv))
             {
-                if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState) // If activating exporter env
+                var documentObject = context.Item["Document"];
+                // If the exporter environment is opening
+                if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState)
                 {
-                    // User may not open documents other than assemblies
-                    if (!(context.Item["Document"] is AssemblyDocument assembly))
-                    {
-                        MessageBox.Show("Only assemblies can be used with the robot exporter.",
-                            "Invalid Document", MessageBoxButtons.OK);
-
-                        InventorUtils.ForceQuitExporter(context.Item["Document"]);
-                    }
-                    // User may not open multiple documents in the exporter
-                    else if (environmentIsOpen)
-                    {
-                        MessageBox.Show("The exporter may only be used in one assembly at a time. " +
-                                        "Please finish using the exporter in \"" + AssemblyDocument.DisplayName +
-                                        "\" to continue.",
-                            "Too Many Assemblies", MessageBoxButtons.OK);
-                        InventorUtils.ForceQuitExporter(assembly);
-                    }
-                    else
+                    if (NewExporterEnvironmentAllowed(documentObject))
                         OnEnvironmentOpen();
+                    else
+                    {
+                        MessageBox.Show("The Robot Exporter only supports assembly documents.",
+                            "Unsupported Document Type", MessageBoxButtons.OK);
+                        InventorUtils.ForceQuitExporter(documentObject);
+                    }
                 }
-                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && environmentIsOpen)
-                {
+                // If the exporter environment is closing
+                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && DocumentIsExporterDocument(documentObject))
                     OnEnvironmentClose();
-                }
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
+        }
+        
+        // User may not open documents other than assemblies or open multiple documents in the exporter
+        private bool NewExporterEnvironmentAllowed(object documentObject)
+        {
+            return documentObject is AssemblyDocument && !environmentIsOpen;
+        }
+        
+        private bool DocumentIsExporterDocument(object documentObject)
+        {
+            return AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
         }
     }
 }

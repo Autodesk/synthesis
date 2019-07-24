@@ -562,7 +562,14 @@ namespace BxDRobotExporter
         public static void EnableEnvironment(Application application, Environment exporterEnv)
         {
             if (GetEnvironmentIndex(application, exporterEnv) != -1) return;
-            application.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
+            try // There is a bu g in the Inventor API where the UserInterfaceManager doesn't list all environments, so sometimes we are attempting to add an environment twice
+            {
+                application.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }
