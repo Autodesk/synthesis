@@ -194,23 +194,6 @@ namespace Synthesis.Input
             return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
         }
 
-        /// <summary>
-        /// Gets the list of ALL the keys.
-        /// </summary>
-        /// <returns>List of keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetKeysList()
-        {
-            mKeysList.Clear();
-            foreach (Player player in Controls.Players)
-            {
-                foreach (KeyMapping key in player.GetActiveList())
-                {
-                    mKeysList.Add(key);
-                }
-            }
-            return mKeysList.AsReadOnly();
-        }
-
         #endregion
 
         #region Synthesis Setup Axes

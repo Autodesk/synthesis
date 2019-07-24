@@ -25,6 +25,48 @@ namespace Synthesis.Input
             Load();
         }
 
+        /// <summary>
+        /// Saves all primary and secondary controls.
+        /// Source: https://github.com/Gris87/InputControl
+        /// </summary>
+        public static void Save()
+        {
+            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
+            {
+                Players[player_i].SaveActiveProfile();
+            }
+        }
+
+        /// <summary>
+        /// Checks if the user has saved their control settings by comparing strings.
+        /// </summary>
+        /// <returns>True: If user did save their controls
+        ///          False: If the user hasn't saved their controls.
+        /// </returns>
+        public static bool CheckIfSaved()
+        {
+            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
+            {
+                if (!Players[player_i].CheckIfSaved())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Loads all primary and secondary controls.
+        /// Source: https://github.com/Gris87/InputControl
+        /// </summary>
+        public static void Load()
+        {
+            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
+            {
+                Players[player_i].LoadActiveProfile();
+            }
+        }
+
         public static Player.Profile CreateDefault(int player_i, Player.ControlProfile controlProfile)
         {
             Player.Profile profile = new Player.Profile();
@@ -65,7 +107,7 @@ namespace Synthesis.Input
                         }
                         break;
                     default:
-                        throw new System.Exception("Unsupported control profile");
+                        throw new Player.UnhandledControlProfileException();
                 }
 
 
@@ -108,47 +150,6 @@ namespace Synthesis.Input
             return profile;
         }
 
-        /// <summary>
-        /// Saves all primary and secondary controls.
-        /// Source: https://github.com/Gris87/InputControl
-        /// </summary>
-        public static void Save()
-        {
-            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
-            {
-                Players[player_i].SaveActiveProfile();
-            }
-        }
-
-        /// <summary>
-        /// Checks if the user has saved their control settings by comparing strings.
-        /// </summary>
-        /// <returns>True: If user did save their controls
-        ///          False: If the user hasn't saved their controls.
-        /// </returns>
-        public static bool CheckIfSaved()
-        {
-            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
-            {
-                if (!Players[player_i].CheckIfSaved())
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Loads all primary and secondary controls.
-        /// Source: https://github.com/Gris87/InputControl
-        /// </summary>
-        public static void Load()
-        {
-            for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
-            {
-                Players[player_i].LoadActiveProfile();
-            }
-        }
 
         public static void UpdateFieldControls(int player_i)
         {

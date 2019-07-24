@@ -197,7 +197,7 @@ public class DriveJoints
 
                         break;
                     default:
-                        throw new System.Exception("Unsupported control profile");
+                        throw new Player.UnhandledControlProfileException();
                 }
             }
         }
