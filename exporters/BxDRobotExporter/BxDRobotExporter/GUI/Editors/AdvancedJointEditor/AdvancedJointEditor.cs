@@ -3,7 +3,7 @@ using Inventor;
 
 namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 {
-    public class AdvancedJointEditorDockableWindow
+    public class AdvancedJointEditor
     {
         private DockableWindow embeddedAdvancedJointEditorPane;
         private AdvancedJointEditorUserControl advancedJointEditorUserControl;

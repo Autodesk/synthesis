@@ -57,10 +57,10 @@ namespace BxDRobotExporter
         private ButtonDefinition dofButton;
         private ButtonDefinition settingsButton;
         
-        // Dockable windows
-        private static AdvancedJointEditorDockableWindow advancedJointEditor = new AdvancedJointEditorDockableWindow();
-        private static DockableWindow embeddedGuidePane;
-        private static DockableWindow embeddedDofKeyPane;
+        // Dockable window managers
+        private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
+        private readonly DOFKey dofKey = new DOFKey();
+        private DockableWindow embeddedGuidePane;
 
         // UI elements
         private JointForm jointForm;
@@ -241,17 +241,7 @@ namespace BxDRobotExporter
             UserInterfaceManager uiMan = MainApplication.UserInterfaceManager;
             
             advancedJointEditor.CreateDockableWindow(uiMan, RobotDataManager.SkeletonBase);
-
-            embeddedDofKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");
-            embeddedDofKeyPane.DockingState = DockingStateEnum.kFloat;
-            embeddedDofKeyPane.Width = 220;
-            embeddedDofKeyPane.Height = 130;
-            embeddedDofKeyPane.SetMinimumSize(120, 220);
-            embeddedDofKeyPane.ShowVisibilityCheckBox = false;
-            embeddedDofKeyPane.ShowTitleBar = true;
-            var keyPanel = new DofKeyPane();
-            embeddedDofKeyPane.AddChild(keyPanel.Handle);
-            embeddedDofKeyPane.Visible = false;
+            dofKey.CreateDockableWindow(uiMan);
 
             embeddedGuidePane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:GuidePane", "Robot Export Guide");
             embeddedGuidePane.DockingState = DockingStateEnum.kDockRight;
@@ -299,11 +289,8 @@ namespace BxDRobotExporter
                 embeddedGuidePane.Delete();
             }
 
-            if (embeddedDofKeyPane != null)
-            {
-                embeddedDofKeyPane.Visible = false;
-                embeddedDofKeyPane.Delete();
-            }
+            dofKey.DestroyDockableWindow();
+
 
             InventorUtils.ForceQuitExporter(AsmDocument);
 
@@ -455,8 +442,7 @@ namespace BxDRobotExporter
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
 
             HighlightManager.ToggleDofHighlight(RobotDataManager);
-            embeddedDofKeyPane.Visible = HighlightManager.DisplayDof;
-
+            dofKey.Enabled = HighlightManager.DisplayDof;
         }
         private void EditJoint_OnExecute(NameValueMap context)
         {
