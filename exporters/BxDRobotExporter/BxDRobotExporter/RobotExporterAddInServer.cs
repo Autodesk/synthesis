@@ -5,12 +5,18 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BxDRobotExporter.ControlGUI;
+using BxDRobotExporter.ExportGuide;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.GUI.Editors.AdvancedJointEditor;
+using BxDRobotExporter.GUI.Editors.DegreesOfFreedomViewer;
 using BxDRobotExporter.GUI.Editors.JointEditor;
 using BxDRobotExporter.Messages;
+using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.Properties;
 using Inventor;
+using Application = Inventor.Application;
+using Color = System.Drawing.Color;
+using Environment = Inventor.Environment;
 
 namespace BxDRobotExporter
 {
@@ -22,11 +28,11 @@ namespace BxDRobotExporter
     {
         public static RobotExporterAddInServer Instance { get; private set; }
 
-        public Inventor.Application MainApplication;
+        public Application MainApplication;
 
         public AssemblyDocument AsmDocument;
         private List<ComponentOccurrence> disabledAssemblyOccurences;
-        private Inventor.Environment exporterEnv;
+        private Environment exporterEnv;
         private bool environmentEnabled = false;
 
         //Makes sure that the application doesn't create a bunch of dockable windows. Nobody wants that crap.
@@ -53,6 +59,11 @@ namespace BxDRobotExporter
         //Highlighting
         public HighlightSet ChildHighlight;
         private HighlightSet wheelHighlight;
+        
+        // Dockable windows
+        public static DockableWindow EmbeddedJointPane;
+        public static DockableWindow EmbeddedGuidePane;
+        public static DockableWindow EmbeddedKeyPane;
 
         /// <summary>
         /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
@@ -136,7 +147,7 @@ namespace BxDRobotExporter
             guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "View a checklist of all tasks necessary prior to export.", guideIconSmall, guideIconLarge);
-            guideButton.OnExecute += delegate {InventorUtils.EmbededGuidePane.Visible = !InventorUtils.EmbededGuidePane.Visible; };
+            guideButton.OnExecute += delegate {EmbeddedGuidePane.Visible = !EmbeddedGuidePane.Visible; };
             guideButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(guideButton, true);
 
@@ -203,13 +214,13 @@ namespace BxDRobotExporter
             blueHighlightSet = AsmDocument.CreateHighlightSet();
             greenHighlightSet = AsmDocument.CreateHighlightSet();
             redHighlightSet = AsmDocument.CreateHighlightSet();
-            blueHighlightSet.Color = InventorUtils.GetInventorColor(System.Drawing.Color.DodgerBlue);
-            greenHighlightSet.Color = InventorUtils.GetInventorColor(System.Drawing.Color.LawnGreen);
-            redHighlightSet.Color = InventorUtils.GetInventorColor(System.Drawing.Color.Red);
+            blueHighlightSet.Color = InventorUtils.GetInventorColor(Color.DodgerBlue);
+            greenHighlightSet.Color = InventorUtils.GetInventorColor(Color.LawnGreen);
+            redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
             ChildHighlight = AsmDocument.CreateHighlightSet();
             ChildHighlight.Color = InventorUtils.GetInventorColor(SynthesisGui.PluginSettings.InventorChildColor);
             wheelHighlight = AsmDocument.CreateHighlightSet();
-            wheelHighlight.Color = InventorUtils.GetInventorColor(System.Drawing.Color.Green);
+            wheelHighlight.Color = InventorUtils.GetInventorColor(Color.Green);
 
             //Sets up events for selecting and deselecting parts in inventor
             ExporterSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
@@ -227,13 +238,69 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             InventorUtils.Gui.LoadRobotData(AsmDocument);
-            
-            InventorUtils.CreateDockableWindows(MainApplication);
+
+            UserInterfaceManager uiMan = MainApplication.UserInterfaceManager;
+            EmbeddedJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
+
+            EmbeddedJointPane.DockingState = DockingStateEnum.kDockBottom;
+            EmbeddedJointPane.Height = 250;
+            EmbeddedJointPane.ShowVisibilityCheckBox = false;
+            EmbeddedJointPane.ShowTitleBar = true;
+            Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
+
+            Instance.AdvancedAdvancedJointEditor.SetSkeleton(InventorUtils.Gui.SkeletonBase);
+            Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
+            Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            {
+
+                if (nodes == null || nodes.Count == 0) return;
+
+                foreach (RigidNode_Base node in nodes)
+                {
+                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
+                        node is OglRigidNode)
+                    {
+                        (node as OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+
+                        WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                        wheelDriver.center = center;
+                        wheelDriver.radius = radius;
+                        wheelDriver.width = width;
+                        node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
+
+                    }
+                }
+            };
+            EmbeddedJointPane.AddChild(Instance.AdvancedAdvancedJointEditor.Handle);
+
+            EmbeddedJointPane.Visible = true;
+
+            EmbeddedKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");
+            EmbeddedKeyPane.DockingState = DockingStateEnum.kFloat;
+            EmbeddedKeyPane.Width = 220;
+            EmbeddedKeyPane.Height = 130;
+            EmbeddedKeyPane.SetMinimumSize(120, 220);
+            EmbeddedKeyPane.ShowVisibilityCheckBox = false;
+            EmbeddedKeyPane.ShowTitleBar = true;
+            var keyPanel = new DofKeyPane();
+            EmbeddedKeyPane.AddChild(keyPanel.Handle);
+            EmbeddedKeyPane.Visible = false;
+
+            EmbeddedGuidePane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:GuidePane", "Robot Export Guide");
+            EmbeddedGuidePane.DockingState = DockingStateEnum.kDockRight;
+            EmbeddedGuidePane.Width = 600;
+            EmbeddedGuidePane.ShowVisibilityCheckBox = false;
+            EmbeddedGuidePane.ShowTitleBar = true;
+            var guidePanel = new ExportGuidePanel();
+            EmbeddedGuidePane.AddChild(guidePanel.Handle);
+            EmbeddedGuidePane.Visible = true;
             // Hide non-jointed components;
 
             // Reload panels in UI
             jointForm = new JointForm();
-            InventorUtils.HideAdvancedJointEditor();
+            HideAdvancedJointEditor();
         }
 
         /// <summary>
@@ -259,7 +326,23 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences = null;
 
             // Close add-in
-            InventorUtils.DisposeDockableWindows();
+            if (EmbeddedJointPane != null)
+            {
+                EmbeddedJointPane.Visible = false;
+                EmbeddedJointPane.Delete();
+            }
+            if (EmbeddedGuidePane != null)
+            {
+                EmbeddedGuidePane.Visible = false;
+                EmbeddedGuidePane.Delete();
+            }
+
+            if (EmbeddedKeyPane != null)
+            {
+                EmbeddedKeyPane.Visible = false;
+                EmbeddedKeyPane.Delete();
+            }
+
             InventorUtils.ForceQuitExporter(AsmDocument);
 
             // Dispose of document
@@ -285,7 +368,7 @@ namespace BxDRobotExporter
             {
                 if (beforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    InventorUtils.HideAdvancedJointEditor();
+                    HideAdvancedJointEditor();
                     hiddenExporter = true;
                 }
             }
@@ -358,7 +441,7 @@ namespace BxDRobotExporter
         /// <param name="beforeOrAfter"></param>
         /// <param name="context"></param>
         /// <param name="handlingCode"></param>
-        private void UIEvents_OnEnvironmentChange(Inventor.Environment environment,
+        private void UIEvents_OnEnvironmentChange(Environment environment,
             EnvironmentStateEnum environmentState, EventTimingEnum beforeOrAfter, NameValueMap context,
             out HandlingCodeEnum handlingCode)
         {
@@ -420,7 +503,7 @@ namespace BxDRobotExporter
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
 
             displayDof = !displayDof;
-            InventorUtils.EmbededKeyPane.Visible = displayDof;
+            EmbeddedKeyPane.Visible = displayDof;
 
             if (displayDof)
             {
@@ -488,8 +571,8 @@ namespace BxDRobotExporter
         private void AdvancedEditJoint_OnExecute(NameValueMap context)
         {
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
-            InventorUtils.ToggleAdvancedJointEditor();
-            if (InventorUtils.IsAdvancedJointEditorVisible())
+            ToggleAdvancedJointEditor();
+            if (IsAdvancedJointEditorVisible())
             {
                 jointForm.Hide();
             }
@@ -539,7 +622,7 @@ namespace BxDRobotExporter
         /// <param name="child"></param>
         /// <param name="useFancyColors"></param>
         /// <param name="saveLocation"></param>
-        private void ExporterSettings_SettingsChanged(System.Drawing.Color child, bool useFancyColors,
+        private void ExporterSettings_SettingsChanged(Color child, bool useFancyColors,
             string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
         {
             ChildHighlight.Color = InventorUtils.GetInventorColor(child);
@@ -555,6 +638,50 @@ namespace BxDRobotExporter
             Settings.Default.ConfigVersion =
                 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Settings.Default.Save();
+        }
+
+        public static bool IsAdvancedJointEditorVisible()
+        {
+            if (EmbeddedJointPane == null) return false;
+            return EmbeddedJointPane.Visible;
+        }
+
+        public static void ToggleAdvancedJointEditor()
+        {
+            if (EmbeddedJointPane != null)
+            {
+                if (IsAdvancedJointEditorVisible())
+                {
+                    HideAdvancedJointEditor();
+                }
+                else
+                {
+                    ShowAdvancedJointEditor();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hides the dockable windows. Used when switching documents. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
+        /// </summary>
+        public static void HideAdvancedJointEditor() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
+        {
+            if (EmbeddedJointPane != null)
+            {
+                EmbeddedJointPane.Visible = false;
+                InventorUtils.FocusAndHighlightNodes(null, Instance.MainApplication.ActiveView.Camera, 1);
+            }
+        }
+
+        /// <summary>
+        /// Shows the dockable windows again when assembly document is switched back to. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnActivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
+        /// </summary>
+        public static void ShowAdvancedJointEditor()
+        {
+            if (EmbeddedJointPane != null)
+            {
+                EmbeddedJointPane.Visible = true;
+            }
         }
     }
 }
