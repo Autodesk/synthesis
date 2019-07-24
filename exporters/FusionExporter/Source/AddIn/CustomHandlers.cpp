@@ -99,7 +99,6 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
 	if (eventArgs->action() == "drivetrain_type") {
 		eui->closeDriveTypePalette(eventArgs->data());
-
 	} else if (eventArgs->action() == "highlight") {
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 	} else if (eventArgs->action() == "edit_sensors") {
@@ -113,6 +112,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 
 		if (eventArgs->action() == "export")
 			eui->startExportRobot();
+		else if (eventArgs->action() == "save")
+			eui->closeJointEditorPalette();
 	}
 }
 
