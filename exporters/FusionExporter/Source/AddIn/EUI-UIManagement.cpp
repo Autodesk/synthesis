@@ -172,7 +172,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Robot Exporter Form", "Palette/jointEditor.html", false, true, true, 370, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "Palette/jointEditor.html", false, true, true, 370, 200);
 		if (!jointEditorPalette)
 			return false;
 
