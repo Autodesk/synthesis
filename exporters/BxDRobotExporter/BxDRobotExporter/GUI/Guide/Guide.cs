@@ -32,6 +32,7 @@ namespace BxDRobotExporter.GUI.Guide
             {
                 embeddedGuidePane.Visible = false;
                 embeddedGuidePane.Delete();
+                embeddedGuidePane = null;
             }
         }
     }

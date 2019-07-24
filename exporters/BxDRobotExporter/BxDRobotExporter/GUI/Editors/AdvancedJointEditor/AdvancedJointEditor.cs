@@ -43,6 +43,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             {
                 embeddedAdvancedJointEditorPane.Visible = false;
                 embeddedAdvancedJointEditorPane.Delete();
+                embeddedAdvancedJointEditorPane = null;
             }
         }
 
@@ -58,7 +59,8 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         {
             if (embeddedAdvancedJointEditorPane == null) return;
             embeddedAdvancedJointEditorPane.Visible = false;
-            InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 1);
+            if (RobotExporterAddInServer.Instance.Application.ActiveView != null)
+                InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 1);
         }
 
         /// <summary>
