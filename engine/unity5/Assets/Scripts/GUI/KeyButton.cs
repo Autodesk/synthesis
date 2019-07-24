@@ -24,19 +24,20 @@ namespace Synthesis.GUI
 
         private Text mKeyText;
 
+        public void Awake()
+        {
+            mKeyText = GetComponentInChildren<Text>();
+        }
+
         // Use this for initialization
-        void Start()
+        public void Start()
         {
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 
         // Update is called once per frame
-        void OnGUI()
+        public void OnGUI()
         {
-            if (mKeyText == null)
-            {
-                mKeyText = GetComponentInChildren<Text>();
-            }
             //Implement style preferances; (some assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
             mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
             mKeyText.color = Color.white;
@@ -74,11 +75,6 @@ namespace Synthesis.GUI
         /// </summary>
         public void UpdateText()
         {
-            if (mKeyText == null)
-            {
-                mKeyText = GetComponentInChildren<Text>();
-            }
-
             switch (keyIndex)
             {
                 case 0:
@@ -98,11 +94,6 @@ namespace Synthesis.GUI
         public void OnClick()
         {
             selectedButton = this;
-
-            if (mKeyText == null)
-            {
-                mKeyText = GetComponentInChildren<Text>();
-            }
 
             mKeyText.text = "Press Key";
         }

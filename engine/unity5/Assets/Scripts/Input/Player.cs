@@ -32,6 +32,15 @@ namespace Synthesis.Input
             // Custom3
         }
 
+        public class UnhandledControlProfileException : System.Exception
+        {
+            public UnhandledControlProfileException(){}
+
+            public UnhandledControlProfileException(string message): base(message){}
+
+            public UnhandledControlProfileException(string message, System.Exception inner): base(message, inner){}
+        }
+
         public const ControlProfile DEFAULT_CONTROL_PROFILE = ControlProfile.ArcadeKeyboard;
 
         /// <summary>
@@ -174,57 +183,6 @@ namespace Synthesis.Input
                     });
                 }
             }
-
-            public List<KeyMapping> GetKeyMappingList()
-            {
-                List<KeyMapping> list = new List<KeyMapping>();
-                foreach (var field in buttons.GetType().GetFields())
-                {
-                    if ((field.FieldType == typeof(KeyMapping)))
-                    {
-                        if ((KeyMapping)field.GetValue(buttons) != null)
-                            list.Add((KeyMapping)field.GetValue(buttons));
-                    }
-                    else if ((field.FieldType == typeof(KeyMapping[])))
-                    {
-                        foreach(var mapping in (KeyMapping[])field.GetValue(buttons))
-                        {
-                            if(mapping != null)
-                            {
-                                list.Add(mapping);
-                            }
-                        }
-                    }
-                    else if ((field.FieldType == typeof(List<KeyMapping>)))
-                    {
-                        foreach (var mapping in (List<KeyMapping>)field.GetValue(buttons))
-                        {
-                            if (mapping != null)
-                            {
-                                list.Add(mapping);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        throw new System.Exception("Unhandled field type " + field.FieldType.Name);
-                    }
-                }
-                return list;
-            }
-        }
-
-        public Player(int i)
-        {
-            index = i;
-
-            arcadeDriveProfile = new Profile();
-            tankDriveProfile = new Profile();
-
-            ResetArcade();
-            ResetTank();
-
-            SetControlProfile(DEFAULT_CONTROL_PROFILE);
         }
 
         private int index; // TODO: necessary to track this here?
@@ -235,23 +193,25 @@ namespace Synthesis.Input
         //The list and controls called on the current player
         private Profile activeProfile;
 
-        //Set of arcade drive keys
-        private Profile arcadeDriveProfile;
+        private Profile[] profiles;
 
-        //Set of tank drive keys
-        private Profile tankDriveProfile;
+        public Player(int playerIndex)
+        {
+            index = playerIndex;
+
+            profiles = new Profile[(int)System.Enum.GetValues(typeof(ControlProfile)).Cast<ControlProfile>().Max() + 1]; // Set array to number of enum values
+
+            for (int i = 0; i < profiles.Length; i++) {
+                profiles[i] = new Profile();
+                ResetProfile((ControlProfile)i);
+            }
+
+            SetControlProfile(DEFAULT_CONTROL_PROFILE);
+        }
 
         public Profile GetProfile(ControlProfile controlProfile) // TODO move Controls initialization into this file
         {
-            switch (controlProfile)
-            {
-                case ControlProfile.TankJoystick:
-                    return tankDriveProfile;
-                case ControlProfile.ArcadeKeyboard:
-                    return arcadeDriveProfile;
-                default:
-                    throw new System.Exception("Unsupported control profile"); // TODO make custom exception
-            }
+            return profiles[(int)controlProfile];
         }
 
         private string MakePrefPrefix()
@@ -261,17 +221,7 @@ namespace Synthesis.Input
 
         public void SaveActiveProfile()
         {
-            switch (activeControlProfile)
-            {
-                case ControlProfile.TankJoystick:
-                    PlayerPrefs.SetString(MakePrefPrefix(), tankDriveProfile.ToString());
-                    break;
-                case ControlProfile.ArcadeKeyboard:
-                    PlayerPrefs.SetString(MakePrefPrefix(), arcadeDriveProfile.ToString());
-                    break;
-                default:
-                    throw new System.Exception("Unsupported control profile"); // TODO make custom exception
-            }
+            PlayerPrefs.SetString(MakePrefPrefix(), profiles[(int)activeControlProfile].ToString());
             PlayerPrefs.Save();
         }
 
@@ -289,39 +239,22 @@ namespace Synthesis.Input
             string input = PlayerPrefs.GetString(MakePrefPrefix());
             if (input != "")
             {
-                switch (activeControlProfile)
-                {
-                    case ControlProfile.TankJoystick:
-                        tankDriveProfile.FromString(input);
-                        break;
-                    case ControlProfile.ArcadeKeyboard:
-                        arcadeDriveProfile.FromString(input);
-                        break;
-                    default:
-                        throw new System.Exception("Unsupported control profile"); // TODO make custom exception
-                }
+                profiles[(int)activeControlProfile].FromString(input);
+
                 Controls.UpdateFieldControls(index);
-                if(!CheckIfSaved())
+
+                if (!CheckIfSaved())
                     SaveActiveProfile();
                 SetControlProfile(activeControlProfile);
             }
             else
             {
-                switch (activeControlProfile)
-                {
-                    case ControlProfile.TankJoystick:
-                        ResetTank();
-                        break;
-                    case ControlProfile.ArcadeKeyboard:
-                        ResetArcade();
-                        break;
-                    default:
-                        throw new System.Exception("Unsupported control profile"); // TODO make custom exception
-                }
-                Controls.UpdateFieldControls(index);
+                ResetProfile(activeControlProfile);
+
+                Controls.UpdateFieldControls(index); // TODO: move into create default?
+
                 if (!CheckIfSaved())
                     SaveActiveProfile();
-                SaveActiveProfile();
             }
         }
 
@@ -341,46 +274,46 @@ namespace Synthesis.Input
         /// <returns>The active player list.</returns>
         public ReadOnlyCollection<KeyMapping> GetActiveList()
         {
-            /*
-            for(int i = 0; i < activeList.Count; i++)
+            List<KeyMapping> list = new List<KeyMapping>();
+            foreach (var field in activeProfile.buttons.GetType().GetFields())
             {
-                if ((activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn ")) &&
-                    FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
+                if ((field.FieldType == typeof(KeyMapping)))
                 {
-                    switch (activeControlProfile) // Remove gamepiece controls when field changes // TODO only do when field changes
+                    if ((KeyMapping)field.GetValue(activeProfile.buttons) != null)
+                        list.Add((KeyMapping)field.GetValue(activeProfile.buttons));
+                }
+                else if ((field.FieldType == typeof(KeyMapping[])))
+                {
+                    foreach (var mapping in (KeyMapping[])field.GetValue(activeProfile.buttons))
                     {
-                        case ControlProfile.ArcadeKeyboard:
-                            arcadeDriveList.Remove(activeList[i]);
-                            resetArcadeDriveList.Remove(activeList[i]);
-                            break;
-                        case ControlProfile.TankJoystick:
-                            tankDriveList.Remove(activeList[i]);
-                            resetTankDriveList.Remove(activeList[i]);
-                            break;
-                        default:
-                            throw new System.Exception("Unsupported control profile");
+                        if (mapping != null)
+                        {
+                            list.Add(mapping);
+                        }
                     }
-                    activeList.RemoveAt(i);
+                }
+                else if ((field.FieldType == typeof(List<KeyMapping>)))
+                {
+                    foreach (var mapping in (List<KeyMapping>)field.GetValue(activeProfile.buttons))
+                    {
+                        if (mapping != null)
+                        {
+                            list.Add(mapping);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new System.Exception("Unhandled Buttons field type " + field.FieldType.Name);
                 }
             }
-            */
-            return activeProfile.GetKeyMappingList().AsReadOnly();
+            return list.AsReadOnly();
         }
 
         public void SetControlProfile(ControlProfile p)
         {
             activeControlProfile = p;
-            switch (activeControlProfile)
-            {
-                case ControlProfile.ArcadeKeyboard:
-                    activeProfile = arcadeDriveProfile;
-                    break;
-                case ControlProfile.TankJoystick:
-                    activeProfile = tankDriveProfile;
-                    break;
-                default:
-                    throw new System.Exception("Unsupported control profile");
-            }
+            activeProfile = profiles[(int)activeControlProfile];
         }
 
         public ControlProfile GetActiveControlProfile()
@@ -388,22 +321,10 @@ namespace Synthesis.Input
             return activeControlProfile;
         }
 
-        /// <summary>
-        /// Resets the activeList to tank drive defaults.
-        /// </summary>
-        public void ResetTank()
+        public void ResetProfile(ControlProfile controlProfile)
         {
-            tankDriveProfile = Controls.CreateDefault(index, ControlProfile.TankJoystick);
-            SetControlProfile(ControlProfile.TankJoystick);
-        }
-
-        /// <summary>
-        /// Resets the activeList to arcade drive defaults.
-        /// </summary>
-        public void ResetArcade()
-        {
-            arcadeDriveProfile = Controls.CreateDefault(index, ControlProfile.ArcadeKeyboard);
-            SetControlProfile(ControlProfile.ArcadeKeyboard);
+            profiles[(int)controlProfile] = Controls.CreateDefault(index, controlProfile);
+            SetControlProfile(controlProfile);
         }
     }
 }

@@ -147,25 +147,5 @@ namespace Synthesis.Input
                 Destroy(child.gameObject);
             }
         }
-
-        /// <summary>
-        /// Resets controls to tank drive defaults for the active player and updates 
-        /// corresponding control labels/buttons.
-        /// </summary>
-        public void ResetTankDrive()
-        {
-            Controls.Players[SettingsMode.activePlayerIndex].ResetTank();
-            CreateButtons();
-        }
-
-        /// <summary>
-        /// Resets controls to arcade drive defaults for the active player and updates 
-        /// corresponding control labels/buttons.
-        /// </summary>
-        public void ResetArcadeDrive()
-        {
-            Controls.Players[SettingsMode.activePlayerIndex].ResetArcade();
-            CreateButtons();
-        }
     }
 }

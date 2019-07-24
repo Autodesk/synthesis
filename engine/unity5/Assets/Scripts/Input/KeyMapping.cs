@@ -130,7 +130,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput argToInput(UnityEngine.KeyCode? arg)
+        private static CustomInput ArgToInput(UnityEngine.KeyCode? arg)
         {
             if (arg == null)
                 return null;
@@ -139,7 +139,7 @@ namespace Synthesis.Input
         #endregion
 
         public KeyMapping(string name, UnityEngine.KeyCode primaryInput, UnityEngine.KeyCode? secondaryInput = null, UnityEngine.KeyCode? tertiaryInput = null) :
-            this(name, argToInput(primaryInput), argToInput(secondaryInput), argToInput(tertiaryInput))
+            this(name, ArgToInput(primaryInput), ArgToInput(secondaryInput), ArgToInput(tertiaryInput))
         { }
 
         /// <summary>

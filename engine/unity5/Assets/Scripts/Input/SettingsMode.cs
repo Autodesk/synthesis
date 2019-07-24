@@ -97,18 +97,9 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            switch (Controls.Players[activePlayerIndex].GetActiveControlProfile())
-            {
-                case Player.ControlProfile.TankJoystick:
-                    GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-                    break;
-                case Player.ControlProfile.ArcadeKeyboard:
-                    GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
-                    break;
-                default:
-                    throw new System.Exception("Unsupported control profile");
-            }
+            Controls.Players[activePlayerIndex].ResetProfile(activeControlProfile);
             Controls.Save();
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
         /// <summary>
