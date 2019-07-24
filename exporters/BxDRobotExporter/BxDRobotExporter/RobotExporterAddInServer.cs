@@ -14,7 +14,6 @@ using BxDRobotExporter.Messages;
 using BxDRobotExporter.Properties;
 using Inventor;
 using Application = Inventor.Application;
-using Color = System.Drawing.Color;
 using Environment = Inventor.Environment;
 
 namespace BxDRobotExporter
@@ -219,10 +218,6 @@ namespace BxDRobotExporter
             RobotDataManager = new RobotDataManager();
 
             HighlightManager.EnvironmentOpening(AsmDocument);
-
-
-            //Sets up events for selecting and deselecting parts in inventor
-            ExporterSettingsForm.PluginSettingsValues.SettingsChanged += ExporterSettings_SettingsChanged;
 
             environmentEnabled = true;
 
@@ -434,29 +429,6 @@ namespace BxDRobotExporter
         {
             Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
             handlingCode = HandlingCodeEnum.kEventHandled;
-        }
-
-        /// <summary>
-        /// Called when the user presses 'OK' in the settings menu
-        /// </summary>
-        /// <param name="child"></param>
-        /// <param name="useFancyColors"></param>
-        /// <param name="saveLocation"></param>
-        private void ExporterSettings_SettingsChanged(Color child, bool useFancyColors,
-            string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetition, bool useAnalytics)
-        {
-            HighlightManager.SetJointHighlightColor(child);
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Exporter Settings");
-            //Update Application
-            Settings.Default.ExportToField = openSynthesis;
-            Settings.Default.SelectedField = fieldLocation;
-            Settings.Default.ChildColor = child;
-            Settings.Default.FancyColors = useFancyColors;
-            Settings.Default.SaveLocation = saveLocation;
-            Settings.Default.DefaultRobotCompetition = defaultRobotCompetition;
-            Settings.Default.UseAnalytics = useAnalytics;
-            Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
-            Settings.Default.Save();
         }
 
 
