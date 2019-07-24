@@ -204,13 +204,13 @@ namespace BxDRobotExporter
             environmentIsOpen = true;
 
             AssemblyDocument = (AssemblyDocument) Application.ActiveDocument;
-            
+
             HighlightManager.EnvironmentOpening(AssemblyDocument);
 
             // Disable non-jointed components
             disabledAssemblyOccurrences = new List<ComponentOccurrence>();
             disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AssemblyDocument));
-            
+
             // Load robot skeleton and prepare UI
             RobotDataManager = new RobotDataManager();
             if (!RobotDataManager.LoadRobotSkeleton())
@@ -218,6 +218,7 @@ namespace BxDRobotExporter
                 InventorUtils.ForceQuitExporter(AssemblyDocument);
                 return;
             }
+
             RobotDataManager.LoadRobotData(AssemblyDocument);
 
             // Create dockable window UI
@@ -225,7 +226,7 @@ namespace BxDRobotExporter
             advancedJointEditor.CreateDockableWindow(uiMan);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
-            
+
             // Load skeleton into joint editors
             advancedJointEditor.UpdateSkeleton(RobotDataManager.SkeletonBase);
             jointForm.UpdateSkeleton(RobotDataManager.SkeletonBase);
@@ -268,8 +269,8 @@ namespace BxDRobotExporter
 
             environmentIsOpen = false;
         }
-        
-        
+
+
         private void OnEnvironmentHide()
         {
             // Hide dockable windows when switching to a different document 
@@ -277,7 +278,7 @@ namespace BxDRobotExporter
             dofKey.TemporaryHide();
             guide.TemporaryHide();
         }
-        
+
         private void OnEnvironmentShow()
         {
             // Restore visible state of dockable windows
@@ -288,23 +289,19 @@ namespace BxDRobotExporter
 
 
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
-        { 
-            if (beforeOrAfter == EventTimingEnum.kAfter)
+        {
+            if (beforeOrAfter == EventTimingEnum.kBefore)
             {
                 if (IsNewExporterEnvironmentAllowed(documentObject))
-                {
                     InventorUtils.EnableEnvironment(Application, exporterEnv);
-                    if (Settings.Default.ShowFirstLaunchInfo)
-                        new FirstLaunchInfo().ShowDialog();
-                }
                 else
                     InventorUtils.DisableEnvironment(Application, exporterEnv);
-
+                
                 if (IsDocumentOpenInTheExporter(documentObject))
-                {
                     OnEnvironmentShow();
-                }
             }
+            else if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject)) 
+                new FirstLaunchInfo().ShowDialog();
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
@@ -321,7 +318,6 @@ namespace BxDRobotExporter
             // If the robot export environment is open and the document that is about to be closed is the assembly document with the robot exporter opened
             if (beforeOrAfter == EventTimingEnum.kBefore && IsDocumentOpenInTheExporter(documentObject))
                 OnEnvironmentClose();
-
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
@@ -350,13 +346,13 @@ namespace BxDRobotExporter
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
-        
+
         // User may not open documents other than assemblies or open multiple documents in the exporter
         private bool IsNewExporterEnvironmentAllowed(object documentObject)
         {
             return !environmentIsOpen && documentObject is AssemblyDocument;
         }
-        
+
         private bool IsDocumentOpenInTheExporter(object documentObject)
         {
             return environmentIsOpen && AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
