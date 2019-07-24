@@ -14,7 +14,7 @@ namespace BxDRobotExporter.GUI.Editors
         /// <summary>
         /// The local copy of the setting values
         /// </summary>
-        public static PluginSettingsValues Values = new PluginSettingsValues();
+        private static PluginSettingsValues Values = new PluginSettingsValues();
 
         public ExporterSettingsForm()
         {
@@ -22,16 +22,13 @@ namespace BxDRobotExporter.GUI.Editors
 
             LoadValues();
 
-            buttonOK.Click += delegate (object sender, EventArgs e)
+            buttonOK.Click += delegate(object sender, EventArgs e)
             {
                 SaveValues();
                 Close();
             };
 
-            buttonCancel.Click += delegate (object sender, EventArgs e)
-            {
-                Close();
-            };
+            buttonCancel.Click += delegate(object sender, EventArgs e) { Close(); };
         }
 
         /// <summary>
@@ -44,7 +41,7 @@ namespace BxDRobotExporter.GUI.Editors
             ChildHighlight.BackColor = Values.InventorChildColor;
             checkBox1.Checked = Values.UseAnalytics;
         }
-        
+
         /// <summary>
         /// Save the form's values in a <see cref="PluginSettingsValues"/> structure
         /// </summary>
@@ -75,9 +72,15 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         public class PluginSettingsValues
         {
+            public event SettingsEvent SettingsChanged;
 
-            public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
+            {
+                SaveSettings();
+                if (SettingsChanged != null) SettingsChanged.Invoke(this);
+            }
+
+            private void SaveSettings()
             {
                 Settings.Default.ExportToField = OpenSynthesis;
                 Settings.Default.SelectedField = FieldName;
@@ -88,17 +91,48 @@ namespace BxDRobotExporter.GUI.Editors
                 Settings.Default.UseAnalytics = UseAnalytics;
                 Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
                 Settings.Default.Save();
+            }
 
-                if (SettingsChanged != null) SettingsChanged.Invoke(this);
+            /// <summary>
+            /// Initializes all of the <see cref="Managers.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
+            /// </summary>
+            public void LoadSettings()
+            {
+                // Old configurations get overriden (version numbers below 1)
+                if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
+                    Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
+
+                if (Settings.Default.ConfigVersion < 3)
+                {
+                    InventorChildColor = Settings.Default.ChildColor;
+                    GeneralSaveLocation = Settings.Default.SaveLocation;
+                    GeneralUseFancyColors = Settings.Default.FancyColors;
+                    OpenSynthesis = Settings.Default.ExportToField;
+                    FieldName = Settings.Default.SelectedField;
+                    DefaultRobotCompetition = "GENERIC";
+                    UseAnalytics = true;
+                }
+                else
+                {
+                    InventorChildColor = Settings.Default.ChildColor;
+                    GeneralSaveLocation = Settings.Default.SaveLocation;
+                    GeneralUseFancyColors = Settings.Default.FancyColors;
+                    OpenSynthesis = Settings.Default.ExportToField;
+                    FieldName = Settings.Default.SelectedField;
+                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition;
+                    UseAnalytics = Settings.Default.UseAnalytics;
+                }
             }
 
             //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
             public string FieldName;
-            public String DefaultRobotCompetition;
+            public string DefaultRobotCompetition;
             public bool OpenSynthesis;
+
             public bool UseAnalytics;
+
             //Inventor
             public Color InventorChildColor;
         }
@@ -111,17 +145,17 @@ namespace BxDRobotExporter.GUI.Editors
         private void ChildHighlight_Click(object sender, EventArgs e)
         {
             ColorDialog colorChoose = new ColorDialog();
-            if(colorChoose.ShowDialog() == DialogResult.OK)
+            if (colorChoose.ShowDialog() == DialogResult.OK)
             {
                 ChildHighlight.BackColor = colorChoose.Color;
             }
         }
-        
+
         private void ButtonBrowse_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
             folderBrowser.ShowDialog();
-            if(folderBrowser.SelectedPath != null)
+            if (folderBrowser.SelectedPath != null)
             {
                 Values.GeneralSaveLocation = folderBrowser.SelectedPath;
             }

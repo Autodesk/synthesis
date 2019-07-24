@@ -79,7 +79,7 @@ namespace BxDRobotExporter
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(MainApplication.UserName);
             AnalyticsUtils.LogPage("Inventor");
-            LoadSettings();
+            RobotDataManager.PluginSettings.LoadSettings();
 
             var editJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
             var editJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
@@ -376,43 +376,6 @@ namespace BxDRobotExporter
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        /// <summary>
-        /// Initializes all of the <see cref="Managers.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
-        /// </summary>
-        private static void LoadSettings()
-        {
-            // Old configurations get overriden (version numbers below 1)
-            if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
-                Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-
-            if (Settings.Default.ConfigVersion < 3)
-            {
-                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
-                {
-                    InventorChildColor = Settings.Default.ChildColor,
-                    GeneralSaveLocation = Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Settings.Default.FancyColors,
-                    OpenSynthesis = Settings.Default.ExportToField,
-                    FieldName = Settings.Default.SelectedField,
-                    DefaultRobotCompetition = "GENERIC",
-                    UseAnalytics = true
-                };
-            }
-            else
-            {
-                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
-                {
-                    InventorChildColor = Settings.Default.ChildColor,
-                    GeneralSaveLocation = Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Settings.Default.FancyColors,
-                    OpenSynthesis = Settings.Default.ExportToField,
-                    FieldName = Settings.Default.SelectedField,
-                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition,
-                    UseAnalytics = Settings.Default.UseAnalytics
-                };
-            }
         }
     }
 }
