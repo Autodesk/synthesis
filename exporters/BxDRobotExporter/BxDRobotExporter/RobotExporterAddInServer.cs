@@ -63,8 +63,7 @@ namespace BxDRobotExporter
         // UI elements
         private JointForm jointForm = new JointForm();
 
-        // ???? (Weird flags which should be deleted)
-        private bool exporterBlocked;
+        // Flags
         private bool environmentIsOpen;
 
 
@@ -169,8 +168,7 @@ namespace BxDRobotExporter
             pluginPanel.CommandControls.AddButton(settingsButton, true);
 
             exporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
-            Application.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
-            exporterEnv.DisabledCommandList.Add(Application.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            exporterEnv.DisabledCommandList.Add(Application.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]); // TODO: Can this be removed?
 
             Application.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
             Application.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
@@ -200,11 +198,11 @@ namespace BxDRobotExporter
         /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
         /// </summary>
-        private void EnvironmentOpening()
+        private void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
             environmentIsOpen = true;
-            
+
             AssemblyDocument = (AssemblyDocument) Application.ActiveDocument;
             
             HighlightManager.EnvironmentOpening(AssemblyDocument);
@@ -236,7 +234,7 @@ namespace BxDRobotExporter
         /// <summary>
         /// Disposes of some COM objects and exits the environment
         /// </summary>
-        private void EnvironmentClosing()
+        private void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
             RobotDataManager.SaveRobotData();
@@ -274,10 +272,25 @@ namespace BxDRobotExporter
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
             NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo)
+            if (beforeOrAfter == EventTimingEnum.kBefore)
             {
-                new FirstLaunchInfo().ShowDialog();
+                if (!(documentObject is AssemblyDocument) || environmentIsOpen)
+                {
+                    InventorUtils.DisableEnvironment(Application, exporterEnv);
+                }
+                else
+                {
+                    InventorUtils.EnableEnvironment(Application, exporterEnv);
+                }
             }
+            else if (beforeOrAfter == EventTimingEnum.kAfter)
+            {
+                if (Settings.Default.ShowFirstLaunchInfo)
+                {
+                    new FirstLaunchInfo().ShowDialog();
+                }
+            }
+
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
@@ -311,7 +324,7 @@ namespace BxDRobotExporter
                 {
                     if (AssemblyDocument != null && assembly == AssemblyDocument)
                     {
-                        EnvironmentClosing();
+                        OnEnvironmentClose();
                     }
                 }
             }
@@ -340,15 +353,8 @@ namespace BxDRobotExporter
                     {
                         MessageBox.Show("Only assemblies can be used with the robot exporter.",
                             "Invalid Document", MessageBoxButtons.OK);
-                        exporterBlocked = true;
 
-                        // Quit the exporter
-                        if (context.Item["Document"] is DrawingDocument drawing)
-                            InventorUtils.ForceQuitExporter(drawing);
-                        else if (context.Item["Document"] is PartDocument part)
-                            InventorUtils.ForceQuitExporter(part);
-                        else if (context.Item["Document"] is PresentationDocument presentation) 
-                            InventorUtils.ForceQuitExporter(presentation);
+                        InventorUtils.ForceQuitExporter(context.Item["Document"]);
                     }
                     // User may not open multiple documents in the exporter
                     else if (environmentIsOpen)
@@ -357,18 +363,14 @@ namespace BxDRobotExporter
                                         "Please finish using the exporter in \"" + AssemblyDocument.DisplayName +
                                         "\" to continue.",
                             "Too Many Assemblies", MessageBoxButtons.OK);
-                        exporterBlocked = true;
                         InventorUtils.ForceQuitExporter(assembly);
                     }
                     else
-                        EnvironmentOpening();
+                        OnEnvironmentOpen();
                 }
                 else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && environmentIsOpen)
                 {
-                    if (exporterBlocked)
-                        exporterBlocked = false;
-                    else
-                        EnvironmentClosing();
+                    OnEnvironmentClose();
                 }
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Inventor;
+using Environment = Inventor.Environment;
 using IPictureDisp = stdole.IPictureDisp;
 
 namespace BxDRobotExporter
@@ -33,15 +34,16 @@ namespace BxDRobotExporter
                 camera.ApplyWithoutTransition();
                 return;
             }
+
             var occurrences = GetComponentOccurrencesFromNodes(nodes);
             if (occurrences == null)
             {
                 return;
             }
-            
+
             RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, zoom, InventorUtils.ViewDirection.Y);
+            FocusCameraOnOccurrences(occurrences, 15, camera, zoom, ViewDirection.Y);
             HighlightOccurrences(occurrences);
         }
 
@@ -57,15 +59,16 @@ namespace BxDRobotExporter
             {
                 return;
             }
+
             var occurrences = GetComponentOccurrencesFromNodes(nodes);
             if (occurrences == null)
             {
                 return;
             }
-            
+
             RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, InventorUtils.ViewDirection.Y);
+            FocusCameraOnOccurrences(occurrences, 15, camera, ViewDirection.Y);
             HighlightOccurrences(occurrences);
         }
 
@@ -154,7 +157,7 @@ namespace BxDRobotExporter
         /// <param name="zoom"></param>
         /// <param name="viewDirection">Direction to view the point from.</param>
         /// <param name="animate">True to animate movement of camera.</param>
-        public static void SetCameraView(Vector focus, double viewDistance, Camera camera, double zoom, InventorUtils.ViewDirection viewDirection = InventorUtils.ViewDirection.Y, bool animate = true)
+        public static void SetCameraView(Vector focus, double viewDistance, Camera camera, double zoom, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
         {
             camera.Fit(); // TODO: Determine model size properly
             camera.GetExtents(out var width, out var height);
@@ -174,7 +177,7 @@ namespace BxDRobotExporter
         public static void SetCameraView(Vector focus, Box boundingBox, double viewDistance, Camera camera, bool animate = true)
         {
             var boxVector = boundingBox.MinPoint.VectorTo(boundingBox.MaxPoint);
-            SetCameraView(focus, viewDistance, boxVector.X, boxVector.Z, camera, InventorUtils.ViewDirection.Y, animate);
+            SetCameraView(focus, viewDistance, boxVector.X, boxVector.Z, camera, ViewDirection.Y, animate);
         }
 
         /// <summary>
@@ -186,7 +189,7 @@ namespace BxDRobotExporter
         /// <param name="zoom"></param>
         /// <param name="viewDirection">Direction to view the point from.</param>
         /// <param name="animate">True to animate movement of camera.</param>
-        public static void SetCameraView(Vector focus, double viewDistance, double width, double height, Camera camera, InventorUtils.ViewDirection viewDirection = InventorUtils.ViewDirection.Y, bool animate = true)
+        public static void SetCameraView(Vector focus, double viewDistance, double width, double height, Camera camera, ViewDirection viewDirection = ViewDirection.Y, bool animate = true)
         {
             Point focusPoint = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreatePoint(focus.X, focus.Y, focus.Z);
 
@@ -195,25 +198,25 @@ namespace BxDRobotExporter
             camera.Target = focusPoint;
 
             // Flip view for negative direction
-            if ((viewDirection & InventorUtils.ViewDirection.Negative) == InventorUtils.ViewDirection.Negative)
+            if ((viewDirection & ViewDirection.Negative) == ViewDirection.Negative)
                 viewDistance = -viewDistance;
 
             UnitVector up = null;
 
             // Find camera position and upwards direction
-            if ((viewDirection & InventorUtils.ViewDirection.X) == InventorUtils.ViewDirection.X)
+            if ((viewDirection & ViewDirection.X) == ViewDirection.X)
             {
                 focus.X += viewDistance;
                 up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 1, 0);
             }
 
-            if ((viewDirection & InventorUtils.ViewDirection.Y) == InventorUtils.ViewDirection.Y)
+            if ((viewDirection & ViewDirection.Y) == ViewDirection.Y)
             {
                 focus.Y += viewDistance;
                 up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 0, 1);
             }
 
-            if ((viewDirection & InventorUtils.ViewDirection.Z) == InventorUtils.ViewDirection.Z)
+            if ((viewDirection & ViewDirection.Z) == ViewDirection.Z)
             {
                 focus.Z += viewDistance;
                 up = RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateUnitVector(0, 1, 0);
@@ -239,7 +242,7 @@ namespace BxDRobotExporter
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public static void FocusCameraOnOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, Camera camera, double zoom,
-            InventorUtils.ViewDirection viewDirection = InventorUtils.ViewDirection.Y, bool animate = false)
+            ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;
@@ -259,7 +262,7 @@ namespace BxDRobotExporter
         /// <param name="viewDirection">The direction of the camera</param>
         /// <param name="animate">True if you want to animate the camera moving to the new position</param>
         public static void FocusCameraOnOccurrences(List<ComponentOccurrence> occurrences, double viewDistance, Camera camera,
-            InventorUtils.ViewDirection viewDirection = InventorUtils.ViewDirection.Y, bool animate = false)
+            ViewDirection viewDirection = ViewDirection.Y, bool animate = false)
         {
             if (occurrences.Count < 1)
                 return;
@@ -291,18 +294,19 @@ namespace BxDRobotExporter
         public static Box CombineBoundingBoxes(List<ComponentOccurrence> occurrences)
         {
             var resultBox = occurrences[0].RangeBox.Copy();
-            foreach (var occurrence in occurrences.GetRange(1, occurrences.Count-1))
+            foreach (var occurrence in occurrences.GetRange(1, occurrences.Count - 1))
             {
                 resultBox.Extend(occurrence.RangeBox.MaxPoint);
                 resultBox.Extend(occurrence.RangeBox.MinPoint);
             }
+
             return resultBox;
         }
 
         public static void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
         {
             highlightSet.Clear();
-            foreach (var componentOccurrence in InventorUtils.GetComponentOccurrencesFromNodes(nodes))
+            foreach (var componentOccurrence in GetComponentOccurrencesFromNodes(nodes))
             {
                 highlightSet.AddItem(componentOccurrence);
             }
@@ -346,6 +350,23 @@ namespace BxDRobotExporter
         {
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
             document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
+        }
+
+
+        public static void ForceQuitExporter(object document)
+        {
+            switch (document)
+            {
+                case DrawingDocument drawing:
+                    ForceQuitExporter(drawing);
+                    break;
+                case PartDocument part:
+                    ForceQuitExporter(part);
+                    break;
+                case PresentationDocument presentation:
+                    ForceQuitExporter(presentation);
+                    break;
+            }
         }
 
         /// <summary>
@@ -516,6 +537,32 @@ namespace BxDRobotExporter
             /// </summary>
             Z = 0b00000100,
             Negative = 0b00001000
+        }
+
+        private static int GetEnvironmentIndex(Application application, Environment environment) // Inventor API doesn't tell you the environment index...
+        {
+            for (var i = application.UserInterfaceManager.ParallelEnvironments.Count - 1; i >= 0; i--)
+            {
+                if (application.UserInterfaceManager.ParallelEnvironments[i].Equals(environment))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public static void DisableEnvironment(Application application, Environment environment)
+        {
+            var environmentIndex = GetEnvironmentIndex(application, environment);
+            if (environmentIndex == -1) return;
+            application.UserInterfaceManager.ParallelEnvironments.Remove(environmentIndex);
+        }
+
+        public static void EnableEnvironment(Application application, Environment exporterEnv)
+        {
+            if (GetEnvironmentIndex(application, exporterEnv) != -1) return;
+            application.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
         }
     }
 }

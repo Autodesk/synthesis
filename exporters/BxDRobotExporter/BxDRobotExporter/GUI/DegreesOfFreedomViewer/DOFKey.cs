@@ -34,6 +34,7 @@ namespace BxDRobotExporter.GUI.DegreesOfFreedomViewer
             {
                 embeddedDofKeyPane.Visible = false;
                 embeddedDofKeyPane.Delete();
+                embeddedDofKeyPane = null;
             }
         }
     }
