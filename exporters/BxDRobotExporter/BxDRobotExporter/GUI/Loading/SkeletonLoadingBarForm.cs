@@ -100,7 +100,7 @@ namespace BxDRobotExporter.ControlGUI
             }
             finally
             {
-                SynthesisGui.Instance.SkeletonBase = skeleton;
+                RobotDataManager.Instance.SkeletonBase = skeleton;
             }
         }
 

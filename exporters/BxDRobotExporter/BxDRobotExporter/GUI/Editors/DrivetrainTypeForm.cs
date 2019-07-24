@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using BxDRobotExporter.ControlGUI;
 
 namespace BxDRobotExporter.GUI.Editors
 {
@@ -40,7 +39,7 @@ namespace BxDRobotExporter.GUI.Editors
             }
             
             
-            SelectType(SynthesisGui.Instance.SkeletonBase.driveTrainType);
+            SelectType(RobotDataManager.Instance.SkeletonBase.driveTrainType);
         }
 
         private void RecursiveControlNavigator(Control control, Action<Control> action)
@@ -67,7 +66,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            SynthesisGui.Instance.SkeletonBase.driveTrainType = driveTrainType;
+            RobotDataManager.Instance.SkeletonBase.driveTrainType = driveTrainType;
             Close();
         }
     }

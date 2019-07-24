@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.ExportGuide;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.GUI.Editors.AdvancedJointEditor;
@@ -218,7 +217,7 @@ namespace BxDRobotExporter
             greenHighlightSet.Color = InventorUtils.GetInventorColor(Color.LawnGreen);
             redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
             ChildHighlight = AsmDocument.CreateHighlightSet();
-            ChildHighlight.Color = InventorUtils.GetInventorColor(SynthesisGui.PluginSettings.InventorChildColor);
+            ChildHighlight.Color = InventorUtils.GetInventorColor(RobotDataManager.PluginSettings.InventorChildColor);
             wheelHighlight = AsmDocument.CreateHighlightSet();
             wheelHighlight.Color = InventorUtils.GetInventorColor(Color.Green);
 
@@ -564,7 +563,7 @@ namespace BxDRobotExporter
 //                Utilities.HideAdvancedJointEditor();
                 jointForm.OnShowButtonClick();
                 jointForm.ShowDialog();
-                AdvancedAdvancedJointEditor.SetSkeleton(SynthesisGui.Instance.SkeletonBase);
+                AdvancedAdvancedJointEditor.SetSkeleton(RobotDataManager.Instance.SkeletonBase);
             }
         }
 

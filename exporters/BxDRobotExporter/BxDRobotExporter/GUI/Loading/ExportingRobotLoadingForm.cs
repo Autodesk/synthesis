@@ -135,12 +135,12 @@ namespace BxDRobotExporter.ControlGUI
                 return;
             }
 
-            if (SynthesisGui.Instance.SkeletonBase == null)
+            if (RobotDataManager.Instance.SkeletonBase == null)
                 return; // Skeleton has not been built
 
-            List<BXDAMesh> meshes = ExportMeshesLite(SynthesisGui.Instance.SkeletonBase, SynthesisGui.Instance.RMeta.TotalWeightKg);
+            List<BXDAMesh> meshes = ExportMeshesLite(RobotDataManager.Instance.SkeletonBase, RobotDataManager.Instance.RMeta.TotalWeightKg);
 
-            SynthesisGui.Instance.Meshes = meshes;
+            RobotDataManager.Instance.Meshes = meshes;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
