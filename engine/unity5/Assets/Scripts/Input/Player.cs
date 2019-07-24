@@ -153,7 +153,7 @@ namespace Synthesis.Input
         }
 
         //Checks if tank drive is enabled
-        private ControlProfile controlProfile;
+        private ControlProfile activeControlProfile;
 
         //The list and controls called on the current player
         private List<KeyMapping> activeList;
@@ -356,7 +356,7 @@ namespace Synthesis.Input
                 if ((activeList[i].name.Contains(" Pick Up ") || activeList[i].name.Contains(" Release ") || activeList[i].name.Contains(" Spawn ")) &&
                     FieldDataHandler.gamepieces.Where(g => activeList[i].name.Contains(g.name)).ToArray().Count() == 0)
                 {
-                    switch (controlProfile) // Remove gamepiece controls when field changes // TODO only do when field changes
+                    switch (activeControlProfile) // Remove gamepiece controls when field changes // TODO only do when field changes
                     {
                         case ControlProfile.ArcadeKeyboard:
                             arcadeDriveList.Remove(activeList[i]);
@@ -423,8 +423,8 @@ namespace Synthesis.Input
 
         public void SetControlProfile(ControlProfile p)
         {
-            controlProfile = p;
-            switch (p)
+            activeControlProfile = p;
+            switch (activeControlProfile)
             {
                 case ControlProfile.ArcadeKeyboard:
                     activeList = arcadeDriveList;
@@ -437,9 +437,9 @@ namespace Synthesis.Input
             }
         }
 
-        public ControlProfile GetControlProfile()
+        public ControlProfile GetActiveControlProfile()
         {
-            return controlProfile;
+            return activeControlProfile;
         }
 
         /// <summary>
