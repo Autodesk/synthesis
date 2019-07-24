@@ -179,6 +179,8 @@
     <Compile Include="GUI\Editors\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
       <DependentUpon>DOFKeyPane.cs</DependentUpon>
     </Compile>
+    <Compile Include="Managers\HighlightManager.cs" />
+    <Compile Include="Managers\RobotDataManager.cs" />
     <Compile Include="OGLViewer\InventorCamera.cs" />
     <Compile Include="OGLViewer\OGLDrawing.cs" />
     <Compile Include="OGLViewer\OGL_RigidNode.cs" />
@@ -204,7 +206,6 @@
     <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
-    <Compile Include="RobotDataManager.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />

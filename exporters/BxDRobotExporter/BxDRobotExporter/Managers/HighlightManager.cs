@@ -1,0 +1,108 @@
+using System.Collections.Generic;
+using Inventor;
+using Color = System.Drawing.Color;
+
+namespace BxDRobotExporter.Managers
+{
+    public class HighlightManager
+    {
+        private HighlightSet blueHighlightSet;
+        private HighlightSet greenHighlightSet;
+        private HighlightSet redHighlightSet;
+
+        private HighlightSet jointEditorHighlight;
+        private HighlightSet wheelHighlight;
+
+        public void EnvironmentOpening(AssemblyDocument asmDocument)
+        {
+            blueHighlightSet = asmDocument.CreateHighlightSet();
+            blueHighlightSet.Color = InventorUtils.GetInventorColor(Color.DodgerBlue);
+            greenHighlightSet = asmDocument.CreateHighlightSet();
+            greenHighlightSet.Color = InventorUtils.GetInventorColor(Color.LawnGreen);
+            redHighlightSet = asmDocument.CreateHighlightSet();
+            redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
+
+            jointEditorHighlight = asmDocument.CreateHighlightSet();
+            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotDataManager.PluginSettings.InventorChildColor);
+            wheelHighlight = asmDocument.CreateHighlightSet();
+            wheelHighlight.Color = InventorUtils.GetInventorColor(Color.Green);
+        }
+
+        public bool DisplayDof { get; private set; }
+
+        public void EnableDofHighlight(RobotDataManager robotDataManager)
+        {
+            if (robotDataManager.SkeletonBase == null && !robotDataManager.LoadRobotSkeleton())
+                return;
+
+            var rootNodes = new List<RigidNode_Base> {robotDataManager.SkeletonBase};
+            var jointedNodes = new List<RigidNode_Base>();
+            var problemNodes = new List<RigidNode_Base>();
+
+            foreach (var node in robotDataManager.SkeletonBase.ListAllNodes())
+            {
+                if (node == robotDataManager.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                {
+                    continue;
+                }
+
+                if (node.GetSkeletalJoint() == null || node.GetSkeletalJoint().cDriver == null) // TODO: Figure out how to identify nodes that aren't set up (highlight red)
+                {
+                    problemNodes.Add(node);
+                }
+                else
+                {
+                    jointedNodes.Add(node);
+                }
+            }
+
+            jointEditorHighlight.Clear();
+            InventorUtils.CreateHighlightSet(rootNodes, blueHighlightSet);
+            InventorUtils.CreateHighlightSet(jointedNodes, greenHighlightSet);
+            InventorUtils.CreateHighlightSet(problemNodes, redHighlightSet);
+        }
+
+        public void ClearDofHighlight()
+        {
+            blueHighlightSet.Clear();
+            greenHighlightSet.Clear();
+            redHighlightSet.Clear();
+            DisplayDof = false;
+        }
+
+        public void ToggleDofHighlight(RobotDataManager RobotDataManager)
+        {
+            DisplayDof = !DisplayDof;
+
+            if (DisplayDof)
+            {
+                EnableDofHighlight(RobotDataManager);
+            }
+            else
+            {
+                ClearDofHighlight();
+            }
+        }
+
+        public void ClearJointHighlight()
+        {
+            jointEditorHighlight.Clear();
+        }
+
+        public void HighlightJoint(ComponentOccurrence componentOccurrence)
+        {
+            jointEditorHighlight.AddItem(componentOccurrence);
+        }
+
+        public void ClearAllHighlight()
+        {
+            ClearDofHighlight();
+            ClearJointHighlight();
+        }
+
+        public void SetJointHighlightColor(Color getInventorColor)
+        {
+            jointEditorHighlight.Color = InventorUtils.GetInventorColor(getInventorColor);
+        }
+    }
+}
