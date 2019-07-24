@@ -84,7 +84,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             selectionFinishedTimeout.Tick += FinishedSelecting;
             selectionFinishedTimeout.Interval = 55; // minimum accuracy of winforms timers
             
-            SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
+            SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, RobotExporterAddInServer.Instance.Application.ActiveView.Camera,  1);
             ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
 

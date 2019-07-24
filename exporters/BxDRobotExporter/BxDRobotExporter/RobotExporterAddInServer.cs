@@ -28,9 +28,9 @@ namespace BxDRobotExporter
         public readonly HighlightManager HighlightManager = new HighlightManager();
         public RobotDataManager RobotDataManager;
 
-        public Application MainApplication;
+        public Application Application;
 
-        public AssemblyDocument AsmDocument;
+        public AssemblyDocument AssemblyDocument;
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
 
         // -- UI FIELDS
@@ -61,7 +61,7 @@ namespace BxDRobotExporter
         private readonly Guide guide = new Guide();
 
         // UI elements
-        private JointForm jointForm;
+        private readonly JointForm jointForm = new JointForm();
 
         // ???? (Weird flags which should be deleted)
         private bool exporterBlocked;
@@ -75,9 +75,9 @@ namespace BxDRobotExporter
         /// <param name="firstTime"></param>
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
-            MainApplication = addInSiteObject.Application;
+            Application = addInSiteObject.Application;
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
-            AnalyticsUtils.SetUser(MainApplication.UserName);
+            AnalyticsUtils.SetUser(Application.UserName);
             AnalyticsUtils.LogPage("Inventor");
             RobotDataManager.PluginSettings.LoadSettings();
 
@@ -99,11 +99,11 @@ namespace BxDRobotExporter
             var gearLogoSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears16));
             var gearLogoLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.Gears32));
 
-            exporterEnv = MainApplication.UserInterfaceManager.Environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall, synthesisLogoLarge);
+            exporterEnv = Application.UserInterfaceManager.Environments.Add("Robot Export", "BxD:RobotExporter:Environment", null, synthesisLogoSmall, synthesisLogoLarge);
 
-            var exporterTab = MainApplication.UserInterfaceManager.Ribbons["Assembly"].RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab", clientId, "", false, true);
+            var exporterTab = Application.UserInterfaceManager.Ribbons["Assembly"].RibbonTabs.Add("Robot Export", "BxD:RobotExporter:RobotExporterTab", clientId, "", false, true);
 
-            var controlDefs = MainApplication.CommandManager.ControlDefinitions;
+            var controlDefs = Application.CommandManager.ControlDefinitions;
 
             driveTrainPanel = exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
             jointPanel = exporterTab.RibbonPanels.Add("Joint Setup", "BxD:RobotExporter:JointPanel", clientId);
@@ -170,13 +170,13 @@ namespace BxDRobotExporter
             pluginPanel.CommandControls.AddButton(settingsButton, true);
 
             exporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
-            MainApplication.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
-            exporterEnv.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            Application.UserInterfaceManager.ParallelEnvironments.Add(exporterEnv);
+            exporterEnv.DisabledCommandList.Add(Application.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
 
-            MainApplication.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
-            MainApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
-            MainApplication.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
-            MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
+            Application.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
+            Application.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
+            Application.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
+            Application.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
 
             Instance = this;
         }
@@ -186,8 +186,8 @@ namespace BxDRobotExporter
         /// </summary>
         public void Deactivate()
         {
-            Marshal.ReleaseComObject(MainApplication);
-            MainApplication = null;
+            Marshal.ReleaseComObject(Application);
+            Application = null;
             exporterEnv.Delete();
 
             GC.WaitForPendingFinalizers();
@@ -201,46 +201,39 @@ namespace BxDRobotExporter
         /// <summary>
         /// Gets the assembly document and makes the <see cref="DockableWindows"/>
         /// </summary>
-        private void OpeningExporter()
+        private void EnvironmentOpening()
         {
             AnalyticsUtils.StartSession();
-            //Gets the assembly document and creates dockable windows
-            AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
-            RobotDataManager = new RobotDataManager();
-
-            HighlightManager.EnvironmentOpening(AsmDocument);
-
             environmentIsOpen = true;
+            
+            AssemblyDocument = (AssemblyDocument) Application.ActiveDocument;
+            
+            HighlightManager.EnvironmentOpening(AssemblyDocument);
 
+            // Disable non-jointed components
+            disabledAssemblyOccurrences = new List<ComponentOccurrence>();
+            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AssemblyDocument));
+            
             // Load robot skeleton and prepare UI
+            RobotDataManager = new RobotDataManager();
             if (!RobotDataManager.LoadRobotSkeleton())
             {
-                InventorUtils.ForceQuitExporter(AsmDocument);
+                InventorUtils.ForceQuitExporter(AssemblyDocument);
                 return;
             }
+            RobotDataManager.LoadRobotData(AssemblyDocument);
 
-            disabledAssemblyOccurrences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
-            // If fails to load existing data, restart wizard
-            RobotDataManager.LoadRobotData(AsmDocument);
-
-            UserInterfaceManager uiMan = MainApplication.UserInterfaceManager;
-
+            // Create dockable window UI
+            var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan, RobotDataManager.SkeletonBase);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
-
-            // Hide non-jointed components;
-
-            // Reload panels in UI
-            jointForm = new JointForm();
-            advancedJointEditor.Visible = false;
         }
 
         /// <summary>
         /// Disposes of some COM objects and exits the environment
         /// </summary>
-        private void ClosingExporter()
+        private void EnvironmentClosing()
         {
             AnalyticsUtils.EndSession();
             RobotDataManager.SaveRobotData();
@@ -265,12 +258,12 @@ namespace BxDRobotExporter
             guide.DestroyDockableWindow();
             dofKey.DestroyDockableWindow();
 
-            InventorUtils.ForceQuitExporter(AsmDocument);
+            InventorUtils.ForceQuitExporter(AssemblyDocument);
 
             // Dispose of document
-            if (AsmDocument != null)
-                Marshal.ReleaseComObject(AsmDocument);
-            AsmDocument = null;
+            if (AssemblyDocument != null)
+                Marshal.ReleaseComObject(AssemblyDocument);
+            AssemblyDocument = null;
 
             environmentIsOpen = false;
         }
@@ -313,9 +306,9 @@ namespace BxDRobotExporter
             {
                 if (documentObject is AssemblyDocument assembly)
                 {
-                    if (AsmDocument != null && assembly == AsmDocument)
+                    if (AssemblyDocument != null && assembly == AssemblyDocument)
                     {
-                        ClosingExporter();
+                        EnvironmentClosing();
                     }
                 }
             }
@@ -337,7 +330,7 @@ namespace BxDRobotExporter
         {
             if (environment.Equals(exporterEnv) && beforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState)
+                if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState) // If activating exporter env
                 {
                     // User may not open documents other than assemblies
                     if (!(context.Item["Document"] is AssemblyDocument assembly))
@@ -351,27 +344,28 @@ namespace BxDRobotExporter
                             InventorUtils.ForceQuitExporter(drawing);
                         else if (context.Item["Document"] is PartDocument part)
                             InventorUtils.ForceQuitExporter(part);
-                        else if (context.Item["Document"] is PresentationDocument presentation) InventorUtils.ForceQuitExporter(presentation);
+                        else if (context.Item["Document"] is PresentationDocument presentation) 
+                            InventorUtils.ForceQuitExporter(presentation);
                     }
                     // User may not open multiple documents in the exporter
                     else if (environmentIsOpen)
                     {
                         MessageBox.Show("The exporter may only be used in one assembly at a time. " +
-                                        "Please finish using the exporter in \"" + AsmDocument.DisplayName +
+                                        "Please finish using the exporter in \"" + AssemblyDocument.DisplayName +
                                         "\" to continue.",
                             "Too Many Assemblies", MessageBoxButtons.OK);
                         exporterBlocked = true;
                         InventorUtils.ForceQuitExporter(assembly);
                     }
                     else
-                        OpeningExporter();
+                        EnvironmentOpening();
                 }
                 else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && environmentIsOpen)
                 {
                     if (exporterBlocked)
                         exporterBlocked = false;
                     else
-                        ClosingExporter();
+                        EnvironmentClosing();
                 }
             }
 
