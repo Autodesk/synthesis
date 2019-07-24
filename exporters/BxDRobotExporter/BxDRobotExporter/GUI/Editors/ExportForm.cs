@@ -9,7 +9,7 @@ namespace BxDRobotExporter.GUI.Editors
 {
     public partial class ExportForm : Form
     {
-        static Dictionary<string, string> fields = new Dictionary<string, string>();
+        private static Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public ExportForm(string initialRobotName)
         {
@@ -17,7 +17,7 @@ namespace BxDRobotExporter.GUI.Editors
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
-            ColorBox.Checked = SynthesisGUI.PluginSettings.GeneralUseFancyColors;
+            ColorBox.Checked = SynthesisGui.PluginSettings.GeneralUseFancyColors;
             
         }
 
@@ -43,8 +43,8 @@ namespace BxDRobotExporter.GUI.Editors
                     FieldSelectComboBox.Items.Add(pair.Key);
                 }
             }
-            this.FieldSelectComboBox.SelectedItem = SynthesisGUI.PluginSettings.fieldName;
-            this.OpenSynthesisBox.Checked = SynthesisGUI.PluginSettings.openSynthesis;
+            this.FieldSelectComboBox.SelectedItem = SynthesisGui.PluginSettings.FieldName;
+            this.OpenSynthesisBox.Checked = SynthesisGui.PluginSettings.OpenSynthesis;
         }
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
@@ -56,8 +56,8 @@ namespace BxDRobotExporter.GUI.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                SynthesisGUI.PluginSettings.fieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
-                SynthesisGUI.PluginSettings.openSynthesis = settingsForm.OpenSynthesisBox.Checked;
+                SynthesisGui.PluginSettings.FieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
+                SynthesisGui.PluginSettings.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
                 
@@ -77,14 +77,14 @@ namespace BxDRobotExporter.GUI.Editors
         {
             if (CheckFormIsValid())
             {
-                var InvalidChars = (new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars())).Distinct();
+                var invalidChars = (new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars())).Distinct();
 
-                foreach (char c in InvalidChars)
+                foreach (char c in invalidChars)
                 {
                     RobotNameTextBox.Text = RobotNameTextBox.Text.Replace(c.ToString(), "");
                 }
 
-                if(File.Exists(SynthesisGUI.PluginSettings.GeneralSaveLocation + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
+                if(File.Exists(SynthesisGui.PluginSettings.GeneralSaveLocation + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     return;
                 }

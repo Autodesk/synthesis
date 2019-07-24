@@ -135,12 +135,12 @@ namespace BxDRobotExporter.ControlGUI
                 return;
             }
 
-            if (SynthesisGUI.Instance.SkeletonBase == null)
+            if (SynthesisGui.Instance.SkeletonBase == null)
                 return; // Skeleton has not been built
 
-            List<BXDAMesh> Meshes = ExportMeshesLite(SynthesisGUI.Instance.SkeletonBase, SynthesisGUI.Instance.RMeta.TotalWeightKg);
+            List<BXDAMesh> meshes = ExportMeshesLite(SynthesisGui.Instance.SkeletonBase, SynthesisGui.Instance.RMeta.TotalWeightKg);
 
-            SynthesisGUI.Instance.Meshes = Meshes;
+            SynthesisGui.Instance.Meshes = meshes;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -236,7 +236,7 @@ namespace BxDRobotExporter.ControlGUI
             // Add meshes to all nodes
             for (int i = 0; i < meshes.Count; i++)
             {
-                ((OGL_RigidNode)nodes[i]).loadMeshes(meshes[i]);
+                ((OglRigidNode)nodes[i]).LoadMeshes(meshes[i]);
             }
 
             // Get wheel information (radius, center, etc.) for all wheels
@@ -253,7 +253,7 @@ namespace BxDRobotExporter.ControlGUI
                     // Drivers without wheel metadata do not need radius, center, or width info.
                     if (wheelDriver != null)
                     {
-                        (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                        (node as OGLViewer.OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
                         wheelDriver.radius = radius;
                         wheelDriver.center = center;
                         wheelDriver.width = width;

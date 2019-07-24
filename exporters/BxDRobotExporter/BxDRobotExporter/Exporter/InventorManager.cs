@@ -7,24 +7,24 @@ namespace BxDRobotExporter.Exporter
     public class InventorManager
     {
 
-        private static Lazy<InventorManager> _instance = new Lazy<InventorManager>(() => new InventorManager());
+        private static Lazy<InventorManager> instance = new Lazy<InventorManager>(() => new InventorManager());
         public static InventorManager Instance
         {
             get
             {
                 try
                 {
-                    return _instance.Value;
+                    return instance.Value;
                 }
                 catch
                 {
-                    _instance = new Lazy<InventorManager>(() => new InventorManager());
+                    instance = new Lazy<InventorManager>(() => new InventorManager());
                     return null;
                 }
             }
         }
 
-        public bool loaded = false;
+        public bool Loaded = false;
 
         public Application InventorInstance;
         //private AssemblyDocument RobotDocument;
@@ -33,7 +33,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InventorInstance.ActiveDocument;
             }
         }
@@ -42,7 +42,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return (AssemblyDocument) ActiveDocument;
             }
         }
@@ -51,7 +51,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return AssemblyDocument.ComponentDefinition;
             }
         }
@@ -60,7 +60,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return ComponentDefinition.Occurrences;
             }
         }
@@ -69,7 +69,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InventorInstance.CommandManager;
             }
         }
@@ -78,7 +78,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InventorInstance.TransientGeometry;
             }
         }
@@ -87,7 +87,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InventorInstance.TransientObjects;
             }
         }
@@ -96,20 +96,20 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InventorInstance.UserInterfaceManager;
             }
         }
 
-        private InteractionEvents _interactionEvents;
+        private InteractionEvents interactionEvents;
         public InteractionEvents InteractionEvents
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
 
-                if (_interactionEvents == null) _interactionEvents = CommandManager.CreateInteractionEvents();
-                return _interactionEvents;
+                if (interactionEvents == null) interactionEvents = CommandManager.CreateInteractionEvents();
+                return interactionEvents;
             }
         }
 
@@ -117,7 +117,7 @@ namespace BxDRobotExporter.Exporter
         {
             get
             {
-                if (!loaded) LoadInventor();
+                if (!Loaded) LoadInventor();
                 return InteractionEvents.SelectEvents;
             }
         }
@@ -137,8 +137,8 @@ namespace BxDRobotExporter.Exporter
             try
             {
                 InventorInstance = (Application)Marshal.GetActiveObject("Inventor.Application");
-                _interactionEvents = null;
-                loaded = true;
+                interactionEvents = null;
+                Loaded = true;
             }
             catch (COMException e)
             {
@@ -148,7 +148,7 @@ namespace BxDRobotExporter.Exporter
 
         public static void ReleaseInventor()
         {
-            if (Instance == null || !Instance.loaded) return;
+            if (Instance == null || !Instance.Loaded) return;
 
             try
             {
@@ -162,7 +162,7 @@ namespace BxDRobotExporter.Exporter
                 Console.WriteLine(e);
             }
 
-            Instance.loaded = false;
+            Instance.Loaded = false;
         }
 
         public static void Reload()

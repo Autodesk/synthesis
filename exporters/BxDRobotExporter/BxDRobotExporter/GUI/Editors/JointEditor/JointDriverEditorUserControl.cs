@@ -52,8 +52,8 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
             
             CalculatedWeightCheck.Checked = joint.weight <= 0;
-            UnitBox.SelectedIndex = SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 0;
-            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (SynthesisGUI.Instance.RMeta.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
+            UnitBox.SelectedIndex = SynthesisGui.Instance.RMeta.PreferMetric ? 1 : 0;
+            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (SynthesisGui.Instance.RMeta.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
             
             cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");
@@ -161,7 +161,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     {
                         case MotorType.GENERIC:
                             RobotCompetitionDropDown.SelectedItem =
-                                SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
+                                SynthesisGui.PluginSettings.DefaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -288,7 +288,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                 cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
-                RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition;
+                RobotCompetitionDropDown.SelectedItem = SynthesisGui.PluginSettings.DefaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
@@ -447,7 +447,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     }
 
                     joint.cDriver.motor = motor;
-                    SynthesisGUI.PluginSettings.defaultRobotCompetition =
+                    SynthesisGui.PluginSettings.DefaultRobotCompetition =
                         RobotCompetitionDropDown.SelectedItem.ToString();
                 }
 

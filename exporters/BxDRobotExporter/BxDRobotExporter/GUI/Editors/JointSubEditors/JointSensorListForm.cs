@@ -5,7 +5,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
 {
     public partial class JointSensorListForm : Form
     {
-        SkeletalJoint_Base joint;
+        private SkeletalJoint_Base joint;
 
         public JointSensorListForm(SkeletalJoint_Base passJoint)
         {

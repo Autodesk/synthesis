@@ -6,39 +6,39 @@ namespace BxDRobotExporter.SkeletalStructure
 {
     public class SkeletalJoint
     {
-        public CustomRigidGroup childGroup;
-        public CustomRigidGroup parentGroup;
-        public CustomRigidJoint rigidJoint;
-        public AssemblyJointDefinition asmJoint;
-        public AssemblyJoint asmJointOccurrence;
-        public bool childIsTheOne;
+        public CustomRigidGroup ChildGroup;
+        public CustomRigidGroup ParentGroup;
+        public CustomRigidJoint RigidJoint;
+        public AssemblyJointDefinition AsmJoint;
+        public AssemblyJoint AsmJointOccurrence;
+        public bool ChildIsTheOne;
 
         // public bool childIsTheOne;
 
 
         public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
         {
-            if (rigidJoint.joints.Count != 1)
+            if (rigidJoint.Joints.Count != 1)
                 throw new Exception("Not a proper joint");
 
-            asmJoint = rigidJoint.joints[0].Definition;
-            asmJointOccurrence = rigidJoint.joints[0];
-            childGroup = null;
-            parentGroup = parent;
-            this.rigidJoint = rigidJoint;
-            if (rigidJoint.groupOne.Equals(parent))
+            AsmJoint = rigidJoint.Joints[0].Definition;
+            AsmJointOccurrence = rigidJoint.Joints[0];
+            ChildGroup = null;
+            ParentGroup = parent;
+            this.RigidJoint = rigidJoint;
+            if (rigidJoint.GroupOne.Equals(parent))
             {
-                childGroup = rigidJoint.groupTwo;
+                ChildGroup = rigidJoint.GroupTwo;
             }
-            else if (rigidJoint.groupTwo.Equals(parent))
+            else if (rigidJoint.GroupTwo.Equals(parent))
             {
-                childGroup = rigidJoint.groupOne;
+                ChildGroup = rigidJoint.GroupOne;
             }
             else
             {
                 throw new Exception("Couldn't match parent group");
             }
-            if (childGroup == null)
+            if (ChildGroup == null)
                 throw new Exception("Not a proper joint: No child joint found");
 
             /*childIsTheOne = childGroup.Contains(asmJointOccurrence.AffectedOccurrenceOne);
@@ -50,12 +50,12 @@ namespace BxDRobotExporter.SkeletalStructure
 
         public CustomRigidGroup GetChild()
         {
-            return childGroup;
+            return ChildGroup;
         }
 
         public CustomRigidGroup GetParent()
         {
-            return parentGroup;
+            return ParentGroup;
         }
 
         public static SkeletalJoint_Base Create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
@@ -74,7 +74,7 @@ namespace BxDRobotExporter.SkeletalStructure
         }
     }
 
-    public static class SkeletalJointType_Extensions
+    public static class SkeletalJointTypeExtensions
     {
 
         public static SkeletalJointType ToSkeletalJointType(this AssemblyJointTypeEnum assemblyJoint)

@@ -8,35 +8,35 @@ namespace BxDRobotExporter.OGLViewer
     /// <summary>
     /// A rigid node with mesh data that can be rendered in the viewer
     /// </summary>
-    public class OGL_RigidNode : RigidNode_Base
+    public class OglRigidNode : RigidNode_Base
     {
 
         /// <summary>
         /// GUID used to determine highlighted nodes
         /// </summary>
-        private readonly UInt32 myGUID;
+        private readonly UInt32 myGuid;
 
         /// <summary>
         /// The part's transformation matrix
         /// </summary>
         private Matrix4 myTrans = new Matrix4();
 
-        public BXDAMesh baseMesh;
+        public BXDAMesh BaseMesh;
 
         /// <summary>
         /// The node's visual submeshes
         /// </summary>
-        private List<VBOMesh> models = new List<VBOMesh>();
+        private List<VboMesh> models = new List<VboMesh>();
 
         /// <summary>
         /// The node's collision submeshes
         /// </summary>
-        private List<VBOMesh> colliders = new List<VBOMesh>();
+        private List<VboMesh> colliders = new List<VboMesh>();
 
         /// <summary>
         /// The requested rotation of the part around a rotational joint
         /// </summary>
-        public float requestedRotation = 0;
+        public float RequestedRotation = 0;
 
         /// <summary>
         /// The requested movement of the part around a linear joint
@@ -46,7 +46,7 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// The part's center of mass (Shown upon selection)
         /// </summary>
-        public BXDVector3 centerOfMass;
+        public BXDVector3 CenterOfMass;
 
         /// <summary>
         /// Reset the part to its initial position
@@ -61,12 +61,12 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// The highlight state of the node
         /// </summary>
-        public HighlightState highlight = HighlightState.NOTHING;
+        public HighlightState Highlight = HighlightState.Nothing;
 
         /// <summary>
         /// Get the number of collision submeshes on the part
         /// </summary>
-        public int colliderCount
+        public int ColliderCount
         {
             get
             {
@@ -80,7 +80,7 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// Get the number of visual submeshes on the part
         /// </summary>
-        public int meshCount
+        public int MeshCount
         {
             get
             {
@@ -94,7 +94,7 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// The total number of triangles in the part's visual submeshes
         /// </summary>
-        public int meshTriangleCount
+        public int MeshTriangleCount
         {
             get;
             private set;
@@ -103,7 +103,7 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// The total number of triangles in the part's collision submeshes
         /// </summary>
-        public int colliderTriangleCount
+        public int ColliderTriangleCount
         {
             get;
             private set;
@@ -112,10 +112,10 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// Create a blank OGL_RigidNode with a unique GUID
         /// </summary>
-        public OGL_RigidNode(Guid guid)
+        public OglRigidNode(Guid guid)
             : base(guid)
         {
-            myGUID = SelectManager.AllocateGUID(this);
+            myGuid = SelectManager.AllocateGuid(this);
         }
 
         /// <summary>
@@ -126,28 +126,28 @@ namespace BxDRobotExporter.OGLViewer
         /// For conversion from a RigidNode_Base, casting will suffice.
         /// </remarks>
         /// <param name="baseData">The rigid node containing existing model data</param>
-        public OGL_RigidNode(RigidNode_Base baseData)
+        public OglRigidNode(RigidNode_Base baseData)
             : base(baseData.GUID)
         {
-            myGUID = SelectManager.AllocateGUID(this);
+            myGuid = SelectManager.AllocateGuid(this);
             ModelFullID = baseData.ModelFullID;
             ModelFileName = baseData.ModelFileName;
 
             foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.Children)
             {
-                AddChild(child.Key, new OGL_RigidNode(child.Value));
+                AddChild(child.Key, new OglRigidNode(child.Value));
             }
         }
 
         /// <summary>
         /// Free resources used by OpenGL
         /// </summary>
-        public void destroy()
+        public void Destroy()
         {
-            SelectManager.FreeGUID(myGUID);
-            foreach (VBOMesh mesh in models)
+            SelectManager.FreeGuid(myGuid);
+            foreach (VboMesh mesh in models)
             {
-                mesh.destroy();
+                mesh.Destroy();
             }
         }
 
@@ -163,9 +163,9 @@ namespace BxDRobotExporter.OGLViewer
                 float[] dists = new float[3]; //[0] = x, [1] = y, [2] = z
 
                 //Let's assume that it's aligned on some axis. If it isn't, we have other problems
-                foreach (VBOMesh mesh in models)
+                foreach (VboMesh mesh in models)
                 {
-                    double[] verts = mesh.subMesh.verts;
+                    double[] verts = mesh.SubMesh.verts;
 
                     Vector3[] vertices = new Vector3[verts.Length / 3];
 
@@ -184,9 +184,9 @@ namespace BxDRobotExporter.OGLViewer
                     center = new BXDVector3(sum.X / vertices.Length, sum.Y / vertices.Length, sum.Z / vertices.Length);
                 }
 
-                foreach (VBOMesh mesh in models)
+                foreach (VboMesh mesh in models)
                 {
-                    double[] verts = mesh.subMesh.verts;
+                    double[] verts = mesh.SubMesh.verts;
 
                     for (int i = 0; i < verts.Length; i += 3)
                     {
@@ -211,19 +211,19 @@ namespace BxDRobotExporter.OGLViewer
         /// Load the data from a BXDAMesh into the node
         /// </summary>
         /// <param name="mesh">The mesh to load from</param>
-        public void loadMeshes(BXDAMesh mesh)
+        public void LoadMeshes(BXDAMesh mesh)
         {
-            this.centerOfMass = mesh.physics.centerOfMass;
-            baseMesh = mesh;
+            this.CenterOfMass = mesh.physics.centerOfMass;
+            BaseMesh = mesh;
             
             foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
             {
-                models.Add(new VBOMesh(sub));
+                models.Add(new VboMesh(sub));
             }
             
             foreach (BXDAMesh.BXDASubMesh sub in mesh.colliders)
             {
-                colliders.Add(new VBOMesh(sub));
+                colliders.Add(new VboMesh(sub));
             }
         }
 
@@ -231,7 +231,7 @@ namespace BxDRobotExporter.OGLViewer
         /// Compute the positions and rotations of this node and its children
         /// </summary>
         /// <param name="moveJoints">Whether or not to move the node on its joints</param>
-        public void compute(bool moveJoints)
+        public void Compute(bool moveJoints)
         {
             if (moveJoints) timeStep += 0.005f;
             else timeStep = 0.0f;
@@ -244,17 +244,17 @@ namespace BxDRobotExporter.OGLViewer
                 {
                     case SkeletalJointType.CYLINDRICAL:
                         CylindricalJoint_Base cjb = (CylindricalJoint_Base)GetSkeletalJoint();
-                        requestedRotation = cjb.currentAngularPosition;
+                        RequestedRotation = cjb.currentAngularPosition;
                         requestedTranslation = cjb.currentLinearPosition;
                         break;
                     case SkeletalJointType.ROTATIONAL:
                         RotationalJoint_Base rjb = (RotationalJoint_Base)GetSkeletalJoint();
-                        requestedRotation = rjb.currentAngularPosition;
+                        RequestedRotation = rjb.currentAngularPosition;
                         requestedTranslation = 0;
                         break;
                     case SkeletalJointType.LINEAR:
                         LinearJoint_Base ljb = (LinearJoint_Base)GetSkeletalJoint();
-                        requestedRotation = 0;
+                        RequestedRotation = 0;
                         requestedTranslation = ljb.currentLinearPosition;
                         break;
                 }
@@ -269,20 +269,20 @@ namespace BxDRobotExporter.OGLViewer
                     BXDVector3 basePoint = dof.basePoint;
                     if (GetParent() != null)
                     {
-                        basePoint = ((OGL_RigidNode)GetParent()).myTrans.Multiply(basePoint);
-                        axis = ((OGL_RigidNode)GetParent()).myTrans.Rotate(axis);
+                        basePoint = ((OglRigidNode)GetParent()).myTrans.Multiply(basePoint);
+                        axis = ((OglRigidNode)GetParent()).myTrans.Rotate(axis);
                     }
 
-                    requestedRotation = (float)(Math.Sin(timeStep) + 0.9f) * 1.2f *
+                    RequestedRotation = (float)(Math.Sin(timeStep) + 0.9f) * 1.2f *
                                             (dof.hasAngularLimits() ?
                                                 (dof.upperLimit - dof.lowerLimit) / 2.0f : 3.14f) +
                                             (dof.hasAngularLimits() ?
                                                 dof.lowerLimit : 0);
 
-                    requestedRotation = Math.Max(dof.lowerLimit, Math.Min(dof.upperLimit, requestedRotation));
-                    myTrans *= Matrix4.CreateTranslation(-dof.basePoint.ToTK());
-                    myTrans *= Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTK(), requestedRotation - dof.currentPosition);
-                    myTrans *= Matrix4.CreateTranslation(dof.basePoint.ToTK());
+                    RequestedRotation = Math.Max(dof.lowerLimit, Math.Min(dof.upperLimit, RequestedRotation));
+                    myTrans *= Matrix4.CreateTranslation(-dof.basePoint.ToTk());
+                    myTrans *= Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTk(), RequestedRotation - dof.currentPosition);
+                    myTrans *= Matrix4.CreateTranslation(dof.basePoint.ToTk());
                 }
                 foreach (LinearDOF dof in GetSkeletalJoint().GetLinearDOF())
                 {
@@ -293,19 +293,19 @@ namespace BxDRobotExporter.OGLViewer
                                                     dof.lowerLimit : 0);
 
                     requestedTranslation = Math.Max(dof.lowerLimit, Math.Min(dof.upperLimit, requestedTranslation));
-                    myTrans *= Matrix4.CreateTranslation(dof.translationalAxis.ToTK() * (requestedTranslation - dof.currentPosition));
+                    myTrans *= Matrix4.CreateTranslation(dof.translationalAxis.ToTk() * (requestedTranslation - dof.currentPosition));
                 }
             }
 
             if (GetParent() != null)
             {
-                myTrans = myTrans * ((OGL_RigidNode)GetParent()).myTrans;
+                myTrans = myTrans * ((OglRigidNode)GetParent()).myTrans;
             }
 
             foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in Children)
             {
-                OGL_RigidNode child = ((OGL_RigidNode)pair.Value);
-                child.compute(moveJoints);
+                OglRigidNode child = ((OglRigidNode)pair.Value);
+                child.Compute(moveJoints);
             }
         }
 
@@ -602,10 +602,10 @@ namespace BxDRobotExporter.OGLViewer
         /// </summary>
         public enum HighlightState : byte
         {
-            NOTHING = 0,
-            ACTIVE = 1,
-            HOVERING = 2,
-            ACTIVE_HOVERING = 3
+            Nothing = 0,
+            Active = 1,
+            Hovering = 2,
+            ActiveHovering = 3
         }
 
     }

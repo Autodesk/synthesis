@@ -9,13 +9,13 @@ namespace BxDRobotExporter
 {
     public class AnalyticsUtils
     {
-        public static string BASE_URL = "https://www.google-analytics.com/collect";
-        public static string TRACKING = "UA-81892961-4";
-        public static string USER_ID = "unknown";
-        private static readonly HttpClient client = new HttpClient();
+        public static string BaseUrl = "https://www.google-analytics.com/collect";
+        public static string Tracking = "UA-81892961-4";
+        public static string UserId = "unknown";
+        private static readonly HttpClient Client = new HttpClient();
         public static void SetUser(string user)
         {
-            USER_ID = GetHashString(user);
+            UserId = GetHashString(user);
         }
 
         public static byte[] GetHash(string inputString)
@@ -35,18 +35,18 @@ namespace BxDRobotExporter
 
 
 
-        private static string GetBaseURL()
+        private static string GetBaseUrl()
         {
-            string res = BASE_URL;
+            string res = BaseUrl;
             res += "?v=1";
-            res += "&tid=" + TRACKING;
-            res += "&uid="+ USER_ID;
+            res += "&tid=" + Tracking;
+            res += "&uid="+ UserId;
             return res;
         }
 
         public static async Task PostAsync(string para)
         {
-            if (!SynthesisGUI.PluginSettings.useAnalytics)
+            if (!SynthesisGui.PluginSettings.UseAnalytics)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace BxDRobotExporter
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync(para, content);
+            var response = await Client.PostAsync(para, content);
 
             var responseString = await response.Content.ReadAsStringAsync();
         }
@@ -66,20 +66,20 @@ namespace BxDRobotExporter
 
         public static void StartSession()
         {
-            string url = GetBaseURL();
+            string url = GetBaseUrl();
             url += "&sc=start";
             PostAsync(url);
         }
 
         public static void EndSession()
         {
-            string url = GetBaseURL();
+            string url = GetBaseUrl();
             url += "&sc=end";
             PostAsync(url);
         }
         public static void LogPage(string page)
         {
-            string url = GetBaseURL();
+            string url = GetBaseUrl();
             url += "&t=pageview";
             url += "&dh=inventor.plugin";
             url += "&dp=" + page;
@@ -88,7 +88,7 @@ namespace BxDRobotExporter
 
         public static void LogEvent(string catagory, string action, string label, int value = 0)
         {
-            string url = GetBaseURL();
+            string url = GetBaseUrl();
             url += "&t=event";
             url += "&ec="+catagory;
             url += "&ea=" + action;

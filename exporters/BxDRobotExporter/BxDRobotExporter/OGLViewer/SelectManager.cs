@@ -6,14 +6,14 @@ namespace BxDRobotExporter.OGLViewer
     public class SelectManager
     {
         // For selections
-        private static readonly Stack<UInt32> FREE_NODE_IDS = new Stack<UInt32>();
-        private static UInt32 NODES_CREATED = 0;
-        private static readonly Dictionary<UInt32, object> NODE_MAPPING = new Dictionary<UInt32, object>();
+        private static readonly Stack<UInt32> FreeNodeIds = new Stack<UInt32>();
+        private static UInt32 nodesCreated = 0;
+        private static readonly Dictionary<UInt32, object> NodeMapping = new Dictionary<UInt32, object>();
 
-        public static object GetByGUID(UInt32 guid)
+        public static object GetByGuid(UInt32 guid)
         {
             object output;
-            if (NODE_MAPPING.TryGetValue(guid, out output))
+            if (NodeMapping.TryGetValue(guid, out output))
             {
                 return output;
             }
@@ -23,47 +23,47 @@ namespace BxDRobotExporter.OGLViewer
             }
         }
 
-        public static UInt32 AllocateGUID(object obj)
+        public static UInt32 AllocateGuid(object obj)
         {
-            UInt32 myGUID;
-            if (FREE_NODE_IDS.Count == 0)
+            UInt32 myGuid;
+            if (FreeNodeIds.Count == 0)
             {
-                myGUID = ++NODES_CREATED;
+                myGuid = ++nodesCreated;
             }
             else
             {
-                myGUID = FREE_NODE_IDS.Pop();
+                myGuid = FreeNodeIds.Pop();
             }
             try
             {
-                NODE_MAPPING.Add(myGUID, obj);
+                NodeMapping.Add(myGuid, obj);
             }
             catch
             {
-                NODE_MAPPING[myGUID] = obj;
+                NodeMapping[myGuid] = obj;
             }
-            return myGUID;
+            return myGuid;
         }
 
-        public static bool FreeGUID(UInt32 guid)
+        public static bool FreeGuid(UInt32 guid)
         {
-            if (guid == NODES_CREATED)
+            if (guid == nodesCreated)
             {
-                NODES_CREATED--;
+                nodesCreated--;
             }
             else
             {
-                FREE_NODE_IDS.Push(guid);
+                FreeNodeIds.Push(guid);
             }
-            return NODE_MAPPING.Remove(guid);
+            return NodeMapping.Remove(guid);
         }
 
-        public static byte[] GUIDToColor(uint guid)
+        public static byte[] GuidToColor(uint guid)
         {
             return BitConverter.GetBytes(guid);
         }
 
-        public static UInt32 ColorToGUID(byte[] data)
+        public static UInt32 ColorToGuid(byte[] data)
         {
             return BitConverter.ToUInt32(data, 0);
         }

@@ -14,7 +14,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             InitializeComponent();
             SuspendLayout();
 
-            foreach (RigidNode_Base node in InventorUtils.GUI.SkeletonBase.ListAllNodes())
+            foreach (RigidNode_Base node in InventorUtils.Gui.SkeletonBase.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {

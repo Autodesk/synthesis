@@ -5,9 +5,9 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
 {
     public partial class JointSensorEditorForm : Form
     {
-        SkeletalJoint_Base joint;
-        int sourceIndex = 0;
-        RobotSensorType[] sensorTypeOptions;
+        private SkeletalJoint_Base joint;
+        private int sourceIndex = 0;
+        private RobotSensorType[] sensorTypeOptions;
 
         public JointSensorEditorForm(SkeletalJoint_Base passJoint, int sourceIndex = -1)
         {

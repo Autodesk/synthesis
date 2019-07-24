@@ -4,7 +4,7 @@ using Inventor;
 
 namespace BxDRobotExporter.SkeletalStructure
 {
-    public class BallJoint : BallJoint_Base, InventorSkeletalJoint
+    public class BallJoint : BallJoint_Base, INventorSkeletalJoint
     {
         private SkeletalJoint wrapped;
 
@@ -19,14 +19,14 @@ namespace BxDRobotExporter.SkeletalStructure
 
         public void ReloadInventorJoint()
         {
-            basePoint = InventorDocumentIOUtils.ToBXDVector(wrapped.rigidJoint.geomOne);
+            basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne);
         }
 
         public static bool IsBallJoint(CustomRigidJoint jointI)
         {
-            if (jointI.joints.Count == 1)
+            if (jointI.Joints.Count == 1)
             {
-                AssemblyJointDefinition joint = jointI.joints[0].Definition;
+                AssemblyJointDefinition joint = jointI.Joints[0].Definition;
                 //Checks if there is no linear motion allowed.
                 return joint.JointType == AssemblyJointTypeEnum.kBallJointType;
             }
@@ -44,7 +44,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
         protected override string ToString_Internal()
         {
-            return wrapped.childGroup + " rotates about " + wrapped.parentGroup;
+            return wrapped.ChildGroup + " rotates about " + wrapped.ParentGroup;
         }
     }
 }

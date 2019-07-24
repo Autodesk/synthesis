@@ -55,7 +55,7 @@ namespace BxDRobotExporter.SkeletalStructure
             HashSet<AssemblyComponentDefinition> roots = new HashSet<AssemblyComponentDefinition>();
             foreach (CustomRigidGroup group in groups)
             {
-                foreach (ComponentOccurrence cO in group.occurrences)
+                foreach (ComponentOccurrence cO in group.Occurrences)
                 {
                     roots.Add(GetParent(cO).Parent);
                 }
@@ -70,7 +70,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
             foreach (CustomRigidGroup group in groups)
             {
-                foreach (ComponentOccurrence cO in group.occurrences)
+                foreach (ComponentOccurrence cO in group.Occurrences)
                 {
                     if (enable)
                     {
@@ -101,10 +101,10 @@ namespace BxDRobotExporter.SkeletalStructure
             }
         }
 
-        public static bool DID_COLLIDE = false;
+        public static bool DidCollide = false;
         public static void OnCollisionEvent()
         {
-            DID_COLLIDE = true;
+            DidCollide = true;
         }
     }
 }

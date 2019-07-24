@@ -6,45 +6,45 @@ namespace BxDRobotExporter.RigidAnalyzer
 {
     public class CustomRigidJoint
     {
-        public List<AssemblyJoint> joints = new List<AssemblyJoint>();
-        public List<AssemblyConstraint> constraints = new List<AssemblyConstraint>();
-        public CustomRigidGroup groupOne;
-        public CustomRigidGroup groupTwo;
+        public List<AssemblyJoint> Joints = new List<AssemblyJoint>();
+        public List<AssemblyConstraint> Constraints = new List<AssemblyConstraint>();
+        public CustomRigidGroup GroupOne;
+        public CustomRigidGroup GroupTwo;
 
-        public dynamic geomOne, geomTwo;
-        public NameValueMap options;
+        public dynamic GeomOne, GeomTwo;
+        public NameValueMap Options;
 
-        public bool jointBased;
+        public bool JointBased;
 
-        public RigidBodyJointTypeEnum type;
+        public RigidBodyJointTypeEnum Type;
 
         public CustomRigidJoint(RigidBodyJoint joint, CustomRigidGroup groupOnez, CustomRigidGroup groupTwoz)
         {
             foreach (AssemblyJoint aj in joint.Joints)
             {
-                joints.Add(aj);
+                Joints.Add(aj);
             }
             foreach (AssemblyConstraint cj in joint.Constraints)
             {
-                constraints.Add(cj);
+                Constraints.Add(cj);
             }
-            groupOne = groupOnez;
-            groupTwo = groupTwoz;
-            type = joint.JointType;
-            joint.GetJointData(out geomOne, out geomTwo, out options);
+            GroupOne = groupOnez;
+            GroupTwo = groupTwoz;
+            Type = joint.JointType;
+            joint.GetJointData(out GeomOne, out GeomTwo, out Options);
             try
             {
-                jointBased = options.get_Value("FromJoint");
+                JointBased = Options.get_Value("FromJoint");
             }
             catch
             {
-                jointBased = false;
+                JointBased = false;
             }
         }
 
         public override string ToString()
         {
-            return "RigidJoint (" + Enum.GetName(typeof(RigidBodyJointTypeEnum), type) + "): " + constraints.Count + "C, " + joints.Count + "J";
+            return "RigidJoint (" + Enum.GetName(typeof(RigidBodyJointTypeEnum), Type) + "): " + Constraints.Count + "C, " + Joints.Count + "J";
         }
     }
 }

@@ -5,7 +5,7 @@ using Inventor;
 
 namespace BxDRobotExporter.RigidAnalyzer
 {
-    static class RigidBodyCleaner
+    internal static class RigidBodyCleaner
     {
         /// <summary>
         /// Removes all the meaningless items from the given group of rigid body results, simplifying the model.
@@ -22,14 +22,14 @@ namespace BxDRobotExporter.RigidAnalyzer
         /// <param name="results">Rigid results to clean</param>
         public static void CleanMeaningless(CustomRigidResults results)
         {
-            foreach (CustomRigidGroup group in results.groups)
+            foreach (CustomRigidGroup group in results.Groups)
             {
-                group.occurrences.RemoveAll(item => item.Suppressed);
+                group.Occurrences.RemoveAll(item => item.Suppressed);
             }
             //Removes groups with no components.
-            results.groups.RemoveAll(item => item.occurrences.Count <= 0);
+            results.Groups.RemoveAll(item => item.Occurrences.Count <= 0);
             //Removes joints that attach a group to itself or an empty group.
-            results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0);
+            results.Joints.RemoveAll(item => item.GroupOne.Equals(item.GroupTwo) || item.GroupOne.Occurrences.Count <= 0 || item.GroupTwo.Occurrences.Count <= 0);
         }
 
         /// <summary>
@@ -44,9 +44,9 @@ namespace BxDRobotExporter.RigidAnalyzer
         {
             CustomRigidGroup firstRoot = null;
             //Bundles all the grounded components together into one CustomRigidGroup.
-            foreach (CustomRigidGroup group in results.groups)
+            foreach (CustomRigidGroup group in results.Groups)
             {
-                if (group.grounded)
+                if (group.Grounded)
                 {
                     if ((firstRoot == null))
                     {
@@ -54,23 +54,23 @@ namespace BxDRobotExporter.RigidAnalyzer
                     }
                     else
                     {
-                        firstRoot.occurrences.AddRange(group.occurrences);
-                        group.occurrences.Clear();
+                        firstRoot.Occurrences.AddRange(group.Occurrences);
+                        group.Occurrences.Clear();
                     }
                 }
             }
             if (firstRoot != null)
             {
-                foreach (CustomRigidJoint joint in results.joints)
+                foreach (CustomRigidJoint joint in results.Joints)
                 {
                     //If a group has no occurrences, its because they were transferred to the firstRoot group.  Updates joints to attach to that joint.
-                    if (joint.groupOne.occurrences.Count == 0)
+                    if (joint.GroupOne.Occurrences.Count == 0)
                     {
-                        joint.groupOne = firstRoot;
+                        joint.GroupOne = firstRoot;
                     }
-                    if (joint.groupTwo.occurrences.Count == 0)
+                    if (joint.GroupTwo.Occurrences.Count == 0)
                     {
-                        joint.groupTwo = firstRoot;
+                        joint.GroupTwo = firstRoot;
                     }
                 }
             }
@@ -90,23 +90,23 @@ namespace BxDRobotExporter.RigidAnalyzer
         private static void GenerateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
         {
             //Creates a spot in the dictionary for each component.
-            foreach (CustomRigidGroup group in results.groups)
+            foreach (CustomRigidGroup group in results.Groups)
             {
                 joints.Add(group, new HashSet<CustomRigidGroup>());
                 constraints.Add(group, new HashSet<CustomRigidGroup>());
             }
             //Adds connections between components going both directions.
-            foreach (CustomRigidJoint j in results.joints)
+            foreach (CustomRigidJoint j in results.Joints)
             {
-                if (j.jointBased && j.joints.Count > 0 && j.joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
+                if (j.JointBased && j.Joints.Count > 0 && j.Joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
                 {
-                    joints[j.groupOne].Add(j.groupTwo);
-                    joints[j.groupTwo].Add(j.groupOne);
+                    joints[j.GroupOne].Add(j.GroupTwo);
+                    joints[j.GroupTwo].Add(j.GroupOne);
                 }
                 else
                 {
-                    constraints[j.groupOne].Add(j.groupTwo);
-                    constraints[j.groupTwo].Add(j.groupOne);
+                    constraints[j.GroupOne].Add(j.GroupTwo);
+                    constraints[j.GroupTwo].Add(j.GroupOne);
                 }
             }
         }
@@ -116,9 +116,9 @@ namespace BxDRobotExporter.RigidAnalyzer
         /// </summary>
         private class PlannedJoint
         {
-            public RigidNode node;
-            public RigidNode parentNode;
-            public CustomRigidJoint joint;
+            public RigidNode Node;
+            public RigidNode ParentNode;
+            public CustomRigidJoint Joint;
         }
 
         /// <summary>
@@ -151,9 +151,9 @@ namespace BxDRobotExporter.RigidAnalyzer
             HashSet<CustomRigidGroup> closedNodes = new HashSet<CustomRigidGroup>();
 
             // Find the first grounded group, the start point for dijkstra's algorithm.
-            foreach (CustomRigidGroup grp in results.groups)
+            foreach (CustomRigidGroup grp in results.Groups)
             {
-                if (grp.grounded)
+                if (grp.Grounded)
                 {
                     openNodes.Add(new CustomRigidGroup[] { grp, grp });
                     closedNodes.Add(grp);
@@ -178,15 +178,15 @@ namespace BxDRobotExporter.RigidAnalyzer
                         baseNodes.Add(jonConn, rnode);
 
                         //Find the actual joint between the two components.
-                        foreach (CustomRigidJoint jnt in results.joints)
+                        foreach (CustomRigidJoint jnt in results.Joints)
                         {
-                            if (jnt.joints.Count > 0 && ((jnt.groupOne.Equals(jonConn) && jnt.groupTwo.Equals(node[0]))
-                                                         || (jnt.groupOne.Equals(node[0]) && jnt.groupTwo.Equals(jonConn))))
+                            if (jnt.Joints.Count > 0 && ((jnt.GroupOne.Equals(jonConn) && jnt.GroupTwo.Equals(node[0]))
+                                                         || (jnt.GroupOne.Equals(node[0]) && jnt.GroupTwo.Equals(jonConn))))
                             {
                                 PlannedJoint pJoint = new PlannedJoint();
-                                pJoint.joint = jnt;
-                                pJoint.parentNode = baseNodes[node[1]];
-                                pJoint.node = rnode;
+                                pJoint.Joint = jnt;
+                                pJoint.ParentNode = baseNodes[node[1]];
+                                pJoint.Node = rnode;
                                 plannedJoints.Add(pJoint);
                                 newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
                                 break;
@@ -208,29 +208,29 @@ namespace BxDRobotExporter.RigidAnalyzer
             //Transfers components between constrained groups.
             foreach (KeyValuePair<CustomRigidGroup, CustomRigidGroup> pair in mergePattern)
             {
-                pair.Value.occurrences.AddRange(pair.Key.occurrences); //Transfers key components to related value.
-                pair.Key.occurrences.Clear();
-                pair.Value.grounded = pair.Value.grounded || pair.Key.grounded; //Is it possible for the key to be grounded?  Would there have to be a loop of groups?
+                pair.Value.Occurrences.AddRange(pair.Key.Occurrences); //Transfers key components to related value.
+                pair.Key.Occurrences.Clear();
+                pair.Value.Grounded = pair.Value.Grounded || pair.Key.Grounded; //Is it possible for the key to be grounded?  Would there have to be a loop of groups?
             }
             Console.WriteLine("Resolve broken joints");
             //Goes through each joint and sees if it was merged.  If it was, it attaches the group left behind to the group that was merged into.
-            foreach (CustomRigidJoint joint in results.joints)
+            foreach (CustomRigidJoint joint in results.Joints)
             {
                 CustomRigidGroup updatedGroup = null; //Stores the group that the previous groupOne/Two was merged into.
-                if (mergePattern.TryGetValue(joint.groupOne, out updatedGroup))
+                if (mergePattern.TryGetValue(joint.GroupOne, out updatedGroup))
                 {
-                    joint.groupOne = updatedGroup;
+                    joint.GroupOne = updatedGroup;
                 }
-                if (mergePattern.TryGetValue(joint.groupTwo, out updatedGroup))
+                if (mergePattern.TryGetValue(joint.GroupTwo, out updatedGroup))
                 {
-                    joint.groupTwo = updatedGroup;
+                    joint.GroupTwo = updatedGroup;
                 }
             }
             Console.WriteLine("Creating planned skeletal joints");
             foreach (PlannedJoint pJoint in plannedJoints)
             {
-                SkeletalJoint_Base sJ = SkeletalJoint.Create(pJoint.joint, pJoint.parentNode.group);
-                pJoint.parentNode.AddChild(sJ, pJoint.node);
+                SkeletalJoint_Base sJ = SkeletalJoint.Create(pJoint.Joint, pJoint.ParentNode.Group);
+                pJoint.ParentNode.AddChild(sJ, pJoint.Node);
             }
             Console.WriteLine("Cleanup remainders");
             CleanMeaningless(results);

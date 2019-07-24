@@ -16,8 +16,8 @@ namespace BxDRobotExporter
 {
     internal static class InventorUtils
     {
-        static internal SynthesisGUI GUI;
-        static DockableWindow EmbededJointPane;
+        static internal SynthesisGui Gui;
+        private static DockableWindow embededJointPane;
         public static DockableWindow EmbededGuidePane;
         public static DockableWindow EmbededKeyPane;
 
@@ -30,15 +30,15 @@ namespace BxDRobotExporter
         {
 
             UserInterfaceManager uiMan = app.UserInterfaceManager;
-            EmbededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
+            embededJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
 
-            EmbededJointPane.DockingState = DockingStateEnum.kDockBottom;
-            EmbededJointPane.Height = 250;
-            EmbededJointPane.ShowVisibilityCheckBox = false;
-            EmbededJointPane.ShowTitleBar = true;
+            embededJointPane.DockingState = DockingStateEnum.kDockBottom;
+            embededJointPane.Height = 250;
+            embededJointPane.ShowVisibilityCheckBox = false;
+            embededJointPane.ShowTitleBar = true;
             RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
 
-            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.SetSkeleton(GUI.SkeletonBase);
+            RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.SetSkeleton(Gui.SkeletonBase);
             RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => FocusAndHighlightNodes(nodes, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
             RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
@@ -50,9 +50,9 @@ namespace BxDRobotExporter
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
-                        node is OGL_RigidNode)
+                        node is OglRigidNode)
                     {
-                        (node as OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                        (node as OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
 
                         WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
                         wheelDriver.center = center;
@@ -63,9 +63,9 @@ namespace BxDRobotExporter
                     }
                 }
             };
-            EmbededJointPane.AddChild(RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
+            embededJointPane.AddChild(RobotExporterAddInServer.Instance.AdvancedAdvancedJointEditor.Handle);
 
-            EmbededJointPane.Visible = true;
+            embededJointPane.Visible = true;
 
             EmbededKeyPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:KeyPane", "Degrees of Freedom Key");
             EmbededKeyPane.DockingState = DockingStateEnum.kFloat;
@@ -74,7 +74,7 @@ namespace BxDRobotExporter
             EmbededKeyPane.SetMinimumSize(120, 220);
             EmbededKeyPane.ShowVisibilityCheckBox = false;
             EmbededKeyPane.ShowTitleBar = true;
-            var keyPanel = new DOFKeyPane();
+            var keyPanel = new DofKeyPane();
             EmbededKeyPane.AddChild(keyPanel.Handle);
             EmbededKeyPane.Visible = false;
 
@@ -92,7 +92,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                GUI = new SynthesisGUI(RobotExporterAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+                Gui = new SynthesisGui(RobotExporterAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
             }
             catch (Exception e)
             {
@@ -106,10 +106,10 @@ namespace BxDRobotExporter
         /// </summary>
         public static void DisposeDockableWindows()
         {
-            if (EmbededJointPane != null)
+            if (embededJointPane != null)
             {
-                EmbededJointPane.Visible = false;
-                EmbededJointPane.Delete();
+                embededJointPane.Visible = false;
+                embededJointPane.Delete();
             }
             if (EmbededGuidePane != null)
             {
@@ -126,13 +126,13 @@ namespace BxDRobotExporter
 
         public static bool IsAdvancedJointEditorVisible()
         {
-            if (EmbededJointPane == null) return false;
-            return EmbededJointPane.Visible;
+            if (embededJointPane == null) return false;
+            return embededJointPane.Visible;
         }
 
         public static void ToggleAdvancedJointEditor()
         {
-            if (EmbededJointPane != null)
+            if (embededJointPane != null)
             {
                 if (IsAdvancedJointEditorVisible())
                 {
@@ -149,9 +149,9 @@ namespace BxDRobotExporter
         /// </summary>
         public static void HideAdvancedJointEditor() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
         {
-            if (EmbededJointPane != null)
+            if (embededJointPane != null)
             {
-                EmbededJointPane.Visible = false;
+                embededJointPane.Visible = false;
                 FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera, 1);
             }
         }
@@ -161,9 +161,9 @@ namespace BxDRobotExporter
         /// </summary>
         public static void ShowAdvancedJointEditor()
         {
-            if (EmbededJointPane != null)
+            if (embededJointPane != null)
             {
-                EmbededJointPane.Visible = true;
+                embededJointPane.Visible = true;
             }
         }
 
@@ -178,7 +178,7 @@ namespace BxDRobotExporter
         }
 
         /// <summary>
-        /// Initializes all of the <see cref="SynthesisGUI"/> settings to the proper values. Should be called once in the Activate class
+        /// Initializes all of the <see cref="SynthesisGui"/> settings to the proper values. Should be called once in the Activate class
         /// </summary>
         public static void LoadSettings()
         {
@@ -188,28 +188,28 @@ namespace BxDRobotExporter
 
             if (Settings.Default.ConfigVersion < 3)
             {
-                SynthesisGUI.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                SynthesisGui.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Settings.Default.ChildColor,
                     GeneralSaveLocation = Settings.Default.SaveLocation,
                     GeneralUseFancyColors = Settings.Default.FancyColors,
-                    openSynthesis = Settings.Default.ExportToField,
-                    fieldName = Settings.Default.SelectedField,
-                    defaultRobotCompetition = "GENERIC",
-                    useAnalytics = true
+                    OpenSynthesis = Settings.Default.ExportToField,
+                    FieldName = Settings.Default.SelectedField,
+                    DefaultRobotCompetition = "GENERIC",
+                    UseAnalytics = true
                 };
             }
             else
             {
-                SynthesisGUI.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                SynthesisGui.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Settings.Default.ChildColor,
                     GeneralSaveLocation = Settings.Default.SaveLocation,
                     GeneralUseFancyColors = Settings.Default.FancyColors,
-                    openSynthesis = Settings.Default.ExportToField,
-                    fieldName = Settings.Default.SelectedField,
-                    defaultRobotCompetition = Settings.Default.DefaultRobotCompetition,
-                    useAnalytics = Settings.Default.UseAnalytics
+                    OpenSynthesis = Settings.Default.ExportToField,
+                    FieldName = Settings.Default.SelectedField,
+                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition,
+                    UseAnalytics = Settings.Default.UseAnalytics
                 };
             }
         }
@@ -271,7 +271,7 @@ namespace BxDRobotExporter
 
         public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
         {
-            RobotExporterAddInServer.Instance.ClearDOFHighlight();
+            RobotExporterAddInServer.Instance.ClearDofHighlight();
             RobotExporterAddInServer.Instance.ChildHighlight.Clear();
 
             foreach (var componentOccurrence in occurrences)
@@ -282,7 +282,7 @@ namespace BxDRobotExporter
 
         public static void ClearHighlight()
         {
-            RobotExporterAddInServer.Instance.ClearDOFHighlight();
+            RobotExporterAddInServer.Instance.ClearDofHighlight();
             RobotExporterAddInServer.Instance.ChildHighlight.Clear();
         }
 
