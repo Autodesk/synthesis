@@ -3,10 +3,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
 using BxDRobotExporter.Managers;
+using BxDRobotExporter.Properties;
 
 namespace BxDRobotExporter.GUI.Editors
 {
-    public delegate void SettingsEvent(Color child, bool useFancyColors, string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetit, bool useAnalytics);
+    public delegate void SettingsEvent(ExporterSettingsForm.PluginSettingsValues values);
 
     public partial class ExporterSettingsForm : Form
     {
@@ -78,7 +79,17 @@ namespace BxDRobotExporter.GUI.Editors
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, OpenSynthesis, FieldName, DefaultRobotCompetition, UseAnalytics);
+                Settings.Default.ExportToField = OpenSynthesis;
+                Settings.Default.SelectedField = FieldName;
+                Settings.Default.ChildColor = InventorChildColor;
+                Settings.Default.FancyColors = GeneralUseFancyColors;
+                Settings.Default.SaveLocation = GeneralSaveLocation;
+                Settings.Default.DefaultRobotCompetition = DefaultRobotCompetition;
+                Settings.Default.UseAnalytics = UseAnalytics;
+                Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
+                Settings.Default.Save();
+
+                if (SettingsChanged != null) SettingsChanged.Invoke(this);
             }
 
             //General
