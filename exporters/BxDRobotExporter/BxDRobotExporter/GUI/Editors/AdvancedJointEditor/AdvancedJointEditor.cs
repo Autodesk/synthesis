@@ -22,7 +22,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                 }
                 else
                 {
-                    Hide();
+                    HideAndClearHighlight();
                 }
             }
         }
@@ -42,6 +42,16 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             embeddedAdvancedJointEditorPane.ShowTitleBar = true;
             embeddedAdvancedJointEditorPane.AddChild(advancedJointEditorUserControl.Handle);
             embeddedAdvancedJointEditorPane.Visible = visible;
+
+            uiMan.DockableWindows.Events.OnHide += (DockableWindow window, EventTimingEnum after, NameValueMap context, out HandlingCodeEnum code) =>
+            {
+                if (after == EventTimingEnum.kBefore && window.Equals(embeddedAdvancedJointEditorPane))
+                {
+                    ClearHighlight();
+                    visible = false; // 
+                }
+                code = HandlingCodeEnum.kEventNotHandled;
+            };
         }
 
         public void DestroyDockableWindow()
@@ -62,10 +72,15 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// <summary>
         /// Hides the dockable windows. Used when switching documents. Called in <see cref="RobotExporterAddInServer.ApplicationEvents_OnDeactivateDocument(_Document, EventTimingEnum, NameValueMap, out HandlingCodeEnum)"/>.
         /// </summary>
-        private void Hide() // TODO: Figure out how to call this when the advanced editor tab is closed manually (Inventor API)
+        private void HideAndClearHighlight()
         {
-            if (embeddedAdvancedJointEditorPane == null) return;
-            embeddedAdvancedJointEditorPane.Visible = false;
+            ClearHighlight();
+            if (embeddedAdvancedJointEditorPane != null) 
+                embeddedAdvancedJointEditorPane.Visible = false;
+        }
+
+        private static void ClearHighlight()
+        {
             if (RobotExporterAddInServer.Instance.Application.ActiveView != null)
                 InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 1);
         }
@@ -83,7 +98,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
         public void TemporaryHide()
         {
-            Hide();
+            HideAndClearHighlight();
         }
     }
 }
