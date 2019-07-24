@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {

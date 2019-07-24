@@ -28,7 +28,7 @@ namespace BxDRobotExporter
         {
             if (nodes == null)
             {
-                ClearHighlight();
+                RobotExporterAddInServer.Instance.highlightManager.ClearAllHighlight();
                 camera.Fit();
                 camera.ApplyWithoutTransition();
                 return;
@@ -39,7 +39,7 @@ namespace BxDRobotExporter
                 return;
             }
             
-            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.highlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
             FocusCameraOnOccurrences(occurrences, 15, camera, zoom, InventorUtils.ViewDirection.Y);
             HighlightOccurrences(occurrences);
@@ -63,7 +63,7 @@ namespace BxDRobotExporter
                 return;
             }
             
-            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.highlightManager.ClearJointHighlight();
             // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
             FocusCameraOnOccurrences(occurrences, 15, camera, InventorUtils.ViewDirection.Y);
             HighlightOccurrences(occurrences);
@@ -71,19 +71,12 @@ namespace BxDRobotExporter
 
         public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
         {
-            RobotExporterAddInServer.Instance.ClearDofHighlight();
-            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
+            RobotExporterAddInServer.Instance.highlightManager.ClearAllHighlight();
 
             foreach (var componentOccurrence in occurrences)
             {
-                RobotExporterAddInServer.Instance.ChildHighlight.AddItem(componentOccurrence);
+                RobotExporterAddInServer.Instance.highlightManager.HighlightJoint(componentOccurrence);
             }
-        }
-
-        public static void ClearHighlight()
-        {
-            RobotExporterAddInServer.Instance.ClearDofHighlight();
-            RobotExporterAddInServer.Instance.ChildHighlight.Clear();
         }
 
         public static List<ComponentOccurrence> GetComponentOccurrencesFromNodes(List<RigidNode_Base> nodes)

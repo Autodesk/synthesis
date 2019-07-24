@@ -11,7 +11,7 @@ using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
 
-namespace BxDRobotExporter
+namespace BxDRobotExporter.Managers
 {
     public class RobotDataManager
     {

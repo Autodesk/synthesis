@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;

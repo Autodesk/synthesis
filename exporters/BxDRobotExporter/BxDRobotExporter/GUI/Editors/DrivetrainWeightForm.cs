@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {

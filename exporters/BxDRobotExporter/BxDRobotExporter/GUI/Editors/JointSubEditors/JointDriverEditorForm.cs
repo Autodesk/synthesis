@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors.JointSubEditors
 {
