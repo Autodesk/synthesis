@@ -53,7 +53,7 @@ namespace BxDRobotExporter.Managers
 
         public static RobotDataManager Instance;
 
-        public static ExporterSettingsForm.PluginSettingsValues PluginSettings;
+        public static readonly ExporterSettingsForm.PluginSettingsValues PluginSettings = new ExporterSettingsForm.PluginSettingsValues();
     
         private Inventor.AssemblyDocument asmDocument = null; // Set when LoadRobotData is called.
         public RigidNode_Base SkeletonBase = null;

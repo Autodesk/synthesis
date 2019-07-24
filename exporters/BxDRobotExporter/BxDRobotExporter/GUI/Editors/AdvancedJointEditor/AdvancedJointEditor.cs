@@ -6,7 +6,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
     public class AdvancedJointEditor
     {
         private DockableWindow embeddedAdvancedJointEditorPane;
-        private AdvancedJointEditorUserControl advancedJointEditorUserControl;
+        private readonly AdvancedJointEditorUserControl advancedJointEditorUserControl = new AdvancedJointEditorUserControl();
         
         public bool Visible
         {
@@ -16,27 +16,26 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                 if (embeddedAdvancedJointEditorPane == null) return;
                 if (value)
                 {
-                    Hide();
+                    Show();
                 }
                 else
                 {
-                    Show();
+                    Hide();
                 }
             }
         }
 
-        public void CreateDockableWindow(UserInterfaceManager uiMan, RigidNode_Base skeletonBase)
+        public void CreateDockableWindow(UserInterfaceManager uiMan)
         {
             DestroyDockableWindow();
             embeddedAdvancedJointEditorPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
-
             embeddedAdvancedJointEditorPane.DockingState = DockingStateEnum.kDockBottom;
             embeddedAdvancedJointEditorPane.Height = 250;
             embeddedAdvancedJointEditorPane.ShowVisibilityCheckBox = false;
             embeddedAdvancedJointEditorPane.ShowTitleBar = true;
-            advancedJointEditorUserControl = new AdvancedJointEditorUserControl(skeletonBase);
             embeddedAdvancedJointEditorPane.AddChild(advancedJointEditorUserControl.Handle);
-            embeddedAdvancedJointEditorPane.Visible = true;        }
+            embeddedAdvancedJointEditorPane.Visible = false;
+        }
 
         public void DestroyDockableWindow()
         {
