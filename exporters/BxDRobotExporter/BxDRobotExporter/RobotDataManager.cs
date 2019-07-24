@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
 
-namespace BxDRobotExporter.ControlGUI
+namespace BxDRobotExporter
 {
-    [Guid("ec18f8d4-c13e-4c86-8148-7414efb6e1e2")]
-    public class SynthesisGui
+    public class RobotDataManager
     {
         //public event Action ExportFinished;
         //public void OnExportFinished()
@@ -51,21 +51,20 @@ namespace BxDRobotExporter.ControlGUI
 
         public RuntimeMeta RMeta = RuntimeMeta.CreateRuntimeMeta();
 
-        public static SynthesisGui Instance;
+        public static RobotDataManager Instance;
 
         public static ExporterSettingsForm.PluginSettingsValues PluginSettings;
     
         private Inventor.AssemblyDocument asmDocument = null; // Set when LoadRobotData is called.
         public RigidNode_Base SkeletonBase = null;
         public List<BXDAMesh> Meshes = null;
-        public bool MeshesAreColored = false;
-        public Inventor.Application MainApplication;
+        
+        private bool meshesAreColored = false;
         private LoadingSkeletonForm loadingSkeleton;
         private LiteExporterForm liteExporter;
 
-        public SynthesisGui(Inventor.Application mainApplication)
+        public RobotDataManager()
         {
-            this.MainApplication = mainApplication;
             Instance = this;
 
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
@@ -143,7 +142,7 @@ namespace BxDRobotExporter.ControlGUI
         /// <summary>
         /// Load meshes of a robot from Inventor
         /// </summary>
-        public bool LoadMeshes()
+        private bool LoadMeshes()
         {
             try
             {
@@ -169,7 +168,7 @@ namespace BxDRobotExporter.ControlGUI
 
                 GC.Collect();
 
-                MeshesAreColored = PluginSettings.GeneralUseFancyColors;
+                meshesAreColored = PluginSettings.GeneralUseFancyColors;
             }
             catch (InvalidComObjectException)
             {
@@ -220,7 +219,7 @@ namespace BxDRobotExporter.ControlGUI
         /// we are unable to access RobotExporterAPI or BxDRobotExporter, so writing the limits here is a workaround to that issue.
         /// </summary>
         /// <param name="skeleton">Skeleton to write limits to</param>
-        public void WriteLimits(RigidNode_Base skeleton)
+        private static void WriteLimits(RigidNode_Base skeleton)
         {
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             skeleton.ListAllNodes(nodes);
@@ -271,7 +270,7 @@ namespace BxDRobotExporter.ControlGUI
                 if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName))
                     Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName);
 
-                if (Meshes == null || MeshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
+                if (Meshes == null || meshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                     LoadMeshes();
                 BXDJSkeleton.SetupFileNames(SkeletonBase);
 
@@ -327,7 +326,7 @@ namespace BxDRobotExporter.ControlGUI
                     RMeta.ActiveRobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
                     RMeta.TotalWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                     RMeta.PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
-                    SynthesisGui.Instance.SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
+                    RobotDataManager.Instance.SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
                 }
 
                 // Load joint data
@@ -346,9 +345,9 @@ namespace BxDRobotExporter.ControlGUI
         /// <param name="propertySets">Group of property sets to add any new property sets to.</param>
         /// <param name="currentNode">Current node to save joint data of.</param>
         /// <returns>True if all data was loaded successfully.</returns>
-        public bool LoadJointData(Inventor.PropertySets propertySets, RigidNode_Base currentNode)
+        private static bool LoadJointData(Inventor.PropertySets propertySets, RigidNode_Base currentNode)
         {
-            bool allSuccessful = true;
+            var allSuccessful = true;
 
             foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> connection in currentNode.Children)
             {
@@ -468,7 +467,7 @@ namespace BxDRobotExporter.ControlGUI
                     InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)SynthesisGui.Instance.SkeletonBase.driveTrainType);
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)RobotDataManager.Instance.SkeletonBase.driveTrainType);
           
                 // Save joint data
                 return SaveJointData(propertySets, SkeletonBase);
@@ -484,7 +483,7 @@ namespace BxDRobotExporter.ControlGUI
         /// Recursive utility for JointDataSave.
         /// </summary>
         /// <returns>True if all data was saved successfully.</returns>
-        private bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
+        private static bool SaveJointData(Inventor.PropertySets assemblyPropertySets, RigidNode_Base currentNode)
         {
             bool allSuccessful = true;
 

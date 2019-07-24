@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.Exporter;
 
 namespace BxDRobotExporter.GUI.Editors
@@ -38,7 +37,7 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            Values = SynthesisGui.PluginSettings;
+            Values = RobotDataManager.PluginSettings;
 
             ChildHighlight.BackColor = Values.InventorChildColor;
             checkBox1.Checked = Values.UseAnalytics;

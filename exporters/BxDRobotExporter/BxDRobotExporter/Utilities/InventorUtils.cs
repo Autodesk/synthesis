@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.Properties;
 using Inventor;
@@ -13,12 +12,12 @@ namespace BxDRobotExporter
 {
     internal static class InventorUtils
     {
-        static internal SynthesisGui Gui;
+        static internal RobotDataManager Gui;
         public static void CreateChildDialog()
         {
             try
             {
-                Gui = new SynthesisGui(RobotExporterAddInServer.Instance.MainApplication);  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+                Gui = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
             }
             catch (Exception e)
             {
@@ -38,7 +37,7 @@ namespace BxDRobotExporter
         }
 
         /// <summary>
-        /// Initializes all of the <see cref="SynthesisGui"/> settings to the proper values. Should be called once in the Activate class
+        /// Initializes all of the <see cref="RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
         /// </summary>
         public static void LoadSettings()
         {
@@ -48,7 +47,7 @@ namespace BxDRobotExporter
 
             if (Settings.Default.ConfigVersion < 3)
             {
-                SynthesisGui.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Settings.Default.ChildColor,
                     GeneralSaveLocation = Settings.Default.SaveLocation,
@@ -61,7 +60,7 @@ namespace BxDRobotExporter
             }
             else
             {
-                SynthesisGui.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
                 {
                     InventorChildColor = Settings.Default.ChildColor,
                     GeneralSaveLocation = Settings.Default.SaveLocation,

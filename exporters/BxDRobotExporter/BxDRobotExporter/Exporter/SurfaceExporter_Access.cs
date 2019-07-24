@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;
 
@@ -39,7 +38,7 @@ namespace BxDRobotExporter.Exporter
 
                 Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
                 {
-                    CalculateSurfaceFacets(surface, outputMesh, SynthesisGui.PluginSettings.GeneralUseFancyColors);
+                    CalculateSurfaceFacets(surface, outputMesh, RobotDataManager.PluginSettings.GeneralUseFancyColors);
 
                     lock (finishLock)
                     {
