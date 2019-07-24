@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
+using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.Utilities.Synthesis;
 
 namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
@@ -47,7 +48,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
         /// </summary>
-        public AdvancedJointEditorUserControl()
+        public AdvancedJointEditorUserControl(RigidNode_Base root)
         {
             InitializeComponent();
             this.DoLayout(null, null);
@@ -82,6 +83,33 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
             selectionFinishedTimeout.Tick += FinishedSelecting;
             selectionFinishedTimeout.Interval = 55; // minimum accuracy of winforms timers
+            
+            SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, RobotExporterAddInServer.Instance.MainApplication.ActiveView.Camera,  1);
+            ModifiedJoint += delegate (List<RigidNode_Base> nodes)
+            {
+
+                if (nodes == null || nodes.Count == 0) return;
+
+                foreach (RigidNode_Base node in nodes)
+                {
+                    if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                        node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
+                        node is OglRigidNode)
+                    {
+                        (node as OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+
+                        WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                        wheelDriver.center = center;
+                        wheelDriver.radius = radius;
+                        wheelDriver.width = width;
+                        node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
+
+                    }
+                }
+            };
+
+            UpdateSkeleton(root);
         }
 
         /// <summary>
@@ -225,7 +253,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// Load a list of nodes into the editor pane
         /// </summary>
         /// <param name="root">The base node</param>
-        public void SetSkeleton(RigidNode_Base root)
+        public void UpdateSkeleton(RigidNode_Base root)
         {
             if (root == null) nodeList = null;
             else nodeList = root.ListAllNodes();

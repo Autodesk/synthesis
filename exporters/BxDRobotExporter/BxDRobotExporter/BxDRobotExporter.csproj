@@ -149,10 +149,13 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.cs" />
+    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
       <DependentUpon>DOFKeyPane.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUIManager.cs" />
     <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
