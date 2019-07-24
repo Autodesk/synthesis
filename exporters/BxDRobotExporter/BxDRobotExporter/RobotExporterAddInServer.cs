@@ -64,9 +64,8 @@ namespace BxDRobotExporter
         private JointForm jointForm;
 
         // ???? (Weird flags which should be deleted)
-        private bool exporterBlocked = false;
-        private bool hiddenExporter = false;
-        private bool environmentEnabled = false;
+        private bool exporterBlocked;
+        private bool environmentIsOpen;
 
 
         /// <summary>
@@ -211,7 +210,7 @@ namespace BxDRobotExporter
 
             HighlightManager.EnvironmentOpening(AsmDocument);
 
-            environmentEnabled = true;
+            environmentIsOpen = true;
 
             // Load robot skeleton and prepare UI
             if (!RobotDataManager.LoadRobotSkeleton())
@@ -273,63 +272,28 @@ namespace BxDRobotExporter
                 Marshal.ReleaseComObject(AsmDocument);
             AsmDocument = null;
 
-            environmentEnabled = false;
+            environmentIsOpen = false;
         }
 
-        /// <summary>
-        /// Makes the dockable windows invisible when the document switches. This avoids data loss. 
-        /// Also re-enables the exporter in the document if it was disabled. This allows the user to use the exporter in that document at a later point.
-        /// </summary>
-        /// <param name="documentObject"></param>
-        /// <param name="beforeOrAfter"></param>
-        /// <param name="context"></param>
-        /// <param name="handlingCode"></param>
-        private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
-            NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            if (environmentEnabled)
-            {
-                if (beforeOrAfter == EventTimingEnum.kBefore)
-                {
-                    advancedJointEditor.Visible = false;
-                    dofKey.Visible = false;
-                    guide.Visible = false;
-                    hiddenExporter = true;
-                }
-            }
-
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        /// <summary>
-        /// Disables the environment button if you aren't in the assembly document that the exporter was originally opened in.
-        /// </summary>
-        /// <param name="documentObject"></param>
-        /// <param name="beforeOrAfter"></param>
-        /// <param name="context"></param>
-        /// <param name="handlingCode"></param>
         private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
             NameValueMap context, out HandlingCodeEnum handlingCode)
         {
-            if (beforeOrAfter == EventTimingEnum.kBefore)
+            if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo)
             {
-                if (documentObject is AssemblyDocument assembly)
-                {
-                    if ((AsmDocument == null || assembly == AsmDocument) && hiddenExporter)
-                    {
-                        hiddenExporter = false;
-                    }
-                }
+                new FirstLaunchInfo().ShowDialog();
             }
-            else if (beforeOrAfter == EventTimingEnum.kAfter)
-            {
-                if (Settings.Default.ShowFirstLaunchInfo)
-                {
-                    var firstLaunchInfo = new FirstLaunchInfo();
-                    firstLaunchInfo.ShowDialog();
-                }
-            }
+            handlingCode = HandlingCodeEnum.kEventNotHandled;
+        }
 
+        private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter,
+            NameValueMap context, out HandlingCodeEnum handlingCode)
+        {
+            if (environmentIsOpen && beforeOrAfter == EventTimingEnum.kBefore)
+            {
+                advancedJointEditor.Visible = false;
+                dofKey.Visible = false;
+                guide.Visible = false;
+            }
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
 
@@ -345,7 +309,7 @@ namespace BxDRobotExporter
             EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
             // Quit the exporter if the closing document has the exporter open
-            if (beforeOrAfter == EventTimingEnum.kBefore && environmentEnabled)
+            if (beforeOrAfter == EventTimingEnum.kBefore && environmentIsOpen)
             {
                 if (documentObject is AssemblyDocument assembly)
                 {
@@ -390,7 +354,7 @@ namespace BxDRobotExporter
                         else if (context.Item["Document"] is PresentationDocument presentation) InventorUtils.ForceQuitExporter(presentation);
                     }
                     // User may not open multiple documents in the exporter
-                    else if (environmentEnabled)
+                    else if (environmentIsOpen)
                     {
                         MessageBox.Show("The exporter may only be used in one assembly at a time. " +
                                         "Please finish using the exporter in \"" + AsmDocument.DisplayName +
@@ -402,7 +366,7 @@ namespace BxDRobotExporter
                     else
                         OpeningExporter();
                 }
-                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && environmentEnabled)
+                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && environmentIsOpen)
                 {
                     if (exporterBlocked)
                         exporterBlocked = false;
