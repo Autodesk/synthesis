@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -123,7 +122,6 @@ namespace BxDRobotExporter
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", drivetrainTypeIconSmall, drivetrainTypeIconLarge);
             driveTrainTypeButton.OnExecute += context => new DrivetrainTypeForm().ShowDialog();
-            driveTrainTypeButton.OnHelp += _OnHelp;
             driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
 
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
@@ -131,7 +129,6 @@ namespace BxDRobotExporter
                 "Assign the weight of the drivetrain.", drivetrainWeightIconSmall, drivetrainWeightIconLarge);
             drivetrainWeightButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight");
             drivetrainWeightButton.OnExecute += context => RobotDataManager.PromptRobotWeight();
-            drivetrainWeightButton.OnHelp += _OnHelp;
             driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
 
             // Joint panel buttons
@@ -139,7 +136,6 @@ namespace BxDRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", editJointIconSmall, editJointIconLarge);
             advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
             advancedEditJointButton.OnExecute += context => advancedJointEditor.Toggle();
-            advancedEditJointButton.OnHelp += _OnHelp;
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
@@ -150,7 +146,6 @@ namespace BxDRobotExporter
                 jointForm.ShowDialog();
                 advancedJointEditor.UpdateSkeleton(RobotDataManager.Instance.SkeletonBase);
             };
-            editJointButton.OnHelp += _OnHelp;
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
             // ChecklistPanel buttons
@@ -158,7 +153,6 @@ namespace BxDRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "View a checklist of all tasks necessary prior to export.", guideIconSmall, guideIconLarge);
             guideButton.OnExecute += context => guide.Visible = !guide.Visible;
-            guideButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(guideButton, true);
 
             dofButton = controlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
@@ -169,13 +163,11 @@ namespace BxDRobotExporter
                 HighlightManager.ToggleDofHighlight(RobotDataManager);
                 dofKey.Visible = HighlightManager.DisplayDof;
             };
-            dofButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(dofButton, true);
 
             settingsButton = controlDefs.AddButtonDefinition("Plugin Settings", "BxD:RobotExporter:Settings",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", gearLogoSmall, gearLogoLarge);
             settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
-            settingsButton.OnHelp += _OnHelp;
             pluginPanel.CommandControls.AddButton(settingsButton, true);
 
             exporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
@@ -419,18 +411,6 @@ namespace BxDRobotExporter
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
-
-        /// <summary>
-        /// Opens the help page on bxd.autodesk.com. This is the callback used for all OnHelp events.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="handlingCode"></param>
-        private void _OnHelp(NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            Process.Start("http://bxd.autodesk.com/synthesis/tutorials-robot.html");
-            handlingCode = HandlingCodeEnum.kEventHandled;
-        }
-
 
         /// <summary>
         /// Initializes all of the <see cref="Managers.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
