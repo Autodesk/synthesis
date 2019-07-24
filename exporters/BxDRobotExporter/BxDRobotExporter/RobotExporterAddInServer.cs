@@ -60,7 +60,7 @@ namespace BxDRobotExporter
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly DOFKey dofKey = new DOFKey();
-        private DockableWindow embeddedGuidePane;
+        private readonly Guide guide = new Guide();
 
         // UI elements
         private JointForm jointForm;
@@ -125,27 +125,40 @@ namespace BxDRobotExporter
             driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nType",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", drivetrainTypeIconSmall, drivetrainTypeIconLarge);
-            driveTrainTypeButton.OnExecute += DriveTrainType_OnExecute;
+            driveTrainTypeButton.OnExecute += context => new DrivetrainTypeForm().ShowDialog();
             driveTrainTypeButton.OnHelp += _OnHelp;
             driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
 
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Assign the weight of the drivetrain.", drivetrainWeightIconSmall, drivetrainWeightIconLarge);
-            drivetrainWeightButton.OnExecute += SetWeight_OnExecute;
+            drivetrainWeightButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
+                RobotDataManager.PromptRobotWeight();
+            };
             drivetrainWeightButton.OnHelp += _OnHelp;
             driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
 
             // Joint panel buttons
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", editJointIconSmall, editJointIconLarge);
-            advancedEditJointButton.OnExecute += AdvancedEditJoint_OnExecute;
+            advancedEditJointButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
+                advancedJointEditor.Toggle();
+            };
             advancedEditJointButton.OnHelp += _OnHelp;
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", editJointIconSmall, editJointIconLarge);
-            editJointButton.OnExecute += EditJoint_OnExecute;
+            editJointButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
+                jointForm.ShowDialog();
+                advancedJointEditor.UpdateSkeleton(RobotDataManager.Instance.SkeletonBase);
+            };
             editJointButton.OnHelp += _OnHelp;
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
@@ -153,19 +166,24 @@ namespace BxDRobotExporter
             guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "View a checklist of all tasks necessary prior to export.", guideIconSmall, guideIconLarge);
-            guideButton.OnExecute += delegate {embeddedGuidePane.Visible = !embeddedGuidePane.Visible; };
+            guideButton.OnExecute += delegate {guide.Visible = !guide.Visible; };
             guideButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(guideButton, true);
 
             dofButton = controlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", guideIconSmall, guideIconLarge);
-            dofButton.OnExecute += DOF_OnExecute;
+            dofButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
+                HighlightManager.ToggleDofHighlight(RobotDataManager);
+                dofKey.Visible = HighlightManager.DisplayDof;
+            };
             dofButton.OnHelp += _OnHelp;
             checklistPanel.CommandControls.AddButton(dofButton, true);
 
             settingsButton = controlDefs.AddButtonDefinition("Plugin Settings", "BxD:RobotExporter:Settings",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", gearLogoSmall, gearLogoLarge);
-            settingsButton.OnExecute += Settings_OnExecute;
+            settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
             settingsButton.OnHelp += _OnHelp;
             pluginPanel.CommandControls.AddButton(settingsButton, true);
 
@@ -179,16 +197,6 @@ namespace BxDRobotExporter
             MainApplication.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
 
             Instance = this;
-        }
-        private void Settings_OnExecute(NameValueMap context)
-        {
-            var settingsForm = new ExporterSettingsForm();
-            settingsForm.ShowDialog();
-        }
-        private void DriveTrainType_OnExecute(NameValueMap context)
-        {
-            var drivetrainTypeForm = new DrivetrainTypeForm();
-            drivetrainTypeForm.ShowDialog();
         }
 
         /// <summary>
@@ -242,15 +250,8 @@ namespace BxDRobotExporter
             
             advancedJointEditor.CreateDockableWindow(uiMan, RobotDataManager.SkeletonBase);
             dofKey.CreateDockableWindow(uiMan);
+            guide.CreateDockableWindow(uiMan);
 
-            embeddedGuidePane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:GuidePane", "Robot Export Guide");
-            embeddedGuidePane.DockingState = DockingStateEnum.kDockRight;
-            embeddedGuidePane.Width = 600;
-            embeddedGuidePane.ShowVisibilityCheckBox = false;
-            embeddedGuidePane.ShowTitleBar = true;
-            var guidePanel = new ExportGuidePanel();
-            embeddedGuidePane.AddChild(guidePanel.Handle);
-            embeddedGuidePane.Visible = true;
             // Hide non-jointed components;
 
             // Reload panels in UI
@@ -283,14 +284,8 @@ namespace BxDRobotExporter
             disabledAssemblyOccurrences = null;
 
             advancedJointEditor.DestroyDockableWindow();
-            if (embeddedGuidePane != null)
-            {
-                embeddedGuidePane.Visible = false;
-                embeddedGuidePane.Delete();
-            }
-
+            guide.DestroyDockableWindow();
             dofKey.DestroyDockableWindow();
-
 
             InventorUtils.ForceQuitExporter(AsmDocument);
 
@@ -435,51 +430,6 @@ namespace BxDRobotExporter
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        private void DOF_OnExecute(NameValueMap context)
-        {
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF", 0);
-
-            HighlightManager.ToggleDofHighlight(RobotDataManager);
-            dofKey.Enabled = HighlightManager.DisplayDof;
-        }
-        private void EditJoint_OnExecute(NameValueMap context)
-        {
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint", 0);
-            if (jointForm.Visible)
-            {
-                jointForm.Hide();
-            }
-            else
-            {
-                if (RobotDataManager.SkeletonBase == null && !RobotDataManager.LoadRobotSkeleton())
-                    return;
-                jointForm.OnShowButtonClick();
-                jointForm.ShowDialog();
-                advancedJointEditor.UpdateSkeleton(RobotDataManager.Instance.SkeletonBase);
-            }
-        }
-
-        private void AdvancedEditJoint_OnExecute(NameValueMap context)
-        {
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint", 0);
-            advancedJointEditor.Toggle();
-            if (advancedJointEditor.IsVisible())
-            {
-                jointForm.Hide();
-            }
-        }
-
-        //Settings
-        /// <summary>
-        /// Opens the <see cref="DrivetrainWeightForm"/> form to allow the user to set the weight of their robot.
-        /// </summary>
-        /// <param name="context"></param>
-        private void SetWeight_OnExecute(NameValueMap context)
-        {
-            AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
-            RobotDataManager.PromptRobotWeight();
         }
 
         /// <summary>

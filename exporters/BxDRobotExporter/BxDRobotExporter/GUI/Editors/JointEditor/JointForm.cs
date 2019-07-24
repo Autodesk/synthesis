@@ -46,10 +46,11 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             };
         }
 
-        public void OnShowButtonClick()
+        public new void ShowDialog()
         {
             CollapseAllCards();
             jointCards.ForEach(card => card.LoadValuesRecursive());
+            base.ShowDialog();
         }
 
         public void CollapseAllCards(JointCard besides = null)

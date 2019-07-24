@@ -157,6 +157,7 @@
     </Compile>
     <Compile Include="GUI\DegreesOfFreedomViewer\DOFKey.cs" />
     <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditor.cs" />
+    <Compile Include="GUI\Guide\Guide.cs" />
     <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
