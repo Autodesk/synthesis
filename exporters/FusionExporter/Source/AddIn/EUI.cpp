@@ -280,8 +280,6 @@ void EUI::updateProgress(double percent)
 		percent = 1;
 	}
 
-	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
-
 	progressPalette->sendInfoToHTML("progress", std::to_string(percent));
 
 }
