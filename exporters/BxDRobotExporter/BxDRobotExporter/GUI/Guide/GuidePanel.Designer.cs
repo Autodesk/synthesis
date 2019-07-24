@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace BxDRobotExporter.ExportGuide
+namespace BxDRobotExporter.GUI.Guide
 {
     partial class ExportGuidePanel
     {
