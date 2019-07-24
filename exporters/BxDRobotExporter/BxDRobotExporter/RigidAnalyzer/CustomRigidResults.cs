@@ -6,10 +6,10 @@ namespace BxDRobotExporter.RigidAnalyzer
 {
     public class CustomRigidResults
     {
-        public List<CustomRigidGroup> groups;
-        public List<CustomRigidJoint> joints;
+        public List<CustomRigidGroup> Groups;
+        public List<CustomRigidJoint> Joints;
 
-        public Dictionary<string, CustomRigidGroup> groupIDToCustom = new Dictionary<string, CustomRigidGroup>();
+        public Dictionary<string, CustomRigidGroup> GroupIdToCustom = new Dictionary<string, CustomRigidGroup>();
 
         /// <summary>
         /// Grabs the joints and groups from the Inventor results, 
@@ -18,26 +18,26 @@ namespace BxDRobotExporter.RigidAnalyzer
         public CustomRigidResults(RigidBodyResults results)
         {
             Console.WriteLine("Building custom dataset");
-            groups = new List<CustomRigidGroup>(results.RigidBodyGroups.Count);
-            joints = new List<CustomRigidJoint>(results.RigidBodyJoints.Count);
+            Groups = new List<CustomRigidGroup>(results.RigidBodyGroups.Count);
+            Joints = new List<CustomRigidJoint>(results.RigidBodyJoints.Count);
             foreach (RigidBodyGroup group in results.RigidBodyGroups)
             {
                 CustomRigidGroup tmp = new CustomRigidGroup(group);
-                if ((!(groupIDToCustom.ContainsKey(tmp.fullQualifier))))
+                if ((!(GroupIdToCustom.ContainsKey(tmp.FullQualifier))))
                 {
-                    groups.Add(tmp);
-                    groupIDToCustom.Add(tmp.fullQualifier, tmp);
+                    Groups.Add(tmp);
+                    GroupIdToCustom.Add(tmp.FullQualifier, tmp);
                 }
                 else
                 {
-                    Console.WriteLine("GroupID Collision: " + groupIDToCustom[CustomRigidGroup.GetGroupQualifier(group)].ToString() + " and " + tmp.ToString());
+                    Console.WriteLine("GroupID Collision: " + GroupIdToCustom[CustomRigidGroup.GetGroupQualifier(group)].ToString() + " and " + tmp.ToString());
                 }
-                Console.Write("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+                Console.Write("Group " + Groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + Joints.Count + "/" + results.RigidBodyJoints.Count);
             }
             foreach (RigidBodyJoint joint in results.RigidBodyJoints)
             {
-                joints.Add(new CustomRigidJoint(joint, groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupOne)], groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupTwo)]));
-                Console.Write("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+                Joints.Add(new CustomRigidJoint(joint, GroupIdToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupOne)], GroupIdToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupTwo)]));
+                Console.Write("Group " + Groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + Joints.Count + "/" + results.RigidBodyJoints.Count);
             }
             Console.WriteLine();
             Console.WriteLine("Built custom dataset");

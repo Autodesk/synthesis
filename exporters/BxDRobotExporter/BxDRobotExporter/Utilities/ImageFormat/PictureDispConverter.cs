@@ -16,9 +16,9 @@ namespace BxDRobotExporter {
                 ref Guid iid,
                 [MarshalAs(UnmanagedType.Bool)] bool fOwn);
 
-        static Guid iPictureDispGuid = typeof(stdole.IPictureDisp).GUID;
+        private static Guid iPictureDispGuid = typeof(stdole.IPictureDisp).GUID;
 
-        private static class PICTDESC
+        private static class Pictdesc
         {
             //Picture Types
             public const short PICTYPE_UNINITIALIZED = -1;
@@ -31,8 +31,8 @@ namespace BxDRobotExporter {
             [StructLayout(LayoutKind.Sequential)]
             public class Icon
             {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PICTDESC.Icon));
-                internal int picType = PICTDESC.PICTYPE_ICON;
+                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(Pictdesc.Icon));
+                internal int picType = Pictdesc.PICTYPE_ICON;
                 internal IntPtr hicon = IntPtr.Zero;
                 internal int unused1;
                 internal int unused2;
@@ -46,8 +46,8 @@ namespace BxDRobotExporter {
             [StructLayout(LayoutKind.Sequential)]
             public class Bitmap
             {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PICTDESC.Bitmap));
-                internal int picType = PICTDESC.PICTYPE_BITMAP;
+                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(Pictdesc.Bitmap));
+                internal int picType = Pictdesc.PICTYPE_BITMAP;
                 internal IntPtr hbitmap = IntPtr.Zero;
                 internal IntPtr hpal = IntPtr.Zero;
                 internal int unused;
@@ -62,7 +62,7 @@ namespace BxDRobotExporter {
         public static stdole.IPictureDisp ToIPictureDisp(
             System.Drawing.Icon icon)
         {
-            PICTDESC.Icon pictIcon = new PICTDESC.Icon(icon);
+            Pictdesc.Icon pictIcon = new Pictdesc.Icon(icon);
 
             return OleCreatePictureIndirect(
                 pictIcon, ref iPictureDispGuid, true);
@@ -71,7 +71,7 @@ namespace BxDRobotExporter {
         public static stdole.IPictureDisp ToIPictureDisp(
             System.Drawing.Bitmap bmp)
         {
-            PICTDESC.Bitmap pictBmp = new PICTDESC.Bitmap(bmp);
+            Pictdesc.Bitmap pictBmp = new Pictdesc.Bitmap(bmp);
 
             return OleCreatePictureIndirect(pictBmp, ref iPictureDispGuid, true);
         }

@@ -16,16 +16,16 @@ namespace BxDRobotExporter.OGLViewer
         /// </summary>
         public enum Mode
         {
-            NONE,
-            MOVE,
-            ORBIT,
-            FINE_ZOOM
+            None,
+            Move,
+            Orbit,
+            FineZoom
         }
 
         /// <summary>
         /// The current camera mode
         /// </summary>
-        public Mode currentMode = Mode.NONE;
+        public Mode CurrentMode = Mode.None;
 
         /// <summary>
         /// The width and height of the overlay
@@ -38,20 +38,20 @@ namespace BxDRobotExporter.OGLViewer
         /// <summary>
         /// The camera's offset on the Z axis
         /// </summary>
-        public float offset = -70;
+        public float Offset = -70;
 
         /// <summary>
         /// The camera's transformation matrix
         /// </summary>
-        public Matrix4 pose = Matrix4.Identity;
+        public Matrix4 Pose = Matrix4.Identity;
 
         /// <summary>
         /// Multiply the currently loaded matrix with the camera's matrix
         /// </summary>
-        public void translate()
+        public void Translate()
         {
-            GL.Translate(50, -30, offset);
-            GL.MultMatrix(ref pose);
+            GL.Translate(50, -30, Offset);
+            GL.MultMatrix(ref Pose);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace BxDRobotExporter.OGLViewer
         /// </summary>
         /// <param name="width">The width of the overlay</param>
         /// <param name="height">The height of the overlay</param>
-        public void renderOverlay(float width, float height)
+        public void RenderOverlay(float width, float height)
         {
             this.width = width;
             this.height = height;
@@ -70,14 +70,14 @@ namespace BxDRobotExporter.OGLViewer
                 GL.LogicOp(LogicOp.Invert);
                 GL.Enable(EnableCap.ColorLogicOp);
 
-                if (currentMode == Mode.ORBIT)
+                if (CurrentMode == Mode.Orbit)
                 {
                     float radius = Math.Min(width, height) * 0.3f;
 
                     GL.PushMatrix();
                     {
                         GL.Translate(width / 2, height / 2, 0);
-                        OGLDrawing.drawArc(new BXDVector3(0, 0, 1), new BXDVector3(0, 1, 0), 0, 6.28f, radius, Color4.Gray, Color4.Gray);
+                        OglDrawing.DrawArc(new BXDVector3(0, 0, 1), new BXDVector3(0, 1, 0), 0, 6.28f, radius, Color4.Gray, Color4.Gray);
 
                         GL.Begin(PrimitiveType.Lines);
                         {

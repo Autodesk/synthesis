@@ -6,7 +6,7 @@ using BxDRobotExporter.Exporter;
 
 namespace BxDRobotExporter.GUI.Editors
 {
-    public delegate void SettingsEvent(Color Child, bool UseFancyColors, string SaveLocation, bool OpenSynthesis, string FieldLocation, string defaultRobotCompetit, bool useAnalytics);
+    public delegate void SettingsEvent(Color child, bool useFancyColors, string saveLocation, bool openSynthesis, string fieldLocation, string defaultRobotCompetit, bool useAnalytics);
 
     public partial class ExporterSettingsForm : Form
     {
@@ -38,10 +38,10 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            Values = SynthesisGUI.PluginSettings;
+            Values = SynthesisGui.PluginSettings;
 
             ChildHighlight.BackColor = Values.InventorChildColor;
-            checkBox1.Checked = Values.useAnalytics;
+            checkBox1.Checked = Values.UseAnalytics;
         }
         
         /// <summary>
@@ -50,7 +50,7 @@ namespace BxDRobotExporter.GUI.Editors
         private void SaveValues()
         {
             Values.InventorChildColor = ChildHighlight.BackColor;
-            Values.useAnalytics = checkBox1.Checked;
+            Values.UseAnalytics = checkBox1.Checked;
             Values.OnSettingsChanged();
         }
 
@@ -65,7 +65,7 @@ namespace BxDRobotExporter.GUI.Editors
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = true,
                 GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots",
-                useAnalytics = true
+                UseAnalytics = true
             };
         }
 
@@ -78,16 +78,16 @@ namespace BxDRobotExporter.GUI.Editors
             public static event SettingsEvent SettingsChanged;
             internal void OnSettingsChanged()
             {
-                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, openSynthesis, fieldName, defaultRobotCompetition, useAnalytics);
+                SettingsChanged.Invoke(InventorChildColor, GeneralUseFancyColors, GeneralSaveLocation, OpenSynthesis, FieldName, DefaultRobotCompetition, UseAnalytics);
             }
 
             //General
             public string GeneralSaveLocation;
             public bool GeneralUseFancyColors;
-            public string fieldName;
-            public String defaultRobotCompetition;
-            public bool openSynthesis;
-            public bool useAnalytics;
+            public string FieldName;
+            public String DefaultRobotCompetition;
+            public bool OpenSynthesis;
+            public bool UseAnalytics;
             //Inventor
             public Color InventorChildColor;
         }
@@ -118,7 +118,7 @@ namespace BxDRobotExporter.GUI.Editors
 
         private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
-            Values.useAnalytics = checkBox1.Checked;
+            Values.UseAnalytics = checkBox1.Checked;
         }
     }
 }

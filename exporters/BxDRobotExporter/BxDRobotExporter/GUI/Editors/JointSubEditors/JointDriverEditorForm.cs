@@ -134,7 +134,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                     switch (joint.cDriver.motor)
                     {
                         case MotorType.GENERIC:
-                            RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition.ToString();
+                            RobotCompetitionDropDown.SelectedItem = SynthesisGui.PluginSettings.DefaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -261,7 +261,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                 cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
-                RobotCompetitionDropDown.SelectedItem = SynthesisGUI.PluginSettings.defaultRobotCompetition;
+                RobotCompetitionDropDown.SelectedItem = SynthesisGui.PluginSettings.DefaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
@@ -317,7 +317,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
         /// <summary>
         /// Changes the position of window elements based on the type of driver.
         /// </summary>
-        void PrepLayout()
+        private void PrepLayout()
         {
             chkBoxDriveWheel.Hide();
             rbCAN.Hide();
@@ -432,7 +432,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                         motor = MotorType.GENERIC;
                     }
                     joint.cDriver.motor = motor;
-                    SynthesisGUI.PluginSettings.defaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
+                    SynthesisGui.PluginSettings.DefaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
                 }
                 //Only need to store wheel driver if run by motor and is a wheel.
                 if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)

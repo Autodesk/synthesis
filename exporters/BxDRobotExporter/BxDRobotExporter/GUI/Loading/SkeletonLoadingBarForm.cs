@@ -100,7 +100,7 @@ namespace BxDRobotExporter.ControlGUI
             }
             finally
             {
-                SynthesisGUI.Instance.SkeletonBase = skeleton;
+                SynthesisGui.Instance.SkeletonBase = skeleton;
             }
         }
 
@@ -118,19 +118,19 @@ namespace BxDRobotExporter.ControlGUI
 
             //Getting Rigid Body Info...
             SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
-            NameValueMap RigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
+            NameValueMap rigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
 
-            RigidGetOptions.Add("DoubleBearing", false);
-            RigidBodyResults RawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(RigidGetOptions);
+            rigidGetOptions.Add("DoubleBearing", false);
+            RigidBodyResults rawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
 
             //Getting Rigid Body Info...Done
-            CustomRigidResults RigidResults = new CustomRigidResults(RawRigidResults);
+            CustomRigidResults rigidResults = new CustomRigidResults(rawRigidResults);
 
 
             //Building Model...
             SetProgress("Building model...", occurrences.Count + 1, occurrences.Count + 3);
-            RigidBodyCleaner.CleanGroundedBodies(RigidResults);
-            RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(RigidResults);
+            RigidBodyCleaner.CleanGroundedBodies(rigidResults);
+            RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Building Model...Done
 
@@ -141,7 +141,7 @@ namespace BxDRobotExporter.ControlGUI
 
             foreach (RigidNode_Base node in nodes)
             {
-                node.ModelFileName = ((RigidNode)node).group.ToString();
+                node.ModelFileName = ((RigidNode)node).Group.ToString();
                 node.ModelFullID = node.GetModelID();
             }
             //Cleaning Up...Done

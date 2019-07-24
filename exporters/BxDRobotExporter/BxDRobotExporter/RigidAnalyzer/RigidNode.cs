@@ -5,40 +5,40 @@ using Inventor;
 
 namespace BxDRobotExporter.RigidAnalyzer
 {
-    public class RigidNode : OGL_RigidNode 
+    public class RigidNode : OglRigidNode 
     {
         public delegate void DeferredCalculation(RigidNode node);
 
-        public CustomRigidGroup group;
+        public CustomRigidGroup Group;
 
         public RigidNode(Guid guid)
             : base(guid)
         {
-            group = null;
+            Group = null;
         }
 
         public RigidNode(Guid guid, CustomRigidGroup grp)
             : base(guid)
         {
-            this.group = grp;
+            this.Group = grp;
         }
 
         public override object GetModel()
         {
-            return group;
+            return Group;
         }
 
         public override string GetModelID()
         {
             // Compile a model ID
             List<string> components = new List<string>();
-            if (group == null)
+            if (Group == null)
             {
                 components.Add(GetHashCode().ToString());
             }
             else
             {
-                foreach (ComponentOccurrence oc in group.occurrences)
+                foreach (ComponentOccurrence oc in Group.Occurrences)
                 {
                     if (oc != null)
                     {// prevents weird hidden components from ruining our day-

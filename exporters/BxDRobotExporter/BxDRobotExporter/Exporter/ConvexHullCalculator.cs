@@ -35,15 +35,15 @@ namespace BxDRobotExporter.Exporter
         /// </summary>
         private class SimplificationVertex
         {
-            public int finalIndex = -99;
-            public float[] pos = new float[3];
-            public List<SimplificationFace> faces = new List<SimplificationFace>();
+            public int FinalIndex = -99;
+            public float[] Pos = new float[3];
+            public List<SimplificationFace> Faces = new List<SimplificationFace>();
 
             public SimplificationVertex(float x, float y, float z)
             {
-                pos[0] = x;
-                pos[1] = y;
-                pos[2] = z;
+                Pos[0] = x;
+                Pos[1] = y;
+                Pos[2] = z;
             }
         }
 
@@ -52,28 +52,28 @@ namespace BxDRobotExporter.Exporter
         /// </summary>
         private class SimplificationFace : IComparable<SimplificationFace>
         {
-            public SimplificationVertex[] verts = new SimplificationVertex[3];
-            public float[] edgeLengths = new float[3];
-            public int minEdge = 0;
+            public SimplificationVertex[] Verts = new SimplificationVertex[3];
+            public float[] EdgeLengths = new float[3];
+            public int MinEdge = 0;
 
             /// <summary>
             /// Updates the cached edge lengths
             /// </summary>
-            public void updateInfo()
+            public void UpdateInfo()
             {
                 float best = 999999999;
                 for (int i = 0; i < 3; i++)
                 {
-                    SimplificationVertex a = verts[i];
-                    SimplificationVertex b = verts[(i + 1) % verts.Length];
-                    float dx = a.pos[0] - b.pos[0];
-                    float dy = a.pos[1] - b.pos[1];
-                    float dz = a.pos[2] - b.pos[2];
-                    edgeLengths[i] = (dx * dx) + (dy * dy) + (dz * dz);
-                    if (edgeLengths[i] < best)
+                    SimplificationVertex a = Verts[i];
+                    SimplificationVertex b = Verts[(i + 1) % Verts.Length];
+                    float dx = a.Pos[0] - b.Pos[0];
+                    float dy = a.Pos[1] - b.Pos[1];
+                    float dz = a.Pos[2] - b.Pos[2];
+                    EdgeLengths[i] = (dx * dx) + (dy * dy) + (dz * dz);
+                    if (EdgeLengths[i] < best)
                     {
-                        best = edgeLengths[i];
-                        minEdge = i;
+                        best = EdgeLengths[i];
+                        MinEdge = i;
                     }
                 }
             }
@@ -84,7 +84,7 @@ namespace BxDRobotExporter.Exporter
             /// <param name="other">The other face</param>
             int IComparable<SimplificationFace>.CompareTo(SimplificationFace other)
             {
-                return edgeLengths[minEdge].CompareTo(other.edgeLengths[other.minEdge]);
+                return EdgeLengths[MinEdge].CompareTo(other.EdgeLengths[other.MinEdge]);
             }
         }
 
@@ -113,18 +113,18 @@ namespace BxDRobotExporter.Exporter
             for (int i = 0; i < trisCount * 3; i += 3)
             {
                 SimplificationFace face = new SimplificationFace();
-                face.verts[0] = simplVerts[(int)inds[i]];
-                face.verts[1] = simplVerts[(int)inds[i + 1]];
-                face.verts[2] = simplVerts[(int)inds[i + 2]];
-                foreach (SimplificationVertex v in face.verts)
+                face.Verts[0] = simplVerts[(int)inds[i]];
+                face.Verts[1] = simplVerts[(int)inds[i + 1]];
+                face.Verts[2] = simplVerts[(int)inds[i + 2]];
+                foreach (SimplificationVertex v in face.Verts)
                 {
-                    v.faces.Add(face);  // Make sure all verticies know their neighbors
+                    v.Faces.Add(face);  // Make sure all verticies know their neighbors
                 }
                 simplFace.Add(face);
             }
             foreach (SimplificationFace face in simplFace)
             {
-                face.updateInfo();
+                face.UpdateInfo();
             }
 
             simplFace.Sort();
@@ -216,7 +216,7 @@ namespace BxDRobotExporter.Exporter
                 SimplificationFace bFace = simplFace[0];
                 // This is the edge to remove
                 SimplificationVertex[] remove = new SimplificationVertex[] {
-                    bFace.verts[bFace.minEdge], bFace.verts[(bFace.minEdge + 1) % bFace.verts.Length] };
+                    bFace.Verts[bFace.MinEdge], bFace.Verts[(bFace.MinEdge + 1) % bFace.Verts.Length] };
 
 
 #if FANCY_SIMPLIFY_GRAPHICS
@@ -232,10 +232,10 @@ namespace BxDRobotExporter.Exporter
                 float[] center = new float[3];
                 foreach (SimplificationVertex vert in remove)
                 {
-                    center[0] += vert.pos[0] / 2.0f;
-                    center[1] += vert.pos[1] / 2.0f;
-                    center[2] += vert.pos[2] / 2.0f;
-                    vert.faces.Clear(); // Really, never use vertex again.
+                    center[0] += vert.Pos[0] / 2.0f;
+                    center[1] += vert.Pos[1] / 2.0f;
+                    center[2] += vert.Pos[2] / 2.0f;
+                    vert.Faces.Clear(); // Really, never use vertex again.
                 }
                 SimplificationVertex newVertex = new SimplificationVertex(center[0], center[1], center[2]);
 
@@ -244,12 +244,12 @@ namespace BxDRobotExporter.Exporter
                 {
                     int matched = 0;
                     SimplificationFace face = simplFace[k];
-                    for (int j = 0; j < face.verts.Length; j++)
+                    for (int j = 0; j < face.Verts.Length; j++)
                     {
-                        if (face.verts[j] == remove[0] ||
-                            face.verts[j] == remove[1])
+                        if (face.Verts[j] == remove[0] ||
+                            face.Verts[j] == remove[1])
                         {
-                            face.verts[j] = newVertex;
+                            face.Verts[j] = newVertex;
 
 #if FANCY_SIMPLIFY_GRAPHICS
                             Array.Copy(face.verts[j].pos, 0, major, face.tmpHead + (3 * j), 3);
@@ -260,7 +260,7 @@ namespace BxDRobotExporter.Exporter
 
                             if (matched == 0)
                             {
-                                newVertex.faces.Add(face);
+                                newVertex.Faces.Add(face);
                             }
                             matched++;
                         }
@@ -271,15 +271,15 @@ namespace BxDRobotExporter.Exporter
                     {
                         // Degenerate
                         simplFace.RemoveAt(k);
-                        foreach (SimplificationVertex v in face.verts)
+                        foreach (SimplificationVertex v in face.Verts)
                         {
-                            v.faces.Remove(face);
+                            v.Faces.Remove(face);
                         }
                     }
                     else if (matched == 1)
                     {
                         // We changed, so update edge lengths
-                        face.updateInfo();
+                        face.UpdateInfo();
                     }
                 }
                 simplVerts.Add(newVertex);
@@ -287,7 +287,7 @@ namespace BxDRobotExporter.Exporter
                 simplFace.Sort();
             }
 
-            simplVerts.RemoveAll((vert) => vert.faces.Count <= 0);
+            simplVerts.RemoveAll((vert) => vert.Faces.Count <= 0);
 
             // Rebuild arrays
             vertCount = (uint)simplVerts.Count;
@@ -295,17 +295,17 @@ namespace BxDRobotExporter.Exporter
             for (int i = 0; i < simplVerts.Count; i++)
             {
                 int off = i * 3;
-                simplVerts[i].finalIndex = (i);  // Our indices are zero based <3
-                Array.Copy(simplVerts[i].pos, 0, verts, off, 3);
+                simplVerts[i].FinalIndex = (i);  // Our indices are zero based <3
+                Array.Copy(simplVerts[i].Pos, 0, verts, off, 3);
             }
             trisCount = (uint)simplFace.Count;
             inds = new uint[trisCount * 3];
             for (int i = 0; i < simplFace.Count; i++)
             {
                 int off = i * 3;
-                inds[off] = (uint)simplFace[i].verts[0].finalIndex;
-                inds[off + 1] = (uint)simplFace[i].verts[1].finalIndex;
-                inds[off + 2] = (uint)simplFace[i].verts[2].finalIndex;
+                inds[off] = (uint)simplFace[i].Verts[0].FinalIndex;
+                inds[off + 1] = (uint)simplFace[i].Verts[1].FinalIndex;
+                inds[off + 2] = (uint)simplFace[i].Verts[2].FinalIndex;
             }
         }
 
@@ -528,34 +528,34 @@ namespace BxDRobotExporter.Exporter
         //    return subs;
         //}
 
-        private static double[] GetHullNormals(HullVertex[] HullVertices, double[] RawVertices, double[] RawNormals)
+        private static double[] GetHullNormals(HullVertex[] hullVertices, double[] rawVertices, double[] rawNormals)
         {
-            List<double> Normals = new List<double>();
+            List<double> normals = new List<double>();
 
-            foreach(HullVertex vert in HullVertices)
+            foreach(HullVertex vert in hullVertices)
             {
-                for(int i = 0; i < RawVertices.Length; i += 3)
+                for(int i = 0; i < rawVertices.Length; i += 3)
                 {
-                    if (vert.Position[0] == RawVertices[i] && vert.Position[1] == RawVertices[i + 1] && vert.Position[2] == RawVertices[i + 2])
+                    if (vert.Position[0] == rawVertices[i] && vert.Position[1] == rawVertices[i + 1] && vert.Position[2] == rawVertices[i + 2])
                     {
-                        Normals.Add(RawNormals[i]);
-                        Normals.Add(RawNormals[i + 1]);
-                        Normals.Add(RawNormals[i + 2]);
+                        normals.Add(rawNormals[i]);
+                        normals.Add(rawNormals[i + 1]);
+                        normals.Add(rawNormals[i + 2]);
                     }
                 }
             }
 
-            return Normals.ToArray();
+            return normals.ToArray();
         }
 
-        private static double[] GetRawVerts(HullVertex[] HullVertices)
+        private static double[] GetRawVerts(HullVertex[] hullVertices)
         {
-            List<double> Vertices = new List<double>();
+            List<double> vertices = new List<double>();
 
-            foreach (HullVertex Vertex in HullVertices)
-                Vertices.AddRange(Vertex.Position);
+            foreach (HullVertex vertex in hullVertices)
+                vertices.AddRange(vertex.Position);
 
-            return Vertices.ToArray();
+            return vertices.ToArray();
         }
 
         public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh bMesh)
@@ -563,23 +563,23 @@ namespace BxDRobotExporter.Exporter
             List<BXDAMesh.BXDASubMesh> meshes = new List<BXDAMesh.BXDASubMesh>();
             foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
             {
-                List<HullVertex> RawVertices = new List<HullVertex>();
+                List<HullVertex> rawVertices = new List<HullVertex>();
                 for (int i = 0; i < mesh.verts.Length; i += 3)
                 {
-                    RawVertices.Add(new HullVertex(mesh.verts[i], mesh.verts[i + 1], mesh.verts[i + 2]));
+                    rawVertices.Add(new HullVertex(mesh.verts[i], mesh.verts[i + 1], mesh.verts[i + 2]));
                 }
-                var Hull = ConvexHull.Create(RawVertices);
-                var HullVertices = new List<HullVertex>();
-                HullVertices.AddRange(Hull.Points);
+                var hull = ConvexHull.Create(rawVertices);
+                var hullVertices = new List<HullVertex>();
+                hullVertices.AddRange(hull.Points);
 
                 List<uint> indices = new List<uint>();
-                foreach (var face in Hull.Faces)
+                foreach (var face in hull.Faces)
                 {
-                    indices.Add((uint)HullVertices.IndexOf(face.Vertices[0]));
-                    indices.Add((uint)HullVertices.IndexOf(face.Vertices[1]));
-                    indices.Add((uint)HullVertices.IndexOf(face.Vertices[2]));
+                    indices.Add((uint)hullVertices.IndexOf(face.Vertices[0]));
+                    indices.Add((uint)hullVertices.IndexOf(face.Vertices[1]));
+                    indices.Add((uint)hullVertices.IndexOf(face.Vertices[2]));
                 }
-                float[] verts = Array.ConvertAll(GetRawVerts(HullVertices.ToArray()), item => (float)item);
+                float[] verts = Array.ConvertAll(GetRawVerts(hullVertices.ToArray()), item => (float)item);
 
                 meshes.Add(ExportMeshInternal(verts, (uint)verts.Length / 3, indices.ToArray(), ((uint)indices.Count / 3)));
             } 

@@ -2,9 +2,9 @@
 
 namespace BxDRobotExporter.GUI.Editors.DegreesOfFreedomViewer
 {
-    public partial class DOFKeyPane : UserControl
+    public partial class DofKeyPane : UserControl
     {
-        public DOFKeyPane()
+        public DofKeyPane()
         {
             InitializeComponent();
 

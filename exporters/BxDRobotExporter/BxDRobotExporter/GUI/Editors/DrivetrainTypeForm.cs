@@ -40,7 +40,7 @@ namespace BxDRobotExporter.GUI.Editors
             }
             
             
-            SelectType(SynthesisGUI.Instance.SkeletonBase.driveTrainType);
+            SelectType(SynthesisGui.Instance.SkeletonBase.driveTrainType);
         }
 
         private void RecursiveControlNavigator(Control control, Action<Control> action)
@@ -67,7 +67,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            SynthesisGUI.Instance.SkeletonBase.driveTrainType = driveTrainType;
+            SynthesisGui.Instance.SkeletonBase.driveTrainType = driveTrainType;
             Close();
         }
     }

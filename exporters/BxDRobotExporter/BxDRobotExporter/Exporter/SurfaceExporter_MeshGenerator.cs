@@ -20,21 +20,21 @@ namespace BxDRobotExporter.Exporter
         private const uint MAX_VERTS_OR_FACETS = ushort.MaxValue;
         private class VertexCollection
         {
-            public double[] coordinates = new double[MAX_VERTS_OR_FACETS * 3];
-            public double[] norms = new double[MAX_VERTS_OR_FACETS * 3];
-            public int count = 0;
+            public double[] Coordinates = new double[MAX_VERTS_OR_FACETS * 3];
+            public double[] Norms = new double[MAX_VERTS_OR_FACETS * 3];
+            public int Count = 0;
         }
 
         private class FacetCollection
         {
-            public int[] indices = new int[MAX_VERTS_OR_FACETS * 3];
-            public int count = 0;
+            public int[] Indices = new int[MAX_VERTS_OR_FACETS * 3];
+            public int Count = 0;
         }
 
         private class PartialSurface
         {
-            public VertexCollection verts = new VertexCollection();
-            public FacetCollection facets = new FacetCollection();
+            public VertexCollection Verts = new VertexCollection();
+            public FacetCollection Facets = new FacetCollection();
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace BxDRobotExporter.Exporter
             // Do separate if too many faces
             if (!separateFaces)
             {
-                surf.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                surf.CalculateFacets(tolerance, out bufferSurface.Verts.Count, out bufferSurface.Facets.Count, out bufferSurface.Verts.Coordinates, out bufferSurface.Verts.Norms, out bufferSurface.Facets.Indices);
 
-                if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS || bufferSurface.facets.count > MAX_VERTS_OR_FACETS)
+                if (bufferSurface.Verts.Count > MAX_VERTS_OR_FACETS || bufferSurface.Facets.Count > MAX_VERTS_OR_FACETS)
                     separateFaces = true;
             }
 
@@ -119,7 +119,7 @@ namespace BxDRobotExporter.Exporter
                 foreach (Face face in faces)
                 {
                     if (face.Appearance != null) { 
-                        face.CalculateFacets(tolerance, out bufferSurface.verts.count, out bufferSurface.facets.count, out bufferSurface.verts.coordinates, out bufferSurface.verts.norms, out bufferSurface.facets.indices);
+                        face.CalculateFacets(tolerance, out bufferSurface.Verts.Count, out bufferSurface.Facets.Count, out bufferSurface.Verts.Coordinates, out bufferSurface.Verts.Norms, out bufferSurface.Facets.Indices);
                         outputMesh.AddSurface(ref bufferSurface, GetAssetProperties(face.Appearance));
                     }
                 }
@@ -172,43 +172,43 @@ namespace BxDRobotExporter.Exporter
                     return;
 
                 newMeshSurface.hasColor = true;
-                newMeshSurface.color = asset.color;
-                newMeshSurface.transparency = (float)asset.transparency;
-                newMeshSurface.translucency = (float)asset.translucency;
-                newMeshSurface.specular = (float)asset.specular;
+                newMeshSurface.color = asset.Color;
+                newMeshSurface.transparency = (float)asset.Transparency;
+                newMeshSurface.translucency = (float)asset.Translucency;
+                newMeshSurface.specular = (float)asset.Specular;
 
                 // Prevent too many vertices
-                if (bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                if (bufferSurface.Verts.Count > MAX_VERTS_OR_FACETS)
                     throw new TooManyVerticesException();
 
                 int indexOffset;
                 lock (outputVerts)
                 {
                     // Prevent too many vertices
-                    if (outputVerts.count + bufferSurface.verts.count > MAX_VERTS_OR_FACETS)
+                    if (outputVerts.Count + bufferSurface.Verts.Count > MAX_VERTS_OR_FACETS)
                         DumpOutputInternal();
                 
                     // Copy buffer vertices into output
-                    Array.Copy(bufferSurface.verts.coordinates, 0, outputVerts.coordinates, outputVerts.count * 3, bufferSurface.verts.count * 3);
-                    Array.Copy(bufferSurface.verts.norms, 0, outputVerts.norms, outputVerts.count * 3, bufferSurface.verts.count * 3);
+                    Array.Copy(bufferSurface.Verts.Coordinates, 0, outputVerts.Coordinates, outputVerts.Count * 3, bufferSurface.Verts.Count * 3);
+                    Array.Copy(bufferSurface.Verts.Norms, 0, outputVerts.Norms, outputVerts.Count * 3, bufferSurface.Verts.Count * 3);
 
                     // Store length of output verts for later
-                    indexOffset = outputVerts.count - 1;
-                    outputVerts.count += bufferSurface.verts.count;
+                    indexOffset = outputVerts.Count - 1;
+                    outputVerts.Count += bufferSurface.Verts.Count;
                 }
 
                 // Copy buffer surface into output, incrementing indices relative to where verts where stitched into the vert array
-                newMeshSurface.indicies = new int[bufferSurface.facets.count * 3];
-                for (int i = 0; i < bufferSurface.facets.count * 3; i++)
-                    newMeshSurface.indicies[i] = bufferSurface.facets.indices[i] + indexOffset; // Why does Inventor start from 1?!
+                newMeshSurface.indicies = new int[bufferSurface.Facets.Count * 3];
+                for (int i = 0; i < bufferSurface.Facets.Count * 3; i++)
+                    newMeshSurface.indicies[i] = bufferSurface.Facets.Indices[i] + indexOffset; // Why does Inventor start from 1?!
 
                 // Add the new surface to the output
                 lock (outputMeshSurfaces)
                     outputMeshSurfaces.Add(newMeshSurface);
 
                 // Empty buffer
-                bufferSurface.verts.count = 0;
-                bufferSurface.facets.count = 0;
+                bufferSurface.Verts.Count = 0;
+                bufferSurface.Facets.Count = 0;
             }
         
             /// <summary>
@@ -226,15 +226,15 @@ namespace BxDRobotExporter.Exporter
             /// </summary>
             private void DumpOutputInternal()
             {             
-                if (outputVerts.count == 0 || outputMeshSurfaces.Count == 0)
+                if (outputVerts.Count == 0 || outputMeshSurfaces.Count == 0)
                     return;
 
                 // Copy the output surface's vertices and normals into the new sub-object
                 BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
-                subObject.verts = new double[outputVerts.count * 3];
-                subObject.norms = new double[outputVerts.count * 3];
-                Array.Copy(outputVerts.coordinates, 0, subObject.verts, 0, outputVerts.count * 3);
-                Array.Copy(outputVerts.norms, 0, subObject.norms, 0, outputVerts.count * 3);
+                subObject.verts = new double[outputVerts.Count * 3];
+                subObject.norms = new double[outputVerts.Count * 3];
+                Array.Copy(outputVerts.Coordinates, 0, subObject.verts, 0, outputVerts.Count * 3);
+                Array.Copy(outputVerts.Norms, 0, subObject.norms, 0, outputVerts.Count * 3);
 
                 // Copy the output surfaces into the new sub-object
                 subObject.surfaces = new List<BXDAMesh.BXDASurface>(outputMeshSurfaces);
@@ -244,7 +244,7 @@ namespace BxDRobotExporter.Exporter
                     outputMesh.meshes.Add(subObject);
 
                 // Empty temporary storage
-                outputVerts.count = 0;
+                outputVerts.Count = 0;
                 outputMeshSurfaces.Clear();
             }
         }

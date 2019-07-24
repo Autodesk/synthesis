@@ -6,11 +6,11 @@ namespace BxDRobotExporter.RigidAnalyzer
 {
     public class CustomRigidGroup
     {
-        public List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
+        public List<ComponentOccurrence> Occurrences = new List<ComponentOccurrence>();
 
-        public bool grounded;
+        public bool Grounded;
 
-        public string fullQualifier;
+        public string FullQualifier;
         public static string GetGroupQualifier(RigidBodyGroup group)
         {
             StringBuilder builder = new StringBuilder();
@@ -25,21 +25,21 @@ namespace BxDRobotExporter.RigidAnalyzer
         {
             foreach (ComponentOccurrence comp in group.Occurrences)
             {
-                occurrences.Add(comp);
+                Occurrences.Add(comp);
             }
         
-            grounded = group.Grounded;
-            fullQualifier = GetGroupQualifier(group);
+            Grounded = group.Grounded;
+            FullQualifier = GetGroupQualifier(group);
         }
 
         public override string ToString()
         {
-            if (occurrences.Count == 1)
+            if (Occurrences.Count == 1)
             {
-                return occurrences[0].Name;
+                return Occurrences[0].Name;
             }
             string res = "[";
-            foreach (ComponentOccurrence occ in occurrences)
+            foreach (ComponentOccurrence occ in Occurrences)
             {
                 if (res.Length > 100)
                 {
@@ -56,11 +56,11 @@ namespace BxDRobotExporter.RigidAnalyzer
         {
             if ((obj is CustomRigidGroup))
             {
-                return fullQualifier.Equals(((CustomRigidGroup)obj).fullQualifier);
+                return FullQualifier.Equals(((CustomRigidGroup)obj).FullQualifier);
             }
             else if ((obj is RigidBodyGroup))
             {
-                return fullQualifier.Equals(GetGroupQualifier((RigidBodyGroup)obj));
+                return FullQualifier.Equals(GetGroupQualifier((RigidBodyGroup)obj));
             }
             else
             {
@@ -70,12 +70,12 @@ namespace BxDRobotExporter.RigidAnalyzer
 
         public override int GetHashCode()
         {
-            return fullQualifier.GetHashCode();
+            return FullQualifier.GetHashCode();
         }
 
         public bool Contains(ComponentOccurrence c)
         {
-            return occurrences.Contains(c);
+            return Occurrences.Contains(c);
         }
     }
 }
