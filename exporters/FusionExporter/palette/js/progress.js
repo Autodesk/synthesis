@@ -33,7 +33,7 @@ window.fusionJavaScriptHandler =
                 else if (action == 'success')
                 {
                     console.log("Error: " + data);
-                    document.getElementById('status').innerHTML = "Export Successfully Completed! (This will auto-close in 5s)";
+                    document.getElementById('status').innerHTML = "Export Successfully Completed! (This will auto-close in 5s)<br />Your robot can be found in " + data;
                     document.getElementById("progress").style.visibility = "hidden";
 
                     setTimeout(resetView, 6000);
