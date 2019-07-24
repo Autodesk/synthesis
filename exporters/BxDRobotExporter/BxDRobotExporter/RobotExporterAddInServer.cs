@@ -33,7 +33,7 @@ namespace BxDRobotExporter
         public Application MainApplication;
 
         public AssemblyDocument AsmDocument;
-        private List<ComponentOccurrence> disabledAssemblyOccurences;
+        private List<ComponentOccurrence> disabledAssemblyOccurrences;
         private Environment exporterEnv;
         private bool environmentEnabled = false;
 
@@ -225,8 +225,8 @@ namespace BxDRobotExporter
                 return;
             }
 
-            disabledAssemblyOccurences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
+            disabledAssemblyOccurrences = new List<ComponentOccurrence>();
+            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
             RobotDataManager.LoadRobotData(AsmDocument);
 
@@ -313,8 +313,8 @@ namespace BxDRobotExporter
             }
 
             // Re-enable disabled components
-            if (disabledAssemblyOccurences != null) InventorUtils.EnableComponents(disabledAssemblyOccurences);
-            disabledAssemblyOccurences = null;
+            if (disabledAssemblyOccurrences != null) InventorUtils.EnableComponents(disabledAssemblyOccurrences);
+            disabledAssemblyOccurrences = null;
 
             // Close add-in
             if (embeddedJointPane != null)
