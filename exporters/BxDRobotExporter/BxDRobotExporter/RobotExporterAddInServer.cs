@@ -135,7 +135,7 @@ namespace BxDRobotExporter
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", editJointIconSmall, editJointIconLarge);
             advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
-            advancedEditJointButton.OnExecute += context => advancedJointEditor.Toggle();
+            advancedEditJointButton.OnExecute += context => advancedJointEditor.Visible = !advancedJointEditor.Visible;
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
@@ -235,7 +235,7 @@ namespace BxDRobotExporter
 
             // Reload panels in UI
             jointForm = new JointForm();
-            advancedJointEditor.Hide();
+            advancedJointEditor.Visible = false;
         }
 
         /// <summary>
@@ -291,7 +291,9 @@ namespace BxDRobotExporter
             {
                 if (beforeOrAfter == EventTimingEnum.kBefore)
                 {
-                    advancedJointEditor.Hide();
+                    advancedJointEditor.Visible = false;
+                    dofKey.Visible = false;
+                    guide.Visible = false;
                     hiddenExporter = true;
                 }
             }
