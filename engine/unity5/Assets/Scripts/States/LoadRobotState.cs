@@ -44,7 +44,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Resume()
         {
-            robotList.Refresh(PlayerPrefs.GetString("RobotDirectory"));
+            robotList.Refresh(PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots")));
         }
 
         /// <summary>
@@ -53,7 +53,8 @@ namespace Synthesis.States
         public void OnBackButtonClicked()
         {
             Auxiliary.FindGameObject("SimLoadRobot").SetActive(false);
-            StateMachine.ChangeState(new ErrorScreenState());
+            //StateMachine.ChangeState(new ErrorScreenState());
+            Application.Quit();
         }
 
         /// <summary>

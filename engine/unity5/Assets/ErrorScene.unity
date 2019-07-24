@@ -1861,7 +1861,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Back
+  m_Text: Exit To Desktop
 --- !u!222 &1257190934
 CanvasRenderer:
   m_ObjectHideFlags: 0
