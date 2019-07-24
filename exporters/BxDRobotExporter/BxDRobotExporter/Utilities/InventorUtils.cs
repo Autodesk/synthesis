@@ -1,31 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using BxDRobotExporter.GUI.Editors;
-using BxDRobotExporter.Properties;
 using Inventor;
-using Environment = System.Environment;
 using IPictureDisp = stdole.IPictureDisp;
 
 namespace BxDRobotExporter
 {
     internal static class InventorUtils
     {
-        static internal RobotDataManager Gui;
-        public static void CreateChildDialog()
-        {
-            try
-            {
-                Gui = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-                throw;
-            }
-        }
-
         /// <summary>
         /// Converts from a <see cref="System.Drawing.Color"/> to an <see cref="Inventor.Color"/>
         /// </summary>
@@ -35,47 +17,6 @@ namespace BxDRobotExporter
         {
             return RobotExporterAddInServer.Instance.MainApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
         }
-
-        /// <summary>
-        /// Initializes all of the <see cref="RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
-        /// </summary>
-        public static void LoadSettings()
-        {
-            // Old configurations get overriden (version numbers below 1)
-            if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
-                Settings.Default.SaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-
-            if (Settings.Default.ConfigVersion < 3)
-            {
-                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
-                {
-                    InventorChildColor = Settings.Default.ChildColor,
-                    GeneralSaveLocation = Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Settings.Default.FancyColors,
-                    OpenSynthesis = Settings.Default.ExportToField,
-                    FieldName = Settings.Default.SelectedField,
-                    DefaultRobotCompetition = "GENERIC",
-                    UseAnalytics = true
-                };
-            }
-            else
-            {
-                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
-                {
-                    InventorChildColor = Settings.Default.ChildColor,
-                    GeneralSaveLocation = Settings.Default.SaveLocation,
-                    GeneralUseFancyColors = Settings.Default.FancyColors,
-                    OpenSynthesis = Settings.Default.ExportToField,
-                    FieldName = Settings.Default.SelectedField,
-                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition,
-                    UseAnalytics = Settings.Default.UseAnalytics
-                };
-            }
-        }
-
-
-        // Analytics
-
 
         /// <summary>
         /// Selects a list of nodes in Inventor.

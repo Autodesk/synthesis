@@ -26,6 +26,8 @@ namespace BxDRobotExporter
     public class RobotExporterAddInServer : ApplicationAddInServer
     {
         public static RobotExporterAddInServer Instance { get; private set; }
+        
+        internal static RobotDataManager RobotDataManager;
 
         public Application MainApplication;
 
@@ -75,7 +77,7 @@ namespace BxDRobotExporter
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(MainApplication.UserName);
             AnalyticsUtils.LogPage("Inventor");
-            InventorUtils.LoadSettings();
+            LoadSettings();
 
             var editJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
             var editJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
@@ -209,7 +211,7 @@ namespace BxDRobotExporter
             AnalyticsUtils.StartSession();
             //Gets the assembly document and creates dockable windows
             AsmDocument = (AssemblyDocument) MainApplication.ActiveDocument;
-            InventorUtils.CreateChildDialog();
+            CreateChildDialog();
             blueHighlightSet = AsmDocument.CreateHighlightSet();
             greenHighlightSet = AsmDocument.CreateHighlightSet();
             redHighlightSet = AsmDocument.CreateHighlightSet();
@@ -227,7 +229,7 @@ namespace BxDRobotExporter
             environmentEnabled = true;
 
             // Load robot skeleton and prepare UI
-            if (!InventorUtils.Gui.LoadRobotSkeleton())
+            if (!RobotDataManager.LoadRobotSkeleton())
             {
                 InventorUtils.ForceQuitExporter(AsmDocument);
                 return;
@@ -236,7 +238,7 @@ namespace BxDRobotExporter
             disabledAssemblyOccurences = new List<ComponentOccurrence>();
             disabledAssemblyOccurences.AddRange(InventorUtils.DisableUnconnectedComponents(AsmDocument));
             // If fails to load existing data, restart wizard
-            InventorUtils.Gui.LoadRobotData(AsmDocument);
+            RobotDataManager.LoadRobotData(AsmDocument);
 
             UserInterfaceManager uiMan = MainApplication.UserInterfaceManager;
             EmbeddedJointPane = uiMan.DockableWindows.Add(Guid.NewGuid().ToString(), "BxD:RobotExporter:JointEditor", "Advanced Robot Joint Editor");
@@ -247,7 +249,7 @@ namespace BxDRobotExporter
             EmbeddedJointPane.ShowTitleBar = true;
             Instance.AdvancedAdvancedJointEditor = new AdvancedJointEditorUserControl();
 
-            Instance.AdvancedAdvancedJointEditor.SetSkeleton(InventorUtils.Gui.SkeletonBase);
+            Instance.AdvancedAdvancedJointEditor.SetSkeleton(RobotDataManager.SkeletonBase);
             Instance.AdvancedAdvancedJointEditor.SelectedJoint += nodes => InventorUtils.FocusAndHighlightNodes(nodes, Instance.MainApplication.ActiveView.Camera,  1);
             Instance.AdvancedAdvancedJointEditor.ModifiedJoint += delegate (List<RigidNode_Base> nodes)
             {
@@ -506,16 +508,16 @@ namespace BxDRobotExporter
 
             if (displayDof)
             {
-                if (InventorUtils.Gui.SkeletonBase == null && !InventorUtils.Gui.LoadRobotSkeleton())
+                if (RobotDataManager.SkeletonBase == null && !RobotDataManager.LoadRobotSkeleton())
                     return;
 
-                var rootNodes = new List<RigidNode_Base> {InventorUtils.Gui.SkeletonBase};
+                var rootNodes = new List<RigidNode_Base> {RobotDataManager.SkeletonBase};
                 var jointedNodes = new List<RigidNode_Base>();
                 var problemNodes = new List<RigidNode_Base>();
 
-                foreach (var node in InventorUtils.Gui.SkeletonBase.ListAllNodes())
+                foreach (var node in RobotDataManager.SkeletonBase.ListAllNodes())
                 {
-                    if (node == InventorUtils.Gui.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                    if (node == RobotDataManager.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                     {
                         continue;
                     }
@@ -558,7 +560,7 @@ namespace BxDRobotExporter
             }
             else
             {
-                if (InventorUtils.Gui.SkeletonBase == null && !InventorUtils.Gui.LoadRobotSkeleton())
+                if (RobotDataManager.SkeletonBase == null && !RobotDataManager.LoadRobotSkeleton())
                     return;
 //                Utilities.HideAdvancedJointEditor();
                 jointForm.OnShowButtonClick();
@@ -583,14 +585,14 @@ namespace BxDRobotExporter
         /// <param name="context"></param>
         private void SaveRobotData(NameValueMap context)
         {
-            InventorUtils.Gui.SaveRobotData();
+            RobotDataManager.SaveRobotData();
         }
 
         private void PromptExportToSynthesis()
         {
-            if (InventorUtils.Gui.PromptExportSettings())
-                if (InventorUtils.Gui.ExportRobot() && InventorUtils.Gui.RMeta.FieldName != null)
-                    InventorUtils.Gui.OpenSynthesis();
+            if (RobotDataManager.PromptExportSettings())
+                if (RobotDataManager.ExportRobot() && RobotDataManager.RMeta.FieldName != null)
+                    RobotDataManager.OpenSynthesis();
         }
 
         //Settings
@@ -601,7 +603,7 @@ namespace BxDRobotExporter
         private void SetWeight_OnExecute(NameValueMap context)
         {
             AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight", 0);
-            InventorUtils.Gui.PromptRobotWeight();
+            RobotDataManager.PromptRobotWeight();
         }
 
         /// <summary>
@@ -680,6 +682,56 @@ namespace BxDRobotExporter
             if (EmbeddedJointPane != null)
             {
                 EmbeddedJointPane.Visible = true;
+            }
+        }
+        
+        public static void CreateChildDialog()
+        {
+            try
+            {
+                RobotExporterAddInServer.RobotDataManager = new RobotDataManager();  // pass the main application to the GUI so classes RobotExporter can access Inventor to read the joints
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Initializes all of the <see cref="BxDRobotExporter.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
+        /// </summary>
+        public static void LoadSettings()
+        {
+            // Old configurations get overriden (version numbers below 1)
+            if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
+                Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
+
+            if (Settings.Default.ConfigVersion < 3)
+            {
+                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                {
+                    InventorChildColor = Settings.Default.ChildColor,
+                    GeneralSaveLocation = Settings.Default.SaveLocation,
+                    GeneralUseFancyColors = Settings.Default.FancyColors,
+                    OpenSynthesis = Settings.Default.ExportToField,
+                    FieldName = Settings.Default.SelectedField,
+                    DefaultRobotCompetition = "GENERIC",
+                    UseAnalytics = true
+                };
+            }
+            else
+            {
+                RobotDataManager.PluginSettings = ExporterSettingsForm.Values = new ExporterSettingsForm.PluginSettingsValues
+                {
+                    InventorChildColor = Settings.Default.ChildColor,
+                    GeneralSaveLocation = Settings.Default.SaveLocation,
+                    GeneralUseFancyColors = Settings.Default.FancyColors,
+                    OpenSynthesis = Settings.Default.ExportToField,
+                    FieldName = Settings.Default.SelectedField,
+                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition,
+                    UseAnalytics = Settings.Default.UseAnalytics
+                };
             }
         }
     }
