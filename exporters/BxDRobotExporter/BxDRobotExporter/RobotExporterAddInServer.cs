@@ -61,7 +61,7 @@ namespace BxDRobotExporter
         private readonly Guide guide = new Guide();
 
         // UI elements
-        private readonly JointForm jointForm = new JointForm();
+        private JointForm jointForm = new JointForm();
 
         // ???? (Weird flags which should be deleted)
         private bool exporterBlocked;
@@ -79,7 +79,6 @@ namespace BxDRobotExporter
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(Application.UserName);
             AnalyticsUtils.LogPage("Inventor");
-            RobotDataManager.PluginSettings.LoadSettings();
 
             var editJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32)); //these are still here at request of QA
             var editJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(Resources.JointEditor32));
@@ -225,9 +224,13 @@ namespace BxDRobotExporter
 
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
-            advancedJointEditor.CreateDockableWindow(uiMan, RobotDataManager.SkeletonBase);
+            advancedJointEditor.CreateDockableWindow(uiMan);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
+            
+            // Load skeleton into joint editors
+            advancedJointEditor.UpdateSkeleton(RobotDataManager.SkeletonBase);
+            jointForm.UpdateSkeleton(RobotDataManager.SkeletonBase);
         }
 
         /// <summary>

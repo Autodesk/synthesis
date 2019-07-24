@@ -72,6 +72,11 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         public class PluginSettingsValues
         {
+            public PluginSettingsValues()
+            {
+                LoadSettings();
+            }
+
             public event SettingsEvent SettingsChanged;
 
             internal void OnSettingsChanged()

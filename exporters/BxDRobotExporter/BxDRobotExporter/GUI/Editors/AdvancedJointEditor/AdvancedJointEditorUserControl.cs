@@ -48,7 +48,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
         /// </summary>
-        public AdvancedJointEditorUserControl(RigidNode_Base root)
+        public AdvancedJointEditorUserControl()
         {
             InitializeComponent();
             this.DoLayout(null, null);
@@ -108,8 +108,6 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     }
                 }
             };
-
-            UpdateSkeleton(root);
         }
 
         /// <summary>

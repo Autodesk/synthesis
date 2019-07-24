@@ -12,23 +12,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         {
             AnalyticsUtils.LogPage("Joint Editor");
             InitializeComponent();
-            SuspendLayout();
 
-            foreach (RigidNode_Base node in RobotExporterAddInServer.Instance.RobotDataManager.SkeletonBase.ListAllNodes())
-            {
-                if (node.GetSkeletalJoint() != null) // create new part panels for every node
-                {
-                    JointCard panel = new JointCard(node, this);
-                    panel.Dock = DockStyle.Top;
-
-                    jointCards.Add(panel);
-
-                    WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
-                }
-            }
-
-            ResumeLayout();
-            
             Shown += (sender, args) => // First load
             {
                 jointCards.ForEach(card => card.LoadPreviewIcon());
@@ -44,6 +28,26 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                 Hide();
                 e.Cancel = true; // this cancels the close event.
             };
+        }
+
+        public void UpdateSkeleton(RigidNode_Base skeletonBase)
+        {
+            SuspendLayout();
+
+            foreach (RigidNode_Base node in skeletonBase.ListAllNodes())
+            {
+                if (node.GetSkeletalJoint() != null) // create new part panels for every node
+                {
+                    JointCard panel = new JointCard(node, this);
+                    panel.Dock = DockStyle.Top;
+
+                    jointCards.Add(panel);
+
+                    WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
+                }
+            }
+
+            ResumeLayout();
         }
 
         public new void ShowDialog()
