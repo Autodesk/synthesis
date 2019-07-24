@@ -17,7 +17,7 @@ git submodule update --init
 if [[ "${TOOLCHAIN}" == "" ]] ; then 
     cd third_party/protobuf && \
         ./autogen.sh && \
-        ./configure && \
+        ./configure "CFLAGS=-fPIC" "CLAGS=-fPIC" && \
         make && sudo make install
     pwd
     mkdir -p ../../libs/opt
