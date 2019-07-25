@@ -15,7 +15,7 @@ namespace BxDRobotExporter
             return InventorManager.Instance.TransientGeometry.CreateVector(v.x, v.y, v.z);
         }
 
-        public static BXDVector3 ToBxdVector(dynamic p)
+        public static BXDVector3 ToBXDVector(dynamic p)
         {
             return new BXDVector3(p.X, p.Y, p.Z);
         }

@@ -135,13 +135,13 @@ namespace BxDRobotExporter.SkeletalStructure
         {
             if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.RootPoint);
+                axis = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.Direction);
+                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
             }
             else
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.RootPoint);
+                axis = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
 
             currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
