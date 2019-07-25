@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;
 
@@ -11,11 +12,11 @@ namespace BxDRobotExporter.ControlGUI
 {
     public partial class LoadingSkeletonForm : Form
     {
-        private readonly RobotData robotData;
+        private readonly RobotDataManager robotDataManager;
 
-        public LoadingSkeletonForm(RobotData robotData)
+        public LoadingSkeletonForm(RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
+            this.robotDataManager = robotDataManager;
             InitializeComponent();
 
             FormClosing += delegate (object sender, FormClosingEventArgs e)
@@ -103,7 +104,7 @@ namespace BxDRobotExporter.ControlGUI
             }
             finally
             {
-                robotData.RobotBaseNode = skeleton;
+                robotDataManager.RobotBaseNode = skeleton;
             }
         }
 

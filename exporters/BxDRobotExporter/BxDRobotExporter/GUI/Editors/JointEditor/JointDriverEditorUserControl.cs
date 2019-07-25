@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.Synthesis;
 
@@ -14,11 +15,11 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         private JointCard jointCard;
         private List<RigidNode_Base> nodes;
         private JointDriverType[] typeOptions;
-        private readonly RobotData robotData;
+        private readonly RobotDataManager robotDataManager;
 
-        public JointDriverEditorUserControl(RobotData robotData)
+        public JointDriverEditorUserControl(RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
+            this.robotDataManager = robotDataManager;
             InitializeComponent();
             WinFormsUtils.DisableScrollSelection(this);
             EnableLiveSave(this);
@@ -53,8 +54,8 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
             
             CalculatedWeightCheck.Checked = joint.weight <= 0;
-            UnitBox.SelectedIndex = robotData.RobotPreferMetric ? 1 : 0;
-            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotData.RobotPreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
+            UnitBox.SelectedIndex = robotDataManager.RobotPreferMetric ? 1 : 0;
+            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotDataManager.RobotPreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
             
             cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");
@@ -162,7 +163,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     {
                         case MotorType.GENERIC:
                             RobotCompetitionDropDown.SelectedItem =
-                                RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition.ToString();
+                                RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -289,7 +290,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                 cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
-                RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition;
+                RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
@@ -448,7 +449,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     }
 
                     joint.cDriver.motor = motor;
-                    RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition =
+                    RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition =
                         RobotCompetitionDropDown.SelectedItem.ToString();
                 }
 

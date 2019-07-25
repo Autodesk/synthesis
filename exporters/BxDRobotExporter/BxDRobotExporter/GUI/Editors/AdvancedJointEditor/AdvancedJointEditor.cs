@@ -1,4 +1,5 @@
 using System;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 using Inventor;
 
@@ -61,9 +62,9 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             }
         }
 
-        public void UpdateSkeleton(RobotData robotData)
+        public void UpdateSkeleton(RobotDataManager robotDataManager)
         {
-            advancedJointEditorUserControl.UpdateSkeleton(robotData);
+            advancedJointEditorUserControl.UpdateSkeleton(robotDataManager);
         }
 
         /// <summary>

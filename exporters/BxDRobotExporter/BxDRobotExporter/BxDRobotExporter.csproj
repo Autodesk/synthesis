@@ -182,7 +182,9 @@
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.Designer.cs">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Managers\AddInSettingsManager.cs" />
     <Compile Include="Managers\HighlightManager.cs" />
+    <Compile Include="Managers\RobotDataManager.cs" />
     <Compile Include="OGLViewer\InventorCamera.cs" />
     <Compile Include="OGLViewer\OGLDrawing.cs" />
     <Compile Include="OGLViewer\OGL_RigidNode.cs" />
@@ -190,7 +192,6 @@
     <Compile Include="OGLViewer\SelectManager.cs" />
     <Compile Include="OGLViewer\ShaderLoader.cs" />
     <Compile Include="OGLViewer\VBOMesh.cs" />
-    <Compile Include="AddInSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -209,7 +210,7 @@
     <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
-    <Compile Include="RobotData.cs" />
+    <Compile Include="SingleEnvironmentAddInServer.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
@@ -292,13 +293,12 @@
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities\AnalyticsUtils.cs" />
-    <Compile Include="Utilities\ImageFormat\AxHostConverter.cs">
+    <Compile Include="Utilities\ImageConverters\AxHostConverter.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utilities\ImageFormat\PictureDispConverter.cs" />
+    <Compile Include="Utilities\ImageConverters\PictureDispConverter.cs" />
     <Compile Include="Utilities\InventorDocumentIoUtils.cs" />
     <Compile Include="Utilities\InventorUtils.cs" />
-    <Compile Include="Utilities\SingleEnvironmentAddInServer.cs" />
     <Compile Include="Utilities\Synthesis\JointToStringUtils.cs" />
     <Compile Include="Utilities\Synthesis\SynthesisUtils.cs" />
     <Compile Include="Utilities\WinFormsUtils.cs" />

@@ -3,11 +3,12 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BxDRobotExporter.Messages;
 using BxDRobotExporter.Properties;
+using BxDRobotExporter.Utilities;
 using Inventor;
 using Application = Inventor.Application;
 using Environment = Inventor.Environment;
 
-namespace BxDRobotExporter.Utilities
+namespace BxDRobotExporter
 {
     public abstract class SingleEnvironmentAddInServer : ApplicationAddInServer
     {

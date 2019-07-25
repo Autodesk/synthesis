@@ -12,9 +12,9 @@ using BxDRobotExporter.SkeletalStructure;
 using BxDRobotExporter.Utilities;
 using Inventor;
 
-namespace BxDRobotExporter
+namespace BxDRobotExporter.Managers
 {
-    public class RobotData
+    public class RobotDataManager
     {
         // Robot
         public string RobotName;
@@ -26,7 +26,7 @@ namespace BxDRobotExporter
         public string RobotField;
         public bool RobotPreferMetric = false;
 
-        public RobotData()
+        public RobotDataManager()
         {
             RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid); // TODO: Remove this and refactor BXDJReader versions
         }
@@ -163,7 +163,7 @@ namespace BxDRobotExporter
                 if (string.IsNullOrEmpty(RobotName)) // If robot has not been named, cancel
                     return false;
 
-                var robotFolderPath = RobotExporterAddInServer.Instance.AddInSettings.ExportPath + "\\" + RobotName;
+                var robotFolderPath = RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + RobotName;
                 Directory.CreateDirectory(robotFolderPath); // CreateDirectory checks if the folder already exists
 
                 if (!LoadMeshes()) // Re-export every time because we don't detect changes to the robot CAD

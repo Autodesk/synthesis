@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.Synthesis;
@@ -45,7 +46,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         private List<RigidNode_Base> nodeList = null;
         
         private Timer selectionFinishedTimeout = new Timer();
-        private RobotData robotData;
+        private RobotDataManager robotDataManager;
 
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
@@ -253,10 +254,10 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// Load a list of nodes into the editor pane
         /// </summary>
         /// <param name="root">The base node</param>
-        public void UpdateSkeleton(RobotData robotData)
+        public void UpdateSkeleton(RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
-            nodeList = robotData.RobotBaseNode?.ListAllNodes();
+            this.robotDataManager = robotDataManager;
+            nodeList = robotDataManager.RobotBaseNode?.ListAllNodes();
             UpdateJointList();
         }
 
@@ -277,7 +278,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     if (joint != null)
                     {
                         var item = new ListViewItem(new[] {
-                            JointToStringUtils.JointTypeString(joint, robotData), JointToStringUtils.NodeNameString(node), JointToStringUtils.DriverString(joint), JointToStringUtils.WheelTypeString(joint), JointToStringUtils.SensorCountString(joint)})
+                            JointToStringUtils.JointTypeString(joint, robotDataManager), JointToStringUtils.NodeNameString(node), JointToStringUtils.DriverString(joint), JointToStringUtils.WheelTypeString(joint), JointToStringUtils.SensorCountString(joint)})
                         {
                             Tag = node
                         };

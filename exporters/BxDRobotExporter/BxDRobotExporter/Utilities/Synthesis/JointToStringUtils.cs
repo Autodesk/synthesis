@@ -1,4 +1,5 @@
 using System;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.Utilities.Synthesis
 {
@@ -65,10 +66,10 @@ namespace BxDRobotExporter.Utilities.Synthesis
             return InventorDocumentIoUtils.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
         }
 
-        public static string JointTypeString(SkeletalJoint_Base joint, RobotData robotData = null)
+        public static string JointTypeString(SkeletalJoint_Base joint, RobotDataManager robotDataManager = null)
         {
             return InventorDocumentIoUtils.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
-                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (robotData != null && robotData.RobotPreferMetric ? 1 : 2.20462f), 2)+(robotData != null && robotData.RobotPreferMetric ? " Kilograms" : " Pounds"));
+                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (robotDataManager != null && robotDataManager.RobotPreferMetric ? 1 : 2.20462f), 2)+(robotDataManager != null && robotDataManager.RobotPreferMetric ? " Kilograms" : " Pounds"));
         }
     }
 }
