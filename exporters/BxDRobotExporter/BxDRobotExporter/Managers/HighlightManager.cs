@@ -10,7 +10,21 @@ namespace BxDRobotExporter.Managers
         private HighlightSet jointEditorHighlight;
         
         // Degrees of freedom highlight
-        public bool DisplayDof { get; private set; }
+        public bool DisplayDof
+        {
+            set
+            {
+                if (value)
+                {
+                    EnableDofHighlight(RobotExporterAddInServer.Instance.RobotData);
+                }
+                else
+                {
+                    ClearDofHighlight();
+                }
+            }
+        }
+
         private HighlightSet blueHighlightSet;
         private HighlightSet greenHighlightSet;
         private HighlightSet redHighlightSet;
@@ -29,7 +43,7 @@ namespace BxDRobotExporter.Managers
             jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotExporterAddInServer.Instance.AddInSettings.InventorChildColor);
         }
 
-        public void EnableDofHighlight(RobotData robotData)
+        private void EnableDofHighlight(RobotData robotData)
         {
             if (robotData.RobotBaseNode == null && !robotData.LoadRobotSkeleton())
                 return;
@@ -61,26 +75,11 @@ namespace BxDRobotExporter.Managers
             InventorUtils.CreateHighlightSet(problemNodes, redHighlightSet);
         }
 
-        public void ClearDofHighlight()
+        private void ClearDofHighlight()
         {
             blueHighlightSet.Clear();
             greenHighlightSet.Clear();
             redHighlightSet.Clear();
-            DisplayDof = false;
-        }
-
-        public void ToggleDofHighlight(RobotData robotData)
-        {
-            DisplayDof = !DisplayDof;
-
-            if (DisplayDof)
-            {
-                EnableDofHighlight(robotData);
-            }
-            else
-            {
-                ClearDofHighlight();
-            }
         }
 
         public void ClearJointHighlight()
@@ -95,7 +94,7 @@ namespace BxDRobotExporter.Managers
 
         public void ClearAllHighlight()
         {
-            ClearDofHighlight();
+            DisplayDof = false;
             ClearJointHighlight();
         }
 
