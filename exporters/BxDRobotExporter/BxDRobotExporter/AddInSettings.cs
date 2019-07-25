@@ -8,14 +8,26 @@ namespace BxDRobotExporter
     /// <summary>
     /// The struct that stores settings for the <see cref="Exporter"/>
     /// </summary>
-    public class PluginSettings
+    public class AddInSettings
     {
-        public PluginSettings()
+        // Events
+        public event SettingsEvent SettingsChanged;
+
+        // Environment
+        public Color InventorChildColor;
+        public bool UseAnalytics;
+        
+        // Export
+        public string GeneralSaveLocation;
+        public bool GeneralUseFancyColors;
+        public string FieldName;
+        public string DefaultRobotCompetition;
+        public bool OpenSynthesis;
+        
+        public AddInSettings()
         {
             LoadSettings();
         }
-
-        public event SettingsEvent SettingsChanged;
 
         internal void OnSettingsChanged()
         {
@@ -66,17 +78,5 @@ namespace BxDRobotExporter
                 UseAnalytics = Settings.Default.UseAnalytics;
             }
         }
-
-        //General
-        public string GeneralSaveLocation;
-        public bool GeneralUseFancyColors;
-        public string FieldName;
-        public string DefaultRobotCompetition;
-        public bool OpenSynthesis;
-
-        public bool UseAnalytics;
-
-        //Inventor
-        public Color InventorChildColor;
     }
 }

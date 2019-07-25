@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using BxDRobotExporter.Exporter;
 
 namespace BxDRobotExporter.GUI.Editors
 {
-    public delegate void SettingsEvent(PluginSettings values);
+    public delegate void SettingsEvent(AddInSettings values);
 
     public partial class ExporterSettingsForm : Form
     {
         /// <summary>
         /// The local copy of the setting values
         /// </summary>
-        private static PluginSettings Values = new PluginSettings();
+        private AddInSettings values;
 
         public ExporterSettingsForm()
         {
@@ -20,13 +19,13 @@ namespace BxDRobotExporter.GUI.Editors
 
             LoadValues();
 
-            buttonOK.Click += delegate(object sender, EventArgs e)
+            buttonOK.Click += (sender, args) =>
             {
                 SaveValues();
                 Close();
             };
 
-            buttonCancel.Click += delegate(object sender, EventArgs e) { Close(); };
+            buttonCancel.Click += (sender, args) => Close();
         }
 
         /// <summary>
@@ -34,39 +33,23 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            Values = RobotExporterAddInServer.PluginSettings;
-
-            ChildHighlight.BackColor = Values.InventorChildColor;
-            checkBox1.Checked = Values.UseAnalytics;
+            values = RobotExporterAddInServer.Instance.AddInSettings;
+            ChildHighlight.BackColor = values.InventorChildColor;
+            checkBox1.Checked = values.UseAnalytics;
         }
 
         /// <summary>
-        /// Save the form's values in a <see cref="PluginSettings"/> structure
+        /// Save the form's values in a <see cref="AddInSettings"/> structure
         /// </summary>
         private void SaveValues()
         {
-            Values.InventorChildColor = ChildHighlight.BackColor;
-            Values.UseAnalytics = checkBox1.Checked;
-            Values.OnSettingsChanged();
+            values.InventorChildColor = ChildHighlight.BackColor;
+            values.UseAnalytics = checkBox1.Checked;
+            values.OnSettingsChanged();
         }
 
         /// <summary>
-        /// Get the default values for the <see cref="PluginSettings"/> structure
-        /// </summary>
-        /// <returns>Default values for the <see cref="Exporter"/></returns>
-        public static PluginSettings GetDefaultSettings()
-        {
-            return new PluginSettings()
-            {
-                InventorChildColor = Color.FromArgb(255, 0, 125, 255),
-                GeneralUseFancyColors = true,
-                GeneralSaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots",
-                UseAnalytics = true
-            };
-        }
-
-        /// <summary>
-        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="PluginSettings"/>
+        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="AddInSettings"/>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -77,21 +60,6 @@ namespace BxDRobotExporter.GUI.Editors
             {
                 ChildHighlight.BackColor = colorChoose.Color;
             }
-        }
-
-        private void ButtonBrowse_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-            folderBrowser.ShowDialog();
-            if (folderBrowser.SelectedPath != null)
-            {
-                Values.GeneralSaveLocation = folderBrowser.SelectedPath;
-            }
-        }
-
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            Values.UseAnalytics = checkBox1.Checked;
         }
     }
 }

@@ -56,7 +56,7 @@ namespace BxDRobotExporter
                 fieldName = ExportDefaultField;
             }
 
-            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace BxDRobotExporter
 
                 GC.Collect();
 
-                ExportWithColors = RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors;
+                ExportWithColors = RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors;
             }
             catch (InvalidComObjectException) // TODO: Don't do this
             {
@@ -155,8 +155,8 @@ namespace BxDRobotExporter
                 RobotName = robotName;
                 ExportDefaultField = field;
 
-                RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors = colors;
-                RobotExporterAddInServer.PluginSettings.OnSettingsChanged();
+                RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors = colors;
+                RobotExporterAddInServer.Instance.AddInSettings.OnSettingsChanged();
 
                 return true;
             }
@@ -215,7 +215,7 @@ namespace BxDRobotExporter
                 if (string.IsNullOrEmpty(RobotName)) // If robot has not been named, cancel
                     return false;
 
-                var robotFolderPath = RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName;
+                var robotFolderPath = RobotExporterAddInServer.Instance.AddInSettings.GeneralSaveLocation + "\\" + RobotName;
                 Directory.CreateDirectory(robotFolderPath); // CreateDirectory checks if the folder already exists
 
                 if (!LoadMeshes()) // Re-export every time because we don't detect changes to the robot CAD

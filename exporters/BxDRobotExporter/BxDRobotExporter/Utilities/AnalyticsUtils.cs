@@ -45,7 +45,7 @@ namespace BxDRobotExporter
 
         public static async Task PostAsync(string para)
         {
-            if (!RobotExporterAddInServer.PluginSettings.UseAnalytics)
+            if (!RobotExporterAddInServer.Instance.AddInSettings.UseAnalytics)
             {
                 return;
             }

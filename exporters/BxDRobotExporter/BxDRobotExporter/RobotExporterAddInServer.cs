@@ -23,17 +23,18 @@ namespace BxDRobotExporter
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
     public class RobotExporterAddInServer : ApplicationAddInServer
     {
+        
+        // ------ Add-In ------
         public static RobotExporterAddInServer Instance { get; private set; }
-
-        public readonly HighlightManager HighlightManager = new HighlightManager();
-        private RobotData robotData;
-
+        public readonly AddInSettings AddInSettings = new AddInSettings();
         public Application Application;
 
+        // ------ Robot Document ------
         public AssemblyDocument AssemblyDocument;
+        private RobotData robotData;
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
 
-        // -- UI FIELDS
+        // ------ UI ------
         // Environment
         private Environment exporterEnv;
 
@@ -59,9 +60,12 @@ namespace BxDRobotExporter
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor(false);
         private readonly DOFKey dofKey = new DOFKey();
         private readonly Guide guide = new Guide(true);
+        
+        // Other managers
+        public readonly HighlightManager HighlightManager = new HighlightManager();
 
         // UI elements
-        private JointForm jointForm = new JointForm();
+        private readonly JointForm jointForm = new JointForm();
 
         // Flags
         private bool environmentIsOpen;
@@ -357,7 +361,5 @@ namespace BxDRobotExporter
         {
             return environmentIsOpen && AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
         }
-
-        public static readonly PluginSettings PluginSettings = new PluginSettings();
     }
 }
