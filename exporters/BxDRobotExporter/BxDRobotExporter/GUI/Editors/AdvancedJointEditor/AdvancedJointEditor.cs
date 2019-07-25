@@ -64,9 +64,9 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             }
         }
 
-        public void UpdateSkeleton(RigidNode_Base instanceSkeletonBase)
+        public void UpdateSkeleton(RobotData robotData)
         {
-            advancedJointEditorUserControl.UpdateSkeleton(instanceSkeletonBase);
+            advancedJointEditorUserControl.UpdateSkeleton(robotData);
         }
 
         /// <summary>

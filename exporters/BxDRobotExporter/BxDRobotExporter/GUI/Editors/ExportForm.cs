@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {
@@ -17,7 +16,7 @@ namespace BxDRobotExporter.GUI.Editors
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
-            ColorBox.Checked = RobotDataManager.PluginSettings.GeneralUseFancyColors;
+            ColorBox.Checked = RobotData.PluginSettings.GeneralUseFancyColors;
             
         }
 
@@ -43,8 +42,8 @@ namespace BxDRobotExporter.GUI.Editors
                     FieldSelectComboBox.Items.Add(pair.Key);
                 }
             }
-            this.FieldSelectComboBox.SelectedItem = RobotDataManager.PluginSettings.FieldName;
-            this.OpenSynthesisBox.Checked = RobotDataManager.PluginSettings.OpenSynthesis;
+            this.FieldSelectComboBox.SelectedItem = RobotData.PluginSettings.FieldName;
+            this.OpenSynthesisBox.Checked = RobotData.PluginSettings.OpenSynthesis;
         }
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
@@ -56,8 +55,8 @@ namespace BxDRobotExporter.GUI.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                RobotDataManager.PluginSettings.FieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
-                RobotDataManager.PluginSettings.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
+                RobotData.PluginSettings.FieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
+                RobotData.PluginSettings.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
                 
@@ -84,7 +83,7 @@ namespace BxDRobotExporter.GUI.Editors
                     RobotNameTextBox.Text = RobotNameTextBox.Text.Replace(c.ToString(), "");
                 }
 
-                if(File.Exists(RobotDataManager.PluginSettings.GeneralSaveLocation + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
+                if(File.Exists(RobotData.PluginSettings.GeneralSaveLocation + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     return;
                 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {
@@ -9,12 +8,12 @@ namespace BxDRobotExporter.GUI.Editors
         public float TotalWeightKg = 0;
         public bool PreferMetric = false;
 
-        public DrivetrainWeightForm()
+        public DrivetrainWeightForm(RobotData robotData)
         {
             InitializeComponent();
             AnalyticsUtils.LogPage("SetWeightForm");
-            TotalWeightKg = RobotDataManager.Instance.RMeta.TotalWeightKg;
-            PreferMetric = RobotDataManager.Instance.RMeta.PreferMetric;
+            TotalWeightKg = robotData.RMeta.TotalWeightKg;
+            PreferMetric = robotData.RMeta.PreferMetric;
 
             SetWeightBoxValue(TotalWeightKg * (PreferMetric ? 1 : 2.20462f));
             CalculatedWeightCheck.Checked = TotalWeightKg <= 0;
@@ -55,11 +54,6 @@ namespace BxDRobotExporter.GUI.Editors
                 WeightBox.Value = (decimal)value;
             else
                 WeightBox.Value = 0;
-        }
-
-        private void UnitBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

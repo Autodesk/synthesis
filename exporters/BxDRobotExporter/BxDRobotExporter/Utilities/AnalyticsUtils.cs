@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter
 {
@@ -46,7 +45,7 @@ namespace BxDRobotExporter
 
         public static async Task PostAsync(string para)
         {
-            if (!RobotDataManager.PluginSettings.UseAnalytics)
+            if (!RobotData.PluginSettings.UseAnalytics)
             {
                 return;
             }

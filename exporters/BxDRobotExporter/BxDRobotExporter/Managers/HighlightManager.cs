@@ -26,21 +26,21 @@ namespace BxDRobotExporter.Managers
             redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
 
             jointEditorHighlight = asmDocument.CreateHighlightSet();
-            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotDataManager.PluginSettings.InventorChildColor);
+            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotData.PluginSettings.InventorChildColor);
         }
 
-        public void EnableDofHighlight(RobotDataManager robotDataManager)
+        public void EnableDofHighlight(RobotData robotData)
         {
-            if (robotDataManager.SkeletonBase == null && !robotDataManager.LoadRobotSkeleton())
+            if (robotData.SkeletonBase == null && !robotData.LoadRobotSkeleton())
                 return;
 
-            var rootNodes = new List<RigidNode_Base> {robotDataManager.SkeletonBase};
+            var rootNodes = new List<RigidNode_Base> {robotData.SkeletonBase};
             var jointedNodes = new List<RigidNode_Base>();
             var problemNodes = new List<RigidNode_Base>();
 
-            foreach (var node in robotDataManager.SkeletonBase.ListAllNodes())
+            foreach (var node in robotData.SkeletonBase.ListAllNodes())
             {
-                if (node == robotDataManager.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                if (node == robotData.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                 {
                     continue;
                 }
@@ -69,13 +69,13 @@ namespace BxDRobotExporter.Managers
             DisplayDof = false;
         }
 
-        public void ToggleDofHighlight(RobotDataManager RobotDataManager)
+        public void ToggleDofHighlight(RobotData robotData)
         {
             DisplayDof = !DisplayDof;
 
             if (DisplayDof)
             {
-                EnableDofHighlight(RobotDataManager);
+                EnableDofHighlight(robotData);
             }
             else
             {

@@ -30,15 +30,15 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             };
         }
 
-        public void UpdateSkeleton(RigidNode_Base skeletonBase)
+        public void UpdateSkeleton(RobotData robotData)
         {
             SuspendLayout();
 
-            foreach (RigidNode_Base node in skeletonBase.ListAllNodes())
+            foreach (RigidNode_Base node in robotData.SkeletonBase.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {
-                    JointCard panel = new JointCard(node, this);
+                    JointCard panel = new JointCard(node, this, robotData);
                     panel.Dock = DockStyle.Top;
 
                     jointCards.Add(panel);

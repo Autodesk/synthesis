@@ -11,9 +11,9 @@ using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
 
-namespace BxDRobotExporter.Managers
+namespace BxDRobotExporter
 {
-    public class RobotDataManager
+    public class RobotData
     {
         //public event Action ExportFinished;
         //public void OnExportFinished()
@@ -51,7 +51,6 @@ namespace BxDRobotExporter.Managers
 
         public RuntimeMeta RMeta = RuntimeMeta.CreateRuntimeMeta();
 
-        public static RobotDataManager Instance;
 
         public static readonly ExporterSettingsForm.PluginSettingsValues PluginSettings = new ExporterSettingsForm.PluginSettingsValues();
     
@@ -63,14 +62,9 @@ namespace BxDRobotExporter.Managers
         private LoadingSkeletonForm loadingSkeleton;
         private LiteExporterForm liteExporter;
 
-        public RobotDataManager()
+        public RobotData()
         {
-            Instance = this;
-
-            RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
-            {
-                return new OglRigidNode(guid);
-            };
+            RigidNode_Base.NODE_FACTORY = guid => new OglRigidNode(guid);
         }
 
         /// <summary>
@@ -109,7 +103,7 @@ namespace BxDRobotExporter.Managers
             {
                 var exporterThread = new Thread(() =>
                 {
-                    loadingSkeleton = new LoadingSkeletonForm();
+                    loadingSkeleton = new LoadingSkeletonForm(this);
                     loadingSkeleton.ShowDialog();
                 });
 
@@ -150,13 +144,13 @@ namespace BxDRobotExporter.Managers
                 {
                     if (SkeletonBase == null)
                     {
-                        loadingSkeleton = new LoadingSkeletonForm();
+                        loadingSkeleton = new LoadingSkeletonForm(this);
                         loadingSkeleton.ShowDialog();
                     }
 
                     if (SkeletonBase != null)
                     {
-                        liteExporter = new LiteExporterForm();
+                        liteExporter = new LiteExporterForm(this);
                         liteExporter.ShowDialog(); // Remove node building
                     }
                 });
@@ -326,7 +320,7 @@ namespace BxDRobotExporter.Managers
                     RMeta.ActiveRobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
                     RMeta.TotalWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                     RMeta.PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
-                    RobotDataManager.Instance.SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
+                    SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
                 }
 
                 // Load joint data
@@ -467,7 +461,7 @@ namespace BxDRobotExporter.Managers
                     InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", RMeta.ActiveRobotName);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", RMeta.TotalWeightKg * 10.0f); // x10 for better accuracy
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", RMeta.PreferMetric);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)RobotDataManager.Instance.SkeletonBase.driveTrainType);
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)SkeletonBase.driveTrainType);
           
                 // Save joint data
                 return SaveJointData(propertySets, SkeletonBase);
@@ -587,7 +581,7 @@ namespace BxDRobotExporter.Managers
         {
             try
             {
-                DrivetrainWeightForm weightForm = new DrivetrainWeightForm();
+                DrivetrainWeightForm weightForm = new DrivetrainWeightForm(this);
 
                 weightForm.ShowDialog();
 

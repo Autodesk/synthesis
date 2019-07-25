@@ -48,7 +48,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             this.jointTypeValue = new System.Windows.Forms.Label();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.jointEditorUserControl = new JointDriverEditorUserControl();
+            this.jointEditorUserControl = new JointDriverEditorUserControl(robotData);
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -360,5 +360,6 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         private System.Windows.Forms.Label jointTypeValue;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private JointDriverEditorUserControl jointEditorUserControl;
+        private readonly RobotData robotData;
     }
 }
