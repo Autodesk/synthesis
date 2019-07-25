@@ -6,7 +6,6 @@ using BxDRobotExporter.GUI.Editors.JointSubEditors;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.Utilities;
-using BxDRobotExporter.Utilities.Synthesis;
 
 namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 {
@@ -278,7 +277,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     if (joint != null)
                     {
                         var item = new ListViewItem(new[] {
-                            JointToStringUtils.JointTypeString(joint, robotDataManager), JointToStringUtils.NodeNameString(node), JointToStringUtils.DriverString(joint), JointToStringUtils.WheelTypeString(joint), JointToStringUtils.SensorCountString(joint)})
+                            ToStringUtils.JointTypeString(joint, robotDataManager), ToStringUtils.NodeNameString(node), ToStringUtils.DriverString(joint), ToStringUtils.WheelTypeString(joint), ToStringUtils.SensorCountString(joint)})
                         {
                             Tag = node
                         };

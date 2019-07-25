@@ -60,5 +60,14 @@ namespace BxDRobotExporter.Utilities
                     break;
             }
         }
+
+        public static void RecursiveControlNavigator(Control control, Action<Control> action)
+        {
+            action.Invoke(control);
+            foreach (Control subControl in control.Controls)
+            {
+                RecursiveControlNavigator(subControl, action);
+            }
+        }
     }
 }

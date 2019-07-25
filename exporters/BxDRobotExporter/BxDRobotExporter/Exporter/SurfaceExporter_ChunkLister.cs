@@ -32,7 +32,7 @@ namespace BxDRobotExporter.Exporter
                 // Compute physics
                 try
                 {
-                    physics.Add((float) occ.MassProperties.Mass, InventorDocumentIoUtils.ToBXDVector(occ.MassProperties.CenterOfMass));
+                    physics.Add((float) occ.MassProperties.Mass, MathUtils.ToBXDVector(occ.MassProperties.CenterOfMass));
                 }
                 catch
                 {
@@ -47,7 +47,7 @@ namespace BxDRobotExporter.Exporter
             // Add sub-occurences
             foreach (ComponentOccurrence subOcc in occ.SubOccurrences)
             {
-                if (InventorDocumentIoUtils.BoxVolume(subOcc.RangeBox) >= minVolume)
+                if (MathUtils.BoxVolume(subOcc.RangeBox) >= minVolume)
                 {
                     GenerateExportList(subOcc, plannedExports, physics, minVolume, true);
                 }
@@ -68,7 +68,7 @@ namespace BxDRobotExporter.Exporter
             double maxVolume = 0;
             foreach (ComponentOccurrence occ in group.occurrences)
             {
-                double curVolume = InventorDocumentIoUtils.BoxVolume(occ.RangeBox);
+                double curVolume = MathUtils.BoxVolume(occ.RangeBox);
                 if (curVolume > maxVolume)
                     maxVolume = curVolume;
             }
@@ -77,7 +77,7 @@ namespace BxDRobotExporter.Exporter
             // Analyze all component occurrences
             foreach (ComponentOccurrence occ in group.occurrences)
             {
-                if (InventorDocumentIoUtils.BoxVolume(occ.RangeBox) >= minVolume)
+                if (MathUtils.BoxVolume(occ.RangeBox) >= minVolume)
                 {
                     GenerateExportList(occ, plannedExports, physics, minVolume);
                 }

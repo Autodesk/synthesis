@@ -1,64 +1,11 @@
 ﻿using System;
-using BxDRobotExporter.Exporter;
 using Inventor;
 
 namespace BxDRobotExporter.Utilities
 {
-    public static class InventorDocumentIoUtils
+    public static class InventorDocumentIOUtils
     {
-        public const string SYNTHESIS_PATH = @"C:\Program Files\Autodesk\Synthesis\Synthesis\Synthesis.exe";
-        public static string ViewerPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + @"\RobotViewer\RobotViewer.exe";
-    
-        public static Vector ToInventorVector(BXDVector3 v)
-        {
-            if (InventorManager.Instance == null) return null;
-            return InventorManager.Instance.TransientGeometry.CreateVector(v.x, v.y, v.z);
-        }
-
-        public static BXDVector3 ToBXDVector(dynamic p)
-        {
-            return new BXDVector3(p.X, p.Y, p.Z);
-        }
-
-        public static string VectorToString(object pO)
-        {
-            if (pO is Vector)
-            {
-                Vector p = (Vector) pO;
-                return (p.X + "," + p.Y + "," + p.Z);
-            }
-            else if (pO is UnitVector)
-            {
-                UnitVector p = (UnitVector) pO;
-                return (p.X + "," + p.Y + "," + p.Z);
-            }
-            else if (pO is Point)
-            {
-                Point p = (Point) pO;
-                return (p.X + "," + p.Y + "," + p.Z);
-            }
-            return "";
-        }
-
-        public static double BoxVolume(Box b)
-        {
-            double dx = b.MaxPoint.X - b.MinPoint.X;
-            double dy = b.MaxPoint.Y - b.MinPoint.Y;
-            double dz = b.MaxPoint.Z - b.MinPoint.Z;
-            return dx * dy * dz;
-        }
-
-        public static string CapitalizeFirstLetter(string str, bool onlyFirst = false)
-        {
-            if (str.Length < 2)
-                return str.ToUpperInvariant();
-            else if (onlyFirst)
-                return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1).ToLowerInvariant();
-            else
-                return str.Substring(0, 1).ToUpperInvariant() + str.Substring(1);
-        }
-
-        public static Inventor.PropertySet GetPropertySet(Inventor.PropertySets sets, string name, bool createIfDoesNotExist = true)
+        public static Inventor.PropertySet GetPropertySet(PropertySets sets, string name, bool createIfDoesNotExist = true)
         {
             foreach (Inventor.PropertySet set in sets)
             {
@@ -68,10 +15,7 @@ namespace BxDRobotExporter.Utilities
                 }
             }
 
-            if (createIfDoesNotExist)
-                return sets.Add(name);
-            else
-                return null;
+            return createIfDoesNotExist ? sets.Add(name) : null;
         }
 
         public static bool HasProperty(Inventor.PropertySet set, string name)
@@ -131,16 +75,6 @@ namespace BxDRobotExporter.Utilities
                 // Property already exists, get existing value
                 return (T)set[name].Value;
             }
-        }
-    }
-
-    public static class LegacyEvents
-    {
-        public static event Action RobotModified;
-        
-        public static void OnRobotModified()
-        {
-            RobotModified?.Invoke();
         }
     }
 }

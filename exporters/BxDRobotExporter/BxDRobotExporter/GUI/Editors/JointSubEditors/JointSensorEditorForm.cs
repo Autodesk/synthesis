@@ -94,7 +94,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                 joint.attachedSensors.Add(addedSensor);
             }
 
-            LegacyEvents.OnRobotModified();
             Close();
         }
         

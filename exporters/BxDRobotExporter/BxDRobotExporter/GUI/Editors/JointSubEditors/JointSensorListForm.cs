@@ -55,7 +55,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
             {
                 joint.attachedSensors.Remove((RobotSensor) sensorListView.SelectedItems[0].Tag);
                 this.UpdateSensorList();
-                LegacyEvents.OnRobotModified();
             }
         }
 
