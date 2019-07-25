@@ -17,12 +17,9 @@ namespace Synthesis.Input
     {
         public enum Mode// Order must correspond to that in the dropdown list within Unity
         {
-            // ArcadeJoystick,
-            ArcadeKeyboard,
-            // MecanumJoystick,
-            MecanumKeyboard,
-            TankJoystick,
-            // TankKeyboard
+            Arcade,
+            Mecanum,
+            Tank,
             // Custom1,
             // Custom2,
             // Custom3
@@ -223,7 +220,7 @@ namespace Synthesis.Input
 
                 switch (controlProfile)
                 {
-                    case Mode.ArcadeKeyboard:
+                    case Mode.Arcade:
                         {
                             #region Arcade Controls
 
@@ -245,11 +242,11 @@ namespace Synthesis.Input
                             #endregion
                         }
                         break;
-                    case Mode.MecanumKeyboard:
+                    case Mode.Mecanum:
                         {
                             #region Mecanum Controls
 
-                            if (player_i != 0) // Customized keyboard player 1 controls
+                            if (player_i == 0) // Customized keyboard player 1 controls
                             {
                                 profile.buttons.pwmPos[FRONT_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow, KeyCode.Alpha2);
                                 profile.buttons.pwmNeg[FRONT_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.Alpha1);
@@ -277,7 +274,7 @@ namespace Synthesis.Input
                             #endregion
                         }
                         break;
-                    case Mode.TankJoystick:
+                    case Mode.Tank:
                         {
                             #region Tank Controls
 
