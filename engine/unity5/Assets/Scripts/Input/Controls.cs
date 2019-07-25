@@ -30,6 +30,7 @@ namespace Synthesis.Input
             {
                 Players[player_i].SaveActiveProfile();
             }
+            GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
         }
 
         /// <summary>

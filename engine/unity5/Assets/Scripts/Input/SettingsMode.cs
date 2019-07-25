@@ -32,8 +32,6 @@ namespace Synthesis.Input
 
         public void Awake()
         {
-            Controls.Load();
-
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
 
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
@@ -82,14 +80,6 @@ namespace Synthesis.Input
         public void OnSaveClick()
         {
             Controls.Save();
-            UserMessageManager.Dispatch("Player preferences saved.", 5);
-        }
-
-        public void OnSaveClickMainMenu()
-        {
-            Controls.Save();
-            UserMessageManager.Dispatch("Player preferences saved.", 5);
-            StateMachine.SceneGlobal.ChangeState(new HomeTabState());
         }
 
         /// <summary>
@@ -138,7 +128,9 @@ namespace Synthesis.Input
                 UpdateProfileSelection();
 
                 //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
-                GetLastSavedControls();
+                Controls.Load();
+                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
+
                 UpdatePlayerButtonStyle();
             }
         }
@@ -167,16 +159,6 @@ namespace Synthesis.Input
                 profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
                 profileDropdown.RefreshShownValue();
             }
-        }
-
-        /// <summary>
-        /// Gets the last loaded controls if the player did not press the "Save" button.
-        /// Helps prevent auto-saving (in case a user accidentally changes their controls.)
-        /// </summary>
-        public void GetLastSavedControls()
-        {
-            Controls.Load();
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
         }
 
         /// <summary>

@@ -794,8 +794,6 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
-
-                Controls.Load();
                 GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
             }
             else
