@@ -1424,7 +1424,7 @@ namespace Synthesis.Input
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
-                outKey.thirdInput = third;
+                outKey.tertiaryInput = third;
             }
             else
             {

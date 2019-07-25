@@ -19,7 +19,7 @@ namespace Synthesis.Input
         [JsonProperty]
         private CustomInput mSecondaryInput;
 
-        //[JsonProperty]
+        [JsonProperty]
         private CustomInput mTertiaryInput;
 
 
@@ -100,7 +100,7 @@ namespace Synthesis.Input
         /// </summary>
         /// <value>Third input.</value>
         [JsonIgnore]
-        public CustomInput thirdInput
+        public CustomInput tertiaryInput
         {
             get
             {
@@ -152,10 +152,7 @@ namespace Synthesis.Input
         [JsonConstructor]
         public KeyMapping(string name, CustomInput primaryCustomInput = null, CustomInput secondaryCustomInput = null, CustomInput thirdCustomInput = null)
         {
-            mName = name;
-            primaryInput = primaryCustomInput;
-            secondaryInput = secondaryCustomInput;
-            thirdInput = thirdCustomInput;
+            set(name, primaryCustomInput, secondaryCustomInput, thirdCustomInput);
         }
 
         /// <summary>
@@ -173,10 +170,36 @@ namespace Synthesis.Input
         /// <param name="another">Another KeyMapping instance.</param>
         public void set(KeyMapping another)
         {
-            mName = another.mName;
-            mPrimaryInput = another.mPrimaryInput;
-            mSecondaryInput = another.mSecondaryInput;
-            mTertiaryInput = another.mTertiaryInput;
+            set(another.mName, another.mPrimaryInput, another.mSecondaryInput, another.mTertiaryInput);
+        }
+
+        public void set(string name, CustomInput primaryCustomInput = null, CustomInput secondaryCustomInput = null, CustomInput thirdCustomInput = null)
+        {
+            mName = name;
+            set(primaryCustomInput, secondaryCustomInput, thirdCustomInput);
+        }
+
+        public void set(UnityEngine.KeyCode primaryInput, UnityEngine.KeyCode? secondaryInput = null, UnityEngine.KeyCode? tertiaryInput = null)
+        {
+            set(ArgToInput(primaryInput), ArgToInput(secondaryInput), ArgToInput(tertiaryInput));
+        }
+
+        public void set(CustomInput primaryCustomInput = null, CustomInput secondaryCustomInput = null, CustomInput thirdCustomInput = null)
+        {
+            primaryInput = primaryCustomInput;
+            secondaryInput = secondaryCustomInput;
+            tertiaryInput = thirdCustomInput;
+        }
+
+        private float combineValues(float a, float b, float c)
+        {
+            // Combine values, but make sure it's no higher than the highest or lower than the lowest parameter.
+
+            var value = a + b + c;
+            var upperBound = System.Math.Max(System.Math.Max(a, b), c);
+            var lowerBound = System.Math.Min(System.Math.Min(a, b), c);
+
+            return (value < lowerBound) ? lowerBound : ((value > upperBound) ? upperBound : value); // Clamp value
         }
 
         /// <summary>
@@ -188,31 +211,10 @@ namespace Synthesis.Input
         /// <param name="device">Preferred input device.</param>
         public float getValue(bool exactKeyModifiers = false, string axis = "", InputDevice device = InputDevice.Any)
         {
-            float res = 0;
-            float cur;
-
-            cur = mPrimaryInput.getInput(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mSecondaryInput.getInput(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mTertiaryInput.getInput(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            return res;
+            return combineValues(
+                mPrimaryInput.getInput(exactKeyModifiers, axis, device),
+                mSecondaryInput.getInput(exactKeyModifiers, axis, device),
+                mTertiaryInput.getInput(exactKeyModifiers, axis, device));
         }
 
         /// <summary>
@@ -224,31 +226,10 @@ namespace Synthesis.Input
         /// <param name="device">Preferred input device.</param>
         public float getValueDown(bool exactKeyModifiers = false, string axis = "", InputDevice device = InputDevice.Any)
         {
-            float res = 0;
-            float cur;
-
-            cur = mPrimaryInput.getInputDown(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mSecondaryInput.getInputDown(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mTertiaryInput.getInputDown(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            return res;
+            return combineValues(
+               mPrimaryInput.getInputDown(exactKeyModifiers, axis, device),
+               mSecondaryInput.getInputDown(exactKeyModifiers, axis, device),
+               mTertiaryInput.getInputDown(exactKeyModifiers, axis, device));
         }
 
         /// <summary>
@@ -260,31 +241,10 @@ namespace Synthesis.Input
         /// <param name="device">Preferred input device.</param>
         public float getValueUp(bool exactKeyModifiers = false, string axis = "", InputDevice device = InputDevice.Any)
         {
-            float res = 0;
-            float cur;
-
-            cur = mPrimaryInput.getInputUp(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mSecondaryInput.getInputUp(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            cur = mTertiaryInput.getInputUp(exactKeyModifiers, axis, device);
-
-            if (cur > res)
-            {
-                res = cur;
-            }
-
-            return res;
+            return combineValues(
+               mPrimaryInput.getInputUp(exactKeyModifiers, axis, device),
+               mSecondaryInput.getInputUp(exactKeyModifiers, axis, device),
+               mTertiaryInput.getInputUp(exactKeyModifiers, axis, device));
         }
 
         /// <summary>

@@ -13,7 +13,6 @@ using Synthesis.Utils;
 public class DriveJoints
 {
     public const int PWM_COUNT = 10;
-    public const  int PWM_OFFSET = 2;
 
     private const float SpeedArrowPwm = 0.5f;
     private const float WheelMaxSpeed = 300f;
@@ -140,66 +139,13 @@ public class DriveJoints
     /// <param name="controlIndex"></param>
     /// <param name="mecanum"></param>
     /// <returns></returns>
-    public static float[] GetPwmValues(int controlIndex, bool isMecanum)
+    public static float[] GetPwmValues(int controlIndex)
     {
         float[] pwm = new float[PWM_COUNT];
         if (!InputControl.freeze)
         {
-            for (int i = PWM_OFFSET; i < PWM_COUNT; i++)
-                pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i - PWM_OFFSET]) * SpeedArrowPwm;
-
-            if (isMecanum)
-            {
-                #region Mecanum Drive
-                pwm[(int)MecanumPorts.FrontRight] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * -SpeedArrowPwm);
-
-                pwm[(int)MecanumPorts.FrontLeft] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * -SpeedArrowPwm);
-
-                //For some reason, giving the back wheels 0.25 power instead of 0.5 works for strafing
-                pwm[(int)MecanumPorts.BackRight] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * -SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * 0.25f);
-
-                pwm[(int)MecanumPorts.BackLeft] =
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm) +
-                    (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[0]) * 0.25f);
-
-                #endregion
-            }
-            else
-            {
-                switch(Controls.Players[controlIndex].GetActiveProfileMode())
-                {
-                    case Profile.Mode.TankJoystick:
-                        pwm[0] =
-                           (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankRightAxes) * SpeedArrowPwm);
-
-                        pwm[1] =
-                           (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankLeftAxes) * SpeedArrowPwm);
-
-                        break;
-                    case Profile.Mode.ArcadeKeyboard:
-                        pwm[0] =
-                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
-                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm);
-
-                        pwm[1] =
-                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * SpeedArrowPwm) +
-                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm);
-
-                        break;
-                    default:
-                        throw new Profile.UnhandledControlProfileException();
-                }
-            }
+            for (int i = 0; i < PWM_COUNT; i++)
+                pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i]) * SpeedArrowPwm;
         }
 
         return pwm;
