@@ -44,6 +44,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         private List<RigidNode_Base> nodeList = null;
         
         private Timer selectionFinishedTimeout = new Timer();
+        private RobotData robotData;
 
         /// <summary>
         /// Create a new JointEditorPane and register actions for the right click menu
@@ -61,10 +62,10 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     {
                         if (nodes.Count != 1) return;
 
-                        RigidNode_Base node = nodes[0];
+                        var node = nodes[0];
                         if (node != null && node.GetSkeletalJoint() != null)// prevents the user from trying to edit a null joint
                         {
-                            JointLimitEditorForm limitEditor = new JointLimitEditorForm(node.GetSkeletalJoint());// show the limit editor form
+                            var limitEditor = new JointLimitEditorForm(node.GetSkeletalJoint());// show the limit editor form
                             limitEditor.ShowDialog(ParentForm);
                         }
                     }
@@ -90,16 +91,16 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
                 if (nodes == null || nodes.Count == 0) return;
 
-                foreach (RigidNode_Base node in nodes)
+                foreach (var node in nodes)
                 {
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
                         node is OglRigidNode)
                     {
-                        (node as OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                        (node as OglRigidNode).GetWheelInfo(out var radius, out var width, out var center);
 
-                        WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                        var wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
                         wheelDriver.center = center;
                         wheelDriver.radius = radius;
                         wheelDriver.width = width;
@@ -117,7 +118,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// <param name="callback">The action to perform when the item is clicked</param>
         public void RegisterContextAction(string caption, JointEditorEvent callback)
         {
-            ToolStripButton item = new ToolStripButton()
+            var item = new ToolStripButton()
             {
                 Text = caption
             };
@@ -140,11 +141,11 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         public void AddSelection(RigidNode_Base node, bool clearActive)
         {
             if (clearActive) lstJoints.SelectedItems.Clear();
-            foreach (ListViewItem listItem in lstJoints.Items.OfType<ListViewItem>())
+            foreach (var listItem in lstJoints.Items.OfType<ListViewItem>())
             {
                 if (!lstJoints.SelectedItems.Contains(listItem)) listItem.BackColor = Control.DefaultBackColor;
             }
-            ListViewItem item = lstJoints.Items.OfType<ListViewItem>().FirstOrDefault(i => i.Tag == node);
+            var item = lstJoints.Items.OfType<ListViewItem>().FirstOrDefault(i => i.Tag == node);
 
             if (item != null)
             {
@@ -179,12 +180,12 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         private void ListSensors_Internal(List<RigidNode_Base> nodes)
         {
             if (nodes == null || nodes.Count != 1) return;
-            RigidNode_Base node = nodes[0];
+            var node = nodes[0];
 
             if (node == null) return;
 
             currentlyEditing = true;
-            JointSensorListForm listForm = new JointSensorListForm(node.GetSkeletalJoint());
+            var listForm = new JointSensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog(ParentForm);
             ModifiedJoint?.Invoke(nodes);
             this.UpdateJointList();
@@ -225,14 +226,14 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         private void FinishedSelecting(object sender, EventArgs e)
         {
             selectionFinishedTimeout.Stop();
-            foreach (ListViewItem item in lstJoints.Items.OfType<ListViewItem>())
+            foreach (var item in lstJoints.Items.OfType<ListViewItem>())
             {
                 item.BackColor = Control.DefaultBackColor;
             }
 
             if (lstJoints.SelectedItems.Count > 0)
             {
-                foreach (ListViewItem item in lstJoints.SelectedItems.OfType<ListViewItem>())
+                foreach (var item in lstJoints.SelectedItems.OfType<ListViewItem>())
                 {
                     item.BackColor = System.Drawing.Color.LightSteelBlue;
                 }
@@ -251,10 +252,10 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         /// Load a list of nodes into the editor pane
         /// </summary>
         /// <param name="root">The base node</param>
-        public void UpdateSkeleton(RigidNode_Base root)
+        public void UpdateSkeleton(RobotData robotData)
         {
-            if (root == null) nodeList = null;
-            else nodeList = root.ListAllNodes();
+            this.robotData = robotData;
+            nodeList = robotData.SkeletonBase?.ListAllNodes();
             UpdateJointList();
         }
 
@@ -267,15 +268,15 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
             if (nodeList == null) return;
 
-            foreach (RigidNode_Base node in nodeList)
+            foreach (var node in nodeList)
             {
                 if (node.GetSkeletalJoint() != null)
                 {
-                    SkeletalJoint_Base joint = node.GetSkeletalJoint();
+                    var joint = node.GetSkeletalJoint();
                     if (joint != null)
                     {
-                        ListViewItem item = new ListViewItem(new string[] {
-                            JointToStringUtils.JointTypeString(joint), JointToStringUtils.NodeNameString(node), JointToStringUtils.DriverString(joint), JointToStringUtils.WheelTypeString(joint), JointToStringUtils.SensorCountString(joint)})
+                        var item = new ListViewItem(new[] {
+                            JointToStringUtils.JointTypeString(joint, robotData), JointToStringUtils.NodeNameString(node), JointToStringUtils.DriverString(joint), JointToStringUtils.WheelTypeString(joint), JointToStringUtils.SensorCountString(joint)})
                         {
                             Tag = node
                         };
@@ -296,7 +297,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
         private void JointContextMenu_Opening(object sender, EventArgs e)
         {
-            List<SkeletalJointType> types = (from item in lstJoints.SelectedItems.OfType<ListViewItem>()
+            var types = (from item in lstJoints.SelectedItems.OfType<ListViewItem>()
                                              select ((RigidNode_Base)item.Tag).GetSkeletalJoint().GetJointType()).ToList();
 
             if (types.Count > 1 && types[0] != types[1])

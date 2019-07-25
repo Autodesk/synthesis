@@ -16,8 +16,9 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         private bool isHighlighted;
         private bool hasLoadedEditor;
 
-        public JointCard(RigidNode_Base node, JointForm jointForm)
+        public JointCard(RigidNode_Base node, JointForm jointForm, RobotData robotData)
         {
+            this.robotData = robotData;
             this.jointForm = jointForm;
             this.node = node;
 
@@ -32,7 +33,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         {
             var joint = node.GetSkeletalJoint();
             jointName.Text = JointToStringUtils.NodeNameString(node);
-            jointTypeValue.Text = JointToStringUtils.JointTypeString(joint);
+            jointTypeValue.Text = JointToStringUtils.JointTypeString(joint, robotData);
             driverValue.Text = JointToStringUtils.DriverString(joint);
             wheelTypeValue.Text = JointToStringUtils.WheelTypeString(joint);
         }

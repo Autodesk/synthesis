@@ -183,7 +183,6 @@
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Managers\HighlightManager.cs" />
-    <Compile Include="Managers\RobotDataManager.cs" />
     <Compile Include="OGLViewer\InventorCamera.cs" />
     <Compile Include="OGLViewer\OGLDrawing.cs" />
     <Compile Include="OGLViewer\OGL_RigidNode.cs" />
@@ -209,6 +208,7 @@
     <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
+    <Compile Include="RobotData.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />

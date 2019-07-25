@@ -26,7 +26,7 @@ namespace BxDRobotExporter
         public static RobotExporterAddInServer Instance { get; private set; }
 
         public readonly HighlightManager HighlightManager = new HighlightManager();
-        public RobotDataManager RobotDataManager;
+        private RobotData robotData;
 
         public Application Application;
 
@@ -118,14 +118,14 @@ namespace BxDRobotExporter
             driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nType",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", drivetrainTypeIconSmall, drivetrainTypeIconLarge);
-            driveTrainTypeButton.OnExecute += context => new DrivetrainTypeForm().ShowDialog();
+            driveTrainTypeButton.OnExecute += context => new DrivetrainTypeForm(robotData).ShowDialog();
             driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
 
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Assign the weight of the drivetrain.", drivetrainWeightIconSmall, drivetrainWeightIconLarge);
             drivetrainWeightButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight");
-            drivetrainWeightButton.OnExecute += context => RobotDataManager.PromptRobotWeight();
+            drivetrainWeightButton.OnExecute += context => robotData.PromptRobotWeight();
             driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
 
             // Joint panel buttons
@@ -141,7 +141,7 @@ namespace BxDRobotExporter
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
                 jointForm.ShowDialog();
-                advancedJointEditor.UpdateSkeleton(RobotDataManager.Instance.SkeletonBase);
+                advancedJointEditor.UpdateSkeleton(robotData);
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
@@ -157,7 +157,7 @@ namespace BxDRobotExporter
             dofButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF");
-                HighlightManager.ToggleDofHighlight(RobotDataManager);
+                HighlightManager.ToggleDofHighlight(robotData);
                 dofKey.Visible = HighlightManager.DisplayDof;
             };
             checklistPanel.CommandControls.AddButton(dofButton, true);
@@ -212,15 +212,15 @@ namespace BxDRobotExporter
             disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AssemblyDocument));
 
             // Load robot skeleton and prepare UI
-            RobotDataManager = new RobotDataManager();
-            if (!RobotDataManager.LoadRobotSkeleton())
+            robotData = new RobotData();
+            if (!robotData.LoadRobotSkeleton())
             {
                 InventorUtils.ForceQuitExporter(AssemblyDocument);
                 return;
             }
 
-            RobotDataManager.LoadRobotData(AssemblyDocument);
-
+            robotData.LoadRobotData(AssemblyDocument);
+            
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
@@ -228,8 +228,8 @@ namespace BxDRobotExporter
             guide.CreateDockableWindow(uiMan);
 
             // Load skeleton into joint editors
-            advancedJointEditor.UpdateSkeleton(RobotDataManager.SkeletonBase);
-            jointForm.UpdateSkeleton(RobotDataManager.SkeletonBase);
+            advancedJointEditor.UpdateSkeleton(robotData);
+            jointForm.UpdateSkeleton(robotData);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace BxDRobotExporter
         private void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
-            RobotDataManager.SaveRobotData();
+            robotData.SaveRobotData();
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
@@ -247,9 +247,9 @@ namespace BxDRobotExporter
 
             if (exportResult == DialogResult.Yes)
             {
-                if (RobotDataManager.PromptExportSettings())
-                    if (RobotDataManager.ExportRobot() && RobotDataManager.RMeta.FieldName != null)
-                        RobotDataManager.OpenSynthesis();
+                if (robotData.PromptExportSettings())
+                    if (robotData.ExportRobot() && robotData.RMeta.FieldName != null)
+                        robotData.OpenSynthesis();
             }
 
             // Re-enable disabled components

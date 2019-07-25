@@ -1,5 +1,4 @@
 using System;
-using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.Utilities.Synthesis
 {
@@ -58,18 +57,18 @@ namespace BxDRobotExporter.Utilities.Synthesis
 
         public static string NodeNameString(RigidNode_Base node)
         {
-            return global::BxDRobotExporter.InventorDocumentIoUtils.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
+            return InventorDocumentIoUtils.CapitalizeFirstLetter(node.ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
         }
 
         public static string ParentNameString(RigidNode_Base node)
         {
-            return global::BxDRobotExporter.InventorDocumentIoUtils.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
+            return InventorDocumentIoUtils.CapitalizeFirstLetter(node.GetParent().ModelFileName.Replace('_', ' ').Replace(".bxda", ""));
         }
 
-        public static string JointTypeString(SkeletalJoint_Base joint)
+        public static string JointTypeString(SkeletalJoint_Base joint, RobotData robotData = null)
         {
-            return global::BxDRobotExporter.InventorDocumentIoUtils.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
-                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (RobotDataManager.Instance.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(RobotDataManager.Instance.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
+            return InventorDocumentIoUtils.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
+                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (robotData != null && robotData.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(robotData != null && robotData.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
         }
     }
 }

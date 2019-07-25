@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
-using BxDRobotExporter.Managers;
 using BxDRobotExporter.Properties;
 
 namespace BxDRobotExporter.GUI.Editors
@@ -36,7 +35,7 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            Values = RobotDataManager.PluginSettings;
+            Values = RobotData.PluginSettings;
 
             ChildHighlight.BackColor = Values.InventorChildColor;
             checkBox1.Checked = Values.UseAnalytics;
@@ -99,7 +98,7 @@ namespace BxDRobotExporter.GUI.Editors
             }
 
             /// <summary>
-            /// Initializes all of the <see cref="Managers.RobotDataManager"/> settings to the proper values. Should be called once in the Activate class
+            /// Initializes all of the <see cref="RobotData"/> settings to the proper values. Should be called once in the Activate class
             /// </summary>
             public void LoadSettings()
             {
