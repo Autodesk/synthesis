@@ -31,16 +31,16 @@ namespace BxDRobotExporter.Managers
 
         public void EnableDofHighlight(RobotData robotData)
         {
-            if (robotData.SkeletonBase == null && !robotData.LoadRobotSkeleton())
+            if (robotData.RobotBaseNode == null && !robotData.LoadRobotSkeleton())
                 return;
 
-            var rootNodes = new List<RigidNode_Base> {robotData.SkeletonBase};
+            var rootNodes = new List<RigidNode_Base> {robotData.RobotBaseNode};
             var jointedNodes = new List<RigidNode_Base>();
             var problemNodes = new List<RigidNode_Base>();
 
-            foreach (var node in robotData.SkeletonBase.ListAllNodes())
+            foreach (var node in robotData.RobotBaseNode.ListAllNodes())
             {
-                if (node == robotData.SkeletonBase) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                if (node == robotData.RobotBaseNode) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                 {
                     continue;
                 }

@@ -34,7 +34,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         {
             SuspendLayout();
 
-            foreach (RigidNode_Base node in robotData.SkeletonBase.ListAllNodes())
+            foreach (RigidNode_Base node in robotData.RobotBaseNode.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {

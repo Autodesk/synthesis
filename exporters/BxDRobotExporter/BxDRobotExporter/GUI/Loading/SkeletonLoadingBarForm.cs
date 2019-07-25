@@ -103,7 +103,7 @@ namespace BxDRobotExporter.ControlGUI
             }
             finally
             {
-                robotData.SkeletonBase = skeleton;
+                robotData.RobotBaseNode = skeleton;
             }
         }
 

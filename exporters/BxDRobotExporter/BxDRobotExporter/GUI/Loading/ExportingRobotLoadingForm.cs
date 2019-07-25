@@ -137,12 +137,12 @@ namespace BxDRobotExporter.ControlGUI
                 return;
             }
 
-            if (robotData.SkeletonBase == null)
+            if (robotData.RobotBaseNode == null)
                 return; // Skeleton has not been built
 
-            List<BXDAMesh> meshes = ExportMeshesLite(robotData.SkeletonBase, robotData.RobotWeightKg);
+            List<BXDAMesh> meshes = ExportMeshesLite(robotData.RobotBaseNode, robotData.RobotWeightKg);
 
-            robotData.Meshes = meshes;
+            robotData.RobotMeshes = meshes;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
