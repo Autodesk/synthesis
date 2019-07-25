@@ -4,7 +4,7 @@ using Inventor;
 
 namespace BxDRobotExporter.SkeletalStructure
 {
-    public class LinearJoint : LinearJoint_Base, INventorSkeletalJoint
+    public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
     {
         private SkeletalJoint wrapped;
 
@@ -16,29 +16,29 @@ namespace BxDRobotExporter.SkeletalStructure
         public void DetermineLimits()
         {
             MotionLimits cache = new MotionLimits();
-            DriveSettings driver = wrapped.AsmJointOccurrence.DriveSettings;
+            DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
             driver.DriveType = DriveTypeEnum.kDriveLinearPositionType;
             driver.CollisionDetection = true;
             driver.OnCollision += MotionLimits.OnCollisionEvent;
             driver.FrameRate = 1;
             float step = 0.1f;
-            Box mover = (wrapped.ChildIsTheOne ? wrapped.AsmJointOccurrence.OccurrenceOne : wrapped.AsmJointOccurrence.OccurrenceTwo).RangeBox;
+            Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
             float maxOffset = (float) mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(InventorDocumentIoUtils.ToInventorVector(axis));
 
             driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
 
-            cache.DoContactSetup(true, wrapped.ChildGroup, wrapped.ParentGroup);
+            cache.DoContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
 
             driver.StartValue = currentLinearPosition + " cm";
             driver.EndValue = (currentLinearPosition + maxOffset) + " cm";
 
             // Forward
             driver.GoToStart();
-            MotionLimits.DidCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayForward();
-            if (MotionLimits.DidCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
-                linearLimitHigh = (float) wrapped.AsmJoint.LinearPosition.Value - step;
+                linearLimitHigh = (float) wrapped.asmJoint.LinearPosition.Value - step;
                 hasUpperLimit = true;
             }
 
@@ -46,65 +46,65 @@ namespace BxDRobotExporter.SkeletalStructure
             driver.EndValue = currentLinearPosition + " cm";
             driver.StartValue = (currentLinearPosition - maxOffset) + " cm";
             driver.GoToEnd();
-            MotionLimits.DidCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayReverse();
-            if (MotionLimits.DidCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
-                linearLimitLow = (float) wrapped.AsmJoint.LinearPosition.Value + step;
+                linearLimitLow = (float) wrapped.asmJoint.LinearPosition.Value + step;
                 hasLowerLimit = true;
             }
 
             driver.OnCollision -= MotionLimits.OnCollisionEvent;
-            cache.DoContactSetup(false, wrapped.ChildGroup, wrapped.ParentGroup);
+            cache.DoContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
 
-            wrapped.AsmJoint.LinearPosition.Value = currentLinearPosition;
+            wrapped.asmJoint.LinearPosition.Value = currentLinearPosition;
 
             Console.WriteLine(hasLowerLimit + " low: " + linearLimitLow + "\t" + hasUpperLimit + " high: " + linearLimitHigh);
 
             // Stash results
-            wrapped.AsmJoint.HasLinearPositionStartLimit = hasLowerLimit;
-            wrapped.AsmJoint.HasLinearPositionEndLimit = hasUpperLimit;
+            wrapped.asmJoint.HasLinearPositionStartLimit = hasLowerLimit;
+            wrapped.asmJoint.HasLinearPositionEndLimit = hasUpperLimit;
             if (hasLowerLimit)
             {
-                wrapped.AsmJoint.LinearPositionStartLimit.Value = linearLimitLow;
+                wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitLow;
             }
             if (hasUpperLimit)
             {
-                wrapped.AsmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
+                wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
             }
         }
 
         public void ReloadInventorJoint()
         {
-            if (wrapped.ChildGroup == wrapped.RigidJoint.GroupOne)
+            if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomTwo.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomTwo.RootPoint);
+                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.Direction);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.RootPoint);
             }
             else
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.RootPoint);
+                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Direction);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
 
-            if ((hasUpperLimit = wrapped.AsmJoint.HasLinearPositionEndLimit) && (hasLowerLimit = wrapped.AsmJoint.HasLinearPositionStartLimit))
+            if ((hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit) && (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit))
             {
-                linearLimitHigh = (float)wrapped.AsmJoint.LinearPositionEndLimit.Value;
-                linearLimitLow = (float)wrapped.AsmJoint.LinearPositionStartLimit.Value;
+                linearLimitHigh = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
+                linearLimitLow = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
             }
             else
             {
                 throw new Exception("Joints with linear motion need two limits.");
             }
-            currentLinearPosition = (wrapped.AsmJoint.LinearPosition != null) ? ((float)wrapped.AsmJoint.LinearPosition.Value) : 0;
+            currentLinearPosition = (wrapped.asmJoint.LinearPosition != null) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
         }
 
         public static bool IsLinearJoint(CustomRigidJoint jointI)
         {
             // kTranslationalJoint
-            if (jointI.Joints.Count == 1)
+            if (jointI.joints.Count == 1)
             {
-                AssemblyJointDefinition joint = jointI.Joints[0].Definition;
+                AssemblyJointDefinition joint = jointI.joints[0].Definition;
                 //Cylindrical joints with no rotaion are effectively sliding joints.
                 return joint.JointType == AssemblyJointTypeEnum.kSlideJointType
                        || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType
@@ -125,7 +125,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
         protected override string ToString_Internal()
         {
-            return wrapped.ChildGroup + " translates along " + wrapped.ParentGroup;
+            return wrapped.childGroup + " translates along " + wrapped.parentGroup;
         }
     }
 }

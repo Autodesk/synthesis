@@ -147,13 +147,13 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
         if (wrapped.childGroup == rigidJoint.groupOne)
         {
-            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
+            axis = Utilities.ToBxdVector(rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBxdVector(rigidJoint.geomTwo.RootPoint);
         }
         else
         {
-            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
+            axis = Utilities.ToBxdVector(rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBxdVector(rigidJoint.geomOne.RootPoint);
         }
 
         currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;

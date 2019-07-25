@@ -131,7 +131,7 @@ namespace FieldExporter.Components
                 {
                     FieldNode outputNode = new FieldNode(currentOccurrence.Name);
 
-                    outputNode.Position = Utilities.ToBXDVector(currentOccurrence.Transformation.Translation);
+                    outputNode.Position = Utilities.ToBxdVector(currentOccurrence.Transformation.Translation);
                     outputNode.Rotation = Utilities.QuaternionFromMatrix(currentOccurrence.Transformation);
 
                     if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))

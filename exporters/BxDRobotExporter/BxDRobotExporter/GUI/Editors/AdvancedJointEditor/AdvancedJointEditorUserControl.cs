@@ -96,9 +96,9 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
                         node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
-                        node is OglRigidNode)
+                        node is OGL_RigidNode)
                     {
-                        (node as OglRigidNode).GetWheelInfo(out var radius, out var width, out var center);
+                        (node as OGL_RigidNode).GetWheelInfo(out var radius, out var width, out var center);
 
                         var wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
                         wheelDriver.center = center;

@@ -238,7 +238,7 @@ namespace BxDRobotExporter.ControlGUI
             // Add meshes to all nodes
             for (int i = 0; i < meshes.Count; i++)
             {
-                ((OglRigidNode)nodes[i]).LoadMeshes(meshes[i]);
+                ((OGL_RigidNode)nodes[i]).loadMeshes(meshes[i]);
             }
 
             // Get wheel information (radius, center, etc.) for all wheels
@@ -255,7 +255,7 @@ namespace BxDRobotExporter.ControlGUI
                     // Drivers without wheel metadata do not need radius, center, or width info.
                     if (wheelDriver != null)
                     {
-                        (node as OGLViewer.OglRigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
+                        (node as OGLViewer.OGL_RigidNode).GetWheelInfo(out float radius, out float width, out BXDVector3 center);
                         wheelDriver.radius = radius;
                         wheelDriver.center = center;
                         wheelDriver.width = width;

@@ -144,7 +144,7 @@ namespace BxDRobotExporter.ControlGUI
 
             foreach (RigidNode_Base node in nodes)
             {
-                node.ModelFileName = ((RigidNode)node).Group.ToString();
+                node.ModelFileName = ((RigidNode)node).group.ToString();
                 node.ModelFullID = node.GetModelID();
             }
             //Cleaning Up...Done

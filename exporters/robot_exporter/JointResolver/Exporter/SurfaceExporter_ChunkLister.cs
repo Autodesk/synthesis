@@ -33,7 +33,7 @@ public partial class SurfaceExporter
             // Compute physics
             try
             {
-                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
+                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBxdVector(occ.MassProperties.CenterOfMass));
                 Console.WriteLine(InventorManager.Instance.ActiveDocument.UnitsOfMeasure.MassUnits.ToString());
             }
             catch
