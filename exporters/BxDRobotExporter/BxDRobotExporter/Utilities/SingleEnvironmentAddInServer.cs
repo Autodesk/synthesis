@@ -7,7 +7,7 @@ using Inventor;
 using Application = Inventor.Application;
 using Environment = Inventor.Environment;
 
-namespace BxDRobotExporter
+namespace BxDRobotExporter.Utilities
 {
     public abstract class SingleEnvironmentAddInServer : ApplicationAddInServer
     {

@@ -210,7 +210,6 @@
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
     <Compile Include="RobotData.cs" />
-    <Compile Include="SingleEnvironmentAddInServer.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
@@ -299,6 +298,7 @@
     <Compile Include="Utilities\ImageFormat\PictureDispConverter.cs" />
     <Compile Include="Utilities\InventorDocumentIoUtils.cs" />
     <Compile Include="Utilities\InventorUtils.cs" />
+    <Compile Include="Utilities\SingleEnvironmentAddInServer.cs" />
     <Compile Include="Utilities\Synthesis\JointToStringUtils.cs" />
     <Compile Include="Utilities\WinFormsUtils.cs" />
   </ItemGroup>
