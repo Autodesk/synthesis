@@ -167,7 +167,6 @@ namespace Synthesis.States
                         MovePlane();
                     }
                 } else {
-                    Controls.Load();
                     timesLoaded++;
                 }
 
@@ -391,11 +390,13 @@ namespace Synthesis.States
 
             FieldDataHandler.Load(fieldPath);
             timesLoaded++;
+
             Controls.Load();
             Controls.UpdateFieldControls();
+            if (!Controls.CheckIfSaved())
+                Controls.Save();
 
-            string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);
+            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
             Debug.Log(loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
