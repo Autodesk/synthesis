@@ -15,26 +15,18 @@ namespace BxDRobotExporter
 {
     public class RobotData
     {
-        public class ExporterSettings
+        private bool useSettingsDir = true;
+        private string activeDir;
+        private string activeRobotName;
+        private float totalWeightKg;
+        public float TotalWeightKg
         {
-            public bool UseSettingsDir = true;
-            public string ActiveDir;
-            public string ActiveRobotName;
-            private float totalWeightKg;
-            public float TotalWeightKg
-            {
-                get => totalWeightKg;
-                set => totalWeightKg = value > 0 ? value : 0; // Prevent negative weight values
-            }
-            public bool PreferMetric;
-            public string FieldName;
+            get => totalWeightKg;
+            set => totalWeightKg = value > 0 ? value : 0; // Prevent negative weight values
         }
+        public bool PreferMetric;
+        public string FieldName;
 
-        public readonly ExporterSettings Settings = new ExporterSettings();
-
-
-        public static readonly ExporterSettingsForm.PluginSettingsValues PluginSettings = new ExporterSettingsForm.PluginSettingsValues();
-    
         private Inventor.AssemblyDocument asmDocument = null; // Set when LoadRobotData is called.
         public RigidNode_Base SkeletonBase = null;
         public List<BXDAMesh> Meshes = null;
@@ -57,22 +49,22 @@ namespace BxDRobotExporter
             if (robotName == null)
             {
                 // Cancel if no robot name is given
-                if (Settings.ActiveRobotName == null)
+                if (activeRobotName == null)
                     return;
 
-                robotName = Settings.ActiveRobotName;
+                robotName = activeRobotName;
             }
 
             if (fieldName == null)
             {
                 // Cancel if no field name is given
-                if (Settings.FieldName == null)
+                if (FieldName == null)
                     return;
 
-                fieldName = Settings.FieldName;
+                fieldName = FieldName;
             }
         
-            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
         }
 
         /// <summary>
@@ -143,7 +135,7 @@ namespace BxDRobotExporter
 
                 GC.Collect();
 
-                meshesAreColored = PluginSettings.GeneralUseFancyColors;
+                meshesAreColored = RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors;
             }
             catch (InvalidComObjectException)
             {
@@ -173,15 +165,15 @@ namespace BxDRobotExporter
         /// <returns>True if user pressed okay, false if they pressed cancel</returns>
         public bool PromptExportSettings()
         {
-            if (ExportForm.Prompt(Settings.ActiveRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
+            if (ExportForm.Prompt(activeRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
             {
-                Settings.UseSettingsDir = true;
-                Settings.ActiveDir = null;
-                Settings.ActiveRobotName = robotName;
-                Settings.FieldName = field;
-            
-                PluginSettings.GeneralUseFancyColors = colors;
-                PluginSettings.OnSettingsChanged();
+                useSettingsDir = true;
+                activeDir = null;
+                activeRobotName = robotName;
+                FieldName = field;
+
+                RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors = colors;
+                RobotExporterAddInServer.PluginSettings.OnSettingsChanged();
 
                 return true;
             }
@@ -238,20 +230,20 @@ namespace BxDRobotExporter
             {
                 WriteLimits(SkeletonBase);// write the limits from Inventor to the skeleton
                 // If robot has not been named, prompt user for information
-                if (Settings.ActiveRobotName == null)
+                if (activeRobotName == null)
                     if (!PromptExportSettings())
                         return false;
 
-                if (!Directory.Exists(PluginSettings.GeneralSaveLocation + "\\" + Settings.ActiveRobotName))
-                    Directory.CreateDirectory(PluginSettings.GeneralSaveLocation + "\\" + Settings.ActiveRobotName);
+                if (!Directory.Exists(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + activeRobotName))
+                    Directory.CreateDirectory(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + activeRobotName);
 
-                if (Meshes == null || meshesAreColored != PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
+                if (Meshes == null || meshesAreColored != RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                     LoadMeshes();
                 BXDJSkeleton.SetupFileNames(SkeletonBase);
 
 
                 BXDJSkeleton.WriteSkeleton(
-                    (Settings.UseSettingsDir && Settings.ActiveDir != null) ? Settings.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + Settings.ActiveRobotName + "\\skeleton.bxdj",
+                    (useSettingsDir && activeDir != null) ? activeDir : RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + activeRobotName + "\\skeleton.bxdj",
                     SkeletonBase
                 );
 
@@ -261,7 +253,7 @@ namespace BxDRobotExporter
 
                 for (int i = 0; i < Meshes.Count; i++)
                 {
-                    Meshes[i].WriteToFile((Settings.UseSettingsDir && Settings.ActiveDir != null) ? Settings.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + Settings.ActiveRobotName + "\\node_" + i + ".bxda");
+                    Meshes[i].WriteToFile((useSettingsDir && activeDir != null) ? activeDir : RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + activeRobotName + "\\node_" + i + ".bxda");
                 }
 
                 return true;
@@ -298,9 +290,9 @@ namespace BxDRobotExporter
             
                 if (propertySet != null)
                 {
-                    Settings.ActiveRobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
-                    Settings.TotalWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
-                    Settings.PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
+                    activeRobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
+                    TotalWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
+                    PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
                     SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
                 }
 
@@ -438,10 +430,10 @@ namespace BxDRobotExporter
                 // Save global robot data
                 Inventor.PropertySet propertySet = InventorDocumentIoUtils.GetPropertySet(propertySets, "bxd-robotdata");
 
-                if (Settings.ActiveRobotName != null)
-                    InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", Settings.ActiveRobotName);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", Settings.TotalWeightKg * 10.0f); // x10 for better accuracy
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", Settings.PreferMetric);
+                if (activeRobotName != null)
+                    InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", activeRobotName);
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", TotalWeightKg * 10.0f); // x10 for better accuracy
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", PreferMetric);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)SkeletonBase.driveTrainType);
           
                 // Save joint data
@@ -568,8 +560,8 @@ namespace BxDRobotExporter
 
                 if (weightForm.DialogResult == DialogResult.OK)
                 {
-                    Settings.TotalWeightKg = weightForm.TotalWeightKg;
-                    Settings.PreferMetric = weightForm.PreferMetric;
+                    TotalWeightKg = weightForm.TotalWeightKg;
+                    PreferMetric = weightForm.PreferMetric;
                     return true;
                 }
             }

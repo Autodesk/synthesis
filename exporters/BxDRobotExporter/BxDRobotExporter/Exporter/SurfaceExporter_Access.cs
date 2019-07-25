@@ -38,7 +38,7 @@ namespace BxDRobotExporter.Exporter
 
                 Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
                 {
-                    CalculateSurfaceFacets(surface, outputMesh, RobotData.PluginSettings.GeneralUseFancyColors);
+                    CalculateSurfaceFacets(surface, outputMesh, RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors);
 
                     lock (finishLock)
                     {
