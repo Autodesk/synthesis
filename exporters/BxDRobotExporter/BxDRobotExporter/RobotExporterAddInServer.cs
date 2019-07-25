@@ -248,7 +248,7 @@ namespace BxDRobotExporter
             if (exportResult == DialogResult.Yes)
             {
                 if (robotData.PromptExportSettings())
-                    if (robotData.ExportRobot() && robotData.Settings.FieldName != null)
+                    if (robotData.ExportRobot() && robotData.FieldName != null)
                         robotData.OpenSynthesis();
             }
 
@@ -357,5 +357,7 @@ namespace BxDRobotExporter
         {
             return environmentIsOpen && AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
         }
+
+        public static readonly PluginSettings PluginSettings = new PluginSettings();
     }
 }

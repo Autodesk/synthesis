@@ -53,8 +53,8 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
             
             CalculatedWeightCheck.Checked = joint.weight <= 0;
-            UnitBox.SelectedIndex = robotData.Settings.PreferMetric ? 1 : 0;
-            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotData.Settings.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
+            UnitBox.SelectedIndex = robotData.PreferMetric ? 1 : 0;
+            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotData.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
             
             cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");
@@ -162,7 +162,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     {
                         case MotorType.GENERIC:
                             RobotCompetitionDropDown.SelectedItem =
-                                RobotData.PluginSettings.DefaultRobotCompetition.ToString();
+                                RobotExporterAddInServer.PluginSettings.DefaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -289,7 +289,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                 cmbFrictionLevel.SelectedIndex = (int) FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
-                RobotCompetitionDropDown.SelectedItem = RobotData.PluginSettings.DefaultRobotCompetition;
+                RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.PluginSettings.DefaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
@@ -448,7 +448,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
                     }
 
                     joint.cDriver.motor = motor;
-                    RobotData.PluginSettings.DefaultRobotCompetition =
+                    RobotExporterAddInServer.PluginSettings.DefaultRobotCompetition =
                         RobotCompetitionDropDown.SelectedItem.ToString();
                 }
 

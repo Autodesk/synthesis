@@ -2,18 +2,17 @@
 using System.Drawing;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
-using BxDRobotExporter.Properties;
 
 namespace BxDRobotExporter.GUI.Editors
 {
-    public delegate void SettingsEvent(ExporterSettingsForm.PluginSettingsValues values);
+    public delegate void SettingsEvent(PluginSettings values);
 
     public partial class ExporterSettingsForm : Form
     {
         /// <summary>
         /// The local copy of the setting values
         /// </summary>
-        private static PluginSettingsValues Values = new PluginSettingsValues();
+        private static PluginSettings Values = new PluginSettings();
 
         public ExporterSettingsForm()
         {
@@ -35,14 +34,14 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            Values = RobotData.PluginSettings;
+            Values = RobotExporterAddInServer.PluginSettings;
 
             ChildHighlight.BackColor = Values.InventorChildColor;
             checkBox1.Checked = Values.UseAnalytics;
         }
 
         /// <summary>
-        /// Save the form's values in a <see cref="PluginSettingsValues"/> structure
+        /// Save the form's values in a <see cref="PluginSettings"/> structure
         /// </summary>
         private void SaveValues()
         {
@@ -52,12 +51,12 @@ namespace BxDRobotExporter.GUI.Editors
         }
 
         /// <summary>
-        /// Get the default values for the <see cref="PluginSettingsValues"/> structure
+        /// Get the default values for the <see cref="PluginSettings"/> structure
         /// </summary>
         /// <returns>Default values for the <see cref="Exporter"/></returns>
-        public static PluginSettingsValues GetDefaultSettings()
+        public static PluginSettings GetDefaultSettings()
         {
-            return new PluginSettingsValues()
+            return new PluginSettings()
             {
                 InventorChildColor = Color.FromArgb(255, 0, 125, 255),
                 GeneralUseFancyColors = true,
@@ -67,82 +66,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
 
         /// <summary>
-        /// The struct that stores settings for the <see cref="Exporter"/>
-        /// </summary>
-        public class PluginSettingsValues
-        {
-            public PluginSettingsValues()
-            {
-                LoadSettings();
-            }
-
-            public event SettingsEvent SettingsChanged;
-
-            internal void OnSettingsChanged()
-            {
-                SaveSettings();
-                if (SettingsChanged != null) SettingsChanged.Invoke(this);
-            }
-
-            private void SaveSettings()
-            {
-                Settings.Default.ExportToField = OpenSynthesis;
-                Settings.Default.SelectedField = FieldName;
-                Settings.Default.ChildColor = InventorChildColor;
-                Settings.Default.FancyColors = GeneralUseFancyColors;
-                Settings.Default.SaveLocation = GeneralSaveLocation;
-                Settings.Default.DefaultRobotCompetition = DefaultRobotCompetition;
-                Settings.Default.UseAnalytics = UseAnalytics;
-                Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
-                Settings.Default.Save();
-            }
-
-            /// <summary>
-            /// Initializes all of the <see cref="RobotData"/> settings to the proper values. Should be called once in the Activate class
-            /// </summary>
-            public void LoadSettings()
-            {
-                // Old configurations get overriden (version numbers below 1)
-                if (Settings.Default.SaveLocation == "" || Settings.Default.SaveLocation == "firstRun" || Settings.Default.ConfigVersion < 2)
-                    Settings.Default.SaveLocation = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Robots";
-
-                if (Settings.Default.ConfigVersion < 3)
-                {
-                    InventorChildColor = Settings.Default.ChildColor;
-                    GeneralSaveLocation = Settings.Default.SaveLocation;
-                    GeneralUseFancyColors = Settings.Default.FancyColors;
-                    OpenSynthesis = Settings.Default.ExportToField;
-                    FieldName = Settings.Default.SelectedField;
-                    DefaultRobotCompetition = "GENERIC";
-                    UseAnalytics = true;
-                }
-                else
-                {
-                    InventorChildColor = Settings.Default.ChildColor;
-                    GeneralSaveLocation = Settings.Default.SaveLocation;
-                    GeneralUseFancyColors = Settings.Default.FancyColors;
-                    OpenSynthesis = Settings.Default.ExportToField;
-                    FieldName = Settings.Default.SelectedField;
-                    DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition;
-                    UseAnalytics = Settings.Default.UseAnalytics;
-                }
-            }
-
-            //General
-            public string GeneralSaveLocation;
-            public bool GeneralUseFancyColors;
-            public string FieldName;
-            public string DefaultRobotCompetition;
-            public bool OpenSynthesis;
-
-            public bool UseAnalytics;
-
-            //Inventor
-            public Color InventorChildColor;
-        }
-
-        /// <summary>
-        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="PluginSettingsValues"/>
+        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="PluginSettings"/>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
