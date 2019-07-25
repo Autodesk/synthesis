@@ -95,13 +95,13 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
 
         if (wrapped.childGroup == rigidJoint.groupOne)
         {
-            axis = Utilities.ToBxdVector(rigidJoint.geomTwo.Direction);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomTwo.RootPoint);
+            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
         }
         else
         {
-            axis = Utilities.ToBxdVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomOne.RootPoint);
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
         if ((hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit) && (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit))

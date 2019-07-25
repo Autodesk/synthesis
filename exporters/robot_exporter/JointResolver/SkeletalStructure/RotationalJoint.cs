@@ -97,13 +97,13 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
         try
         {
-            axis = Utilities.ToBxdVector(rigidJoint.geomOne.Normal);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomOne.Center);
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.Center);
         }
         catch
         {
-            axis = Utilities.ToBxdVector(rigidJoint.geomOne.Direction);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomOne.RootPoint);
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
 
