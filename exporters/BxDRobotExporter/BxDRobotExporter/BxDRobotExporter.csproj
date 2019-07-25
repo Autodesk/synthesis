@@ -190,7 +190,7 @@
     <Compile Include="OGLViewer\SelectManager.cs" />
     <Compile Include="OGLViewer\ShaderLoader.cs" />
     <Compile Include="OGLViewer\VBOMesh.cs" />
-    <Compile Include="PluginSettings.cs" />
+    <Compile Include="AddInSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

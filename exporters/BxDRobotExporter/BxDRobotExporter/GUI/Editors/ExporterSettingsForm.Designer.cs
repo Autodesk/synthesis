@@ -112,7 +112,6 @@
             this.checkBox1.TabIndex = 14;
             this.checkBox1.Text = "Send Analytics";
             this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // PluginSettingsForm
             // 
