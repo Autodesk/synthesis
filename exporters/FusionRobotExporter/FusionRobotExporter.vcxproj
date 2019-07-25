@@ -13,9 +13,9 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D7CBB035-8CC0-4576-9C72-5076E079586B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>FusionSynthV2</RootNamespace>
+    <RootNamespace>FusionRobotExporter</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>FusionSynth</ProjectName>
+    <ProjectName>FusionRobotExporter</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -52,7 +52,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>\\Mac\Home\Documents\git\synthesis\exporters\FusionExporter\Include;C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionExporter\Include;$(IncludePath)</IncludePath>
+    <IncludePath>\\Mac\Home\Documents\git\synthesis\exporters\FusionRobotExporter\Include;C:\Users\t_walkn\Documents\GitHub\synthesis\exporters\FusionRobotExporter\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -61,7 +61,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SIMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(APPDATA)/Autodesk/Autodesk Fusion 360/API/CPP/include</AdditionalIncludeDirectories>
-      <AdditionalUsingDirectories>\\Mac\Home\Documents\git\FusionSynth\DebugSimulatorFileIO;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>\\Mac\Home\Documents\git\FusionRobotExporter\DebugSimulatorFileIO;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,7 +96,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="FusionSynthV2.manifest">
+    <Text Include="FusionRobotExporter.manifest">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Text>
@@ -138,7 +138,7 @@
     <ClCompile Include="Source\AddIn\EUI-Handlers.cpp" />
     <ClCompile Include="Source\AddIn\EUI-UIManagement.cpp" />
     <ClCompile Include="Source\AddIn\EUI.cpp" />
-    <ClCompile Include="Source\AddIn\FusionSynthV2.cpp" />
+    <ClCompile Include="Source\AddIn\FusionRobotExporter.cpp" />
     <ClCompile Include="Source\Data\BXDA\BinaryWriter.cpp" />
     <ClCompile Include="Source\Data\BXDA\SubMesh.cpp" />
     <ClCompile Include="Source\Data\BXDA\Triangle.cpp" />
