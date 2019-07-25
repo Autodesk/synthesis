@@ -37,13 +37,13 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 
         if (wrapped.childGroup == rigidJoint.groupOne)
         {
-            normal = Utilities.ToBxdVector(rigidJoint.geomTwo.Normal);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomTwo.RootPoint);
+            normal = Utilities.ToBXDVector(rigidJoint.geomTwo.Normal);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
         }
         else
         {
-            normal = Utilities.ToBxdVector(rigidJoint.geomOne.Normal);
-            basePoint = Utilities.ToBxdVector(rigidJoint.geomOne.RootPoint);
+            normal = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
     }
 

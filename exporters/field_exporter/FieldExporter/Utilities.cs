@@ -19,7 +19,7 @@ public class Utilities
     /// </summary>
     /// <param name="p"></param>
     /// <returns></returns>
-    public static BXDVector3 ToBxdVector(dynamic p)
+    public static BXDVector3 ToBXDVector(dynamic p)
     {
         return new BXDVector3(p.X, p.Y, p.Z);
     }
