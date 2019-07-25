@@ -62,8 +62,9 @@ public class DriveJoints
     /// <param name="skeleton"></param>
     /// <param name="dioModules"></param>
     /// <param name="controlIndex"></param>
-    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, float[] pwm)
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, int controlIndex)
     {
+        var pwm = GetPwmValues(controlIndex);
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
@@ -142,11 +143,8 @@ public class DriveJoints
     public static float[] GetPwmValues(int controlIndex)
     {
         float[] pwm = new float[PWM_COUNT];
-        if (!InputControl.freeze)
-        {
-            for (int i = 0; i < PWM_COUNT; i++)
-                pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i]) * SpeedArrowPwm;
-        }
+        for (int i = 0; i < PWM_COUNT; i++)
+            pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i]) * SpeedArrowPwm;
 
         return pwm;
     }
@@ -157,7 +155,7 @@ public class DriveJoints
     /// <param name="skeleton"></param>
     /// <param name="pwm"></param>
     /// <param name="emuList"></param>
-    public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
+    public static void UpdateAllMotors(RigidNode_Base skeleton, int controlIndex, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
     {
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
@@ -172,6 +170,7 @@ public class DriveJoints
             }
         } else // Use regular controls
         {
+            var pwm = GetPwmValues(controlIndex);
             for (int i = 0; i < pwm.Length; i++)
                 motors[i] = pwm[i];
         }

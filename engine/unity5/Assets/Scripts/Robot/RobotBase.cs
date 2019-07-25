@@ -340,7 +340,7 @@ namespace Synthesis.Robot
         /// </summary>
         protected virtual void UpdateMotors()
         {
-            DriveJoints.UpdateAllMotors(RootNode, DriveJoints.GetPwmValues(ControlIndex), emuList);
+            DriveJoints.UpdateAllMotors(RootNode, ControlIndex, emuList);
         }
 
         /// <summary>
