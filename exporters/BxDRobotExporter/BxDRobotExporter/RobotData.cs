@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -27,36 +26,9 @@ namespace BxDRobotExporter
         public string ExportDefaultField;
         public bool PreferMetric = false;
 
-
         public RobotData()
         {
-            RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid);
-        }
-
-        /// <summary>
-        /// Open Synthesis to a specific robot and field.
-        /// </summary>
-        public void OpenSynthesis(string robotName = null, string fieldName = null)
-        {
-            if (robotName == null)
-            {
-                // Cancel if no robot name is given
-                if (RobotName == null)
-                    return;
-
-                robotName = RobotName;
-            }
-
-            if (fieldName == null)
-            {
-                // Cancel if no field name is given
-                if (ExportDefaultField == null)
-                    return;
-
-                fieldName = ExportDefaultField;
-            }
-
-            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
+            RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid); // TODO: Remove this and refactor BXDJReader versions
         }
 
         /// <summary>
@@ -74,12 +46,10 @@ namespace BxDRobotExporter
 
                 exporterThread.SetApartmentState(ApartmentState.STA);
                 exporterThread.Start();
-
                 exporterThread.Join();
-
                 GC.Collect();
             }
-            catch (InvalidComObjectException)
+            catch (InvalidComObjectException) // TODO: Don't do this
             {
             }
             catch (TaskCanceledException)
@@ -142,26 +112,6 @@ namespace BxDRobotExporter
             }
 
             return RobotMeshes != null && liteExporter.DialogResult == DialogResult.OK;
-        }
-
-        /// <summary>
-        /// Prompts the user for the name of the robot, as well as other information.
-        /// </summary>
-        /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-        public bool PromptExportSettings()
-        {
-            if (ExportForm.Prompt(RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
-            {
-                RobotName = robotName;
-                ExportDefaultField = field;
-
-                RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors = colors;
-                RobotExporterAddInServer.Instance.AddInSettings.OnSettingsChanged();
-
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>

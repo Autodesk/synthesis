@@ -300,6 +300,7 @@
     <Compile Include="Utilities\InventorUtils.cs" />
     <Compile Include="Utilities\SingleEnvironmentAddInServer.cs" />
     <Compile Include="Utilities\Synthesis\JointToStringUtils.cs" />
+    <Compile Include="Utilities\Synthesis\SynthesisUtils.cs" />
     <Compile Include="Utilities\WinFormsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
