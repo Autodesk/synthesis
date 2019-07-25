@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -9,11 +8,8 @@ using BxDRobotExporter.GUI.Editors.AdvancedJointEditor;
 using BxDRobotExporter.GUI.Editors.JointEditor;
 using BxDRobotExporter.GUI.Guide;
 using BxDRobotExporter.Managers;
-using BxDRobotExporter.Messages;
 using BxDRobotExporter.Properties;
 using Inventor;
-using Application = Inventor.Application;
-using Environment = Inventor.Environment;
 
 namespace BxDRobotExporter
 {
@@ -21,16 +17,13 @@ namespace BxDRobotExporter
     /// This is where the magic happens. All top-level event handling, UI creation, and inventor communication is handled here.
     /// </summary>
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
-    public class RobotExporterAddInServer : ApplicationAddInServer
+    public class RobotExporterAddInServer : SingleEnvironmentAddInServer, ApplicationAddInServer
     {
-        
         // ------ Add-In ------
         public static RobotExporterAddInServer Instance { get; private set; }
         public readonly AddInSettings AddInSettings = new AddInSettings();
-        public Application Application;
 
         // ------ Robot Document ------
-        public AssemblyDocument AssemblyDocument;
         private RobotData robotData;
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
 
@@ -67,18 +60,8 @@ namespace BxDRobotExporter
         // UI elements
         private readonly JointForm jointForm = new JointForm();
 
-        // Flags
-        private bool environmentIsOpen;
-
-
-        /// <summary>
-        /// Called when the <see cref="RobotExporterAddInServer"/> is being loaded
-        /// </summary>
-        /// <param name="addInSiteObject"></param>
-        /// <param name="firstTime"></param>
-        public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
+        protected override Environment CreateEnvironment()
         {
-            Application = addInSiteObject.Application;
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(Application.UserName);
             AnalyticsUtils.LogPage("Inventor");
@@ -174,56 +157,36 @@ namespace BxDRobotExporter
             exporterEnv.DefaultRibbonTab = "BxD:RobotExporter:RobotExporterTab";
             exporterEnv.DisabledCommandList.Add(Application.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]); // TODO: Can this be removed?
 
-            Application.UserInterfaceManager.UserInterfaceEvents.OnEnvironmentChange += UIEvents_OnEnvironmentChange;
-            Application.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
-            Application.ApplicationEvents.OnDeactivateDocument += ApplicationEvents_OnDeactivateDocument;
-            Application.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
-
             Instance = this;
+
+            return exporterEnv;
         }
 
-        /// <summary>
-        /// Called when the <see cref="RobotExporterAddInServer"/> is being unloaded
-        /// </summary>
-        public void Deactivate()
+        protected override void DestroyEnvironment()
         {
-            Marshal.ReleaseComObject(Application);
-            Application = null;
             exporterEnv.Delete();
-
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            exporterEnv = null;
         }
 
-        // For ApplicationAddInServer interface
-        public void ExecuteCommand(int commandId) {}
-        public object Automation => null;
-
-        /// <summary>
-        /// Gets the assembly document and makes the <see cref="DockableWindows"/>
-        /// </summary>
-        private void OnEnvironmentOpen()
+        protected override void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
-            environmentIsOpen = true;
 
-            AssemblyDocument = (AssemblyDocument) Application.ActiveDocument;
-
-            HighlightManager.EnvironmentOpening(AssemblyDocument);
+            HighlightManager.EnvironmentOpening(OpenDocument);
 
             // Disable non-jointed components
             disabledAssemblyOccurrences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(AssemblyDocument));
+            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(OpenDocument));
 
             // Load robot skeleton and prepare UI
             robotData = new RobotData();
             if (!robotData.LoadRobotSkeleton())
             {
-                InventorUtils.ForceQuitExporter(AssemblyDocument);
+                InventorUtils.ForceQuitExporter(OpenDocument);
                 return;
             }
 
-            robotData.LoadRobotData(AssemblyDocument);
+            robotData.LoadRobotData(OpenDocument);
             
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
@@ -236,13 +199,10 @@ namespace BxDRobotExporter
             jointForm.UpdateSkeleton(robotData);
         }
 
-        /// <summary>
-        /// Disposes of some COM objects and exits the environment
-        /// </summary>
-        private void OnEnvironmentClose()
+        protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
-            robotData.SaveRobotData(AssemblyDocument);
+            robotData.SaveRobotData(OpenDocument);
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
@@ -263,103 +223,27 @@ namespace BxDRobotExporter
             advancedJointEditor.DestroyDockableWindow();
             guide.DestroyDockableWindow();
             dofKey.DestroyDockableWindow();
-
-            InventorUtils.ForceQuitExporter(AssemblyDocument);
-
-            // Dispose of document
-            if (AssemblyDocument != null)
-                Marshal.ReleaseComObject(AssemblyDocument);
-            AssemblyDocument = null;
-
-            environmentIsOpen = false;
         }
 
-
-        private void OnEnvironmentHide()
+        protected override void OnEnvironmentHide()
         {
             // Hide dockable windows when switching to a different document 
             advancedJointEditor.TemporaryHide();
             dofKey.TemporaryHide();
             guide.TemporaryHide();
         }
-
-        private void OnEnvironmentShow()
+        
+        protected override void OnEnvironmentShow()
         {
             // Restore visible state of dockable windows
             advancedJointEditor.Visible = advancedJointEditor.Visible;
             dofKey.Visible = dofKey.Visible;
             guide.Visible = guide.Visible;
         }
-
-
-        private void ApplicationEvents_OnActivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
+        
+        protected override bool DocumentCondition(Document document)
         {
-            if (beforeOrAfter == EventTimingEnum.kBefore)
-            {
-                if (IsNewExporterEnvironmentAllowed(documentObject))
-                    InventorUtils.EnableEnvironment(Application, exporterEnv);
-                else
-                    InventorUtils.DisableEnvironment(Application, exporterEnv);
-                
-                if (IsDocumentOpenInTheExporter(documentObject))
-                    OnEnvironmentShow();
-            }
-            else if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject)) 
-                new FirstLaunchInfo().ShowDialog();
-
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        private void ApplicationEvents_OnDeactivateDocument(_Document documentObject, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            if (beforeOrAfter == EventTimingEnum.kBefore && IsDocumentOpenInTheExporter(documentObject))
-                OnEnvironmentHide();
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        private void ApplicationEvents_OnCloseDocument(_Document documentObject, string fullDocumentName, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            // If the robot export environment is open and the document that is about to be closed is the assembly document with the robot exporter opened
-            if (beforeOrAfter == EventTimingEnum.kBefore && IsDocumentOpenInTheExporter(documentObject))
-                OnEnvironmentClose();
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        private void UIEvents_OnEnvironmentChange(Environment environment, EnvironmentStateEnum environmentState, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
-        {
-            // If the environment changing is the exporter environment
-            if (beforeOrAfter == EventTimingEnum.kBefore && environment.Equals(exporterEnv))
-            {
-                var documentObject = context.Item["Document"];
-                // If the exporter environment is opening
-                if (environmentState == EnvironmentStateEnum.kActivateEnvironmentState)
-                {
-                    if (IsNewExporterEnvironmentAllowed(documentObject))
-                        OnEnvironmentOpen();
-                    else
-                    {
-                        MessageBox.Show("The Robot Exporter only supports assembly documents.", // or, the environment is already open, but the env button hiding seems to work in that case
-                            "Unsupported Document Type", MessageBoxButtons.OK);
-                        InventorUtils.ForceQuitExporter(documentObject);
-                    }
-                }
-                // If the exporter environment is closing
-                else if (environmentState == EnvironmentStateEnum.kTerminateEnvironmentState && IsDocumentOpenInTheExporter(documentObject))
-                    OnEnvironmentClose();
-            }
-
-            handlingCode = HandlingCodeEnum.kEventNotHandled;
-        }
-
-        // User may not open documents other than assemblies or open multiple documents in the exporter
-        private bool IsNewExporterEnvironmentAllowed(object documentObject)
-        {
-            return !environmentIsOpen && documentObject is AssemblyDocument;
-        }
-
-        private bool IsDocumentOpenInTheExporter(object documentObject)
-        {
-            return environmentIsOpen && AssemblyDocument != null && documentObject is AssemblyDocument assembly && assembly == AssemblyDocument;
+            return document is AssemblyDocument;
         }
     }
 }

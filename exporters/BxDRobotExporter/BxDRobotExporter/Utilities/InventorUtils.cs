@@ -139,7 +139,8 @@ namespace BxDRobotExporter
         /// <returns></returns>
         public static ComponentOccurrence GetOccurrence(string name)
         {
-            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AssemblyDocument.ComponentDefinition.Occurrences)
+            if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return null;
+            foreach (ComponentOccurrence component in asmDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return component;
@@ -372,10 +373,11 @@ namespace BxDRobotExporter
         /// <summary>
         /// Disables all components in a document that are not connected to another component by a joint.
         /// </summary>
-        /// <param name="asmDocument">Document to traverse.</param>
+        /// <param name="document">Document to traverse.</param>
         /// <returns>List of disabled components.</returns>
-        public static List<ComponentOccurrence> DisableUnconnectedComponents(AssemblyDocument asmDocument)
+        public static IEnumerable<ComponentOccurrence> DisableUnconnectedComponents(Document document)
         {
+            if (!(document is AssemblyDocument asmDocument)) return new List<ComponentOccurrence>();
             // Find all components in the assembly that are connected to a joint
             var jointedAssemblyOccurences = new List<ComponentOccurrence>();
             foreach (AssemblyJoint joint in asmDocument.ComponentDefinition.Joints)
@@ -479,7 +481,8 @@ namespace BxDRobotExporter
         /// <returns></returns>
         private static bool CheckForOccurrence(string name)
         {
-            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.AssemblyDocument.ComponentDefinition.Occurrences)
+            if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return false;
+            foreach (ComponentOccurrence component in asmDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return true;

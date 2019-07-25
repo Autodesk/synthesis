@@ -243,7 +243,7 @@ namespace BxDRobotExporter
         /// </summary>
         /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
         /// <returns>True if all data was loaded successfully.</returns>
-        public bool LoadRobotData(AssemblyDocument asmDocument)
+        public bool LoadRobotData(Document asmDocument)
         {
             if (asmDocument == null)
                 return false;
@@ -386,7 +386,7 @@ namespace BxDRobotExporter
         /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
         /// </summary>
         /// <returns>True if all data was saved successfully.</returns>
-        public bool SaveRobotData(AssemblyDocument asmDocument)
+        public bool SaveRobotData(Document asmDocument)
         {
             if (asmDocument == null)
                 return false;
