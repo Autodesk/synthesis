@@ -40,7 +40,7 @@ namespace BxDRobotExporter.Managers
             redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
 
             jointEditorHighlight = asmDocument.CreateHighlightSet();
-            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotExporterAddInServer.Instance.AddInSettings.InventorChildColor);
+            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotExporterAddInServer.Instance.AddInSettings.JointHighlightColor);
         }
 
         private void EnableDofHighlight(RobotData robotData)

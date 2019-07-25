@@ -22,9 +22,8 @@ namespace BxDRobotExporter
         public List<BXDAMesh> RobotMeshes = null;
 
         // Robot export settings
-        public bool ExportWithColors = true;
-        public string ExportDefaultField;
-        public bool PreferMetric = false;
+        public string RobotField;
+        public bool RobotPreferMetric = false;
 
         public RobotData()
         {
@@ -96,8 +95,6 @@ namespace BxDRobotExporter
                 exporterThread.Join();
 
                 GC.Collect();
-
-                ExportWithColors = RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors;
             }
             catch (InvalidComObjectException) // TODO: Don't do this
             {
@@ -165,7 +162,7 @@ namespace BxDRobotExporter
                 if (string.IsNullOrEmpty(RobotName)) // If robot has not been named, cancel
                     return false;
 
-                var robotFolderPath = RobotExporterAddInServer.Instance.AddInSettings.GeneralSaveLocation + "\\" + RobotName;
+                var robotFolderPath = RobotExporterAddInServer.Instance.AddInSettings.ExportPath + "\\" + RobotName;
                 Directory.CreateDirectory(robotFolderPath); // CreateDirectory checks if the folder already exists
 
                 if (!LoadMeshes()) // Re-export every time because we don't detect changes to the robot CAD
@@ -213,7 +210,7 @@ namespace BxDRobotExporter
                 {
                     RobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
                     RobotWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
-                    PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
+                    RobotPreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
                     RobotBaseNode.driveTrainType = (RigidNode_Base.DriveTrainType) InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int) RigidNode_Base.DriveTrainType.NONE);
                 }
 
@@ -355,7 +352,7 @@ namespace BxDRobotExporter
                 if (RobotName != null)
                     InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", RobotName);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", RobotWeightKg * 10.0f); // x10 for better accuracy
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", PreferMetric);
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", RobotPreferMetric);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int) RobotBaseNode.driveTrainType);
 
                 // Save joint data
@@ -484,7 +481,7 @@ namespace BxDRobotExporter
                 if (weightForm.DialogResult == DialogResult.OK)
                 {
                     RobotWeightKg = weightForm.TotalWeightKg;
-                    PreferMetric = weightForm.PreferMetric;
+                    RobotPreferMetric = weightForm.PreferMetric;
                     return true;
                 }
             }

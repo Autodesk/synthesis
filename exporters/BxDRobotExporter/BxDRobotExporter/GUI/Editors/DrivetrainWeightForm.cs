@@ -13,7 +13,7 @@ namespace BxDRobotExporter.GUI.Editors
             InitializeComponent();
             AnalyticsUtils.LogPage("SetWeightForm");
             TotalWeightKg = robotData.RobotWeightKg;
-            PreferMetric = robotData.PreferMetric;
+            PreferMetric = robotData.RobotPreferMetric;
 
             SetWeightBoxValue(TotalWeightKg * (PreferMetric ? 1 : 2.20462f));
             CalculatedWeightCheck.Checked = TotalWeightKg <= 0;

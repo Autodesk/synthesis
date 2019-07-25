@@ -16,7 +16,7 @@ namespace BxDRobotExporter.GUI.Editors
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
-            ColorBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors;
+            ColorBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.DefaultExportWithColors;
             
         }
 
@@ -42,7 +42,7 @@ namespace BxDRobotExporter.GUI.Editors
                     FieldSelectComboBox.Items.Add(pair.Key);
                 }
             }
-            this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.FieldName;
+            this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.DefaultField;
             this.OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.OpenSynthesis;
         }
         
@@ -55,10 +55,10 @@ namespace BxDRobotExporter.GUI.Editors
             if (Prompt(robotData.RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
             {
                 robotData.RobotName = robotName;
-                robotData.ExportDefaultField = field;
+                robotData.RobotField = field;
 
-                RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors = colors;
-                RobotExporterAddInServer.Instance.AddInSettings.OnSettingsChanged();
+                RobotExporterAddInServer.Instance.AddInSettings.DefaultExportWithColors = colors;
+                RobotExporterAddInServer.Instance.AddInSettings.SaveSettings();
 
                 return true;
             }
@@ -75,7 +75,7 @@ namespace BxDRobotExporter.GUI.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                RobotExporterAddInServer.Instance.AddInSettings.FieldName = (string)settingsForm.FieldSelectComboBox.SelectedItem;
+                RobotExporterAddInServer.Instance.AddInSettings.DefaultField = (string)settingsForm.FieldSelectComboBox.SelectedItem;
                 RobotExporterAddInServer.Instance.AddInSettings.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
@@ -103,7 +103,7 @@ namespace BxDRobotExporter.GUI.Editors
                     RobotNameTextBox.Text = RobotNameTextBox.Text.Replace(c.ToString(), "");
                 }
 
-                if(File.Exists(RobotExporterAddInServer.Instance.AddInSettings.GeneralSaveLocation + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
+                if(File.Exists(RobotExporterAddInServer.Instance.AddInSettings.ExportPath + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     return;
                 }
