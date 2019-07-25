@@ -11,10 +11,19 @@ namespace BxDRobotExporter
 {
     public abstract class SingleEnvironmentAddInServer : ApplicationAddInServer
     {
+        /// <summary>
+        /// The <see cref="Application"/> which the add-in has been opened in
+        /// </summary>
         public Application Application { get; private set; }
+        
+        /// <summary>
+        /// The <see cref="Document"/> which the environment has been opened in
+        /// </summary>
         public Document OpenDocument { get; private set; }
 
-        private bool environmentOpen;
+        /// <summary>
+        /// Whether the environment is open in Inventor
+        /// </summary>
         public bool EnvironmentOpen
         {
             get => environmentOpen;
@@ -42,8 +51,11 @@ namespace BxDRobotExporter
                 }
             }
         }
+        private bool environmentOpen;
         
-        private bool environmentVisible;
+        /// <summary>
+        /// Whether the environment is open in the focused document in Inventor
+        /// </summary>
         public bool EnvironmentVisible
         {
             get => environmentVisible;
@@ -62,20 +74,48 @@ namespace BxDRobotExporter
                 }
             }
         }
+        private bool environmentVisible;
 
-        private Environment environment;
+        
+        /// <summary>
+        /// Creates the environment which will be managed by the add-in, called once when the add-in is activated
+        /// </summary>
+        /// <returns>The created environment managed by the plugin</returns>
         protected abstract Environment CreateEnvironment();
 
+        /// <summary>
+        /// Destroy the environment which is managed by the add-in, called once when the add-in is deactivated
+        /// </summary>
         protected abstract void DestroyEnvironment();
 
+        /// <summary>
+        /// Fires when the environment managed by the add-in is opened
+        /// </summary>
         protected abstract void OnEnvironmentOpen();
 
+        /// <summary>
+        /// Fires when the environment managed by the add-in is closed
+        /// </summary>
         protected abstract void OnEnvironmentClose();
 
+        /// <summary>
+        /// Fires when the environment managed by the add-in is focused
+        /// </summary>
         protected abstract void OnEnvironmentShow();
 
+        /// <summary>
+        /// Fires when the environment managed by the add-in is hidden
+        /// </summary>
         protected abstract void OnEnvironmentHide();
-        protected abstract bool DocumentCondition(Document document);
+        
+        /// <summary>
+        /// Checks whether the document in which the user has attempted to open the environment is supported
+        /// </summary>
+        /// <param name="document">The document to be checked</param>
+        /// <returns>If the document type is supported by the add-in</returns>
+        protected abstract bool IsDocumentSupported(Document document);
+
+        private Environment environment;
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
@@ -163,7 +203,7 @@ namespace BxDRobotExporter
 
         private bool IsNewExporterEnvironmentAllowed(object documentObject)
         {
-            return !EnvironmentOpen && documentObject is Document document && DocumentCondition(document);
+            return !EnvironmentOpen && documentObject is Document document && IsDocumentSupported(document);
         }
 
         private bool IsDocumentOpenInTheExporter(object documentObject)

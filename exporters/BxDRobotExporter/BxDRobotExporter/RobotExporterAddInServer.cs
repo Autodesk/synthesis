@@ -243,9 +243,9 @@ namespace BxDRobotExporter
             HighlightManager.DisplayDof = dofKey.Visible;
         }
         
-        protected override bool DocumentCondition(Document document)
+        protected override bool IsDocumentSupported(Document document)
         {
-            return document is AssemblyDocument;
+            return document is AssemblyDocument; // The robot exporter is only compatible with assembly documents
         }
     }
 }
