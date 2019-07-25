@@ -31,7 +31,7 @@ namespace BxDRobotExporter.Exporter
                 // Compute physics
                 try
                 {
-                    physics.Add((float) occ.MassProperties.Mass, InventorDocumentIoUtils.ToBxdVector(occ.MassProperties.CenterOfMass));
+                    physics.Add((float) occ.MassProperties.Mass, InventorDocumentIoUtils.ToBXDVector(occ.MassProperties.CenterOfMass));
                 }
                 catch
                 {

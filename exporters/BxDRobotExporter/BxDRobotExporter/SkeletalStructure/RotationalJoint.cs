@@ -78,13 +78,13 @@ namespace BxDRobotExporter.SkeletalStructure
         {
             try
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Normal);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Center);
+                axis = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Normal);
+                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Center);
             }
             catch
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.RootPoint);
+                axis = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Direction);
+                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
 
             hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
