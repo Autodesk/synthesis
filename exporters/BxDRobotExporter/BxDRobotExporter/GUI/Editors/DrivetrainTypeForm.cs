@@ -41,7 +41,7 @@ namespace BxDRobotExporter.GUI.Editors
             }
             
             
-            SelectType(robotData.SkeletonBase.driveTrainType);
+            SelectType(robotData.RobotBaseNode.driveTrainType);
         }
 
         private void RecursiveControlNavigator(Control control, Action<Control> action)
@@ -68,7 +68,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            robotData.SkeletonBase.driveTrainType = driveTrainType;
+            robotData.RobotBaseNode.driveTrainType = driveTrainType;
             Close();
         }
     }

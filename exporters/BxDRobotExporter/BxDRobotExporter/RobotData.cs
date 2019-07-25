@@ -23,15 +23,13 @@ namespace BxDRobotExporter
         // Robot
         public string RobotName;
         public float RobotWeightKg;
-        public RigidNode_Base SkeletonBase = null;
-        public List<BXDAMesh> Meshes = null;
+        public RigidNode_Base RobotBaseNode = null;
+        public List<BXDAMesh> RobotMeshes = null;
 
         // Robot export settings
-        public bool meshesAreColored = false;
-        public string FieldName;
-        public bool PreferMetric;
-        public bool useSettingsDir = true;
-        public string activeDir;
+        public bool ExportWithColors = true;
+        public string ExportDefaultField;
+        public bool PreferMetric = false;
 
 
         public RobotData()
@@ -42,7 +40,6 @@ namespace BxDRobotExporter
         /// <summary>
         /// Open Synthesis to a specific robot and field.
         /// </summary>
-        /// <param name="node"></param>
         public void OpenSynthesis(string robotName = null, string fieldName = null)
         {
             if (robotName == null)
@@ -57,10 +54,10 @@ namespace BxDRobotExporter
             if (fieldName == null)
             {
                 // Cancel if no field name is given
-                if (FieldName == null)
+                if (ExportDefaultField == null)
                     return;
 
-                fieldName = FieldName;
+                fieldName = ExportDefaultField;
             }
         
             Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, string.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + robotName, fieldName));
@@ -99,7 +96,7 @@ namespace BxDRobotExporter
                 return false;
             }
 
-            if (SkeletonBase == null)
+            if (RobotBaseNode == null)
                 return false; // Skeleton export failed
 
             return true;
@@ -114,13 +111,13 @@ namespace BxDRobotExporter
             {
                 var exporterThread = new Thread(() =>
                 {
-                    if (SkeletonBase == null)
+                    if (RobotBaseNode == null)
                     {
                         loadingSkeleton = new LoadingSkeletonForm(this);
                         loadingSkeleton.ShowDialog();
                     }
 
-                    if (SkeletonBase != null)
+                    if (RobotBaseNode != null)
                     {
                         liteExporter = new LiteExporterForm(this);
                         liteExporter.ShowDialog(); // Remove node building
@@ -134,7 +131,7 @@ namespace BxDRobotExporter
 
                 GC.Collect();
 
-                meshesAreColored = RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors;
+                ExportWithColors = RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors;
             }
             catch (InvalidComObjectException)
             {
@@ -149,7 +146,7 @@ namespace BxDRobotExporter
                 return false;
             }
         
-            if (Meshes == null)
+            if (RobotMeshes == null)
                 return false; // Meshes were not exported
         
             if (liteExporter.DialogResult != DialogResult.OK)
@@ -166,10 +163,8 @@ namespace BxDRobotExporter
         {
             if (ExportForm.Prompt(RobotName, out string robotName, out bool colors, out bool openSynthesis, out string field) == DialogResult.OK)
             {
-                useSettingsDir = true;
-                activeDir = null;
                 RobotName = robotName;
-                FieldName = field;
+                ExportDefaultField = field;
 
                 RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors = colors;
                 RobotExporterAddInServer.PluginSettings.OnSettingsChanged();
@@ -227,7 +222,7 @@ namespace BxDRobotExporter
         {
             try
             {
-                WriteLimits(SkeletonBase);// write the limits from Inventor to the skeleton
+                WriteLimits(RobotBaseNode);// write the limits from Inventor to the skeleton
                 // If robot has not been named, prompt user for information
                 if (RobotName == null)
                     if (!PromptExportSettings())
@@ -236,23 +231,23 @@ namespace BxDRobotExporter
                 if (!Directory.Exists(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName))
                     Directory.CreateDirectory(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName);
 
-                if (Meshes == null || meshesAreColored != RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
+                if (RobotMeshes == null || ExportWithColors != RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
                     LoadMeshes();
-                BXDJSkeleton.SetupFileNames(SkeletonBase);
+                BXDJSkeleton.SetupFileNames(RobotBaseNode);
 
 
                 BXDJSkeleton.WriteSkeleton(
-                    (useSettingsDir && activeDir != null) ? activeDir : RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\skeleton.bxdj",
-                    SkeletonBase
+                    RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\skeleton.bxdj",
+                    RobotBaseNode
                 );
 
 
                 //XML EXPORTING
                 //BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
 
-                for (int i = 0; i < Meshes.Count; i++)
+                for (int i = 0; i < RobotMeshes.Count; i++)
                 {
-                    Meshes[i].WriteToFile((useSettingsDir && activeDir != null) ? activeDir : RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\node_" + i + ".bxda");
+                    RobotMeshes[i].WriteToFile(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\node_" + i + ".bxda");
                 }
 
                 return true;
@@ -275,7 +270,7 @@ namespace BxDRobotExporter
             if (asmDocument == null)
                 return false;
 
-            if (SkeletonBase == null)
+            if (RobotBaseNode == null)
                 return false;
 
             PropertySets propertySets = asmDocument.PropertySets;
@@ -291,11 +286,11 @@ namespace BxDRobotExporter
                     RobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
                     RobotWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
                     PreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
-                    SkeletonBase.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
+                    RobotBaseNode.driveTrainType = (RigidNode_Base.DriveTrainType)InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int)RigidNode_Base.DriveTrainType.NONE);
                 }
 
                 // Load joint data
-                return LoadJointData(propertySets, SkeletonBase) && (propertySet != null);
+                return LoadJointData(propertySets, RobotBaseNode) && (propertySet != null);
             }
             catch (Exception e)
             {
@@ -417,7 +412,7 @@ namespace BxDRobotExporter
             if (asmDocument == null)
                 return false;
 
-            if (SkeletonBase == null)
+            if (RobotBaseNode == null)
                 return false;
 
             PropertySets propertySets = asmDocument.PropertySets;
@@ -432,10 +427,10 @@ namespace BxDRobotExporter
                     InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", RobotName);
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", RobotWeightKg * 10.0f); // x10 for better accuracy
                 InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", PreferMetric);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)SkeletonBase.driveTrainType);
+                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int)RobotBaseNode.driveTrainType);
           
                 // Save joint data
-                return SaveJointData(propertySets, SkeletonBase);
+                return SaveJointData(propertySets, RobotBaseNode);
             }
             catch (Exception e)
             {
@@ -596,12 +591,12 @@ namespace BxDRobotExporter
         
             //Remove node from the children of its parent
             node.GetParent().Children.Remove(node.GetSkeletalJoint());
-            Meshes.Remove(childMesh);
+            RobotMeshes.Remove(childMesh);
         }
 
         private BXDAMesh GetMesh(RigidNode_Base node)
         {
-            return Meshes[SkeletonBase.ListAllNodes().IndexOf(node)];
+            return RobotMeshes[RobotBaseNode.ListAllNodes().IndexOf(node)];
         }
     }
 }

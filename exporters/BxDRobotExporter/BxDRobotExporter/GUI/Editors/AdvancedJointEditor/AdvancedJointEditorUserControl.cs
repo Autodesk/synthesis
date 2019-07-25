@@ -255,7 +255,7 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         public void UpdateSkeleton(RobotData robotData)
         {
             this.robotData = robotData;
-            nodeList = robotData.SkeletonBase?.ListAllNodes();
+            nodeList = robotData.RobotBaseNode?.ListAllNodes();
             UpdateJointList();
         }
 
