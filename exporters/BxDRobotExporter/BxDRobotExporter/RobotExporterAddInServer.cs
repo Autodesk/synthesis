@@ -238,7 +238,7 @@ namespace BxDRobotExporter
         private void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
-            robotData.SaveRobotData();
+            robotData.SaveRobotData(AssemblyDocument);
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
