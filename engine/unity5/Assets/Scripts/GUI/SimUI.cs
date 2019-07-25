@@ -94,6 +94,8 @@ namespace Synthesis.GUI
 
         private static SimUI instance = null;
 
+        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
+
         private void Start()
         {
             instance = this;
@@ -794,25 +796,31 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
-                DynamicCamera.ControlEnabled = true;
-                InputControl.freeze = false;
-                inputManagerPanel.SetActive(false);
-                inputPanelOn = false;
-                ToggleHotKeys(false);
-
-                CheckUnsavedControls();
+                CheckUnsavedControls(() =>
+                {
+                    DynamicCamera.ControlEnabled = true;
+                    InputControl.freeze = false;
+                    inputManagerPanel.SetActive(false);
+                    inputPanelOn = false;
+                    ToggleHotKeys(false);
+                });
             }
         }
 
-        public void CheckUnsavedControls()
+        public void CheckUnsavedControls(Action callback)
         {
+            ProcessControlsCallback = callback;
             if (!Controls.CheckIfSaved())
             {
                 checkSavePanel.SetActive(true);
+            } else
+            {
+                if(ProcessControlsCallback != null)
+                    ProcessControlsCallback.Invoke();
             }
         }
 
@@ -851,9 +859,12 @@ namespace Synthesis.GUI
                 case "no":
                     Controls.Load();
                     break;
+                default:
                 case "cancel":
-                    break;
+                    return;
             }
+            if (ProcessControlsCallback != null)
+                ProcessControlsCallback.Invoke();
         }
 
         /// <summary>

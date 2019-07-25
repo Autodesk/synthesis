@@ -24,7 +24,6 @@ namespace Synthesis.Input
 
         public State CurrentState { get; set; }
 
-
         // Variable to keep track which player controls are being edited in the control panel
         public static int activePlayerIndex;
 
@@ -99,13 +98,15 @@ namespace Synthesis.Input
         {
             if (activeProfileMode != (Profile.Mode)value)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
-                activeProfileMode = (Profile.Mode)value;
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                {
+                    activeProfileMode = (Profile.Mode)value;
 
-                Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
-                Controls.Players[activePlayerIndex].LoadActiveProfile();
+                    Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
+                    Controls.Players[activePlayerIndex].LoadActiveProfile();
 
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                    GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                });
             }
         }
 
@@ -119,19 +120,13 @@ namespace Synthesis.Input
         {
             if (index != activePlayerIndex)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
-                activePlayerIndex = index;
-                //Creates and generates player one's keys and control buttons
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-
-                //Checks if the profile selection needs to be updated (according to the player)
-                UpdateProfileSelection();
-
-                //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
-                Controls.Load();
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
-
-                UpdatePlayerButtonStyle();
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                {
+                    activePlayerIndex = index;
+                    UpdateProfileSelection();
+                    UpdatePlayerButtonStyle();
+                    GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                });
             }
         }
 
@@ -158,19 +153,6 @@ namespace Synthesis.Input
             {
                 profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
                 profileDropdown.RefreshShownValue();
-            }
-        }
-
-        /// <summary>
-        /// Updates all the key/control buttons.
-        /// </summary>
-        public void UpdateButtons()
-        {
-            KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();
-
-            foreach (KeyButton keyButton in keyButtons)
-            {
-                keyButton.UpdateText();
             }
         }
     }
