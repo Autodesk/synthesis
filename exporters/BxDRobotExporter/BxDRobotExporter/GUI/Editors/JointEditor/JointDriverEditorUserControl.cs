@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Windows.Forms;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
-using BxDRobotExporter.Utilities.Synthesis;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
 {
@@ -72,7 +71,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
 
             if (joint.cDriver != null)
             {
-                cmbDriveSide.SelectedItem = JointToStringUtils.DriveTrainSideString(joint);
+                cmbDriveSide.SelectedItem = ToStringUtils.DriveTrainSideString(joint);
 
                 cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
 

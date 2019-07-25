@@ -20,7 +20,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
         public void ReloadInventorJoint()
         {
-            basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne);
+            basePoint = MathUtils.ToBXDVector(wrapped.rigidJoint.geomOne);
         }
 
         public static bool IsBallJoint(CustomRigidJoint jointI)

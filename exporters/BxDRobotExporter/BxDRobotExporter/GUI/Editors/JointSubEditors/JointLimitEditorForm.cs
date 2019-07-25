@@ -184,7 +184,6 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
             }
             if (canClose)
             {
-                LegacyEvents.OnRobotModified();
                 Close();
             }
         }

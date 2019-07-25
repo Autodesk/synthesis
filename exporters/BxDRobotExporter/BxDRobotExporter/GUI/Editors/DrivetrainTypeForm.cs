@@ -29,13 +29,13 @@ namespace BxDRobotExporter.GUI.Editors
 
             foreach (var keyValuePair in controls)
             {
-                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseDown += (sender, args) => SelectType(keyValuePair.Key));
-                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseEnter += (sender, args) =>
+                WinFormsUtils.RecursiveControlNavigator(keyValuePair.Value, control => control.MouseDown += (sender, args) => SelectType(keyValuePair.Key));
+                WinFormsUtils.RecursiveControlNavigator(keyValuePair.Value, control => control.MouseEnter += (sender, args) =>
                 {
                     if (driveTrainType != keyValuePair.Key)
                         keyValuePair.Value.BackColor = HoverColor;
                 });
-                RecursiveControlNavigator(keyValuePair.Value, control => control.MouseLeave += (sender, args) =>
+                WinFormsUtils.RecursiveControlNavigator(keyValuePair.Value, control => control.MouseLeave += (sender, args) =>
                 {
                     if (driveTrainType != keyValuePair.Key)
                         keyValuePair.Value.BackColor = DefaultColor;
@@ -44,15 +44,6 @@ namespace BxDRobotExporter.GUI.Editors
             
             
             SelectType(robotDataManager.RobotBaseNode.driveTrainType);
-        }
-
-        private void RecursiveControlNavigator(Control control, Action<Control> action)
-        {
-            action.Invoke(control);
-            foreach (Control subControl in control.Controls)
-            {
-                RecursiveControlNavigator(subControl, action);
-            }
         }
 
         private void SelectType(RigidNode_Base.DriveTrainType type)

@@ -5,6 +5,8 @@ namespace BxDRobotExporter.Utilities.Synthesis
 {
     public static class SynthesisUtils
     {
+        private const string SYNTHESIS_PATH = @"C:\Program Files\Autodesk\Synthesis\Synthesis\Synthesis.exe";
+
         /// <summary>
         /// Open Synthesis to a specific robot and field.
         /// </summary>
@@ -13,7 +15,7 @@ namespace BxDRobotExporter.Utilities.Synthesis
             if (robotName == null) return;
             if (fieldName == null) return;
 
-            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, String.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + robotName, fieldName));
+            Process.Start(SYNTHESIS_PATH, String.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + robotName, fieldName));
         }
     }
 }

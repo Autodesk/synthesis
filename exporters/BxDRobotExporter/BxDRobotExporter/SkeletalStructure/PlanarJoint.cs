@@ -27,13 +27,13 @@ namespace BxDRobotExporter.SkeletalStructure
         {
             if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
             {
-                normal = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.Normal);
-                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
+                normal = MathUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.Normal);
+                basePoint = MathUtils.ToBXDVector(wrapped.rigidJoint.geomTwo.RootPoint);
             }
             else
             {
-                normal = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Normal);
-                basePoint = InventorDocumentIoUtils.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
+                normal = MathUtils.ToBXDVector(wrapped.rigidJoint.geomOne.Normal);
+                basePoint = MathUtils.ToBXDVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
         }
 

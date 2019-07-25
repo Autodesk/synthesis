@@ -6,7 +6,6 @@ using BxDRobotExporter.GUI.Editors.JointSubEditors;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.ImageFormat;
-using BxDRobotExporter.Utilities.Synthesis;
 using Inventor;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
@@ -35,10 +34,10 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         public void LoadValues()
         {
             var joint = node.GetSkeletalJoint();
-            jointName.Text = JointToStringUtils.NodeNameString(node);
-            jointTypeValue.Text = JointToStringUtils.JointTypeString(joint, robotDataManager);
-            driverValue.Text = JointToStringUtils.DriverString(joint);
-            wheelTypeValue.Text = JointToStringUtils.WheelTypeString(joint);
+            jointName.Text = ToStringUtils.NodeNameString(node);
+            jointTypeValue.Text = ToStringUtils.JointTypeString(joint, robotDataManager);
+            driverValue.Text = ToStringUtils.DriverString(joint);
+            wheelTypeValue.Text = ToStringUtils.WheelTypeString(joint);
         }
 
         public void LoadValuesRecursive()

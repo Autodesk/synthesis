@@ -205,14 +205,14 @@ namespace BxDRobotExporter.Managers
             try
             {
                 // Load global robot data
-                var propertySet = InventorDocumentIoUtils.GetPropertySet(propertySets, "bxd-robotdata", false);
+                var propertySet = InventorDocumentIOUtils.GetPropertySet(propertySets, "bxd-robotdata", false);
 
                 if (propertySet != null)
                 {
-                    RobotName = InventorDocumentIoUtils.GetProperty(propertySet, "robot-name", "");
-                    RobotWeightKg = InventorDocumentIoUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
-                    RobotPreferMetric = InventorDocumentIoUtils.GetProperty(propertySet, "robot-prefer-metric", false);
-                    RobotBaseNode.driveTrainType = (RigidNode_Base.DriveTrainType) InventorDocumentIoUtils.GetProperty(propertySet, "robot-driveTrainType", (int) RigidNode_Base.DriveTrainType.NONE);
+                    RobotName = InventorDocumentIOUtils.GetProperty(propertySet, "robot-name", "");
+                    RobotWeightKg = InventorDocumentIOUtils.GetProperty(propertySet, "robot-weight-kg", 0) / 10.0f; // Stored at x10 for better accuracy
+                    RobotPreferMetric = InventorDocumentIOUtils.GetProperty(propertySet, "robot-prefer-metric", false);
+                    RobotBaseNode.driveTrainType = (RigidNode_Base.DriveTrainType) InventorDocumentIOUtils.GetProperty(propertySet, "robot-driveTrainType", (int) RigidNode_Base.DriveTrainType.NONE);
                 }
 
                 // Load joint data
@@ -244,79 +244,79 @@ namespace BxDRobotExporter.Managers
                 var setName = "bxd-jointdata-" + child.GetModelID();
 
                 // Attempt to open the property set
-                var propertySet = InventorDocumentIoUtils.GetPropertySet(propertySets, setName, false);
+                var propertySet = InventorDocumentIOUtils.GetPropertySet(propertySets, setName, false);
 
                 // If the property set does not exist, stop loading data
                 if (propertySet == null)
                     return false;
 
-                joint.weight = InventorDocumentIoUtils.GetProperty(propertySet, "weight", 10);
+                joint.weight = InventorDocumentIOUtils.GetProperty(propertySet, "weight", 10);
 
                 // Get joint properties from set
                 // Get driver information
-                if (InventorDocumentIoUtils.GetProperty(propertySet, "has-driver", false))
+                if (InventorDocumentIOUtils.GetProperty(propertySet, "has-driver", false))
                 {
                     if (joint.cDriver == null)
-                        joint.cDriver = new JointDriver((JointDriverType) InventorDocumentIoUtils.GetProperty(propertySet, "driver-type", (int) JointDriverType.MOTOR));
+                        joint.cDriver = new JointDriver((JointDriverType) InventorDocumentIOUtils.GetProperty(propertySet, "driver-type", (int) JointDriverType.MOTOR));
                     var driver = joint.cDriver;
 
-                    joint.cDriver.motor = (MotorType) InventorDocumentIoUtils.GetProperty(propertySet, "motor-type", (int) MotorType.GENERIC);
-                    joint.cDriver.port1 = InventorDocumentIoUtils.GetProperty(propertySet, "driver-port1", 0);
-                    joint.cDriver.port2 = InventorDocumentIoUtils.GetProperty(propertySet, "driver-port2", -1);
-                    joint.cDriver.isCan = InventorDocumentIoUtils.GetProperty(propertySet, "driver-isCan", false);
-                    joint.cDriver.lowerLimit = InventorDocumentIoUtils.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
-                    joint.cDriver.upperLimit = InventorDocumentIoUtils.GetProperty(propertySet, "driver-upperLimit", 0.0f);
-                    joint.cDriver.InputGear = InventorDocumentIoUtils.GetProperty(propertySet, "driver-inputGear", 0.0f); // writes the gearing that the user last had in the exporter to the current gearing value
-                    joint.cDriver.OutputGear = InventorDocumentIoUtils.GetProperty(propertySet, "driver-outputGear", 0.0f); // writes the gearing that the user last had in the exporter to the current gearing value
-                    joint.cDriver.hasBrake = InventorDocumentIoUtils.GetProperty(propertySet, "driver-hasBrake", false);
+                    joint.cDriver.motor = (MotorType) InventorDocumentIOUtils.GetProperty(propertySet, "motor-type", (int) MotorType.GENERIC);
+                    joint.cDriver.port1 = InventorDocumentIOUtils.GetProperty(propertySet, "driver-port1", 0);
+                    joint.cDriver.port2 = InventorDocumentIOUtils.GetProperty(propertySet, "driver-port2", -1);
+                    joint.cDriver.isCan = InventorDocumentIOUtils.GetProperty(propertySet, "driver-isCan", false);
+                    joint.cDriver.lowerLimit = InventorDocumentIOUtils.GetProperty(propertySet, "driver-lowerLimit", 0.0f);
+                    joint.cDriver.upperLimit = InventorDocumentIOUtils.GetProperty(propertySet, "driver-upperLimit", 0.0f);
+                    joint.cDriver.InputGear = InventorDocumentIOUtils.GetProperty(propertySet, "driver-inputGear", 0.0f); // writes the gearing that the user last had in the exporter to the current gearing value
+                    joint.cDriver.OutputGear = InventorDocumentIOUtils.GetProperty(propertySet, "driver-outputGear", 0.0f); // writes the gearing that the user last had in the exporter to the current gearing value
+                    joint.cDriver.hasBrake = InventorDocumentIOUtils.GetProperty(propertySet, "driver-hasBrake", false);
 
                     // Get other properties stored in meta
                     // Wheel information
-                    if (InventorDocumentIoUtils.GetProperty(propertySet, "has-wheel", false))
+                    if (InventorDocumentIOUtils.GetProperty(propertySet, "has-wheel", false))
                     {
                         if (driver.GetInfo<WheelDriverMeta>() == null)
                             driver.AddInfo(new WheelDriverMeta());
                         var wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
 
-                        wheel.type = (WheelType) InventorDocumentIoUtils.GetProperty(propertySet, "wheel-type", (int) WheelType.NORMAL);
-                        wheel.isDriveWheel = InventorDocumentIoUtils.GetProperty(propertySet, "wheel-isDriveWheel", false);
-                        wheel.SetFrictionLevel((FrictionLevel) InventorDocumentIoUtils.GetProperty(propertySet, "wheel-frictionLevel", (int) FrictionLevel.MEDIUM));
+                        wheel.type = (WheelType) InventorDocumentIOUtils.GetProperty(propertySet, "wheel-type", (int) WheelType.NORMAL);
+                        wheel.isDriveWheel = InventorDocumentIOUtils.GetProperty(propertySet, "wheel-isDriveWheel", false);
+                        wheel.SetFrictionLevel((FrictionLevel) InventorDocumentIOUtils.GetProperty(propertySet, "wheel-frictionLevel", (int) FrictionLevel.MEDIUM));
                     }
 
                     // Pneumatic information
-                    if (InventorDocumentIoUtils.GetProperty(propertySet, "has-pneumatic", false))
+                    if (InventorDocumentIOUtils.GetProperty(propertySet, "has-pneumatic", false))
                     {
                         if (driver.GetInfo<PneumaticDriverMeta>() == null)
                             driver.AddInfo(new PneumaticDriverMeta());
                         var pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
 
-                        pneumatic.width = InventorDocumentIoUtils.GetProperty(propertySet, "pneumatic-diameter", (double) 0.5);
-                        pneumatic.pressureEnum = (PneumaticPressure) InventorDocumentIoUtils.GetProperty(propertySet, "pneumatic-pressure", (int) PneumaticPressure.MEDIUM);
+                        pneumatic.width = InventorDocumentIOUtils.GetProperty(propertySet, "pneumatic-diameter", (double) 0.5);
+                        pneumatic.pressureEnum = (PneumaticPressure) InventorDocumentIOUtils.GetProperty(propertySet, "pneumatic-pressure", (int) PneumaticPressure.MEDIUM);
                     }
 
                     // Elevator information
-                    if (InventorDocumentIoUtils.GetProperty(propertySet, "has-elevator", false))
+                    if (InventorDocumentIOUtils.GetProperty(propertySet, "has-elevator", false))
                     {
                         if (driver.GetInfo<ElevatorDriverMeta>() == null)
                             driver.AddInfo(new ElevatorDriverMeta());
                         var elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
-                        elevator.type = (ElevatorType) InventorDocumentIoUtils.GetProperty(propertySet, "elevator-type", (int) ElevatorType.NOT_MULTI);
+                        elevator.type = (ElevatorType) InventorDocumentIOUtils.GetProperty(propertySet, "elevator-type", (int) ElevatorType.NOT_MULTI);
                         if (((int) elevator.type) > 7)
                         {
                             elevator.type = ElevatorType.NOT_MULTI;
                         }
                     }
 
-                    for (var i = 0; i < InventorDocumentIoUtils.GetProperty(propertySet, "num-sensors", 0); i++)
+                    for (var i = 0; i < InventorDocumentIOUtils.GetProperty(propertySet, "num-sensors", 0); i++)
                     {
                         RobotSensor addedSensor;
-                        addedSensor = new RobotSensor((RobotSensorType) InventorDocumentIoUtils.GetProperty(propertySet, "sensorType" + i, (int) RobotSensorType.ENCODER));
-                        addedSensor.portA = ((int) InventorDocumentIoUtils.GetProperty(propertySet, "sensorPortA" + i, 0));
-                        addedSensor.portB = ((int) InventorDocumentIoUtils.GetProperty(propertySet, "sensorPortB" + i, 0));
-                        addedSensor.conTypePortA = ((SensorConnectionType) InventorDocumentIoUtils.GetProperty(propertySet, "sensorPortConA" + i, (int) SensorConnectionType.DIO));
-                        addedSensor.conTypePortB = ((SensorConnectionType) InventorDocumentIoUtils.GetProperty(propertySet, "sensorPortConB" + i, (int) SensorConnectionType.DIO));
-                        addedSensor.conversionFactor = InventorDocumentIoUtils.GetProperty(propertySet, "sensorConversion" + i, 0.0);
+                        addedSensor = new RobotSensor((RobotSensorType) InventorDocumentIOUtils.GetProperty(propertySet, "sensorType" + i, (int) RobotSensorType.ENCODER));
+                        addedSensor.portA = ((int) InventorDocumentIOUtils.GetProperty(propertySet, "sensorPortA" + i, 0));
+                        addedSensor.portB = ((int) InventorDocumentIOUtils.GetProperty(propertySet, "sensorPortB" + i, 0));
+                        addedSensor.conTypePortA = ((SensorConnectionType) InventorDocumentIOUtils.GetProperty(propertySet, "sensorPortConA" + i, (int) SensorConnectionType.DIO));
+                        addedSensor.conTypePortB = ((SensorConnectionType) InventorDocumentIOUtils.GetProperty(propertySet, "sensorPortConB" + i, (int) SensorConnectionType.DIO));
+                        addedSensor.conversionFactor = InventorDocumentIOUtils.GetProperty(propertySet, "sensorConversion" + i, 0.0);
                         joint.attachedSensors.Add(addedSensor);
                     }
                 }
@@ -348,13 +348,13 @@ namespace BxDRobotExporter.Managers
             try
             {
                 // Save global robot data
-                var propertySet = InventorDocumentIoUtils.GetPropertySet(propertySets, "bxd-robotdata");
+                var propertySet = InventorDocumentIOUtils.GetPropertySet(propertySets, "bxd-robotdata");
 
                 if (RobotName != null)
-                    InventorDocumentIoUtils.SetProperty(propertySet, "robot-name", RobotName);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-weight-kg", RobotWeightKg * 10.0f); // x10 for better accuracy
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-prefer-metric", RobotPreferMetric);
-                InventorDocumentIoUtils.SetProperty(propertySet, "robot-driveTrainType", (int) RobotBaseNode.driveTrainType);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "robot-name", RobotName);
+                InventorDocumentIOUtils.SetProperty(propertySet, "robot-weight-kg", RobotWeightKg * 10.0f); // x10 for better accuracy
+                InventorDocumentIOUtils.SetProperty(propertySet, "robot-prefer-metric", RobotPreferMetric);
+                InventorDocumentIOUtils.SetProperty(propertySet, "robot-driveTrainType", (int) RobotBaseNode.driveTrainType);
 
                 // Save joint data
                 return SaveJointData(propertySets, RobotBaseNode);
@@ -383,79 +383,79 @@ namespace BxDRobotExporter.Managers
                 var setName = "bxd-jointdata-" + child.GetModelID();
 
                 // Create the property set if it doesn't exist
-                var propertySet = InventorDocumentIoUtils.GetPropertySet(assemblyPropertySets, setName);
+                var propertySet = InventorDocumentIOUtils.GetPropertySet(assemblyPropertySets, setName);
 
                 // Add joint properties to set
                 // Save driver information
                 var driver = joint.cDriver;
-                InventorDocumentIoUtils.SetProperty(propertySet, "has-driver", driver != null);
-                InventorDocumentIoUtils.SetProperty(propertySet, "weight", joint.weight);
+                InventorDocumentIOUtils.SetProperty(propertySet, "has-driver", driver != null);
+                InventorDocumentIOUtils.SetProperty(propertySet, "weight", joint.weight);
                 if (driver != null)
                 {
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-type", (int) driver.GetDriveType());
-                    InventorDocumentIoUtils.SetProperty(propertySet, "motor-type", (int) driver.GetMotorType());
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-port1", driver.port1);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-port2", driver.port2);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-isCan", driver.isCan);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-inputGear", driver.InputGear); // writes the input gear to the .IAM file incase the user wants to reexport their robot later
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-outputGear", driver.OutputGear); // writes the ouotput gear to the .IAM file incase the user wants to reexport their robot later
-                    InventorDocumentIoUtils.SetProperty(propertySet, "driver-hasBrake", driver.hasBrake);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-type", (int) driver.GetDriveType());
+                    InventorDocumentIOUtils.SetProperty(propertySet, "motor-type", (int) driver.GetMotorType());
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-port1", driver.port1);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-port2", driver.port2);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-isCan", driver.isCan);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-lowerLimit", driver.lowerLimit);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-upperLimit", driver.upperLimit);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-inputGear", driver.InputGear); // writes the input gear to the .IAM file incase the user wants to reexport their robot later
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-outputGear", driver.OutputGear); // writes the ouotput gear to the .IAM file incase the user wants to reexport their robot later
+                    InventorDocumentIOUtils.SetProperty(propertySet, "driver-hasBrake", driver.hasBrake);
 
                     // Save other properties stored in meta
                     // Wheel information
                     var wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
-                    InventorDocumentIoUtils.SetProperty(propertySet, "has-wheel", wheel != null);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "has-wheel", wheel != null);
 
                     if (wheel != null)
                     {
-                        InventorDocumentIoUtils.SetProperty(propertySet, "wheel-type", (int) wheel.type);
-                        InventorDocumentIoUtils.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
-                        InventorDocumentIoUtils.SetProperty(propertySet, "wheel-frictionLevel", (int) wheel.GetFrictionLevel());
+                        InventorDocumentIOUtils.SetProperty(propertySet, "wheel-type", (int) wheel.type);
+                        InventorDocumentIOUtils.SetProperty(propertySet, "wheel-isDriveWheel", wheel.isDriveWheel);
+                        InventorDocumentIOUtils.SetProperty(propertySet, "wheel-frictionLevel", (int) wheel.GetFrictionLevel());
                     }
 
                     // Pneumatic information
                     var pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
-                    InventorDocumentIoUtils.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "has-pneumatic", pneumatic != null);
 
                     if (pneumatic != null)
                     {
-                        InventorDocumentIoUtils.SetProperty(propertySet, "pneumatic-diameter", (double) pneumatic.width);
-                        InventorDocumentIoUtils.SetProperty(propertySet, "pneumatic-pressure", (int) pneumatic.pressureEnum);
+                        InventorDocumentIOUtils.SetProperty(propertySet, "pneumatic-diameter", (double) pneumatic.width);
+                        InventorDocumentIOUtils.SetProperty(propertySet, "pneumatic-pressure", (int) pneumatic.pressureEnum);
                     }
 
                     // Elevator information
                     var elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
 
 
-                    InventorDocumentIoUtils.SetProperty(propertySet, "has-elevator", elevator != null);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "has-elevator", elevator != null);
 
                     if (elevator != null)
                     {
-                        InventorDocumentIoUtils.SetProperty(propertySet, "elevator-type", (int) elevator.type);
+                        InventorDocumentIOUtils.SetProperty(propertySet, "elevator-type", (int) elevator.type);
                     }
                 }
 
-                for (var i = 0; i < InventorDocumentIoUtils.GetProperty(propertySet, "num-sensors", 0); i++) // delete existing sensors
+                for (var i = 0; i < InventorDocumentIOUtils.GetProperty(propertySet, "num-sensors", 0); i++) // delete existing sensors
                 {
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorType" + i);
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorPortA" + i);
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorPortConA" + i);
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorPortB" + i);
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorPortConB" + i);
-                    InventorDocumentIoUtils.RemoveProperty(propertySet, "sensorConversion" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorType" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorPortA" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorPortConA" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorPortB" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorPortConB" + i);
+                    InventorDocumentIOUtils.RemoveProperty(propertySet, "sensorConversion" + i);
                 }
 
-                InventorDocumentIoUtils.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
+                InventorDocumentIOUtils.SetProperty(propertySet, "num-sensors", joint.attachedSensors.Count);
                 for (var i = 0; i < joint.attachedSensors.Count; i++)
                 {
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorType" + i, (int) joint.attachedSensors[i].type);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorPortA" + i, joint.attachedSensors[i].portA);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorPortConA" + i, (int) joint.attachedSensors[i].conTypePortA);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorPortB" + i, joint.attachedSensors[i].portB);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorPortConB" + i, (int) joint.attachedSensors[i].conTypePortB);
-                    InventorDocumentIoUtils.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorType" + i, (int) joint.attachedSensors[i].type);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorPortA" + i, joint.attachedSensors[i].portA);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorPortConA" + i, (int) joint.attachedSensors[i].conTypePortA);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorPortB" + i, joint.attachedSensors[i].portB);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorPortConB" + i, (int) joint.attachedSensors[i].conTypePortB);
+                    InventorDocumentIOUtils.SetProperty(propertySet, "sensorConversion" + i, joint.attachedSensors[i].conversionFactor);
                 }
 
                 // Recur along this child
