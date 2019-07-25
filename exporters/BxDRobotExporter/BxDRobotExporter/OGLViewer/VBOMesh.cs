@@ -3,43 +3,43 @@ using OpenTK.Graphics.OpenGL;
 
 namespace BxDRobotExporter.OGLViewer
 {
-    public class VboMesh
+    public class VBOMesh
     {
         private int[] bufferObjects = null;
-        public BXDAMesh.BXDASubMesh SubMesh;
+        public BXDAMesh.BXDASubMesh subMesh;
 
-        public VboMesh(BXDAMesh.BXDASubMesh subMesh)
+        public VBOMesh(BXDAMesh.BXDASubMesh subMesh)
         {
-            this.SubMesh = subMesh;
+            this.subMesh = subMesh;
         }
 
-        public void LoadToGpu()
+        public void loadToGPU()
         {
-            UnloadFromGpu();
+            unloadFromGPU();
 
-            bufferObjects = new int[2 + SubMesh.surfaces.Count];
+            bufferObjects = new int[2 + subMesh.surfaces.Count];
             GL.GenBuffers(bufferObjects.Length, bufferObjects);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[0]);
-            GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(SubMesh.verts.Length * sizeof(double)), SubMesh.verts, BufferUsageHint.StaticDraw);
+            GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.verts.Length * sizeof(double)), subMesh.verts, BufferUsageHint.StaticDraw);
 
-            if (SubMesh.norms != null)
+            if (subMesh.norms != null)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[1]);
-                GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(SubMesh.norms.Length * sizeof(double)), SubMesh.norms,
+                GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.norms.Length * sizeof(double)), subMesh.norms,
                         BufferUsageHint.StaticDraw);
             }
 
-            for (int i = 0; i < SubMesh.surfaces.Count; i++)
+            for (int i = 0; i < subMesh.surfaces.Count; i++)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[2 + i]);
-                GL.BufferData<int>(BufferTarget.ArrayBuffer, new IntPtr(SubMesh.surfaces[i].indicies.Length * sizeof(int)),
-                    SubMesh.surfaces[i].indicies, BufferUsageHint.StaticDraw);
+                GL.BufferData<int>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.surfaces[i].indicies.Length * sizeof(int)),
+                    subMesh.surfaces[i].indicies, BufferUsageHint.StaticDraw);
             }
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void UnloadFromGpu()
+        public void unloadFromGPU()
         {
             if (bufferObjects != null && bufferObjects.Length > 0)
             {
@@ -49,11 +49,11 @@ namespace BxDRobotExporter.OGLViewer
         }
 
 
-        public void Draw(bool effects = true)
+        public void draw(bool effects = true)
         {
             if (bufferObjects == null)
             {
-                LoadToGpu();
+                loadToGPU();
             }
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.NormalArray);
@@ -68,15 +68,15 @@ namespace BxDRobotExporter.OGLViewer
             {
                 if (effects)
                 {
-                    uint val = SubMesh.surfaces[i].hasColor ? SubMesh.surfaces[i].color : 0xFFFFFFFF;
+                    uint val = subMesh.surfaces[i].hasColor ? subMesh.surfaces[i].color : 0xFFFFFFFF;
                     float[] color = { (val & 0xFF) / 255f, ((val >> 8) & 0xFF) / 255f, ((val >> 16) & 0xFF) / 255f, ((val >> 24) & 0xFF) / 255f };
-                    if (SubMesh.surfaces[i].transparency != 0)
+                    if (subMesh.surfaces[i].transparency != 0)
                     {
-                        color[3] = SubMesh.surfaces[i].transparency;
+                        color[3] = subMesh.surfaces[i].transparency;
                     }
-                    else if (SubMesh.surfaces[i].translucency != 0)
+                    else if (subMesh.surfaces[i].translucency != 0)
                     {
-                        color[3] = SubMesh.surfaces[i].translucency;
+                        color[3] = subMesh.surfaces[i].translucency;
                     }
                     if (color[3] == 0)   // No perfectly transparent things plz.
                     {
@@ -93,10 +93,10 @@ namespace BxDRobotExporter.OGLViewer
                     }
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1, 1, 1, 1 });
-                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, SubMesh.surfaces[i].specular);
+                    GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, subMesh.surfaces[i].specular);
                 }
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, bufferObjects[i + 2]);
-                GL.DrawElements(PrimitiveType.Triangles, SubMesh.surfaces[i].indicies.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                GL.DrawElements(PrimitiveType.Triangles, subMesh.surfaces[i].indicies.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
             }
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
@@ -104,7 +104,7 @@ namespace BxDRobotExporter.OGLViewer
             GL.DisableClientState(ArrayCap.NormalArray);
         }
 
-        internal void Destroy()
+        internal void destroy()
         {
             GL.DeleteBuffers(bufferObjects.Length, bufferObjects);
             bufferObjects = new int[0];

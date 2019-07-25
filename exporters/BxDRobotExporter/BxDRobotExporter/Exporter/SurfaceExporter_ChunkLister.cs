@@ -65,7 +65,7 @@ namespace BxDRobotExporter.Exporter
 
             // Calculate minimum volume to export a component
             double maxVolume = 0;
-            foreach (ComponentOccurrence occ in group.Occurrences)
+            foreach (ComponentOccurrence occ in group.occurrences)
             {
                 double curVolume = InventorDocumentIoUtils.BoxVolume(occ.RangeBox);
                 if (curVolume > maxVolume)
@@ -74,7 +74,7 @@ namespace BxDRobotExporter.Exporter
             double minVolume = maxVolume * MIN_VOLUME_PERCENT;
 
             // Analyze all component occurrences
-            foreach (ComponentOccurrence occ in group.Occurrences)
+            foreach (ComponentOccurrence occ in group.occurrences)
             {
                 if (InventorDocumentIoUtils.BoxVolume(occ.RangeBox) >= minVolume)
                 {

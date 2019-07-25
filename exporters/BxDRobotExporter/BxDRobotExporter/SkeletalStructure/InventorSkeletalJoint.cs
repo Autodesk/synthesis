@@ -1,7 +1,7 @@
 ﻿
 namespace BxDRobotExporter.SkeletalStructure
 {
-    public interface INventorSkeletalJoint
+    public interface InventorSkeletalJoint
     {
         SkeletalJoint GetWrapped();
 

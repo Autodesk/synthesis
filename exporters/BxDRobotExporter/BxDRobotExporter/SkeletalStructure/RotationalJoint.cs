@@ -4,7 +4,7 @@ using Inventor;
 
 namespace BxDRobotExporter.SkeletalStructure
 {
-    public class RotationalJoint : RotationalJoint_Base, INventorSkeletalJoint
+    public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
     {
         private SkeletalJoint wrapped;
 
@@ -15,7 +15,7 @@ namespace BxDRobotExporter.SkeletalStructure
         public void DetermineLimits()
         {
             MotionLimits cache = new MotionLimits();
-            DriveSettings driver = wrapped.AsmJointOccurrence.DriveSettings;
+            DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
             driver.DriveType = DriveTypeEnum.kDriveAngularPositionType;
             driver.CollisionDetection = true;
             driver.OnCollision += MotionLimits.OnCollisionEvent;
@@ -23,18 +23,18 @@ namespace BxDRobotExporter.SkeletalStructure
             float step = 0.05f;
             driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " rad");
 
-            cache.DoContactSetup(true, wrapped.ChildGroup, wrapped.ParentGroup);
+            cache.DoContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
 
             driver.StartValue = currentAngularPosition + " rad";
             driver.EndValue = (currentAngularPosition + 6.5) + " rad";
 
             // Forward
             driver.GoToStart();
-            MotionLimits.DidCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayForward();
-            if (MotionLimits.DidCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
-                angularLimitHigh = (float) wrapped.AsmJoint.AngularPosition.Value - step;
+                angularLimitHigh = (float) wrapped.asmJoint.AngularPosition.Value - step;
                 hasAngularLimit = true;
             }
 
@@ -42,11 +42,11 @@ namespace BxDRobotExporter.SkeletalStructure
             driver.EndValue = currentAngularPosition + " rad";
             driver.StartValue = (currentAngularPosition - 6.5) + " rad";
             driver.GoToEnd();
-            MotionLimits.DidCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayReverse();
-            if (MotionLimits.DidCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
-                angularLimitLow = (float) wrapped.AsmJoint.AngularPosition.Value + step;
+                angularLimitLow = (float) wrapped.asmJoint.AngularPosition.Value + step;
                 if (!hasAngularLimit)
                 {
                     angularLimitHigh = angularLimitLow + 6.28f - (step * 2.0f);
@@ -59,18 +59,18 @@ namespace BxDRobotExporter.SkeletalStructure
             }
 
             driver.OnCollision -= MotionLimits.OnCollisionEvent;
-            cache.DoContactSetup(false, wrapped.ChildGroup, wrapped.ParentGroup);
+            cache.DoContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
 
-            wrapped.AsmJoint.AngularPosition.Value = currentAngularPosition;
+            wrapped.asmJoint.AngularPosition.Value = currentAngularPosition;
 
             Console.WriteLine(hasAngularLimit + "; high: " + angularLimitHigh + "; low: " + angularLimitLow);
 
             // Stash results
-            wrapped.AsmJoint.HasAngularPositionLimits = hasAngularLimit;
+            wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
             if (hasAngularLimit)
             {
-                wrapped.AsmJoint.AngularPositionStartLimit.Value = angularLimitLow;
-                wrapped.AsmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
+                wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
+                wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
             }
         }
 
@@ -78,30 +78,30 @@ namespace BxDRobotExporter.SkeletalStructure
         {
             try
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.Normal);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.Center);
+                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Normal);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Center);
             }
             catch
             {
-                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.Direction);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.RootPoint);
+                axis = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Direction);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
 
-            hasAngularLimit = wrapped.AsmJoint.HasAngularPositionLimits;
+            hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
             if ((hasAngularLimit))
             {
-                angularLimitLow = (float)wrapped.AsmJoint.AngularPositionStartLimit.Value;
-                angularLimitHigh = (float)wrapped.AsmJoint.AngularPositionEndLimit.Value;
+                angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
+                angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
             }
-            currentAngularPosition = (wrapped.AsmJoint.AngularPosition != null) ? (float)wrapped.AsmJoint.AngularPosition.Value : 0;
+            currentAngularPosition = (wrapped.asmJoint.AngularPosition != null) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
         }
 
         public static bool IsRotationalJoint(CustomRigidJoint jointI)
         {
             // RigidBodyJointType = kConcentricCircleCircleJoint
-            if (jointI.JointBased && jointI.Joints.Count == 1)
+            if (jointI.jointBased && jointI.joints.Count == 1)
             {
-                AssemblyJointDefinition joint = jointI.Joints[0].Definition;
+                AssemblyJointDefinition joint = jointI.joints[0].Definition;
                 //Checks if there is no linear motion allowed.
                 return joint.JointType == AssemblyJointTypeEnum.kRotationalJointType
                        || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType
@@ -124,7 +124,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
         protected override string ToString_Internal()
         {
-            return wrapped.ChildGroup + " rotates about " + wrapped.ParentGroup;
+            return wrapped.childGroup + " rotates about " + wrapped.parentGroup;
         }
     }
 }

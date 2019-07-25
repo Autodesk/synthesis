@@ -17,7 +17,7 @@ namespace BxDRobotExporter.Exporter
 
         public class InvalidJointException : ApplicationException
         {
-            private AssemblyJoint joint;
+            AssemblyJoint joint;
 
             public InvalidJointException(string message, AssemblyJoint joint) : base(message)
             {
@@ -69,14 +69,14 @@ namespace BxDRobotExporter.Exporter
 
             foreach (RigidNode_Base node in nodes)
             {
-                node.ModelFileName = ((RigidNode)node).Group.ToString();
+                node.ModelFileName = ((RigidNode)node).group.ToString();
                 node.ModelFullID = node.GetModelID();
             }
 
             return baseNode;
         }
     
-        public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool useOcl = false)
+        public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool useOCL = false)
         {
             SurfaceExporter surfs = new SurfaceExporter();
             BXDJSkeleton.SetupFileNames(baseNode);

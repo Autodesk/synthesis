@@ -30,7 +30,7 @@ namespace BxDRobotExporter
 
         public RobotData()
         {
-            RigidNode_Base.NODE_FACTORY = guid => new OglRigidNode(guid);
+            RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace BxDRobotExporter
             {
                 if (parentId[i] >= 0)
                 {
-                    var inventorJoint = nodes[i].GetSkeletalJoint() as INventorSkeletalJoint;
+                    var inventorJoint = nodes[i].GetSkeletalJoint() as InventorSkeletalJoint;
                     if (inventorJoint != null)
                         inventorJoint.ReloadInventorJoint();
                 }

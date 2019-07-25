@@ -8,7 +8,7 @@ using Inventor;
 
 namespace BxDRobotExporter.SkeletalStructure
 {
-    internal class PlanarJoint : PlanarJoint_Base, INventorSkeletalJoint
+    class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
     {
         private SkeletalJoint wrapped;
 
@@ -24,23 +24,23 @@ namespace BxDRobotExporter.SkeletalStructure
 
         public void ReloadInventorJoint()
         {
-            if (wrapped.ChildGroup == wrapped.RigidJoint.GroupOne)
+            if (wrapped.childGroup == wrapped.rigidJoint.groupOne)
             {
-                normal = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomTwo.Normal);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomTwo.RootPoint);
+                normal = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.Normal);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomTwo.RootPoint);
             }
             else
             {
-                normal = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.Normal);
-                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.RigidJoint.GeomOne.RootPoint);
+                normal = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.Normal);
+                basePoint = InventorDocumentIoUtils.ToBxdVector(wrapped.rigidJoint.geomOne.RootPoint);
             }
         }
 
         public static bool IsPlanarJoint(CustomRigidJoint jointI)
         {
-            if (jointI.Joints.Count == 1)
+            if (jointI.joints.Count == 1)
             {
-                AssemblyJointDefinition joint = jointI.Joints[0].Definition;
+                AssemblyJointDefinition joint = jointI.joints[0].Definition;
                 return joint.JointType == AssemblyJointTypeEnum.kPlanarJointType;
             }
             return false;
@@ -57,7 +57,7 @@ namespace BxDRobotExporter.SkeletalStructure
 
         protected override string ToString_Internal()
         {
-            return wrapped.ChildGroup + " rotates about " + wrapped.ParentGroup;
+            return wrapped.childGroup + " rotates about " + wrapped.parentGroup;
         }
     }
 }

@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace BxDRobotExporter.OGLViewer
 {
-    public class OglDrawing
+    public class OGLDrawing
     {
         /// <summary>
         /// Draws a cross hair at the origin
@@ -12,7 +12,7 @@ namespace BxDRobotExporter.OGLViewer
         /// <param name="axis">The crosshair plane is normal to this</param>
         /// <param name="bias">Use this to orient the crosshair</param>
         /// <param name="size">The radius of the crosshair</param>
-        public static void DrawCrossHair(BXDVector3 axis, BXDVector3 bias, float size)
+        public static void drawCrossHair(BXDVector3 axis, BXDVector3 bias, float size)
         {
             BXDVector3 dir1 = BXDVector3.CrossProduct(axis, bias);
             BXDVector3 dir2 = BXDVector3.CrossProduct(axis, dir1);
@@ -34,11 +34,11 @@ namespace BxDRobotExporter.OGLViewer
         /// <param name="maxAngle">The ending angle</param>
         /// <param name="radius">The radius of the arc</param>
         /// <param name="steps">The number of steps to use</param>
-        public static void DrawArc(BXDVector3 axis, BXDVector3 bias, float minAngle, float maxAngle, float radius, Color4 start, Color4 end, int steps = 100)
+        public static void drawArc(BXDVector3 axis, BXDVector3 bias, float minAngle, float maxAngle, float radius, Color4 start, Color4 end, int steps = 100)
         {
             GL.Begin(PrimitiveType.LineStrip);
             // Arcthing
-            Matrix4 stepMatrix = Matrix4.CreateFromAxisAngle(axis.ToTk(), -(maxAngle - minAngle) / steps);
+            Matrix4 stepMatrix = Matrix4.CreateFromAxisAngle(axis.ToTK(), -(maxAngle - minAngle) / steps);
             BXDVector3 tempVec = bias.Copy().Multiply(radius / bias.Magnitude());
             for (float f = 0; f < 1.0f; f += 1f / (float)steps)
             {

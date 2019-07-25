@@ -2,7 +2,7 @@
 
 namespace BxDRobotExporter.OGLViewer
 {
-    public static class OpenTkMathExt
+    public static class OpenTK_Math_Ext
     {
 
         public static BXDVector3 Multiply(this Matrix4 mat, BXDVector3 v)
@@ -27,12 +27,12 @@ namespace BxDRobotExporter.OGLViewer
             return new BXDVector3((float)resX, (float)resY, (float)resZ);
         }
 
-        public static Vector3 ToTk(this BXDVector3 vec)
+        public static Vector3 ToTK(this BXDVector3 vec)
         {
             return new Vector3(vec.x, vec.y, vec.z);
         }
 
-        public static BXDVector3 ToBxd(this Vector3 vec)
+        public static BXDVector3 ToBXD(this Vector3 vec)
         {
             return new BXDVector3(vec.X, vec.Y, vec.Z);
         }
