@@ -28,7 +28,7 @@ namespace Synthesis.Input
         // Variable to keep track which player controls are being edited in the control panel
         public static int activePlayerIndex;
 
-        private Player.ControlProfile activeControlProfile;
+        private Profile.Mode activeProfileMode;
 
         public void Awake()
         {
@@ -49,7 +49,7 @@ namespace Synthesis.Input
         public void OnEnable()
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
-            profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveControlProfile();
+            profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
 
             //Measurement slider
             unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
@@ -97,7 +97,7 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            Controls.Players[activePlayerIndex].ResetProfile(activeControlProfile);
+            Controls.Players[activePlayerIndex].ResetProfile(activeProfileMode);
             Controls.Save();
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
@@ -107,12 +107,12 @@ namespace Synthesis.Input
         /// </summary>
         public void OnProfileSelect(int value)
         {
-            if (activeControlProfile != (Player.ControlProfile)value)
+            if (activeProfileMode != (Profile.Mode)value)
             {
                 GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(); // TODO: Don't continue this function until after user chooses to save or not
-                activeControlProfile = (Player.ControlProfile)value;
+                activeProfileMode = (Profile.Mode)value;
 
-                Controls.Players[activePlayerIndex].SetControlProfile((Player.ControlProfile)value);
+                Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
                 Controls.Players[activePlayerIndex].LoadActiveProfile();
 
                 GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
@@ -162,9 +162,9 @@ namespace Synthesis.Input
         /// </summary>
         public void UpdateProfileSelection()
         {
-            if (profileDropdown.value != (int)Controls.Players[activePlayerIndex].GetActiveControlProfile())
+            if (profileDropdown.value != (int)Controls.Players[activePlayerIndex].GetActiveProfileMode())
             {
-                profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveControlProfile();
+                profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
                 profileDropdown.RefreshShownValue();
             }
         }

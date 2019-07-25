@@ -176,9 +176,9 @@ public class DriveJoints
             }
             else
             {
-                switch(Controls.Players[controlIndex].GetActiveControlProfile())
+                switch(Controls.Players[controlIndex].GetActiveProfileMode())
                 {
-                    case Player.ControlProfile.TankJoystick:
+                    case Profile.Mode.TankJoystick:
                         pwm[0] =
                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankRightAxes) * SpeedArrowPwm);
 
@@ -186,7 +186,7 @@ public class DriveJoints
                            (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().tankLeftAxes) * SpeedArrowPwm);
 
                         break;
-                    case Player.ControlProfile.ArcadeKeyboard:
+                    case Profile.Mode.ArcadeKeyboard:
                         pwm[0] =
                             (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().vertical) * -SpeedArrowPwm) +
                             (InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().horizontal) * SpeedArrowPwm);
@@ -197,7 +197,7 @@ public class DriveJoints
 
                         break;
                     default:
-                        throw new Player.UnhandledControlProfileException();
+                        throw new Profile.UnhandledControlProfileException();
                 }
             }
         }

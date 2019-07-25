@@ -153,9 +153,6 @@ namespace Synthesis.Robot
             RootNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode;
 
             RootNode.ListAllNodes(nodes);
-            
-
-            Debug.Log(RootNode.driveTrainType.ToString());
 
             emuList = new List<EmuNetworkInfo>();
 
@@ -163,7 +160,7 @@ namespace Synthesis.Robot
             {
                 try
                 {
-                    if (Base.GetSkeletalJoint().attachedSensors != null)
+                    if (Base.GetSkeletalJoint() != null && Base.GetSkeletalJoint().attachedSensors != null)
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
@@ -178,8 +175,6 @@ namespace Synthesis.Robot
                                 });
                             }
                         }
-
-                       
                     }
                 }
                 catch (Exception e)
