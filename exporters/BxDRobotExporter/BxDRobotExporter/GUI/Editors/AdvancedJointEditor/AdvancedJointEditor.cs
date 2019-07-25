@@ -8,12 +8,13 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
         private DockableWindow embeddedAdvancedJointEditorPane;
         private readonly AdvancedJointEditorUserControl advancedJointEditorUserControl = new AdvancedJointEditorUserControl();
 
-        private bool visible;
+        private bool visible; // Whether the joint editor _should_ be visible
         public bool Visible
         {
             get => visible;
             set
             {
+                if (value == embeddedAdvancedJointEditorPane.Visible) return; // Only on change
                 visible = value;
                 if (embeddedAdvancedJointEditorPane == null) return;
                 if (value)
@@ -25,11 +26,6 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
                     HideAndClearHighlight();
                 }
             }
-        }
-
-        public AdvancedJointEditor(bool startVisible)
-        {
-            visible = startVisible;
         }
 
         public void CreateDockableWindow(UserInterfaceManager uiMan)
@@ -47,8 +43,8 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
             {
                 if (after == EventTimingEnum.kBefore && window.Equals(embeddedAdvancedJointEditorPane))
                 {
-                    ClearHighlight();
-                    visible = false; // 
+                    ClearHighlight(); // Must not hide pane again because this event will be fired again
+                    visible = false;
                 }
                 code = HandlingCodeEnum.kEventNotHandled;
             };
@@ -98,7 +94,11 @@ namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor
 
         public void TemporaryHide()
         {
-            HideAndClearHighlight();
+            if (!visible) return;
+
+            // Hmmm
+            Visible = false;
+            visible = true; // because visible is set to false when OnHide is fired
         }
     }
 }
