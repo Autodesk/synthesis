@@ -130,16 +130,18 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Converted CustomInput.</returns>
         /// <param name="arg">Some kind of argument.</param>
-        private static CustomInput ArgToInput(UnityEngine.KeyCode? arg)
+        private static CustomInput ArgToInput(UnityEngine.KeyCode? arg, KeyModifier keyModifier = KeyModifier.NoModifier)
         {
             if (arg == null)
                 return null;
-            return new KeyboardInput(arg.Value);
+            return new KeyboardInput(arg.Value, keyModifier);
         }
         #endregion
 
-        public KeyMapping(string name, UnityEngine.KeyCode primaryInput, UnityEngine.KeyCode? secondaryInput = null, UnityEngine.KeyCode? tertiaryInput = null) :
-            this(name, ArgToInput(primaryInput), ArgToInput(secondaryInput), ArgToInput(tertiaryInput))
+        public KeyMapping(string name, UnityEngine.KeyCode primaryInput, KeyModifier primaryKeyModifier = KeyModifier.NoModifier, 
+            UnityEngine.KeyCode? secondaryInput = null, KeyModifier secondaryKeyModifier = KeyModifier.NoModifier, 
+            UnityEngine.KeyCode? tertiaryInput = null, KeyModifier tertiaryKeyModifier = KeyModifier.NoModifier) :
+            this(name, ArgToInput(primaryInput, primaryKeyModifier), ArgToInput(secondaryInput, secondaryKeyModifier), ArgToInput(tertiaryInput, tertiaryKeyModifier))
         { }
 
         /// <summary>

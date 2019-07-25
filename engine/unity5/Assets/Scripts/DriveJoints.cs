@@ -144,7 +144,7 @@ public class DriveJoints
     {
         float[] pwm = new float[PWM_COUNT];
         for (int i = 0; i < PWM_COUNT; i++)
-            pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i]) * SpeedArrowPwm;
+            pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i], true) * SpeedArrowPwm;
 
         return pwm;
     }
