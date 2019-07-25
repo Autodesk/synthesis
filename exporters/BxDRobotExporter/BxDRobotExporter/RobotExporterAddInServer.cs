@@ -17,7 +17,7 @@ namespace BxDRobotExporter
     /// This is where the magic happens. All top-level event handling, UI creation, and inventor communication is handled here.
     /// </summary>
     [Guid("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
-    public class RobotExporterAddInServer : SingleEnvironmentAddInServer, ApplicationAddInServer
+    public class RobotExporterAddInServer : SingleEnvironmentAddInServer
     {
         // ------ Add-In ------
         public static RobotExporterAddInServer Instance { get; private set; }

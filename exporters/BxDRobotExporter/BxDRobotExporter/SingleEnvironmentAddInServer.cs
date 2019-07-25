@@ -9,7 +9,7 @@ using Environment = Inventor.Environment;
 
 namespace BxDRobotExporter
 {
-    public abstract class SingleEnvironmentAddInServer
+    public abstract class SingleEnvironmentAddInServer : ApplicationAddInServer
     {
         public Application Application { get; private set; }
         public Document OpenDocument { get; private set; }
