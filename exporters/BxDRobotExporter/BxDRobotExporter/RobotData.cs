@@ -211,38 +211,29 @@ namespace BxDRobotExporter
             try
             {
                 WriteLimits(RobotBaseNode); // write the limits from Inventor to the skeleton
-                // If robot has not been named, prompt user for information
-                if (RobotName == null)
+                
+                if (string.IsNullOrEmpty(RobotName)) // If robot has not been named, cancel
                     return false;
 
-                if (!Directory.Exists(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName))
-                    Directory.CreateDirectory(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName);
+                var robotFolderPath = RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName;
+                Directory.CreateDirectory(robotFolderPath); // CreateDirectory checks if the folder already exists
 
-                if (RobotMeshes == null || ExportWithColors != RobotExporterAddInServer.PluginSettings.GeneralUseFancyColors) // Re-export if color settings changed
-                    LoadMeshes();
+                if (!LoadMeshes()) // Re-export every time because we don't detect changes to the robot CAD
+                    return false;
+                
                 BXDJSkeleton.SetupFileNames(RobotBaseNode);
-
-
-                BXDJSkeleton.WriteSkeleton(
-                    RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\skeleton.bxdj",
-                    RobotBaseNode
-                );
-
-
-                //XML EXPORTING
-                //BXDJSkeleton.WriteSkeleton((RMeta.UseSettingsDir && RMeta.ActiveDir != null) ? RMeta.ActiveDir : PluginSettings.GeneralSaveLocation + "\\" + RMeta.ActiveRobotName + "\\skeleton.bxdj", SkeletonBase);
+                BXDJSkeleton.WriteSkeleton(robotFolderPath + "\\skeleton.bxdj", RobotBaseNode);
 
                 for (var i = 0; i < RobotMeshes.Count; i++)
                 {
-                    RobotMeshes[i].WriteToFile(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName + "\\node_" + i + ".bxda");
+                    RobotMeshes[i].WriteToFile(robotFolderPath + "\\node_" + i + ".bxda");
                 }
-
                 return true;
             }
             catch (Exception e)
             {
                 //TODO: Create a form that displays a simple error message with an option to expand it and view the exception info
-                MessageBox.Show("Error saving robot: " + e.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unable to export robot: " + e.Message, "Export Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
