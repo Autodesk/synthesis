@@ -95,40 +95,7 @@ namespace Synthesis.Input
         /// </summary>
         public ReadOnlyCollection<KeyMapping> GetActiveList()
         {
-            List<KeyMapping> list = new List<KeyMapping>();
-            foreach (var field in profiles[(int)activeProfileMode].buttons.GetType().GetFields())
-            {
-                if ((field.FieldType == typeof(KeyMapping)))
-                {
-                    if ((KeyMapping)field.GetValue(profiles[(int)activeProfileMode].buttons) != null)
-                        list.Add((KeyMapping)field.GetValue(profiles[(int)activeProfileMode].buttons));
-                }
-                else if ((field.FieldType == typeof(KeyMapping[])))
-                {
-                    foreach (var mapping in (KeyMapping[])field.GetValue(profiles[(int)activeProfileMode].buttons))
-                    {
-                        if (mapping != null)
-                        {
-                            list.Add(mapping);
-                        }
-                    }
-                }
-                else if ((field.FieldType == typeof(List<KeyMapping>)))
-                {
-                    foreach (var mapping in (List<KeyMapping>)field.GetValue(profiles[(int)activeProfileMode].buttons))
-                    {
-                        if (mapping != null)
-                        {
-                            list.Add(mapping);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new System.Exception("Unhandled Buttons field type " + field.FieldType.Name);
-                }
-            }
-            return list.AsReadOnly();
+            return profiles[(int)activeProfileMode].buttons.ToList().AsReadOnly();
         }
 
         public void SetActiveProfileMode(Profile.Mode profileMode)

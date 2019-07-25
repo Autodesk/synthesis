@@ -76,6 +76,37 @@ namespace Synthesis.Input
 
                 // Leave fields null
             }
+
+            public List<KeyMapping> ToList()
+            {
+                // Keep this up-to-date with all this class's fields
+                // The order they appear here is the order they'll appear in the controls menu
+
+                List<KeyMapping> list = new List<KeyMapping>();
+                for(int i = 0; i < DriveJoints.PWM_COUNT; i++)
+                {
+                    list.Add(pwmPos[i]);
+                    list.Add(pwmNeg[i]);
+                }
+
+                list.Add(resetRobot);
+                list.Add(resetField);
+                list.Add(cameraToggle);
+                list.Add(scoreboard);
+                list.Add(trajectory);
+                list.Add(replayMode);
+                list.Add(duplicateRobot);
+                list.Add(switchActiveRobot);
+
+                foreach (var mapping in pickup)
+                    list.Add(mapping);
+                foreach (var mapping in release)
+                    list.Add(mapping);
+                foreach (var mapping in spawnPieces)
+                    list.Add(mapping);
+
+                return list;
+            }
         }
 
         /// <summary>

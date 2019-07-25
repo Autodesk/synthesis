@@ -126,7 +126,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
+                if (InputControl.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {

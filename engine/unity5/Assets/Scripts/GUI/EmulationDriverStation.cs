@@ -10,6 +10,8 @@ namespace Synthesis.GUI
         public static EmulationDriverStation Instance { get; private set; }
         private bool VMConnectionCoroutineRunning = false;
 
+        private bool lastGameSpecificMessageFocused = false;
+
         GameObject canvas;
         InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
@@ -73,7 +75,11 @@ namespace Synthesis.GUI
 
         public void Update()
         {
-            InputControl.freeze = gameSpecificMessage.isFocused;
+            if (lastGameSpecificMessageFocused != gameSpecificMessage.isFocused)
+            {
+                InputControl.freeze = gameSpecificMessage.isFocused;
+                lastGameSpecificMessageFocused = gameSpecificMessage.isFocused;
+            }
         }
 
         /// <summary>
