@@ -169,12 +169,12 @@ namespace Synthesis.Input
         /// <param name="name">KeyMapping name.</param>
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
-        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, CustomInput primary)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, CustomInput primary)
         {
             return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
-        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, KeyCode primary)
         {
             return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
@@ -189,7 +189,7 @@ namespace Synthesis.Input
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        public static KeyMapping SetKey(Player.ControlProfile controlProfile, string name, int controlIndex, KeyCode primary, CustomInput secondary)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, KeyCode primary, CustomInput secondary)
         {
             return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
         }
@@ -207,7 +207,7 @@ namespace Synthesis.Input
         /// <param name="negative">Name of negative KeyMapping.</param>
         /// <param name="positive">Name of positive KeyMapping.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static Axis SetAxis(Player.ControlProfile controlProfile, string name, int controlIndex, KeyMapping negative, KeyMapping positive)
+        public static Axis SetAxis(Profile.Mode controlProfile, string name, int controlIndex, KeyMapping negative, KeyMapping positive)
         {
             return null; // Controls.Players[controlIndex].SetAxis(controlProfile, name, negative, positive);
         }
