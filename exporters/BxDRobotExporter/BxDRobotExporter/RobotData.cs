@@ -213,8 +213,7 @@ namespace BxDRobotExporter
                 WriteLimits(RobotBaseNode); // write the limits from Inventor to the skeleton
                 // If robot has not been named, prompt user for information
                 if (RobotName == null)
-                    if (!PromptExportSettings())
-                        return false;
+                    return false;
 
                 if (!Directory.Exists(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName))
                     Directory.CreateDirectory(RobotExporterAddInServer.PluginSettings.GeneralSaveLocation + "\\" + RobotName);
