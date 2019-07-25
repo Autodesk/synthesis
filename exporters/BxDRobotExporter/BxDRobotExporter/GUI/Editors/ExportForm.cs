@@ -45,6 +45,26 @@ namespace BxDRobotExporter.GUI.Editors
             this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.FieldName;
             this.OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.OpenSynthesis;
         }
+        
+        /// <summary>
+        /// Prompts the user for the name of the robot, as well as other information.
+        /// </summary>
+        /// <returns>True if user pressed okay, false if they pressed cancel</returns>
+        public static bool PromptExportSettings(RobotData robotData)
+        { // TODO: Compact this down
+            if (Prompt(robotData.RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
+            {
+                robotData.RobotName = robotName;
+                robotData.ExportDefaultField = field;
+
+                RobotExporterAddInServer.Instance.AddInSettings.GeneralUseFancyColors = colors;
+                RobotExporterAddInServer.Instance.AddInSettings.OnSettingsChanged();
+
+                return true;
+            }
+
+            return false;
+        }
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
         {

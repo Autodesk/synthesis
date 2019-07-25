@@ -10,6 +10,7 @@ using BxDRobotExporter.GUI.Guide;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Properties;
 using BxDRobotExporter.Utilities;
+using BxDRobotExporter.Utilities.Synthesis;
 using Inventor;
 
 namespace BxDRobotExporter
@@ -212,9 +213,9 @@ namespace BxDRobotExporter
 
             if (exportResult == DialogResult.Yes)
             {
-                if (RobotData.PromptExportSettings())
+                if (ExportForm.PromptExportSettings(RobotData))
                     if (RobotData.ExportRobot() && RobotData.ExportDefaultField != null)
-                        RobotData.OpenSynthesis();
+                        SynthesisUtils.OpenSynthesis(RobotData.RobotName, RobotData.RobotName);
             }
 
             // Re-enable disabled components
