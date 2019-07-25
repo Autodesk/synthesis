@@ -15,7 +15,7 @@ namespace Synthesis.Input
     {
         public const int PLAYER_COUNT = 6;
         
-        public const Profile.Mode DEFAULT_PROFILE_MODE = Profile.Mode.ArcadeKeyboard;
+        public const Profile.Mode DEFAULT_PROFILE_MODE = Profile.Mode.Arcade;
 
         private int index; // TODO: necessary to track this here?
 
