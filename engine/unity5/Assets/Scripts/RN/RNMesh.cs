@@ -100,7 +100,7 @@ namespace Synthesis.RN
                 string jsonFile = Directory.GetParent(filePath).FullName + Path.DirectorySeparatorChar + "skeleton.json";
                 bool useJsonWeight = false;
                 if (File.Exists(jsonFile)) { useJsonWeight = true; }
-                float weight = 1.0f;
+                float weight = mesh.physics.mass;
                 if (useJsonWeight) {
                     try {
                         weight = (float)GetSkeletalJoint().weight;
