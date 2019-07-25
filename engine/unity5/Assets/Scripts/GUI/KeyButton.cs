@@ -17,7 +17,7 @@ namespace Synthesis.GUI
     {
         public static KeyButton selectedButton = null;
         public static bool ignoreMouseMovement = true;
-        public static bool useKeyModifiers = false;
+        public static bool useKeyModifiers = true;
 
         public KeyMapping keyMapping;
         public int keyIndex;

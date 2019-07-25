@@ -183,11 +183,10 @@ namespace Synthesis.Input
                 {
                     if (player_i == 0) // Customized keyboard player 1 controls
                     {
-                        if (Enum.TryParse("Alpha" + pwm_i, false, out KeyCode pos) &&
-                        Enum.TryParse("Keypad" + pwm_i, false, out KeyCode neg))
+                        if (Enum.TryParse("Alpha" + pwm_i, false, out KeyCode val))
                         {
-                            profile.buttons.pwmPos[pwm_i] = new KeyMapping("PWM " + pwm_i + " Positive", pos);
-                            profile.buttons.pwmNeg[pwm_i] = new KeyMapping("PWM " + pwm_i + " Negative", neg);
+                            profile.buttons.pwmPos[pwm_i] = new KeyMapping("PWM " + pwm_i + " Positive", val);
+                            profile.buttons.pwmNeg[pwm_i] = new KeyMapping("PWM " + pwm_i + " Negative", val, KeyModifier.Shift);
                         }
                         else
                         {
@@ -347,7 +346,7 @@ namespace Synthesis.Input
                     if (player_i == 0)
                     {
                         buttons.pickup.Add(new KeyMapping("1: Pick Up " + FieldDataHandler.gamepieces[i].name, KeyCode.LeftControl));
-                        buttons.release.Add(new KeyMapping("1: Release " + FieldDataHandler.gamepieces[i].name, KeyCode.LeftShift));
+                        buttons.release.Add(new KeyMapping("1: Release " + FieldDataHandler.gamepieces[i].name, KeyCode.LeftAlt));
                         buttons.spawnPieces.Add(new KeyMapping("1: Spawn " + FieldDataHandler.gamepieces[i].name, KeyCode.RightControl));
 
                     }
