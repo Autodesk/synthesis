@@ -9,6 +9,7 @@ using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
+using BxDRobotExporter.Utilities;
 using Inventor;
 
 namespace BxDRobotExporter

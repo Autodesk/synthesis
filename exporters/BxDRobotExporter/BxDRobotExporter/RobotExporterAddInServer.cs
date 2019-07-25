@@ -12,7 +12,7 @@ using BxDRobotExporter.Properties;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.Synthesis;
 using Inventor;
-using static BxDRobotExporter.PictureDispConverter;
+using static BxDRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 
 namespace BxDRobotExporter
 {

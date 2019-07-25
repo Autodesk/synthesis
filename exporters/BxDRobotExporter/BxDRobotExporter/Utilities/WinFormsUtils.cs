@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.Editors.JointEditor
+namespace BxDRobotExporter.Utilities
 {
     internal static class WinFormsUtils
     {

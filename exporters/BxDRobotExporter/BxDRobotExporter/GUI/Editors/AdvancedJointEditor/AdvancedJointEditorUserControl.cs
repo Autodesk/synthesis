@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
 using BxDRobotExporter.OGLViewer;
+using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.Synthesis;
 
 namespace BxDRobotExporter.GUI.Editors.AdvancedJointEditor

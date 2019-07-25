@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter.Editors.JointEditor
+namespace BxDRobotExporter.Utilities.ImageFormat
 {
     internal class AxHostConverter : AxHost
     {

@@ -5,7 +5,7 @@ using Inventor;
 using Environment = Inventor.Environment;
 using IPictureDisp = stdole.IPictureDisp;
 
-namespace BxDRobotExporter
+namespace BxDRobotExporter.Utilities
 {
     internal static class InventorUtils
     {

@@ -4,6 +4,7 @@
 
 using System;
 using BxDRobotExporter.RigidAnalyzer;
+using BxDRobotExporter.Utilities;
 using Inventor;
 
 namespace BxDRobotExporter.SkeletalStructure

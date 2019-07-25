@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace BxDRobotExporter.Utilities.Synthesis
 {
-    public class SynthesisUtils
+    public static class SynthesisUtils
     {
         /// <summary>
         /// Open Synthesis to a specific robot and field.
