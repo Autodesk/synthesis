@@ -9,6 +9,7 @@ using BxDRobotExporter.GUI.Editors.JointEditor;
 using BxDRobotExporter.GUI.Guide;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Properties;
+using BxDRobotExporter.Utilities;
 using Inventor;
 
 namespace BxDRobotExporter
