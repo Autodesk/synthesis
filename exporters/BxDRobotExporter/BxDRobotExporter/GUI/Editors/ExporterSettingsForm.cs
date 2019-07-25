@@ -34,7 +34,7 @@ namespace BxDRobotExporter.GUI.Editors
         private void LoadValues()
         {
             values = RobotExporterAddInServer.Instance.AddInSettings;
-            ChildHighlight.BackColor = values.InventorChildColor;
+            ChildHighlight.BackColor = values.JointHighlightColor;
             checkBox1.Checked = values.UseAnalytics;
         }
 
@@ -43,9 +43,9 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void SaveValues()
         {
-            values.InventorChildColor = ChildHighlight.BackColor;
+            values.JointHighlightColor = ChildHighlight.BackColor;
             values.UseAnalytics = checkBox1.Checked;
-            values.OnSettingsChanged();
+            values.SaveSettings();
         }
 
         /// <summary>
