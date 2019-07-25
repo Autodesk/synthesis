@@ -2,9 +2,9 @@
 using BxDRobotExporter.Exporter;
 using Inventor;
 
-namespace BxDRobotExporter
+namespace BxDRobotExporter.Utilities
 {
-    public class InventorDocumentIoUtils
+    public static class InventorDocumentIoUtils
     {
         public const string SYNTHESIS_PATH = @"C:\Program Files\Autodesk\Synthesis\Synthesis\Synthesis.exe";
         public static string ViewerPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + @"\RobotViewer\RobotViewer.exe";

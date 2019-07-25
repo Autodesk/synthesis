@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BxDRobotExporter.Editors.JointEditor;
+using BxDRobotExporter.Utilities;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
 {

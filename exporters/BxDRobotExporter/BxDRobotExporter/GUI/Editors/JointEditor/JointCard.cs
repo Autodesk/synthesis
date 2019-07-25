@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Exporter;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
+using BxDRobotExporter.Utilities;
+using BxDRobotExporter.Utilities.ImageFormat;
 using BxDRobotExporter.Utilities.Synthesis;
 using Inventor;
 

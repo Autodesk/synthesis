@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BxDRobotExporter.RigidAnalyzer;
+using BxDRobotExporter.Utilities;
 using Inventor;
 
 namespace BxDRobotExporter.Exporter

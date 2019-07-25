@@ -1,4 +1,3 @@
-using BxDRobotExporter.Editors.JointEditor;
 using BxDRobotExporter.Properties;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
