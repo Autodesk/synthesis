@@ -4,6 +4,7 @@ using Synthesis.Input.Enums;
 using Synthesis.Input.Inputs;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 //=========================================================================================
 //                                      Profile Class
@@ -165,9 +166,11 @@ namespace Synthesis.Input
             }
         }
 
-        public static Profile CreateDefault(int joystick_index, Mode controlProfile)
+        public static Profile CreateDefault(int player_i, Mode controlProfile)
         {
             Profile profile = new Profile();
+
+            var joystick_index = player_i + 1;
 
             if (Enum.TryParse("Joystick" + joystick_index, false, out Joystick joy))
             {
@@ -176,30 +179,46 @@ namespace Synthesis.Input
                     case Mode.ArcadeKeyboard:
                         {
                             #region Arcade Controls
-
-                            profile.buttons.forward = new KeyMapping("Forward", new JoystickInput(JoystickAxis.Axis2Negative, joy));
-                            profile.buttons.backward = new KeyMapping("Backward", new JoystickInput(JoystickAxis.Axis2Positive, joy));
-                            profile.buttons.left = new KeyMapping("Left", new JoystickInput(JoystickAxis.Axis4Negative, joy));
-                            profile.buttons.right = new KeyMapping("Right", new JoystickInput(JoystickAxis.Axis4Positive, joy));
+                            if (player_i == 0)
+                            {
+                                profile.buttons.forward = new KeyMapping("Forward", KeyCode.UpArrow);
+                                profile.buttons.backward = new KeyMapping("Backward", KeyCode.DownArrow);
+                                profile.buttons.left = new KeyMapping("Left", KeyCode.LeftArrow);
+                                profile.buttons.right = new KeyMapping("Right", KeyCode.RightArrow);
+                            }
+                            else
+                            {
+                                profile.buttons.forward = new KeyMapping("Forward", new JoystickInput(JoystickAxis.Axis2Negative, joy));
+                                profile.buttons.backward = new KeyMapping("Backward", new JoystickInput(JoystickAxis.Axis2Positive, joy));
+                                profile.buttons.left = new KeyMapping("Left", new JoystickInput(JoystickAxis.Axis4Negative, joy));
+                                profile.buttons.right = new KeyMapping("Right", new JoystickInput(JoystickAxis.Axis4Positive, joy));
+                            }
 
                             profile.axes.horizontal = new Axis("Arcade Horizontal", profile.buttons.left, profile.buttons.right);
                             profile.axes.vertical = new Axis("Arcade Vertical", profile.buttons.backward, profile.buttons.forward);
-
                             #endregion
                         }
                         break;
                     case Mode.TankJoystick:
                         {
                             #region Tank Controls
-
-                            profile.buttons.tankFrontLeft = new KeyMapping("Tank Front Left", new JoystickInput(JoystickAxis.Axis2Negative, joy));
-                            profile.buttons.tankBackLeft = new KeyMapping("Tank Back Left", new JoystickInput(JoystickAxis.Axis2Positive, joy));
-                            profile.buttons.tankFrontRight = new KeyMapping("Tank Front Right", new JoystickInput(JoystickAxis.Axis5Positive, joy));
-                            profile.buttons.tankBackRight = new KeyMapping("Tank Back Right", new JoystickInput(JoystickAxis.Axis5Negative, joy));
+                            if (player_i == 0)
+                            { // TODO: Same for now, will be removed when custom arcade and tank controls are removed
+                                profile.buttons.tankFrontLeft = new KeyMapping("Tank Front Left", new JoystickInput(JoystickAxis.Axis2Negative, joy));
+                                profile.buttons.tankBackLeft = new KeyMapping("Tank Back Left", new JoystickInput(JoystickAxis.Axis2Positive, joy));
+                                profile.buttons.tankFrontRight = new KeyMapping("Tank Front Right", new JoystickInput(JoystickAxis.Axis5Positive, joy));
+                                profile.buttons.tankBackRight = new KeyMapping("Tank Back Right", new JoystickInput(JoystickAxis.Axis5Negative, joy));
+                            }
+                            else
+                            {
+                                profile.buttons.tankFrontLeft = new KeyMapping("Tank Front Left", new JoystickInput(JoystickAxis.Axis2Negative, joy));
+                                profile.buttons.tankBackLeft = new KeyMapping("Tank Back Left", new JoystickInput(JoystickAxis.Axis2Positive, joy));
+                                profile.buttons.tankFrontRight = new KeyMapping("Tank Front Right", new JoystickInput(JoystickAxis.Axis5Positive, joy));
+                                profile.buttons.tankBackRight = new KeyMapping("Tank Back Right", new JoystickInput(JoystickAxis.Axis5Negative, joy));
+                            }
 
                             profile.axes.tankLeftAxes = new Axis("Tank Left", profile.buttons.tankBackLeft, profile.buttons.tankFrontLeft);
                             profile.axes.tankRightAxes = new Axis("Tank Right", profile.buttons.tankBackRight, profile.buttons.tankFrontRight);
-
                             #endregion
                         }
                         break;
@@ -213,30 +232,60 @@ namespace Synthesis.Input
                 //PWM controls
                 for (int pwm_i = 0; pwm_i < DriveJoints.PWM_COUNT - DriveJoints.PWM_OFFSET; pwm_i++)
                 {
-                    var pwm_key_i = pwm_i + 1;
-                    if (Enum.TryParse("Axis" + pwm_key_i + "Positive", false, out JoystickAxis axis_pos) &&
-                        Enum.TryParse("Axis" + pwm_key_i + "Negative", false, out JoystickAxis axis_neg))
+                    if (player_i == 0)
                     {
-                        profile.buttons.pwmPos[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Positive", new JoystickInput(axis_pos, joy));
-                        profile.buttons.pwmNeg[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Negative", new JoystickInput(axis_neg, joy));
-
-                        profile.axes.pwmAxes[pwm_i] = new Axis("PWM " + (pwm_i + DriveJoints.PWM_OFFSET), profile.buttons.pwmNeg[pwm_i], profile.buttons.pwmPos[pwm_i]);
+                        if (Enum.TryParse("Alpha" + pwm_i, false, out KeyCode pos) &&
+                        Enum.TryParse("Keypad" + pwm_i, false, out KeyCode neg))
+                        {
+                            profile.buttons.pwmPos[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Positive", pos);
+                            profile.buttons.pwmNeg[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Negative", neg);
+                        }
+                        else
+                        {
+                            throw new Exception("Error configuring PWM buttons");
+                        }
                     }
                     else
                     {
-                        throw new Exception("Error configuring PWM buttons");
+                        var pwm_key_i = pwm_i + 1;
+                        if (Enum.TryParse("Axis" + pwm_key_i + "Positive", false, out JoystickAxis axis_pos) &&
+                        Enum.TryParse("Axis" + pwm_key_i + "Negative", false, out JoystickAxis axis_neg))
+                        {
+                            profile.buttons.pwmPos[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Positive", new JoystickInput(axis_pos, joy));
+                            profile.buttons.pwmNeg[pwm_i] = new KeyMapping("PWM " + (pwm_i + DriveJoints.PWM_OFFSET) + " Negative", new JoystickInput(axis_neg, joy));
+                        }
+                        else
+                        {
+                            throw new Exception("Error configuring PWM buttons");
+                        }
                     }
+
+                    profile.axes.pwmAxes[pwm_i] = new Axis("PWM " + (pwm_i + DriveJoints.PWM_OFFSET), profile.buttons.pwmNeg[pwm_i], profile.buttons.pwmPos[pwm_i]);
                 }
 
                 //Other Controls
-                profile.buttons.resetRobot = new KeyMapping("Reset Robot", new JoystickInput(JoystickButton.Button8, joy));
-                profile.buttons.resetField = new KeyMapping("Reset Field", new JoystickInput(JoystickButton.Button9, joy));
-                profile.buttons.replayMode = new KeyMapping("Replay Mode", new JoystickInput(JoystickButton.Button12, joy));
-                profile.buttons.cameraToggle = new KeyMapping("Camera Toggle", new JoystickInput(JoystickButton.Button7, joy));
-                profile.buttons.scoreboard = new KeyMapping("Scoreboard", new JoystickInput(JoystickButton.Button10, joy));
-                profile.buttons.trajectory = new KeyMapping("Toggle Trajectory", new JoystickInput(JoystickButton.Button11, joy));
-                profile.buttons.duplicateRobot = new KeyMapping("Duplicate Robot", new JoystickInput(JoystickButton.Button1, joy));
-                profile.buttons.switchActiveRobot = new KeyMapping("Switch Active Robot", new JoystickInput(JoystickButton.Button2, joy));
+                if (player_i == 0)
+                {
+                    profile.buttons.resetRobot = new KeyMapping("Reset Robot", KeyCode.R);
+                    profile.buttons.resetField = new KeyMapping("Reset Field", KeyCode.F);
+                    profile.buttons.replayMode = new KeyMapping("Replay Mode", KeyCode.Tab);
+                    profile.buttons.cameraToggle = new KeyMapping("Camera Toggle", KeyCode.C);
+                    profile.buttons.scoreboard = new KeyMapping("Scoreboard", KeyCode.Q);
+                    profile.buttons.trajectory = new KeyMapping("Toggle Trajectory", KeyCode.T);
+                    profile.buttons.duplicateRobot = new KeyMapping("Duplicate Robot", KeyCode.U);
+                    profile.buttons.switchActiveRobot = new KeyMapping("Switch Active Robot", KeyCode.Y);
+                }
+                else
+                {
+                    profile.buttons.resetRobot = new KeyMapping("Reset Robot", new JoystickInput(JoystickButton.Button8, joy));
+                    profile.buttons.resetField = new KeyMapping("Reset Field", new JoystickInput(JoystickButton.Button9, joy));
+                    profile.buttons.replayMode = new KeyMapping("Replay Mode", new JoystickInput(JoystickButton.Button12, joy));
+                    profile.buttons.cameraToggle = new KeyMapping("Camera Toggle", new JoystickInput(JoystickButton.Button7, joy));
+                    profile.buttons.scoreboard = new KeyMapping("Scoreboard", new JoystickInput(JoystickButton.Button10, joy));
+                    profile.buttons.trajectory = new KeyMapping("Toggle Trajectory", new JoystickInput(JoystickButton.Button11, joy));
+                    profile.buttons.duplicateRobot = new KeyMapping("Duplicate Robot", new JoystickInput(JoystickButton.Button1, joy));
+                    profile.buttons.switchActiveRobot = new KeyMapping("Switch Active Robot", new JoystickInput(JoystickButton.Button2, joy));
+                }
 
                 #endregion
             }
@@ -244,17 +293,19 @@ namespace Synthesis.Input
             {
                 throw new Exception("Failed to establish joystick index");
             }
-            profile.UpdateFieldControls(joystick_index);
+            profile.UpdateFieldControls(player_i);
             return profile;
         }
 
-        public void UpdateFieldControls(int joystick_index)
+        public void UpdateFieldControls(int player_i)
         {
             #region Field Controls
 
             buttons.pickup.Clear();
             buttons.release.Clear();
             buttons.spawnPieces.Clear();
+
+            var joystick_index = player_i + 1;
 
             for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
             {

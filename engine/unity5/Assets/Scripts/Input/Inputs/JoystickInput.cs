@@ -66,7 +66,7 @@ namespace Synthesis.Input.Inputs
         #endregion
 
         [Newtonsoft.Json.JsonConstructor]
-        public JoystickInput(JoystickAxis axis = JoystickAxis.None, JoystickButton button = JoystickButton.None, Joystick target = Joystick.AllJoysticks, KeyModifier modifiers = KeyModifier.NoModifier)
+        public JoystickInput(JoystickAxis axis, JoystickButton button, Joystick target = Joystick.AllJoysticks, KeyModifier modifiers = KeyModifier.NoModifier)
         {
             if ((axis == JoystickAxis.None) == (button == JoystickButton.None))
             {

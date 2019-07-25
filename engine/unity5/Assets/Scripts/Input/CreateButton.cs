@@ -35,12 +35,7 @@ namespace Synthesis.Input
         // Use this for initialization
         public void Start()
         {
-            DestroyList();
-
-            //Loads controls (if changed in another scene) and updates their button text.
-            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateButtons();
+            CreateButtons();
 
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
         }
@@ -55,7 +50,7 @@ namespace Synthesis.Input
 
         public void CreateButtons() // TODO rename to CreateButtons and limit number of calls? Replace with UpdateAllText?
         {
-            DestroyList();
+            DestroyButtons();
             float maxNameWidth = 0;
             float contentHeight = 4;
 
@@ -130,7 +125,7 @@ namespace Synthesis.Input
         /// Destroys control lists.
         /// Reccommended: Call before generating/creating a new player control list.
         /// </summary>
-        public void DestroyList()
+        private void DestroyButtons()
         {
             namesTransform = transform.Find("Names");
             keysTransform = transform.Find("Keys");

@@ -66,7 +66,7 @@ namespace Synthesis.Input
         {
             for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
             {
-                Players[player_i].GetProfile(Players[player_i].GetActiveProfileMode()).UpdateFieldControls(player_i + 1);
+                Players[player_i].GetProfile(Players[player_i].GetActiveProfileMode()).UpdateFieldControls(player_i);
             }
         }
     }

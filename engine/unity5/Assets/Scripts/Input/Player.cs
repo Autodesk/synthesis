@@ -69,7 +69,7 @@ namespace Synthesis.Input
             if (input != "")
             {
                 profiles[(int)activeProfileMode].FromString(input);
-                profiles[(int)activeProfileMode].UpdateFieldControls(index + 1);
+                profiles[(int)activeProfileMode].UpdateFieldControls(index);
             }
             else
             {
@@ -143,7 +143,7 @@ namespace Synthesis.Input
 
         public void ResetProfile(Profile.Mode profileMode)
         {
-            profiles[(int)profileMode] = Profile.CreateDefault(index + 1, profileMode);
+            profiles[(int)profileMode] = Profile.CreateDefault(index, profileMode);
         }
     }
 }
