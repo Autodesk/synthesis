@@ -281,6 +281,10 @@ namespace Synthesis.States
             saveButton.onClick.RemoveAllListeners();
             saveButton.onClick.AddListener(PushSaveReplayState);
 
+            Button loadButton = GameObject.Find("LoadReplayButton").GetComponent<Button>();
+            loadButton.onClick.RemoveAllListeners();
+            loadButton.onClick.AddListener(PushLoadReplayState);
+
             Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
             helpButton.onClick.RemoveAllListeners();
             helpButton.onClick.AddListener(HelpMenu);
@@ -491,6 +495,14 @@ namespace Synthesis.States
                 }
             }
             StateMachine.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
+        }
+
+        /// <summary>
+        /// Pushes the load replay state.
+        /// </summary>
+        private void PushLoadReplayState()
+        {
+            StateMachine.PushState(new LoadReplayState());
         }
 
         /// <summary>
