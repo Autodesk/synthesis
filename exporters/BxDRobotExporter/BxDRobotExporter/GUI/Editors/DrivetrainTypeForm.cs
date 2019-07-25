@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 
 namespace BxDRobotExporter.GUI.Editors
 {
     public partial class DrivetrainTypeForm : Form
     {
-        private readonly RobotData robotData;
+        private readonly RobotDataManager robotDataManager;
         private static readonly Color SelectedColor = Color.FromArgb(239, 195, 154);
         private static readonly Color HoverColor = Color.FromArgb(239, 217, 192);
         private static readonly Color DefaultColor = SystemColors.Control;
@@ -16,9 +17,9 @@ namespace BxDRobotExporter.GUI.Editors
         private readonly Dictionary<RigidNode_Base.DriveTrainType, Control> controls = new Dictionary<RigidNode_Base.DriveTrainType, Control>();
         private RigidNode_Base.DriveTrainType driveTrainType;
 
-        public DrivetrainTypeForm(RobotData robotData)
+        public DrivetrainTypeForm(RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
+            this.robotDataManager = robotDataManager;
             AnalyticsUtils.LogPage("DriveTrainTypeForm");
             InitializeComponent();
 
@@ -42,7 +43,7 @@ namespace BxDRobotExporter.GUI.Editors
             }
             
             
-            SelectType(robotData.RobotBaseNode.driveTrainType);
+            SelectType(robotDataManager.RobotBaseNode.driveTrainType);
         }
 
         private void RecursiveControlNavigator(Control control, Action<Control> action)
@@ -69,7 +70,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            robotData.RobotBaseNode.driveTrainType = driveTrainType;
+            robotDataManager.RobotBaseNode.driveTrainType = driveTrainType;
             Close();
         }
     }

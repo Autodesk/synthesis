@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;
@@ -11,7 +12,7 @@ namespace BxDRobotExporter.ControlGUI
 {
     public partial class LiteExporterForm : Form
     {
-        private readonly RobotData robotData;
+        private readonly RobotDataManager robotDataManager;
         public bool Exporting = false;
 
         public event EventHandler StartExport;
@@ -28,9 +29,9 @@ namespace BxDRobotExporter.ControlGUI
 
         public static LiteExporterForm Instance;
 
-        public LiteExporterForm(RobotData robotData)
+        public LiteExporterForm(RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
+            this.robotDataManager = robotDataManager;
             InitializeComponent();
             Instance = this;
             LoadingAnimation.WaitOnLoad = true;
@@ -137,12 +138,12 @@ namespace BxDRobotExporter.ControlGUI
                 return;
             }
 
-            if (robotData.RobotBaseNode == null)
+            if (robotDataManager.RobotBaseNode == null)
                 return; // Skeleton has not been built
 
-            List<BXDAMesh> meshes = ExportMeshesLite(robotData.RobotBaseNode, robotData.RobotWeightKg);
+            List<BXDAMesh> meshes = ExportMeshesLite(robotDataManager.RobotBaseNode, robotDataManager.RobotWeightKg);
 
-            robotData.RobotMeshes = meshes;
+            robotDataManager.RobotMeshes = meshes;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

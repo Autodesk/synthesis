@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {
-    public delegate void SettingsEvent(AddInSettings values);
+    public delegate void SettingsEvent(AddInSettingsManager values);
 
     public partial class ExporterSettingsForm : Form
     {
         /// <summary>
         /// The local copy of the setting values
         /// </summary>
-        private AddInSettings values;
+        private AddInSettingsManager values;
 
         public ExporterSettingsForm()
         {
@@ -33,13 +34,13 @@ namespace BxDRobotExporter.GUI.Editors
         /// </summary>
         private void LoadValues()
         {
-            values = RobotExporterAddInServer.Instance.AddInSettings;
+            values = RobotExporterAddInServer.Instance.AddInSettingsManager;
             ChildHighlight.BackColor = values.JointHighlightColor;
             checkBox1.Checked = values.UseAnalytics;
         }
 
         /// <summary>
-        /// Save the form's values in a <see cref="AddInSettings"/> structure
+        /// Save the form's values in a <see cref="AddInSettingsManager"/> structure
         /// </summary>
         private void SaveValues()
         {
@@ -49,7 +50,7 @@ namespace BxDRobotExporter.GUI.Editors
         }
 
         /// <summary>
-        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="AddInSettings"/>
+        /// Sets the <see cref="Color"/> of the <see cref="Button"/> and by extension the <see cref="AddInSettingsManager"/>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

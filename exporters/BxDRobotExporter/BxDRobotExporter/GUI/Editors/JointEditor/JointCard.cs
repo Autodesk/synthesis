@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.ImageFormat;
 using BxDRobotExporter.Utilities.Synthesis;
@@ -18,9 +19,9 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         private bool isHighlighted;
         private bool hasLoadedEditor;
 
-        public JointCard(RigidNode_Base node, JointForm jointForm, RobotData robotData)
+        public JointCard(RigidNode_Base node, JointForm jointForm, RobotDataManager robotDataManager)
         {
-            this.robotData = robotData;
+            this.robotDataManager = robotDataManager;
             this.jointForm = jointForm;
             this.node = node;
 
@@ -35,7 +36,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         {
             var joint = node.GetSkeletalJoint();
             jointName.Text = JointToStringUtils.NodeNameString(node);
-            jointTypeValue.Text = JointToStringUtils.JointTypeString(joint, robotData);
+            jointTypeValue.Text = JointToStringUtils.JointTypeString(joint, robotDataManager);
             driverValue.Text = JointToStringUtils.DriverString(joint);
             wheelTypeValue.Text = JointToStringUtils.WheelTypeString(joint);
         }

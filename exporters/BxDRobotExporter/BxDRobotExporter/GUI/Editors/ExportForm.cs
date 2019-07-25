@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 
 namespace BxDRobotExporter.GUI.Editors
 {
@@ -16,7 +17,7 @@ namespace BxDRobotExporter.GUI.Editors
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
-            ColorBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.DefaultExportWithColors;
+            ColorBox.Checked = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors;
             
         }
 
@@ -42,23 +43,23 @@ namespace BxDRobotExporter.GUI.Editors
                     FieldSelectComboBox.Items.Add(pair.Key);
                 }
             }
-            this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.DefaultField;
-            this.OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettings.OpenSynthesis;
+            this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultField;
+            this.OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis;
         }
         
         /// <summary>
         /// Prompts the user for the name of the robot, as well as other information.
         /// </summary>
         /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-        public static bool PromptExportSettings(RobotData robotData)
+        public static bool PromptExportSettings(RobotDataManager robotDataManager)
         { // TODO: Compact this down
-            if (Prompt(robotData.RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
+            if (Prompt(robotDataManager.RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
             {
-                robotData.RobotName = robotName;
-                robotData.RobotField = field;
+                robotDataManager.RobotName = robotName;
+                robotDataManager.RobotField = field;
 
-                RobotExporterAddInServer.Instance.AddInSettings.DefaultExportWithColors = colors;
-                RobotExporterAddInServer.Instance.AddInSettings.SaveSettings();
+                RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors = colors;
+                RobotExporterAddInServer.Instance.AddInSettingsManager.SaveSettings();
 
                 return true;
             }
@@ -75,8 +76,8 @@ namespace BxDRobotExporter.GUI.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                RobotExporterAddInServer.Instance.AddInSettings.DefaultField = (string)settingsForm.FieldSelectComboBox.SelectedItem;
-                RobotExporterAddInServer.Instance.AddInSettings.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
+                RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultField = (string)settingsForm.FieldSelectComboBox.SelectedItem;
+                RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
 
                 field = null;
                 
@@ -103,7 +104,7 @@ namespace BxDRobotExporter.GUI.Editors
                     RobotNameTextBox.Text = RobotNameTextBox.Text.Replace(c.ToString(), "");
                 }
 
-                if(File.Exists(RobotExporterAddInServer.Instance.AddInSettings.ExportPath + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
+                if(File.Exists(RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + RobotNameTextBox.Text + @"\skeleton.bxdj") && MessageBox.Show("Overwrite Existing Robot?", "Save Robot", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     return;
                 }

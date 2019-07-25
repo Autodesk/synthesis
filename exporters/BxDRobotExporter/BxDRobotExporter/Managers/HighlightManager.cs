@@ -17,7 +17,7 @@ namespace BxDRobotExporter.Managers
             {
                 if (value)
                 {
-                    EnableDofHighlight(RobotExporterAddInServer.Instance.RobotData);
+                    EnableDofHighlight(RobotExporterAddInServer.Instance.RobotDataManager);
                 }
                 else
                 {
@@ -41,21 +41,21 @@ namespace BxDRobotExporter.Managers
             redHighlightSet.Color = InventorUtils.GetInventorColor(Color.Red);
 
             jointEditorHighlight = asmDocument.CreateHighlightSet();
-            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotExporterAddInServer.Instance.AddInSettings.JointHighlightColor);
+            jointEditorHighlight.Color = InventorUtils.GetInventorColor(RobotExporterAddInServer.Instance.AddInSettingsManager.JointHighlightColor);
         }
 
-        private void EnableDofHighlight(RobotData robotData)
+        private void EnableDofHighlight(RobotDataManager robotDataManager)
         {
-            if (robotData.RobotBaseNode == null && !robotData.LoadRobotSkeleton())
+            if (robotDataManager.RobotBaseNode == null && !robotDataManager.LoadRobotSkeleton())
                 return;
 
-            var rootNodes = new List<RigidNode_Base> {robotData.RobotBaseNode};
+            var rootNodes = new List<RigidNode_Base> {robotDataManager.RobotBaseNode};
             var jointedNodes = new List<RigidNode_Base>();
             var problemNodes = new List<RigidNode_Base>();
 
-            foreach (var node in robotData.RobotBaseNode.ListAllNodes())
+            foreach (var node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
-                if (node == robotData.RobotBaseNode) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
+                if (node == robotDataManager.RobotBaseNode) // Base node is already dealt with TODO: add ListChildren() to RigidNode_Base
                 {
                     continue;
                 }

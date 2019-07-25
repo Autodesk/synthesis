@@ -13,7 +13,7 @@ namespace BxDRobotExporter.Utilities.Synthesis
             if (robotName == null) return;
             if (fieldName == null) return;
 
-            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, String.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettings.ExportPath + "\\" + robotName, fieldName));
+            Process.Start(InventorDocumentIoUtils.SYNTHESIS_PATH, String.Format("-robot \"{0}\" -field \"{1}\"", RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + robotName, fieldName));
         }
     }
 }

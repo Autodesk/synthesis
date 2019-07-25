@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
+using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
@@ -30,15 +31,15 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             };
         }
 
-        public void UpdateSkeleton(RobotData robotData)
+        public void UpdateSkeleton(RobotDataManager robotDataManager)
         {
             SuspendLayout();
 
-            foreach (RigidNode_Base node in robotData.RobotBaseNode.ListAllNodes())
+            foreach (RigidNode_Base node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {
-                    JointCard panel = new JointCard(node, this, robotData);
+                    JointCard panel = new JointCard(node, this, robotDataManager);
                     panel.Dock = DockStyle.Top;
 
                     jointCards.Add(panel);

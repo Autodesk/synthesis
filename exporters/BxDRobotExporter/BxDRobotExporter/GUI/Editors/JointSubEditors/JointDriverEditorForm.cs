@@ -134,7 +134,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                     switch (joint.cDriver.motor)
                     {
                         case MotorType.GENERIC:
-                            RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition.ToString();
+                            RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition.ToString();
                             MotorTypeDropDown.SelectedItem = "GENERIC";
                             break;
                         case MotorType.CIM:
@@ -261,7 +261,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                 cmbFrictionLevel.SelectedIndex = (int)FrictionLevel.MEDIUM;
                 chkBoxDriveWheel.Checked = false;
 
-                RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition;
+                RobotCompetitionDropDown.SelectedItem = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition;
                 MotorTypeDropDown.SelectedItem = "GENERIC";
             }
 
@@ -432,7 +432,7 @@ namespace BxDRobotExporter.GUI.Editors.JointSubEditors
                         motor = MotorType.GENERIC;
                     }
                     joint.cDriver.motor = motor;
-                    RobotExporterAddInServer.Instance.AddInSettings.DefaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
+                    RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultRobotCompetition = RobotCompetitionDropDown.SelectedItem.ToString();
                 }
                 //Only need to store wheel driver if run by motor and is a wheel.
                 if (cType.IsMotor() && (WheelType)cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
