@@ -99040,6 +99040,8 @@ MonoBehaviour:
     m_Options:
     - m_Text: Arcade Keyboard
       m_Image: {fileID: 0}
+    - m_Text: Mecanum Keyboard
+      m_Image: {fileID: 0}
     - m_Text: Tank Joystick
       m_Image: {fileID: 0}
   m_OnValueChanged:

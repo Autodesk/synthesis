@@ -83,6 +83,11 @@ namespace Synthesis.GUI
                 case 1:
                     mKeyText.text = keyMapping.secondaryInput.ToString();
                     break;
+                case 2:
+                    mKeyText.text = keyMapping.tertiaryInput.ToString();
+                    break;
+                default:
+                    throw new System.Exception();
             }
         }
         //}
@@ -113,6 +118,11 @@ namespace Synthesis.GUI
                 case 1:
                     keyMapping.secondaryInput = input;
                     break;
+                case 2:
+                    keyMapping.tertiaryInput = input;
+                    break;
+                default:
+                    throw new System.Exception();
             }
 
             UpdateText();
