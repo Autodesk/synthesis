@@ -68,7 +68,7 @@ namespace BxDRobotExporter.Utilities.Synthesis
         public static string JointTypeString(SkeletalJoint_Base joint, RobotData robotData = null)
         {
             return InventorDocumentIoUtils.CapitalizeFirstLetter(Enum.GetName(typeof(SkeletalJointType), joint.GetJointType()), true)
-                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (robotData != null && robotData.RMeta.PreferMetric ? 1 : 2.20462f), 2)+(robotData != null && robotData.RMeta.PreferMetric ? " Kilograms" : " Pounds"));
+                   + (joint.weight <= 0 ? ", Calculated Weight" : ", " + Math.Round(Math.Max(joint.weight, 0) * (robotData != null && robotData.Settings.PreferMetric ? 1 : 2.20462f), 2)+(robotData != null && robotData.Settings.PreferMetric ? " Kilograms" : " Pounds"));
         }
     }
 }

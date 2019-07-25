@@ -53,8 +53,8 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
             TextInfo textInfo = new CultureInfo("en-US", true).TextInfo;
             
             CalculatedWeightCheck.Checked = joint.weight <= 0;
-            UnitBox.SelectedIndex = robotData.RMeta.PreferMetric ? 1 : 0;
-            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotData.RMeta.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
+            UnitBox.SelectedIndex = robotData.Settings.PreferMetric ? 1 : 0;
+            WeightBox.Value = (decimal) (Math.Max(joint.weight, 0) * (robotData.Settings.PreferMetric ? 1 : 2.20462f)); // TODO: Re-use existing weight code
             
             cmbDriveSide.Items.Clear(); // TODO: This is dependant on DT type
             cmbDriveSide.Items.Add("Left");

@@ -248,7 +248,7 @@ namespace BxDRobotExporter
             if (exportResult == DialogResult.Yes)
             {
                 if (robotData.PromptExportSettings())
-                    if (robotData.ExportRobot() && robotData.RMeta.FieldName != null)
+                    if (robotData.ExportRobot() && robotData.Settings.FieldName != null)
                         robotData.OpenSynthesis();
             }
 
