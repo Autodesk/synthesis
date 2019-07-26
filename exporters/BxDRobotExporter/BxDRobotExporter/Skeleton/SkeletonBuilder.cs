@@ -9,16 +9,6 @@ namespace BxDRobotExporter.Skeleton
 {
     public class SkeletonBuilder
     {
-        public class EmptyAssemblyException : ApplicationException
-        {
-            public EmptyAssemblyException() : base("No parts in assembly.") { }
-        }
-
-        public class InvalidJointException : ApplicationException
-        {
-            public InvalidJointException(string message) : base(message) { }
-        }
-
         public class NoGroundException : ApplicationException
         {
             public NoGroundException() : base("Assembly has no ground.") { }
@@ -59,14 +49,6 @@ namespace BxDRobotExporter.Skeleton
             try
             {
                 skeletonBase = ExportSkeleton(progress);
-            }
-            catch (EmptyAssemblyException)
-            {
-                MessageBox.Show("Assembly has no parts to export.", "Empty Assembly", MessageBoxButtons.OK);
-            }
-            catch (InvalidJointException ex)
-            {
-                MessageBox.Show(ex.Message, "Invalid Joint", MessageBoxButtons.OK);
             }
             catch (NoGroundException)
             {
