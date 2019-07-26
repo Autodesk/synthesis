@@ -49,7 +49,7 @@ namespace BxDRobotExporter.RigidAnalyzer
             {
                 if (group.grounded)
                 {
-                    if ((firstRoot == null))
+                    if (firstRoot == null)
                     {
                         firstRoot = group;
                     }
