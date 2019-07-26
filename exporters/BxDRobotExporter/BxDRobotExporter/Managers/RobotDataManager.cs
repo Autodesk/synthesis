@@ -144,7 +144,7 @@ namespace BxDRobotExporter.Managers
                     return false;
                 
                 BXDJSkeleton.SetupFileNames(RobotBaseNode);
-                BXDJSkeleton.WriteSkeleton(robotFolderPath + "\\skeleton.bxdj", RobotBaseNode);
+                BXDJSkeletonJson.WriteSkeleton(robotFolderPath + "\\skeleton.json", RobotBaseNode);
 
                 for (var i = 0; i < RobotMeshes.Count; i++)
                 {
