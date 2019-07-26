@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BxDRobotExporter.SkeletalStructure;
+using BxDRobotExporter.Skeleton;
 using Inventor;
 
 namespace BxDRobotExporter.RigidAnalyzer
@@ -76,7 +77,7 @@ namespace BxDRobotExporter.RigidAnalyzer
             }
             else
             {
-                throw new Exporter.Exporter.NoGroundException();
+                throw new SkeletonBuilder.NoGroundException();
             }
             CleanMeaningless(results);
         }

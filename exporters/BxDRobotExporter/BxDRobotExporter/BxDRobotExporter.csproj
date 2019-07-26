@@ -144,7 +144,6 @@
   <ItemGroup>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
-    <Compile Include="Exporter\SkeletonBuilder.cs" />
     <Compile Include="Exporter\InventorManager.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
@@ -292,6 +291,7 @@
     <Compile Include="GUI\Editors\RobotSettingsForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Skeleton\SkeletonBuilder.cs" />
     <Compile Include="Utilities\AnalyticsUtils.cs" />
     <Compile Include="Utilities\ImageConverters\AxHostConverter.cs">
       <SubType>Component</SubType>
