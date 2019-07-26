@@ -1,21 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using BxDRobotExporter.GUI.Loading;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.RigidAnalyzer;
 using BxDRobotExporter.Utilities;
 
-namespace BxDRobotExporter.Exporter.Mesh
+namespace BxDRobotExporter.Exporter
 {
     public static class MeshExporter
     {
-        /// <summary>
-        /// The lite equivalent of the 'Start Exporter' <see cref="Button"/> in the <see cref="ExporterForm"/>. Used in <see cref="ExportingMeshesForm.ExporterWorker_DoWork "/>
-        /// </summary>
-        /// <seealso cref="ExportingMeshesForm.ExporterWorker_DoWork"/>
-        /// <param name="baseNode"></param>
-        /// <returns></returns>
         public static List<BXDAMesh> ExportMeshes(IProgress<ProgressUpdate> progress, RigidNode_Base baseNode, float totalMassKg)
         {
             SurfaceExporter surfs = new SurfaceExporter();
