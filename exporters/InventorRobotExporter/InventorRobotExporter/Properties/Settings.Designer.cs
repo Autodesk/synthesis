@@ -97,18 +97,6 @@ namespace InventorRobotExporter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("firstRun")]
-        public string SelectedField {
-            get {
-                return ((string)(this["SelectedField"]));
-            }
-            set {
-                this["SelectedField"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowExportOrAdvancedForm {
             get {

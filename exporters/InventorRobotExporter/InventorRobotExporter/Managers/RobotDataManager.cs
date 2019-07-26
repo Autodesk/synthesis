@@ -22,7 +22,6 @@ namespace InventorRobotExporter.Managers
         public List<BXDAMesh> RobotMeshes = null;
 
         // Robot export settings
-        public string RobotField;
         public bool RobotPreferMetric = false;
 
         public RobotDataManager()

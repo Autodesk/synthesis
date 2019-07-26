@@ -288,7 +288,7 @@
     <Compile Include="GUI\Editors\ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\RobotSettingsForm.Designer.cs">
+    <Compile Include="GUI\Editors\ExportForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities\AnalyticsUtils.cs" />
@@ -372,7 +372,7 @@
     <EmbeddedResource Include="GUI\Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\RobotSettingsForm.resx">
+    <EmbeddedResource Include="GUI\Editors\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

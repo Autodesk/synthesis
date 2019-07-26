@@ -205,8 +205,8 @@ namespace InventorRobotExporter
             if (exportResult == DialogResult.Yes)
             {
                 if (ExportForm.PromptExportSettings(RobotDataManager))
-                    if (RobotDataManager.ExportRobot() && RobotDataManager.RobotField != null)
-                        SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName, RobotDataManager.RobotField);
+                    if (RobotDataManager.ExportRobot())
+                        SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
             }
 
             // Re-enable disabled components

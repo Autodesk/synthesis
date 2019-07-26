@@ -18,7 +18,6 @@ namespace InventorRobotExporter.Managers
 
         // Export defaults (can be changed by user)
         public bool DefaultExportWithColors;
-        public string DefaultField;
         public string DefaultRobotCompetition;
         public bool OpenSynthesis;
         
@@ -36,7 +35,6 @@ namespace InventorRobotExporter.Managers
         public void SaveSettings()
         {
             Settings.Default.ExportToField = OpenSynthesis;
-            Settings.Default.SelectedField = DefaultField;
             Settings.Default.ChildColor = JointHighlightColor;
             Settings.Default.FancyColors = DefaultExportWithColors;
             Settings.Default.SaveLocation = ExportPath;
@@ -62,7 +60,6 @@ namespace InventorRobotExporter.Managers
                 ExportPath = Settings.Default.SaveLocation;
                 DefaultExportWithColors = Settings.Default.FancyColors;
                 OpenSynthesis = Settings.Default.ExportToField;
-                DefaultField = Settings.Default.SelectedField;
                 DefaultRobotCompetition = "GENERIC";
                 UseAnalytics = true;
             }
@@ -72,7 +69,6 @@ namespace InventorRobotExporter.Managers
                 ExportPath = Settings.Default.SaveLocation;
                 DefaultExportWithColors = Settings.Default.FancyColors;
                 OpenSynthesis = Settings.Default.ExportToField;
-                DefaultField = Settings.Default.SelectedField;
                 DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition;
                 UseAnalytics = Settings.Default.UseAnalytics;
             }
