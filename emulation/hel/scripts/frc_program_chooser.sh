@@ -4,10 +4,12 @@
 
 PREFIX=$0 # File name of script running
 
+mkdir -p logs
+
 while true; do
 	if [ -f /home/lvuser/FRCUserProgram.jar ]; then # Run java user program
 		printf "$PREFIX Executing Java FRCUserProgram.\n"
-		LD_LIBRARY_PATH=/home/lvuser LD_PRELOAD=/lib/libhel.so java -jar /home/lvuser/FRCUserProgram.jar
+		LD_LIBRARY_PATH=/home/lvuser LD_PRELOAD=/lib/libhel.so java -jar /home/lvuser/FRCUserProgram.jar &> logs/log.log
 	elif [ -f /home/lvuser/FRCUserProgram ]; then # Run cpp user program
 		printf "$PREFIX Executing C++ FRCUserProgram.\n"
 		sudo chmod +x /home/lvuser/FRCUserProgram
