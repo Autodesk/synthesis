@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.Exporter.Mesh;
+using BxDRobotExporter.Exporter;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 
