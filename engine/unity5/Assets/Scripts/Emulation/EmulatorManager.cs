@@ -2,6 +2,7 @@
 using Renci.SshNet;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -82,43 +83,6 @@ namespace Synthesis
                 qemuJavaProcess = null;
                 grpcBridgeProcess.Kill();
                 grpcBridgeProcess = null;
-            }
-        }
-
-        public class UserProgram
-        {
-            public enum UserProgramType
-            {
-                JAVA,
-                CPP
-            }
-
-            public string fullFileName { get; private set; }
-            public string targetFileName { get; private set; }
-            public UserProgramType type { get; private set; }
-
-            public UserProgram(string fullFileName)
-            {
-                this.fullFileName = fullFileName;
-
-                string fileName = fullFileName.Substring(fullFileName.LastIndexOf('\\') + 1);
-
-                this.targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
-                const string JAR_EXTENSION = ".jar";
-
-                if (fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
-                {
-                    this.targetFileName += JAR_EXTENSION;
-                    this.type = UserProgramType.JAVA;
-                }
-                else
-                {
-                    this.type = UserProgramType.CPP;
-                }
-            }
-            public UserProgram()
-            {
-                type = UserProgramType.JAVA;
             }
         }
 
@@ -231,6 +195,52 @@ namespace Synthesis
         public static bool IsRunningRobotCode()
         {
             return isRunningRobotCode;
+        }
+
+        public static void ReceiveProgramOutput()
+        {
+            new Thread(() =>
+            {
+                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                {
+                    client.Connect();
+                    var command = client.CreateCommand("tail -f /home/lvuser/logs/log.log");
+                    command.BeginExecute();
+                    var reader = new StreamReader(command.OutputStream);
+                    var line = "";
+                    while (IsRunningRobotCode())
+                    {
+                        line = reader.ReadLine(); // Different read function?
+                        if (line != null)
+                            GUI.UserMessageManager.Dispatch(line, 5);
+                    }
+                    client.Disconnect();
+                }
+            }).Start();
+        }
+
+        public static void FetchLogFile()
+        {
+            Task.Run(() =>
+            {
+                string folder = SFB.StandaloneFileBrowser.OpenFolderPanel("Log file destination", "C:\\", false);
+                if (folder == null)
+                {
+                    UnityEngine.Debug.Log("No folder selected for log file destination");
+                }
+                else
+                {
+
+                    using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    {
+                        client.Connect();
+                        Stream localLogFile = File.Create(folder + "/log.log");
+                        client.Download("/home/lvuser/logs/log.log", localLogFile);
+                        localLogFile.Close();
+                        client.Disconnect();
+                    }
+                }
+            });
         }
     }
 }

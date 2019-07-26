@@ -11,7 +11,7 @@ while true; do
 	elif [ -f /home/lvuser/FRCUserProgram ]; then # Run cpp user program
 		printf "$PREFIX Executing C++ FRCUserProgram.\n"
 		sudo chmod +x /home/lvuser/FRCUserProgram
-		LD_LIBRARY_PATH=/home/lvuser /home/lvuser/FRCUserProgram
+		LD_LIBRARY_PATH=/home/lvuser /home/lvuser/FRCUserProgram &> logs/log.log
 	else
 		printf "$PREFIX: No FRCUserProgram found. Sleeping for 5 seconds and then retrying.\n"
 		sleep 5;
