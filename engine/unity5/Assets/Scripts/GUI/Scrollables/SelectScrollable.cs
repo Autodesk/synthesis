@@ -14,6 +14,8 @@ namespace Synthesis.GUI.Scrollables
         public string[] TargetExtensions;
         public string ErrorMessage;
 
+        public bool trigger = false;
+
         /// <summary>
         /// Refreshes the scrollable with the directory provided.
         /// </summary>
@@ -32,7 +34,10 @@ namespace Synthesis.GUI.Scrollables
             if (items.Count > 0)
                 selectedEntry = items[0];
 
-            position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
+            if (!trigger) {
+                position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
+                trigger = true;
+            }
         }
 
         /// <summary>
