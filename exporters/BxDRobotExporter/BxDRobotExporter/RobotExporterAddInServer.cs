@@ -206,7 +206,7 @@ namespace BxDRobotExporter
             {
                 if (ExportForm.PromptExportSettings(RobotDataManager))
                     if (RobotDataManager.ExportRobot() && RobotDataManager.RobotField != null)
-                        SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName, RobotDataManager.RobotName);
+                        SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName, RobotDataManager.RobotField);
             }
 
             // Re-enable disabled components
