@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter.Skeleton;
@@ -13,14 +14,16 @@ namespace BxDRobotExporter.GUI.Loading
         public BuildingSkeletonForm()
         {
             InitializeComponent();
+            BuildSkeletonWorker.DoWork += BuildSkeletonWorker_DoWork;
+            BuildSkeletonWorker.RunWorkerCompleted += BuildSkeletonWorker_RunWorkerCompleted;
 
-            Shown += async (sender, args) =>
+            Shown += (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
-                rigidNodeBase = await Task.Run(() => SkeletonBuilder.ExportSkeleton(new Progress<ProgressUpdate>(SetProgress)));
-                RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
-                Close();
+                BuildSkeletonWorker.RunWorkerAsync();
             };
+            
+            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
         
         public async Task<RigidNode_Base> BuildSkeleton()
@@ -41,6 +44,27 @@ namespace BxDRobotExporter.GUI.Loading
             ProgressLabel.Text = update.Message;
             ProgressBar.Maximum = update.MaxProgress;
             ProgressBar.Value = update.CurrentProgress;
+        }
+        
+        private void BuildSkeletonWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            rigidNodeBase = SkeletonBuilder.ExportSkeleton(new Progress<ProgressUpdate>(SetProgress));
+        }
+
+        private void BuildSkeletonWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+                ProgressLabel.Text = "Skeleton Loading Cancelled";
+            else if (e.Error != null)
+            {
+                ProgressLabel.Text = "An error occurred.";
+                MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
     }
 }

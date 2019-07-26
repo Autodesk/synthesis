@@ -31,6 +31,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
+            this.BuildSkeletonWorker = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,6 +63,11 @@
             this.ProgressLabel.TabIndex = 0;
             this.ProgressLabel.Text = "Building nodes...";
             this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // ExporterWorker
+            // 
+            this.BuildSkeletonWorker.WorkerReportsProgress = true;
+            this.BuildSkeletonWorker.WorkerSupportsCancellation = true;
             // 
             // ProgressBar
             // 
@@ -102,5 +108,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label ProgressLabel;
         private System.Windows.Forms.ProgressBar ProgressBar;
+        private System.ComponentModel.BackgroundWorker BuildSkeletonWorker;
     }
 }
