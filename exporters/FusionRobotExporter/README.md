@@ -1,4 +1,4 @@
-# FusionExporter (FusionSynth)
+# FusionRobotExporter 
 
 ## Road Map
 * TBD
@@ -13,13 +13,13 @@
 2) Launch Visual Studio in Admin Mode for necessary permissions
 3) Import the FusionSynth.sln Solution in Visual Studio
    - File -> Open -> Project/Solution
-   - Select `... \synthesis\exporters\FusionExporter\FusionSynth.sln`
+   - Select `... \synthesis\exporters\FusionRobotExporter\FusionRobotExporter.sln`
 4) Change Debug command in project settings to Fusion360.exe
     (Usually located in "AppData\Local\Autodesk\webdeploy\production\<varies>")
 5) Build > Build Solution
 6) Start the debugger
 7) In Fusion 360, open the Add-Ins menu, select the Add-Ins tab, and click the ➕ icon next to "My Add-Ins"
-8) Select the "FusionExporter" folder
+8) Select the "FusionRobotExporter" folder
 9) Close Fusion 360 and start debugging again
 
 ## Current Issues
@@ -31,9 +31,9 @@
 
 ### File Structure
 ```
-FusionExporter
+FusionRobotExporter
 |
-├── Include - Libraries used in FusionSynth
+├── Include - Libraries used in the FusionRobotExporter
 |   └── rapidjson - JSON library. Used for saving configurations for later use
 |
 ├── Resources - Images used in the Fusion add-in
