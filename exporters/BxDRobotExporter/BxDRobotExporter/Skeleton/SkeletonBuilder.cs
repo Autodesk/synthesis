@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using BxDRobotExporter.Exporter;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;
 
@@ -27,25 +26,20 @@ namespace BxDRobotExporter.Skeleton
 
         public static RigidNode_Base ExporterWorker_DoWork(IProgress<int> progress)
         {
-            if (InventorManager.Instance == null)
-            {
-                MessageBox.Show("Couldn't detect a running instance of Inventor.");
-                return null;
-            }
-
-            if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
+            if (RobotExporterAddInServer.Instance.OpenDocument == null || !(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument))
             {
                 MessageBox.Show("Couldn't detect an open assembly");
                 return null;
             }
 
-            if (InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
+            var asmDocument = RobotExporterAddInServer.Instance.OpenDocument as AssemblyDocument;
+            if (asmDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
             {
                 MessageBox.Show("Cannot build skeleton from empty assembly");
                 return null;
             }
 
-            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+            RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
 
             RigidNode_Base skeleton = null;
 
@@ -80,10 +74,11 @@ namespace BxDRobotExporter.Skeleton
 
             progress.Report(1);
 //            SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
-            var rigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
+            var rigidGetOptions = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateNameValueMap();
 
             rigidGetOptions.Add("DoubleBearing", false);
-            var rawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
+            var asmDocument = RobotExporterAddInServer.Instance.OpenDocument as AssemblyDocument;
+            var rawRigidResults = asmDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
 
             //Getting Rigid Body Info...Done
             var rigidResults = new CustomRigidResults(rawRigidResults);

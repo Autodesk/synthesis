@@ -40,25 +40,16 @@ namespace BxDRobotExporter.ControlGUI
             ExporterWorker.DoWork += ExporterWorker_DoWork;
             ExporterWorker.RunWorkerCompleted += ExporterWorker_RunWorkerCompleted;
 
-            Shown += delegate (object sender, EventArgs e)
+            Shown += (sender, args) =>
             {
-                if (InventorManager.Instance == null)
-                {
-                    MessageBox.Show("Couldn't detect a running instance of Inventor.");
-                    return;
-                }
-
-                InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+                RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
 
                 Exporting = true;
                 OnStartExport();
                 ExporterWorker.RunWorkerAsync();
             };
 
-            FormClosing += delegate (object sender, FormClosingEventArgs e)
-            {
-                InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-            };
+            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
 
         /// <summary>
@@ -132,7 +123,7 @@ namespace BxDRobotExporter.ControlGUI
         /// <param name="e"></param>
         private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
+            if (RobotExporterAddInServer.Instance.OpenDocument == null || !(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument))
             {
                 MessageBox.Show("Couldn't detect an open assembly");
                 return;

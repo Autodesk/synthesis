@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BxDRobotExporter.Exporter;
 using BxDRobotExporter.GUI.Editors.JointSubEditors;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
@@ -62,7 +61,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
 
         public void LoadPreviewIcon()
         {
-            var iconCamera = InventorManager.Instance.TransientObjects.CreateCamera();
+            var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
             if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return;
             iconCamera.SceneObject = asmDocument.ComponentDefinition;
 
