@@ -182,31 +182,13 @@ namespace Synthesis.States
 
                 try
                 {
-                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), false);
                 } catch (Exception e) {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
 
                 if (!result)
                 {
-                    /*PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
-                    if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
-                    {
-                        bool loadedBot = false;
-
-                        string[] robots = Directory.GetDirectories(robotDirectory);
-                        foreach (string robot in robots) {
-                            if (LoadRobot(robot, RobotTypeManager.IsMixAndMatch)) {
-                                PlayerPrefs.SetString("simSelectedRobot", robot);
-                                loadedBot = true;
-                            }
-                        }
-
-                        if (!loadedBot) {
-                            AppModel.ErrorToMenu("Could not load any robots in default directory:\n" + robotDirectory);
-                            return;
-                        }
-                    }*/
                     AppModel.ErrorToMenu("ROBOT_SELECT");
                     return;
                 }
@@ -429,7 +411,7 @@ namespace Synthesis.States
                 string[] files = Directory.GetFiles(directory);
                 foreach (string a in files) {
                     string name = Path.GetFileName(a);
-                    if (name.Substring(0, 8).ToLower().Equals("skeleton")) {
+                    if (name.ToLower().Contains("skeleton")) {
                         b = false;
                     }
                 }
