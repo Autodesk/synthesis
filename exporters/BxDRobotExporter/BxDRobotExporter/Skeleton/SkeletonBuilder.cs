@@ -7,7 +7,7 @@ using Inventor;
 
 namespace BxDRobotExporter.Skeleton
 {
-    public class SkeletonBuilder
+    public static class SkeletonBuilder
     {
         public class NoGroundException : ApplicationException
         {
@@ -30,12 +30,6 @@ namespace BxDRobotExporter.Skeleton
 
         public static RigidNode_Base ExporterWorker_DoWork(IProgress<SkeletonProgressUpdate> progress)
         {
-            if (RobotExporterAddInServer.Instance.OpenDocument == null || !(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument))
-            {
-                MessageBox.Show("Couldn't detect an open assembly");
-                return null;
-            }
-
             var asmDocument = RobotExporterAddInServer.Instance.OpenDocument as AssemblyDocument;
             if (asmDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
             {
