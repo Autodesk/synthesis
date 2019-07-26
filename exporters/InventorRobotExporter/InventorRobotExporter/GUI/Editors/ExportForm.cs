@@ -24,27 +24,9 @@ namespace InventorRobotExporter.GUI.Editors
         /// <summary>
         /// Gets the paths for all the synthesis fields.
         /// </summary>
-        public void InitializeFields()
+        private void InitializeFields()
         {
-            if (fields.Count == 0)
-            {
-                var dirs = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Fields");
-
-                foreach (var dir in dirs)
-                {
-                    fields.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last(), dir);
-                    FieldSelectComboBox.Items.Add(dir.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Last());
-                }
-            }
-            else
-            {
-                foreach(KeyValuePair<string, string> pair in fields)
-                {
-                    FieldSelectComboBox.Items.Add(pair.Key);
-                }
-            }
-            this.FieldSelectComboBox.SelectedItem = RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultField;
-            this.OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis;
+            OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis;
         }
         
         /// <summary>
@@ -53,10 +35,9 @@ namespace InventorRobotExporter.GUI.Editors
         /// <returns>True if user pressed okay, false if they pressed cancel</returns>
         public static bool PromptExportSettings(RobotDataManager robotDataManager)
         { // TODO: Compact this down
-            if (Prompt(robotDataManager.RobotName, out var robotName, out var colors, out var openSynthesis, out var field) == DialogResult.OK)
+            if (Prompt(robotDataManager.RobotName, out var robotName, out var colors, out var openSynthesis) == DialogResult.OK)
             {
                 robotDataManager.RobotName = robotName;
-                robotDataManager.RobotField = field;
 
                 RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors = colors;
                 RobotExporterAddInServer.Instance.AddInSettingsManager.SaveSettings();
@@ -67,7 +48,7 @@ namespace InventorRobotExporter.GUI.Editors
             return false;
         }
 
-        public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis, out string field)
+        public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis)
         {
             try
             {
@@ -76,13 +57,7 @@ namespace InventorRobotExporter.GUI.Editors
                 robotName = settingsForm.RobotNameTextBox.Text;
                 colors = settingsForm.ColorBox.Checked;
                 openSynthesis = settingsForm.OpenSynthesisBox.Checked;
-                RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultField = (string)settingsForm.FieldSelectComboBox.SelectedItem;
                 RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis = settingsForm.OpenSynthesisBox.Checked;
-
-                field = null;
-                
-                if (settingsForm.OpenSynthesisBox.Checked && settingsForm.FieldSelectComboBox.SelectedItem != null)
-                    field = fields[(string)settingsForm.FieldSelectComboBox.SelectedItem];
 
                 return settingsForm.DialogResult;
             }
@@ -120,32 +95,16 @@ namespace InventorRobotExporter.GUI.Editors
 
         private void OpenSynthesisBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (OpenSynthesisBox.Checked)
-            {
-                FieldLabel.Enabled = true;
-                FieldSelectComboBox.Enabled = true;
-            }
-            else
-            {
-                FieldLabel.Enabled = false;
-                FieldSelectComboBox.Enabled = false;
-            }
-
             CheckFormIsValid();
         }
 
         private bool CheckFormIsValid()
         {
-            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0 && (!OpenSynthesisBox.Checked || FieldSelectComboBox.SelectedItem != null);
+            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0;
             return ButtonOk.Enabled;
         }
 
         private void RobotNameTextBox_TextChanged(object sender, EventArgs e)
-        {
-            CheckFormIsValid();
-        }
-
-        private void FieldSelectComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckFormIsValid();
         }
