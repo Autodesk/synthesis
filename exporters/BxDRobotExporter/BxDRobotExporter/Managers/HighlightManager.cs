@@ -31,7 +31,7 @@ namespace BxDRobotExporter.Managers
         private HighlightSet redHighlightSet;
 
 
-        public void EnvironmentOpening(Document asmDocument)
+        public void EnvironmentOpening(AssemblyDocument asmDocument)
         {
             blueHighlightSet = asmDocument.CreateHighlightSet();
             blueHighlightSet.Color = InventorUtils.GetInventorColor(Color.DodgerBlue);

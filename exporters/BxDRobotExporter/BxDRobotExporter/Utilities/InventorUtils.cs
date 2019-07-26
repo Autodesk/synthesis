@@ -139,8 +139,7 @@ namespace BxDRobotExporter.Utilities
         /// <returns></returns>
         public static ComponentOccurrence GetOccurrence(string name)
         {
-            if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return null;
-            foreach (ComponentOccurrence component in asmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return component;
@@ -373,11 +372,10 @@ namespace BxDRobotExporter.Utilities
         /// <summary>
         /// Disables all components in a document that are not connected to another component by a joint.
         /// </summary>
-        /// <param name="document">Document to traverse.</param>
+        /// <param name="asmDocumentocument to traverse.</param>
         /// <returns>List of disabled components.</returns>
-        public static IEnumerable<ComponentOccurrence> DisableUnconnectedComponents(Document document)
+        public static IEnumerable<ComponentOccurrence> DisableUnconnectedComponents(AssemblyDocument asmDocument)
         {
-            if (!(document is AssemblyDocument asmDocument)) return new List<ComponentOccurrence>();
             // Find all components in the assembly that are connected to a joint
             var jointedAssemblyOccurences = new List<ComponentOccurrence>();
             foreach (AssemblyJoint joint in asmDocument.ComponentDefinition.Joints)
@@ -481,8 +479,7 @@ namespace BxDRobotExporter.Utilities
         /// <returns></returns>
         private static bool CheckForOccurrence(string name)
         {
-            if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return false;
-            foreach (ComponentOccurrence component in asmDocument.ComponentDefinition.Occurrences)
+            foreach (ComponentOccurrence component in RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition.Occurrences)
             {
                 if (component.Name == name)
                     return true;
