@@ -125,7 +125,9 @@ void EUI::highlightAndFocusSingleJoint(std::string jointID, bool transition, dou
 
 	if (getJointGeometryAndOccurances(jointID, geo, entity)) return;
 
-	dofViewEnabled = false;
+	//dofViewEnabled = false;
+	dofViewEnabled = true;
+
 	// Highlight the parts of the joint
 	UI->activeSelections()->clear();
 	UI->activeSelections()->add(entity);
@@ -148,20 +150,21 @@ void EUI::toggleDOF()
 {
 	dofViewEnabled = !dofViewEnabled;
 
-	if (!dofViewEnabled)
+	if (dofViewEnabled)
+	{
+		focusWholeModel(true, 1.5, app->activeViewport()->camera());
+
+		auto config = Exporter::loadConfiguration(app->activeDocument());
+
+		for (const auto joint : config.getJoints())
+		{
+			EUI::highlightJoint(joint.first);
+		};
+	} else
 	{
 		UI->activeSelections()->clear();
 		return;
 	}
-
-	focusWholeModel(true, 1.5, app->activeViewport()->camera());
-
-	auto config = Exporter::loadConfiguration(app->activeDocument());
-
-	for (const auto joint : config.getJoints())
-	{
-		EUI::highlightJoint(joint.first);
-	};
 }
 
 void EUI::focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam)
@@ -308,6 +311,7 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 	}
 
 	//UI->messageBox("Robot Exported successfully to: " + Filesystem::getCurrentRobotDirectory("name"));
-	
+
+	progressPalette->sendInfoToHTML("progress", std::to_string(0));
 	closeProgressPalette();
 }

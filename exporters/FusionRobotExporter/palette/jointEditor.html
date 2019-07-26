@@ -10,23 +10,19 @@
             {
                 display: none;
             }
-
             #basic-info
             {
-                padding-left: 1rem;
-                padding-right: 1rem;
+                padding-left: 0rem;
+                padding-right: 0rem;
             }
-
             #basic-info
             {
-                padding-right: 1.5rem;
+                padding-right: 0rem;
             }
-
             .joint-config
             {
                 position: relative;
             }
-
             .edit-sensors-button
             {
                 position: absolute;
@@ -34,7 +30,6 @@
                 right: 2.5rem;
                 width: auto;
             }
-
             .wheel-side
             {
                 width: 100%;
@@ -57,8 +52,8 @@
         <script src="js/jointEditor.js"></script>
         <div id="export-settings">
             <div id="basic-info">
-                <span class="field-label">Robot Name: </span>
-                <span class="field-input"><input type="text" id="name" value="unnamed" onchange="updateSubmitButton()"></span>
+                <span class="field-label" style="visibility: hidden">Robot Name: </span>
+                <span class="field-input"><input type="text" id="name" value="unnamed" style="visibility: hidden" onchange="updateSubmitButton()"></span>
             </div>
 
             <fieldset id="joint-config-template" class="joint-config">
@@ -164,8 +159,7 @@
             </fieldset>
         </div>
         
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save Configuration</button>
-        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
+        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save</button>
 
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
