@@ -21,9 +21,10 @@ namespace Synthesis.States
     {
         readonly GameObject canvas;
 
-        Button saveButton;
-        Button cancelButton;
         Button deleteButton;
+        Button cancelButton;
+        Button launchButton;
+
         Text replayNameText;
 
         /// <summary>
@@ -34,19 +35,21 @@ namespace Synthesis.States
             GameObject panel = GameObject.Find("SimLoadReplayList");
             string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + "Replays";
 
-            //saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
-            //saveButton.onClick.RemoveAllListeners();
-            //saveButton.onClick.AddListener(Save);
-
             deleteButton = GameObject.Find("DeleteButton").GetComponent<Button>();
             deleteButton.onClick.RemoveAllListeners();
             deleteButton.onClick.AddListener(OnDeleteButtonClicked);
 
+            cancelButton = GameObject.Find("CancelButton").GetComponent<Button>();
+            cancelButton.onClick.RemoveAllListeners();
+            cancelButton.onClick.AddListener(OnCancelButtonClicked);
+
+            launchButton = GameObject.Find("LaunchButton").GetComponent<Button>();
+            launchButton.onClick.RemoveAllListeners();
+            launchButton.onClick.AddListener(OnLaunchButtonClicked);
+
             //replayNameText = GameObject.Find("ReplayNameText").GetComponent<Text>();
 
             DynamicCamera.ControlEnabled = false;
-
-            Debug.Log("Load Replay State");
         }
 
         /// <summary>
@@ -67,14 +70,6 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Pops the current <see cref="State"/> when the back button is pressed.
-        /// </summary>
-        public void OnCancelButtonClicked()
-        {
-            StateMachine.PopState();
-        }
-
-        /// <summary>
         /// Deletes the selected replay when the delete button is pressed.
         /// </summary>
         public void OnDeleteButtonClicked()
@@ -88,6 +83,14 @@ namespace Synthesis.States
                 replayList.SetActive(false);
                 replayList.SetActive(true);
             }
+        }
+
+        /// <summary>
+        /// Pops the current <see cref="State"/> when the back button is pressed.
+        /// </summary>
+        public void OnCancelButtonClicked()
+        {
+            StateMachine.PopState();
         }
 
         /// <summary>
