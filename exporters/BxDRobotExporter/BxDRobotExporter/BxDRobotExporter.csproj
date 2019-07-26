@@ -183,7 +183,6 @@
     <Compile Include="Managers\AddInSettingsManager.cs" />
     <Compile Include="Managers\HighlightManager.cs" />
     <Compile Include="Managers\RobotDataManager.cs" />
-    <Compile Include="OGLViewer\InventorCamera.cs" />
     <Compile Include="OGLViewer\OGLDrawing.cs" />
     <Compile Include="OGLViewer\OGL_RigidNode.cs" />
     <Compile Include="OGLViewer\OpenTK_Math_Ext.cs" />
