@@ -33,6 +33,10 @@ build/*
 **/CMakeDoxyfile.in
 **/CMakeDoxygenDefaults.cmake
 
+# Exceptions to gitignore
+!build/lib/libwpi.so
+!build/lib/libwpi-x86.so
+
 # Doxygen
 docs/html
 docs/latex
