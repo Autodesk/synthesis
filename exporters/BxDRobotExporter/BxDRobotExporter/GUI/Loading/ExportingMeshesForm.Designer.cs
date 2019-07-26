@@ -33,7 +33,7 @@ namespace BxDRobotExporter.GUI.Loading
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportingMeshesForm));
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProgressLabel = new System.Windows.Forms.Label();
-            this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
+            this.ExportMeshWorker = new System.ComponentModel.BackgroundWorker();
             this.ExitButton = new System.Windows.Forms.Button();
             this.LoadingAnimation = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingAnimation)).BeginInit();
@@ -60,8 +60,8 @@ namespace BxDRobotExporter.GUI.Loading
             // 
             // ExporterWorker
             // 
-            this.ExporterWorker.WorkerReportsProgress = true;
-            this.ExporterWorker.WorkerSupportsCancellation = true;
+            this.ExportMeshWorker.WorkerReportsProgress = true;
+            this.ExportMeshWorker.WorkerSupportsCancellation = true;
             // 
             // ExitButton
             // 
@@ -110,7 +110,7 @@ namespace BxDRobotExporter.GUI.Loading
 
         private System.Windows.Forms.PictureBox LoadingAnimation;
         private System.Windows.Forms.Label ProgressLabel;
-        private System.ComponentModel.BackgroundWorker ExporterWorker;
+        private System.ComponentModel.BackgroundWorker ExportMeshWorker;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.ProgressBar ProgressBar;
     }

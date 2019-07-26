@@ -17,13 +17,13 @@ namespace BxDRobotExporter.GUI.Loading
         public ExportingMeshesForm()
         {
             InitializeComponent();
-            ExporterWorker.DoWork += ExporterWorker_DoWork;
-            ExporterWorker.RunWorkerCompleted += ExporterWorker_RunWorkerCompleted;
+            ExportMeshWorker.DoWork += ExportMeshWorker_DoWork;
+            ExportMeshWorker.RunWorkerCompleted += ExportMeshWorker_RunWorkerCompleted;
 
             Shown += (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
-                ExporterWorker.RunWorkerAsync();
+                ExportMeshWorker.RunWorkerAsync();
             };
 
             FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
@@ -51,27 +51,21 @@ namespace BxDRobotExporter.GUI.Loading
             ProgressBar.Value = progressUpdate.CurrentProgress;
         }
 
-        private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void ExportMeshWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (RobotExporterAddInServer.Instance.OpenAssemblyDocument == null)
-            {
-                MessageBox.Show("Couldn't detect an open assembly");
-                return;
-            }
-
             exportMeshes = MeshExporter.ExportMeshes(new Progress<ProgressUpdate>(SetProgress), robotDataManager.RobotBaseNode, robotDataManager.RobotWeightKg);
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            if (ExporterWorker.IsBusy)
-                ExporterWorker.CancelAsync();
+            if (ExportMeshWorker.IsBusy)
+                ExportMeshWorker.CancelAsync();
         
-            if (ExporterWorker.CancellationPending)
+            if (ExportMeshWorker.CancellationPending)
                 Dispose();
         }
 
-        private void ExporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void ExportMeshWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
                 ProgressLabel.Text = "Export Cancelled";
