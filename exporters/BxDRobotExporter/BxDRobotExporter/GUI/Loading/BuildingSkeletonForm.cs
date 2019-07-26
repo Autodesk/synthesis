@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static BxDRobotExporter.Skeleton.SkeletonBuilder;
+using BxDRobotExporter.Exporter.Skeleton;
+using BxDRobotExporter.Utilities;
 
 namespace BxDRobotExporter.GUI.Loading
 {
-    public partial class SkeletonLoadingBarForm : Form
+    public partial class BuildingSkeletonForm : Form
     {
         private RigidNode_Base rigidNodeBase;
 
-        public SkeletonLoadingBarForm()
+        public BuildingSkeletonForm()
         {
             InitializeComponent();
 
             Shown += async (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
-                rigidNodeBase = await Task.Run(() => ExportSkeleton(new Progress<SkeletonProgressUpdate>(SetProgress)));
+                rigidNodeBase = await Task.Run(() => SkeletonBuilder.ExportSkeleton(new Progress<ProgressUpdate>(SetProgress)));
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
                 Close();
             };
@@ -28,12 +29,12 @@ namespace BxDRobotExporter.GUI.Loading
             return rigidNodeBase;
         }
 
-        private void SetProgress(SkeletonProgressUpdate update)
+        private void SetProgress(ProgressUpdate update)
         {
             // Allows function to be called by other threads TODO: is this neccecary?
             if (InvokeRequired)
             {
-                BeginInvoke((Action<SkeletonProgressUpdate>)SetProgress, update);
+                BeginInvoke((Action<ProgressUpdate>)SetProgress, update);
                 return;
             }
 

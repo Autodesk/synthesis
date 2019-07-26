@@ -1,8 +1,8 @@
 ﻿using BxDRobotExporter.Properties;
 
-namespace BxDRobotExporter.ControlGUI
+namespace BxDRobotExporter.GUI.Loading
 {
-    partial class LiteExporterForm
+    partial class ExportingMeshesForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@ namespace BxDRobotExporter.ControlGUI
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LiteExporterForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportingMeshesForm));
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
@@ -83,6 +83,7 @@ namespace BxDRobotExporter.ControlGUI
             this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);
             this.LoadingAnimation.TabIndex = 0;
             this.LoadingAnimation.TabStop = false;
+            this.LoadingAnimation.WaitOnLoad = true;
             // 
             // LiteExporterForm
             // 
@@ -97,7 +98,7 @@ namespace BxDRobotExporter.ControlGUI
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "LiteExporterForm";
+            this.Name = "ExportingMeshesForm";
             this.Text = "Exporting Meshes...";
             ((System.ComponentModel.ISupportInitialize)(this.LoadingAnimation)).EndInit();
             this.ResumeLayout(false);

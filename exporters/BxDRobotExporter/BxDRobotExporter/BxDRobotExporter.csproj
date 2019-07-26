@@ -144,6 +144,8 @@
   <ItemGroup>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
+    <Compile Include="Exporter\Mesh\MeshExporter.cs" />
+    <Compile Include="Exporter\Skeleton\SkeletonBuilder.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
@@ -162,16 +164,16 @@
     <Compile Include="GUI\Guide\GuidePanel.Designer.cs">
       <DependentUpon>GuidePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Loading\ExportingRobotLoadingForm.cs">
+    <Compile Include="GUI\Loading\ExportingMeshesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Loading\ExportingRobotLoadingForm.Designer.cs">
-      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    <Compile Include="GUI\Loading\ExportingMeshesForm.Designer.cs">
+      <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Loading\SkeletonLoadingBarForm.Designer.cs">
-      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    <Compile Include="GUI\Loading\BuildingSkeletonForm.Designer.cs">
+      <DependentUpon>BuildingSkeletonForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Loading\SkeletonLoadingBarForm.cs">
+    <Compile Include="GUI\Loading\BuildingSkeletonForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.cs">
@@ -289,7 +291,6 @@
     <Compile Include="GUI\Editors\RobotSettingsForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Skeleton\SkeletonBuilder.cs" />
     <Compile Include="Utilities\AnalyticsUtils.cs" />
     <Compile Include="Utilities\ImageConverters\AxHostConverter.cs">
       <SubType>Component</SubType>
@@ -298,6 +299,7 @@
     <Compile Include="Utilities\InventorDocumentIOUtils.cs" />
     <Compile Include="Utilities\InventorUtils.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\ProgressUpdate.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
     <Compile Include="Utilities\ToStringUtils.cs" />
     <Compile Include="Utilities\Synthesis\SynthesisUtils.cs" />
@@ -323,11 +325,11 @@
     <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
       <DependentUpon>GuidePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Loading\ExportingRobotLoadingForm.resx">
-      <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Loading\ExportingMeshesForm.resx">
+      <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Loading\SkeletonLoadingBarForm.resx">
-      <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Loading\BuildingSkeletonForm.resx">
+      <DependentUpon>BuildingSkeletonForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>

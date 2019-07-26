@@ -1,6 +1,6 @@
 ﻿namespace BxDRobotExporter.GUI.Loading
 {
-    partial class SkeletonLoadingBarForm
+    partial class BuildingSkeletonForm
     {
         /// <summary>
         /// Required designer variable.
@@ -85,7 +85,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "SkeletonLoadingBarForm";
+            this.Name = "BuildingSkeletonForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Analyzing Model";
