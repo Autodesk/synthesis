@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
+using BxDRobotExporter.GUI.Loading;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.SkeletalStructure;
 using BxDRobotExporter.Utilities;
@@ -40,7 +41,7 @@ namespace BxDRobotExporter.Managers
             {
                 var exporterThread = new Thread(() =>
                 {
-                    var loadingSkeleton = new LoadingSkeletonForm(this);
+                    var loadingSkeleton = new SkeletonLoadingBarForm(this);
                     loadingSkeleton.ShowDialog();
                 });
 
@@ -80,7 +81,7 @@ namespace BxDRobotExporter.Managers
                 {
                     if (RobotBaseNode == null)
                     {
-                        var loadingSkeleton = new LoadingSkeletonForm(this);
+                        var loadingSkeleton = new SkeletonLoadingBarForm(this);
                         loadingSkeleton.ShowDialog();
                     }
 

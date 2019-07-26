@@ -2,30 +2,36 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.RigidAnalyzer;
 using Inventor;
 
-namespace BxDRobotExporter.ControlGUI
+namespace BxDRobotExporter.GUI.Loading
 {
-    public partial class LoadingSkeletonForm : Form
+    public partial class SkeletonLoadingBarForm : Form
     {
         private readonly RobotDataManager robotDataManager;
 
-        public LoadingSkeletonForm(RobotDataManager robotDataManager)
+        public SkeletonLoadingBarForm(RobotDataManager robotDataManager)
         {
             this.robotDataManager = robotDataManager;
             InitializeComponent();
 
-            FormClosing += delegate (object sender, FormClosingEventArgs e)
+            FormClosing += (sender, args) => InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+//            Shown += (sender, args) => ExporterWorker.RunWorkerAsync();
+
+            var progress = new Progress<int>(v =>
             {
-                InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-            };
-            Shown += delegate (object sender, EventArgs e)
+                SetProgress("Loading", v, 100);
+            }); 
+            Shown += async (sender, args) =>
             {
-                ExporterWorker.RunWorkerAsync();
+                await Task.Run(() => robotDataManager.RobotBaseNode = ExporterWorker_DoWork(progress));
+                Close();
             };
         }
 
@@ -44,30 +50,30 @@ namespace BxDRobotExporter.ControlGUI
         }
         
         // Hide function cannot be run by worker
-        private void SetProgressWindowVisisble(bool v)
+        private void SetProgressWindowVisible(bool v)
         {
             if (InvokeRequired)
             {
-                BeginInvoke((Action<bool>)SetProgressWindowVisisble, v);
+                BeginInvoke((Action<bool>)SetProgressWindowVisible, v);
                 return;
             }
 
             Visible = v;
         }
 
-        private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
+        private RigidNode_Base ExporterWorker_DoWork(IProgress<int> progress)
         {
 
             if (InventorManager.Instance == null)
             {
                 MessageBox.Show("Couldn't detect a running instance of Inventor.");
-                return;
+                return null;
             }
 
             if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
             {
                 MessageBox.Show("Couldn't detect an open assembly");
-                return;
+                return null;
             }
 
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
@@ -76,11 +82,11 @@ namespace BxDRobotExporter.ControlGUI
 
             try
             {
-                skeleton = ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+                skeleton = ExportSkeleton(progress, InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
             }
             catch (Exporter.Exporter.EmptyAssemblyException)
             {
-                SetProgressWindowVisisble(false);
+//                SetProgressWindowVisible(false);
 
                 string caption = "Empty Assembly";
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
@@ -88,7 +94,7 @@ namespace BxDRobotExporter.ControlGUI
             }
             catch (Exporter.Exporter.InvalidJointException ex)
             {
-                SetProgressWindowVisisble(false);
+//                SetProgressWindowVisible(false);
 
                 string caption = "Invalid Joint";
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
@@ -96,16 +102,14 @@ namespace BxDRobotExporter.ControlGUI
             }
             catch (Exporter.Exporter.NoGroundException)
             {
-                SetProgressWindowVisisble(false);
+//                SetProgressWindowVisible(false);
 
                 string caption = "No Ground";
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
                 DialogResult r = MessageBox.Show("Please ground a part in your assembly to export your robot.", caption, buttons);
             }
-            finally
-            {
-                robotDataManager.RobotBaseNode = skeleton;
-            }
+
+            return skeleton;
         }
 
         /// <summary>
@@ -113,7 +117,7 @@ namespace BxDRobotExporter.ControlGUI
         /// </summary>
         /// <param name="occurrences"></param>
         /// <returns></returns>
-        public RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
+        private RigidNode_Base ExportSkeleton(IProgress<int> progress, IReadOnlyCollection<ComponentOccurrence> occurrences)
         {
             if (occurrences.Count == 0)
             {
@@ -121,7 +125,10 @@ namespace BxDRobotExporter.ControlGUI
             }
 
             //Getting Rigid Body Info...
-            SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
+
+            progress.Report(1);
+            Thread.Sleep(1000);
+//            SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
             NameValueMap rigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
 
             rigidGetOptions.Add("DoubleBearing", false);
@@ -132,14 +139,20 @@ namespace BxDRobotExporter.ControlGUI
 
 
             //Building Model...
-            SetProgress("Building model...", occurrences.Count + 1, occurrences.Count + 3);
+            progress.Report(4);
+            Thread.Sleep(1000);
+
+//            SetProgress("Building model...", occurrences.Count + 1, occurrences.Count + 3);
             RigidBodyCleaner.CleanGroundedBodies(rigidResults);
             RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Building Model...Done
 
             //Cleaning Up...
-            SetProgress("Cleaning up...", occurrences.Count + 2, occurrences.Count + 3);
+            progress.Report(40);
+            Thread.Sleep(1000);
+
+//            SetProgress("Cleaning up...", occurrences.Count + 2, occurrences.Count + 3);
             List<RigidNode_Base> nodes = new List<RigidNode_Base>();
             baseNode.ListAllNodes(nodes);
 
@@ -149,7 +162,10 @@ namespace BxDRobotExporter.ControlGUI
                 node.ModelFullID = node.GetModelID();
             }
             //Cleaning Up...Done
-            SetProgress("Done", occurrences.Count + 3, occurrences.Count + 3);
+            progress.Report(100);
+            Thread.Sleep(1000);
+
+//            SetProgress("Done", occurrences.Count + 3, occurrences.Count + 3);
             return baseNode;
         }
 

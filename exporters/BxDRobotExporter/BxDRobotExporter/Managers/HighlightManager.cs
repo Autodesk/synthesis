@@ -46,7 +46,7 @@ namespace BxDRobotExporter.Managers
 
         private void EnableDofHighlight(RobotDataManager robotDataManager)
         {
-            if (robotDataManager.RobotBaseNode == null && !robotDataManager.LoadRobotSkeleton())
+            if (robotDataManager.RobotBaseNode == null)
                 return;
 
             var rootNodes = new List<RigidNode_Base> {robotDataManager.RobotBaseNode};
