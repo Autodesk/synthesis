@@ -30,7 +30,7 @@ namespace BxDRobotExporter.Skeleton
 
         public static RigidNode_Base ExporterWorker_DoWork(IProgress<SkeletonProgressUpdate> progress)
         {
-            var asmDocument = RobotExporterAddInServer.Instance.OpenDocument as AssemblyDocument;
+            var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument;
             if (asmDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
             {
                 MessageBox.Show("Cannot build skeleton from empty assembly");
@@ -58,7 +58,7 @@ namespace BxDRobotExporter.Skeleton
             progress.Report(new SkeletonProgressUpdate("Getting physics info...", 1, 4));
             var rigidGetOptions = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateNameValueMap();
             rigidGetOptions.Add("DoubleBearing", false);
-            var asmDocument = RobotExporterAddInServer.Instance.OpenDocument as AssemblyDocument;
+            var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument as AssemblyDocument;
             var rawRigidResults = asmDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
             var rigidResults = new CustomRigidResults(rawRigidResults);
 

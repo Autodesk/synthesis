@@ -15,7 +15,7 @@ using Inventor;
 
 namespace BxDRobotExporter.Managers
 {
-    public class RobotDataManager
+    public class RobotDataManager // TODO: Refactor robot load/save methods
     {
         // Robot
         public string RobotName;
@@ -192,7 +192,7 @@ namespace BxDRobotExporter.Managers
         /// </summary>
         /// <param name="asmDocument">Assembly document to load data from. Data will be saved to this document when <see cref="SaveRobotData"/> is called.</param>
         /// <returns>True if all data was loaded successfully.</returns>
-        public bool LoadRobotData(Document asmDocument)
+        public bool LoadRobotData(AssemblyDocument asmDocument)
         {
             if (asmDocument == null)
                 return false;
@@ -335,7 +335,7 @@ namespace BxDRobotExporter.Managers
         /// Saves the joint information to the most recently loaded assembly file. Returns false if fails.
         /// </summary>
         /// <returns>True if all data was saved successfully.</returns>
-        public bool SaveRobotData(Document asmDocument)
+        public bool SaveRobotData(AssemblyDocument asmDocument)
         {
             if (asmDocument == null)
                 return false;

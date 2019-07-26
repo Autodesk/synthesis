@@ -5,7 +5,6 @@ using BxDRobotExporter.GUI.Editors.JointSubEditors;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Utilities;
 using BxDRobotExporter.Utilities.ImageFormat;
-using Inventor;
 
 namespace BxDRobotExporter.GUI.Editors.JointEditor
 {
@@ -62,8 +61,7 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         public void LoadPreviewIcon()
         {
             var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
-            if (!(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument asmDocument)) return;
-            iconCamera.SceneObject = asmDocument.ComponentDefinition;
+            iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
 
             const double zoom = 0.6; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
             

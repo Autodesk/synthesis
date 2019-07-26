@@ -6,7 +6,6 @@ using BxDRobotExporter.Exporter;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.OGLViewer;
 using BxDRobotExporter.RigidAnalyzer;
-using Inventor;
 
 namespace BxDRobotExporter.ControlGUI
 {
@@ -123,7 +122,7 @@ namespace BxDRobotExporter.ControlGUI
         /// <param name="e"></param>
         private void ExporterWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (RobotExporterAddInServer.Instance.OpenDocument == null || !(RobotExporterAddInServer.Instance.OpenDocument is AssemblyDocument))
+            if (RobotExporterAddInServer.Instance.OpenAssemblyDocument == null)
             {
                 MessageBox.Show("Couldn't detect an open assembly");
                 return;

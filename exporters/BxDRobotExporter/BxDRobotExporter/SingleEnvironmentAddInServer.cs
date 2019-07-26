@@ -20,7 +20,7 @@ namespace BxDRobotExporter
         /// <summary>
         /// The <see cref="Document"/> which the environment has been opened in
         /// </summary>
-        public Document OpenDocument { get; private set; }
+        protected Document OpenDocument { get; private set; }
 
         /// <summary>
         /// Whether the environment is open in Inventor

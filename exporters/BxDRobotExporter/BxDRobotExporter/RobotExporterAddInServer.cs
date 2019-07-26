@@ -28,6 +28,9 @@ namespace BxDRobotExporter
 
         // Robot/Document
         public RobotDataManager RobotDataManager { get; private set; }
+
+        public AssemblyDocument OpenAssemblyDocument => OpenDocument as AssemblyDocument; // We know this is an AssemblyDocument because of the condition in IsDocumentSupported()
+
         private List<ComponentOccurrence> disabledAssemblyOccurrences;
 
         // Environment
@@ -162,21 +165,21 @@ namespace BxDRobotExporter
         {
             AnalyticsUtils.StartSession();
 
-            HighlightManager.EnvironmentOpening(OpenDocument);
+            HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
 
             // Disable non-jointed components
             disabledAssemblyOccurrences = new List<ComponentOccurrence>();
-            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(OpenDocument));
+            disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(OpenAssemblyDocument));
 
             // Load robot skeleton and prepare UI
             RobotDataManager = new RobotDataManager();
             if (!RobotDataManager.LoadRobotSkeleton())
             {
-                InventorUtils.ForceQuitExporter(OpenDocument);
+                InventorUtils.ForceQuitExporter(OpenAssemblyDocument);
                 return;
             }
 
-            RobotDataManager.LoadRobotData(OpenDocument);
+            RobotDataManager.LoadRobotData(OpenAssemblyDocument);
 
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
@@ -192,7 +195,7 @@ namespace BxDRobotExporter
         protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
-            RobotDataManager.SaveRobotData(OpenDocument);
+            RobotDataManager.SaveRobotData(OpenAssemblyDocument);
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
