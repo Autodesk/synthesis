@@ -1,6 +1,6 @@
-﻿namespace BxDRobotExporter.ControlGUI
+﻿namespace BxDRobotExporter.GUI.Loading
 {
-    partial class LoadingSkeletonForm
+    partial class SkeletonLoadingBarForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadingSkeletonForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SkeletonLoadingBarForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
-            this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
+//            this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,8 +76,8 @@
             // 
             // ExporterWorker
             // 
-            this.ExporterWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ExporterWorker_DoWork);
-            this.ExporterWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ExporterWorker_RunWorkerCompleted);
+//            this.ExporterWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ExporterWorker_DoWork);
+//            this.ExporterWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ExporterWorker_RunWorkerCompleted);
             // 
             // SkeletonExporterForm
             // 
@@ -93,7 +93,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "LoadingSkeletonForm";
+            this.Name = "SkeletonLoadingBarForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Analyzing Model";
@@ -109,6 +109,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label ProgressLabel;
         private System.Windows.Forms.ProgressBar ProgressBar;
-        private System.ComponentModel.BackgroundWorker ExporterWorker;
+//        private System.ComponentModel.BackgroundWorker ExporterWorker;
     }
 }
