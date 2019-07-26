@@ -87,7 +87,6 @@ namespace Synthesis.Input
         public void OnReset()
         {
             Controls.Players[activePlayerIndex].ResetProfile(activeProfileMode);
-            Controls.Save();
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
