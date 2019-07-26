@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using BxDRobotExporter.Exporter.Skeleton;
 using BxDRobotExporter.SkeletalStructure;
-using BxDRobotExporter.Skeleton;
 using Inventor;
 
 namespace BxDRobotExporter.RigidAnalyzer

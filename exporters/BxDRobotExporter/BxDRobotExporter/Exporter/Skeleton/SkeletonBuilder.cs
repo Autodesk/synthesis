@@ -5,7 +5,7 @@ using BxDRobotExporter.RigidAnalyzer;
 using BxDRobotExporter.Utilities;
 using Inventor;
 
-namespace BxDRobotExporter.Skeleton
+namespace BxDRobotExporter.Exporter.Skeleton
 {
     public static class SkeletonBuilder
     {
@@ -14,28 +14,14 @@ namespace BxDRobotExporter.Skeleton
             public NoGroundException() : base("Assembly has no ground.") { }
         }
 
-        public class SkeletonProgressUpdate
-        {
-            public readonly string Message;
-            public readonly int CurrentProgress;
-            public readonly int MaxProgress;
-
-            public SkeletonProgressUpdate(string message, int currentProgress, int maxProgress)
-            {
-                Message = message;
-                CurrentProgress = currentProgress;
-                MaxProgress = maxProgress;
-            }
-        }
-
-        public static RigidNode_Base ExportSkeleton(IProgress<SkeletonProgressUpdate> progress)
+        public static RigidNode_Base ExportSkeleton(IProgress<ProgressUpdate> progress)
         {
             // If no components
             if (RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
                 return null;
             
             //Getting Rigid Body Info...
-            progress.Report(new SkeletonProgressUpdate("Getting physics info...", 1, 4));
+            progress.Report(new ProgressUpdate("Getting physics info...", 1, 4));
             var rigidGetOptions = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateNameValueMap();
             rigidGetOptions.Add("DoubleBearing", false);
             var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument;
@@ -43,7 +29,7 @@ namespace BxDRobotExporter.Skeleton
             var rigidResults = new CustomRigidResults(rawRigidResults);
 
             //Building Model...
-            progress.Report(new SkeletonProgressUpdate("Building model...", 2, 4));
+            progress.Report(new ProgressUpdate("Building model...", 2, 4));
             try
             {
                 RigidBodyCleaner.CleanGroundedBodies(rigidResults);
@@ -56,7 +42,7 @@ namespace BxDRobotExporter.Skeleton
             var skeletonBase = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Cleaning Up...
-            progress.Report(new SkeletonProgressUpdate("Cleaning up...", 3, 4));
+            progress.Report(new ProgressUpdate("Cleaning up...", 3, 4));
             var nodes = new List<RigidNode_Base>();
             skeletonBase.ListAllNodes(nodes);
             foreach (var node in nodes)
@@ -65,7 +51,7 @@ namespace BxDRobotExporter.Skeleton
                 node.ModelFullID = node.GetModelID();
             }
             
-            progress.Report(new SkeletonProgressUpdate("Done", 4, 4));
+            progress.Report(new ProgressUpdate("Done", 4, 4));
             return skeletonBase;
         }
     }

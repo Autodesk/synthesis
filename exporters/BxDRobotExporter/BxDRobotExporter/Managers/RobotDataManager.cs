@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.ControlGUI;
 using BxDRobotExporter.GUI.Editors;
 using BxDRobotExporter.GUI.Loading;
 using BxDRobotExporter.OGLViewer;
@@ -39,7 +37,7 @@ namespace BxDRobotExporter.Managers
         {
             try
             {
-                RobotBaseNode = new SkeletonLoadingBarForm().BuildSkeleton().Result;
+                RobotBaseNode = new BuildingSkeletonForm().BuildSkeleton().Result;
                 GC.Collect();
             }
             catch (InvalidComObjectException) // TODO: Don't do this
@@ -55,10 +53,7 @@ namespace BxDRobotExporter.Managers
                 return false;
             }
 
-            if (RobotBaseNode == null)
-                return false; // Skeleton export failed
-
-            return true;
+            return RobotBaseNode != null;
         }
 
         /// <summary>
@@ -66,30 +61,17 @@ namespace BxDRobotExporter.Managers
         /// </summary>
         private bool LoadMeshes()
         {
-            var liteExporter = new LiteExporterForm(this);
+            var liteExporter = new ExportingMeshesForm();
             try
             {
                 if (RobotBaseNode == null)
-                {
-                    RobotBaseNode = new SkeletonLoadingBarForm().BuildSkeleton().Result;
-                }
+                    if (!LoadRobotSkeleton())
+                        return false; // Unable to load robot skeleton
                 
-                var exporterThread = new Thread(() =>
-                {
-
-
-                    if (RobotBaseNode != null)
-                    {
-                        liteExporter.ShowDialog(); // Remove node building
-                    }
-                });
-
-                exporterThread.SetApartmentState(ApartmentState.STA);
-                exporterThread.Start();
-
-                exporterThread.Join();
-
+                RobotMeshes = liteExporter.ExportMeshes(this).Result;
                 GC.Collect();
+                
+                return RobotMeshes != null && liteExporter.DialogResult == DialogResult.OK;
             }
             catch (InvalidComObjectException) // TODO: Don't do this
             {
@@ -100,10 +82,8 @@ namespace BxDRobotExporter.Managers
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                return false;
             }
-
-            return RobotMeshes != null && liteExporter.DialogResult == DialogResult.OK;
+            return false;
         }
 
         /// <summary>
