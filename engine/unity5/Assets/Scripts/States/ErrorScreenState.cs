@@ -15,7 +15,7 @@ namespace Synthesis.States
         public override void Start()
         {
             if (AppModel.ErrorMessage.Equals("ROBOT_SELECT")) {
-                AppModel.ErrorMessage = "If you selected a new bot\nThe simulator should now work";
+                AppModel.ClearError();
                 StateMachine.ChangeState(new LoadRobotState());
             }
             else {
