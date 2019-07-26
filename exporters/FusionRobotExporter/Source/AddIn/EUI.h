@@ -43,6 +43,7 @@ namespace SynthesisAddIn
 		// UI Management
 		void prepareAllPalettes(); ///< Creates all palettes
 		void hideAllPalettes();
+		void closeAllPalettes();
 
 		void openDriveTypePalette();
 		void closeDriveTypePalette(std::string data);
@@ -101,7 +102,7 @@ namespace SynthesisAddIn
 		void toggleDOF();
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
-		bool dofViewEnabled;
+		bool dofViewEnabled = false;
 
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
