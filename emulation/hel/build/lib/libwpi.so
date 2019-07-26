@@ -1,0 +1,2 @@
+OUTPUT_FORMAT(elf32-littlearm)
+GROUP ( AS_NEEDED ( libcscore.so libntcore.so libwpiutil.so libniriosession.so.18.0.0 libniriodevenum.so.18.0.0 libRoboRIO_FRC_ChipObject.so.19.0.0 libvisa.so libNiRioSrv.so.18.0.0 libFRC_NetworkCommunication.so.19.0.0 libNiFpga.so.18.0.0 libNiFpgaLv.so.18.0.0 libwpiHal.so libwpilibc.so ) )

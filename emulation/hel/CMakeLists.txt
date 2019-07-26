@@ -12,7 +12,7 @@ FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/user-code)
 SET(hel_VERSION_MAJOR 1)
 SET(hel_VERSION_MINOR 0)
 
-SET(SCRIPTS_DIR "${CMAKE_SOURCE_DIR}/scripts")
+SET(SCRIPTS_DIR "${SCRIPTS_DIR}")
 SET(USER_CODE_DIR "${CMAKE_BINARY_DIR}/user-code")
 SET(NILIB_DIR "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIR "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
@@ -25,14 +25,11 @@ SET(GRPC "v1.21.4")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 
-OPTION(NO_TESTING "Disable unit tests" ON)
+OPTION(NO_TESTING "Disable unit tests" OFF)
 OPTION(NO_ROBOT "Disable test robot code" ON)
-OPTION(BENCH "Enable benchmark builds" ON)
+OPTION(BENCH "Enable benchmark builds" OFF)
 OPTION(X86 "Build for x86" OFF)
 OPTION(BUILD_DOC "Enable building of documentation" OFF)
-
-SET(DEBUG FALSE)
-SET(RELEASE FALSE)
 
 SET(DEFAULT_BUILD_TYPE "Release")
 
@@ -60,6 +57,7 @@ if(CMAKE_BUILD_TYPE MATCHES "^RELEASE$" OR CMAKE_BUILD_TYPE MATCHES "^RELWITHDEB
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
   endif()
   SET(RELEASE ON)
+  SET(DEBUG FALSE)
 endif()
 if(CMAKE_BUILD_TYPE MATCHES "^DEBUG$" OR CMAKE_BUILD_TYPE MATCHES "^RELWITHDEBINFO$")
   SET(DEBUG ON)
@@ -80,7 +78,7 @@ if(NOT X86)
     GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG ${GRPC}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIR}"
+    BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
 
 
@@ -108,7 +106,7 @@ else()
     GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG ${GRPC}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIR}"
+    BUILD_COMMAND ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" "${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
 
   SET(CMAKE_C_COMPILER gcc)
@@ -285,7 +283,7 @@ if(NOT NO_TESTING AND DEBUG)
         PREFIX lib/google_test
         DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
         GIT_REPOSITORY https://www.github.com/google/googletest
-        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_BINARY_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
+        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
     else()
       MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
       EXTERNALPROJECT_ADD(GoogleTest
@@ -296,7 +294,7 @@ if(NOT NO_TESTING AND DEBUG)
     endif()
     MESSAGE("Disovering test files:")
 
-    FILE(GLOB test_list tests/*.cpp)
+    FILE(GLOB test_list ${CMAKE_SOURCE_DIR}/tests/*.cpp)
     FOREACH(file ${test_list})
       STRING(REPLACE ".cpp" "" test_name_unclean ${file})
       GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
@@ -356,7 +354,7 @@ if(BENCH AND DEBUG)
 
   MESSAGE("Discovering benchmark files")
 
-  FILE(GLOB benchmark_list benchmarks/*.cpp)
+  FILE(GLOB benchmark_list ${CMAKE_SOURCE_DIR}/benchmarks/*.cpp)
   FOREACH(file ${benchmark_list})
     STRING(REPLACE ".cpp" "" benchmark_name_unclean ${file})
     GET_FILENAME_COMPONENT(benchmark_name ${benchmark_name_unclean} NAME)
@@ -382,7 +380,7 @@ if(BENCH AND DEBUG)
       "${NILIB_DIR}/src/include"
       # "${CTRE_DIR}/cpp/include/"
       # "${CTRE_DIR}/libraries/driver/include"
-      "${CMAKE_BINARY_DIR}/include"
+      "${CMAKE_SOURCE_DIR}/include"
       "${CMAKE_BINARY_DIR}/include"
       "${CMAKE_BINARY_DIR}/lib/include")
 
@@ -397,7 +395,7 @@ if(RELEASE OR BUILD_DOC)
 
     ADD_CUSTOM_TARGET(doxygen ALL
       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       COMMENT "Generating API documentation"
       VERBATIM)
   else()
