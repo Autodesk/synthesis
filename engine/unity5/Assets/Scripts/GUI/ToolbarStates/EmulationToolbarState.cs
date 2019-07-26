@@ -89,9 +89,7 @@ namespace Assets.Scripts.GUI
             }
             else
             {
-                Synthesis.EmulatorManager.UserProgram userProgram = new Synthesis.EmulatorManager.UserProgram(selectedFiles[0]);
-                if (Synthesis.EmulatorManager.IsRunningRobotCode())
-                    EmulationDriverStation.Instance.StopRobotCode();
+                Synthesis.UserProgram userProgram = new Synthesis.UserProgram(selectedFiles[0]);
                 loadingPanel.SetActive(true);
                 Task Upload = Task.Factory.StartNew(() =>
                 {
@@ -100,7 +98,7 @@ namespace Assets.Scripts.GUI
                 });
 
                 await Upload;
-                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(UserProgram.UserProgramType), programType));
+                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(Synthesis.UserProgram.UserProgramType), programType));
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,

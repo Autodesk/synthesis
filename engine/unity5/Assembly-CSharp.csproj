@@ -216,6 +216,7 @@
     <Compile Include="Assets\Scripts\Emulation\ReceiverTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\SenderTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
+    <Compile Include="Assets\Scripts\Emulation\UserProgram.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />

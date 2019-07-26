@@ -54,7 +54,6 @@ namespace Synthesis.GUI
             disableRobotImage = Auxiliary.FindObject(canvas, "Disable").GetComponentInChildren<Image>();
 
             RobotState("teleop");
-            RobotDisabled();
             StopRobotCode();
             BeginTrackingVMConnectionStatus();
         }
@@ -125,16 +124,20 @@ namespace Synthesis.GUI
                         RobotDisabled();
                     }
                 }
-                else if(EmulatorManager.IsVMRunning())
+                else
                 {
-                    VMConnectionStatusImage.sprite = EmulatorConnection;
-                    VMConnectionStatusMessage.text = "Starting";
-                    StopRobotCode();
-                } else
-                {
-                    VMConnectionStatusImage.sprite = StartEmulator;
-                    VMConnectionStatusMessage.text = "Start Emulator";
-                    StopRobotCode();
+                    if (EmulatorManager.IsVMRunning())
+                    {
+                        VMConnectionStatusImage.sprite = EmulatorConnection;
+                        VMConnectionStatusMessage.text = "Starting";
+                    }
+                    else
+                    {
+                        VMConnectionStatusImage.sprite = StartEmulator;
+                        VMConnectionStatusMessage.text = "Start Emulator";
+                    }
+                    if(EmulatorManager.IsRunningRobotCode())
+                        StopRobotCode();
                 }
                 yield return new WaitForSeconds(1.0f); // s
             }
