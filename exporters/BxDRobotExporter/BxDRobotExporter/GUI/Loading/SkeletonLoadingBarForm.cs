@@ -1,24 +1,31 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.Managers;
 using static BxDRobotExporter.Skeleton.SkeletonBuilder;
 
 namespace BxDRobotExporter.GUI.Loading
 {
     public partial class SkeletonLoadingBarForm : Form
     {
-        public SkeletonLoadingBarForm(RobotDataManager robotDataManager)
+        private RigidNode_Base rigidNodeBase;
+
+        public SkeletonLoadingBarForm()
         {
             InitializeComponent();
 
             Shown += async (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
-                await Task.Run(() => robotDataManager.RobotBaseNode = ExporterWorker_DoWork(new Progress<SkeletonProgressUpdate>(SetProgress)));
+                rigidNodeBase = await Task.Run(() => ExportSkeleton(new Progress<SkeletonProgressUpdate>(SetProgress)));
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
                 Close();
             };
+        }
+        
+        public async Task<RigidNode_Base> BuildSkeleton()
+        {
+            await Task.Run(ShowDialog).ConfigureAwait(false);
+            return rigidNodeBase;
         }
 
         private void SetProgress(SkeletonProgressUpdate update)

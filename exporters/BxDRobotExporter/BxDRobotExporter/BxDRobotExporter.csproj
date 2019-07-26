@@ -168,7 +168,7 @@
     <Compile Include="GUI\Loading\ExportingRobotLoadingForm.Designer.cs">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Loading\SkeletonExporterForm.Designer.cs">
+    <Compile Include="GUI\Loading\SkeletonLoadingBarForm.Designer.cs">
       <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Loading\SkeletonLoadingBarForm.cs">
@@ -327,7 +327,7 @@
     <EmbeddedResource Include="GUI\Loading\ExportingRobotLoadingForm.resx">
       <DependentUpon>ExportingRobotLoadingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Loading\SkeletonExporterForm.resx">
+    <EmbeddedResource Include="GUI\Loading\SkeletonLoadingBarForm.resx">
       <DependentUpon>SkeletonLoadingBarForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">

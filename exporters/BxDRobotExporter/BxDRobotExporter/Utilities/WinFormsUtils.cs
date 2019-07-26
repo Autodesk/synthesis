@@ -69,5 +69,10 @@ namespace BxDRobotExporter.Utilities
                 RecursiveControlNavigator(subControl, action);
             }
         }
+
+        public static void ShowErrorDialog(string text, string caption)
+        {
+            MessageBox.Show(new Form { TopMost = true }, text, caption, MessageBoxButtons.OK);
+        }
     }
 }
