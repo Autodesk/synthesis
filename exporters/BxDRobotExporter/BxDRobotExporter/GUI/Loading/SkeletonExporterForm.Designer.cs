@@ -32,7 +32,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ProgressLabel = new System.Windows.Forms.Label();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
-//            this.ExporterWorker = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,11 +73,6 @@
             this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.ProgressBar.TabIndex = 1;
             // 
-            // ExporterWorker
-            // 
-//            this.ExporterWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ExporterWorker_DoWork);
-//            this.ExporterWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ExporterWorker_RunWorkerCompleted);
-            // 
             // SkeletonExporterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -109,6 +103,5 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label ProgressLabel;
         private System.Windows.Forms.ProgressBar ProgressBar;
-//        private System.ComponentModel.BackgroundWorker ExporterWorker;
     }
 }
