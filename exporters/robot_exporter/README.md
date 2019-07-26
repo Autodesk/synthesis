@@ -1,7 +1,7 @@
 # robot_exporter
 
 ## Road Map
-* Deprecated in favor of [BxDRobotExporter](https://github.com/Autodesk/synthesis/tree/836-exporter-readme/exporters/BxDRobotExporter)
+* Deprecated in favor of [InventorRobotExporter](https://github.com/Autodesk/synthesis/tree/836-exporter-readme/exporters/InventorRobotExporter)
 
 ## Requirements
 * Git
