@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BxDRobotExporter.Managers;
-using BxDRobotExporter.Skeleton;
+using static BxDRobotExporter.Skeleton.SkeletonBuilder;
 
 namespace BxDRobotExporter.GUI.Loading
 {
@@ -12,32 +12,27 @@ namespace BxDRobotExporter.GUI.Loading
         {
             InitializeComponent();
 
-            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
-
-            var progress = new Progress<int>(v =>
-            {
-                SetProgress("Loading", v, 100);
-            }); 
-            
             Shown += async (sender, args) =>
             {
-                await Task.Run(() => robotDataManager.RobotBaseNode = SkeletonBuilder.ExporterWorker_DoWork(progress));
+                RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
+                await Task.Run(() => robotDataManager.RobotBaseNode = ExporterWorker_DoWork(new Progress<SkeletonProgressUpdate>(SetProgress)));
+                RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
                 Close();
             };
         }
 
-        private void SetProgress(string message, int current, int max)
+        private void SetProgress(SkeletonProgressUpdate update)
         {
             // Allows function to be called by other threads TODO: is this neccecary?
             if (InvokeRequired)
             {
-                BeginInvoke((Action<string, int, int>)SetProgress, message, current, max);
+                BeginInvoke((Action<SkeletonProgressUpdate>)SetProgress, update);
                 return;
             }
 
-            ProgressLabel.Text = message;
-            ProgressBar.Maximum = max;
-            ProgressBar.Value = current;
+            ProgressLabel.Text = update.Message;
+            ProgressBar.Maximum = update.MaxProgress;
+            ProgressBar.Value = update.CurrentProgress;
         }
     }
 }
