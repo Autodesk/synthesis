@@ -34,6 +34,9 @@ namespace BxDRobotExporter.GUI.Editors.JointEditor
         public void UpdateSkeleton(RobotDataManager robotDataManager)
         {
             SuspendLayout();
+            
+            DefinePartsLayout.Controls.Clear();
+            DefinePartsLayout.RowStyles.Clear();
 
             foreach (RigidNode_Base node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
