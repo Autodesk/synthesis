@@ -197,8 +197,6 @@ Section "Code Emulator" Emulator
 	Pop $R0 ;Get the return value
 	
 	${If} $R0 == "OK"  ;Return value should be "OK"
-	  RMDir /r $INSTDIR\Emulator
-	  SetOutPath $INSTDIR\Emulator
 	  HideWindow
 	  ExecWait '"$PLUGINSDIR\DockerToolbox-18.09.3.exe" /SILENT'
 	  ExecWait '"$PROGRAMFILES64\Docker Toolbox\docker.exe" run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel'
