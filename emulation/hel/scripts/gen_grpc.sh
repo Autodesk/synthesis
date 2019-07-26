@@ -53,7 +53,7 @@ else
 fi
 
 mkdir -p lib/gen
-$PROTOC ../api/v1/proto/emulator_service.proto -I../api/v1/proto --cpp_out=./lib/gen
-$PROTOC ../api/v1/proto/emulator_service.proto -I../api/v1/proto --grpc_out=./lib/gen --plugin=protoc-gen-grpc=$GRPC_PLUGIN
+$PROTOC ../../api/v1/proto/emulator_service.proto -I../../api/v1/proto --cpp_out=./lib/gen
+$PROTOC ../../api/v1/proto/emulator_service.proto -I../../api/v1/proto --grpc_out=./lib/gen --plugin=protoc-gen-grpc=$GRPC_PLUGIN
 
 printf "\n"
