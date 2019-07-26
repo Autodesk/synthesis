@@ -31,6 +31,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
+            GameObject panel = GameObject.Find("SimLoadReplayList");
+            string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + "Replays";
 
             //saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
             //saveButton.onClick.RemoveAllListeners();
