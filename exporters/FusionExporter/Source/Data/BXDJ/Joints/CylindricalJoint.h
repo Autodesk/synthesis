@@ -43,11 +43,12 @@ namespace BXDJ
 		float getMaxTranslation() const; ///< \return The maximum position of the child.
 
 		void applyConfig(const ConfigData &);
-
+		nlohmann::json GetJson();
 	private:
 		core::Ptr<fusion::CylindricalJointMotion> fusionJointMotion; ///< The cylindrical joint in Fusion.
-
 		void write(XmlWriter &) const;
+
+		
 
 	};
 }

@@ -2,6 +2,7 @@
 
 #include <string>
 #include "XmlWriter.h"
+#include <nlohmann/json.hpp>
 #include "CustomJSONObject.h"
 #include "Components.h"
 
@@ -89,8 +90,10 @@ namespace BXDJ
 		std::unique_ptr<Elevator> getElevator(); ///< Gets any elevator configuration from the Driver. If the Driver has no Elevator, returns nullptr.
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
+		nlohmann::json GetExportJson();
 
 		void loadJSONObject(const rapidjson::Value&);
+
 
 	private:
 		std::unique_ptr<Wheel> wheel; ///< Wheel attached to the Driver.

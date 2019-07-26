@@ -69,7 +69,7 @@ namespace BXDJ
 
 		OneTwo getParentOccNum() { return parentOcc; } ///< \return Which Fusion occurrence (One or Two) that the parent of this Joint is in the Fusion joint.
 		virtual void write(XmlWriter &) const; ///< This should be called by any derived Joint classes. Writes driver and sensors to the BXDJ file.
-		
+		std::vector<std::shared_ptr<JointSensor>> sensors; ///< Contains any JointSensors attached to this Joint.
 
 	private:
 		OneTwo parentOcc; ///< Specifies which occurrence in the Fusion joint is recognized as the parent.
@@ -79,7 +79,7 @@ namespace BXDJ
 		std::shared_ptr<RigidNode> child; ///< The RigidNode that is a child of this Joint.
 		std::unique_ptr<Driver> driver; ///< The Driver applied to this Joint.
 		
-		std::vector<std::shared_ptr<JointSensor>> sensors; ///< Contains any JointSensors attached to this Joint.
+		
 
 	};
 };
