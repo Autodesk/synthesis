@@ -39,15 +39,7 @@ namespace BxDRobotExporter.Managers
         {
             try
             {
-                var exporterThread = new Thread(() =>
-                {
-                    var loadingSkeleton = new SkeletonLoadingBarForm(this);
-                    loadingSkeleton.ShowDialog();
-                });
-
-                exporterThread.SetApartmentState(ApartmentState.STA);
-                exporterThread.Start();
-                exporterThread.Join();
+                RobotBaseNode = new SkeletonLoadingBarForm().BuildSkeleton().Result;
                 GC.Collect();
             }
             catch (InvalidComObjectException) // TODO: Don't do this
@@ -77,13 +69,14 @@ namespace BxDRobotExporter.Managers
             var liteExporter = new LiteExporterForm(this);
             try
             {
+                if (RobotBaseNode == null)
+                {
+                    RobotBaseNode = new SkeletonLoadingBarForm().BuildSkeleton().Result;
+                }
+                
                 var exporterThread = new Thread(() =>
                 {
-                    if (RobotBaseNode == null)
-                    {
-                        var loadingSkeleton = new SkeletonLoadingBarForm(this);
-                        loadingSkeleton.ShowDialog();
-                    }
+
 
                     if (RobotBaseNode != null)
                     {

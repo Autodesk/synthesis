@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using BxDRobotExporter.RigidAnalyzer;
+using BxDRobotExporter.Utilities;
 using Inventor;
 
 namespace BxDRobotExporter.Skeleton
@@ -28,43 +28,31 @@ namespace BxDRobotExporter.Skeleton
             }
         }
 
-        public static RigidNode_Base ExporterWorker_DoWork(IProgress<SkeletonProgressUpdate> progress)
+        public static RigidNode_Base ExportSkeleton(IProgress<SkeletonProgressUpdate> progress)
         {
-            var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument;
-            if (asmDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
-            {
-                MessageBox.Show("Cannot build skeleton from empty assembly");
+            // If no components
+            if (RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
                 return null;
-            }
-
-
-            RigidNode_Base skeletonBase = null;
-
-            try
-            {
-                skeletonBase = ExportSkeleton(progress);
-            }
-            catch (NoGroundException)
-            {
-                MessageBox.Show("Please ground a part in your assembly to export your robot.", "No Ground", MessageBoxButtons.OK);
-            }
-
-            return skeletonBase;
-        }
-
-        private static RigidNode_Base ExportSkeleton(IProgress<SkeletonProgressUpdate> progress)
-        {
+            
             //Getting Rigid Body Info...
             progress.Report(new SkeletonProgressUpdate("Getting physics info...", 1, 4));
             var rigidGetOptions = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateNameValueMap();
             rigidGetOptions.Add("DoubleBearing", false);
-            var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument as AssemblyDocument;
+            var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument;
             var rawRigidResults = asmDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
             var rigidResults = new CustomRigidResults(rawRigidResults);
 
             //Building Model...
             progress.Report(new SkeletonProgressUpdate("Building model...", 2, 4));
-            RigidBodyCleaner.CleanGroundedBodies(rigidResults);
+            try
+            {
+                RigidBodyCleaner.CleanGroundedBodies(rigidResults);
+            }
+            catch (NoGroundException)
+            {
+                WinFormsUtils.ShowErrorDialog("Please ground a part in your assembly to export your robot.", "No Ground");
+                return null;
+            }
             var skeletonBase = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Cleaning Up...
