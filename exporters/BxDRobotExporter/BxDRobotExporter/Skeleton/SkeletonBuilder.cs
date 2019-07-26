@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using BxDRobotExporter.Exporter;
 using BxDRobotExporter.RigidAnalyzer;
@@ -40,37 +39,31 @@ namespace BxDRobotExporter.Skeleton
                 return null;
             }
 
+            if (InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList().Count == 0)
+            {
+                MessageBox.Show("Cannot build skeleton from empty assembly");
+                return null;
+            }
+
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
             RigidNode_Base skeleton = null;
 
             try
             {
-                skeleton = ExportSkeleton(progress, InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
+                skeleton = ExportSkeleton(progress);
             }
-            catch (SkeletonBuilder.EmptyAssemblyException)
+            catch (EmptyAssemblyException)
             {
-//                SetProgressWindowVisible(false);
-
-                string caption = "Empty Assembly";
-                MessageBoxButtons buttons = MessageBoxButtons.OK;
-                DialogResult r = MessageBox.Show("Assembly has no parts to export.", caption, buttons);
+                MessageBox.Show("Assembly has no parts to export.", "Empty Assembly", MessageBoxButtons.OK);
             }
-            catch (SkeletonBuilder.InvalidJointException ex)
+            catch (InvalidJointException ex)
             {
-//                SetProgressWindowVisible(false);
-
-                string caption = "Invalid Joint";
-                MessageBoxButtons buttons = MessageBoxButtons.OK;
-                DialogResult r = MessageBox.Show(ex.Message, caption, buttons);
+                MessageBox.Show(ex.Message, "Invalid Joint", MessageBoxButtons.OK);
             }
-            catch (SkeletonBuilder.NoGroundException)
+            catch (NoGroundException)
             {
-//                SetProgressWindowVisible(false);
-
-                string caption = "No Ground";
-                MessageBoxButtons buttons = MessageBoxButtons.OK;
-                DialogResult r = MessageBox.Show("Please ground a part in your assembly to export your robot.", caption, buttons);
+                MessageBox.Show("Please ground a part in your assembly to export your robot.", "No Ground", MessageBoxButtons.OK);
             }
 
             return skeleton;
@@ -81,54 +74,42 @@ namespace BxDRobotExporter.Skeleton
         /// </summary>
         /// <param name="occurrences"></param>
         /// <returns></returns>
-        private static RigidNode_Base ExportSkeleton(IProgress<int> progress, IReadOnlyCollection<ComponentOccurrence> occurrences)
+        private static RigidNode_Base ExportSkeleton(IProgress<int> progress)
         {
-            if (occurrences.Count == 0)
-            {
-                throw new SkeletonBuilder.EmptyAssemblyException();
-            }
-
             //Getting Rigid Body Info...
 
             progress.Report(1);
-            Thread.Sleep(1000);
 //            SetProgress("Getting physics info...", occurrences.Count, occurrences.Count + 3);
-            NameValueMap rigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
+            var rigidGetOptions = InventorManager.Instance.TransientObjects.CreateNameValueMap();
 
             rigidGetOptions.Add("DoubleBearing", false);
-            RigidBodyResults rawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
+            var rawRigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
 
             //Getting Rigid Body Info...Done
-            CustomRigidResults rigidResults = new CustomRigidResults(rawRigidResults);
+            var rigidResults = new CustomRigidResults(rawRigidResults);
 
 
             //Building Model...
             progress.Report(4);
-            Thread.Sleep(1000);
-
 //            SetProgress("Building model...", occurrences.Count + 1, occurrences.Count + 3);
             RigidBodyCleaner.CleanGroundedBodies(rigidResults);
-            RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
+            var baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Building Model...Done
 
             //Cleaning Up...
             progress.Report(40);
-            Thread.Sleep(1000);
-
 //            SetProgress("Cleaning up...", occurrences.Count + 2, occurrences.Count + 3);
-            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+            var nodes = new List<RigidNode_Base>();
             baseNode.ListAllNodes(nodes);
 
-            foreach (RigidNode_Base node in nodes)
+            foreach (var node in nodes)
             {
                 node.ModelFileName = ((RigidNode)node).@group.ToString();
                 node.ModelFullID = node.GetModelID();
             }
             //Cleaning Up...Done
             progress.Report(100);
-            Thread.Sleep(1000);
-
 //            SetProgress("Done", occurrences.Count + 3, occurrences.Count + 3);
             return baseNode;
         }
