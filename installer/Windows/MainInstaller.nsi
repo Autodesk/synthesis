@@ -95,7 +95,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
-		DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
+		;DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
 
         Goto next
 
