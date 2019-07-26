@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BxDRobotExporter.Exporter;
 using BxDRobotExporter.Managers;
 using BxDRobotExporter.Skeleton;
 
@@ -13,7 +12,7 @@ namespace BxDRobotExporter.GUI.Loading
         {
             InitializeComponent();
 
-            FormClosing += (sender, args) => InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
 
             var progress = new Progress<int>(v =>
             {
