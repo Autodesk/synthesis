@@ -155,6 +155,29 @@ void Wheel::loadJSONObject(const rapidjson::Value & wheelJSON)
 	}
 }
 
+nlohmann::json BXDJ::Wheel::GetExportJson()
+{
+	nlohmann::json wheelJson;
+
+	wheelJson["$type"] = "WheelDriverMeta, SimulatorAPI";
+	wheelJson["radius"] = radius;
+	wheelJson["type"] = type;
+	wheelJson["width"] = width;
+	wheelJson["center"] = center.GetJson();
+	wheelJson["forwardExtremeSlip"] = getForwardExtremeSlip();
+	wheelJson["forwardExtremeValue"] = getForwardExtremeValue();
+	wheelJson["forwardAsympSlip"] = getForwardAsympSlip();
+	wheelJson["forwardAsympValue"] = getForwardAsympValue();
+	wheelJson["sideExtremeSlip"] = getSideExtremeSlip();
+	wheelJson["sideExtremeValue"] = getSideExtremeValue();
+	wheelJson["sideAsympSlip"] = getSideAsympSlip();
+	wheelJson["sideAsympValue"] = getSideAsympValue();
+	wheelJson["isDriveWheel"] = isDriveWheel;
+
+	
+	return wheelJson;
+}
+
 void Wheel::write(XmlWriter & output) const
 {
 	output.startElement("WheelDriverMeta");

@@ -116,14 +116,31 @@ nlohmann::json RotationalJoint::GetJson() {
 	jointJson["basePoint"] = getChildBasePoint().GetJson();
 	jointJson["currentAngularPosition"] = getCurrentAngle();
 	jointJson["hasAngularLimit"] = hasLimits();
-	jointJson["angularLimitLow"] = getMinAngle();
-	jointJson["angularLimitHigh"] = getMaxAngle();
+
+	double min = roundf(getMinAngle() * 100) / 100;
+	if(!min){
+		min = 0;
+ 	}
+
+	double max = roundf(getMaxAngle() * 100) / 100;
+	if (max == NULL) {
+		max = 0;
+	}
+
+	jointJson["angularLimitLow"] =  min;
+	jointJson["angularLimitHigh"] = max;
 	jointJson["typeSave"] = "ROTATIONAL";
-	jointJson["weight"] = getWeightData() || 10;
+	jointJson["weight"] = getWeightData();
 
-	nlohmann::json driverJson;
 
-	jointJson["cDrive"] = driverJson;
+	nlohmann::json sensorJson = nlohmann::json::array();
 
+	for (int i = 0; i < sensors.size(); i++) {
+		sensorJson.push_back(sensors[i]->GetExportJSON());
+	}
+
+	jointJson["attachedSensors"] = sensorJson;
+	jointJson["cDriver"] = getDriver()->GetExportJson();
+	
 	return jointJson;
 }

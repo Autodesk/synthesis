@@ -49,7 +49,7 @@ namespace BXDJ
 		Joint * getParent() const; ///< \return The Joint connecting the RigidNode to its parent.
 		int getOccurrenceCount() const; ///< \return The number of Fusion occurrences contained in this RigidNode.
 		
-		
+		nlohmann::json GetJson();
 		///
 		/// Creates a vector containing the children of this RigidNode.
 		/// \param[out] children Vector to place all child RigidNodes into.
@@ -131,7 +131,7 @@ namespace BXDJ
 		
 		void write(XmlWriter &) const;
 
-		nlohmann::json GetJson();
+		
 		
 
 	};

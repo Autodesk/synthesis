@@ -101,6 +101,30 @@ rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocat
 	return driverJSON;
 }
 
+nlohmann::json BXDJ::Driver::GetExportJson()
+{
+
+	nlohmann::json exportJson;
+
+	exportJson["port1"] = portOne + 1;
+	exportJson["port2"] = portTwo + 1;
+	exportJson["isCan"] = portSignal == Driver::Signal::CAN;
+	exportJson["lowerLimit"] = 0;
+	exportJson["upperLimit"] = 0;
+	exportJson["motor"] = motor + 1;
+	exportJson["InputGear"] = inputGear;
+	exportJson["OutputGear"] = outputGear;
+	exportJson["hasBreak"] = false;
+	
+	nlohmann::json metaJson;
+	if (getWheel() != nullptr) {
+		metaJson["WheelDriverMeta, SimulatorAPI, Version=0.3.3.1, Culture=neutral, PublicKeyToken=null"] = getWheel()->GetExportJson();
+	}
+
+	exportJson["MetaInfo"] = metaJson;
+	return exportJson;
+}
+
 void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
 {
 	if (driverJSON.IsObject())

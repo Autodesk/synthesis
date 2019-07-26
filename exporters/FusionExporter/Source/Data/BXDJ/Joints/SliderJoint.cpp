@@ -66,6 +66,47 @@ void SliderJoint::applyConfig(const ConfigData & config)
 			addSensor(*sensor);
 }
 
+nlohmann::json BXDJ::SliderJoint::GetJson()
+{
+	nlohmann::json json;
+
+	/*
+	nlohmann::json jointJson;
+	jointJson["$type"] = "RotationalJoint, RobotExportAPI";
+	jointJson["axis"] = getAxisOfRotation().GetJson();
+	jointJson["basePoint"] = getChildBasePoint().GetJson();
+	jointJson["currentAngularPosition"] = getCurrentAngle();
+	jointJson["hasAngularLimit"] = hasLimits();
+	jointJson["angularLimitLow"] =  min;
+	jointJson["angularLimitHigh"] = max;
+	jointJson["typeSave"] = "ROTATIONAL";
+	jointJson["weight"] = getWeightData();
+
+
+	jointJson["attachedSensors"] = nlohmann::json::array();
+	jointJson["cDriver"] = getDriver()->GetExportJson();*/
+
+	json["$type"] = "SliderJoint, RobotExportAPI";
+	json["typeSave"] = "LINEAR";
+	json["basePoint"] = getChildBasePoint().GetJson();
+	json["axis"] = getAxisOfTranslation().GetJson();
+	json["linearLimitLow"] = getMinTranslation();
+	json["linearLimitHigh"] = getMaxTranslation();
+	json["currentLinearPosition"] = getCurrentTranslation();
+	json["cDriver"] = getDriver()->GetExportJson();
+	json["weight"] = getWeightData(); 
+	
+	nlohmann::json sensorJson = nlohmann::json::array();
+
+	for (int i = 0; i < sensors.size(); i++) {
+		sensorJson.push_back(sensors[i]->GetExportJSON());
+	}
+
+	json["attachedSensors"] = sensorJson;
+
+	return json;
+}
+
 void SliderJoint::write(XmlWriter & output) const
 {
 	// Write joint information

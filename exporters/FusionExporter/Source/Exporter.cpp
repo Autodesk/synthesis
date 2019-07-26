@@ -170,13 +170,11 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		
 		nlohmann::json baseJson;
 		baseJson["Version"] = CURRENT_VERSION;
-		baseJson["DriveTrainType"] = BXDJ::ConfigData::toString(config.drivetrainType);
+		baseJson["DriveTrainType"] = config.drivetrainType;
 		baseJson["SoftwareExportedWith"] = "FUSION_360";
 
-		nlohmann::json nodes = nlohmann::json::array();
 
-
-		baseJson["nodes"] = nodes;
+		baseJson["nodes"] = rootNode->GetJson();
 
 		std::ofstream writeStream(filenameBXDJ);
 
