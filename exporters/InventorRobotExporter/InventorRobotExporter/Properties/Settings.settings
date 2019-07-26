@@ -20,6 +20,9 @@
     <Setting Name="DefaultRobotCompetition" Type="System.String" Scope="User">
       <Value Profile="(Default)">GENERIC</Value>
     </Setting>
+    <Setting Name="SelectedField" Type="System.String" Scope="User">
+      <Value Profile="(Default)">firstRun</Value>
+    </Setting>
     <Setting Name="ShowExportOrAdvancedForm" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
