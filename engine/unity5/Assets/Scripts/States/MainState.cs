@@ -283,12 +283,12 @@ namespace Synthesis.States
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.Players[0].GetButtons().cameraToggle)) &&
+            if ((InputControl.GetButtonDown(Controls.Global.GetButtons().cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().replayMode))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Global.GetButtons().replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -393,7 +393,7 @@ namespace Synthesis.States
 
             Controls.Load();
             Controls.UpdateFieldControls();
-            if (!Controls.CheckIfSaved())
+            if (!Controls.HasBeenSaved())
                 Controls.Save();
 
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);

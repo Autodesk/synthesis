@@ -109,14 +109,8 @@ public class DynamicCamera : MonoBehaviour
 
             if (ControlEnabled && RobotProvider.RobotActive)
             {
-                if (!opposite)
-                {
-                    currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
-                else
-                {
-                    currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
+                var delta = InputControl.GetAxis(Controls.Global.GetAxes().cameraHorizontal) * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                currentPosition += opposite ? -delta : delta;
             }
 
             Mono.transform.rotation = currentRotation;
@@ -293,14 +287,14 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
-                        rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                        rotationVector.y += InputControl.GetAxis("Mouse X") * rotationSpeed;
                         ControlEnabled = true;
                     }
                 }
 
                 //Use WASD to move camera position
-                positionVector += Input.GetAxis("CameraHorizontal") * Mono.transform.right * transformSpeed * Time.deltaTime;
-                positionVector += Input.GetAxis("CameraVertical") * Mono.transform.forward * transformSpeed * Time.deltaTime;
+                positionVector += InputControl.GetAxis(Controls.Global.GetAxes().cameraHorizontal) * Mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += InputControl.GetAxis(Controls.Global.GetAxes().cameraVertical) * Mono.transform.forward * transformSpeed * Time.deltaTime;
 
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 

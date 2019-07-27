@@ -180,7 +180,7 @@ namespace Synthesis.Robot
             {
                 keyDownTime = Time.time;
             }
-            else if (InputControl.GetButtonDown(Controls.Players[ControlIndex].GetButtons().resetField))
+            else if (InputControl.GetButtonDown(Controls.Global.GetButtons().resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 MainState.timesLoaded--;

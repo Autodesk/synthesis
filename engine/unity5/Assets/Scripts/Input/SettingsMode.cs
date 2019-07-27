@@ -86,7 +86,8 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            Controls.Players[activePlayerIndex].ResetProfile(activeProfileMode);
+            Controls.Players[activePlayerIndex].ResetActiveProfile();
+            Controls.Global.Reset();
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
@@ -103,6 +104,7 @@ namespace Synthesis.Input
 
                     Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
                     Controls.Players[activePlayerIndex].LoadActiveProfile();
+                    Controls.Global.Load();
 
                     GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
                 });

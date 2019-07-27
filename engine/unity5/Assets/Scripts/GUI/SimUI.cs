@@ -108,6 +108,11 @@ namespace Synthesis.GUI
 
         private void Update()
         {
+            if (InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true))
+            {
+                tabs.SetActive(!tabs.activeSelf);
+                tabStateMachine.CurrentState.ToggleHidden();
+            }
             if (toolkit == null)
             {
                 camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -814,7 +819,7 @@ namespace Synthesis.GUI
         public void CheckUnsavedControls(Action callback)
         {
             ProcessControlsCallback = callback;
-            if (!Controls.CheckIfSaved())
+            if (!Controls.HasBeenSaved())
             {
                 checkSavePanel.SetActive(true);
             } else

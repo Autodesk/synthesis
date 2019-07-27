@@ -32,15 +32,15 @@ namespace Synthesis.Input
 
             for (int i = 0; i < profiles.Length; i++) {
                 profiles[i] = new Profile();
-                ResetProfile((Profile.Mode)i);
             }
 
             activeProfileMode = DEFAULT_PROFILE_MODE;
+            ResetActiveProfile();
         }
 
-        public Profile GetProfile(Profile.Mode profileMode)
+        public Profile GetActiveProfile()
         {
-            return profiles[(int)profileMode];
+            return profiles[(int)activeProfileMode];
         }
 
         private string MakePrefPrefix()
@@ -54,13 +54,9 @@ namespace Synthesis.Input
             PlayerPrefs.Save();
         }
 
-        public bool CheckIfSaved()
+        public bool HasBeenSaved()
         {
-            if (PlayerPrefs.GetString(MakePrefPrefix()) != profiles[(int)activeProfileMode].ToString())
-            {
-                return false;
-            }
-            return true;
+            return PlayerPrefs.GetString(MakePrefPrefix()) == profiles[(int)activeProfileMode].ToString();
         }
 
         public void LoadActiveProfile()
@@ -73,10 +69,10 @@ namespace Synthesis.Input
             }
             else
             {
-                ResetProfile(activeProfileMode);
+                ResetActiveProfile();
             }
 
-            if (!CheckIfSaved())
+            if (!HasBeenSaved())
                 SaveActiveProfile();
         }
 
@@ -93,9 +89,9 @@ namespace Synthesis.Input
         /// <summary>
         /// Gets a list of all active player profile controls.
         /// </summary>
-        public ReadOnlyCollection<KeyMapping> GetActiveList()
+        public List<KeyMapping> GetActiveList()
         {
-            return profiles[(int)activeProfileMode].buttons.ToList().AsReadOnly();
+            return profiles[(int)activeProfileMode].buttons.ToList();
         }
 
         public void SetActiveProfileMode(Profile.Mode profileMode)
@@ -108,9 +104,9 @@ namespace Synthesis.Input
             return activeProfileMode;
         }
 
-        public void ResetProfile(Profile.Mode profileMode)
+        public void ResetActiveProfile()
         {
-            profiles[(int)profileMode] = Profile.CreateDefault(index, profileMode);
+            profiles[(int)activeProfileMode].Reset(index, activeProfileMode);
         }
     }
 }
