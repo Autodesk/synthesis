@@ -498,7 +498,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (InputControl.GetButtonDown(Controls.Players[StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.ControlIndex].GetButtons().replayMode) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (InputControl.GetButtonDown(Controls.Global.GetButtons().replayMode) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 ReturnToMainState();
         }
 
@@ -513,7 +513,7 @@ namespace Synthesis.States
                 camera = dynamicCamera.GetComponent<UnityEngine.Camera>();
             }
 
-            if (Input.InputControl.GetButtonDown(Controls.Players[0].GetButtons().cameraToggle))
+            if (Input.InputControl.GetButtonDown(Controls.Global.GetButtons().cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             if (firstFrame)

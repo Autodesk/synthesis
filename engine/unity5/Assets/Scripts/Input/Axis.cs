@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Synthesis.Input.Enums;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Synthesis.Input
         /// Gets the axis name.
         /// </summary>
         /// <value>Axis name.</value>
+        [JsonIgnore]
         public string Name
         {
             get
@@ -37,11 +39,6 @@ namespace Synthesis.Input
 
             set
             {
-                if (value == null)
-                {
-                    Debug.LogError("value can't be null");
-                }
-
                 mNegative = value;
             }
         }
@@ -59,11 +56,6 @@ namespace Synthesis.Input
 
             set
             {
-                if (value == null)
-                {
-                    Debug.LogError("value can't be null");
-                }
-
                 mPositive = value;
             }
         }

@@ -5,6 +5,7 @@ namespace Synthesis.Input
     public class Controls
     {
         public static Player[] Players;
+        public static GlobalProfile Global;
 
         /// <summary>
         /// Initializes the <see cref="Controls"/> class.
@@ -16,6 +17,8 @@ namespace Synthesis.Input
             {
                 Players[i] = new Player(i);
             }
+
+            Global = new GlobalProfile();
 
             Load();
         }
@@ -30,6 +33,7 @@ namespace Synthesis.Input
             {
                 Players[player_i].SaveActiveProfile();
             }
+            Global.Save();
             GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
         }
 
@@ -39,16 +43,16 @@ namespace Synthesis.Input
         /// <returns>
         /// True if user has saved their controls
         /// </returns>
-        public static bool CheckIfSaved()
+        public static bool HasBeenSaved()
         {
             for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
             {
-                if (!Players[player_i].CheckIfSaved())
+                if (!Players[player_i].HasBeenSaved())
                 {
                     return false;
                 }
             }
-            return true;
+            return Global.HasBeenSaved();
         }
 
         /// <summary>
@@ -60,13 +64,14 @@ namespace Synthesis.Input
             {
                 Players[player_i].LoadActiveProfile();
             }
+            Global.Load();
         }
 
         public static void UpdateFieldControls()
         {
             for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
             {
-                Players[player_i].GetProfile(Players[player_i].GetActiveProfileMode()).UpdateFieldControls(player_i);
+                Players[player_i].GetActiveProfile().UpdateFieldControls(player_i);
             }
         }
     }

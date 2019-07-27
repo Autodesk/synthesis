@@ -40,6 +40,13 @@ namespace Synthesis.Input
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
         }
 
+        private ReadOnlyCollection<KeyMapping> CreateKeyMappingList()
+        {
+            var merged = Controls.Players[SettingsMode.activePlayerIndex].GetActiveList();
+            merged.AddRange(Controls.Global.GetList()); // TODO: move to separate global controls configuration tab of menu
+            return merged.AsReadOnly();
+        }
+
         //==============================================================================================
         //                                       Update Functions
         // The following functions are almost identical EXCEPT for the ReadOnlyCollection line.
@@ -55,7 +62,8 @@ namespace Synthesis.Input
             float contentHeight = 4;
 
             //Retrieves and updates the active player's keys
-            ReadOnlyCollection<KeyMapping> keys = Controls.Players[SettingsMode.activePlayerIndex].GetActiveList();
+            ReadOnlyCollection<KeyMapping> keys = CreateKeyMappingList();
+
 
             foreach (KeyMapping key in keys)
             {

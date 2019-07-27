@@ -432,5 +432,10 @@ namespace Synthesis.GUI
             sensorManagerGUI.EndProcesses();
             robotCameraGUI.EndProcesses();
         }
+
+        public override void ToggleHidden()
+        {
+            toolbar.SetActive(!toolbar.activeSelf);
+        }
     }
 }

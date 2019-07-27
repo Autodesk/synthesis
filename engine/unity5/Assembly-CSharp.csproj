@@ -267,6 +267,7 @@
     <Compile Include="Assets\Scripts\Input\Enums\KeyModifier.cs" />
     <Compile Include="Assets\Scripts\Input\Enums\MouseAxis.cs" />
     <Compile Include="Assets\Scripts\Input\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\Input\GlobalProfile.cs" />
     <Compile Include="Assets\Scripts\Input\InputControl.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\CustomInput.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\JoystickInput.cs" />
