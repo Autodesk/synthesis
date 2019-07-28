@@ -514,5 +514,13 @@ namespace Synthesis.Input.Inputs
 
             return mCachedInputName;
         }
+
+        public override bool Equals(CustomInput b)
+        {
+            if (!(b is JoystickInput))
+                return false;
+            var b2 = (JoystickInput)b;
+            return mModifiers == b2.mModifiers && mAxis == b2.mAxis && mButton == b2.mButton && mTarget == b2.mTarget;
+        }
     }
 }

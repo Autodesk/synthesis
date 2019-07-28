@@ -364,5 +364,13 @@ namespace Synthesis.Input.Inputs
                 return value < 0 ? -value : 0;
             }
         }
+
+        public override bool Equals(CustomInput b)
+        {
+            if (!(b is MouseInput))
+                return false;
+            var b2 = (MouseInput)b;
+            return mModifiers == b2.mModifiers && mAxis == b2.mAxis && mButton == b2.mButton;
+        }
     }
 }

@@ -22,6 +22,8 @@ namespace Synthesis.Input
         [JsonProperty]
         private CustomInput mTertiaryInput;
 
+        public const int NUM_INPUTS = 3;
+
 
         #region Properties
 
@@ -39,6 +41,21 @@ namespace Synthesis.Input
             }
         }
         #endregion
+
+        public ref CustomInput GetInput(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    return ref mPrimaryInput;
+                case 1:
+                    return ref mSecondaryInput;
+                case 2:
+                    return ref mTertiaryInput;
+                default:
+                    throw new System.Exception();
+            }
+        }
 
         #region primaryInput
         /// <summary>

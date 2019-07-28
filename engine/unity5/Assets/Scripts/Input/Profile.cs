@@ -144,7 +144,13 @@ namespace Synthesis.Input
             JsonConvert.PopulateObject(input, this, JSON_SETTINGS);
         }
 
-        public void Reset(int player_i, Mode controlProfile)
+        // Default PWM addresses for various motors for use in default profiles
+        public const int FRONT_LEFT_PWM = 0;
+        public const int FRONT_RIGHT_PWM = 1;
+        public const int BACK_LEFT_PWM = 2;
+        public const int BACK_RIGHT_PWM = 3;
+
+        public void Reset(int player_i, Mode controlMode)
         {
             var joystick_index = player_i + 1;
 
@@ -187,13 +193,7 @@ namespace Synthesis.Input
                     axes.pwmAxes[pwm_i] = new Axis(" PWM " + pwm_i, buttons.pwmNeg[pwm_i], buttons.pwmPos[pwm_i]);
                 }
 
-                // Default PWM addresses for various motors for use in default profiles
-                const int FRONT_LEFT_PWM = 0;
-                const int FRONT_RIGHT_PWM = 1;
-                const int BACK_LEFT_PWM = 2;
-                const int BACK_RIGHT_PWM = 3;
-
-                switch (controlProfile)
+                switch (controlMode)
                 {
                     case Mode.Arcade:
                         {
