@@ -38,6 +38,7 @@ namespace Synthesis.Input.Inputs
 
         #endregion
 
+        public abstract bool Equals(CustomInput b);
 
 
         /// <summary>

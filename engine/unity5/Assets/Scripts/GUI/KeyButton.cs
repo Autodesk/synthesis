@@ -1,7 +1,11 @@
 ﻿using Synthesis.Input;
 using Synthesis.Input.Enums;
 using Synthesis.Input.Inputs;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 //=========================================================================================
@@ -13,53 +17,55 @@ using UnityEngine.UI;
 
 namespace Synthesis.GUI
 {
-    public class KeyButton : MonoBehaviour
+    public class KeyButton : MonoBehaviour, IPointerClickHandler
     {
-        public static KeyButton selectedButton = null;
+        private static List<KeyButton> selectedButtons = new List<KeyButton>();
         public static bool ignoreMouseMovement = true;
         public static bool useKeyModifiers = true;
 
+        private static Stopwatch delayTimer = new Stopwatch();
+        private const long DELAY_TIME = 100; // ms
+
         public KeyMapping keyMapping;
         public int keyIndex;
-
         private Text mKeyText;
+
+        private static Color DEFAULT_COLOR = Color.white;
+        private static Color SELECTED_COLOR = new Color(247 / 255f, 162 / 255f, 24 / 255f, 1f);
 
         public void Awake()
         {
             mKeyText = GetComponentInChildren<Text>();
+            delayTimer.Restart();
         }
 
         // Use this for initialization
         public void Start()
         {
-            GetComponent<Button>().onClick.AddListener(OnClick);
+            //Implement style preferances; (some assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
+            mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
+            mKeyText.color = DEFAULT_COLOR;
+            mKeyText.fontSize = 13;
+        }
+
+        private static CustomInput CreateDefaultMapping()
+        {
+            return new KeyboardInput();
         }
 
         // Update is called once per frame
         public void OnGUI()
         {
-            //Implement style preferances; (some assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
-            mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
-            mKeyText.color = Color.white;
-            mKeyText.fontSize = 13;
-
-            //Checks if the CurrentInput uses the ignoreMouseMovement or useKeyModifiers
-            //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 08/2017
-            if (selectedButton == this)
+            if (selectedButtons.Contains(this))
             {
-                CustomInput CurrentInput = Input.InputControl.CurrentInput(ignoreMouseMovement, useKeyModifiers);
+                CustomInput CurrentInput = InputControl.CurrentInput(ignoreMouseMovement, useKeyModifiers);
 
                 if (CurrentInput != null)
                 {
                     if (CurrentInput.modifiers == KeyModifier.NoModifier && CurrentInput is KeyboardInput
                         && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace) //Allows users to use the BACKSPACE to set "None" to their controls.
                     {
-                        SetInput(new KeyboardInput());
-                    }
-                    else if (CurrentInput.modifiers == KeyModifier.NoModifier && CurrentInput is KeyboardInput
-                        && ((KeyboardInput)CurrentInput).key == KeyCode.Backspace)
-                    {
-                        SetInput(new KeyboardInput());
+                        SetInput(CreateDefaultMapping());
                     }
                     else
                     {
@@ -75,32 +81,54 @@ namespace Synthesis.GUI
         /// </summary>
         public void UpdateText()
         {
-            switch (keyIndex)
+            mKeyText.text = keyMapping.GetInput(keyIndex).ToString();
+        }
+
+        public void Select()
+        {
+            if (delayTimer.ElapsedMilliseconds > DELAY_TIME && !selectedButtons.Contains(this)) // Delay to allow users to assign mouse clicks more easily without re-selecting
             {
-                case 0:
-                    mKeyText.text = keyMapping.primaryInput.ToString();
-                    break;
-                case 1:
-                    mKeyText.text = keyMapping.secondaryInput.ToString();
-                    break;
-                case 2:
-                    mKeyText.text = keyMapping.tertiaryInput.ToString();
-                    break;
-                default:
-                    throw new System.Exception();
+                selectedButtons.Add(this);
+                mKeyText.text = "Press Key";
+                mKeyText.color = SELECTED_COLOR;
+                GetComponent<Button>().interactable = false;
             }
         }
-        //}
+
+        public void Deselect()
+        {
+            if (selectedButtons.Remove(this))
+            {
+                GetComponent<Button>().interactable = true;
+                UpdateText();
+                mKeyText.color = DEFAULT_COLOR;
+                delayTimer.Restart();
+            }
+        }
+
 
         /// <summary>
         /// Updates the text when the user clicks the control buttons. 
         /// Source: https://github.com/Gris87/InputControl
         /// </summary>
-        public void OnClick()
+        public void OnPointerClick(PointerEventData eventData)
         {
-            selectedButton = this;
-
-            mKeyText.text = "Press Key";
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left: // Select this one only
+                    Select();
+                    break;
+                case PointerEventData.InputButton.Middle:
+                    break;
+                case PointerEventData.InputButton.Right: // Select all with the same current key mapping. Allows batch reassignment.
+                    if(!keyMapping.GetInput(keyIndex).Equals(CreateDefaultMapping()))
+                        GameObject.Find("Content").GetComponent<CreateButton>().SelectButtons(keyMapping.GetInput(keyIndex));
+                    else // Instead of batch selecting mapping None, only select this mapping
+                        Select();
+                    break;
+                default:
+                    throw new Exception();
+            }
         }
 
         /// <summary>
@@ -110,24 +138,9 @@ namespace Synthesis.GUI
         /// <param name="input">Input from any device or axis (e.g. Joysticks, Mouse, Keyboard)</param>
         private void SetInput(CustomInput input)
         {
-            switch (keyIndex)
-            {
-                case 0:
-                    keyMapping.primaryInput = input;
-                    break;
-                case 1:
-                    keyMapping.secondaryInput = input;
-                    break;
-                case 2:
-                    keyMapping.tertiaryInput = input;
-                    break;
-                default:
-                    throw new System.Exception();
-            }
+            keyMapping.GetInput(keyIndex) = input;
 
-            UpdateText();
-
-            selectedButton = null;
+            Deselect();
         }
     }
 }

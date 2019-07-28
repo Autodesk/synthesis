@@ -27,7 +27,7 @@ namespace Synthesis.Input
         // Variable to keep track which player controls are being edited in the control panel
         public static int activePlayerIndex;
 
-        private Profile.Mode activeProfileMode;
+        public static Profile.Mode activeProfileMode;
 
         public void Awake()
         {
