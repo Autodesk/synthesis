@@ -10,6 +10,12 @@ using Environment = Inventor.Environment;
 
 namespace InventorRobotExporter
 {
+    
+    /// <summary>
+    /// Abstract class for Inventor AddInServers that manage a single environment which can only be open in one document at a time.
+    /// Contains logic for detecting when the environment opens/closes and when the document in which the environment is open is shown/hidden.
+    /// Additionally provides <see cref="IsDocumentSupported"/> to allow base classes to respond with whether or not they support a certain document.
+    /// </summary>
     public abstract class SingleEnvironmentAddInServer : ApplicationAddInServer
     {
         /// <summary>
