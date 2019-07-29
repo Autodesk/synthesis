@@ -297,7 +297,7 @@ namespace Synthesis.GUI
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", 3);
         }
 
         public void OnScoringTab()
