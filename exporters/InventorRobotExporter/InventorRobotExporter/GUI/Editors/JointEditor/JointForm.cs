@@ -14,11 +14,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             AnalyticsUtils.LogPage("Joint Editor");
             InitializeComponent();
 
-            Shown += (sender, args) => // First load
-            {
-                jointCards.ForEach(card => card.LoadPreviewIcon());
-            };
-
             Closing += (sender, e) => // Every close
             {
                 InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 1);
@@ -31,7 +26,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             };
         }
 
-        public void UpdateSkeleton(RobotDataManager robotDataManager)
+        public void LoadRobot(RobotDataManager robotDataManager)
         {
             SuspendLayout();
             
@@ -50,15 +45,16 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                     WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
+            
+            jointCards.ForEach(card => card.LoadPreviewIcon());
 
             ResumeLayout();
         }
 
-        public new void ShowDialog()
+        public new void PreShow() // This can't be an event listener because this should only fire when the user has pressed the button to show the form
         {
             CollapseAllCards();
             jointCards.ForEach(card => card.LoadValuesRecursive());
-            base.ShowDialog();
         }
 
         public void CollapseAllCards(JointCard besides = null)
