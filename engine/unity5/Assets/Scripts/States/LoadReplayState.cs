@@ -75,7 +75,7 @@ namespace Synthesis.States
         public void OnDeleteButtonClicked()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
-            string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
 
             if (entry != null)
             {
@@ -99,7 +99,7 @@ namespace Synthesis.States
         public void OnLaunchButtonClicked()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
-            string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
 
             if (entry != null)
             {
