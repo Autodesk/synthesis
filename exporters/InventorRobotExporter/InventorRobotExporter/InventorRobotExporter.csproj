@@ -307,6 +307,7 @@
     <Compile Include="Utilities\WinFormsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="InventorRobotExporter.X.manifest" />
     <None Include="Resources\Branding\SynthesisLogo16.bmp" />
     <None Include="Resources\Branding\SynthesisLogo32.bmp" />

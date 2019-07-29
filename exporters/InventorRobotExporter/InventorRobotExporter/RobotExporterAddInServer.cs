@@ -52,7 +52,6 @@ namespace InventorRobotExporter
         private ButtonDefinition advancedEditJointButton;
         private ButtonDefinition editJointButton;
 
-        private ButtonDefinition guideButton;
         private ButtonDefinition dofButton;
 
         private ButtonDefinition settingsButton;
@@ -60,7 +59,7 @@ namespace InventorRobotExporter
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly JointViewKey jointViewKey = new JointViewKey();
-        private readonly GuideManager guideManager = new GuideManager(true);
+        public readonly GuideManager guideManager = new GuideManager(true);
 
         // Other managers
         public readonly HighlightManager HighlightManager = new HighlightManager();
@@ -131,13 +130,7 @@ namespace InventorRobotExporter
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
             // PRECHECK PANEL
-            precheckPanel = exporterTab.RibbonPanels.Add("Robot Setup Checklist", "BxD:RobotExporter:ChecklistPanel", clientId);
-
-            guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
-                "View a checklist of all tasks necessary prior to export.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
-            guideButton.OnExecute += context => guideManager.Visible = !guideManager.Visible;
-            precheckPanel.CommandControls.AddButton(guideButton, true);
+            precheckPanel = exporterTab.RibbonPanels.Add("Export Precheck", "BxD:RobotExporter:ChecklistPanel", clientId);
 
             dofButton = controlDefs.AddButtonDefinition("Toggle Joint\nViewer", "BxD:RobotExporter:JointViewer",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View status of all joints.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
@@ -195,6 +188,8 @@ namespace InventorRobotExporter
             advancedJointEditor.CreateDockableWindow(uiMan);
             jointViewKey.Init(uiMan);
             guideManager.Init(uiMan);
+
+            guideManager.Visible = AddInSettingsManager.ShowGuide;
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
