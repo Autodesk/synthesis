@@ -1,6 +1,6 @@
-﻿namespace InventorRobotExporter.GUI.DegreesOfFreedomViewer
+﻿namespace InventorRobotExporter.GUI.JointView
 {
-    partial class DofKeyPane
+    partial class JointViewKeyPane
     {
         /// <summary> 
         /// Required designer variable.
@@ -45,7 +45,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.webBrowser1);
-            this.Name = "DofKeyPane";
+            this.Name = "JointViewKeyPane";
             this.Size = new System.Drawing.Size(180, 149);
             this.ResumeLayout(false);
 
