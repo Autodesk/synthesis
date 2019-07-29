@@ -170,12 +170,6 @@
     <Compile Include="GUI\Loading\ExportingMeshesForm.Designer.cs">
       <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Loading\BuildingSkeletonForm.Designer.cs">
-      <DependentUpon>BuildingSkeletonForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Loading\BuildingSkeletonForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="GUI\Loading\LoadingBar.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -333,9 +327,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Loading\ExportingMeshesForm.resx">
       <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Loading\BuildingSkeletonForm.resx">
-      <DependentUpon>BuildingSkeletonForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Loading\LoadingBar.resx">
       <DependentUpon>LoadingBar.cs</DependentUpon>
