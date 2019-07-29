@@ -11,7 +11,7 @@ namespace InventorRobotExporter.Managers
         private HighlightSet jointEditorHighlight;
         
         // Degrees of freedom highlight
-        public bool DisplayDof
+        public bool DisplayJointHighlight
         {
             set
             {
@@ -95,7 +95,7 @@ namespace InventorRobotExporter.Managers
 
         public void ClearAllHighlight()
         {
-            DisplayDof = false;
+            DisplayJointHighlight = false;
             ClearJointHighlight();
         }
 

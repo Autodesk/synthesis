@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using InventorRobotExporter.GUI.DegreesOfFreedomViewer;
 using InventorRobotExporter.GUI.Editors;
 using InventorRobotExporter.GUI.Editors.AdvancedJointEditor;
 using InventorRobotExporter.GUI.Editors.JointEditor;
@@ -13,6 +12,7 @@ using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
+using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 using Environment = Inventor.Environment;
@@ -59,7 +59,7 @@ namespace InventorRobotExporter
 
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
-        private readonly DOFKey dofKey = new DOFKey();
+        private readonly JointViewKey jointViewKey = new JointViewKey();
         private readonly GuideManager guideManager = new GuideManager(true);
 
         // Other managers
@@ -139,13 +139,13 @@ namespace InventorRobotExporter
             guideButton.OnExecute += context => guideManager.Visible = !guideManager.Visible;
             precheckPanel.CommandControls.AddButton(guideButton, true);
 
-            dofButton = controlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
+            dofButton = controlDefs.AddButtonDefinition("Toggle Joint\nViewer", "BxD:RobotExporter:JointViewer",
+                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View status of all joints.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
             dofButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF");
-                dofKey.Visible = !dofKey.Visible;
-                HighlightManager.DisplayDof = dofKey.Visible;
+                jointViewKey.Visible = !jointViewKey.Visible;
+                HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
             };
             precheckPanel.CommandControls.AddButton(dofButton, true);
 
@@ -153,7 +153,7 @@ namespace InventorRobotExporter
             addInSettingsPanel = exporterTab.RibbonPanels.Add("Add-In", "BxD:RobotExporter:AddInSettings", clientId);
 
             settingsButton = controlDefs.AddButtonDefinition("Add-In Settings", "BxD:RobotExporter:Settings",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
+                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Configure add-in settings.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
             settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
             addInSettingsPanel.CommandControls.AddButton(settingsButton, true);
         }
@@ -193,7 +193,7 @@ namespace InventorRobotExporter
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
-            dofKey.Init(uiMan);
+            jointViewKey.Init(uiMan);
             guideManager.Init(uiMan);
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
@@ -232,14 +232,14 @@ namespace InventorRobotExporter
 
             advancedJointEditor.DestroyDockableWindow();
             guideManager.DestroyDockableWindow();
-            dofKey.DestroyDockableWindow();
+            jointViewKey.DestroyDockableWindow();
         }
 
         protected override void OnEnvironmentHide()
         {
             // Hide dockable windows when switching to a different document 
             advancedJointEditor.TemporaryHide();
-            dofKey.TemporaryHide();
+            jointViewKey.TemporaryHide();
             guideManager.TemporaryHide();
         }
 
@@ -247,10 +247,10 @@ namespace InventorRobotExporter
         {
             // Restore visible state of dockable windows
             advancedJointEditor.Visible = advancedJointEditor.Visible;
-            dofKey.Visible = dofKey.Visible;
+            jointViewKey.Visible = jointViewKey.Visible;
             guideManager.Visible = guideManager.Visible;
             // And DOF highlight in case that gets cleared
-            HighlightManager.DisplayDof = dofKey.Visible;
+            HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
         }
 
         protected override bool IsDocumentSupported(Document document)
