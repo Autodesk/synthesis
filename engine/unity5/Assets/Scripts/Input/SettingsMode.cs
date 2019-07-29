@@ -156,5 +156,10 @@ namespace Synthesis.Input
                 profileDropdown.RefreshShownValue();
             }
         }
+
+        public void UpdateButtons()
+        {
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+        }
     }
 }

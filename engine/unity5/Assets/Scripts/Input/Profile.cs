@@ -145,8 +145,8 @@ namespace Synthesis.Input
         }
 
         // Default PWM addresses for various motors for use in default profiles
-        public const int FRONT_LEFT_PWM = 0;
-        public const int FRONT_RIGHT_PWM = 1;
+        public const int FRONT_LEFT_PWM = 1;
+        public const int FRONT_RIGHT_PWM = 0;
         public const int BACK_LEFT_PWM = 2;
         public const int BACK_RIGHT_PWM = 3;
 
@@ -201,17 +201,17 @@ namespace Synthesis.Input
 
                             if (player_i == 0) // Customized keyboard player 1 controls
                             {
-                                buttons.pwmPos[FRONT_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow);
-                                buttons.pwmNeg[FRONT_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow);
-                                buttons.pwmPos[FRONT_RIGHT_PWM].set(KeyCode.UpArrow, KeyCode.RightArrow);
-                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(KeyCode.DownArrow, KeyCode.LeftArrow);
+                                buttons.pwmPos[FRONT_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.RightArrow);
+                                buttons.pwmNeg[FRONT_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.LeftArrow);
+                                buttons.pwmPos[FRONT_RIGHT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow);
+                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow);
                             }
                             else
                             {
-                                buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
-                                buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
-                                buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
-                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
+                                buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy));
+                                buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy));
+                                buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy));
+                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy));
                             }
 
                             #endregion
@@ -223,25 +223,25 @@ namespace Synthesis.Input
 
                             if (player_i == 0) // Customized keyboard player 1 controls
                             {
-                                buttons.pwmPos[FRONT_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow, KeyCode.Alpha2);
-                                buttons.pwmNeg[FRONT_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.Alpha1);
+                                buttons.pwmPos[FRONT_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.RightArrow, KeyCode.Alpha2);
+                                buttons.pwmNeg[FRONT_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.Alpha1);
                                 buttons.pwmPos[BACK_LEFT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow, KeyCode.Alpha1);
                                 buttons.pwmNeg[BACK_LEFT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.Alpha2);
 
-                                buttons.pwmPos[FRONT_RIGHT_PWM].set(KeyCode.UpArrow, KeyCode.RightArrow, KeyCode.Alpha2);
-                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.Alpha1);
+                                buttons.pwmPos[FRONT_RIGHT_PWM].set(KeyCode.DownArrow, KeyCode.RightArrow, KeyCode.Alpha2);
+                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.Alpha1);
                                 buttons.pwmPos[BACK_RIGHT_PWM].set(KeyCode.UpArrow, KeyCode.RightArrow, KeyCode.Alpha1);
                                 buttons.pwmNeg[BACK_RIGHT_PWM].set(KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.Alpha2);
                             }
                             else
                             {
-                                buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
-                                buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
+                                buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
+                                buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
                                 buttons.pwmPos[BACK_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
                                 buttons.pwmNeg[BACK_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
 
-                                buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
-                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
+                                buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
+                                buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
                                 buttons.pwmPos[BACK_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy), new JoystickInput(JoystickAxis.Axis4Positive, joy), new JoystickInput(JoystickAxis.Axis1Negative, joy));
                                 buttons.pwmNeg[BACK_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy), new JoystickInput(JoystickAxis.Axis4Negative, joy), new JoystickInput(JoystickAxis.Axis1Positive, joy));
                             }
@@ -254,10 +254,10 @@ namespace Synthesis.Input
                             #region Tank Controls
 
                             // Player 1's tank controls are the same as the other players'
-                            buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy));
-                            buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy));
-                            buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis5Negative, joy));
-                            buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis5Positive, joy));
+                            buttons.pwmPos[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Negative, joy));
+                            buttons.pwmNeg[FRONT_LEFT_PWM].set(new JoystickInput(JoystickAxis.Axis2Positive, joy));
+                            buttons.pwmPos[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis5Positive, joy));
+                            buttons.pwmNeg[FRONT_RIGHT_PWM].set(new JoystickInput(JoystickAxis.Axis5Negative, joy));
 
                             #endregion
                         }

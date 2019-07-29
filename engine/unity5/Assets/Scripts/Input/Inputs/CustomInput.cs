@@ -13,12 +13,8 @@ namespace Synthesis.Input.Inputs
 
         private string mCachedModifiersToString = null;
 
-
-
         protected static int mCachedModifiersFrame = 0;
         protected static KeyModifier mCachedModifiersState = KeyModifier.NoModifier;
-
-
 
         #region Properties
 
