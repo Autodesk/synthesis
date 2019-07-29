@@ -195,7 +195,6 @@ namespace InventorRobotExporter
             // Load skeleton into joint editors
             advancedJointEditor.UpdateSkeleton(RobotDataManager);
             jointForm.UpdateSkeleton(RobotDataManager);
-            loadingBar.SetProgress(new ProgressUpdate("Done", 10, 10));
             loadingBar.Close();
         }
 
