@@ -155,9 +155,9 @@
     <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
       <DependentUpon>DOFKeyPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKey.cs" />
+    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyManager.cs" />
     <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditor.cs" />
-    <Compile Include="GUI\Guide\Guide.cs" />
+    <Compile Include="GUI\Guide\GuideManager.cs" />
     <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -292,6 +292,7 @@
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities\AnalyticsUtils.cs" />
+    <Compile Include="Utilities\DockableWindowManagerBase.cs" />
     <Compile Include="Utilities\ImageConverters\AxHostConverter.cs">
       <SubType>Component</SubType>
     </Compile>
