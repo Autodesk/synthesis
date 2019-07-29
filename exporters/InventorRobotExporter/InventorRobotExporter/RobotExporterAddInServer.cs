@@ -150,9 +150,9 @@ namespace InventorRobotExporter
             precheckPanel.CommandControls.AddButton(dofButton, true);
 
             // ADD-IN SETTINGS PANEL
-            addInSettingsPanel = exporterTab.RibbonPanels.Add("Plugin", "BxD:RobotExporter:PluginSettings", clientId);
+            addInSettingsPanel = exporterTab.RibbonPanels.Add("Add-In", "BxD:RobotExporter:AddInSettings", clientId);
 
-            settingsButton = controlDefs.AddButtonDefinition("Plugin Settings", "BxD:RobotExporter:Settings",
+            settingsButton = controlDefs.AddButtonDefinition("Add-In Settings", "BxD:RobotExporter:Settings",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
             settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
             addInSettingsPanel.CommandControls.AddButton(settingsButton, true);
