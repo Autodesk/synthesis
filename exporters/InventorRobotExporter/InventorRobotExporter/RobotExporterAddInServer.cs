@@ -161,7 +161,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.StartSession();
             
-            var loadingBar = new LoadingBar("Loading Export Environment");
+            var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
             HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
@@ -203,7 +203,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.EndSession();
             
-            var loadingBar = new LoadingBar("Closing Export Environment");
+            var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
