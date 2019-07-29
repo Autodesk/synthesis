@@ -21,7 +21,7 @@ namespace InventorRobotExporter.Exporter.Skeleton
                 return null;
             
             //Getting Rigid Body Info...
-            progress.Report(new ProgressUpdate("Getting physics info...", 1, 4));
+            progress?.Report(new ProgressUpdate("Getting physics info...", 1, 4));
             var rigidGetOptions = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateNameValueMap();
             rigidGetOptions.Add("DoubleBearing", false);
             var asmDocument = RobotExporterAddInServer.Instance.OpenAssemblyDocument;
@@ -29,7 +29,7 @@ namespace InventorRobotExporter.Exporter.Skeleton
             var rigidResults = new CustomRigidResults(rawRigidResults);
 
             //Building Model...
-            progress.Report(new ProgressUpdate("Building model...", 2, 4));
+            progress?.Report(new ProgressUpdate("Building model...", 2, 4));
             try
             {
                 RigidBodyCleaner.CleanGroundedBodies(rigidResults);
@@ -42,7 +42,7 @@ namespace InventorRobotExporter.Exporter.Skeleton
             var skeletonBase = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 
             //Cleaning Up...
-            progress.Report(new ProgressUpdate("Cleaning up...", 3, 4));
+            progress?.Report(new ProgressUpdate("Cleaning up...", 3, 4));
             var nodes = new List<RigidNode_Base>();
             skeletonBase.ListAllNodes(nodes);
             foreach (var node in nodes)
@@ -51,7 +51,7 @@ namespace InventorRobotExporter.Exporter.Skeleton
                 node.ModelFullID = node.GetModelID();
             }
             
-            progress.Report(new ProgressUpdate("Done", 4, 4));
+            progress?.Report(new ProgressUpdate("Done", 4, 4));
             return skeletonBase;
         }
     }

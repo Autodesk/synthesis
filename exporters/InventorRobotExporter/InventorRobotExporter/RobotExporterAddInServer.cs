@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -14,6 +15,7 @@ using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
 using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
+using Environment = Inventor.Environment;
 
 namespace InventorRobotExporter
 {
@@ -165,39 +167,40 @@ namespace InventorRobotExporter
         protected override void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
-
+            
+            var loadingBar = new LoadingBar("Loading Export Environment");
+            loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
+            loadingBar.Show();
             HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
 
             // Disable non-jointed components
             disabledAssemblyOccurrences = new List<ComponentOccurrence>();
             disabledAssemblyOccurrences.AddRange(InventorUtils.DisableUnconnectedComponents(OpenAssemblyDocument));
 
+            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 2, 10));
             // Load robot skeleton and prepare UI
             RobotDataManager = new RobotDataManager();
-            if (!RobotDataManager.LoadRobotSkeleton())
+            if (!RobotDataManager.LoadRobotSkeleton(new Progress<ProgressUpdate>(loadingBar.SetProgress)))
             {
                 InventorUtils.ForceQuitExporter(OpenAssemblyDocument);
                 return;
             }
 
-            var loadingBar = new LoadingBar("Loading Export Environment");
-
-            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Data...", 1, 4));
-            loadingBar.Show();
+            loadingBar.SetProgress(new ProgressUpdate("Loading Joint Data...", 7, 10));
             RobotDataManager.LoadRobotData(OpenAssemblyDocument);
 
-            loadingBar.SetProgress(new ProgressUpdate("Initializing UI...", 2, 4));
+            loadingBar.SetProgress(new ProgressUpdate("Initializing UI...", 8, 10));
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
 
-            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 3, 4));
+            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
             advancedJointEditor.UpdateSkeleton(RobotDataManager);
             jointForm.UpdateSkeleton(RobotDataManager);
-            loadingBar.SetProgress(new ProgressUpdate("Done", 4, 4));
+            loadingBar.SetProgress(new ProgressUpdate("Done", 10, 10));
             loadingBar.Close();
         }
 
