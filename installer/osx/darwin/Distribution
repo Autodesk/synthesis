@@ -9,21 +9,21 @@
     <domains enable_localSystem="true" />
     <installation-check script="installCheck();"/>
     <script>
-function installCheck() {
-    if(!(system.compareVersions(system.version.ProductVersion, '10.6.0') >= 0)) {
-        my.result.title = 'Unable to install';
-        my.result.message = '__PRODUCT__ requires Mac OS X 10.6 or later.';
-        my.result.type = 'Fatal';
-        return false;
+    function installCheck() {
+        if(!(system.compareVersions(system.version.ProductVersion, '10.6.0') >= 0)) {
+            my.result.title = 'Unable to install';
+            my.result.message = '__PRODUCT__ requires Mac OS X 10.6 or later.';
+            my.result.type = 'Fatal';
+            return false;
+        }
+        if(system.files.fileExistsAtPath("/Library/Application Support/Synthesis")) {
+            my.result.title = 'Previous Installation Detected';
+            my.result.message = 'A previous installation of __PRODUCT__ exists at /Library/Application Support/__PRODUCT__/__VERSION__/. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';
+            my.result.type = 'Warning';
+            return false;
+        }
+        return true;
     }
-    if(system.files.fileExistsAtPath('/Library/Application\ Support/__PRODUCT__/__VERSION__/')) {
-        my.result.title = 'Previous Installation Detected';
-        my.result.message = 'A previous installation of __PRODUCT__ exists at /Library/Application Support/__PRODUCT__/__VERSION__/. This installer will remove the previous installation prior to installing. Please back up any data before proceeding.';
-        my.result.type = 'Warning';
-        return false;
-    }
-    return true;
-}
     </script>
     <choices-outline>
         <line choice="__PRODUCT__"/>
