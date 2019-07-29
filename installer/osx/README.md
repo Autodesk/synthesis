@@ -1,8 +1,23 @@
 # OSX packager
 
-## Build steps:
+## Build step (temp fix) :
 
-0.5 Copy Synthesis build to application folder - ` cp [synthesis/build/dir/Synthesis.app] [syntheis/installer/osx/applcation/]
+1. Get signed Synthesis.app
+
+2. Copy to synthesis macos install application ` cp [Synthesis.app] [syntheis/installer/osx/applcation/] `
+
+3. Install Node / NPM ` brew install node `
+
+4. Install AppDMG ` npm i -g appdmg `
+
+5. change directories to the osx/application directory ` cd synthesis/installer/osx/application/ `
+
+6. Run ` appdmg spec.json Synthesis.app `
+
+
+## Build steps (Not Working) :
+
+0.5 Copy Synthesis build to application folder - ` cp [synthesis/build/dir/Synthesis.app] [syntheis/installer/osx/applcation/] `
 
 1. ` cd installer/osx `
 
