@@ -10,6 +10,7 @@ using InventorRobotExporter.OGLViewer;
 using InventorRobotExporter.SkeletalStructure;
 using InventorRobotExporter.Utilities;
 using Inventor;
+using InventorRobotExporter.Exporter.Skeleton;
 
 namespace InventorRobotExporter.Managers
 {
@@ -32,11 +33,11 @@ namespace InventorRobotExporter.Managers
         /// <summary>
         /// Build the node tree of the robot from Inventor
         /// </summary>
-        public bool LoadRobotSkeleton()
+        public bool LoadRobotSkeleton(Progress<ProgressUpdate> progress = null)
         {
             try
             {
-                RobotBaseNode = new BuildingSkeletonForm().BuildSkeleton().Result;
+                RobotBaseNode = SkeletonBuilder.ExportSkeleton(progress);
                 GC.Collect();
             }
             catch (InvalidComObjectException) // TODO: Don't do this
