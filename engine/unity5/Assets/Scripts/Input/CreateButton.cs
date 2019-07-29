@@ -23,6 +23,8 @@ namespace Synthesis.Input
     {
         public GameObject keyNamePrefab;
         public GameObject keyButtonsPrefab;
+        public GameObject simpleKeyButtonsPrefab;
+        private GameObject controlLabelSwitch;
 
         private Transform namesTransform; //The string name of the control (the first column of the control panel; non-button)
         private Transform keysTransform; //The buttons of the controls (column 2 and column 3 of the control panel)
@@ -33,6 +35,7 @@ namespace Synthesis.Input
         {
             namesTransform = transform.Find("Names");
             keysTransform = transform.Find("Keys");
+            controlLabelSwitch = Auxiliary.FindObject("ControlLabelSwitch");
         }
 
         // Use this for initialization
@@ -62,7 +65,12 @@ namespace Synthesis.Input
             return merged.AsReadOnly();
         }
 
-        public void AddButtonRow(KeyMapping key, ref float contentHeight, ref float maxNameWidth)
+        public void AddButtonRow(string label, KeyMapping key, ref float contentHeight, ref float maxNameWidth)
+        {
+            AddButtonRow(label, key, ref contentHeight, ref maxNameWidth, null, null);
+        }
+
+        public void AddButtonRow(string label, KeyMapping key, ref float contentHeight, ref float maxNameWidth, Action<int, Inputs.CustomInput> inputHandler, Action<int, Text> textHandler)
         {
             //========================================================================================
             //                                   Key Text vs Key Buttons
@@ -75,7 +83,7 @@ namespace Synthesis.Input
             #region Key text
 
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
-            keyNameText.name = key.name;
+            keyNameText.name = label;
 
             RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
 
@@ -84,7 +92,7 @@ namespace Synthesis.Input
             keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
 
             Text keyText = keyNameText.GetComponentInChildren<Text>();
-            keyText.text = key.name;
+            keyText.text = label;
 
             float keyNameWidth = keyText.preferredWidth + 8;
 
@@ -96,8 +104,8 @@ namespace Synthesis.Input
             #endregion
 
             #region Key buttons
-            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
-            keyButtons.name = key.name;
+            GameObject keyButtons = inputHandler != null ? (Instantiate(simpleKeyButtonsPrefab) as GameObject) : (Instantiate(keyButtonsPrefab) as GameObject);
+            keyButtons.name = label;
 
             RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
 
@@ -105,14 +113,15 @@ namespace Synthesis.Input
             keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
             keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
 
+
             for (int i = 0; i < keyButtons.transform.childCount; ++i) // 3 - primary, secondary, tertiary
             {
                 KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
 
-                buttonScript.name = key.name;
-                buttonScript.keyMapping = key;
-                buttonScript.keyIndex = i;
-                buttonScript.UpdateText();
+                if (inputHandler != null)
+                    buttonScript.Init(label, key, i, inputHandler, textHandler);
+                else
+                    buttonScript.Init(label, key, i);
 
                 buttons.Add(buttonScript);
             }
@@ -139,9 +148,192 @@ namespace Synthesis.Input
             //Retrieves and updates the active player's keys
             ReadOnlyCollection<KeyMapping> keys = CreateKeyMappingList();
 
+            bool use_drive_base_labels = (int)controlLabelSwitch.GetComponent<Slider>().value == 0;
+
+            if (use_drive_base_labels)
+            {
+                // Custom button controls for handling tank, arcade, and mecanum drive bases more simply in the UI
+                switch (SettingsMode.activeProfileMode)
+                {
+                    case Profile.Mode.Arcade:
+                        AddButtonRow("Forward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Backward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Left", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].secondaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].secondaryInput.ToString();
+                            });
+                        AddButtonRow("Right", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].secondaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].secondaryInput.ToString();
+                            });
+                        break;
+                    case Profile.Mode.Tank:
+                        AddButtonRow("Left Forward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Left Backward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Right Forward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Right Backward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].primaryInput.ToString();
+                            });
+                        break;
+                    case Profile.Mode.Mecanum:
+                        AddButtonRow("Forward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM].primaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Backward", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM].primaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].primaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM].primaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].primaryInput.ToString();
+                            });
+                        AddButtonRow("Left", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM].secondaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM].secondaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].secondaryInput.ToString();
+                            });
+                        AddButtonRow("Right", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM].secondaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].secondaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM].secondaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].secondaryInput.ToString();
+                            });
+                        AddButtonRow("Strafe Left", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].tertiaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM].tertiaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM].tertiaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM].tertiaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM].tertiaryInput.ToString();
+                            });
+                        AddButtonRow("Strafe Right", Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM], ref contentHeight, ref maxNameWidth,
+                            (int keyIndex, Inputs.CustomInput input) =>
+                            {
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].tertiaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM].tertiaryInput = input;
+
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM].tertiaryInput = input;
+                                Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM].tertiaryInput = input;
+                            },
+                            (int keyIndex, Text mKeyText) =>
+                            {
+                                mKeyText.text = Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM].tertiaryInput.ToString();
+                            });
+                        break;
+                    default:
+                        throw new Profile.UnhandledControlProfileException();
+                }
+            }
             foreach (KeyMapping key in keys)
             {
-                AddButtonRow(key, ref contentHeight, ref maxNameWidth);
+                bool default_front = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM]);
+                bool default_back = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM]) ||
+                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM]);
+                bool covered_in_simple = default_front || (SettingsMode.activeProfileMode == Profile.Mode.Mecanum && default_back);
+                if (!use_drive_base_labels || !covered_in_simple)
+                {
+                    AddButtonRow(key.name, key, ref contentHeight, ref maxNameWidth);
+                }
             }
 
             RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();

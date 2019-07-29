@@ -30,6 +30,9 @@ namespace Synthesis.GUI
         public int keyIndex;
         private Text mKeyText;
 
+        private Action<int, CustomInput> updateInputHandler;
+        private Action<int, Text> updateTextHandler;
+
         private static Color DEFAULT_COLOR = Color.white;
         private static Color SELECTED_COLOR = new Color(247 / 255f, 162 / 255f, 24 / 255f, 1f);
 
@@ -46,6 +49,31 @@ namespace Synthesis.GUI
             mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
             mKeyText.color = DEFAULT_COLOR;
             mKeyText.fontSize = 13;
+        }
+
+        public void Init(string label, KeyMapping key, int index)
+        {
+            Init(label, key, index,
+                (int dummy, CustomInput input) =>
+                {
+                    keyMapping.GetInput(keyIndex) = input;
+                },
+                (int dummy, Text dummy2) =>
+                {
+                    mKeyText.text = keyMapping.GetInput(keyIndex).ToString();
+                });
+        }
+
+        public void Init(string label, KeyMapping key, int index, Action<int, CustomInput> inputHandler, Action<int, Text> textHandler)
+        {
+            name = label;
+            keyMapping = key;
+            keyIndex = index;
+
+            updateInputHandler = inputHandler;
+            updateTextHandler = textHandler;
+
+            updateTextHandler(keyIndex, mKeyText);
         }
 
         private static CustomInput CreateDefaultMapping()
@@ -100,12 +128,11 @@ namespace Synthesis.GUI
             if (selectedButtons.Remove(this))
             {
                 GetComponent<Button>().interactable = true;
-                UpdateText();
                 mKeyText.color = DEFAULT_COLOR;
+                updateTextHandler(keyIndex, mKeyText);
                 delayTimer.Restart();
             }
         }
-
 
         /// <summary>
         /// Updates the text when the user clicks the control buttons. 
@@ -138,7 +165,7 @@ namespace Synthesis.GUI
         /// <param name="input">Input from any device or axis (e.g. Joysticks, Mouse, Keyboard)</param>
         private void SetInput(CustomInput input)
         {
-            keyMapping.GetInput(keyIndex) = input;
+            updateInputHandler(keyIndex, input);
 
             Deselect();
         }
