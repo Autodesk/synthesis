@@ -77,9 +77,9 @@ namespace Synthesis.States
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
 
-            if (entry != null)
+            if (entry != null && entry.EndsWith(".replay"))
             {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + entry + ".replay");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + entry);
                 replayList.SetActive(false);
                 replayList.SetActive(true);
             }
