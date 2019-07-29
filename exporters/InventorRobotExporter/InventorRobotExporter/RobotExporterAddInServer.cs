@@ -98,7 +98,7 @@ namespace InventorRobotExporter
             // DRIVETRAIN PANEL
             driveTrainPanel = exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
 
-            driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nType",
+            driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nLayout",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)), ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)));
             driveTrainTypeButton.OnExecute += context => new DrivetrainLayoutForm(RobotDataManager).ShowDialog();
