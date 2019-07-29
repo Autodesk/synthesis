@@ -11,6 +11,7 @@ using InventorRobotExporter.SkeletalStructure;
 using InventorRobotExporter.Utilities;
 using Inventor;
 using InventorRobotExporter.Exporter.Skeleton;
+using InventorRobotExporter.GUI.Messages;
 
 namespace InventorRobotExporter.Managers
 {
@@ -150,6 +151,10 @@ namespace InventorRobotExporter.Managers
                 {
                     RobotMeshes[i].WriteToFile(robotFolderPath + "\\node_" + i + ".bxda");
                 }
+
+                //MessageBox.Show("Your robot was successfully exported to " + robotFolderPath, "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                new ExportSuccessful(robotFolderPath).ShowDialog();
+
                 return true;
             }
             catch (Exception e)
@@ -158,6 +163,7 @@ namespace InventorRobotExporter.Managers
                 MessageBox.Show("Unable to export robot: " + e.Message, "Export Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+
         }
 
         /// <summary>
