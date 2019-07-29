@@ -1,6 +1,6 @@
 ﻿namespace InventorRobotExporter.GUI.Editors
 {
-    partial class DrivetrainTypeForm
+    partial class DrivetrainLayoutForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DrivetrainTypeForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DrivetrainLayoutForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.customOption = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.hdriveOption = new System.Windows.Forms.TableLayoutPanel();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.tankOption = new System.Windows.Forms.TableLayoutPanel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tankLabel = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.customOption.SuspendLayout();
@@ -133,6 +133,18 @@
             this.hdriveOption.Size = new System.Drawing.Size(144, 163);
             this.hdriveOption.TabIndex = 11;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(11, 135);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(122, 20);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "H-Drive";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // pictureBox2
             // 
             this.pictureBox2.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -145,18 +157,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 6;
             this.pictureBox2.TabStop = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(11, 135);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(122, 20);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "H-Drive";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tankOption
             // 
@@ -177,6 +177,18 @@
             this.tankOption.Size = new System.Drawing.Size(143, 163);
             this.tankOption.TabIndex = 10;
             // 
+            // tankLabel
+            // 
+            this.tankLabel.AutoSize = true;
+            this.tankLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tankLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tankLabel.Location = new System.Drawing.Point(11, 135);
+            this.tankLabel.Name = "tankLabel";
+            this.tankLabel.Size = new System.Drawing.Size(121, 20);
+            this.tankLabel.TabIndex = 7;
+            this.tankLabel.Text = "Standard";
+            this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -190,18 +202,6 @@
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
             // 
-            // tankLabel
-            // 
-            this.tankLabel.AutoSize = true;
-            this.tankLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tankLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tankLabel.Location = new System.Drawing.Point(11, 135);
-            this.tankLabel.Name = "tankLabel";
-            this.tankLabel.Size = new System.Drawing.Size(121, 20);
-            this.tankLabel.TabIndex = 7;
-            this.tankLabel.Text = "Tank Drive";
-            this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // btnOk
             // 
             this.btnOk.Location = new System.Drawing.Point(338, 196);
@@ -213,7 +213,7 @@
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
             // 
-            // DriveTrainTypeForm
+            // DrivetrainLayoutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -225,8 +225,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "DrivetrainTypeForm";
-            this.Text = "Select Drive Train Type";
+            this.Name = "DrivetrainLayoutForm";
+            this.Text = "Select Drivetrain Layout";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.customOption.ResumeLayout(false);
