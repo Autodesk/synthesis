@@ -188,7 +188,6 @@ namespace Synthesis.GUI
             LinkTab<SelectionState>("SelectionPanel");
             LinkTab<DefaultSimulatorState>("DefaultSimulator");
             LinkTab<MixAndMatchState>("MixAndMatchMode");
-            LinkTab<LoadReplayState>("LoadReplayUI");
             LinkTab<LoadRobotState>("SimLoadRobot");
             LinkTab<LoadFieldState>("SimLoadField");
         }
@@ -211,7 +210,9 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// Launches directly into the simulator if command line arguments are provided.
+        /// 
+        /// 
+        /// es directly into the simulator if command line arguments are provided.
         /// </summary>
         /// <returns></returns>
         private bool DirectSimulatorLaunch()

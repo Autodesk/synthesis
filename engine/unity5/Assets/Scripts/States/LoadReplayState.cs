@@ -19,19 +19,19 @@ namespace Synthesis.States
 {
     public class LoadReplayState : State
     {
-        readonly GameObject canvas;
+        GameObject canvas;
 
         Button deleteButton;
         Button cancelButton;
         Button launchButton;
-
-        Text replayNameText;
 
         /// <summary>
         /// Initializes references to requried <see cref="GameObject"/>s.
         /// </summary>
         public override void Start()
         {
+            canvas = Auxiliary.FindGameObject("Canvas");
+
             GameObject panel = GameObject.Find("SimLoadReplayList");
             string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + "Replays";
 
@@ -46,8 +46,6 @@ namespace Synthesis.States
             launchButton = GameObject.Find("LaunchButton").GetComponent<Button>();
             launchButton.onClick.RemoveAllListeners();
             launchButton.onClick.AddListener(OnLaunchButtonClicked);
-
-            //replayNameText = GameObject.Find("ReplayNameText").GetComponent<Text>();
 
             DynamicCamera.ControlEnabled = false;
         }
