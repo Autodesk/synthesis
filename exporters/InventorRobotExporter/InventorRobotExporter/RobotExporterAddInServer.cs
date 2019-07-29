@@ -60,7 +60,7 @@ namespace InventorRobotExporter
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly DOFKey dofKey = new DOFKey();
-        private readonly Guide guide = new Guide(true);
+        private readonly GuideManager guideManager = new GuideManager(true);
 
         // Other managers
         public readonly HighlightManager HighlightManager = new HighlightManager();
@@ -136,7 +136,7 @@ namespace InventorRobotExporter
             guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "View a checklist of all tasks necessary prior to export.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
-            guideButton.OnExecute += context => guide.Visible = !guide.Visible;
+            guideButton.OnExecute += context => guideManager.Visible = !guideManager.Visible;
             precheckPanel.CommandControls.AddButton(guideButton, true);
 
             dofButton = controlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
@@ -193,8 +193,8 @@ namespace InventorRobotExporter
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
-            dofKey.CreateDockableWindow(uiMan);
-            guide.CreateDockableWindow(uiMan);
+            dofKey.Init(uiMan);
+            guideManager.Init(uiMan);
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
@@ -231,7 +231,7 @@ namespace InventorRobotExporter
             disabledAssemblyOccurrences = null;
 
             advancedJointEditor.DestroyDockableWindow();
-            guide.DestroyDockableWindow();
+            guideManager.DestroyDockableWindow();
             dofKey.DestroyDockableWindow();
         }
 
@@ -240,7 +240,7 @@ namespace InventorRobotExporter
             // Hide dockable windows when switching to a different document 
             advancedJointEditor.TemporaryHide();
             dofKey.TemporaryHide();
-            guide.TemporaryHide();
+            guideManager.TemporaryHide();
         }
 
         protected override void OnEnvironmentShow()
@@ -248,7 +248,7 @@ namespace InventorRobotExporter
             // Restore visible state of dockable windows
             advancedJointEditor.Visible = advancedJointEditor.Visible;
             dofKey.Visible = dofKey.Visible;
-            guide.Visible = guide.Visible;
+            guideManager.Visible = guideManager.Visible;
             // And DOF highlight in case that gets cleared
             HighlightManager.DisplayDof = dofKey.Visible;
         }
