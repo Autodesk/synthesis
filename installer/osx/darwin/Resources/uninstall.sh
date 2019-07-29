@@ -61,7 +61,7 @@ else
 fi
 
 #remove application source distribution
-[ -e "/Library/Application Support/${PRODUCT}/${VERISON}" ] && rm -rf "/Library/Application Support/${PRODUCT}/${VERISON}"
+[ -e "/Library/Application\ Support/${PRODUCT}/${VERISON}" ] && rm -rf "/Library/Application\ Support/${PRODUCT}/${VERISON}"
 if [ $? -eq 0 ]
 then
   echo "[3/3] [DONE] Successfully deleted application"
