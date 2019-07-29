@@ -1,6 +1,6 @@
 ﻿namespace InventorRobotExporter.GUI.Loading
 {
-    partial class LoadingBar
+    sealed partial class LoadingBar
     {
         /// <summary>
         /// Required designer variable.
@@ -61,13 +61,8 @@
             this.ProgressLabel.Name = "ProgressLabel";
             this.ProgressLabel.Size = new System.Drawing.Size(327, 17);
             this.ProgressLabel.TabIndex = 0;
-            this.ProgressLabel.Text = "Building nodes...";
+            this.ProgressLabel.Text = "ProgressTextHere";
             this.ProgressLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ExporterWorker
-            // 
-            this.BuildSkeletonWorker.WorkerReportsProgress = true;
-            this.BuildSkeletonWorker.WorkerSupportsCancellation = true;
             // 
             // ProgressBar
             // 
@@ -78,7 +73,12 @@
             this.ProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.ProgressBar.TabIndex = 1;
             // 
-            // SkeletonLoadingBarForm
+            // BuildSkeletonWorker
+            // 
+            this.BuildSkeletonWorker.WorkerReportsProgress = true;
+            this.BuildSkeletonWorker.WorkerSupportsCancellation = true;
+            // 
+            // LoadingBar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -91,10 +91,10 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "BuildingSkeletonForm";
+            this.Name = "LoadingBar";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Analyzing Model";
+            this.Text = "WindowTitleHere";
             this.TopMost = true;
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

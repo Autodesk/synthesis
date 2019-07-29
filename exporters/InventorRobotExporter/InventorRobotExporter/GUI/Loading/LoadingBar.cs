@@ -7,18 +7,17 @@ using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Loading
 {
-    public partial class LoadingBar : Form
+    public sealed partial class LoadingBar : Form
     {
-        public LoadingBar()
+        public LoadingBar(string windowTitle)
         {
             InitializeComponent();
-            Shown += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
-            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
+            Text = windowTitle;
         }
         
         public void SetProgress(ProgressUpdate update)
         {
-            // Allows function to be called by other threads TODO: is this neccecary?
+            // Allows function to be called by other threads
             if (InvokeRequired)
             {
                 BeginInvoke((Action<ProgressUpdate>)SetProgress, update);
