@@ -12,7 +12,7 @@ using Synthesis.Utils;
 
 public class DriveJoints
 {
-    public const int PWM_COUNT = 10;
+    public const int PWM_HDR_COUNT = 10;
 
     private const float SpeedArrowPwm = 0.5f;
     private const float WheelMaxSpeed = 300f;
@@ -28,19 +28,11 @@ public class DriveJoints
 
     private static List<RigidNode_Base> listOfSubNodes;
 
-    private static readonly float[] motors;
-    private static readonly JoystickSerializer[] joystickSerializers;
+    // Output percent of motor controller
+    private static readonly float[] pwm_motor_controllers;
+    private static readonly Dictionary<int, float> can_motor_controllers;
 
-    /// <summary>
-    /// Represents ports on a mecanum drive.
-    /// </summary>
-    private enum MecanumPorts
-    {
-        FrontRight,
-        FrontLeft,
-        BackRight,
-        BackLeft
-    };
+    private static readonly JoystickSerializer[] joystickSerializers;
 
     /// <summary>
     /// Initializes the <see cref="DriveJoints"/> static fields.
@@ -48,7 +40,8 @@ public class DriveJoints
     static DriveJoints()
     {
         listOfSubNodes = new List<RigidNode_Base>();
-        motors = new float[73];
+        pwm_motor_controllers = new float[PWM_HDR_COUNT];
+        can_motor_controllers = new Dictionary<int, float>();
 
         joystickSerializers = new JoystickSerializer[3];
 
@@ -62,76 +55,96 @@ public class DriveJoints
     /// <param name="skeleton"></param>
     /// <param name="dioModules"></param>
     /// <param name="controlIndex"></param>
-    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, int controlIndex)
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, int controlIndex, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
     {
-        var pwm = GetPwmValues(controlIndex);
+        UpdateAllOutputs(controlIndex, emuList);
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        for (int i = 0; i < pwm.Length; i++)
+        foreach (RigidNode_Base node in listOfSubNodes)
         {
-            foreach (RigidNode_Base node in listOfSubNodes)
+            RigidNode rigidNode = (RigidNode)node;
+
+            BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+            if (raycastWheel != null)
             {
-                RigidNode rigidNode = (RigidNode)node;
+                float force = GetOutput(rigidNode.GetSkeletalJoint().cDriver);
+                if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                    force *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+                raycastWheel.ApplyForce(force);
+            }
 
-                BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
-
-                if (raycastWheel != null)
+            if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
+            {
+                if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
+                    float output = GetOutput(rigidNode.GetSkeletalJoint().cDriver);
+                    float maxSpeed = 0f;
+                    float impulse = 0f;
+                    float friction = 0f;
+                    if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
+                        impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
+
+                    if (rigidNode.HasDriverMeta<WheelDriverMeta>())
                     {
-                        float force = pwm[i];
-                        if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
-                            force *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
-                        raycastWheel.ApplyForce(force);
+                        maxSpeed = WheelMaxSpeed;
+                        impulse = WheelMotorImpulse;
+                        friction = WheelCoastFriction;
                     }
+                    else
+                    {
+                        maxSpeed = HingeMaxSpeed;
+                        impulse = HingeMotorImpulse;
+                        friction = HingeCostFriction;
+                    }
+
+                    BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
+                    hingedConstraint.enableMotor = true;
+                    hingedConstraint.targetMotorAngularVelocity = output > 0f ? maxSpeed : output < 0f ? -maxSpeed : 0f;
+                    hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : output == 0f ? friction : Mathf.Abs(output * impulse);
                 }
-
-                if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
+                else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
+                    if (rigidNode.HasDriverMeta<ElevatorDriverMeta>())
                     {
-                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1)
-                        {
-                            float maxSpeed = 0f;
-                            float impulse = 0f;
-                            float friction = 0f;
-                            if (rigidNode.GetSkeletalJoint().cDriver.InputGear != 0 && rigidNode.GetSkeletalJoint().cDriver.OutputGear != 0)
-                                impulse *= Convert.ToSingle(rigidNode.GetSkeletalJoint().cDriver.InputGear / rigidNode.GetSkeletalJoint().cDriver.OutputGear);
-
-                            if (rigidNode.HasDriverMeta<WheelDriverMeta>())
-                            {
-                                maxSpeed = WheelMaxSpeed;
-                                impulse = WheelMotorImpulse;
-                                friction = WheelCoastFriction;
-                            }
-                            else
-                            {
-                                maxSpeed = HingeMaxSpeed;
-                                impulse = HingeMotorImpulse;
-                                friction = HingeCostFriction;
-                            }
-
-                            BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
-                            hingedConstraint.enableMotor = true;
-                            hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
-                            hingedConstraint.maxMotorImpulse = rigidNode.GetSkeletalJoint().cDriver.hasBrake ? HingeMotorImpulse : pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
-                        }
-                    }
-                    else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
-                    {
-                        if (rigidNode.GetSkeletalJoint().cDriver.port1 == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
-                        {
-                            BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
-                            SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
-                            sc.PoweredLinearMotor = true;
-                            sc.MaxLinearMotorForce = MaxSliderForce;
-                            sc.TargetLinearMotorVelocity = pwm[i] * MaxSliderSpeed;
-                        }
+                        float output = GetOutput(rigidNode.GetSkeletalJoint().cDriver);
+                        BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
+                        SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
+                        sc.PoweredLinearMotor = true;
+                        sc.MaxLinearMotorForce = MaxSliderForce;
+                        sc.TargetLinearMotorVelocity = output * MaxSliderSpeed;
                     }
                 }
             }
         }
+    }
+
+    private static void UpdateAllOutputs(int controlIndex, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
+    {
+        if (Synthesis.EmulatorManager.IsRunningRobotCode()) // Use emulator
+        {
+            if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
+            {
+                UpdateEmulationJoysticks();
+                UpdateEmulationMotorControllers();
+                UpdateEmulationSensors(emuList);
+            }
+        }
+        else // Use regular controls
+        {
+            UpdateEngineMotorControllers(controlIndex);
+        }
+    }
+
+    private static float GetOutput(JointDriver cDriver)
+    {
+        if(!cDriver.GetDriveType().IsMotor())
+            throw new Exception("Motor controller output is not motor");
+        int motor_controller_address = cDriver.port1 - 1;
+        if (cDriver.isCan)
+            return can_motor_controllers.ContainsKey(motor_controller_address) ? can_motor_controllers[motor_controller_address] : 0f;
+        return (motor_controller_address < PWM_HDR_COUNT) ? pwm_motor_controllers[motor_controller_address] : 0f;
     }
 
     /// <summary>
@@ -140,13 +153,11 @@ public class DriveJoints
     /// <param name="controlIndex"></param>
     /// <param name="mecanum"></param>
     /// <returns></returns>
-    public static float[] GetPwmValues(int controlIndex)
+    private static void UpdateEngineMotorControllers(int controlIndex)
     {
-        float[] pwm = new float[PWM_COUNT];
-        for (int i = 0; i < PWM_COUNT; i++)
-            pwm[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i], true) * SpeedArrowPwm;
-
-        return pwm;
+        can_motor_controllers.Clear(); // Engine controls do not currently support CAN
+        for (int i = 0; i < PWM_HDR_COUNT; i++)
+            pwm_motor_controllers[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i], true) * SpeedArrowPwm;
     }
 
     /// <summary>
@@ -160,20 +171,7 @@ public class DriveJoints
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
-        if (Synthesis.EmulatorManager.IsRunningRobotCode()) // Use emulator
-        {
-            if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
-            {
-                UpdateEmulationJoysticks();
-                UpdateEmulationMotors();
-                UpdateEmulationSensors(emuList);
-            }
-        } else // Use regular controls
-        {
-            var pwm = GetPwmValues(controlIndex);
-            for (int i = 0; i < pwm.Length; i++)
-                motors[i] = pwm[i];
-        }
+        UpdateAllOutputs(controlIndex, emuList);
 
         foreach (RigidNode node in listOfSubNodes.Select(n => n as RigidNode))
         {
@@ -186,7 +184,7 @@ public class DriveJoints
 
             if (raycastWheel != null)
             {
-                float output = motors[node.GetSkeletalJoint().cDriver.port1 - 1];
+                float output = pwm_motor_controllers[node.GetSkeletalJoint().cDriver.port1 - 1];
 
                 if (node.GetSkeletalJoint().cDriver.InputGear != 0 && node.GetSkeletalJoint().cDriver.OutputGear != 0)
                     output *= Convert.ToSingle(node.GetSkeletalJoint().cDriver.InputGear / node.GetSkeletalJoint().cDriver.OutputGear);
@@ -198,7 +196,7 @@ public class DriveJoints
                 float maxSpeed = 0f;
                 float impulse = 0f;
                 float friction = 0f;
-                float output = joint.cDriver.isCan ? motors[joint.cDriver.port1 - PWM_COUNT] : motors[joint.cDriver.port1 - 1];
+                float output = GetOutput(joint.cDriver);
 
                 if (joint.cDriver.InputGear != 0 && joint.cDriver.OutputGear != 0)
                     impulse *= Convert.ToSingle(joint.cDriver.InputGear / joint.cDriver.OutputGear);
@@ -223,7 +221,7 @@ public class DriveJoints
             }
             else if (joint.cDriver.GetDriveType().IsElevator() && node.HasDriverMeta<ElevatorDriverMeta>())
             {
-                float output = motors[joint.cDriver.port1 - 1];
+                float output = pwm_motor_controllers[joint.cDriver.port1 - 1];
 
                 BSliderConstraint bSliderConstraint = node.MainObject.GetComponent<BSliderConstraint>();
                 SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
@@ -269,13 +267,14 @@ public class DriveJoints
     /// Updates all motor values for emulation.
     /// </summary>
     /// <param name="pwm"></param>
-    private static void UpdateEmulationMotors()
+    private static void UpdateEmulationMotorControllers()
     {
         for (int i = 0; i < Synthesis.OutputManager.Instance.PwmHeaders.Count(); i++)
-            motors[i] = (float)Synthesis.OutputManager.Instance.PwmHeaders[i];
+            pwm_motor_controllers[i] = (float)Synthesis.OutputManager.Instance.PwmHeaders[i];
 
+        can_motor_controllers.Clear();
         foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
-            motors[CAN.Id + PWM_COUNT] = CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput; // first 10 are for PWM outputs
+            can_motor_controllers.Add(CAN.Id, CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput);
     }
 
     /// <summary>

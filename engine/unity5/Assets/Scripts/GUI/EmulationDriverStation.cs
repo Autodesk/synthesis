@@ -120,7 +120,10 @@ namespace Synthesis.GUI
                     if (EmulatorNetworkConnection.Instance.IsConnected())
                         VMConnectionStatusMessage.text = "Connected";
                     else
+                    {
                         VMConnectionStatusMessage.text = "Ready";
+                        RobotDisabled();
+                    }
                 }
                 else if(EmulatorManager.IsVMRunning())
                 {

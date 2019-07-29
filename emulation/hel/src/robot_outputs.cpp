@@ -72,6 +72,9 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 		can.set_id(can_motor_controllers[i]->getID());
 		can.set_inverted(false);
 		can.set_percent_output(can_motor_controllers[i]->getPercentOutput());
+		if(i >= output.can_motor_controllers_size()){
+			output.add_can_motor_controllers();
+		}
 		*output.mutable_can_motor_controllers(i) = can;
 	}
 

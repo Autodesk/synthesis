@@ -56,8 +56,8 @@ namespace Synthesis.Input
 
             public Buttons()
             {
-                pwmPos = new KeyMapping[DriveJoints.PWM_COUNT];
-                pwmNeg = new KeyMapping[DriveJoints.PWM_COUNT];
+                pwmPos = new KeyMapping[DriveJoints.PWM_HDR_COUNT];
+                pwmNeg = new KeyMapping[DriveJoints.PWM_HDR_COUNT];
 
                 spawnPieces = new List<KeyMapping>();
                 pickup = new List<KeyMapping>();
@@ -72,7 +72,7 @@ namespace Synthesis.Input
                 // The order they appear here is the order they'll appear in the controls menu
 
                 List<KeyMapping> list = new List<KeyMapping>();
-                for(int i = 0; i < DriveJoints.PWM_COUNT; i++)
+                for(int i = 0; i < DriveJoints.PWM_HDR_COUNT; i++)
                 {
                     list.Add(pwmPos[i]);
                     list.Add(pwmNeg[i]);
@@ -104,7 +104,7 @@ namespace Synthesis.Input
 
             public Axes()
             {
-                pwmAxes = new Axis[DriveJoints.PWM_COUNT];
+                pwmAxes = new Axis[DriveJoints.PWM_HDR_COUNT];
 
                 // Leave fields null
             }
@@ -161,7 +161,7 @@ namespace Synthesis.Input
                 #region PWM Controls
 
                 //PWM controls
-                for (int pwm_i = 0; pwm_i < DriveJoints.PWM_COUNT; pwm_i++)
+                for (int pwm_i = 0; pwm_i < DriveJoints.PWM_HDR_COUNT; pwm_i++)
                 {
                     if (player_i == 0) // Customized keyboard player 1 controls
                     {
