@@ -47,5 +47,5 @@ project.lock.json
 project.assets.json
 
 # Ignore obj folder which can regenerate with no issues
-/exporters/BxDRobotExporter/RobotExporterTests/obj
-/exporters/BxDRobotExporter/BxDRobotExporter/obj
+/exporters/InventorRobotExporter/RobotExporterTests/obj
+/exporters/InventorRobotExporter/InventorRobotExporter/obj
