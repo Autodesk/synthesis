@@ -12,6 +12,7 @@ using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
+using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 
 namespace InventorRobotExporter
@@ -179,23 +180,36 @@ namespace InventorRobotExporter
                 return;
             }
 
+            var loadingBar = new LoadingBar("Loading Export Environment");
+
+            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Data...", 1, 4));
+            loadingBar.Show();
             RobotDataManager.LoadRobotData(OpenAssemblyDocument);
 
+            loadingBar.SetProgress(new ProgressUpdate("Initializing UI...", 2, 4));
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
             dofKey.CreateDockableWindow(uiMan);
             guide.CreateDockableWindow(uiMan);
 
+            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 3, 4));
             // Load skeleton into joint editors
             advancedJointEditor.UpdateSkeleton(RobotDataManager);
             jointForm.UpdateSkeleton(RobotDataManager);
+            loadingBar.SetProgress(new ProgressUpdate("Done", 4, 4));
+            loadingBar.Close();
         }
 
         protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
+            
+            var loadingBar = new LoadingBar("Closing Export Environment");
+            loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
+            loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
+            loadingBar.Close();
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
