@@ -7,7 +7,7 @@ using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Editors
 {
-    public partial class DrivetrainTypeForm : Form
+    public partial class DrivetrainLayoutForm : Form
     {
         private readonly RobotDataManager robotDataManager;
         private static readonly Color SelectedColor = Color.FromArgb(239, 195, 154);
@@ -17,7 +17,7 @@ namespace InventorRobotExporter.GUI.Editors
         private readonly Dictionary<RigidNode_Base.DriveTrainType, Control> controls = new Dictionary<RigidNode_Base.DriveTrainType, Control>();
         private RigidNode_Base.DriveTrainType driveTrainType;
 
-        public DrivetrainTypeForm(RobotDataManager robotDataManager)
+        public DrivetrainLayoutForm(RobotDataManager robotDataManager)
         {
             this.robotDataManager = robotDataManager;
             AnalyticsUtils.LogPage("DriveTrainTypeForm");
