@@ -65,7 +65,7 @@ namespace InventorRobotExporter
         public readonly HighlightManager HighlightManager = new HighlightManager();
 
         // UI elements
-        private readonly JointForm jointForm = new JointForm();
+        private readonly JointFormSimple jointForm = new JointFormSimple();
 
         protected override Environment CreateEnvironment()
         {

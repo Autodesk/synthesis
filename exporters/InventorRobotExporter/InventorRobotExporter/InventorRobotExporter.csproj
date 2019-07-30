@@ -149,6 +149,24 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
+    <Compile Include="GUI\Editors\JointEditor\JointFormSimple.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\JointFormSimple.Designer.cs">
+      <DependentUpon>JointFormSimple.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\MiniJointCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\MiniJointCard.Designer.cs">
+      <DependentUpon>MiniJointCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\MiniJointCardMech.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\MiniJointCardMech.Designer.cs">
+      <DependentUpon>MiniJointCardMech.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\SimpleJointEditor\AdvancedJointSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -341,6 +359,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointFormSimple.resx">
+      <DependentUpon>JointFormSimple.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\MiniJointCard.resx">
+      <DependentUpon>MiniJointCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\MiniJointCardMech.resx">
+      <DependentUpon>MiniJointCardMech.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\SimpleJointEditor\AdvancedJointSettings.resx">
       <DependentUpon>AdvancedJointSettings.cs</DependentUpon>
     </EmbeddedResource>
