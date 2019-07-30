@@ -40,6 +40,7 @@ namespace Synthesis.GUI.Scrollables
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.alignment = TextAnchor.MiddleLeft;
             listStyle.normal.textColor = Color.white;
+            listStyle.active.textColor = Color.black;
 
             if (ListTextColor == Color.clear) ListTextColor = Color.white;
             /*if (ThumbTexture == null)*/ ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
