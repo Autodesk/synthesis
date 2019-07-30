@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +42,7 @@ namespace Synthesis.GUI.Scrollables
             listStyle.normal.textColor = Color.white;
 
             if (ListTextColor == Color.clear) ListTextColor = Color.white;
-            if (ThumbTexture == null) ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
+            /*if (ThumbTexture == null)*/ ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
