@@ -40,8 +40,6 @@ namespace Synthesis.GUI.Scrollables
                 foreach (string file in files)
                 {
                     if (file.EndsWith(".replay")) items.Add(Path.GetFileName(file));
-                    Debug.Log(directory);
-                    Debug.Log(file);
                 }
                 if (items.Count > 0) selectedEntry = items[0];
                 // items.Add(new DirectoryInfo(field).Name);

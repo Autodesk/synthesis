@@ -20,19 +20,30 @@ namespace Synthesis.States
     public class LoadReplayState : State
     {
         GameObject canvas;
+        GameObject mainCam;
+        GameObject gameObject;
+        GameObject loadingPanel = null;
 
         Button deleteButton;
         Button cancelButton;
         Button launchButton;
+
+        MainState mainState;
 
         /// <summary>
         /// Initializes references to requried <see cref="GameObject"/>s.
         /// </summary>
         public override void Start()
         {
-            canvas = Auxiliary.FindGameObject("Canvas");
+            mainCam = GameObject.Find("Main Camera");
+            canvas = GameObject.Find("Canvas");
+            //loadingPanel = GameObject.Find("LoadingPanel");
+            //loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
+            //loadingPanel = GameObject.Find("Canvas/LoadingPanel").GetComponent<GameObject>();
+            loadingPanel = Auxiliary.FindObject(mainCam, "LoadingPanel");
+            loadingPanel.SetActive(true);
 
-            GameObject panel = GameObject.Find("SimLoadReplayList");
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
             string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + "Replays";
 
             deleteButton = GameObject.Find("DeleteButton").GetComponent<Button>();
@@ -48,6 +59,7 @@ namespace Synthesis.States
             launchButton.onClick.AddListener(OnLaunchButtonClicked);
 
             DynamicCamera.ControlEnabled = false;
+            loadingPanel.SetActive(false);
         }
 
         /// <summary>
@@ -98,6 +110,7 @@ namespace Synthesis.States
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
+            //loadingPanel.SetActive(true);
 
             if (entry != null)
             {
@@ -106,12 +119,14 @@ namespace Synthesis.States
                     AnalyticsLedger.TimingLabel.ReplayMode);
 
                 //splashScreen.SetActive(true);
+                loadingPanel.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", entry);
                 PlayerPrefs.Save();
                 SceneManager.LoadScene("Scene");
             }
 
-            replayList.SetActive(false);
+            //loadingPanel.SetActive(true);
+            //replayList.SetActive(false);
         }
     }
 }

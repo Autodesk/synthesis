@@ -49,7 +49,7 @@ namespace Synthesis.States
         private int lastFrameCount;
 
         public bool Tracking { get; private set; }
-        private bool awaitingReplay;
+        public bool awaitingReplay;
 
         private UnityPacket unityPacket;
 
@@ -314,6 +314,7 @@ namespace Synthesis.States
         {
             if (awaitingReplay)
             {
+                //Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
