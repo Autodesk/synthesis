@@ -112,7 +112,7 @@ namespace Synthesis.Sensors
         public override void UpdateRangeTransform()
         {
             //Lower the transform speed
-            sensorOffset += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraVertical) * 0.02f;
+            sensorOffset += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * 0.02f;
             SetSensorRange(sensorOffset);
         }
 

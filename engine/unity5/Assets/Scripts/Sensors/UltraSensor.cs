@@ -121,7 +121,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public override void UpdateRangeTransform()
         {
-            MaxRange += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraVertical) * 0.02f;
+            MaxRange += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * 0.02f;
         }
 
         public override void UpdateOutputDisplay()
