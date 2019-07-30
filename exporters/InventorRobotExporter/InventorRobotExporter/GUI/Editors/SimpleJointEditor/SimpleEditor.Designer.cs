@@ -28,280 +28,385 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SimpleEditor));
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.jointNavigator = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.jointTypeBox = new System.Windows.Forms.GroupBox();
+            this.jointTypeInput = new System.Windows.Forms.ComboBox();
+            this.weightBox = new System.Windows.Forms.GroupBox();
+            this.weightAmountInput = new System.Windows.Forms.NumericUpDown();
+            this.jointDriverBox = new System.Windows.Forms.GroupBox();
+            this.jointDriverInput = new System.Windows.Forms.ComboBox();
+            this.advancedButton = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.wheelTypeBox = new System.Windows.Forms.GroupBox();
+            this.wheelTypeInput = new System.Windows.Forms.ComboBox();
+            this.driveSideBox = new System.Windows.Forms.GroupBox();
+            this.driveSideInput = new System.Windows.Forms.ComboBox();
+            this.limitsBox = new System.Windows.Forms.GroupBox();
+            this.animateMovementButton = new System.Windows.Forms.Button();
+            this.limitEndInput = new System.Windows.Forms.NumericUpDown();
+            this.limitEndCheckbox = new System.Windows.Forms.CheckBox();
+            this.limitStartInput = new System.Windows.Forms.NumericUpDown();
+            this.limitStartCheckbox = new System.Windows.Forms.CheckBox();
+            this.jointPreviewImage = new System.Windows.Forms.PictureBox();
+            this.jointTypeBox.SuspendLayout();
+            this.weightBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.weightAmountInput)).BeginInit();
+            this.jointDriverBox.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            this.wheelTypeBox.SuspendLayout();
+            this.driveSideBox.SuspendLayout();
+            this.limitsBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).BeginInit();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // jointNavigator
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(92, 12);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(348, 24);
-            this.comboBox1.TabIndex = 0;
-            this.comboBox1.Text = "am-3047_4inDuraOmniV2:1";
+            this.jointNavigator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointNavigator.FormattingEnabled = true;
+            this.jointNavigator.Location = new System.Drawing.Point(69, 10);
+            this.jointNavigator.Margin = new System.Windows.Forms.Padding(2);
+            this.jointNavigator.Name = "jointNavigator";
+            this.jointNavigator.Size = new System.Drawing.Size(262, 21);
+            this.jointNavigator.TabIndex = 0;
+            this.jointNavigator.SelectedIndexChanged += new System.EventHandler(this.JointNavigator_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.label1.Location = new System.Drawing.Point(44, 15);
+            this.label1.Location = new System.Drawing.Point(33, 12);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 18);
+            this.label1.Size = new System.Drawing.Size(36, 15);
             this.label1.TabIndex = 1;
             this.label1.Text = "Joint:";
             // 
-            // groupBox1
+            // jointTypeBox
             // 
-            this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox1.Controls.Add(this.comboBox2);
-            this.groupBox1.Location = new System.Drawing.Point(15, 18);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(163, 51);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Joint Type";
+            this.jointTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.jointTypeBox.Controls.Add(this.jointTypeInput);
+            this.jointTypeBox.Location = new System.Drawing.Point(11, 15);
+            this.jointTypeBox.Margin = new System.Windows.Forms.Padding(2);
+            this.jointTypeBox.Name = "jointTypeBox";
+            this.jointTypeBox.Padding = new System.Windows.Forms.Padding(2);
+            this.jointTypeBox.Size = new System.Drawing.Size(122, 41);
+            this.jointTypeBox.TabIndex = 2;
+            this.jointTypeBox.TabStop = false;
+            this.jointTypeBox.Text = "Joint Type";
             // 
-            // comboBox2
+            // jointTypeInput
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
+            this.jointTypeInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointTypeInput.FormattingEnabled = true;
+            this.jointTypeInput.Items.AddRange(new object[] {
             "(Not Selected)",
             "Drivetrain Wheel",
             "Mechanism Joint"});
-            this.comboBox2.Location = new System.Drawing.Point(6, 21);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(151, 24);
-            this.comboBox2.TabIndex = 0;
-            this.comboBox2.Text = "Mechanism Joint";
+            this.jointTypeInput.Location = new System.Drawing.Point(4, 17);
+            this.jointTypeInput.Margin = new System.Windows.Forms.Padding(2);
+            this.jointTypeInput.Name = "jointTypeInput";
+            this.jointTypeInput.Size = new System.Drawing.Size(114, 21);
+            this.jointTypeInput.TabIndex = 0;
+            this.jointTypeInput.SelectedIndexChanged += new System.EventHandler(this.JointTypeInput_SelectedIndexChanged);
             // 
-            // groupBox2
+            // weightBox
             // 
-            this.groupBox2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox2.Controls.Add(this.numericUpDown1);
-            this.groupBox2.Location = new System.Drawing.Point(15, 84);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(163, 51);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Weight (lbs)";
+            this.weightBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.weightBox.Controls.Add(this.weightAmountInput);
+            this.weightBox.Location = new System.Drawing.Point(11, 68);
+            this.weightBox.Margin = new System.Windows.Forms.Padding(2);
+            this.weightBox.Name = "weightBox";
+            this.weightBox.Padding = new System.Windows.Forms.Padding(2);
+            this.weightBox.Size = new System.Drawing.Size(122, 41);
+            this.weightBox.TabIndex = 3;
+            this.weightBox.TabStop = false;
+            this.weightBox.Text = "Weight (lbs)";
+            this.weightBox.Visible = false;
             // 
-            // groupBox3
+            // weightAmountInput
             // 
-            this.groupBox3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox3.Controls.Add(this.comboBox4);
-            this.groupBox3.Location = new System.Drawing.Point(15, 150);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(163, 51);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Joint Driver";
+            this.weightAmountInput.DecimalPlaces = 1;
+            this.weightAmountInput.Location = new System.Drawing.Point(4, 17);
+            this.weightAmountInput.Margin = new System.Windows.Forms.Padding(2);
+            this.weightAmountInput.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.weightAmountInput.Name = "weightAmountInput";
+            this.weightAmountInput.Size = new System.Drawing.Size(113, 20);
+            this.weightAmountInput.TabIndex = 0;
+            this.weightAmountInput.Value = new decimal(new int[] {
+            225,
+            0,
+            0,
+            65536});
+            this.weightAmountInput.Visible = false;
             // 
-            // comboBox4
+            // jointDriverBox
             // 
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(6, 21);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(151, 24);
-            this.comboBox4.TabIndex = 0;
-            this.comboBox4.Text = "Motor";
+            this.jointDriverBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.jointDriverBox.Controls.Add(this.jointDriverInput);
+            this.jointDriverBox.Location = new System.Drawing.Point(11, 122);
+            this.jointDriverBox.Margin = new System.Windows.Forms.Padding(2);
+            this.jointDriverBox.Name = "jointDriverBox";
+            this.jointDriverBox.Padding = new System.Windows.Forms.Padding(2);
+            this.jointDriverBox.Size = new System.Drawing.Size(122, 41);
+            this.jointDriverBox.TabIndex = 4;
+            this.jointDriverBox.TabStop = false;
+            this.jointDriverBox.Text = "Joint Driver";
+            this.jointDriverBox.Visible = false;
             // 
-            // pictureBox1
+            // jointDriverInput
             // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(196, 18);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(243, 232);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
+            this.jointDriverInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointDriverInput.FormattingEnabled = true;
+            this.jointDriverInput.Items.AddRange(new object[] {
+            "Motor",
+            "Servo",
+            "Dual Motor"});
+            this.jointDriverInput.Location = new System.Drawing.Point(4, 17);
+            this.jointDriverInput.Margin = new System.Windows.Forms.Padding(2);
+            this.jointDriverInput.Name = "jointDriverInput";
+            this.jointDriverInput.Size = new System.Drawing.Size(114, 21);
+            this.jointDriverInput.TabIndex = 0;
+            this.jointDriverInput.Visible = false;
             // 
-            // button1
+            // advancedButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(12, 416);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(114, 27);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Advanced...";
-            this.button1.UseVisualStyleBackColor = true;
+            this.advancedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.advancedButton.Location = new System.Drawing.Point(9, 338);
+            this.advancedButton.Margin = new System.Windows.Forms.Padding(2);
+            this.advancedButton.Name = "advancedButton";
+            this.advancedButton.Size = new System.Drawing.Size(86, 22);
+            this.advancedButton.TabIndex = 6;
+            this.advancedButton.Text = "Advanced...";
+            this.advancedButton.UseVisualStyleBackColor = true;
+            this.advancedButton.Visible = false;
+            this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
-            // button2
+            // cancelButton
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(379, 416);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(95, 27);
-            this.button2.TabIndex = 7;
-            this.button2.Text = "Cancel";
-            this.button2.UseVisualStyleBackColor = true;
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.Location = new System.Drawing.Point(284, 338);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(2);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(71, 22);
+            this.cancelButton.TabIndex = 7;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
-            // button3
+            // okButton
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(278, 416);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(95, 27);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "OK";
-            this.button3.UseVisualStyleBackColor = true;
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(208, 338);
+            this.okButton.Margin = new System.Windows.Forms.Padding(2);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(71, 22);
+            this.okButton.TabIndex = 8;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
             // panel1
             // 
             this.panel1.AutoSize = true;
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.panel1.Controls.Add(this.groupBox4);
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Controls.Add(this.groupBox2);
-            this.panel1.Controls.Add(this.groupBox3);
-            this.panel1.Location = new System.Drawing.Point(12, 49);
+            this.panel1.Controls.Add(this.wheelTypeBox);
+            this.panel1.Controls.Add(this.driveSideBox);
+            this.panel1.Controls.Add(this.limitsBox);
+            this.panel1.Controls.Add(this.jointPreviewImage);
+            this.panel1.Controls.Add(this.jointTypeBox);
+            this.panel1.Controls.Add(this.weightBox);
+            this.panel1.Controls.Add(this.jointDriverBox);
+            this.panel1.Location = new System.Drawing.Point(9, 40);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(458, 357);
+            this.panel1.Size = new System.Drawing.Size(344, 290);
             this.panel1.TabIndex = 9;
             // 
-            // numericUpDown1
+            // wheelTypeBox
             // 
-            this.numericUpDown1.DecimalPlaces = 1;
-            this.numericUpDown1.Location = new System.Drawing.Point(6, 21);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(151, 22);
-            this.numericUpDown1.TabIndex = 0;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            225,
-            0,
-            0,
-            65536});
+            this.wheelTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.wheelTypeBox.Controls.Add(this.wheelTypeInput);
+            this.wheelTypeBox.Location = new System.Drawing.Point(11, 118);
+            this.wheelTypeBox.Margin = new System.Windows.Forms.Padding(2);
+            this.wheelTypeBox.Name = "wheelTypeBox";
+            this.wheelTypeBox.Padding = new System.Windows.Forms.Padding(2);
+            this.wheelTypeBox.Size = new System.Drawing.Size(122, 41);
+            this.wheelTypeBox.TabIndex = 10;
+            this.wheelTypeBox.TabStop = false;
+            this.wheelTypeBox.Text = "Wheel Type";
+            this.wheelTypeBox.Visible = false;
             // 
-            // groupBox4
+            // wheelTypeInput
             // 
-            this.groupBox4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.groupBox4.Controls.Add(this.button4);
-            this.groupBox4.Controls.Add(this.numericUpDown3);
-            this.groupBox4.Controls.Add(this.checkBox2);
-            this.groupBox4.Controls.Add(this.numericUpDown2);
-            this.groupBox4.Controls.Add(this.checkBox1);
-            this.groupBox4.Location = new System.Drawing.Point(15, 256);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(424, 85);
-            this.groupBox4.TabIndex = 5;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Limits (linear)";
+            this.wheelTypeInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.wheelTypeInput.FormattingEnabled = true;
+            this.wheelTypeInput.Items.AddRange(new object[] {
+            "Normal",
+            "Omni",
+            "Mecanum"});
+            this.wheelTypeInput.Location = new System.Drawing.Point(4, 17);
+            this.wheelTypeInput.Margin = new System.Windows.Forms.Padding(2);
+            this.wheelTypeInput.Name = "wheelTypeInput";
+            this.wheelTypeInput.Size = new System.Drawing.Size(114, 21);
+            this.wheelTypeInput.TabIndex = 0;
+            this.wheelTypeInput.Visible = false;
             // 
-            // checkBox1
+            // driveSideBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(9, 25);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(60, 21);
-            this.checkBox1.TabIndex = 1;
-            this.checkBox1.Text = "Start";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.driveSideBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.driveSideBox.Controls.Add(this.driveSideInput);
+            this.driveSideBox.Location = new System.Drawing.Point(11, 64);
+            this.driveSideBox.Margin = new System.Windows.Forms.Padding(2);
+            this.driveSideBox.Name = "driveSideBox";
+            this.driveSideBox.Padding = new System.Windows.Forms.Padding(2);
+            this.driveSideBox.Size = new System.Drawing.Size(122, 41);
+            this.driveSideBox.TabIndex = 6;
+            this.driveSideBox.TabStop = false;
+            this.driveSideBox.Text = "Drivetrain Side";
+            this.driveSideBox.Visible = false;
             // 
-            // numericUpDown2
+            // driveSideInput
             // 
-            this.numericUpDown2.Location = new System.Drawing.Point(9, 52);
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown2.TabIndex = 2;
+            this.driveSideInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.driveSideInput.FormattingEnabled = true;
+            this.driveSideInput.Items.AddRange(new object[] {
+            "Left",
+            "Right",
+            "H-Drive Center"});
+            this.driveSideInput.Location = new System.Drawing.Point(4, 17);
+            this.driveSideInput.Margin = new System.Windows.Forms.Padding(2);
+            this.driveSideInput.Name = "driveSideInput";
+            this.driveSideInput.Size = new System.Drawing.Size(114, 21);
+            this.driveSideInput.TabIndex = 0;
+            this.driveSideInput.Visible = false;
             // 
-            // numericUpDown3
+            // limitsBox
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(142, 52);
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown3.TabIndex = 4;
-            this.numericUpDown3.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
+            this.limitsBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.limitsBox.Controls.Add(this.animateMovementButton);
+            this.limitsBox.Controls.Add(this.limitEndInput);
+            this.limitsBox.Controls.Add(this.limitEndCheckbox);
+            this.limitsBox.Controls.Add(this.limitStartInput);
+            this.limitsBox.Controls.Add(this.limitStartCheckbox);
+            this.limitsBox.Location = new System.Drawing.Point(11, 208);
+            this.limitsBox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitsBox.Name = "limitsBox";
+            this.limitsBox.Padding = new System.Windows.Forms.Padding(2);
+            this.limitsBox.Size = new System.Drawing.Size(318, 69);
+            this.limitsBox.TabIndex = 5;
+            this.limitsBox.TabStop = false;
+            this.limitsBox.Text = "Limits (linear)";
+            this.limitsBox.Visible = false;
             // 
-            // checkBox2
+            // animateMovementButton
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(142, 25);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(55, 21);
-            this.checkBox2.TabIndex = 3;
-            this.checkBox2.Text = "End";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.animateMovementButton.Location = new System.Drawing.Point(211, 20);
+            this.animateMovementButton.Margin = new System.Windows.Forms.Padding(2);
+            this.animateMovementButton.Name = "animateMovementButton";
+            this.animateMovementButton.Size = new System.Drawing.Size(99, 40);
+            this.animateMovementButton.TabIndex = 5;
+            this.animateMovementButton.Text = "Animate Movement";
+            this.animateMovementButton.UseVisualStyleBackColor = true;
+            this.animateMovementButton.Visible = false;
+            this.animateMovementButton.Click += new System.EventHandler(this.AnimateMovementButton_Click);
             // 
-            // button4
+            // limitEndInput
             // 
-            this.button4.Location = new System.Drawing.Point(281, 25);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(132, 49);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "Animate Movement";
-            this.button4.UseVisualStyleBackColor = true;
+            this.limitEndInput.Location = new System.Drawing.Point(106, 42);
+            this.limitEndInput.Margin = new System.Windows.Forms.Padding(2);
+            this.limitEndInput.Name = "limitEndInput";
+            this.limitEndInput.Size = new System.Drawing.Size(90, 20);
+            this.limitEndInput.TabIndex = 4;
+            this.limitEndInput.Visible = false;
+            // 
+            // limitEndCheckbox
+            // 
+            this.limitEndCheckbox.AutoSize = true;
+            this.limitEndCheckbox.Checked = true;
+            this.limitEndCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.limitEndCheckbox.Location = new System.Drawing.Point(106, 20);
+            this.limitEndCheckbox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitEndCheckbox.Name = "limitEndCheckbox";
+            this.limitEndCheckbox.Size = new System.Drawing.Size(45, 17);
+            this.limitEndCheckbox.TabIndex = 3;
+            this.limitEndCheckbox.Text = "End";
+            this.limitEndCheckbox.UseVisualStyleBackColor = true;
+            this.limitEndCheckbox.Visible = false;
+            // 
+            // limitStartInput
+            // 
+            this.limitStartInput.Location = new System.Drawing.Point(7, 42);
+            this.limitStartInput.Margin = new System.Windows.Forms.Padding(2);
+            this.limitStartInput.Name = "limitStartInput";
+            this.limitStartInput.Size = new System.Drawing.Size(90, 20);
+            this.limitStartInput.TabIndex = 2;
+            this.limitStartInput.Visible = false;
+            // 
+            // limitStartCheckbox
+            // 
+            this.limitStartCheckbox.AutoSize = true;
+            this.limitStartCheckbox.Checked = true;
+            this.limitStartCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.limitStartCheckbox.Location = new System.Drawing.Point(7, 20);
+            this.limitStartCheckbox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitStartCheckbox.Name = "limitStartCheckbox";
+            this.limitStartCheckbox.Size = new System.Drawing.Size(48, 17);
+            this.limitStartCheckbox.TabIndex = 1;
+            this.limitStartCheckbox.Text = "Start";
+            this.limitStartCheckbox.UseVisualStyleBackColor = true;
+            this.limitStartCheckbox.Visible = false;
+            // 
+            // jointPreviewImage
+            // 
+            this.jointPreviewImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.jointPreviewImage.Image = global::InventorRobotExporter.Properties.Resources.stockjoint;
+            this.jointPreviewImage.Location = new System.Drawing.Point(147, 15);
+            this.jointPreviewImage.Margin = new System.Windows.Forms.Padding(2);
+            this.jointPreviewImage.Name = "jointPreviewImage";
+            this.jointPreviewImage.Size = new System.Drawing.Size(183, 189);
+            this.jointPreviewImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.jointPreviewImage.TabIndex = 5;
+            this.jointPreviewImage.TabStop = false;
             // 
             // SimpleEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(486, 455);
+            this.ClientSize = new System.Drawing.Size(364, 370);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.okButton);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.advancedButton);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.jointNavigator);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = global::InventorRobotExporter.Properties.Resources.SynthesisLogoIco;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SimpleEditor";
             this.Text = "Joint Editor";
-            this.Load += new System.EventHandler(this.SimpleEditor_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.jointTypeBox.ResumeLayout(false);
+            this.weightBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.weightAmountInput)).EndInit();
+            this.jointDriverBox.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            this.wheelTypeBox.ResumeLayout(false);
+            this.driveSideBox.ResumeLayout(false);
+            this.limitsBox.ResumeLayout(false);
+            this.limitsBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,24 +414,28 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox jointNavigator;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ComboBox comboBox4;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.GroupBox jointTypeBox;
+        private System.Windows.Forms.ComboBox jointTypeInput;
+        private System.Windows.Forms.GroupBox weightBox;
+        private System.Windows.Forms.GroupBox jointDriverBox;
+        private System.Windows.Forms.ComboBox jointDriverInput;
+        private System.Windows.Forms.Button advancedButton;
+        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.NumericUpDown weightAmountInput;
+        private System.Windows.Forms.GroupBox limitsBox;
+        private System.Windows.Forms.NumericUpDown limitStartInput;
+        private System.Windows.Forms.CheckBox limitStartCheckbox;
+        private System.Windows.Forms.NumericUpDown limitEndInput;
+        private System.Windows.Forms.CheckBox limitEndCheckbox;
+        private System.Windows.Forms.Button animateMovementButton;
+        private System.Windows.Forms.PictureBox jointPreviewImage;
+        private System.Windows.Forms.GroupBox wheelTypeBox;
+        private System.Windows.Forms.ComboBox wheelTypeInput;
+        private System.Windows.Forms.GroupBox driveSideBox;
+        private System.Windows.Forms.ComboBox driveSideInput;
     }
 }
