@@ -36,5 +36,15 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             portTypeInput.SelectedIndex = 0;
         }
 
+        private void OkButton_Click(object sender, EventArgs e)
+        {
+            Close();
+            // TODO: Add save functionality
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
