@@ -839,5 +839,10 @@ namespace Synthesis.States
             ActiveRobot.CancelRobotOrientation();
         }
         #endregion
+
+        public UnityEngine.Camera GetCamera()
+        {
+            return DynamicCameraObject.GetComponent<UnityEngine.Camera>();
+        }
     }
 }

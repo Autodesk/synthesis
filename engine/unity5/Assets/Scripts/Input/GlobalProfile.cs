@@ -16,13 +16,17 @@ namespace Synthesis.Input
         {
             // Camera controls
             [JsonProperty]
-            public KeyMapping cameraVerticalPos;
+            public KeyMapping cameraForward;
             [JsonProperty]
-            public KeyMapping cameraVerticalNeg;
+            public KeyMapping cameraBackward;
             [JsonProperty]
-            public KeyMapping cameraHorizontalPos;
+            public KeyMapping cameraRight;
             [JsonProperty]
-            public KeyMapping cameraHorizontalNeg;
+            public KeyMapping cameraLeft;
+            [JsonProperty]
+            public KeyMapping cameraUp;
+            [JsonProperty]
+            public KeyMapping cameraDown;
 
             //Other controls
             [JsonProperty]
@@ -45,10 +49,12 @@ namespace Synthesis.Input
                 // The order they appear here is the order they'll appear in the controls menu
                 List<KeyMapping> list = new List<KeyMapping>();
 
-                list.Add(cameraVerticalPos);
-                list.Add(cameraVerticalNeg);
-                list.Add(cameraHorizontalPos);
-                list.Add(cameraHorizontalNeg);
+                list.Add(cameraForward);
+                list.Add(cameraBackward);
+                list.Add(cameraLeft);
+                list.Add(cameraRight);
+                list.Add(cameraUp);
+                list.Add(cameraDown);
 
                 list.Add(resetField);
                 list.Add(cameraToggle);
@@ -61,7 +67,8 @@ namespace Synthesis.Input
 
         public class Axes
         {
-            public Axis cameraHorizontal;
+            public Axis cameraForward;
+            public Axis cameraLateral;
             public Axis cameraVertical;
 
             public Axes()
@@ -153,13 +160,16 @@ namespace Synthesis.Input
         {
             #region Default Controls
 
-            buttons.cameraVerticalPos = new KeyMapping("Camera Vertical Pos", KeyCode.W);
-            buttons.cameraVerticalNeg = new KeyMapping("Camera Vertical Neg", KeyCode.S);
-            buttons.cameraHorizontalPos = new KeyMapping("Camera Horizontal Pos", KeyCode.D);
-            buttons.cameraHorizontalNeg = new KeyMapping("Camera Horizontal Neg", KeyCode.A);
+            buttons.cameraForward = new KeyMapping("Camera Forward", KeyCode.W);
+            buttons.cameraBackward = new KeyMapping("Camera Backward", KeyCode.S);
+            buttons.cameraRight = new KeyMapping("Camera Right", KeyCode.D);
+            buttons.cameraLeft = new KeyMapping("Camera Left", KeyCode.A);
+            buttons.cameraUp = new KeyMapping("Camera Up", KeyCode.Space);
+            buttons.cameraDown = new KeyMapping("Camera Down", KeyCode.LeftShift);
 
-            axes.cameraVertical = new Axis("Camera Vertical", buttons.cameraVerticalNeg, buttons.cameraVerticalPos);
-            axes.cameraHorizontal = new Axis("Camera Horizontal", buttons.cameraHorizontalNeg, buttons.cameraHorizontalPos);
+            axes.cameraForward= new Axis("Camera Forward Axis", buttons.cameraBackward, buttons.cameraForward);
+            axes.cameraLateral = new Axis("Camera Lateral Axis", buttons.cameraLeft, buttons.cameraRight);
+            axes.cameraVertical = new Axis("Camera Vertical Axis", buttons.cameraDown, buttons.cameraUp);
 
             buttons.resetField = new KeyMapping("Reset Field", KeyCode.F);
             buttons.replayMode = new KeyMapping("Replay Mode", KeyCode.Tab);

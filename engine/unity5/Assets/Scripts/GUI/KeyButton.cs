@@ -95,9 +95,12 @@ namespace Synthesis.GUI
                     {
                         SetInput(CreateDefaultMapping());
                     }
-                    else
+                    else if(!(CurrentInput is MouseInput))
                     {
                         SetInput(CurrentInput);
+                    } else
+                    {
+                        Deselect();
                     }
                 }
             }

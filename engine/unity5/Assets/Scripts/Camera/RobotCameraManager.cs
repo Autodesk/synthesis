@@ -353,7 +353,7 @@ namespace Synthesis.Camera
             //{
                 if (IsChangingFOV) //Control fov
                 {
-                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraVertical);
+                    CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView += Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral);
 
                     //Limit fov to range from 0 to 180
                     float fov = CurrentCamera.GetComponent<UnityEngine.Camera>().fieldOfView;
@@ -363,7 +363,7 @@ namespace Synthesis.Camera
                 }
                 else if (IsShowingAngle) //Control rotation (only when the angle panel is active)
                 {
-                    CurrentCamera.transform.Rotate(new Vector3(-Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraVertical) * rotationSpeed, Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraHorizontal) * rotationSpeed, 0) * Time.deltaTime);
+                    CurrentCamera.transform.Rotate(new Vector3(-Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * rotationSpeed, Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraForward) * rotationSpeed, 0) * Time.deltaTime);
                 }
 
                 CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
