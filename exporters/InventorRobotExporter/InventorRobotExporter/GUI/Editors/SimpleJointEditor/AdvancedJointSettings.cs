@@ -30,9 +30,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
             sensorsTable.Items.Add(item);
 
-            gearRatioInput.Text = "7.300";
-
-            portInput.Text = "5";
             portTypeInput.SelectedIndex = 0;
         }
 
