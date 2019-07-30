@@ -38,15 +38,15 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.portTypeInput = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.addSensorButton = new System.Windows.Forms.Button();
+            this.removeSensorButton = new System.Windows.Forms.Button();
+            this.sensorBox = new System.Windows.Forms.GroupBox();
+            this.gearRatioBox = new System.Windows.Forms.GroupBox();
+            this.portBox = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.sensorBox.SuspendLayout();
+            this.gearRatioBox.SuspendLayout();
+            this.portBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // okButton
@@ -89,6 +89,7 @@
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
+            this.sensorsTable.LabelEdit = true;
             this.sensorsTable.Location = new System.Drawing.Point(6, 19);
             this.sensorsTable.Name = "sensorsTable";
             this.sensorsTable.Size = new System.Drawing.Size(366, 127);
@@ -121,65 +122,65 @@
             this.portTypeInput.Size = new System.Drawing.Size(52, 21);
             this.portTypeInput.TabIndex = 9;
             // 
-            // button1
+            // addSensorButton
             // 
-            this.button1.Location = new System.Drawing.Point(216, 152);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "Add";
-            this.button1.UseVisualStyleBackColor = true;
+            this.addSensorButton.Location = new System.Drawing.Point(216, 152);
+            this.addSensorButton.Name = "addSensorButton";
+            this.addSensorButton.Size = new System.Drawing.Size(75, 23);
+            this.addSensorButton.TabIndex = 10;
+            this.addSensorButton.Text = "Add";
+            this.addSensorButton.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // removeSensorButton
             // 
-            this.button2.Location = new System.Drawing.Point(297, 152);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 11;
-            this.button2.Text = "Remove";
-            this.button2.UseVisualStyleBackColor = true;
+            this.removeSensorButton.Location = new System.Drawing.Point(297, 152);
+            this.removeSensorButton.Name = "removeSensorButton";
+            this.removeSensorButton.Size = new System.Drawing.Size(75, 23);
+            this.removeSensorButton.TabIndex = 11;
+            this.removeSensorButton.Text = "Remove";
+            this.removeSensorButton.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // sensorBox
             // 
-            this.groupBox1.Controls.Add(this.sensorsTable);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 183);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Sensors";
+            this.sensorBox.Controls.Add(this.sensorsTable);
+            this.sensorBox.Controls.Add(this.addSensorButton);
+            this.sensorBox.Controls.Add(this.removeSensorButton);
+            this.sensorBox.Location = new System.Drawing.Point(12, 12);
+            this.sensorBox.Name = "sensorBox";
+            this.sensorBox.Size = new System.Drawing.Size(378, 183);
+            this.sensorBox.TabIndex = 12;
+            this.sensorBox.TabStop = false;
+            this.sensorBox.Text = "Sensors";
             // 
-            // groupBox2
+            // gearRatioBox
             // 
-            this.groupBox2.Controls.Add(this.gearRatioInput);
-            this.groupBox2.Location = new System.Drawing.Point(12, 206);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(134, 50);
-            this.groupBox2.TabIndex = 13;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Gear Ratio";
+            this.gearRatioBox.Controls.Add(this.gearRatioInput);
+            this.gearRatioBox.Location = new System.Drawing.Point(12, 206);
+            this.gearRatioBox.Name = "gearRatioBox";
+            this.gearRatioBox.Size = new System.Drawing.Size(134, 50);
+            this.gearRatioBox.TabIndex = 13;
+            this.gearRatioBox.TabStop = false;
+            this.gearRatioBox.Text = "Gear Ratio";
             // 
-            // groupBox3
+            // portBox
             // 
-            this.groupBox3.Controls.Add(this.portTypeInput);
-            this.groupBox3.Controls.Add(this.portInput);
-            this.groupBox3.Location = new System.Drawing.Point(168, 206);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(117, 50);
-            this.groupBox3.TabIndex = 14;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Port";
+            this.portBox.Controls.Add(this.portTypeInput);
+            this.portBox.Controls.Add(this.portInput);
+            this.portBox.Location = new System.Drawing.Point(168, 206);
+            this.portBox.Name = "portBox";
+            this.portBox.Size = new System.Drawing.Size(117, 50);
+            this.portBox.TabIndex = 14;
+            this.portBox.TabStop = false;
+            this.portBox.Text = "Port";
             // 
             // AdvancedJointSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(402, 297);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.portBox);
+            this.Controls.Add(this.gearRatioBox);
+            this.Controls.Add(this.sensorBox);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -187,10 +188,10 @@
             this.Name = "AdvancedJointSettings";
             this.Text = "Advanced Joint Settings";
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.sensorBox.ResumeLayout(false);
+            this.gearRatioBox.ResumeLayout(false);
+            this.portBox.ResumeLayout(false);
+            this.portBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -203,13 +204,13 @@
         private System.Windows.Forms.TextBox portInput;
         private System.Windows.Forms.ListView sensorsTable;
         private System.Windows.Forms.ComboBox portTypeInput;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button addSensorButton;
+        private System.Windows.Forms.Button removeSensorButton;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox sensorBox;
+        private System.Windows.Forms.GroupBox gearRatioBox;
+        private System.Windows.Forms.GroupBox portBox;
     }
 }

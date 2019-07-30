@@ -12,6 +12,8 @@ using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
+using Inventor;
+using InventorRobotExporter.GUI.Editors.SimpleJointEditor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
@@ -124,7 +126,8 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                jointForm.ShowDialog();
+                //jointForm.ShowDialog();
+                new SimpleEditor(RobotDataManager).ShowDialog();
                 advancedJointEditor.UpdateSkeleton(RobotDataManager);
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
@@ -160,7 +163,7 @@ namespace InventorRobotExporter
         protected override void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
-            
+
             var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
