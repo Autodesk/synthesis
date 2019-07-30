@@ -53,6 +53,7 @@ namespace InventorRobotExporter
 
         private ButtonDefinition advancedEditJointButton;
         private ButtonDefinition editJointButton;
+        private ButtonDefinition altEditJointButton;
 
         private ButtonDefinition dofButton;
 
@@ -126,11 +127,20 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                //jointForm.ShowDialog();
-                new SimpleEditor(RobotDataManager).ShowDialog();
+                jointForm.ShowDialog();
                 advancedJointEditor.UpdateSkeleton(RobotDataManager);
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
+            
+            altEditJointButton = controlDefs.AddButtonDefinition("Alt Edit Joints", "BxD:RobotExporter:AltEditJoint",
+                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
+            altEditJointButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
+                new SimpleEditor(RobotDataManager).ShowDialog();
+                advancedJointEditor.UpdateSkeleton(RobotDataManager);
+            };
+            jointPanel.CommandControls.AddButton(altEditJointButton, true);
 
             // PRECHECK PANEL
             precheckPanel = exporterTab.RibbonPanels.Add("Export Precheck", "BxD:RobotExporter:ChecklistPanel", clientId);
