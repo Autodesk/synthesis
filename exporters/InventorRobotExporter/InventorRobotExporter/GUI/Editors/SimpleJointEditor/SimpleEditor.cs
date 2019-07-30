@@ -15,6 +15,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
     public partial class SimpleEditor : Form
     {
         private readonly RobotDataManager robotDataManager;
+        private int defaultHeight;
 
         public SimpleEditor(RobotDataManager robotDataManager)
         {
@@ -22,6 +23,8 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
             InitializeComponent();
             LoadJointsNavigator();
+
+            defaultHeight = Height;
 
             jointTypeInput.SelectedIndex = 0;
             jointDriverInput.SelectedIndex = 0;
@@ -69,14 +72,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void ResizeToMechanism()
         {
-            this.Height = 409;
-
-            advancedButton.Location = new Point(9, 338);
-            advancedButton.BringToFront();
-            okButton.Location = new Point(208, 338);
-            okButton.BringToFront();
-            cancelButton.Location = new Point(284, 338);
-            cancelButton.BringToFront();
+            Height = defaultHeight;
         }
 
         private void ShowDrivetrainType()
@@ -93,14 +89,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void ResizeToDrivetrain()
         {
-            this.Height = 346;
-
-            advancedButton.Location = new Point(9, 275);
-            advancedButton.BringToFront();
-            okButton.Location = new Point(208, 275);
-            okButton.BringToFront();
-            cancelButton.Location = new Point(284, 275);
-            cancelButton.BringToFront();
+            Height = defaultHeight-limitsBox.Height;
         }
 
         private void LoadJointsNavigator()
