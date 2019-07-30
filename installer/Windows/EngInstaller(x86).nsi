@@ -58,6 +58,13 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 		
+		; Remove inventor plugins
+		Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+		Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+		Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+		Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+		Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+		
 		; Remove outdated bxd inventor plugins
 		Delete "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"

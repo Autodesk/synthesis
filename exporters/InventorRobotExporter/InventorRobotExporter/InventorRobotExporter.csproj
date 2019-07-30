@@ -182,6 +182,12 @@
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.Designer.cs">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Messages\ExportSuccessful.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Messages\ExportSuccessful.Designer.cs">
+      <DependentUpon>ExportSuccessful.cs</DependentUpon>
+    </Compile>
     <Compile Include="Managers\AddInSettingsManager.cs" />
     <Compile Include="Managers\HighlightManager.cs" />
     <Compile Include="Managers\RobotDataManager.cs" />
@@ -249,11 +255,11 @@
     <Compile Include="GUI\Editors\JointSubEditors\JointSensorListForm.Designer.cs">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\DrivetrainTypeForm.cs">
+    <Compile Include="GUI\Editors\DrivetrainLayoutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\DrivetrainTypeForm.Designer.cs">
-      <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
+    <Compile Include="GUI\Editors\DrivetrainLayoutForm.Designer.cs">
+      <DependentUpon>DrivetrainLayoutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\DrivetrainWeightForm.cs">
       <SubType>Form</SubType>
@@ -332,6 +338,9 @@
     <EmbeddedResource Include="GUI\Loading\LoadingBar.resx">
       <DependentUpon>LoadingBar.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Messages\ExportSuccessful.resx">
+      <DependentUpon>ExportSuccessful.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -355,8 +364,8 @@
     <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointSensorListForm.resx">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\DrivetrainTypeForm.resx">
-      <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\DrivetrainLayoutForm.resx">
+      <DependentUpon>DrivetrainLayoutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DrivetrainWeightForm.resx">
       <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
