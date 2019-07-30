@@ -24,7 +24,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
             InitializeComponent();
             AnalyticsUtils.LogEvent("Joint Editor", "System", "Init");
-            jointEditorUserControl.Initialize(new List<RigidNode_Base> {node}, this);
+            jointEditor.Initialize(robotDataManager, new List<RigidNode_Base> {node}, this);
 
             AddHighlightAction(this);
         }
@@ -104,13 +104,13 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         public void SetCollapsed(bool collapse)
         {
             AnalyticsUtils.LogEvent("Joint Editor", "System", "SetCollapsed", collapse ? 0: 1);
-            jointEditorUserControl.Visible = !collapse;
+            jointEditor.Visible = !collapse;
         }
 
 
         public bool IsCollapsed()
         {
-            return !jointEditorUserControl.Visible;
+            return !jointEditor.Visible;
         }
 
         private void editButton_Click(object sender, EventArgs e)
@@ -121,9 +121,9 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             if (!hasLoadedEditor)
             {
                 hasLoadedEditor = true;
-                jointEditorUserControl.SuspendLayout();
-                jointEditorUserControl.LoadValues();
-                jointEditorUserControl.ResumeLayout();
+                jointEditor.SuspendLayout();
+                jointEditor.LoadValues();
+                jointEditor.ResumeLayout();
             }
         }
 

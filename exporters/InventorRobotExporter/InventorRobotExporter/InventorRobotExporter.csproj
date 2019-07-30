@@ -285,10 +285,10 @@
     <Compile Include="GUI\Editors\JointEditor\JointCard.Designer.cs">
       <DependentUpon>JointCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointCardEditor.Designer.cs">
-      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
+    <Compile Include="GUI\Editors\JointEditor\JointDriverEditor.Designer.cs">
+      <DependentUpon>JointDriverEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointDriverEditorUserControl.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointDriverEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Editors\JointEditor\JointForm.cs">
@@ -379,8 +379,8 @@
     <EmbeddedResource Include="GUI\Editors\JointEditor\JointCard.resx">
       <DependentUpon>JointCard.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCardEditor.resx">
-      <DependentUpon>JointDriverEditorUserControl.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointDriverEditor.resx">
+      <DependentUpon>JointDriverEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\JointEditor\JointForm.resx">
       <DependentUpon>JointForm.cs</DependentUpon>

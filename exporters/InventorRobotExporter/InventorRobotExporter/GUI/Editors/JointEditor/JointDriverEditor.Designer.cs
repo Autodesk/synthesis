@@ -1,6 +1,6 @@
 namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    partial class JointDriverEditorUserControl
+    partial class JointDriverEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -871,7 +871,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.ConfigJointLayout);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.Name = "JointDriverEditorUserControl";
+            this.Name = "JointDriverEditor";
             this.Size = new System.Drawing.Size(530, 375);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
