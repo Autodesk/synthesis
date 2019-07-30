@@ -486,7 +486,9 @@ namespace Synthesis.GUI
             if (mamRobot != null && mamRobot.RobotHasManipulator)
                 State.DeleteManipulatorNodes();
 
-            State.ChangeRobot(robotDirectory, true);
+            if (!State.ChangeRobot(robotDirectory, true)) {
+                AppModel.ErrorToMenu("ROBOT_SELECT|Failed to load Mix & Match robot");
+            }
 
             //If the new robot has a manipulator, load the manipulator
             if (RobotTypeManager.HasManipulator)
