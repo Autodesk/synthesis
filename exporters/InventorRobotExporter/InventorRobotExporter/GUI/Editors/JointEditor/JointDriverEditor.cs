@@ -7,25 +7,25 @@ using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    public partial class JointDriverEditorUserControl : UserControl // TODO: Use this UserControl in the DriveChooser form and remove the save button in DriveChooser
+    public partial class JointDriverEditor : UserControl // TODO: Use this UserControl in the DriveChooser form and remove the save button in DriveChooser
     {
         private bool disableAutoSave;
         private SkeletalJoint_Base joint;
         private JointCard jointCard;
         private List<RigidNode_Base> nodes;
         private JointDriverType[] typeOptions;
-        private readonly RobotDataManager robotDataManager;
+        private RobotDataManager robotDataManager;
 
-        public JointDriverEditorUserControl(RobotDataManager robotDataManager)
+        public JointDriverEditor()
         {
-            this.robotDataManager = robotDataManager;
             InitializeComponent();
             WinFormsUtils.DisableScrollSelection(this);
             EnableLiveSave(this);
         }
 
-        public void Initialize(List<RigidNode_Base> nodes, JointCard jointCard)
+        public void Initialize(RobotDataManager robotDataManager, List<RigidNode_Base> nodes, JointCard jointCard)
         {
+            this.robotDataManager = robotDataManager;
             this.nodes = nodes;
             this.jointCard = jointCard;
             AnalyticsUtils.LogEvent("Joint Card Editor", "System", "Init");
