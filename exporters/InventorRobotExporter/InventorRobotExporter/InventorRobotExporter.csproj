@@ -149,6 +149,18 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
+    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditor.Designer.cs">
+      <DependentUpon>SimpleEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditorDT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditorDT.Designer.cs">
+      <DependentUpon>SimpleEditorDT.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\JointView\JointViewKeyPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -380,6 +392,12 @@
   <ItemGroup>
     <Content Include="Autodesk.InventorRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
+    </Content>
+    <Content Include="GUI\Editors\SimpleJointEditor\SimpleEditor.resx">
+      <DependentUpon>SimpleEditor.cs</DependentUpon>
+    </Content>
+    <Content Include="GUI\Editors\SimpleJointEditor\SimpleEditorDT.resx">
+      <DependentUpon>SimpleEditorDT.cs</DependentUpon>
     </Content>
     <Content Include="GUI\JointView\JointViewKey.html" />
     <Content Include="GUI\JointView\JointViewKeyPane.resx" />
