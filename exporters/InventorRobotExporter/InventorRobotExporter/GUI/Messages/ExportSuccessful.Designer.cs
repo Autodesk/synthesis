@@ -63,7 +63,9 @@
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(475, 135);
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(475, 135);
             this.Name = "ExportSuccessful";
             this.Text = "Export Successful";
