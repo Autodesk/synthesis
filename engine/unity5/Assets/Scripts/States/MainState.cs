@@ -189,7 +189,7 @@ namespace Synthesis.States
 
                 if (!result)
                 {
-                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not find the selected bot.");
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not find the selected robot");
                     return;
                 }
 
