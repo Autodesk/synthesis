@@ -57,11 +57,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(459, 96);
             this.Controls.Add(this.description);
             this.Controls.Add(this.okButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(475, 135);
+            this.MinimumSize = new System.Drawing.Size(475, 135);
             this.Name = "ExportSuccessful";
             this.Text = "Export Successful";
             this.ResumeLayout(false);

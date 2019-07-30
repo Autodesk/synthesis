@@ -17,6 +17,7 @@ namespace InventorRobotExporter.GUI.Messages
             InitializeComponent();
 
             description.Text = description.Text.Replace("%path%", path);
+            this.MaximizeBox = false;
         }
 
         private void OkButton_Click(object sender, EventArgs e)
