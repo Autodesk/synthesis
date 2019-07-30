@@ -14,9 +14,11 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            if (AppModel.ErrorMessage.Equals("ROBOT_SELECT")) {
+            string error = AppModel.ErrorMessage;
+            if (error.Split('|')[0].Equals("ROBOT_SELECT")) {
                 AppModel.ClearError();
                 StateMachine.ChangeState(new LoadRobotState());
+                Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
             }
             else {
                 Auxiliary.FindGameObject("ErrorScreen").SetActive(true);
