@@ -24,6 +24,7 @@ namespace InventorRobotExporter.GUI.Editors
             {
                 SaveValues();
                 Close();
+                values.SaveSettings();
             };
 
             buttonCancel.Click += (sender, args) => Close();
@@ -37,6 +38,7 @@ namespace InventorRobotExporter.GUI.Editors
             values = RobotExporterAddInServer.Instance.AddInSettingsManager;
             ChildHighlight.BackColor = values.JointHighlightColor;
             checkBox1.Checked = values.UseAnalytics;
+            checkBox2.Checked = values.ShowGuide;
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace InventorRobotExporter.GUI.Editors
         {
             values.JointHighlightColor = ChildHighlight.BackColor;
             values.UseAnalytics = checkBox1.Checked;
-            values.SaveSettings();
+            values.ShowGuide = checkBox2.Checked;
         }
 
         /// <summary>

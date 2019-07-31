@@ -149,13 +149,13 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.cs">
+    <Compile Include="GUI\JointView\JointViewKeyPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.Designer.cs">
-      <DependentUpon>DOFKeyPane.cs</DependentUpon>
+    <Compile Include="GUI\JointView\JointViewKeyPane.Designer.cs">
+      <DependentUpon>JointViewKeyPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\DegreesOfFreedomViewer\DOFKeyManager.cs" />
+    <Compile Include="GUI\JointView\JointViewKeyManager.cs" />
     <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditor.cs" />
     <Compile Include="GUI\Guide\GuideManager.cs" />
     <Compile Include="GUI\Guide\GuidePanel.cs">
@@ -390,8 +390,8 @@
     <Content Include="Autodesk.InventorRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="GUI\DegreesOfFreedomViewer\DOFKey.html" />
-    <Content Include="GUI\DegreesOfFreedomViewer\DOFKeyPane.resx" />
+    <Content Include="GUI\JointView\JointViewKey.html" />
+    <Content Include="GUI\JointView\JointViewKeyPane.resx" />
     <Content Include="GUI\Guide\Guide.html" />
     <Content Include="packages.config" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
