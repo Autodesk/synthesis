@@ -1,7 +1,7 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Utils;
-using System.Collections;
+using Synthesis.States;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +9,10 @@ using UnityEngine.UI;
 public class SettingsState : State {
 
     private GameObject canvas;
-    private GameObject me;
+    private GameObject settingsPanel;
+    private Button loadReplayButton;
+    //private Button cancelButton;
+    private GameObject loadReplayPanel;
 
     private static float initX = float.MaxValue, initY = float.MaxValue;
 
@@ -39,12 +42,23 @@ public class SettingsState : State {
     public override void Start()
     {
         canvas = Auxiliary.FindGameObject("Canvas");
-        me = Auxiliary.FindObject(canvas, "SettingsPanel");
-        me.SetActive(true);
-        resolutionT = Auxiliary.FindObject(me, "ResolutionText").GetComponent<Text>();
-        screenT = Auxiliary.FindObject(me, "ScreenModeText").GetComponent<Text>();
-        qualityT = Auxiliary.FindObject(me, "QualitySettingsText").GetComponent<Text>();
-        analyticsT = Auxiliary.FindObject(me, "AnalyticsModeText").GetComponent<Text>();
+        settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
+
+        loadReplayButton = Auxiliary.FindObject(canvas, "LoadReplayButton").GetComponent<Button>();
+        loadReplayButton.onClick.RemoveAllListeners();
+        loadReplayButton.onClick.AddListener(PushLoadReplayState);
+
+        //cancelButton = Auxiliary.FindObject(canvas, "CancelButton").GetComponent<Button>();
+        //cancelButton.onClick.RemoveAllListeners();
+        //cancelButton.onClick.AddListener(OnCancelButtonClicked);
+
+        loadReplayPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
+
+        settingsPanel.SetActive(true);
+        resolutionT = Auxiliary.FindObject(settingsPanel, "ResolutionText").GetComponent<Text>();
+        screenT = Auxiliary.FindObject(settingsPanel, "ScreenModeText").GetComponent<Text>();
+        qualityT = Auxiliary.FindObject(settingsPanel, "QualitySettingsText").GetComponent<Text>();
+        analyticsT = Auxiliary.FindObject(settingsPanel, "AnalyticsModeText").GetComponent<Text>();
 
         screenIndex = PlayerPrefs.GetInt("fullscreen") == 0 ? 1 : 0;
         int resInd = (new List<string>(resolutions)).IndexOf(PlayerPrefs.GetString("resolution"));
@@ -60,13 +74,13 @@ public class SettingsState : State {
 
         if (initX == float.MaxValue)
         {
-            Debug.Log("X " + me.transform.position.x);
+            Debug.Log("X " + settingsPanel.transform.position.x);
             initX = 0;
-            initY = me.GetComponent<RectTransform>().anchoredPosition.y;
+            initY = settingsPanel.GetComponent<RectTransform>().anchoredPosition.y;
             Debug.Log("Init");
         } else
         {
-            me.GetComponent<RectTransform>().anchoredPosition = new Vector2(initX, initY);
+            settingsPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(initX, initY);
             Debug.Log("Reset Pos");
         }
     }
@@ -95,6 +109,24 @@ public class SettingsState : State {
         qualityT.text = QualitySettings.names[qualityIndex];
     }
 
+    /// <summary>
+    /// Pushes the load replay state.
+    /// </summary>
+    private void PushLoadReplayState()
+    {
+        settingsPanel.SetActive(false);
+        StateMachine.ChangeState(new LoadReplayState());
+        Debug.Log("pushed");
+    }
+
+    /// <summary>
+    /// Pops the current<see cref="State"/> when the back button is pressed.
+    /// </summary>
+    //public void OnCancelButtonClicked()
+    //{
+    //    StateMachine.PopState();
+    //}
+
     public void OnApplySettingsClicked()
     {
         PlayerPrefs.SetString("resolution", resolutions[resolutionIndex]);
@@ -117,7 +149,7 @@ public class SettingsState : State {
 
     public override void End()
     {
-        me.SetActive(false);
+        settingsPanel.SetActive(false);
     }
 
 }

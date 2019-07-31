@@ -52,14 +52,6 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// Pushes a new <see cref="LoadReplayState"/> when the replays button is pressed.
-        /// </summary>
-        public void OnReplaysButtonClicked()
-        {
-            StateMachine.PushState(new LoadReplayState());
-        }
-
-        /// <summary>
         /// Pushes a new <see cref="LoadFieldState"/> when the change field button is pressed.
         /// </summary>
         public void OnChangeFieldButtonClicked()

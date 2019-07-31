@@ -56,6 +56,7 @@ namespace Synthesis.GUI
         GameObject overlay;
         GameObject tabs;
         GameObject pointImpulsePanel;
+        GameObject loadReplay;
 
         Text helpBodyText;
 
@@ -88,6 +89,8 @@ namespace Synthesis.GUI
 
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+
+            loadReplay = Auxiliary.FindObject(canvas, "LoadReplayPanel");
 
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();

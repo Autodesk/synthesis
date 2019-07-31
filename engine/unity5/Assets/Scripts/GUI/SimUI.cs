@@ -1060,10 +1060,33 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
-        /// <summary>
-        /// Links the specific toolbars to their specified states
-        /// </summary>
-        private void LinkToolbars()
+        public void Launch()
+        {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
+            //loadingPanel.SetActive(true);
+
+            if (entry != null)
+            {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Viewing,
+                    AnalyticsLedger.TimingLabel.ReplayMode);
+
+                //splashScreen.SetActive(true);
+                loadingPanel.SetActive(true);
+                PlayerPrefs.SetString("simSelectedReplay", entry);
+                PlayerPrefs.Save();
+                SceneManager.LoadScene("Scene");
+            }
+
+            //loadingPanel.SetActive(true);
+            replayList.SetActive(false);
+        }
+
+    /// <summary>
+    /// Links the specific toolbars to their specified states
+    /// </summary>
+    private void LinkToolbars()
         {
             LinkToolbar<MainToolbarState>("MainToolbar");
             LinkToolbar<DPMToolbarState>("DPMToolbar");

@@ -225,7 +225,7 @@ namespace Synthesis.States
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
-            StateMachine.Link<LoadReplayState>(Auxiliary.FindGameObject("LoadReplayUI"));
+            StateMachine.Link<LoadReplayState>(Auxiliary.FindGameObject("LoadReplayPanel"));
             StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
