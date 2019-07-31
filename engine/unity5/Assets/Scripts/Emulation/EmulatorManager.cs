@@ -31,6 +31,7 @@ namespace Synthesis
         private static System.Diagnostics.Process grpcBridgeProcess = null;
 
         public static UserProgram.UserProgramType programType = UserProgram.UserProgramType.JAVA;
+        private static bool isUserProgramFree = true;
 
         public static bool IsVMInstalled()
         {
@@ -109,36 +110,38 @@ namespace Synthesis
             }
         }
 
-        public static void SCPFileSender(UserProgram userProgram)
+        public static Task SCPFileSender(UserProgram userProgram, bool autorun = true)
         {
             programType = userProgram.type;
-            try
+            return Task.Run(async () =>
             {
-                if (IsRunningRobotCode())
-                    StopRobotCode();
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                try
                 {
-                    client.Connect();
-                    client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
-                    frcUserProgramPresent = false;
-                    client.Disconnect();
-                }
-
-                using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
-                {
-                    client.Connect();
-                    using (Stream localFile = File.OpenRead(userProgram.fullFileName))
+                    if (IsRunningRobotCode() || IsTryingToRunRobotCode())
+                        await StopRobotCode();
+                    isUserProgramFree = false;
+                	using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
-                        client.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
-                        frcUserProgramPresent = true;
+                        client.Connect();
+                        client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                        frcUserProgramPresent = false;
+                        client.Disconnect();
                     }
-                    client.Disconnect();
+                	using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    {
+                        client.Connect();
+                        using (Stream localFile = File.OpenRead(userProgram.fullFileName))
+                        {
+                            client.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
+                            frcUserProgramPresent = true;
+                        }
+                        client.Disconnect();
+                    }
+                    isUserProgramFree = true;
+                    await RestartRobotCode();
                 }
-            }
-            catch (Exception e)
-            {
-                UnityEngine.Debug.Log(e.Message);
-            }
+                catch (Exception) { }
+            });
         }
 
         private static bool VMConnected = false; // Last connection status
@@ -177,7 +180,7 @@ namespace Synthesis
         public static bool IsVMConnected()
         {
 
-            if (!UpdateVMStatusThread.IsAlive)
+            if (!UpdateVMStatusThread.IsAlive) // TODO start somewhere else
                 UpdateVMStatusThread.Start();
             return VMConnected;
         }
@@ -187,42 +190,52 @@ namespace Synthesis
             return frcUserProgramPresent;
         }
 
-        public static void StopRobotCode()
+        public static bool IsUserProgramFree()
         {
-            isTryingToRunRobotCode = false;
-            new Thread(() =>
+            return isUserProgramFree || !IsFRCUserProgramPresent();
+        }
+
+        public static Task StopRobotCode()
+        {
+            return Task.Run(() =>
             {
+                isTryingToRunRobotCode = false;
+                isUserProgramFree = false;
                 using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
                     isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
                     if (isRunningRobotCode)
                         client.RunCommand(STOP_COMMAND);
+                    isRunningRobotCode = false;
                     client.Disconnect();
                 }
-            }).Start();
+                isUserProgramFree = true;
+            });
         }
 
-        public static void StartRobotCode()
+        public static Task RestartRobotCode()
         {
-            isTryingToRunRobotCode = true;
-            new Thread(() =>
+            return Task.Run(() =>
             {
+                isTryingToRunRobotCode = true;
+                isUserProgramFree = false;
                 using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
-                    isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
                     if (isRunningRobotCode)
                     {
-                        isTryingToRunRobotCode = false;
+                        isTryingToRunRobotCode = false; // To reset the gRPC connection
                         client.RunCommand(STOP_COMMAND);
                     }
                     isTryingToRunRobotCode = true;
+                    isRunningRobotCode = true;
                     EmulatorNetworkConnection.Instance.OpenConnection();
                     client.RunCommand(START_COMMAND);
                     client.Disconnect();
                 }
-            }).Start();
+                isUserProgramFree = true;
+            });
         }
 
         public static bool IsRunningRobotCode()
@@ -235,9 +248,9 @@ namespace Synthesis
             return isTryingToRunRobotCode;
         }
 
-        public static void ReceiveProgramOutput()
+        public static Task ReceiveProgramOutput()
         {
-            new Thread(() =>
+            return Task.Run(() =>
             {
                 using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
@@ -254,12 +267,12 @@ namespace Synthesis
                     }
                     client.Disconnect();
                 }
-            }).Start();
+            });
         }
 
-        public static void FetchLogFile()
+        public static Task FetchLogFile()
         {
-            Task.Run(() =>
+            return Task.Run(() =>
             {
                 string folder = SFB.StandaloneFileBrowser.OpenFolderPanel("Log file destination", "C:\\", false);
                 if (folder == null)
