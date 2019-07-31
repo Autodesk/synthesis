@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.jointNavigator = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.jointLabel = new System.Windows.Forms.Label();
             this.jointTypeBox = new System.Windows.Forms.GroupBox();
             this.jointTypeInput = new System.Windows.Forms.ComboBox();
             this.weightBox = new System.Windows.Forms.GroupBox();
@@ -37,7 +37,7 @@
             this.jointDriverBox = new System.Windows.Forms.GroupBox();
             this.jointDriverInput = new System.Windows.Forms.ComboBox();
             this.advancedButton = new System.Windows.Forms.Button();
-            this.cancelButton = new System.Windows.Forms.Button();
+            this.closeButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.wheelTypeBox = new System.Windows.Forms.GroupBox();
@@ -70,23 +70,23 @@
             // 
             this.jointNavigator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointNavigator.FormattingEnabled = true;
-            this.jointNavigator.Location = new System.Drawing.Point(74, 9);
+            this.jointNavigator.Location = new System.Drawing.Point(110, 8);
             this.jointNavigator.Margin = new System.Windows.Forms.Padding(2);
             this.jointNavigator.Name = "jointNavigator";
-            this.jointNavigator.Size = new System.Drawing.Size(241, 21);
+            this.jointNavigator.Size = new System.Drawing.Size(170, 21);
             this.jointNavigator.TabIndex = 0;
             this.jointNavigator.SelectedIndexChanged += new System.EventHandler(this.JointNavigator_SelectedIndexChanged);
             // 
-            // label1
+            // jointLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.label1.Location = new System.Drawing.Point(34, 10);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(36, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Joint:";
+            this.jointLabel.AutoSize = true;
+            this.jointLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.jointLabel.Location = new System.Drawing.Point(74, 9);
+            this.jointLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.jointLabel.Name = "jointLabel";
+            this.jointLabel.Size = new System.Drawing.Size(36, 15);
+            this.jointLabel.TabIndex = 1;
+            this.jointLabel.Text = "Joint:";
             // 
             // jointTypeBox
             // 
@@ -192,17 +192,17 @@
             this.advancedButton.Visible = false;
             this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
-            // cancelButton
+            // closeButton
             // 
-            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(279, 329);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(2);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(71, 22);
-            this.cancelButton.TabIndex = 7;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.closeButton.Location = new System.Drawing.Point(279, 329);
+            this.closeButton.Margin = new System.Windows.Forms.Padding(2);
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(71, 22);
+            this.closeButton.TabIndex = 7;
+            this.closeButton.Text = "Close";
+            this.closeButton.UseVisualStyleBackColor = true;
+            this.closeButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // okButton
             // 
@@ -371,11 +371,10 @@
             // jointPreviewImage
             // 
             this.jointPreviewImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.jointPreviewImage.Image = global::InventorRobotExporter.Properties.Resources.stockjoint;
             this.jointPreviewImage.Location = new System.Drawing.Point(147, 15);
             this.jointPreviewImage.Margin = new System.Windows.Forms.Padding(2, 2, 14, 8);
             this.jointPreviewImage.Name = "jointPreviewImage";
-            this.jointPreviewImage.Size = new System.Drawing.Size(183, 189);
+            this.jointPreviewImage.Size = new System.Drawing.Size(183, 180);
             this.jointPreviewImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.jointPreviewImage.TabIndex = 5;
             this.jointPreviewImage.TabStop = false;
@@ -386,7 +385,7 @@
             this.backButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.backButton.Location = new System.Drawing.Point(9, 9);
             this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(20, 20);
+            this.backButton.Size = new System.Drawing.Size(60, 19);
             this.backButton.TabIndex = 10;
             this.backButton.UseVisualStyleBackColor = true;
             this.backButton.Click += new System.EventHandler(this.BackButton_Click);
@@ -395,9 +394,9 @@
             // 
             this.nextButton.BackgroundImage = global::InventorRobotExporter.Properties.Resources.ArrowRight;
             this.nextButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.nextButton.Location = new System.Drawing.Point(326, 9);
+            this.nextButton.Location = new System.Drawing.Point(289, 9);
             this.nextButton.Name = "nextButton";
-            this.nextButton.Size = new System.Drawing.Size(20, 20);
+            this.nextButton.Size = new System.Drawing.Size(60, 19);
             this.nextButton.TabIndex = 11;
             this.nextButton.UseVisualStyleBackColor = true;
             this.nextButton.Click += new System.EventHandler(this.NextButton_Click);
@@ -411,9 +410,9 @@
             this.Controls.Add(this.backButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.okButton);
-            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.closeButton);
             this.Controls.Add(this.advancedButton);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.jointLabel);
             this.Controls.Add(this.jointNavigator);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::InventorRobotExporter.Properties.Resources.SynthesisLogoIco;
@@ -442,14 +441,14 @@
         #endregion
 
         private System.Windows.Forms.ComboBox jointNavigator;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label jointLabel;
         private System.Windows.Forms.GroupBox jointTypeBox;
         private System.Windows.Forms.ComboBox jointTypeInput;
         private System.Windows.Forms.GroupBox weightBox;
         private System.Windows.Forms.GroupBox jointDriverBox;
         private System.Windows.Forms.ComboBox jointDriverInput;
         private System.Windows.Forms.Button advancedButton;
-        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.NumericUpDown weightAmountInput;
