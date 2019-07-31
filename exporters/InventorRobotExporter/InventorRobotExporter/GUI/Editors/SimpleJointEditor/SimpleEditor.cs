@@ -1,30 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using InventorRobotExporter.Managers;
 using InventorRobotExporter.Utilities;
+using InventorRobotExporter.Utilities.ImageFormat;
 
 namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 {
     public partial class SimpleEditor : Form
     {
         private readonly RobotDataManager robotDataManager;
+        private List<RigidNode_Base> nodeCache;
         private int defaultHeight;
 
         public SimpleEditor(RobotDataManager robotDataManager)
         {
             this.robotDataManager = robotDataManager;
+            nodeCache = new List<RigidNode_Base>();
 
             InitializeComponent();
             LoadJointsNavigator();
 
-            defaultHeight = Height;
+            defaultHeight = Height; // use for sizing on different displays
 
             jointTypeInput.SelectedIndex = 0;
             jointDriverInput.SelectedIndex = 0;
@@ -84,12 +81,13 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void LoadJointsNavigator()
         {
-            // Loads all node names of components with joints into the Joints Navigator
+            // Loops through all nodes and adds components with joints to the Joint Navigator
             foreach (RigidNode_Base node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() != null)
                 {
                     jointNavigator.Items.Add(ToStringUtils.NodeNameString(node));
+                    nodeCache.Add(node);
                 }
             }
             jointNavigator.SelectedIndex = 0;
@@ -98,7 +96,8 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         // Switch joints from joint list
         private void JointNavigator_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // TODO: Create logic for updating data
+            UpdateDisplay();
+            // TODO: Create logic for updating and saving data
         }
 
         // Change between Drivetrain Wheel and Mechanism Joint
@@ -117,19 +116,62 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             }
         }
 
+        private void UpdateDisplay()
+        {
+            RigidNode_Base node = nodeCache[jointNavigator.SelectedIndex];
+            if (jointTypeInput.SelectedIndex == 1)
+            {
+                // Drivetrain wheel
+                driveSideInput.Text = ToStringUtils.DriveTrainSideString(node.GetSkeletalJoint());
+                wheelTypeInput.Text = ToStringUtils.WheelTypeString(node.GetSkeletalJoint());
+            } else if (jointTypeInput.SelectedIndex == 2)
+            {
+                // Mechanism joint
+                weightAmountInput.Text = "22.05"; // TODO: Get actual weight value
+                jointDriverInput.Text = ToStringUtils.DriverString(node.GetSkeletalJoint());
+                // TODO: Get limit values
+            }
+
+            LoadPreviewIcon(node);
+        }
+
+        public void LoadPreviewIcon(RigidNode_Base node)
+        {
+            // TODO: Look into creating better previews
+
+            var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
+            iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
+
+            const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+
+            const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
+
+            var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
+            iconCamera.Fit();
+            iconCamera.GetExtents(out _, out var height);
+
+            InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
+
+
+            jointPreviewImage.Image = AxHostConverter.PictureDispToImage(
+                iconCamera.CreateImage(jointPreviewImage.Height * widthConst, jointPreviewImage.Height,
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
+        }
+
         private void BackButton_Click(object sender, EventArgs e)
         {
-            if (jointTypeInput.SelectedIndex - 1 > -1)
+            if (jointNavigator.SelectedIndex - 1 > -1)
             {
-                jointTypeInput.SelectedIndex -= 1;
+                jointNavigator.SelectedIndex -= 1;
             }
         }
 
         private void NextButton_Click(object sender, EventArgs e)
         {
-            if (jointTypeInput.SelectedIndex + 1 < jointNavigator.Items.Count - 1)
+            if (jointNavigator.SelectedIndex + 1 < jointNavigator.Items.Count - 1)
             {
-                jointTypeInput.SelectedIndex += 1;
+                jointNavigator.SelectedIndex += 1;
             }
         }
 
@@ -142,7 +184,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         {
             new AdvancedJointSettings().ShowDialog();
         }
-
         private void CancelButton_Click(object sender, EventArgs e)
         {
             Close();
