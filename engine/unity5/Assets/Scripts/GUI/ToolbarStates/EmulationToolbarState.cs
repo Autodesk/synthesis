@@ -27,12 +27,18 @@ namespace Assets.Scripts.GUI
         GameObject emulationToolbar;
         GameObject loadingPanel = null;
 
+        private Text useEmulationButtonText;
+        private Image useEmulationButtonImage;
+
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
+
+            useEmulationButtonText = Auxiliary.FindObject(canvas, "UseEmulationButton").GetComponentInChildren<Text>();
+            useEmulationButtonImage = Auxiliary.FindObject(canvas, "UseEmulationImage").GetComponentInChildren<Image>();
         }
 
         public void OnDestroy()
@@ -69,12 +75,28 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        public void OnUseEmulationButtonClicked()
+        {
+            EmulatorManager.UseEmulation = !EmulatorManager.UseEmulation;
+            if (EmulatorManager.UseEmulation)
+            {
+                useEmulationButtonImage.sprite = EmulationDriverStation.Instance.StopCode;
+                useEmulationButtonText.text = "Stop Emulation";
+            }
+            else
+            {
+                useEmulationButtonImage.sprite = EmulationDriverStation.Instance.StartCode;
+                useEmulationButtonText.text = "Use Emulation";
+                EmulationDriverStation.Instance.RobotDisabled();
+            }
+        }
+
         /// <summary>
         /// Selects robot code and starts VM. 
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramFree)))
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMConnected)) && EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramFree)))
             {
                 LoadCode();
             }
@@ -124,6 +146,7 @@ namespace Assets.Scripts.GUI
         {
             if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
+                EmulatorManager.StartUpdatingStatus();
                 if (!EmulatorManager.StartEmulator())
                     UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
                 EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();

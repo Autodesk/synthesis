@@ -122,13 +122,19 @@ public class DriveJoints
 
     private static void UpdateAllOutputs(int controlIndex, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
     {
-        if (Synthesis.EmulatorManager.IsTryingToRunRobotCode()) // Use emulator
+        if (Synthesis.EmulatorManager.UseEmulation) // Use emulator
         {
             if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
             {
                 UpdateEmulationJoysticks();
                 UpdateEmulationMotorControllers();
                 UpdateEmulationSensors(emuList);
+            }
+            else // Disable outputs
+            {
+                can_motor_controllers.Clear();
+                for (int i = 0; i < PWM_HDR_COUNT; i++)
+                    pwm_motor_controllers[i] = 0;
             }
         }
         else // Use regular controls

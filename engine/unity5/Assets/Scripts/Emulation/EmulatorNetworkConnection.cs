@@ -132,7 +132,7 @@ namespace Synthesis
                 EmulatorManager.StopRobotCode();
             if (EmulatorManager.IsVMRunning())
                 EmulatorManager.KillEmulator();
-            EmulatorManager.KillTestVMConnectionThread();
+            EmulatorManager.StopUpdatingStatus();
         }
 
         public bool IsConnected()

@@ -9,6 +9,7 @@ namespace Synthesis
 
         public enum Requirement
         {
+            UseEmulation,
             VMInstalled,
             VMRunning,
             VMConnected,
@@ -22,6 +23,13 @@ namespace Synthesis
         {
             switch(requirement)
             {
+                case Requirement.UseEmulation:
+                    if (!EmulatorManager.UseEmulation)
+                    {
+                        UserMessageManager.Dispatch("Not configured to use emulation", WARNING_DURATION);
+                        return false;
+                    }
+                    return true;
                 case Requirement.VMInstalled:
                     if (!EmulatorManager.IsVMInstalled())
                     {

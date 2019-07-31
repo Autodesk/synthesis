@@ -9,7 +9,7 @@ namespace Synthesis
 {
     public static class EmulatorManager
     {
-        public static string emulationDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
+        private static string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
 
         private const int DEFAULT_SSH_PORT_CPP = 10022;
         private const int DEFAULT_SSH_PORT_JAVA = 10023;
@@ -22,67 +22,47 @@ namespace Synthesis
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
         private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
 
-        private static bool isRunningRobotCode = false;
-        private static bool isTryingToRunRobotCode = false;
-        private static bool frcUserProgramPresent = false;
-
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
         private static System.Diagnostics.Process grpcBridgeProcess = null;
 
         public static UserProgram.UserProgramType programType = UserProgram.UserProgramType.JAVA;
+        
+		// Last connection status
+        public static bool UseEmulation = false;
+        private static bool VMConnected = false;
         private static bool isUserProgramFree = true;
+        private static bool frcUserProgramPresent = false;
+        private static bool isTryingToRunRobotCode = false;
+        private static bool isRunningRobotCode = false;
+
+        private static System.Diagnostics.Process qemuProcess = null;
+        private static bool updatingStatus = false;
+
+        private static SshClient Client
+        {
+            get
+            {
+                if (SSHClientInternal.instance == null)
+                    SSHClientInternal.instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                if (!SSHClientInternal.instance.IsConnected)
+                    SSHClientInternal.instance.Connect();
+                return SSHClientInternal.instance;
+            }
+        }
+
+        private class SSHClientInternal
+        {
+            static SSHClientInternal() { }
+            internal static SshClient instance = null;
+        }
 
         public static bool IsVMInstalled()
         {
-            return Directory.Exists(emulationDir) &&
-                File.Exists(emulationDir + Path.DirectorySeparatorChar + "zImage") &&
-                File.Exists(emulationDir + Path.DirectorySeparatorChar + "rootfs.ext4") &&
-                File.Exists(emulationDir + Path.DirectorySeparatorChar + "zynq-zed.dtb");
-        }
-
-        public static bool StartEmulator()
-        {
-            bool exception = false;
-        try
-        {
-            Enum.TryParse(PlayerPrefs.GetString("UserProgramType"), out programType);
-            qemuNativeProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                FileName = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu" + Path.DirectorySeparatorChar + "qemu-system-arm.exe",
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + emulationDir + Path.DirectorySeparatorChar + "zImage " +
-                        "-dtb " + emulationDir + Path.DirectorySeparatorChar + "zynq-zed.dtb " +
-                        "-display none -serial null -serial mon:stdio -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" " +
-                        "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_CPP + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "," +
-                        "hostfwd=tcp::2354-:2354 -net nic -sd " + emulationDir + Path.DirectorySeparatorChar + "rootfs.ext4",
-                Verb = "runas"
-            });
-            qemuJavaProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                FileName = @"C:\Program Files\qemu\qemu-system-x86_64.exe",
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                Arguments = " -m 2048 -kernel " + emulationDir + "kernel-java -nographic -append \"console=ttyPS0 root=/dev/sda rw\" -net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_JAVA + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_JAVA_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + " -net nic -hda " + emulationDir + "rootfs-java.ext4",
-                Verb = "runas"
-            });
-
-            grpcBridgeProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                FileName = emulationDir + "grpc-bridge.exe",
-                Verb = "runas"
-            });
-        }
-        catch (Exception)
-        {
-            exception = true;
-        }
-            return !exception && IsVMRunning();
+            return Directory.Exists(EMULATION_DIR) &&
+                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "zImage") &&
+                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs.ext4") &&
+                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb");
         }
 
         public static bool IsVMRunning()
@@ -95,6 +75,75 @@ namespace Synthesis
                 grpcBridgeProcess = null;
 
             return qemuNativeProcess != null && qemuJavaProcess != null && grpcBridgeProcess != null;
+        }
+
+        public static bool IsVMConnected()
+        {
+            return VMConnected;
+        }
+
+        public static bool IsFRCUserProgramPresent()
+        {
+            return frcUserProgramPresent;
+        }
+
+        public static bool IsTryingToRunRobotCode()
+        {
+            return isTryingToRunRobotCode;
+        }
+
+        public static bool IsUserProgramFree()
+        {
+            return isUserProgramFree || !IsFRCUserProgramPresent();
+        }
+
+        public static bool IsRunningRobotCode()
+        {
+            return isRunningRobotCode;
+        }
+
+        public static bool StartEmulator()
+        {
+            bool exception = false;
+            try
+            {
+                Enum.TryParse(PlayerPrefs.GetString("UserProgramType"), out programType);
+                qemuNativeProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    FileName = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu" + Path.DirectorySeparatorChar + "qemu-system-arm.exe",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EMULATION_DIR + Path.DirectorySeparatorChar + "zImage " +
+                            "-dtb " + EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb " +
+                            "-display none -serial null -serial mon:stdio -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" " +
+                            "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_CPP + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "," +
+                            "hostfwd=tcp::2354-:2354 -net nic -sd " + EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs.ext4",
+                    Verb = "runas"
+                });
+                qemuJavaProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    FileName = @"C:\Program Files\qemu\qemu-system-x86_64.exe",
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    Arguments = " -m 2048 -kernel " + EMULATION_DIR + "kernel-java -nographic -append \"console=ttyPS0 root=/dev/sda rw\" -net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_JAVA + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_JAVA_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + " -net nic -hda " + EMULATION_DIR + "rootfs-java.ext4",
+                    Verb = "runas"
+                });
+
+                grpcBridgeProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    FileName = EMULATION_DIR + "grpc-bridge.exe",
+                    Verb = "runas"
+                });
+            }
+            catch (Exception)
+            {
+                exception = true;
+            }
+            return !exception && IsVMRunning();
         }
 
         public static void KillEmulator()
@@ -110,55 +159,17 @@ namespace Synthesis
             }
         }
 
-        public static Task SCPFileSender(UserProgram userProgram, bool autorun = true)
+        private static void StatusUpdater()
         {
-            programType = userProgram.type;
-            return Task.Run(async () =>
+            while (updatingStatus)
             {
                 try
                 {
-                    if (IsRunningRobotCode() || IsTryingToRunRobotCode())
-                        await StopRobotCode();
-                    isUserProgramFree = false;
-                	using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    VMConnected = Client.IsConnected;
+                    if (VMConnected)
                     {
-                        client.Connect();
-                        client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
-                        frcUserProgramPresent = false;
-                        client.Disconnect();
-                    }
-                	using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
-                    {
-                        client.Connect();
-                        using (Stream localFile = File.OpenRead(userProgram.fullFileName))
-                        {
-                            client.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
-                            frcUserProgramPresent = true;
-                        }
-                        client.Disconnect();
-                    }
-                    isUserProgramFree = true;
-                    await RestartRobotCode();
-                }
-                catch (Exception) { }
-            });
-        }
-
-        private static bool VMConnected = false; // Last connection status
-
-        private static Thread UpdateVMStatusThread = new Thread(() =>
-        {
-            while (true)
-            {
-                try
-                {
-                    using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
-                    {
-                        client.Connect();
-                        VMConnected = client.IsConnected;
-                        frcUserProgramPresent = client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
-                        isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
-                        client.Disconnect();
+                        frcUserProgramPresent = Client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
+                        isRunningRobotCode = Client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
                     }
                 }
                 catch
@@ -169,30 +180,53 @@ namespace Synthesis
                 }
                 Thread.Sleep(1000); // ms
             }
-        });
-
-        public static void KillTestVMConnectionThread()
-        {
-            if (UpdateVMStatusThread.IsAlive)
-                UpdateVMStatusThread.Abort();
         }
 
-        public static bool IsVMConnected()
+        public static void StartUpdatingStatus()
         {
-
-            if (!UpdateVMStatusThread.IsAlive) // TODO start somewhere else
-                UpdateVMStatusThread.Start();
-            return VMConnected;
+            if (!updatingStatus)
+            {
+                updatingStatus = true;
+                Task.Run(StatusUpdater);
+            }
         }
 
-        public static bool IsFRCUserProgramPresent()
+        public static void StopUpdatingStatus()
         {
-            return frcUserProgramPresent;
+            updatingStatus = false;
         }
 
-        public static bool IsUserProgramFree()
+        public static Task SCPFileSender(UserProgram userProgram, bool autorun = true)
         {
-            return isUserProgramFree || !IsFRCUserProgramPresent();
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    if (IsRunningRobotCode() || IsTryingToRunRobotCode())
+                        await StopRobotCode();
+
+                    isUserProgramFree = false;
+                    Client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                    frcUserProgramPresent = false;
+
+                    using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    {
+                        scpClient.Connect();
+                        using (Stream localFile = File.OpenRead(userProgram.fullFileName))
+                        {
+                            scpClient.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
+                            frcUserProgramPresent = true;
+                        }
+                        scpClient.Disconnect();
+                    }
+                    isUserProgramFree = true;
+                    if(UseEmulation && autorun)
+                        await RestartRobotCode();
+                }
+                catch (Exception) {
+                    isUserProgramFree = true;
+                }
+            });
         }
 
         public static Task StopRobotCode()
@@ -201,15 +235,9 @@ namespace Synthesis
             {
                 isTryingToRunRobotCode = false;
                 isUserProgramFree = false;
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
-                {
-                    client.Connect();
-                    isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
-                    if (isRunningRobotCode)
-                        client.RunCommand(STOP_COMMAND);
-                    isRunningRobotCode = false;
-                    client.Disconnect();
-                }
+                if (isRunningRobotCode)
+                    Client.RunCommand(STOP_COMMAND);
+                isRunningRobotCode = false;
                 isUserProgramFree = true;
             });
         }
@@ -220,32 +248,17 @@ namespace Synthesis
             {
                 isTryingToRunRobotCode = true;
                 isUserProgramFree = false;
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                if (isRunningRobotCode)
                 {
-                    client.Connect();
-                    if (isRunningRobotCode)
-                    {
-                        isTryingToRunRobotCode = false; // To reset the gRPC connection
-                        client.RunCommand(STOP_COMMAND);
-                    }
-                    isTryingToRunRobotCode = true;
-                    isRunningRobotCode = true;
-                    EmulatorNetworkConnection.Instance.OpenConnection();
-                    client.RunCommand(START_COMMAND);
-                    client.Disconnect();
+                    isTryingToRunRobotCode = false; // To reset the gRPC connection
+                    Client.RunCommand(STOP_COMMAND);
                 }
+                isTryingToRunRobotCode = true;
+                isRunningRobotCode = true;
+                EmulatorNetworkConnection.Instance.OpenConnection();
+                Client.RunCommand(START_COMMAND);
                 isUserProgramFree = true;
             });
-        }
-
-        public static bool IsRunningRobotCode()
-        {
-            return isRunningRobotCode;
-        }
-
-        public static bool IsTryingToRunRobotCode()
-        {
-            return isTryingToRunRobotCode;
         }
 
         public static Task ReceiveProgramOutput()

@@ -25,9 +25,9 @@ namespace Synthesis.GUI
         Image disableRobotImage;
 
         Image VMConnectionImage;
-        Image RobotCodeUploadedImage;
-        Image RobotCodeRunningImage;
-        Image RobotCodeConnectedImage;
+        Image robotCodeUploadedImage;
+        Image robotCodeRunningImage;
+        Image robotCodeConnectedImage;
 
         private const int AUTONOMOUS_LENGTH = 15 * 1000; // ms
 
@@ -63,9 +63,9 @@ namespace Synthesis.GUI
             disableRobotImage = Auxiliary.FindObject(emuDriverStationPanel, "Disable").GetComponentInChildren<Image>();
 
             VMConnectionImage = Auxiliary.FindObject(emuDriverStationPanel, "VMConnectionImage").GetComponentInChildren<Image>();
-            RobotCodeUploadedImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeUploadedImage").GetComponentInChildren<Image>();
-            RobotCodeRunningImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeRunningImage").GetComponentInChildren<Image>();
-            RobotCodeConnectedImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeConnectedImage").GetComponentInChildren<Image>();
+            robotCodeUploadedImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeUploadedImage").GetComponentInChildren<Image>();
+            robotCodeRunningImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeRunningImage").GetComponentInChildren<Image>();
+            robotCodeConnectedImage = Auxiliary.FindObject(emuDriverStationPanel, "RobotCodeConnectedImage").GetComponentInChildren<Image>();
 
             RobotState("teleop");
             RobotDisabled();
@@ -95,9 +95,9 @@ namespace Synthesis.GUI
                 lastGameSpecificMessageFocused = gameSpecificMessage.isFocused;
             }
             VMConnectionImage.sprite = EmulatorManager.IsVMConnected() ? StatusGood : StatusBad;
-            RobotCodeUploadedImage.sprite = EmulatorManager.IsFRCUserProgramPresent() ? StatusGood : StatusBad;
-            RobotCodeRunningImage.sprite = EmulatorManager.IsRunningRobotCode() ? StatusGood : StatusBad;
-            RobotCodeConnectedImage.sprite = EmulatorNetworkConnection.Instance.IsConnected() ? StatusGood : StatusBad;
+            robotCodeUploadedImage.sprite = EmulatorManager.IsFRCUserProgramPresent() ? StatusGood : StatusBad;
+            robotCodeRunningImage.sprite = EmulatorManager.IsRunningRobotCode() ? StatusGood : StatusBad;
+            robotCodeConnectedImage.sprite = EmulatorNetworkConnection.Instance.IsConnected() ? StatusGood : StatusBad;
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Synthesis.GUI
 
         public void RobotEnabled()
         {
-            if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramConnected)))
+            if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UseEmulation)) && EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramConnected)))
             {
                 if (!InputManager.Instance.RobotMode.Enabled && runPracticeMode)
                 {
