@@ -10,6 +10,7 @@ public class SettingsState : State {
 
     private GameObject canvas;
     private GameObject me;
+    private GameObject menu;
 
     private static float initX = float.MaxValue, initY = float.MaxValue;
 
@@ -40,7 +41,11 @@ public class SettingsState : State {
     {
         canvas = Auxiliary.FindGameObject("Canvas");
         me = Auxiliary.FindObject(canvas, "SettingsPanel");
-        me.SetActive(true);
+        //me.SetActive(true);
+
+        menu = Auxiliary.FindObject(canvas, "MenuPanel");
+        menu.SetActive(true);
+
         resolutionT = Auxiliary.FindObject(me, "ResolutionText").GetComponent<Text>();
         screenT = Auxiliary.FindObject(me, "ScreenModeText").GetComponent<Text>();
         qualityT = Auxiliary.FindObject(me, "QualitySettingsText").GetComponent<Text>();
