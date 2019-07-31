@@ -119,6 +119,9 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         private void UpdateDisplay()
         {
             RigidNode_Base node = nodeCache[jointNavigator.SelectedIndex];
+
+            nameInput.Text = ToStringUtils.NodeNameString(node);
+
             if (jointTypeInput.SelectedIndex == 1)
             {
                 // Drivetrain wheel
@@ -139,24 +142,24 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         {
             // TODO: Look into creating better previews
 
-            var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
-            iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
+            //var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
+            //iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
 
-            const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+            //const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
 
-            const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
+            //const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
 
-            var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
-            iconCamera.Fit();
-            iconCamera.GetExtents(out _, out var height);
+            //var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
+            //iconCamera.Fit();
+            //iconCamera.GetExtents(out _, out var height);
 
-            InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
+            //InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
 
 
-            jointPreviewImage.Image = AxHostConverter.PictureDispToImage(
-                iconCamera.CreateImage(jointPreviewImage.Height * widthConst, jointPreviewImage.Height,
-                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
-                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
+            //jointPreviewImage.Image = AxHostConverter.PictureDispToImage(
+            //    iconCamera.CreateImage(jointPreviewImage.Height * widthConst, jointPreviewImage.Height,
+            //        RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
+            //        RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
         }
 
         private void BackButton_Click(object sender, EventArgs e)
@@ -194,6 +197,5 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             // TODO: Implement saving
             Close();
         }
-
     }
 }
