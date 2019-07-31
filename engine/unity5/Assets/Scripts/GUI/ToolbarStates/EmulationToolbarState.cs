@@ -37,8 +37,8 @@ namespace Assets.Scripts.GUI
 
         public void OnDestroy()
         {
-            if (EmulatorManager.IsRunningRobotCode())
-                EmulationDriverStation.Instance.StopRobotCode();
+            if (EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
+                EmulatorManager.StopRobotCode();
         }
 
         public override void FixedUpdate()
@@ -74,7 +74,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMConnected)))
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramFree)))
             {
                 LoadCode();
             }
@@ -91,9 +91,9 @@ namespace Assets.Scripts.GUI
             {
                 Synthesis.UserProgram userProgram = new Synthesis.UserProgram(selectedFiles[0]);
                 loadingPanel.SetActive(true);
-                Task Upload = Task.Factory.StartNew(() =>
+                Task Upload = Task.Factory.StartNew(async () =>
                 {
-                    Synthesis.EmulatorManager.SCPFileSender(userProgram);
+                    await EmulatorManager.SCPFileSender(userProgram);
                     loaded = true;
                 });
 
@@ -117,16 +117,6 @@ namespace Assets.Scripts.GUI
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
                 "Emulation Driver Station",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        public void OnStartRobotCodeButtonClicked()
-        {
-            EmulationDriverStation.Instance.ToggleRobotCodeButton();
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Run Code",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 

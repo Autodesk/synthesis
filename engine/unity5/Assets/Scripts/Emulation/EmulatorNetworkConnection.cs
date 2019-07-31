@@ -128,7 +128,7 @@ namespace Synthesis
         {
             // inputCommander.Send(new StandardMessage.ExitMessage());
             // outputCommander.Send(new StandardMessage.ExitMessage());
-            if (EmulatorManager.IsRunningRobotCode())
+            if (EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
                 EmulatorManager.StopRobotCode();
             if (EmulatorManager.IsVMRunning())
                 EmulatorManager.KillEmulator();

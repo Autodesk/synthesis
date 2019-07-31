@@ -13,6 +13,7 @@ namespace Synthesis
             VMRunning,
             VMConnected,
             UserProgramPresent,
+            UserProgramFree,
             UserProgramRunning,
             UserProgramConnected,
         }
@@ -54,6 +55,16 @@ namespace Synthesis
                         if (CheckRequirement(Requirement.VMConnected))
                         {
                             UserMessageManager.Dispatch("User program not found", WARNING_DURATION);
+                        }
+                        return false;
+                    }
+                    return true;
+                case Requirement.UserProgramFree:
+                    if (!EmulatorManager.IsUserProgramFree())
+                    {
+                        if (CheckRequirement(Requirement.VMConnected))
+                        {
+                             UserMessageManager.Dispatch("Wait for last emulator task to finish", WARNING_DURATION);
                         }
                         return false;
                     }
