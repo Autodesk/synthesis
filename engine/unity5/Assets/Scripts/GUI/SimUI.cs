@@ -94,6 +94,8 @@ namespace Synthesis.GUI
 
         private static SimUI instance = null;
 
+        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
+
         private void Start()
         {
             instance = this;
@@ -106,6 +108,11 @@ namespace Synthesis.GUI
 
         private void Update()
         {
+            if (InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true))
+            {
+                tabs.SetActive(!tabs.activeSelf);
+                tabStateMachine.CurrentState.ToggleHidden();
+            }
             if (toolkit == null)
             {
                 camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -124,7 +131,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
+                if (InputControl.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {
@@ -785,10 +792,9 @@ namespace Synthesis.GUI
         #endregion
         #region control panel and analytics functions
         /// <summary>
-        /// Toggle the control panel ON/OFF based on the boolean passed.
+        /// Toggle the control panel ON/OFF based on its current state.
         /// </summary>
-        /// <param name="show"></param>
-        public void ShowControlPanel(bool alreadySaved)
+        public void ShowControlPanel()
         {
             if (!inputManagerPanel.activeSelf)
             {
@@ -797,37 +803,38 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
-
-                Controls.Load();
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
-                DynamicCamera.ControlEnabled = true;
-                InputControl.freeze = false;
-                inputManagerPanel.SetActive(false);
-                inputPanelOn = false;
-                ToggleHotKeys(false);
-
-                if (!alreadySaved && Controls.CheckIfSaved())
+                CheckUnsavedControls(() =>
                 {
-                    checkSavePanel.SetActive(true);
-                }
+                    DynamicCamera.ControlEnabled = true;
+                    InputControl.freeze = false;
+                    inputManagerPanel.SetActive(false);
+                    inputPanelOn = false;
+                    ToggleHotKeys(false);
+                });
             }
         }
 
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state
-        /// </summary>
-        public void ShowControlPanel()
+        public void CheckUnsavedControls(Action callback)
         {
-            ShowControlPanel(!inputManagerPanel.activeSelf);
+            ProcessControlsCallback = callback;
+            if (!Controls.HasBeenSaved())
+            {
+                checkSavePanel.SetActive(true);
+            } else
+            {
+                if(ProcessControlsCallback != null)
+                    ProcessControlsCallback.Invoke();
+            }
         }
 
         public void SaveAndClose()
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            inputManagerPanel.SetActive(false);
+            ShowControlPanel();
         }
 
         /// <summary>
@@ -858,12 +865,13 @@ namespace Synthesis.GUI
                     break;
                 case "no":
                     Controls.Load();
-                    inputManagerPanel.SetActive(false);
                     break;
+                default:
                 case "cancel":
-                    inputManagerPanel.SetActive(true);
-                    break;
+                    return;
             }
+            if (ProcessControlsCallback != null)
+                ProcessControlsCallback.Invoke();
         }
 
         /// <summary>
@@ -900,10 +908,9 @@ namespace Synthesis.GUI
             if (canvas != null)
             {
                 unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-                int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-                State.IsMetric = (i == 1 ? true : false);
-                PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
-                //Debug.Log("Metric: " + main.IsMetric);
+                State.IsMetric = (int)unitConversionSwitch.GetComponent<Slider>().value == 0;
+                PlayerPrefs.SetString("Measure", State.IsMetric ? "Metric" : "Imperial");
+                // UnityEngine.Debug.Log("Metric: " + State.IsMetric);
             }
         }
 
