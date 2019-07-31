@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.jointNavigator = new System.Windows.Forms.ComboBox();
-            this.jointLabel = new System.Windows.Forms.Label();
             this.jointTypeBox = new System.Windows.Forms.GroupBox();
             this.jointTypeInput = new System.Windows.Forms.ComboBox();
             this.weightBox = new System.Windows.Forms.GroupBox();
@@ -53,6 +52,8 @@
             this.jointPreviewImage = new System.Windows.Forms.PictureBox();
             this.backButton = new System.Windows.Forms.Button();
             this.nextButton = new System.Windows.Forms.Button();
+            this.nameBox = new System.Windows.Forms.GroupBox();
+            this.nameInput = new System.Windows.Forms.TextBox();
             this.jointTypeBox.SuspendLayout();
             this.weightBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.weightAmountInput)).BeginInit();
@@ -64,35 +65,25 @@
             ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).BeginInit();
+            this.nameBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // jointNavigator
             // 
             this.jointNavigator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointNavigator.FormattingEnabled = true;
-            this.jointNavigator.Location = new System.Drawing.Point(110, 8);
+            this.jointNavigator.Location = new System.Drawing.Point(83, 8);
             this.jointNavigator.Margin = new System.Windows.Forms.Padding(2);
             this.jointNavigator.Name = "jointNavigator";
-            this.jointNavigator.Size = new System.Drawing.Size(170, 21);
+            this.jointNavigator.Size = new System.Drawing.Size(195, 21);
             this.jointNavigator.TabIndex = 0;
             this.jointNavigator.SelectedIndexChanged += new System.EventHandler(this.JointNavigator_SelectedIndexChanged);
-            // 
-            // jointLabel
-            // 
-            this.jointLabel.AutoSize = true;
-            this.jointLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.jointLabel.Location = new System.Drawing.Point(74, 9);
-            this.jointLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.jointLabel.Name = "jointLabel";
-            this.jointLabel.Size = new System.Drawing.Size(36, 15);
-            this.jointLabel.TabIndex = 1;
-            this.jointLabel.Text = "Joint:";
             // 
             // jointTypeBox
             // 
             this.jointTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.jointTypeBox.Controls.Add(this.jointTypeInput);
-            this.jointTypeBox.Location = new System.Drawing.Point(11, 15);
+            this.jointTypeBox.Location = new System.Drawing.Point(11, 52);
             this.jointTypeBox.Margin = new System.Windows.Forms.Padding(2);
             this.jointTypeBox.Name = "jointTypeBox";
             this.jointTypeBox.Padding = new System.Windows.Forms.Padding(2);
@@ -120,7 +111,7 @@
             // 
             this.weightBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.weightBox.Controls.Add(this.weightAmountInput);
-            this.weightBox.Location = new System.Drawing.Point(11, 68);
+            this.weightBox.Location = new System.Drawing.Point(11, 105);
             this.weightBox.Margin = new System.Windows.Forms.Padding(2);
             this.weightBox.Name = "weightBox";
             this.weightBox.Padding = new System.Windows.Forms.Padding(2);
@@ -154,7 +145,7 @@
             // 
             this.jointDriverBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.jointDriverBox.Controls.Add(this.jointDriverInput);
-            this.jointDriverBox.Location = new System.Drawing.Point(11, 122);
+            this.jointDriverBox.Location = new System.Drawing.Point(11, 159);
             this.jointDriverBox.Margin = new System.Windows.Forms.Padding(2);
             this.jointDriverBox.Name = "jointDriverBox";
             this.jointDriverBox.Padding = new System.Windows.Forms.Padding(2);
@@ -221,6 +212,7 @@
             this.panel1.AutoSize = true;
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel1.Controls.Add(this.nameBox);
             this.panel1.Controls.Add(this.wheelTypeBox);
             this.panel1.Controls.Add(this.driveSideBox);
             this.panel1.Controls.Add(this.limitsBox);
@@ -238,7 +230,7 @@
             // 
             this.wheelTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.wheelTypeBox.Controls.Add(this.wheelTypeInput);
-            this.wheelTypeBox.Location = new System.Drawing.Point(11, 118);
+            this.wheelTypeBox.Location = new System.Drawing.Point(11, 155);
             this.wheelTypeBox.Margin = new System.Windows.Forms.Padding(2);
             this.wheelTypeBox.Name = "wheelTypeBox";
             this.wheelTypeBox.Padding = new System.Windows.Forms.Padding(2);
@@ -267,7 +259,7 @@
             // 
             this.driveSideBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.driveSideBox.Controls.Add(this.driveSideInput);
-            this.driveSideBox.Location = new System.Drawing.Point(11, 64);
+            this.driveSideBox.Location = new System.Drawing.Point(11, 101);
             this.driveSideBox.Margin = new System.Windows.Forms.Padding(2);
             this.driveSideBox.Name = "driveSideBox";
             this.driveSideBox.Padding = new System.Windows.Forms.Padding(2);
@@ -381,25 +373,42 @@
             // 
             // backButton
             // 
-            this.backButton.BackgroundImage = global::InventorRobotExporter.Properties.Resources.ArrowLeft;
             this.backButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backButton.Location = new System.Drawing.Point(9, 9);
+            this.backButton.Location = new System.Drawing.Point(9, 7);
             this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(60, 19);
+            this.backButton.Size = new System.Drawing.Size(71, 23);
             this.backButton.TabIndex = 10;
+            this.backButton.Text = "< Previous";
             this.backButton.UseVisualStyleBackColor = true;
             this.backButton.Click += new System.EventHandler(this.BackButton_Click);
             // 
             // nextButton
             // 
-            this.nextButton.BackgroundImage = global::InventorRobotExporter.Properties.Resources.ArrowRight;
             this.nextButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.nextButton.Location = new System.Drawing.Point(289, 9);
+            this.nextButton.Location = new System.Drawing.Point(282, 7);
             this.nextButton.Name = "nextButton";
-            this.nextButton.Size = new System.Drawing.Size(60, 19);
+            this.nextButton.Size = new System.Drawing.Size(71, 23);
             this.nextButton.TabIndex = 11;
+            this.nextButton.Text = "Next >";
             this.nextButton.UseVisualStyleBackColor = true;
             this.nextButton.Click += new System.EventHandler(this.NextButton_Click);
+            // 
+            // nameBox
+            // 
+            this.nameBox.Controls.Add(this.nameInput);
+            this.nameBox.Location = new System.Drawing.Point(11, 6);
+            this.nameBox.Name = "nameBox";
+            this.nameBox.Size = new System.Drawing.Size(122, 41);
+            this.nameBox.TabIndex = 11;
+            this.nameBox.TabStop = false;
+            this.nameBox.Text = "Name";
+            // 
+            // nameInput
+            // 
+            this.nameInput.Location = new System.Drawing.Point(4, 15);
+            this.nameInput.Name = "nameInput";
+            this.nameInput.Size = new System.Drawing.Size(114, 20);
+            this.nameInput.TabIndex = 0;
             // 
             // SimpleEditor
             // 
@@ -412,7 +421,6 @@
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.closeButton);
             this.Controls.Add(this.advancedButton);
-            this.Controls.Add(this.jointLabel);
             this.Controls.Add(this.jointNavigator);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::InventorRobotExporter.Properties.Resources.SynthesisLogoIco;
@@ -433,6 +441,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).EndInit();
+            this.nameBox.ResumeLayout(false);
+            this.nameBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -441,7 +451,6 @@
         #endregion
 
         private System.Windows.Forms.ComboBox jointNavigator;
-        private System.Windows.Forms.Label jointLabel;
         private System.Windows.Forms.GroupBox jointTypeBox;
         private System.Windows.Forms.ComboBox jointTypeInput;
         private System.Windows.Forms.GroupBox weightBox;
@@ -465,5 +474,7 @@
         private System.Windows.Forms.CheckBox limitStartCheckbox;
         private System.Windows.Forms.Button backButton;
         private System.Windows.Forms.Button nextButton;
+        private System.Windows.Forms.GroupBox nameBox;
+        private System.Windows.Forms.TextBox nameInput;
     }
 }
