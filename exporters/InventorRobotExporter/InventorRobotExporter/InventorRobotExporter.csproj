@@ -432,6 +432,8 @@
     <Content Include="packages.config" />
     <None Include="Resources\Temporary\stockjoint.PNG" />
     <None Include="Resources\Branding\SynthesisLogoIco.ico" />
+    <None Include="Resources\Other\ArrowLeft.png" />
+    <None Include="Resources\Other\ArrowRight.png" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />
     <Content Include="Resources\RibbonIcons\JointEditor32.png" />

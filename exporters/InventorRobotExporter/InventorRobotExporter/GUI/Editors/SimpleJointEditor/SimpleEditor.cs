@@ -67,11 +67,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             animateMovementButton.Visible = true;
             advancedButton.Visible = true;
 
-            ResizeToMechanism();
-        }
-
-        private void ResizeToMechanism()
-        {
             Height = defaultHeight;
         }
 
@@ -84,12 +79,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             wheelTypeInput.Visible = true;
             advancedButton.Visible = true;
 
-            ResizeToDrivetrain();
-        }
-
-        private void ResizeToDrivetrain()
-        {
-            Height = defaultHeight-limitsBox.Height;
+            Height = defaultHeight - limitsBox.Height;
         }
 
         private void LoadJointsNavigator()
@@ -117,13 +107,29 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             ClearType();
             if (jointTypeInput.SelectedIndex == 0)
             {
-                ResizeToDrivetrain();
+                Height = defaultHeight - limitsBox.Height;
             } else if (jointTypeInput.SelectedIndex == 1)
             {
                 ShowDrivetrainType();
             } else if (jointTypeInput.SelectedIndex == 2)
             {
                 ShowMechanismType();
+            }
+        }
+
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            if (jointTypeInput.SelectedIndex - 1 > -1)
+            {
+                jointTypeInput.SelectedIndex -= 1;
+            }
+        }
+
+        private void NextButton_Click(object sender, EventArgs e)
+        {
+            if (jointTypeInput.SelectedIndex + 1 < jointNavigator.Items.Count - 1)
+            {
+                jointTypeInput.SelectedIndex += 1;
             }
         }
 
