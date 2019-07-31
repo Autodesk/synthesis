@@ -143,7 +143,6 @@ namespace Synthesis.GUI
                 }
             }
             HighlightTabs();
-            if (State.isEmulationDownloaded) emulationTab.SetActive(true);
         }
 
         private void OnGUI()

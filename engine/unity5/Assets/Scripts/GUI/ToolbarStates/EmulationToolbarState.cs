@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
-using static Synthesis.EmulatorManager;
 using System;
+using Synthesis;
 
 namespace Assets.Scripts.GUI
 {
@@ -37,7 +37,7 @@ namespace Assets.Scripts.GUI
 
         public void OnDestroy()
         {
-            if (Synthesis.EmulatorManager.IsRunningRobotCode())
+            if (EmulatorManager.IsRunningRobotCode())
                 EmulationDriverStation.Instance.StopRobotCode();
         }
 
@@ -74,7 +74,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            if (Synthesis.EmulationWarnings.CheckRequirement((Synthesis.EmulationWarnings.Requirement.VMConnected)))
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMConnected)))
             {
                 LoadCode();
             }
@@ -98,18 +98,13 @@ namespace Assets.Scripts.GUI
                 });
 
                 await Upload;
-                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(Synthesis.UserProgram.UserProgramType), programType));
+                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(Synthesis.UserProgram.UserProgramType), EmulatorManager.programType));
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
                 "Select Code",
                 AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        private void UserMessageManager(string v)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -137,9 +132,10 @@ namespace Assets.Scripts.GUI
 
         public void OnVMConnectionStatusClicked()
         {
-            if (!Synthesis.EmulatorManager.IsVMRunning() && !Synthesis.EmulatorManager.IsVMConnected())
+            if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
-                Synthesis.EmulatorManager.StartEmulator();
+                if (!EmulatorManager.StartEmulator())
+                    UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
                 EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
             }
         }

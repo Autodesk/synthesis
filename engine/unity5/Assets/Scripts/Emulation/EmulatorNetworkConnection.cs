@@ -67,7 +67,7 @@ namespace Synthesis
         {
             var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + DEFAULT_PORT, Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationWriter.EmulationWriterClient(conn);
-            while (EmulatorManager.IsRunningRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
@@ -100,7 +100,7 @@ namespace Synthesis
         {
             var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + DEFAULT_PORT, Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
-            while (EmulatorManager.IsRunningRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
                 try
                 {

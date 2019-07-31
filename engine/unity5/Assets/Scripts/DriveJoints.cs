@@ -122,7 +122,7 @@ public class DriveJoints
 
     private static void UpdateAllOutputs(int controlIndex, List<Synthesis.Robot.RobotBase.EmuNetworkInfo> emuList)
     {
-        if (Synthesis.EmulatorManager.IsRunningRobotCode()) // Use emulator
+        if (Synthesis.EmulatorManager.IsTryingToRunRobotCode()) // Use emulator
         {
             if (Synthesis.EmulatorNetworkConnection.Instance.IsConnected())
             {

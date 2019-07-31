@@ -51210,7 +51210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &980188865
 RectTransform:
   m_ObjectHideFlags: 0
@@ -86283,6 +86283,8 @@ MonoBehaviour:
   DefaultColor: {fileID: 21300000, guid: 2313355f62f221346b21d056601f1be3, type: 3}
   EnableColor: {fileID: 21300000, guid: 92bc3e38b05d3f94bb655136bdbce040, type: 3}
   DisableColor: {fileID: 21300000, guid: ca4e7be085c03f54193d4bd46547ee66, type: 3}
+  EmulatorNotInstalled: {fileID: 21300000, guid: 8b569309742910c4da9a8caf22013e9c,
+    type: 3}
   StartEmulator: {fileID: 21300000, guid: 48c7eb39547636d46a171be4edb5ba4d, type: 3}
   EmulatorConnection: {fileID: 21300000, guid: 987afd4216cca6e4082914852ef16fed, type: 3}
   StartCode: {fileID: 21300000, guid: 48c7eb39547636d46a171be4edb5ba4d, type: 3}
