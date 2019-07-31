@@ -281,11 +281,12 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   
-  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
+  ; Execute Docker Toolbox Uninstaller
+  IfFileExists "$PROGRAMFILES64\Docker Toolbox" file_found uninstall_complete
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
-	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
+	MessageBox MB_YESNO "Would you like to uninstall Dcoker Toolbox as well?" IDNO uninstall_complete
+	Exec '"$PROGRAMFILES64\Docker Toolbox\unins000.exe"'
 	Quit
 	
 	uninstall_complete:
