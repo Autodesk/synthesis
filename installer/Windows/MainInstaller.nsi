@@ -69,7 +69,15 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
-		; Remove outdated exporter plugins
+	    ; Remove inventor plugins
+	    Delete "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+		; Remove deprecated bxd inventor plugins
+		Delete "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -77,6 +85,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+		Delete "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
         RMDIR /r $APPDATA\RobotViewer
 
         ; Remove excess shortcuts
@@ -95,7 +104,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
-		DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
+		;DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
 
         Goto next
 
@@ -166,7 +175,7 @@ Section "Inventor Exporter Plugin" iExporter
   File /r "Exporter"
   
   SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
+  File /r "Exporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
 
@@ -197,8 +206,6 @@ Section "Code Emulator" Emulator
 	Pop $R0 ;Get the return value
 	
 	${If} $R0 == "OK"  ;Return value should be "OK"
-	  RMDir /r $INSTDIR\Emulator
-	  SetOutPath $INSTDIR\Emulator
 	  HideWindow
 	  ExecWait '"$PLUGINSDIR\DockerToolbox-18.09.3.exe" /SILENT'
 	  ExecWait '"$PROGRAMFILES64\Docker Toolbox\docker.exe" run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel'
@@ -247,6 +254,16 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $PROGRAMFILES\Autodesk\Synthesis
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
+  
+  ; Remove inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+  ; Remove deprecated bxd inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -254,6 +271,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
   
   ; Remove excess shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"

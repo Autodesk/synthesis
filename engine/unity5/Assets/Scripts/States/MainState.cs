@@ -182,19 +182,15 @@ namespace Synthesis.States
 
                 try
                 {
-                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), false);
                 } catch (Exception e) {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
 
                 if (!result)
                 {
-                    PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
-                    if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
-                    {
-                        AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nThis is the default bot\nReinstall recommended)");
-                        return;
-                    }
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not find the selected robot");
+                    return;
                 }
 
                 reset = FieldDataHandler.robotSpawn == new Vector3(99999, 99999, 99999);
@@ -409,6 +405,25 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
+            bool b = true;
+
+            if (!Directory.Exists(directory)) {
+                return false;
+            }
+            else {
+                string[] files = Directory.GetFiles(directory);
+                foreach (string a in files) {
+                    string name = Path.GetFileName(a);
+                    if (name.ToLower().Contains("skeleton")) {
+                        b = false;
+                    }
+                }
+            }
+
+            if (b) {
+                return false;
+            }
+
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
                 GameObject robotObject = new GameObject("Robot");

@@ -14,8 +14,17 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
-            AppModel.ClearError();
+            string error = AppModel.ErrorMessage;
+            if (error.Split('|')[0].Equals("ROBOT_SELECT")) {
+                AppModel.ClearError();
+                StateMachine.ChangeState(new LoadRobotState());
+                Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
+            }
+            else {
+                Auxiliary.FindGameObject("ErrorScreen").SetActive(true);
+                Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
+                AppModel.ClearError();
+            }
         }
 
         /// <summary>
@@ -28,7 +37,12 @@ namespace Synthesis.States
 
         public void OnBackToSimButtonClicked()
         {
+            Auxiliary.FindGameObject("LoadSplash").SetActive(true);
             SceneManager.LoadScene("Scene");
+        }
+
+        public override void End() {
+            Auxiliary.FindGameObject("ErrorScreen").SetActive(false);
         }
     }
 }

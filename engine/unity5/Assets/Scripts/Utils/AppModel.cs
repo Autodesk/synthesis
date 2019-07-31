@@ -21,7 +21,7 @@ namespace Synthesis.Utils
         /// <summary>
         /// The error message to display when returning to the main menu.
         /// </summary>
-        public static string ErrorMessage { get; private set; }
+        public static string ErrorMessage { get; set; }
 
         /// <summary>
         /// Determines if this is the first time loading the main menu scene.

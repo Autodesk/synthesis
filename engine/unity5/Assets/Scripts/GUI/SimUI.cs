@@ -297,7 +297,7 @@ namespace Synthesis.GUI
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", 3);
         }
 
         public void OnScoringTab()
@@ -486,7 +486,9 @@ namespace Synthesis.GUI
             if (mamRobot != null && mamRobot.RobotHasManipulator)
                 State.DeleteManipulatorNodes();
 
-            State.ChangeRobot(robotDirectory, true);
+            if (!State.ChangeRobot(robotDirectory, true)) {
+                AppModel.ErrorToMenu("ROBOT_SELECT|Failed to load Mix & Match robot");
+            }
 
             //If the new robot has a manipulator, load the manipulator
             if (RobotTypeManager.HasManipulator)
@@ -507,7 +509,7 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
-                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("Robot", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             }
         }
@@ -585,7 +587,7 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
-                GameObject.Find("PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
         }
