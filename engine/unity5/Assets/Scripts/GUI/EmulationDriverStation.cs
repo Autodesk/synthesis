@@ -31,6 +31,7 @@ namespace Synthesis.GUI
         public Sprite DefaultColor;
         public Sprite EnableColor;
         public Sprite DisableColor;
+        public Sprite EmulatorNotInstalled;
         public Sprite StartEmulator;
         public Sprite EmulatorConnection;
         public Sprite StartCode;
@@ -126,18 +127,21 @@ namespace Synthesis.GUI
                 }
                 else
                 {
-                    if (EmulatorManager.IsVMRunning())
+                    if (!EmulatorManager.IsVMInstalled())
                     {
-                        VMConnectionStatusImage.sprite = EmulatorConnection;
-                        VMConnectionStatusMessage.text = "Starting";
+                        VMConnectionStatusImage.sprite = EmulatorNotInstalled;
+                        VMConnectionStatusMessage.text = "Not Installed";
                     }
-                    else
+                    else if (!EmulatorManager.IsVMRunning())
                     {
                         VMConnectionStatusImage.sprite = StartEmulator;
                         VMConnectionStatusMessage.text = "Start Emulator";
                     }
-                    if(EmulatorManager.IsRunningRobotCode())
-                        StopRobotCode();
+                    else
+                    {
+                        VMConnectionStatusImage.sprite = EmulatorConnection;
+                        VMConnectionStatusMessage.text = "Starting";
+                    }
                 }
                 yield return new WaitForSeconds(1.0f); // s
             }
@@ -153,12 +157,13 @@ namespace Synthesis.GUI
 
         public void StartRobotCode()
         {
-            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramPresent)) && !EmulatorManager.IsRunningRobotCode())
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramPresent)))
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 runRobotCodeImage.sprite = StopCode;
                 runRobotCodeImage.color = Color.red;
-                EmulatorManager.StartRobotCode();
+                if(!EmulatorManager.IsTryingToRunRobotCode())
+                    EmulatorManager.StartRobotCode();
             }
         }
 
@@ -167,7 +172,7 @@ namespace Synthesis.GUI
             runButton.GetComponentInChildren<Text>().text = "Run Code";
             runRobotCodeImage.sprite = StartCode;
             runRobotCodeImage.color = Color.green;
-            if (EmulatorManager.IsRunningRobotCode())
+            if (EmulatorManager.IsTryingToRunRobotCode())
                 EmulatorManager.StopRobotCode();
             RobotDisabled();
         }
@@ -177,7 +182,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleRobotCodeButton()
         {
-            if (!EmulatorManager.IsRunningRobotCode())
+            if (!EmulatorManager.IsTryingToRunRobotCode())
             {
                 StartRobotCode();
             }
