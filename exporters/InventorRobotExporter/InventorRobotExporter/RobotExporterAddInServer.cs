@@ -175,6 +175,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.StartSession();
 
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
@@ -211,17 +212,20 @@ namespace InventorRobotExporter
             jointForm.UpdateSkeleton(RobotDataManager);
             simpleJointEditor.UpdateSkeleton(RobotDataManager);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
 
         protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
             
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",

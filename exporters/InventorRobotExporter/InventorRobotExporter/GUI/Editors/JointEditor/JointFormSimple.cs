@@ -55,7 +55,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         public new void ShowDialog()
         {
-            jointCards.ForEach(card => card.LoadValuesRecursive());
+            jointCards.ForEach(card => card.LoadValues());
             base.ShowDialog();
         }
 
