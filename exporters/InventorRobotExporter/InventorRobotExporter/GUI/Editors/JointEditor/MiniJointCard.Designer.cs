@@ -37,7 +37,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.jointName = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.weightComboBox = new System.Windows.Forms.NumericUpDown();
+            this.weightInput = new System.Windows.Forms.NumericUpDown();
             this.driverTypeComboBox = new System.Windows.Forms.ComboBox();
             this.weightLabel = new System.Windows.Forms.Label();
             this.jointDriverLabel = new System.Windows.Forms.Label();
@@ -52,7 +52,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.weightComboBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightInput)).BeginInit();
             this.SuspendLayout();
             // 
             // DriverLayout
@@ -126,7 +126,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 2);
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.weightComboBox, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.weightInput, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.driverTypeComboBox, 1, 4);
             this.tableLayoutPanel2.Controls.Add(this.weightLabel, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.jointDriverLabel, 0, 4);
@@ -152,13 +152,13 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // 
             // numericUpDown4
             // 
-            this.weightComboBox.DecimalPlaces = 1;
-            this.weightComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.weightComboBox.Location = new System.Drawing.Point(116, 97);
-            this.weightComboBox.Name = "weightComboBox";
-            this.weightComboBox.Size = new System.Drawing.Size(280, 22);
-            this.weightComboBox.TabIndex = 9;
-            this.weightComboBox.Value = new decimal(new int[] {
+            this.weightInput.DecimalPlaces = 1;
+            this.weightInput.Dock = System.Windows.Forms.DockStyle.Top;
+            this.weightInput.Location = new System.Drawing.Point(116, 97);
+            this.weightInput.Name = "weightInput";
+            this.weightInput.Size = new System.Drawing.Size(280, 22);
+            this.weightInput.TabIndex = 9;
+            this.weightInput.Value = new decimal(new int[] {
             225,
             0,
             0,
@@ -169,9 +169,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.driverTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.driverTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.driverTypeComboBox.FormattingEnabled = true;
-            this.driverTypeComboBox.Items.AddRange(new object[] {
-            "Motor",
-            "Servo"});
             this.driverTypeComboBox.Location = new System.Drawing.Point(116, 128);
             this.driverTypeComboBox.Name = "driverTypeComboBox";
             this.driverTypeComboBox.Size = new System.Drawing.Size(280, 24);
@@ -278,7 +275,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.jointTypeComboBox.Name = "jointTypeComboBox";
             this.jointTypeComboBox.Size = new System.Drawing.Size(280, 24);
             this.jointTypeComboBox.TabIndex = 3;
-            this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged_1);
+            this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.JointTypeComboBox_SelectedIndexChanged);
             // 
             // sensorsButton
             // 
@@ -307,7 +304,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.weightComboBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightInput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -319,7 +316,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label jointName;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.NumericUpDown weightComboBox;
+        private System.Windows.Forms.NumericUpDown weightInput;
         private System.Windows.Forms.ComboBox driverTypeComboBox;
         private System.Windows.Forms.Label weightLabel;
         private System.Windows.Forms.Label jointDriverLabel;
