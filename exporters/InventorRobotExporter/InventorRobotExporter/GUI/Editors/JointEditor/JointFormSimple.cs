@@ -46,11 +46,26 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
                     jointCards.Add(panel);
 
-                    WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
+                    AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
 
             ResumeLayout();
+        }
+        
+        public static void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
+        {
+            if (rowStyle == null)
+            {
+                rowStyle = new RowStyle();
+                rowStyle.SizeType = SizeType.AutoSize;
+            }
+
+            table.RowCount++;
+            table.RowStyles.Add(rowStyle);
+            table.Controls.Add(control);
+            table.SetRow(control, table.RowCount - 2);
+            table.SetColumn(control, 0);
         }
 
         public new void ShowDialog()
@@ -62,6 +77,17 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         public void ResetAllHighlight()
         {
             jointCards.ForEach(card => card.ResetHighlight());
+        }
+
+        private void CancelButton_Click(object sender, System.EventArgs e)
+        {
+            Close();
+        }
+
+        private void OkButton_Click(object sender, System.EventArgs e)
+        {
+            jointCards.ForEach(card => card.SaveValues());
+            Close();
         }
     }
 }

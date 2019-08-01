@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using InventorRobotExporter.GUI.Editors.JointSubEditors;
 using InventorRobotExporter.Managers;
@@ -32,7 +33,32 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         public void LoadValues()
         {
             var joint = node.GetSkeletalJoint();
+            var jointDriver = joint.cDriver;
             var typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
+
+            jointTypeComboBox.Items.Clear();
+            if (typeOptions.Contains(JointDriverType.MOTOR))
+            {
+                jointTypeComboBox.Items.AddRange(new object[]
+                {
+                    "(Select an option)",
+                    "Drivetrain Wheel",
+                    "Mechanism Joint"
+                });
+            }
+            else
+            {
+                if (jointDriver.port1 <= 2)
+                    jointDriver.port1 = 2;
+
+                jointTypeComboBox.Items.AddRange(new object[]
+                {
+                    "(Select an option)",
+                    "Mechanism Joint"
+                });
+            }
+
+            driverTypeComboBox.Items.Clear();
             var textInfo = new CultureInfo("en-US", true).TextInfo;
             foreach (var type in typeOptions)
             {
@@ -40,40 +66,95 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 if (name != null) // TODO: Get rid of this mess
                     driverTypeComboBox.Items.Add(textInfo.ToTitleCase(name.Replace('_', ' ').ToLowerInvariant()));
             }
-            
+
             jointName.Text = ToStringUtils.NodeNameString(node);
-            
+
             // Defaults when switched:
             weightInput.Value = 0;
             dtSideComboBox.SelectedIndex = 0;
             wheelTypeComboBox.SelectedIndex = 0;
             driverTypeComboBox.SelectedIndex = 0;
 
-            var jointDriver = joint.cDriver;
-        
+
             if (jointDriver == null)
             {
-                jointTypeComboBox.SelectedIndex = 0;
+                jointTypeComboBox.SelectedItem = "(Select an option)";
+            }
+            else if (jointDriver.port1 <= 2) // Drivetrain wheel
+            {
+                jointTypeComboBox.SelectedItem = "Drivetrain Wheel";
+                dtSideComboBox.SelectedIndex = jointDriver.port1;
+                var wheelDriverMeta = jointDriver.GetInfo<WheelDriverMeta>();
+                if (wheelDriverMeta != null)
+                    wheelTypeComboBox.SelectedIndex = (int) wheelDriverMeta.type - 1;
+            }
+            else // Mechanism joint
+            {
+                jointTypeComboBox.SelectedItem = "Mechanism Joint";
+                weightInput.Value = (decimal) Math.Max(joint.weight, 0);
+                driverTypeComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType());
+            }
+        }
+
+        public void SaveValues()
+        {
+            var joint = node.GetSkeletalJoint();
+
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
+            {
+                joint.cDriver = null;
+                joint.weight = 0;
             }
             else
             {
-                driverTypeComboBox.Items.Clear();
-
-                if (jointDriver.port1 <= 2)
+                // Driver type
+                var cType = (string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel" ? JointDriverType.MOTOR : JointDriver.GetAllowedDrivers(joint)[driverTypeComboBox.SelectedIndex];
+                if (joint.cDriver == null || !joint.cDriver.GetDriveType().Equals(cType)) // Defaults
                 {
-                    // Drivetrain wheel
-                    jointTypeComboBox.SelectedIndex = 1;
-                    dtSideComboBox.SelectedIndex = jointDriver.port1;
-                    var wheelDriverMeta = jointDriver.GetInfo<WheelDriverMeta>();
-                    if (wheelDriverMeta != null)
-                        wheelTypeComboBox.SelectedIndex = (int) wheelDriverMeta.type - 1;
+                    joint.cDriver = new JointDriver(cType)
+                    {
+                        port1 = 3,
+                        port2 = 3,
+                        InputGear = 1,
+                        OutputGear = 1,
+                        lowerLimit = 0,
+                        upperLimit = 0,
+                        isCan = true
+                    };
                 }
-                else
+
+                // Always
+                joint.cDriver.hasBrake = true;
+                joint.cDriver.motor = MotorType.GENERIC;
+
+                if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                 {
-                    // Mechanism joint
-                    jointTypeComboBox.SelectedIndex = 2;
-                    weightInput.Value = (decimal) (Math.Max(joint.weight, 0) * 2.20462f); // TODO: Re-use existing weight code
-                    driverTypeComboBox.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType());
+                    // Port/wheel side
+                    joint.cDriver.port1 = dtSideComboBox.SelectedIndex;
+
+                    // Wheel type
+                    var wheelDriver = new WheelDriverMeta
+                    {
+                        type = (WheelType) wheelTypeComboBox.SelectedIndex + 1,
+                        isDriveWheel = true
+                    };
+                    wheelDriver.SetFrictionLevel(FrictionLevel.MEDIUM);
+                    joint.cDriver.AddInfo(wheelDriver);
+
+                    // Weight
+                    joint.weight = 0;
+                }
+                else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
+                {
+                    // Port/wheel side
+                    if (joint.cDriver.port1 <= 2)
+                        joint.cDriver.port1 = 2;
+
+                    // Wheel driver
+                    joint.cDriver.RemoveInfo<WheelDriverMeta>();
+
+                    // Weight
+                    joint.weight = (double) weightInput.Value;
                 }
             }
         }
@@ -98,7 +179,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
 
             const double zoom = 0.6; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
-            
+
             const int widthConst = 3; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
 
             var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> {node});
@@ -126,7 +207,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             foreach (Control control in baseControl.Controls)
                 AddHighlightAction(control);
         }
-        
+
         private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DoLayout();
@@ -151,7 +232,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void InsertTableLayoutControls()
         {
-
             RemoveDrivetrainControls();
             tableLayoutPanel2.Controls.Add(weightInput, 1, 1);
             tableLayoutPanel2.Controls.Add(driverTypeComboBox, 1, 2);
