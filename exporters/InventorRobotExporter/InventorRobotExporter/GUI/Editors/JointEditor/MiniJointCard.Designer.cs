@@ -288,6 +288,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.advancedButton.TabIndex = 7;
             this.advancedButton.Text = "Advanced...";
             this.advancedButton.UseVisualStyleBackColor = true;
+            this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
             // MiniJointCard
             // 

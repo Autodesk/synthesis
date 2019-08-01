@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using InventorRobotExporter.GUI.Editors.JointSubEditors;
+using InventorRobotExporter.GUI.Editors.SimpleJointEditor;
 using InventorRobotExporter.Managers;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.ImageFormat;
@@ -16,6 +17,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private readonly RigidNode_Base node;
 
         private bool isHighlighted;
+        private AdvancedJointSettings advancedSettings;
 
         public MiniJointCard(RigidNode_Base node, JointFormSimple jointForm, RobotDataManager robotDataManager)
         {
@@ -24,6 +26,9 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.node = node;
 
             InitializeComponent();
+            
+            advancedSettings = new AdvancedJointSettings(node.GetSkeletalJoint());
+            
             AnalyticsUtils.LogEvent("Joint Editor", "System", "Init");
             WinFormsUtils.DisableScrollSelection(this);
 
@@ -126,11 +131,16 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 // Always
                 joint.cDriver.hasBrake = true;
                 joint.cDriver.motor = MotorType.GENERIC;
+                joint.cDriver.InputGear = 1;
+                joint.cDriver.OutputGear = advancedSettings.GearRatio;
+                joint.cDriver.lowerLimit = 0;
+                joint.cDriver.upperLimit = 0;
 
                 if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                 {
                     // Port/wheel side
                     joint.cDriver.port1 = dtSideComboBox.SelectedIndex;
+                    joint.cDriver.isCan = true;
 
                     // Wheel type
                     var wheelDriver = new WheelDriverMeta
@@ -147,14 +157,23 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
                 {
                     // Port/wheel side
+                    joint.cDriver.port1 = advancedSettings.PortId;
                     if (joint.cDriver.port1 <= 2)
                         joint.cDriver.port1 = 2;
+                    joint.cDriver.isCan = advancedSettings.IsCan;
 
                     // Wheel driver
                     joint.cDriver.RemoveInfo<WheelDriverMeta>();
 
                     // Weight
                     joint.weight = (double) weightInput.Value;
+                    
+                    // Limits
+                    if (advancedSettings.EnableLimits && advancedSettings.LowerLimit < advancedSettings.UpperLimit)
+                    {
+                        joint.cDriver.lowerLimit = advancedSettings.LowerLimit;
+                        joint.cDriver.upperLimit = advancedSettings.UpperLimit;
+                    }
                 }
             }
         }
@@ -215,17 +234,20 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void DoLayout()
         {
-            switch (jointTypeComboBox.SelectedIndex)
+            switch ((string) jointTypeComboBox.SelectedItem)
             {
-                case 1:
+                case "Drivetrain Wheel":
                     InsertDriveTrainControls();
+                    advancedButton.Visible = true;
                     return;
-                case 2:
+                case "Mechanism Joint":
                     InsertTableLayoutControls();
+                    advancedButton.Visible = true;
                     return;
                 default:
                     RemoveMechControls();
                     RemoveDrivetrainControls();
+                    advancedButton.Visible = false;
                     return;
             }
         }
@@ -262,6 +284,14 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             tableLayoutPanel2.Controls.Remove(driverTypeComboBox);
             tableLayoutPanel2.Controls.Remove(weightLabel);
             tableLayoutPanel2.Controls.Remove(jointDriverLabel);
+        }
+
+        private void AdvancedButton_Click(object sender, EventArgs e)
+        {
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
+                return;
+            advancedSettings.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
+            advancedSettings.ShowDialog();
         }
     }
 }
