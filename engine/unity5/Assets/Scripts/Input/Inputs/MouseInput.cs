@@ -49,7 +49,25 @@ namespace Synthesis.Input.Inputs
 
         #endregion
 
+        /// <summary>
+        /// Create a new instance of <see cref="MouseInput"/> that handles specified mouse axis.
+        /// </summary>
+        /// <param name="axis">Mouse axis.</param>
+        /// <param name="modifiers">Key modifiers.</param>
+        [Newtonsoft.Json.JsonConstructor]
+        public MouseInput(MouseAxis axis, MouseButton button, KeyModifier modifiers = KeyModifier.NoModifier)
+        {
+            if ((axis == MouseAxis.None) == (button == MouseButton.None))
+            {
+                Debug.LogError("Either axis or button must be None, not both or neither");
+            }
 
+            mAxis = axis;
+            mButton = button;
+            mModifiers = modifiers;
+
+            mCachedToString = null;
+        }
 
         /// <summary>
         /// Create a new instance of <see cref="MouseInput"/> that handles specified mouse axis.
@@ -345,6 +363,14 @@ namespace Synthesis.Input.Inputs
             {
                 return value < 0 ? -value : 0;
             }
+        }
+
+        public override bool Equals(CustomInput b)
+        {
+            if (!(b is MouseInput))
+                return false;
+            var b2 = (MouseInput)b;
+            return mModifiers == b2.mModifiers && mAxis == b2.mAxis && mButton == b2.mButton;
         }
     }
 }

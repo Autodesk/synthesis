@@ -15,15 +15,42 @@ namespace Synthesis.Input
 {
     public class SettingsMode : MonoBehaviour
     {
+        //Toggle Switches
+        public Dropdown profileDropdown;
+        public GameObject unitConversionSwitch;
+
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
 
         public State CurrentState { get; set; }
 
-        // Update is called once per frame
-        void Update()
-        {
+        // Variable to keep track which player controls are being edited in the control panel
+        public static int activePlayerIndex;
 
+        public static Profile.Mode activeProfileMode;
+
+        public void Awake()
+        {
+            profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
+
+            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+            //Can change the default measurement HERE and also change the default value in the slider game object in main menu
+            PlayerPrefs.SetString("Measure", "Metric");
+
+            activePlayerIndex = 0;
+        }
+
+        /// <summary>
+        /// Updates the toggles/sliders when changing scenes.
+        /// </summary>
+        public void OnEnable()
+        {
+            profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
+            profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
+
+            //Measurement slider
+            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
         }
 
         /// <summary>
@@ -52,47 +79,36 @@ namespace Synthesis.Input
         public void OnSaveClick()
         {
             Controls.Save();
-            UserMessageManager.Dispatch("Player preferences saved.", 5);
-        }
-
-        public void OnSaveClickMainMenu()
-        {
-            Controls.Save();
-            UserMessageManager.Dispatch("Player preferences saved.", 5);
-            StateMachine.SceneGlobal.ChangeState(new HomeTabState());
         }
 
         /// <summary>
-        /// Loads ALL player controls when clicked.
-        /// </summary>
-        public void OnLoadClick()
-        {
-            Controls.Load();
-        }
-
-        /// <summary>
-        /// Resets ALL player controls to tank drive or arcade drive defaults when clicked.
+        /// Resets ALL player controls to the profile defaults when clicked.
         /// </summary>
         public void OnReset()
         {
-            if (InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive)
-            {
-                GameObject.Find("Content").GetComponent<CreateButton>().ResetTankDrive();
-                Controls.Save();
-            }
-            else
-            {
-                GameObject.Find("Content").GetComponent<CreateButton>().ResetArcadeDrive();
-                Controls.Save();
-            }
+            Controls.Players[activePlayerIndex].ResetActiveProfile();
+            Controls.Global.Reset();
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
         /// <summary>
-        /// Allows the player to toggle their drive preferences between arcade and tank drive.
+        /// Allows the player to switch their control profile.
         /// </summary>
-        public void OnTankToggle()
+        public void OnProfileSelect(int value)
         {
-            GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
+            if (activeProfileMode != (Profile.Mode)value)
+            {
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                {
+                    activeProfileMode = (Profile.Mode)value;
+
+                    Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
+                    Controls.Players[activePlayerIndex].LoadActiveProfile();
+                    Controls.Global.Load();
+
+                    GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                });
+            }
         }
 
         //=========================================================================================
@@ -100,145 +116,50 @@ namespace Synthesis.Input
         // Creates and updates a specific player and their control's list. Checks for possible
         // toggle updates and if controls were saved.
         //=========================================================================================
-        #region Player Buttons
-        public void OnPlayerOne()
+
+        public void OnPlayerSelect(int index)
         {
-            //Creates and generates player one's keys and control buttons
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
-
-            //Checks if the tank drive toggle/slider needs to be updated (according to the player)
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-
-            //If the user did not press the save button, revert back to the last loaded and saved controls (no auto-save.)
-            GetLastSavedControls();
+            if (index != activePlayerIndex)
+            {
+                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                {
+                    activePlayerIndex = index;
+                    UpdateProfileSelection();
+                    UpdatePlayerButtonStyle();
+                    GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                });
+            }
         }
-
-        public void OnPlayerTwo()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerThree()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerFour()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerFive()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-
-        public void OnPlayerSix()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
-            GetLastSavedControls();
-        }
-        #endregion
 
         /// <summary>
         /// Updates the active player button to the active button style. This makes the button
         /// appear highlighted (and stay highlighted) when the player clicks on a specific button.
         /// </summary>
-        public void UpdateButtonStyle()
+        public void UpdatePlayerButtonStyle()
         {
-            switch (InputControl.activePlayerIndex)
-            {
-                #region Active and Default Button Styles
-                case 0:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 1:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 2:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 3:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 4:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                case 5:
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    break;
-                default: //Default to player one as active
-                    GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = ActiveButtonImage;
-                    GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = DefaultButtonImage;
-                    break;
-                    #endregion
-            }
+            GameObject.Find("PlayerOne Button").GetComponent<Image>().sprite = (activePlayerIndex == 0) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerTwo Button").GetComponent<Image>().sprite = (activePlayerIndex == 1) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerThree Button").GetComponent<Image>().sprite = (activePlayerIndex == 2) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerFour Button").GetComponent<Image>().sprite = (activePlayerIndex == 3) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerFive Button").GetComponent<Image>().sprite = (activePlayerIndex == 4) ? ActiveButtonImage : DefaultButtonImage;
+            GameObject.Find("PlayerSix Button").GetComponent<Image>().sprite = (activePlayerIndex == 5) ? ActiveButtonImage : DefaultButtonImage;
         }
 
         /// <summary>
-        /// Gets the last loaded controls if the player did not press the "Save" button.
-        /// Helps prevent auto-saving (in case a user accidentally changes their controls.)
+        /// Updates the control profile selection. Called on the active player to check for each player's individual preferances.
         /// </summary>
-        public void GetLastSavedControls()
+        public void UpdateProfileSelection()
         {
-            Controls.Load();
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            if (profileDropdown.value != (int)Controls.Players[activePlayerIndex].GetActiveProfileMode())
+            {
+                profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
+                profileDropdown.RefreshShownValue();
+            }
         }
 
-        /// <summary>
-        /// Updates all the key/control buttons.
-        /// </summary>
-        public void UpdateAllText()
+        public void UpdateButtons()
         {
-            KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();
-
-            foreach (KeyButton keyButton in keyButtons)
-            {
-                keyButton.UpdateText();
-            }
+            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
     }
 }
