@@ -22,14 +22,12 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         public float LowerLimit = 0;
         public float UpperLimit = 0;
         
-        private readonly int defaultHeight;
 
         public AdvancedJointSettings(SkeletalJoint_Base passJoint)
         {
             joint = passJoint;
             AnalyticsUtils.LogPage("SensorListForm");
             InitializeComponent();
-            defaultHeight = Height;
             UpdateSensorList();
             RestoreFields();
         }
@@ -38,14 +36,10 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         {
             if (isDriveTrainWheel)
             {
-                Height = defaultHeight - limitsBox.Height;
-                limitsBox.Visible = false;
                 portBox.Visible = false;
             }
             else
             {
-                Height = defaultHeight;
-                limitsBox.Visible = true;
                 portBox.Visible = true;
             }
         }
@@ -56,8 +50,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             portInput.Value = Math.Max(3, joint.cDriver?.port1 ?? PortId);
             portTypeInput.SelectedItem = joint.cDriver != null && !joint.cDriver.isCan ? "PWM" : "CAN";
             sensorListView.ColumnWidthChanging += sensorListView_ColumnWidthChanging;
-            limitStartInput.Value = 0;
-            limitEndInput.Value = 0;
         }
 
         private void UpdateSensorList()
@@ -123,9 +115,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             GearRatio = (double) gearRatioInput.Value;
             PortId = (int) portInput.Value;
             IsCan = (string) portTypeInput.SelectedItem == "CAN";
-            EnableLimits = limitStartCheckbox.Checked;
-            LowerLimit = (float) limitStartInput.Value;
-            UpperLimit = (float) limitEndInput.Value;
             Close();
         }
 
@@ -133,14 +122,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         {
             RestoreFields();
             Close();
-        }
-
-        private void LimitStartCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            limitStartInput.Value = 0;
-            limitEndInput.Value = 0;
-            limitStartInput.Enabled = limitStartCheckbox.Checked;
-            limitEndInput.Enabled = limitStartCheckbox.Checked;
         }
     }
 }

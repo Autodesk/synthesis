@@ -42,27 +42,18 @@
             this.gearRatioBox = new System.Windows.Forms.GroupBox();
             this.portBox = new System.Windows.Forms.GroupBox();
             this.portInput = new System.Windows.Forms.NumericUpDown();
-            this.limitsBox = new System.Windows.Forms.GroupBox();
-            this.animateMovementButton = new System.Windows.Forms.Button();
-            this.limitEndInput = new System.Windows.Forms.NumericUpDown();
-            this.limitStartInput = new System.Windows.Forms.NumericUpDown();
-            this.limitStartCheckbox = new System.Windows.Forms.CheckBox();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).BeginInit();
             this.sensorBox.SuspendLayout();
             this.gearRatioBox.SuspendLayout();
             this.portBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portInput)).BeginInit();
-            this.limitsBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(315, 417);
+            this.okButton.Location = new System.Drawing.Point(315, 326);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 28);
@@ -221,86 +212,10 @@
             0,
             0});
             // 
-            // limitsBox
-            // 
-            this.limitsBox.Controls.Add(this.label1);
-            this.limitsBox.Controls.Add(this.animateMovementButton);
-            this.limitsBox.Controls.Add(this.limitEndInput);
-            this.limitsBox.Controls.Add(this.limitStartInput);
-            this.limitsBox.Controls.Add(this.limitStartCheckbox);
-            this.limitsBox.Location = new System.Drawing.Point(16, 322);
-            this.limitsBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.limitsBox.Name = "limitsBox";
-            this.limitsBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.limitsBox.Size = new System.Drawing.Size(507, 85);
-            this.limitsBox.TabIndex = 15;
-            this.limitsBox.TabStop = false;
-            this.limitsBox.Text = "Limits (linear)";
-            // 
-            // animateMovementButton
-            // 
-            this.animateMovementButton.Location = new System.Drawing.Point(352, 25);
-            this.animateMovementButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.animateMovementButton.Name = "animateMovementButton";
-            this.animateMovementButton.Size = new System.Drawing.Size(143, 49);
-            this.animateMovementButton.TabIndex = 5;
-            this.animateMovementButton.Text = "Animate Movement";
-            this.animateMovementButton.UseVisualStyleBackColor = true;
-            // 
-            // limitEndInput
-            // 
-            this.limitEndInput.Enabled = false;
-            this.limitEndInput.Location = new System.Drawing.Point(178, 52);
-            this.limitEndInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.limitEndInput.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.limitEndInput.Minimum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            -2147483648});
-            this.limitEndInput.Name = "limitEndInput";
-            this.limitEndInput.Size = new System.Drawing.Size(168, 22);
-            this.limitEndInput.TabIndex = 4;
-            // 
-            // limitStartInput
-            // 
-            this.limitStartInput.Enabled = false;
-            this.limitStartInput.Location = new System.Drawing.Point(9, 52);
-            this.limitStartInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.limitStartInput.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.limitStartInput.Minimum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            -2147483648});
-            this.limitStartInput.Name = "limitStartInput";
-            this.limitStartInput.Size = new System.Drawing.Size(163, 22);
-            this.limitStartInput.TabIndex = 2;
-            // 
-            // limitStartCheckbox
-            // 
-            this.limitStartCheckbox.AutoSize = true;
-            this.limitStartCheckbox.Location = new System.Drawing.Point(9, 25);
-            this.limitStartCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.limitStartCheckbox.Name = "limitStartCheckbox";
-            this.limitStartCheckbox.Size = new System.Drawing.Size(60, 21);
-            this.limitStartCheckbox.TabIndex = 1;
-            this.limitStartCheckbox.Text = "Start";
-            this.limitStartCheckbox.UseVisualStyleBackColor = true;
-            this.limitStartCheckbox.CheckedChanged += new System.EventHandler(this.LimitStartCheckbox_CheckedChanged);
-            // 
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(423, 417);
+            this.cancelButton.Location = new System.Drawing.Point(423, 326);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(100, 28);
@@ -309,21 +224,11 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(176, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 17);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "End";
-            // 
             // AdvancedJointSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(536, 458);
-            this.Controls.Add(this.limitsBox);
+            this.ClientSize = new System.Drawing.Size(536, 367);
             this.Controls.Add(this.portBox);
             this.Controls.Add(this.gearRatioBox);
             this.Controls.Add(this.sensorBox);
@@ -341,10 +246,6 @@
             this.gearRatioBox.ResumeLayout(false);
             this.portBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.portInput)).EndInit();
-            this.limitsBox.ResumeLayout(false);
-            this.limitsBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -363,13 +264,7 @@
         private System.Windows.Forms.GroupBox sensorBox;
         private System.Windows.Forms.GroupBox gearRatioBox;
         private System.Windows.Forms.GroupBox portBox;
-        private System.Windows.Forms.GroupBox limitsBox;
-        private System.Windows.Forms.Button animateMovementButton;
-        private System.Windows.Forms.NumericUpDown limitEndInput;
-        private System.Windows.Forms.NumericUpDown limitStartInput;
-        private System.Windows.Forms.CheckBox limitStartCheckbox;
         private System.Windows.Forms.NumericUpDown portInput;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Label label1;
     }
 }
