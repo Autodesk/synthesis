@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Inventor;
 using InventorRobotExporter.Managers;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.ImageFormat;
@@ -140,30 +141,66 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         public void LoadPreviewIcon(RigidNode_Base node)
         {
-            // TODO: Look into creating better previews
 
-            //var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
-            //iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
+            var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
+            iconCamera.SceneObject = RobotExporterAddInServer.Instance.OpenAssemblyDocument.ComponentDefinition;
 
-            //const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
+            const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
 
-            //const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
+            const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
 
-            //var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
-            //iconCamera.Fit();
-            //iconCamera.GetExtents(out _, out var height);
+            var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
+            iconCamera.Fit();
+            iconCamera.GetExtents(out _, out var height);
 
-            //InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
+            InventorUtils.SetCameraView(InventorUtils.GetOccurrencesCenter(occurrences), 15, height * zoom * widthConst, height * zoom, iconCamera);
 
 
-            //jointPreviewImage.Image = AxHostConverter.PictureDispToImage(
-            //    iconCamera.CreateImage(jointPreviewImage.Height * widthConst, jointPreviewImage.Height,
-            //        RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
-            //        RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
+            jointPreviewImage.Image = AxHostConverter.PictureDispToImage(
+                iconCamera.CreateImage(jointPreviewImage.Height * widthConst, jointPreviewImage.Height,
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(210, 222, 239),
+                    RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(175, 189, 209)));
+        }
+
+        private void SaveChanges()
+        {
+            SkeletalJoint_Base joint = nodeCache[jointNavigator.SelectedIndex].GetSkeletalJoint();
+
+            if (jointTypeInput.SelectedIndex == 1)
+            {
+                // Drivetrain wheel
+
+            } else if (jointTypeInput.SelectedIndex == 2)
+            {
+                // Mechanism Joint
+                joint.weight = Convert.ToDouble(weightAmountInput.Value);
+                joint.cDriver.SetLimits(float.Parse(limitEndInput.Text), float.Parse(limitStartInput.Text));
+            }
+
+            if (nameInput.Text != jointNavigator.Text)
+            {
+                RenameComponent(jointNavigator.Text, nameInput.Text);
+            }
+
+        }
+
+        private void RenameComponent(String oldName, String newName)
+        {
+            AssemblyDocument document = (AssemblyDocument) RobotExporterAddInServer.Instance.Application.ActiveDocument;
+            AssemblyComponentDefinition component = document.ComponentDefinition;
+
+            foreach (ComponentOccurrence occurence in component.Occurrences)
+            {
+                if (string.Compare(occurence.Name, oldName) == 0)
+                {
+                    occurence.Name = newName;
+                }
+            }
         }
 
         private void BackButton_Click(object sender, EventArgs e)
         {
+            SaveChanges();
             if (jointNavigator.SelectedIndex - 1 > -1)
             {
                 jointNavigator.SelectedIndex -= 1;
@@ -172,6 +209,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void NextButton_Click(object sender, EventArgs e)
         {
+            SaveChanges();
             if (jointNavigator.SelectedIndex + 1 < jointNavigator.Items.Count - 1)
             {
                 jointNavigator.SelectedIndex += 1;
