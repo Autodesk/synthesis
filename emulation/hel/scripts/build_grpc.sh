@@ -12,8 +12,6 @@ export CFLAGS="$CFLAGS $ADDITIONAL_FLAGS"
 
 TARGET_TRIPLE=$(${TOOLCHAIN}gcc -dumpmachine)
 
-git submodule update --init
-
 if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
     make -j10 && \
@@ -30,7 +28,7 @@ if [[ ${TOOLCHAIN} != "" ]] ; then
 
     export GRPC_CROSS_AROPTS="cr --target=elf32-little"
 fi
-make plugins static -j10 \
+make REQUIRE_CUSTOM_LIBRARIES_opt=1 static -j10 \
      HAS_PKG_CONFIG=false \
      CC=${TOOLCHAIN}gcc \
      CXX=${TOOLCHAIN}g++ \
@@ -42,4 +40,5 @@ make plugins static -j10 \
      AR=${TOOLCHAIN}ar \
      AS=${TOOLCHAIN}as \
      AROPTS='-r' \
-     PROTOBUF_CONFIG_OPTS="--host=${TARGET_TRIPLE} --with-protoc=$(find . -name protoc -print -quit)"
+     EMBED_ZLIB="true" \
+     PROTOBUF_CONFIG_OPTS="--host=${TARGET_TRIPLE} --build=$(gcc -dumpmachine) --with-protoc=$(find . -name protoc -print -quit)"
