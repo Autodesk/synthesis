@@ -179,6 +179,7 @@
     <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditor.Designer.cs">
       <DependentUpon>SimpleEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleJoint.cs" />
     <Compile Include="GUI\JointView\JointViewKeyPane.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -69,6 +69,7 @@ namespace InventorRobotExporter
 
         // UI elements
         private readonly JointFormSimple jointForm = new JointFormSimple();
+        private SimpleEditor simpleEditor;
 
         protected override Environment CreateEnvironment()
         {
@@ -132,12 +133,14 @@ namespace InventorRobotExporter
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
             
+            simpleEditor = new SimpleEditor(RobotDataManager);
+
             altEditJointButton = controlDefs.AddButtonDefinition("Alt Edit Joints", "BxD:RobotExporter:AltEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
             altEditJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                new SimpleEditor(RobotDataManager).ShowDialog();
+                simpleEditor.ShowDialog();
                 advancedJointEditor.UpdateSkeleton(RobotDataManager);
             };
             jointPanel.CommandControls.AddButton(altEditJointButton, true);
