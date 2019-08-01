@@ -150,11 +150,16 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel2.Size = new System.Drawing.Size(400, 94);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
-            // numericUpDown4
+            // weightInput
             // 
             this.weightInput.DecimalPlaces = 1;
             this.weightInput.Dock = System.Windows.Forms.DockStyle.Top;
             this.weightInput.Location = new System.Drawing.Point(116, 97);
+            this.weightInput.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             this.weightInput.Name = "weightInput";
             this.weightInput.Size = new System.Drawing.Size(280, 22);
             this.weightInput.TabIndex = 9;
@@ -164,7 +169,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             0,
             65536});
             // 
-            // comboBox5
+            // driverTypeComboBox
             // 
             this.driverTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.driverTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -174,7 +179,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.driverTypeComboBox.Size = new System.Drawing.Size(280, 24);
             this.driverTypeComboBox.TabIndex = 8;
             // 
-            // label4
+            // weightLabel
             // 
             this.weightLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.weightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -186,7 +191,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.weightLabel.Text = "Weight (lbs):";
             this.weightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label5
+            // jointDriverLabel
             // 
             this.jointDriverLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointDriverLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -198,7 +203,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.jointDriverLabel.Text = "Joint Driver:";
             this.jointDriverLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBox3
+            // wheelTypeComboBox
             // 
             this.wheelTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.wheelTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -212,21 +217,21 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.wheelTypeComboBox.Size = new System.Drawing.Size(280, 24);
             this.wheelTypeComboBox.TabIndex = 5;
             // 
-            // comboBox2
+            // dtSideComboBox
             // 
             this.dtSideComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.dtSideComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dtSideComboBox.FormattingEnabled = true;
             this.dtSideComboBox.Items.AddRange(new object[] {
-            "Left",
             "Right",
+            "Left",
             "H-Drive Center"});
             this.dtSideComboBox.Location = new System.Drawing.Point(116, 35);
             this.dtSideComboBox.Name = "dtSideComboBox";
             this.dtSideComboBox.Size = new System.Drawing.Size(280, 24);
             this.dtSideComboBox.TabIndex = 4;
             // 
-            // label1
+            // jointTypeLabel
             // 
             this.jointTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -238,7 +243,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.jointTypeLabel.Text = "Joint Type:";
             this.jointTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label2
+            // sideLabel
             // 
             this.sideLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sideLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -250,7 +255,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.sideLabel.Text = "Side:";
             this.sideLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label3
+            // wheelTypeLabel
             // 
             this.wheelTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wheelTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -262,22 +267,18 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.wheelTypeLabel.Text = "Wheel Type:";
             this.wheelTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBox1
+            // jointTypeComboBox
             // 
             this.jointTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.jointTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointTypeComboBox.FormattingEnabled = true;
-            this.jointTypeComboBox.Items.AddRange(new object[] {
-            "(Select an option)",
-            "Drivetrain Wheel",
-            "Mechanism Joint"});
             this.jointTypeComboBox.Location = new System.Drawing.Point(116, 4);
             this.jointTypeComboBox.Name = "jointTypeComboBox";
             this.jointTypeComboBox.Size = new System.Drawing.Size(280, 24);
             this.jointTypeComboBox.TabIndex = 3;
             this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.JointTypeComboBox_SelectedIndexChanged);
             // 
-            // sensorsButton
+            // advancedButton
             // 
             this.advancedButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.advancedButton.Location = new System.Drawing.Point(283, 5);
