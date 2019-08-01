@@ -1,6 +1,6 @@
-﻿namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
+﻿namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    partial class AdvancedJointSettings
+    partial class AdvancedJointSettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettings));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettingsForm));
             this.okButton = new System.Windows.Forms.Button();
             this.gearRatioInput = new System.Windows.Forms.NumericUpDown();
             this.sensorListView = new System.Windows.Forms.ListView();
@@ -239,7 +239,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AdvancedJointSettings";
+            this.Name = "AdvancedJointSettingsForm";
             this.Text = "Advanced Joint Settings";
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).EndInit();
             this.sensorBox.ResumeLayout(false);

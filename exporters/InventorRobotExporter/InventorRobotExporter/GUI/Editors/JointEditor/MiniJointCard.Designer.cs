@@ -3,7 +3,7 @@ using InventorRobotExporter.Properties;
 
 namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    sealed partial class MiniJointCard
+    sealed partial class JointCardUC
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,7 +31,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MiniJointCard));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointCardUC));
             this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -300,7 +300,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.Margin = new System.Windows.Forms.Padding(0, 0, 0, 15);
             this.MaximumSize = new System.Drawing.Size(800, 0);
             this.MinimumSize = new System.Drawing.Size(540, 0);
-            this.Name = "MiniJointCard";
+            this.Name = "JointCardUC";
             this.Size = new System.Drawing.Size(540, 136);
             this.DriverLayout.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

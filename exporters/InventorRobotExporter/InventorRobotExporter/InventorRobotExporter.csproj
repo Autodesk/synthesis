@@ -149,35 +149,39 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\Editors\JointEditor\JointFormSimple.cs">
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.Designer.cs">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.Designer.cs">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.Designer.cs">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.Designer.cs">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettings.designer.cs">
+      <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointFormSimple.Designer.cs">
-      <DependentUpon>JointFormSimple.cs</DependentUpon>
+    <Compile Include="GUI\Editors\JointEditor\JointEditorForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\MiniJointCard.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointEditorForm.Designer.cs">
+      <DependentUpon>JointEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\JointEditor\JointCardUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Editors\JointEditor\MiniJointCard.Designer.cs">
-      <DependentUpon>MiniJointCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\MiniJointCardMech.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\MiniJointCardMech.Designer.cs">
-      <DependentUpon>MiniJointCardMech.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\SimpleJointEditor\AdvancedJointSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\SimpleJointEditor\AdvancedJointSettings.designer.cs">
-      <DependentUpon>AdvancedJointSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\SimpleJointEditor\SimpleEditor.Designer.cs">
-      <DependentUpon>SimpleEditor.cs</DependentUpon>
+      <DependentUpon>JointCardUC.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\JointView\JointViewKeyPane.cs">
       <SubType>UserControl</SubType>
@@ -255,30 +259,6 @@
     <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.Designer.cs">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.Designer.cs">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.Designer.cs">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointSensorListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointSubEditors\JointSensorListForm.Designer.cs">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Editors\DrivetrainTypeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -296,24 +276,6 @@
     </Compile>
     <Compile Include="GUI\Editors\ExporterSettingsForm.Designer.cs">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointCard.Designer.cs">
-      <DependentUpon>JointCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointDriverEditor.Designer.cs">
-      <DependentUpon>JointDriverEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointDriverEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointForm.Designer.cs">
-      <DependentUpon>JointForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\ExportForm.cs">
       <SubType>Form</SubType>
@@ -353,17 +315,26 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointFormSimple.resx">
-      <DependentUpon>JointFormSimple.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.resx">
+      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.resx">
+      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.resx">
+      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.resx">
+      <DependentUpon>JointSensorListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\AdvancedJointSettings.resx">
+      <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointEditorForm.resx">
+      <DependentUpon>JointEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\JointEditor\MiniJointCard.resx">
-      <DependentUpon>MiniJointCard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\MiniJointCardMech.resx">
-      <DependentUpon>MiniJointCardMech.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\SimpleJointEditor\AdvancedJointSettings.resx">
-      <DependentUpon>AdvancedJointSettings.cs</DependentUpon>
+      <DependentUpon>JointCardUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
       <DependentUpon>GuidePanel.cs</DependentUpon>
@@ -385,18 +356,6 @@
     <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
       <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointDriverEditorForm.resx">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointLimitEditorForm.resx">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointSensorEditorForm.resx">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointSubEditors\JointSensorListForm.resx">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DrivetrainTypeForm.resx">
       <DependentUpon>DrivetrainTypeForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -406,15 +365,6 @@
     <EmbeddedResource Include="GUI\Editors\ExporterSettingsForm.resx">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCard.resx">
-      <DependentUpon>JointCard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointDriverEditor.resx">
-      <DependentUpon>JointDriverEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointForm.resx">
-      <DependentUpon>JointForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -422,9 +372,6 @@
   <ItemGroup>
     <Content Include="Autodesk.InventorRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="GUI\Editors\SimpleJointEditor\SimpleEditor.resx">
-      <DependentUpon>SimpleEditor.cs</DependentUpon>
     </Content>
     <Content Include="GUI\JointView\JointViewKey.html" />
     <Content Include="GUI\JointView\JointViewKeyPane.resx" />
