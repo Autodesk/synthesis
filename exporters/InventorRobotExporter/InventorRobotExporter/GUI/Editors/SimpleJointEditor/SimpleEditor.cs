@@ -233,7 +233,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void AdvancedButton_Click(object sender, EventArgs e)
         {
-            new AdvancedJointSettings().ShowDialog();
+            new AdvancedJointSettings(nodeCache[jointNavigator.SelectedIndex].GetSkeletalJoint()).ShowDialog();
         }
 
         private void OkButton_Click(object sender, EventArgs e)

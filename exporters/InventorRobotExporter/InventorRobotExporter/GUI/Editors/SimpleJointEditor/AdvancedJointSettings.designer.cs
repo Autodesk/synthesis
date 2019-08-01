@@ -30,10 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettings));
             this.okButton = new System.Windows.Forms.Button();
-            this.cancelButton = new System.Windows.Forms.Button();
             this.gearRatioInput = new System.Windows.Forms.NumericUpDown();
-            this.portInput = new System.Windows.Forms.TextBox();
-            this.sensorsTable = new System.Windows.Forms.ListView();
+            this.sensorListView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -43,59 +41,74 @@
             this.sensorBox = new System.Windows.Forms.GroupBox();
             this.gearRatioBox = new System.Windows.Forms.GroupBox();
             this.portBox = new System.Windows.Forms.GroupBox();
+            this.portInput = new System.Windows.Forms.NumericUpDown();
+            this.limitsBox = new System.Windows.Forms.GroupBox();
+            this.animateMovementButton = new System.Windows.Forms.Button();
+            this.limitEndInput = new System.Windows.Forms.NumericUpDown();
+            this.limitStartInput = new System.Windows.Forms.NumericUpDown();
+            this.limitStartCheckbox = new System.Windows.Forms.CheckBox();
+            this.cancelButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).BeginInit();
             this.sensorBox.SuspendLayout();
             this.gearRatioBox.SuspendLayout();
             this.portBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInput)).BeginInit();
+            this.limitsBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(236, 262);
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(315, 417);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.Size = new System.Drawing.Size(100, 28);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
-            // cancelButton
-            // 
-            this.cancelButton.Location = new System.Drawing.Point(317, 262);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 1;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
-            // 
             // gearRatioInput
             // 
-            this.gearRatioInput.Location = new System.Drawing.Point(6, 20);
+            this.gearRatioInput.DecimalPlaces = 4;
+            this.gearRatioInput.Location = new System.Drawing.Point(8, 25);
+            this.gearRatioInput.Margin = new System.Windows.Forms.Padding(4);
+            this.gearRatioInput.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.gearRatioInput.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
             this.gearRatioInput.Name = "gearRatioInput";
-            this.gearRatioInput.Size = new System.Drawing.Size(120, 20);
+            this.gearRatioInput.Size = new System.Drawing.Size(234, 22);
             this.gearRatioInput.TabIndex = 4;
+            this.gearRatioInput.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
-            // portInput
+            // sensorListView
             // 
-            this.portInput.Location = new System.Drawing.Point(6, 19);
-            this.portInput.Name = "portInput";
-            this.portInput.Size = new System.Drawing.Size(46, 20);
-            this.portInput.TabIndex = 6;
-            // 
-            // sensorsTable
-            // 
-            this.sensorsTable.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.sensorListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.sensorsTable.LabelEdit = true;
-            this.sensorsTable.Location = new System.Drawing.Point(6, 19);
-            this.sensorsTable.Name = "sensorsTable";
-            this.sensorsTable.Size = new System.Drawing.Size(366, 127);
-            this.sensorsTable.TabIndex = 7;
-            this.sensorsTable.UseCompatibleStateImageBehavior = false;
-            this.sensorsTable.View = System.Windows.Forms.View.Details;
+            this.sensorListView.Location = new System.Drawing.Point(8, 23);
+            this.sensorListView.Margin = new System.Windows.Forms.Padding(4);
+            this.sensorListView.Name = "sensorListView";
+            this.sensorListView.Size = new System.Drawing.Size(487, 155);
+            this.sensorListView.TabIndex = 7;
+            this.sensorListView.UseCompatibleStateImageBehavior = false;
+            this.sensorListView.View = System.Windows.Forms.View.Details;
+            this.sensorListView.SelectedIndexChanged += new System.EventHandler(this.SensorListView_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
@@ -117,37 +130,45 @@
             this.portTypeInput.Items.AddRange(new object[] {
             "CAN",
             "PWM"});
-            this.portTypeInput.Location = new System.Drawing.Point(58, 18);
+            this.portTypeInput.Location = new System.Drawing.Point(166, 23);
+            this.portTypeInput.Margin = new System.Windows.Forms.Padding(4);
             this.portTypeInput.Name = "portTypeInput";
-            this.portTypeInput.Size = new System.Drawing.Size(52, 21);
+            this.portTypeInput.Size = new System.Drawing.Size(71, 24);
             this.portTypeInput.TabIndex = 9;
+            this.portTypeInput.Text = "CAN";
             // 
             // addSensorButton
             // 
-            this.addSensorButton.Location = new System.Drawing.Point(216, 152);
+            this.addSensorButton.Location = new System.Drawing.Point(288, 187);
+            this.addSensorButton.Margin = new System.Windows.Forms.Padding(4);
             this.addSensorButton.Name = "addSensorButton";
-            this.addSensorButton.Size = new System.Drawing.Size(75, 23);
+            this.addSensorButton.Size = new System.Drawing.Size(100, 28);
             this.addSensorButton.TabIndex = 10;
             this.addSensorButton.Text = "Add";
             this.addSensorButton.UseVisualStyleBackColor = true;
+            this.addSensorButton.Click += new System.EventHandler(this.AddSensorButton_Click);
             // 
             // removeSensorButton
             // 
-            this.removeSensorButton.Location = new System.Drawing.Point(297, 152);
+            this.removeSensorButton.Location = new System.Drawing.Point(396, 187);
+            this.removeSensorButton.Margin = new System.Windows.Forms.Padding(4);
             this.removeSensorButton.Name = "removeSensorButton";
-            this.removeSensorButton.Size = new System.Drawing.Size(75, 23);
+            this.removeSensorButton.Size = new System.Drawing.Size(100, 28);
             this.removeSensorButton.TabIndex = 11;
             this.removeSensorButton.Text = "Remove";
             this.removeSensorButton.UseVisualStyleBackColor = true;
+            this.removeSensorButton.Click += new System.EventHandler(this.RemoveSensorButton_Click);
             // 
             // sensorBox
             // 
-            this.sensorBox.Controls.Add(this.sensorsTable);
+            this.sensorBox.Controls.Add(this.sensorListView);
             this.sensorBox.Controls.Add(this.addSensorButton);
             this.sensorBox.Controls.Add(this.removeSensorButton);
-            this.sensorBox.Location = new System.Drawing.Point(12, 12);
+            this.sensorBox.Location = new System.Drawing.Point(16, 15);
+            this.sensorBox.Margin = new System.Windows.Forms.Padding(4);
             this.sensorBox.Name = "sensorBox";
-            this.sensorBox.Size = new System.Drawing.Size(378, 183);
+            this.sensorBox.Padding = new System.Windows.Forms.Padding(4);
+            this.sensorBox.Size = new System.Drawing.Size(504, 225);
             this.sensorBox.TabIndex = 12;
             this.sensorBox.TabStop = false;
             this.sensorBox.Text = "Sensors";
@@ -155,29 +176,154 @@
             // gearRatioBox
             // 
             this.gearRatioBox.Controls.Add(this.gearRatioInput);
-            this.gearRatioBox.Location = new System.Drawing.Point(12, 206);
+            this.gearRatioBox.Location = new System.Drawing.Point(16, 254);
+            this.gearRatioBox.Margin = new System.Windows.Forms.Padding(4);
             this.gearRatioBox.Name = "gearRatioBox";
-            this.gearRatioBox.Size = new System.Drawing.Size(134, 50);
+            this.gearRatioBox.Padding = new System.Windows.Forms.Padding(4);
+            this.gearRatioBox.Size = new System.Drawing.Size(250, 62);
             this.gearRatioBox.TabIndex = 13;
             this.gearRatioBox.TabStop = false;
             this.gearRatioBox.Text = "Gear Ratio";
             // 
             // portBox
             // 
-            this.portBox.Controls.Add(this.portTypeInput);
             this.portBox.Controls.Add(this.portInput);
-            this.portBox.Location = new System.Drawing.Point(168, 206);
+            this.portBox.Controls.Add(this.portTypeInput);
+            this.portBox.Location = new System.Drawing.Point(274, 254);
+            this.portBox.Margin = new System.Windows.Forms.Padding(4);
             this.portBox.Name = "portBox";
-            this.portBox.Size = new System.Drawing.Size(117, 50);
+            this.portBox.Padding = new System.Windows.Forms.Padding(4);
+            this.portBox.Size = new System.Drawing.Size(249, 62);
             this.portBox.TabIndex = 14;
             this.portBox.TabStop = false;
             this.portBox.Text = "Port";
             // 
+            // portInput
+            // 
+            this.portInput.Location = new System.Drawing.Point(8, 25);
+            this.portInput.Margin = new System.Windows.Forms.Padding(4);
+            this.portInput.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.portInput.Minimum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.portInput.Name = "portInput";
+            this.portInput.Size = new System.Drawing.Size(150, 22);
+            this.portInput.TabIndex = 10;
+            this.portInput.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // limitsBox
+            // 
+            this.limitsBox.Controls.Add(this.label1);
+            this.limitsBox.Controls.Add(this.animateMovementButton);
+            this.limitsBox.Controls.Add(this.limitEndInput);
+            this.limitsBox.Controls.Add(this.limitStartInput);
+            this.limitsBox.Controls.Add(this.limitStartCheckbox);
+            this.limitsBox.Location = new System.Drawing.Point(16, 322);
+            this.limitsBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitsBox.Name = "limitsBox";
+            this.limitsBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitsBox.Size = new System.Drawing.Size(507, 85);
+            this.limitsBox.TabIndex = 15;
+            this.limitsBox.TabStop = false;
+            this.limitsBox.Text = "Limits (linear)";
+            // 
+            // animateMovementButton
+            // 
+            this.animateMovementButton.Location = new System.Drawing.Point(352, 25);
+            this.animateMovementButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.animateMovementButton.Name = "animateMovementButton";
+            this.animateMovementButton.Size = new System.Drawing.Size(143, 49);
+            this.animateMovementButton.TabIndex = 5;
+            this.animateMovementButton.Text = "Animate Movement";
+            this.animateMovementButton.UseVisualStyleBackColor = true;
+            // 
+            // limitEndInput
+            // 
+            this.limitEndInput.Enabled = false;
+            this.limitEndInput.Location = new System.Drawing.Point(178, 52);
+            this.limitEndInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitEndInput.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.limitEndInput.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.limitEndInput.Name = "limitEndInput";
+            this.limitEndInput.Size = new System.Drawing.Size(168, 22);
+            this.limitEndInput.TabIndex = 4;
+            // 
+            // limitStartInput
+            // 
+            this.limitStartInput.Enabled = false;
+            this.limitStartInput.Location = new System.Drawing.Point(9, 52);
+            this.limitStartInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitStartInput.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.limitStartInput.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            -2147483648});
+            this.limitStartInput.Name = "limitStartInput";
+            this.limitStartInput.Size = new System.Drawing.Size(163, 22);
+            this.limitStartInput.TabIndex = 2;
+            // 
+            // limitStartCheckbox
+            // 
+            this.limitStartCheckbox.AutoSize = true;
+            this.limitStartCheckbox.Location = new System.Drawing.Point(9, 25);
+            this.limitStartCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitStartCheckbox.Name = "limitStartCheckbox";
+            this.limitStartCheckbox.Size = new System.Drawing.Size(60, 21);
+            this.limitStartCheckbox.TabIndex = 1;
+            this.limitStartCheckbox.Text = "Start";
+            this.limitStartCheckbox.UseVisualStyleBackColor = true;
+            this.limitStartCheckbox.CheckedChanged += new System.EventHandler(this.LimitStartCheckbox_CheckedChanged);
+            // 
+            // cancelButton
+            // 
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.Location = new System.Drawing.Point(423, 417);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(100, 28);
+            this.cancelButton.TabIndex = 1;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(176, 27);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(33, 17);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "End";
+            // 
             // AdvancedJointSettings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(402, 297);
+            this.ClientSize = new System.Drawing.Size(536, 458);
+            this.Controls.Add(this.limitsBox);
             this.Controls.Add(this.portBox);
             this.Controls.Add(this.gearRatioBox);
             this.Controls.Add(this.sensorBox);
@@ -185,13 +331,20 @@
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AdvancedJointSettings";
             this.Text = "Advanced Joint Settings";
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).EndInit();
             this.sensorBox.ResumeLayout(false);
             this.gearRatioBox.ResumeLayout(false);
             this.portBox.ResumeLayout(false);
-            this.portBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.portInput)).EndInit();
+            this.limitsBox.ResumeLayout(false);
+            this.limitsBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -199,10 +352,8 @@
         #endregion
 
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.NumericUpDown gearRatioInput;
-        private System.Windows.Forms.TextBox portInput;
-        private System.Windows.Forms.ListView sensorsTable;
+        private System.Windows.Forms.ListView sensorListView;
         private System.Windows.Forms.ComboBox portTypeInput;
         private System.Windows.Forms.Button addSensorButton;
         private System.Windows.Forms.Button removeSensorButton;
@@ -212,5 +363,13 @@
         private System.Windows.Forms.GroupBox sensorBox;
         private System.Windows.Forms.GroupBox gearRatioBox;
         private System.Windows.Forms.GroupBox portBox;
+        private System.Windows.Forms.GroupBox limitsBox;
+        private System.Windows.Forms.Button animateMovementButton;
+        private System.Windows.Forms.NumericUpDown limitEndInput;
+        private System.Windows.Forms.NumericUpDown limitStartInput;
+        private System.Windows.Forms.CheckBox limitStartCheckbox;
+        private System.Windows.Forms.NumericUpDown portInput;
+        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label label1;
     }
 }
