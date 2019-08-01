@@ -97,10 +97,10 @@ namespace InventorRobotExporter
             // DRIVETRAIN PANEL
             driveTrainPanel = exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
 
-            driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nType",
+            driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nLayout",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)), ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)));
-            driveTrainTypeButton.OnExecute += context => new DrivetrainTypeForm(RobotDataManager).ShowDialog();
+            driveTrainTypeButton.OnExecute += context => new DrivetrainLayoutForm(RobotDataManager).ShowDialog();
             driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
 
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
@@ -172,7 +172,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.StartSession();
             
-            var loadingBar = new LoadingBar("Loading Export Environment");
+            var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
             HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
@@ -204,7 +204,6 @@ namespace InventorRobotExporter
             
             advancedJointEditor.LoadRobot(RobotDataManager);
             jointForm.LoadRobot(RobotDataManager);
-            loadingBar.SetProgress(new ProgressUpdate("Done", 10, 10));
             loadingBar.Close();
         }
 
@@ -212,7 +211,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.EndSession();
             
-            var loadingBar = new LoadingBar("Closing Export Environment");
+            var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);

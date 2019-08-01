@@ -155,6 +155,11 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        public override void ToggleHidden()
+        {
+            emulationToolbar.SetActive(!emulationToolbar.activeSelf);
+        }
+
         #region Help Button and Menu
         public void OnHelpButtonClicked()
         {

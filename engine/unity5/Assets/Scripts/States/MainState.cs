@@ -18,7 +18,6 @@ using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.Camera;
 using Synthesis.Sensors;
-using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
@@ -50,8 +49,6 @@ namespace Synthesis.States
 
         public bool Tracking { get; private set; }
         private bool awaitingReplay;
-
-        private UnityPacket unityPacket;
 
         /// <summary>
         /// The active robot in this state.
@@ -134,7 +131,6 @@ namespace Synthesis.States
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);
-            unityPacket = new UnityPacket();
             SpawnedRobots = new List<SimulatorRobot>();
         }
 
@@ -155,9 +151,6 @@ namespace Synthesis.States
             BPhysicsTickListener.Instance.OnTick -= BRobotManager.Instance.UpdateRaycastRobots;
             BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
 
-            //starts a new instance of unity packet which receives packets from the driver station
-            unityPacket.Start();
-
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
 
@@ -174,7 +167,6 @@ namespace Synthesis.States
                         MovePlane();
                     }
                 } else {
-                    Controls.Load();
                     timesLoaded++;
                 }
 
@@ -182,32 +174,14 @@ namespace Synthesis.States
 
                 try
                 {
-                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch);
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), false);
                 } catch (Exception e) {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
 
                 if (!result)
                 {
-                    /*PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + "Dozer" + Path.DirectorySeparatorChar);
-                    if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
-                    {
-                        bool loadedBot = false;
-
-                        string[] robots = Directory.GetDirectories(robotDirectory);
-                        foreach (string robot in robots) {
-                            if (LoadRobot(robot, RobotTypeManager.IsMixAndMatch)) {
-                                PlayerPrefs.SetString("simSelectedRobot", robot);
-                                loadedBot = true;
-                            }
-                        }
-
-                        if (!loadedBot) {
-                            AppModel.ErrorToMenu("Could not load any robots in default directory:\n" + robotDirectory);
-                            return;
-                        }
-                    }*/
-                    AppModel.ErrorToMenu("ROBOT_SELECT");
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not find the selected robot");
                     return;
                 }
 
@@ -285,18 +259,18 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
 
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
+            if ((InputControl.GetButtonDown(Controls.Global.GetButtons().cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Global.GetButtons().replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -315,8 +289,6 @@ namespace Synthesis.States
                 AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
             }
-
-            SendRobotPackets();
         }
 
         /// <summary>
@@ -400,14 +372,13 @@ namespace Synthesis.States
 
             FieldDataHandler.Load(fieldPath);
             timesLoaded++;
-            Controls.Load();
-            if (timesLoaded > 1)
-            {
-                Controls.UpdateFieldControls(false);
-            }
 
-            string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);
+            Controls.Load();
+            Controls.UpdateFieldControls();
+            if (!Controls.HasBeenSaved())
+                Controls.Save();
+
+            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
             Debug.Log(loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
@@ -429,7 +400,7 @@ namespace Synthesis.States
                 string[] files = Directory.GetFiles(directory);
                 foreach (string a in files) {
                     string name = Path.GetFileName(a);
-                    if (name.Substring(0, 8).ToLower().Equals("skeleton")) {
+                    if (name.ToLower().Contains("skeleton")) {
                         b = false;
                     }
                 }
@@ -849,17 +820,11 @@ namespace Synthesis.States
         {
             ActiveRobot.CancelRobotOrientation();
         }
-        /// <summary>
-        /// Sends the received packets to the active robot
-        /// </summary>
-        private void SendRobotPackets()
-        {
-            ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (SimulatorRobot robot in SpawnedRobots)
-            {
-                if (robot != ActiveRobot) robot.Packet = null;
-            }
-        }
         #endregion
+
+        public UnityEngine.Camera GetCamera()
+        {
+            return DynamicCameraObject.GetComponent<UnityEngine.Camera>();
+        }
     }
 }

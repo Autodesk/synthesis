@@ -79,5 +79,10 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(true);
             }
         }
+
+        public override void ToggleHidden()
+        {
+            toolbar.SetActive(!toolbar.activeSelf);
+        }
     }
 }
