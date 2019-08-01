@@ -195,6 +195,7 @@ namespace Synthesis.States
             else
             {
                 awaitingReplay = true;
+                PlayerPrefs.SetString("simSelectedReplay", "");
                 LoadReplay(selectedReplay);
             }
 
@@ -216,6 +217,7 @@ namespace Synthesis.States
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);
             StateMachine.Link<ReplayState>(Auxiliary.FindGameObject("ReplayUI"));
             StateMachine.Link<SaveReplayState>(Auxiliary.FindGameObject("SaveReplayUI"));
+            StateMachine.Link<LoadReplayState>(Auxiliary.FindGameObject("LoadReplayPanel"));
             StateMachine.Link<GamepieceSpawnState>(Auxiliary.FindGameObject("ResetGamepieceSpawnpointUI"));
             StateMachine.Link<DefineNodeState>(Auxiliary.FindGameObject("DefineNodeUI"));
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
@@ -573,10 +575,15 @@ namespace Synthesis.States
 
             ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-            if (!LoadField(fieldDirectory))
+            bool hasField = !string.IsNullOrEmpty(fieldDirectory);
+
+            if (hasField)
             {
-                AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
-                return;
+                if (!LoadField(fieldDirectory))
+                {
+                    AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
+                    return;
+                }
             }
 
             foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
@@ -596,28 +603,31 @@ namespace Synthesis.States
                 }
             }
 
-            Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
-
-            int i = 0;
-
-            foreach (Tracker t in fieldTrackers)
+            if (hasField)
             {
-                t.States = fieldStates[i];
-                i++;
-            }
+                Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
 
-            foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
-            {
-                GameObject referenceObject = GameObject.Find(k.Key);
+                int i = 0;
 
-                if (referenceObject == null)
-                    continue;
-
-                foreach (FixedQueue<StateDescriptor> f in k.Value)
+                foreach (Tracker t in fieldTrackers)
                 {
-                    GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
-                    currentPiece.name = k.Key + "(Clone)";
-                    currentPiece.GetComponent<Tracker>().States = f;
+                    t.States = fieldStates[i];
+                    i++;
+                }
+
+                foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
+                {
+                    GameObject referenceObject = GameObject.Find(k.Key);
+
+                    if (referenceObject == null)
+                        continue;
+
+                    foreach (FixedQueue<StateDescriptor> f in k.Value)
+                    {
+                        GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
+                        currentPiece.name = k.Key + "(Clone)";
+                        currentPiece.GetComponent<Tracker>().States = f;
+                    }
                 }
             }
 
