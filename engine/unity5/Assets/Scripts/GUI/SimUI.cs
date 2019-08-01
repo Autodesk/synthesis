@@ -1060,11 +1060,10 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
-        public void Launch()
+        public void LaunchReplay()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
-            //loadingPanel.SetActive(true);
 
             if (entry != null)
             {
@@ -1072,14 +1071,12 @@ namespace Synthesis.GUI
                     AnalyticsLedger.TimingVarible.Viewing,
                     AnalyticsLedger.TimingLabel.ReplayMode);
 
-                //splashScreen.SetActive(true);
                 loadingPanel.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", entry);
                 PlayerPrefs.Save();
                 SceneManager.LoadScene("Scene");
             }
 
-            //loadingPanel.SetActive(true);
             replayList.SetActive(false);
         }
 

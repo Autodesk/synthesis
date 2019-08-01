@@ -93,8 +93,7 @@ namespace Synthesis.States
         }
 
         /// <summary>
-        /// 
-        /// es the browser and opens the robot export tutorials webpage.
+        /// Launches the browser and opens the robot export tutorials webpage.
         /// </summary>
         public void OnRobotExportButtonClicked()
         {

@@ -42,7 +42,6 @@ namespace Synthesis.GUI.Scrollables
                     if (file.EndsWith(".replay")) items.Add(Path.GetFileName(file));
                 }
                 if (items.Count > 0) selectedEntry = items[0];
-                // items.Add(new DirectoryInfo(field).Name);
             }
 
             position = GetComponent<RectTransform>().position;

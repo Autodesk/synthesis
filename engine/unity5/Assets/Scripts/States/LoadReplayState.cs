@@ -20,7 +20,6 @@ namespace Synthesis.States
     public class LoadReplayState : State
     {
         GameObject canvas;
-        GameObject mainCam;
         GameObject loadReplayPanel;
 
         Button deleteButton;
@@ -34,14 +33,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            mainCam = GameObject.Find("Main Camera");
             canvas = GameObject.Find("Canvas");
             loadReplayPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
-            //loadingPanel = GameObject.Find("LoadingPanel");
-            //loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
-            //loadingPanel = GameObject.Find("Canvas/LoadingPanel").GetComponent<GameObject>();
-            //loadingPanel = Auxiliary.FindObject(mainCam, "LoadingPanel");
-            //loadingPanel.SetActive(true);
 
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + "Replays";
@@ -60,7 +53,6 @@ namespace Synthesis.States
 
             loadReplayPanel.SetActive(true);
             DynamicCamera.ControlEnabled = false;
-            //loadingPanel.SetActive(false);
         }
 
         /// <summary>
@@ -119,14 +111,12 @@ namespace Synthesis.States
         //            AnalyticsLedger.TimingVarible.Viewing,
         //            AnalyticsLedger.TimingLabel.ReplayMode);
 
-        //        //splashScreen.SetActive(true);
         //        //loadingPanel.SetActive(true);
         //        PlayerPrefs.SetString("simSelectedReplay", entry);
         //        PlayerPrefs.Save();
         //        SceneManager.LoadScene("Scene");
         //    }
 
-        //    //loadingPanel.SetActive(true);
         //    replayList.SetActive(false);
         //}
     }

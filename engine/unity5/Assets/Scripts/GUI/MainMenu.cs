@@ -210,9 +210,7 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// 
-        /// 
-        /// es directly into the simulator if command line arguments are provided.
+        /// Launches directly into the simulator if command line arguments are provided.
         /// </summary>
         /// <returns></returns>
         private bool DirectSimulatorLaunch()

@@ -10,8 +10,8 @@ public class SettingsState : State {
 
     private GameObject canvas;
     private GameObject settingsPanel;
+
     private Button loadReplayButton;
-    //private Button cancelButton;
     private GameObject loadReplayPanel;
 
     private static float initX = float.MaxValue, initY = float.MaxValue;
@@ -47,10 +47,6 @@ public class SettingsState : State {
         loadReplayButton = Auxiliary.FindObject(canvas, "LoadReplayButton").GetComponent<Button>();
         loadReplayButton.onClick.RemoveAllListeners();
         loadReplayButton.onClick.AddListener(PushLoadReplayState);
-
-        //cancelButton = Auxiliary.FindObject(canvas, "CancelButton").GetComponent<Button>();
-        //cancelButton.onClick.RemoveAllListeners();
-        //cancelButton.onClick.AddListener(OnCancelButtonClicked);
 
         loadReplayPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
 

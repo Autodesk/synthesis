@@ -29,9 +29,6 @@ namespace Synthesis.States
         Text helpBodyText;
         #endregion
 
-        GameObject mainCam;
-        GameObject loadingPanel;
-
         private const float CircleRenderDistance = 10f;
         private const float ConsolidationEpsilon = 0.25f;
 

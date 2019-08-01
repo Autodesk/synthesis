@@ -49,7 +49,7 @@ namespace Synthesis.States
         private int lastFrameCount;
 
         public bool Tracking { get; private set; }
-        public bool awaitingReplay;
+        private bool awaitingReplay;
 
         private UnityPacket unityPacket;
 
@@ -310,7 +310,6 @@ namespace Synthesis.States
         {
             if (awaitingReplay)
             {
-                //Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
@@ -586,7 +585,6 @@ namespace Synthesis.States
             string fieldDirectory;
 
             ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
-            Debug.Log(fieldDirectory);
 
             bool hasField = !string.IsNullOrEmpty(fieldDirectory);
 

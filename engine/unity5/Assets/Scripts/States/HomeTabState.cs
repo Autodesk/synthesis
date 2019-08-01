@@ -6,8 +6,7 @@ namespace Synthesis.States
     public class HomeTabState : State
     {
         /// <summary>
-        /// 
-        /// es the Sim Tab when the start button is pressed.
+        /// Switches the Sim Tab when the start button is pressed.
         /// </summary>
         public void OnStartButtonClicked()
         {
