@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettingsForm));
             this.okButton = new System.Windows.Forms.Button();
             this.gearRatioInput = new System.Windows.Forms.NumericUpDown();
             this.sensorListView = new System.Windows.Forms.ListView();
@@ -78,7 +77,7 @@
             0,
             262144});
             this.gearRatioInput.Name = "gearRatioInput";
-            this.gearRatioInput.Size = new System.Drawing.Size(234, 22);
+            this.gearRatioInput.Size = new System.Drawing.Size(182, 22);
             this.gearRatioInput.TabIndex = 4;
             this.gearRatioInput.Value = new decimal(new int[] {
             1,
@@ -121,10 +120,10 @@
             this.portTypeInput.Items.AddRange(new object[] {
             "CAN",
             "PWM"});
-            this.portTypeInput.Location = new System.Drawing.Point(166, 23);
+            this.portTypeInput.Location = new System.Drawing.Point(190, 23);
             this.portTypeInput.Margin = new System.Windows.Forms.Padding(4);
             this.portTypeInput.Name = "portTypeInput";
-            this.portTypeInput.Size = new System.Drawing.Size(71, 24);
+            this.portTypeInput.Size = new System.Drawing.Size(88, 24);
             this.portTypeInput.TabIndex = 9;
             this.portTypeInput.Text = "CAN";
             // 
@@ -171,7 +170,7 @@
             this.gearRatioBox.Margin = new System.Windows.Forms.Padding(4);
             this.gearRatioBox.Name = "gearRatioBox";
             this.gearRatioBox.Padding = new System.Windows.Forms.Padding(4);
-            this.gearRatioBox.Size = new System.Drawing.Size(250, 62);
+            this.gearRatioBox.Size = new System.Drawing.Size(198, 62);
             this.gearRatioBox.TabIndex = 13;
             this.gearRatioBox.TabStop = false;
             this.gearRatioBox.Text = "Gear Ratio";
@@ -180,11 +179,11 @@
             // 
             this.portBox.Controls.Add(this.portInput);
             this.portBox.Controls.Add(this.portTypeInput);
-            this.portBox.Location = new System.Drawing.Point(274, 254);
+            this.portBox.Location = new System.Drawing.Point(233, 254);
             this.portBox.Margin = new System.Windows.Forms.Padding(4);
             this.portBox.Name = "portBox";
             this.portBox.Padding = new System.Windows.Forms.Padding(4);
-            this.portBox.Size = new System.Drawing.Size(249, 62);
+            this.portBox.Size = new System.Drawing.Size(287, 62);
             this.portBox.TabIndex = 14;
             this.portBox.TabStop = false;
             this.portBox.Text = "Port";
@@ -204,7 +203,7 @@
             0,
             0});
             this.portInput.Name = "portInput";
-            this.portInput.Size = new System.Drawing.Size(150, 22);
+            this.portInput.Size = new System.Drawing.Size(174, 22);
             this.portInput.TabIndex = 10;
             this.portInput.Value = new decimal(new int[] {
             3,
@@ -224,7 +223,7 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
-            // AdvancedJointSettings
+            // AdvancedJointSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -235,7 +234,6 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

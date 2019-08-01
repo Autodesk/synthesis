@@ -126,10 +126,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 2);
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.weightInput, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.driverTypeComboBox, 1, 4);
-            this.tableLayoutPanel2.Controls.Add(this.weightLabel, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.jointDriverLabel, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.wheelTypeComboBox, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.dtSideComboBox, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.jointTypeLabel, 0, 0);
@@ -140,13 +136,10 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 37);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(400, 94);
             this.tableLayoutPanel2.TabIndex = 2;
             // 

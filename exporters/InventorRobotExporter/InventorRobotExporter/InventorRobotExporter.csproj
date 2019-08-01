@@ -165,7 +165,7 @@
     <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.Designer.cs">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettings.designer.cs">
+    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.designer.cs">
       <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.cs">
@@ -180,7 +180,7 @@
     <Compile Include="GUI\Editors\JointEditor\JointCardUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\JointEditor\MiniJointCard.Designer.cs">
+    <Compile Include="GUI\Editors\JointEditor\JointCardUC.Designer.cs">
       <DependentUpon>JointCardUC.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\JointView\JointViewKeyPane.cs">
@@ -327,13 +327,13 @@
     <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.resx">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\AdvancedJointSettings.resx">
+    <EmbeddedResource Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.resx">
       <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\JointEditor\JointEditorForm.resx">
       <DependentUpon>JointEditorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\MiniJointCard.resx">
+    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCardUC.resx">
       <DependentUpon>JointCardUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
