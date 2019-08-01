@@ -27,8 +27,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
             InitializeComponent();
             
-            advancedSettings = new AdvancedJointSettings(node.GetSkeletalJoint());
-            
             AnalyticsUtils.LogEvent("Joint Editor", "System", "Init");
             WinFormsUtils.DisableScrollSelection(this);
 
@@ -37,6 +35,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         public void LoadValues()
         {
+            advancedSettings = new AdvancedJointSettings(node.GetSkeletalJoint());
             var joint = node.GetSkeletalJoint();
             var jointDriver = joint.cDriver;
             var typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
