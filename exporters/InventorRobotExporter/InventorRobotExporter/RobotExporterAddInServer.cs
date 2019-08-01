@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using InventorRobotExporter.GUI.DegreesOfFreedomViewer;
 using InventorRobotExporter.GUI.Editors;
 using InventorRobotExporter.GUI.Editors.AdvancedJointEditor;
 using InventorRobotExporter.GUI.Editors.JointEditor;
@@ -13,6 +12,7 @@ using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
+using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 using Environment = Inventor.Environment;
@@ -52,15 +52,14 @@ namespace InventorRobotExporter
         private ButtonDefinition advancedEditJointButton;
         private ButtonDefinition editJointButton;
 
-        private ButtonDefinition guideButton;
         private ButtonDefinition dofButton;
 
         private ButtonDefinition settingsButton;
 
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
-        private readonly DOFKey dofKey = new DOFKey();
-        private readonly GuideManager guideManager = new GuideManager(true);
+        private readonly JointViewKey jointViewKey = new JointViewKey();
+        public readonly GuideManager guideManager = new GuideManager(true);
 
         // Other managers
         public readonly HighlightManager HighlightManager = new HighlightManager();
@@ -131,29 +130,23 @@ namespace InventorRobotExporter
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
             // PRECHECK PANEL
-            precheckPanel = exporterTab.RibbonPanels.Add("Robot Setup Checklist", "BxD:RobotExporter:ChecklistPanel", clientId);
+            precheckPanel = exporterTab.RibbonPanels.Add("Export Precheck", "BxD:RobotExporter:ChecklistPanel", clientId);
 
-            guideButton = controlDefs.AddButtonDefinition("Toggle Robot\nExport Guide", "BxD:RobotExporter:Guide",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
-                "View a checklist of all tasks necessary prior to export.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
-            guideButton.OnExecute += context => guideManager.Visible = !guideManager.Visible;
-            precheckPanel.CommandControls.AddButton(guideButton, true);
-
-            dofButton = controlDefs.AddButtonDefinition("Toggle Degrees\nof Freedom View", "BxD:RobotExporter:DOF",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
+            dofButton = controlDefs.AddButtonDefinition("Toggle Joint\nViewer", "BxD:RobotExporter:JointViewer",
+                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View status of all joints.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
             dofButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF");
-                dofKey.Visible = !dofKey.Visible;
-                HighlightManager.DisplayDof = dofKey.Visible;
+                jointViewKey.Visible = !jointViewKey.Visible;
+                HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
             };
             precheckPanel.CommandControls.AddButton(dofButton, true);
 
             // ADD-IN SETTINGS PANEL
-            addInSettingsPanel = exporterTab.RibbonPanels.Add("Plugin", "BxD:RobotExporter:PluginSettings", clientId);
+            addInSettingsPanel = exporterTab.RibbonPanels.Add("Add-In", "BxD:RobotExporter:AddInSettings", clientId);
 
-            settingsButton = controlDefs.AddButtonDefinition("Plugin Settings", "BxD:RobotExporter:Settings",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View degrees of freedom.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
+            settingsButton = controlDefs.AddButtonDefinition("Add-In Settings", "BxD:RobotExporter:Settings",
+                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Configure add-in settings.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
             settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
             addInSettingsPanel.CommandControls.AddButton(settingsButton, true);
         }
@@ -168,7 +161,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.StartSession();
             
-            var loadingBar = new LoadingBar("Loading Export Environment");
+            var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
             HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
@@ -193,14 +186,15 @@ namespace InventorRobotExporter
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
             advancedJointEditor.CreateDockableWindow(uiMan);
-            dofKey.Init(uiMan);
+            jointViewKey.Init(uiMan);
             guideManager.Init(uiMan);
+
+            guideManager.Visible = AddInSettingsManager.ShowGuide;
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
             advancedJointEditor.UpdateSkeleton(RobotDataManager);
             jointForm.UpdateSkeleton(RobotDataManager);
-            loadingBar.SetProgress(new ProgressUpdate("Done", 10, 10));
             loadingBar.Close();
         }
 
@@ -208,7 +202,7 @@ namespace InventorRobotExporter
         {
             AnalyticsUtils.EndSession();
             
-            var loadingBar = new LoadingBar("Closing Export Environment");
+            var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
@@ -232,14 +226,14 @@ namespace InventorRobotExporter
 
             advancedJointEditor.DestroyDockableWindow();
             guideManager.DestroyDockableWindow();
-            dofKey.DestroyDockableWindow();
+            jointViewKey.DestroyDockableWindow();
         }
 
         protected override void OnEnvironmentHide()
         {
             // Hide dockable windows when switching to a different document 
             advancedJointEditor.TemporaryHide();
-            dofKey.TemporaryHide();
+            jointViewKey.TemporaryHide();
             guideManager.TemporaryHide();
         }
 
@@ -247,10 +241,10 @@ namespace InventorRobotExporter
         {
             // Restore visible state of dockable windows
             advancedJointEditor.Visible = advancedJointEditor.Visible;
-            dofKey.Visible = dofKey.Visible;
+            jointViewKey.Visible = jointViewKey.Visible;
             guideManager.Visible = guideManager.Visible;
             // And DOF highlight in case that gets cleared
-            HighlightManager.DisplayDof = dofKey.Visible;
+            HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
         }
 
         protected override bool IsDocumentSupported(Document document)

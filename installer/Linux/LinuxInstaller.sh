@@ -1,8 +1,9 @@
 #!/bin/bash
 #sed -i -e 's/\r$//' LinuxInstaller.sh
-VERSION="4.2.3"
-source ./progress_bar.sh
-sudo echo "Installing Autodesk Synthesis $VERSION For Linux (Beta)"
+
+VERSION="4.3.0"
+source ./ProgressBar.sh
+sudo echo "Installing Autodesk Synthesis $VERSION For Linux"
 
 enable_trapping
 setup_scroll_area
@@ -33,4 +34,4 @@ draw_progress_bar 90
 sudo chmod +x $ROOT/usr/share/Autodesk/Synthesis/Synthesis.x86_64
 block_progress_bar 100
 destroy_scroll_area
-echo "Autodesk Synthesis $VERSION For Linux (Beta) Installation Complete"
+echo "Autodesk Synthesis $VERSION For Linux Installation Complete"
