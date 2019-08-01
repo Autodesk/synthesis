@@ -33,6 +33,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.DefinePartsLayout = new System.Windows.Forms.TableLayoutPanel();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.DefinePartsLayout.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,7 +63,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.DefinePartsLayout.Margin = new System.Windows.Forms.Padding(0);
             this.DefinePartsLayout.Name = "DefinePartsLayout";
             this.DefinePartsLayout.Padding = new System.Windows.Forms.Padding(20, 16, 22, 20);
-            this.DefinePartsLayout.RowCount = 3;
+            this.DefinePartsLayout.RowCount = 2;
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -92,10 +93,20 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
-            // JointFormSimple
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 772);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(436, 17);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Use this menu to configure each joint you want to move in Synthesis\r\n";
+            // 
+            // JointEditorForm
             // 
             this.BackColor = System.Drawing.SystemColors.ControlLight;
             this.ClientSize = new System.Drawing.Size(682, 803);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.DefinePartsLayout);
@@ -110,6 +121,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.DefinePartsLayout.ResumeLayout(false);
             this.DefinePartsLayout.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -119,5 +131,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private System.Windows.Forms.TableLayoutPanel DefinePartsLayout;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.Label label1;
     }
 }
