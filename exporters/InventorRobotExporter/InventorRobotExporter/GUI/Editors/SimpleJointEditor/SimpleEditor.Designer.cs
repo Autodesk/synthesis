@@ -36,9 +36,10 @@
             this.jointDriverBox = new System.Windows.Forms.GroupBox();
             this.jointDriverInput = new System.Windows.Forms.ComboBox();
             this.advancedButton = new System.Windows.Forms.Button();
-            this.closeButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.nameBox = new System.Windows.Forms.GroupBox();
+            this.nameInput = new System.Windows.Forms.TextBox();
             this.wheelTypeBox = new System.Windows.Forms.GroupBox();
             this.wheelTypeInput = new System.Windows.Forms.ComboBox();
             this.driveSideBox = new System.Windows.Forms.GroupBox();
@@ -52,30 +53,28 @@
             this.jointPreviewImage = new System.Windows.Forms.PictureBox();
             this.backButton = new System.Windows.Forms.Button();
             this.nextButton = new System.Windows.Forms.Button();
-            this.nameBox = new System.Windows.Forms.GroupBox();
-            this.nameInput = new System.Windows.Forms.TextBox();
             this.jointTypeBox.SuspendLayout();
             this.weightBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.weightAmountInput)).BeginInit();
             this.jointDriverBox.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.nameBox.SuspendLayout();
             this.wheelTypeBox.SuspendLayout();
             this.driveSideBox.SuspendLayout();
             this.limitsBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).BeginInit();
-            this.nameBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // jointNavigator
             // 
             this.jointNavigator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointNavigator.FormattingEnabled = true;
-            this.jointNavigator.Location = new System.Drawing.Point(83, 8);
-            this.jointNavigator.Margin = new System.Windows.Forms.Padding(2);
+            this.jointNavigator.Location = new System.Drawing.Point(111, 10);
+            this.jointNavigator.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.jointNavigator.Name = "jointNavigator";
-            this.jointNavigator.Size = new System.Drawing.Size(195, 21);
+            this.jointNavigator.Size = new System.Drawing.Size(259, 24);
             this.jointNavigator.TabIndex = 0;
             this.jointNavigator.SelectedIndexChanged += new System.EventHandler(this.JointNavigator_SelectedIndexChanged);
             // 
@@ -83,11 +82,11 @@
             // 
             this.jointTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.jointTypeBox.Controls.Add(this.jointTypeInput);
-            this.jointTypeBox.Location = new System.Drawing.Point(11, 52);
-            this.jointTypeBox.Margin = new System.Windows.Forms.Padding(2);
+            this.jointTypeBox.Location = new System.Drawing.Point(15, 64);
+            this.jointTypeBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.jointTypeBox.Name = "jointTypeBox";
-            this.jointTypeBox.Padding = new System.Windows.Forms.Padding(2);
-            this.jointTypeBox.Size = new System.Drawing.Size(122, 41);
+            this.jointTypeBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.jointTypeBox.Size = new System.Drawing.Size(163, 50);
             this.jointTypeBox.TabIndex = 2;
             this.jointTypeBox.TabStop = false;
             this.jointTypeBox.Text = "Joint Type";
@@ -100,10 +99,10 @@
             "(Not Selected)",
             "Drivetrain Wheel",
             "Mechanism Joint"});
-            this.jointTypeInput.Location = new System.Drawing.Point(4, 17);
-            this.jointTypeInput.Margin = new System.Windows.Forms.Padding(2);
+            this.jointTypeInput.Location = new System.Drawing.Point(5, 21);
+            this.jointTypeInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.jointTypeInput.Name = "jointTypeInput";
-            this.jointTypeInput.Size = new System.Drawing.Size(114, 21);
+            this.jointTypeInput.Size = new System.Drawing.Size(151, 24);
             this.jointTypeInput.TabIndex = 0;
             this.jointTypeInput.SelectedIndexChanged += new System.EventHandler(this.JointTypeInput_SelectedIndexChanged);
             // 
@@ -111,11 +110,11 @@
             // 
             this.weightBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.weightBox.Controls.Add(this.weightAmountInput);
-            this.weightBox.Location = new System.Drawing.Point(11, 105);
-            this.weightBox.Margin = new System.Windows.Forms.Padding(2);
+            this.weightBox.Location = new System.Drawing.Point(15, 129);
+            this.weightBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.weightBox.Name = "weightBox";
-            this.weightBox.Padding = new System.Windows.Forms.Padding(2);
-            this.weightBox.Size = new System.Drawing.Size(122, 41);
+            this.weightBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.weightBox.Size = new System.Drawing.Size(163, 50);
             this.weightBox.TabIndex = 3;
             this.weightBox.TabStop = false;
             this.weightBox.Text = "Weight (lbs)";
@@ -124,15 +123,15 @@
             // weightAmountInput
             // 
             this.weightAmountInput.DecimalPlaces = 1;
-            this.weightAmountInput.Location = new System.Drawing.Point(4, 17);
-            this.weightAmountInput.Margin = new System.Windows.Forms.Padding(2);
+            this.weightAmountInput.Location = new System.Drawing.Point(5, 21);
+            this.weightAmountInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.weightAmountInput.Maximum = new decimal(new int[] {
             1000,
             0,
             0,
             0});
             this.weightAmountInput.Name = "weightAmountInput";
-            this.weightAmountInput.Size = new System.Drawing.Size(113, 20);
+            this.weightAmountInput.Size = new System.Drawing.Size(151, 22);
             this.weightAmountInput.TabIndex = 0;
             this.weightAmountInput.Value = new decimal(new int[] {
             225,
@@ -145,11 +144,11 @@
             // 
             this.jointDriverBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.jointDriverBox.Controls.Add(this.jointDriverInput);
-            this.jointDriverBox.Location = new System.Drawing.Point(11, 159);
-            this.jointDriverBox.Margin = new System.Windows.Forms.Padding(2);
+            this.jointDriverBox.Location = new System.Drawing.Point(15, 196);
+            this.jointDriverBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.jointDriverBox.Name = "jointDriverBox";
-            this.jointDriverBox.Padding = new System.Windows.Forms.Padding(2);
-            this.jointDriverBox.Size = new System.Drawing.Size(122, 41);
+            this.jointDriverBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.jointDriverBox.Size = new System.Drawing.Size(163, 50);
             this.jointDriverBox.TabIndex = 4;
             this.jointDriverBox.TabStop = false;
             this.jointDriverBox.Text = "Joint Driver";
@@ -163,45 +162,33 @@
             "Motor",
             "Servo",
             "Dual Motor"});
-            this.jointDriverInput.Location = new System.Drawing.Point(4, 17);
-            this.jointDriverInput.Margin = new System.Windows.Forms.Padding(2);
+            this.jointDriverInput.Location = new System.Drawing.Point(5, 21);
+            this.jointDriverInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.jointDriverInput.Name = "jointDriverInput";
-            this.jointDriverInput.Size = new System.Drawing.Size(114, 21);
+            this.jointDriverInput.Size = new System.Drawing.Size(151, 24);
             this.jointDriverInput.TabIndex = 0;
             this.jointDriverInput.Visible = false;
             // 
             // advancedButton
             // 
             this.advancedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.advancedButton.Location = new System.Drawing.Point(9, 329);
-            this.advancedButton.Margin = new System.Windows.Forms.Padding(2);
+            this.advancedButton.Location = new System.Drawing.Point(12, 405);
+            this.advancedButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.advancedButton.Name = "advancedButton";
-            this.advancedButton.Size = new System.Drawing.Size(86, 22);
+            this.advancedButton.Size = new System.Drawing.Size(115, 27);
             this.advancedButton.TabIndex = 6;
             this.advancedButton.Text = "Advanced...";
             this.advancedButton.UseVisualStyleBackColor = true;
             this.advancedButton.Visible = false;
             this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
-            // closeButton
-            // 
-            this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.closeButton.Location = new System.Drawing.Point(279, 329);
-            this.closeButton.Margin = new System.Windows.Forms.Padding(2);
-            this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(71, 22);
-            this.closeButton.TabIndex = 7;
-            this.closeButton.Text = "Close";
-            this.closeButton.UseVisualStyleBackColor = true;
-            this.closeButton.Click += new System.EventHandler(this.CancelButton_Click);
-            // 
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(202, 329);
-            this.okButton.Margin = new System.Windows.Forms.Padding(2);
+            this.okButton.Location = new System.Drawing.Point(370, 405);
+            this.okButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(71, 22);
+            this.okButton.Size = new System.Drawing.Size(95, 27);
             this.okButton.TabIndex = 8;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -220,21 +207,41 @@
             this.panel1.Controls.Add(this.jointTypeBox);
             this.panel1.Controls.Add(this.weightBox);
             this.panel1.Controls.Add(this.jointDriverBox);
-            this.panel1.Location = new System.Drawing.Point(9, 40);
+            this.panel1.Location = new System.Drawing.Point(12, 49);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(344, 279);
+            this.panel1.Size = new System.Drawing.Size(458, 343);
             this.panel1.TabIndex = 9;
+            // 
+            // nameBox
+            // 
+            this.nameBox.Controls.Add(this.nameInput);
+            this.nameBox.Location = new System.Drawing.Point(15, 7);
+            this.nameBox.Margin = new System.Windows.Forms.Padding(4);
+            this.nameBox.Name = "nameBox";
+            this.nameBox.Padding = new System.Windows.Forms.Padding(4);
+            this.nameBox.Size = new System.Drawing.Size(163, 50);
+            this.nameBox.TabIndex = 11;
+            this.nameBox.TabStop = false;
+            this.nameBox.Text = "Name";
+            // 
+            // nameInput
+            // 
+            this.nameInput.Location = new System.Drawing.Point(5, 18);
+            this.nameInput.Margin = new System.Windows.Forms.Padding(4);
+            this.nameInput.Name = "nameInput";
+            this.nameInput.Size = new System.Drawing.Size(151, 22);
+            this.nameInput.TabIndex = 0;
             // 
             // wheelTypeBox
             // 
             this.wheelTypeBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.wheelTypeBox.Controls.Add(this.wheelTypeInput);
-            this.wheelTypeBox.Location = new System.Drawing.Point(11, 155);
-            this.wheelTypeBox.Margin = new System.Windows.Forms.Padding(2);
+            this.wheelTypeBox.Location = new System.Drawing.Point(15, 191);
+            this.wheelTypeBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wheelTypeBox.Name = "wheelTypeBox";
-            this.wheelTypeBox.Padding = new System.Windows.Forms.Padding(2);
-            this.wheelTypeBox.Size = new System.Drawing.Size(122, 41);
+            this.wheelTypeBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.wheelTypeBox.Size = new System.Drawing.Size(163, 50);
             this.wheelTypeBox.TabIndex = 10;
             this.wheelTypeBox.TabStop = false;
             this.wheelTypeBox.Text = "Wheel Type";
@@ -248,10 +255,10 @@
             "Normal",
             "Omni",
             "Mecanum"});
-            this.wheelTypeInput.Location = new System.Drawing.Point(4, 17);
-            this.wheelTypeInput.Margin = new System.Windows.Forms.Padding(2);
+            this.wheelTypeInput.Location = new System.Drawing.Point(5, 21);
+            this.wheelTypeInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wheelTypeInput.Name = "wheelTypeInput";
-            this.wheelTypeInput.Size = new System.Drawing.Size(114, 21);
+            this.wheelTypeInput.Size = new System.Drawing.Size(151, 24);
             this.wheelTypeInput.TabIndex = 0;
             this.wheelTypeInput.Visible = false;
             // 
@@ -259,11 +266,11 @@
             // 
             this.driveSideBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.driveSideBox.Controls.Add(this.driveSideInput);
-            this.driveSideBox.Location = new System.Drawing.Point(11, 101);
-            this.driveSideBox.Margin = new System.Windows.Forms.Padding(2);
+            this.driveSideBox.Location = new System.Drawing.Point(15, 124);
+            this.driveSideBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.driveSideBox.Name = "driveSideBox";
-            this.driveSideBox.Padding = new System.Windows.Forms.Padding(2);
-            this.driveSideBox.Size = new System.Drawing.Size(122, 41);
+            this.driveSideBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.driveSideBox.Size = new System.Drawing.Size(163, 50);
             this.driveSideBox.TabIndex = 6;
             this.driveSideBox.TabStop = false;
             this.driveSideBox.Text = "Drivetrain Side";
@@ -274,13 +281,13 @@
             this.driveSideInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.driveSideInput.FormattingEnabled = true;
             this.driveSideInput.Items.AddRange(new object[] {
-            "Left",
             "Right",
+            "Left",
             "H-Drive Center"});
-            this.driveSideInput.Location = new System.Drawing.Point(4, 17);
-            this.driveSideInput.Margin = new System.Windows.Forms.Padding(2);
+            this.driveSideInput.Location = new System.Drawing.Point(5, 21);
+            this.driveSideInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.driveSideInput.Name = "driveSideInput";
-            this.driveSideInput.Size = new System.Drawing.Size(114, 21);
+            this.driveSideInput.Size = new System.Drawing.Size(151, 24);
             this.driveSideInput.TabIndex = 0;
             this.driveSideInput.Visible = false;
             // 
@@ -292,11 +299,11 @@
             this.limitsBox.Controls.Add(this.limitEndCheckbox);
             this.limitsBox.Controls.Add(this.limitStartInput);
             this.limitsBox.Controls.Add(this.limitStartCheckbox);
-            this.limitsBox.Location = new System.Drawing.Point(11, 208);
-            this.limitsBox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitsBox.Location = new System.Drawing.Point(15, 256);
+            this.limitsBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.limitsBox.Name = "limitsBox";
-            this.limitsBox.Padding = new System.Windows.Forms.Padding(2);
-            this.limitsBox.Size = new System.Drawing.Size(318, 69);
+            this.limitsBox.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.limitsBox.Size = new System.Drawing.Size(424, 85);
             this.limitsBox.TabIndex = 5;
             this.limitsBox.TabStop = false;
             this.limitsBox.Text = "Limits (linear)";
@@ -304,10 +311,10 @@
             // 
             // animateMovementButton
             // 
-            this.animateMovementButton.Location = new System.Drawing.Point(211, 20);
-            this.animateMovementButton.Margin = new System.Windows.Forms.Padding(2);
+            this.animateMovementButton.Location = new System.Drawing.Point(281, 25);
+            this.animateMovementButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.animateMovementButton.Name = "animateMovementButton";
-            this.animateMovementButton.Size = new System.Drawing.Size(99, 40);
+            this.animateMovementButton.Size = new System.Drawing.Size(132, 49);
             this.animateMovementButton.TabIndex = 5;
             this.animateMovementButton.Text = "Animate Movement";
             this.animateMovementButton.UseVisualStyleBackColor = true;
@@ -316,10 +323,10 @@
             // 
             // limitEndInput
             // 
-            this.limitEndInput.Location = new System.Drawing.Point(106, 42);
-            this.limitEndInput.Margin = new System.Windows.Forms.Padding(2);
+            this.limitEndInput.Location = new System.Drawing.Point(141, 52);
+            this.limitEndInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.limitEndInput.Name = "limitEndInput";
-            this.limitEndInput.Size = new System.Drawing.Size(90, 20);
+            this.limitEndInput.Size = new System.Drawing.Size(120, 22);
             this.limitEndInput.TabIndex = 4;
             this.limitEndInput.Visible = false;
             // 
@@ -328,10 +335,10 @@
             this.limitEndCheckbox.AutoSize = true;
             this.limitEndCheckbox.Checked = true;
             this.limitEndCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.limitEndCheckbox.Location = new System.Drawing.Point(106, 20);
-            this.limitEndCheckbox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitEndCheckbox.Location = new System.Drawing.Point(141, 25);
+            this.limitEndCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.limitEndCheckbox.Name = "limitEndCheckbox";
-            this.limitEndCheckbox.Size = new System.Drawing.Size(45, 17);
+            this.limitEndCheckbox.Size = new System.Drawing.Size(55, 21);
             this.limitEndCheckbox.TabIndex = 3;
             this.limitEndCheckbox.Text = "End";
             this.limitEndCheckbox.UseVisualStyleBackColor = true;
@@ -339,10 +346,10 @@
             // 
             // limitStartInput
             // 
-            this.limitStartInput.Location = new System.Drawing.Point(7, 42);
-            this.limitStartInput.Margin = new System.Windows.Forms.Padding(2);
+            this.limitStartInput.Location = new System.Drawing.Point(9, 52);
+            this.limitStartInput.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.limitStartInput.Name = "limitStartInput";
-            this.limitStartInput.Size = new System.Drawing.Size(90, 20);
+            this.limitStartInput.Size = new System.Drawing.Size(120, 22);
             this.limitStartInput.TabIndex = 2;
             this.limitStartInput.Visible = false;
             // 
@@ -351,10 +358,10 @@
             this.limitStartCheckbox.AutoSize = true;
             this.limitStartCheckbox.Checked = true;
             this.limitStartCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.limitStartCheckbox.Location = new System.Drawing.Point(7, 20);
-            this.limitStartCheckbox.Margin = new System.Windows.Forms.Padding(2);
+            this.limitStartCheckbox.Location = new System.Drawing.Point(9, 25);
+            this.limitStartCheckbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.limitStartCheckbox.Name = "limitStartCheckbox";
-            this.limitStartCheckbox.Size = new System.Drawing.Size(48, 17);
+            this.limitStartCheckbox.Size = new System.Drawing.Size(60, 21);
             this.limitStartCheckbox.TabIndex = 1;
             this.limitStartCheckbox.Text = "Start";
             this.limitStartCheckbox.UseVisualStyleBackColor = true;
@@ -363,20 +370,21 @@
             // jointPreviewImage
             // 
             this.jointPreviewImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.jointPreviewImage.Location = new System.Drawing.Point(147, 15);
-            this.jointPreviewImage.Margin = new System.Windows.Forms.Padding(2, 2, 14, 8);
+            this.jointPreviewImage.Location = new System.Drawing.Point(196, 18);
+            this.jointPreviewImage.Margin = new System.Windows.Forms.Padding(3, 2, 19, 10);
             this.jointPreviewImage.Name = "jointPreviewImage";
-            this.jointPreviewImage.Size = new System.Drawing.Size(183, 180);
-            this.jointPreviewImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.jointPreviewImage.Size = new System.Drawing.Size(243, 221);
+            this.jointPreviewImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.jointPreviewImage.TabIndex = 5;
             this.jointPreviewImage.TabStop = false;
             // 
             // backButton
             // 
             this.backButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.backButton.Location = new System.Drawing.Point(9, 7);
+            this.backButton.Location = new System.Drawing.Point(12, 9);
+            this.backButton.Margin = new System.Windows.Forms.Padding(4);
             this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(71, 23);
+            this.backButton.Size = new System.Drawing.Size(95, 28);
             this.backButton.TabIndex = 10;
             this.backButton.Text = "< Previous";
             this.backButton.UseVisualStyleBackColor = true;
@@ -385,46 +393,29 @@
             // nextButton
             // 
             this.nextButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.nextButton.Location = new System.Drawing.Point(282, 7);
+            this.nextButton.Location = new System.Drawing.Point(376, 9);
+            this.nextButton.Margin = new System.Windows.Forms.Padding(4);
             this.nextButton.Name = "nextButton";
-            this.nextButton.Size = new System.Drawing.Size(71, 23);
+            this.nextButton.Size = new System.Drawing.Size(95, 28);
             this.nextButton.TabIndex = 11;
             this.nextButton.Text = "Next >";
             this.nextButton.UseVisualStyleBackColor = true;
             this.nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
-            // nameBox
-            // 
-            this.nameBox.Controls.Add(this.nameInput);
-            this.nameBox.Location = new System.Drawing.Point(11, 6);
-            this.nameBox.Name = "nameBox";
-            this.nameBox.Size = new System.Drawing.Size(122, 41);
-            this.nameBox.TabIndex = 11;
-            this.nameBox.TabStop = false;
-            this.nameBox.Text = "Name";
-            // 
-            // nameInput
-            // 
-            this.nameInput.Location = new System.Drawing.Point(4, 15);
-            this.nameInput.Name = "nameInput";
-            this.nameInput.Size = new System.Drawing.Size(114, 20);
-            this.nameInput.TabIndex = 0;
-            // 
             // SimpleEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 361);
+            this.ClientSize = new System.Drawing.Size(477, 444);
             this.Controls.Add(this.nextButton);
             this.Controls.Add(this.backButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.okButton);
-            this.Controls.Add(this.closeButton);
             this.Controls.Add(this.advancedButton);
             this.Controls.Add(this.jointNavigator);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::InventorRobotExporter.Properties.Resources.SynthesisLogoIco;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SimpleEditor";
@@ -434,6 +425,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.weightAmountInput)).EndInit();
             this.jointDriverBox.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.nameBox.ResumeLayout(false);
+            this.nameBox.PerformLayout();
             this.wheelTypeBox.ResumeLayout(false);
             this.driveSideBox.ResumeLayout(false);
             this.limitsBox.ResumeLayout(false);
@@ -441,8 +434,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.limitEndInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.limitStartInput)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.jointPreviewImage)).EndInit();
-            this.nameBox.ResumeLayout(false);
-            this.nameBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -457,7 +448,6 @@
         private System.Windows.Forms.GroupBox jointDriverBox;
         private System.Windows.Forms.ComboBox jointDriverInput;
         private System.Windows.Forms.Button advancedButton;
-        private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.NumericUpDown weightAmountInput;

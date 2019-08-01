@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 using Inventor;
 using InventorRobotExporter.Managers;
@@ -10,17 +11,13 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 {
     public partial class SimpleEditor : Form
     {
-        private readonly RobotDataManager robotDataManager;
-        private List<RigidNode_Base> nodeCache;
-        private int defaultHeight;
+        private RobotDataManager robotDataManager;
+        private List<RigidNode_Base> nodeCache = new List<RigidNode_Base>();
+        private readonly int defaultHeight;
 
-        public SimpleEditor(RobotDataManager robotDataManager)
+        public SimpleEditor()
         {
-            this.robotDataManager = robotDataManager;
-            nodeCache = new List<RigidNode_Base>();
-
             InitializeComponent();
-            LoadJointsNavigator();
 
             defaultHeight = Height; // use for sizing on different displays
 
@@ -30,54 +27,10 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
             wheelTypeInput.SelectedIndex = 0;
         }
 
-        private void ClearType()
+        public void UpdateSkeleton(RobotDataManager robotDataManager)
         {
-            // Hides all elements to return the window to its default state
-            weightBox.Visible = false;
-            weightAmountInput.Visible = false;
-            jointDriverBox.Visible = false;
-            jointDriverInput.Visible = false;
-            driveSideBox.Visible = false;
-            driveSideInput.Visible = false;
-            wheelTypeBox.Visible = false;
-            wheelTypeInput.Visible = false;
-            limitsBox.Visible = false;
-            limitStartCheckbox.Visible = false;
-            limitEndCheckbox.Visible = false;
-            limitStartInput.Visible = false;
-            limitEndInput.Visible = false;
-            animateMovementButton.Visible = false;
-            advancedButton.Visible = false;
-        }
-
-        private void ShowMechanismType()
-        {
-            // Show relevant elements to the Mechanism joint type
-            weightBox.Visible = true;
-            weightAmountInput.Visible = true;
-            jointDriverBox.Visible = true;
-            jointDriverInput.Visible = true;
-            limitsBox.Visible = true;
-            limitStartCheckbox.Visible = true;
-            limitEndCheckbox.Visible = true;
-            limitStartInput.Visible = true;
-            limitEndInput.Visible = true;
-            animateMovementButton.Visible = true;
-            advancedButton.Visible = true;
-
-            Height = defaultHeight;
-        }
-
-        private void ShowDrivetrainType()
-        {
-            // Show relevant elements to the Drivetrain joint type
-            driveSideBox.Visible = true;
-            driveSideInput.Visible = true;
-            wheelTypeBox.Visible = true;
-            wheelTypeInput.Visible = true;
-            advancedButton.Visible = true;
-
-            Height = defaultHeight - limitsBox.Height;
+            this.robotDataManager = robotDataManager;
+            LoadJointsNavigator();
         }
 
         private void LoadJointsNavigator()
@@ -97,49 +50,108 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         // Switch joints from joint list
         private void JointNavigator_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateDisplay();
-            // TODO: Create logic for updating and saving data
+            LoadValues(nodeCache[jointNavigator.SelectedIndex]);
         }
 
         // Change between Drivetrain Wheel and Mechanism Joint
         private void JointTypeInput_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ClearType();
+            DoLayout();
+        }
+
+        private void DoLayout()
+        {
+            // Hides all elements to return the window to its default state
+            weightBox.Visible = false;
+            weightAmountInput.Visible = false;
+            jointDriverBox.Visible = false;
+            jointDriverInput.Visible = false;
+            driveSideBox.Visible = false;
+            driveSideInput.Visible = false;
+            wheelTypeBox.Visible = false;
+            wheelTypeInput.Visible = false;
+            limitsBox.Visible = false;
+            limitStartCheckbox.Visible = false;
+            limitEndCheckbox.Visible = false;
+            limitStartInput.Visible = false;
+            limitEndInput.Visible = false;
+            animateMovementButton.Visible = false;
+            advancedButton.Visible = false;
             if (jointTypeInput.SelectedIndex == 0)
             {
                 Height = defaultHeight - limitsBox.Height;
-            } else if (jointTypeInput.SelectedIndex == 1)
+            }
+            else if (jointTypeInput.SelectedIndex == 1)
             {
-                ShowDrivetrainType();
-            } else if (jointTypeInput.SelectedIndex == 2)
+                // Show relevant elements to the Drivetrain joint type
+                driveSideBox.Visible = true;
+                driveSideInput.Visible = true;
+                wheelTypeBox.Visible = true;
+                wheelTypeInput.Visible = true;
+                advancedButton.Visible = true;
+
+                Height = defaultHeight - limitsBox.Height;
+            }
+            else if (jointTypeInput.SelectedIndex == 2)
             {
-                ShowMechanismType();
+                // Show relevant elements to the Mechanism joint type
+                weightBox.Visible = true;
+                weightAmountInput.Visible = true;
+                jointDriverBox.Visible = true;
+                jointDriverInput.Visible = true;
+                limitsBox.Visible = true;
+                limitStartCheckbox.Visible = true;
+                limitEndCheckbox.Visible = true;
+                limitStartInput.Visible = true;
+                limitEndInput.Visible = true;
+                animateMovementButton.Visible = true;
+                advancedButton.Visible = true;
+
+                Height = defaultHeight;
             }
         }
 
-        private void UpdateDisplay()
+        private void LoadValues(RigidNode_Base node)
         {
-            RigidNode_Base node = nodeCache[jointNavigator.SelectedIndex];
-
             nameInput.Text = ToStringUtils.NodeNameString(node);
 
-            if (jointTypeInput.SelectedIndex == 1)
+            var joint = node.GetSkeletalJoint();
+            var jointDriver = joint.cDriver;
+            
+            if (jointDriver == null)
+            {
+                jointTypeInput.SelectedIndex = 0;
+            } else if (jointDriver.port1 <= 2)
             {
                 // Drivetrain wheel
-                driveSideInput.Text = ToStringUtils.DriveTrainSideString(node.GetSkeletalJoint());
-                wheelTypeInput.Text = ToStringUtils.WheelTypeString(node.GetSkeletalJoint());
-            } else if (jointTypeInput.SelectedIndex == 2)
+                jointTypeInput.SelectedIndex = 1;
+                driveSideInput.SelectedIndex = jointDriver.port1;
+                wheelTypeInput.SelectedIndex = (int) jointDriver.GetInfo<WheelDriverMeta>().type - 1;
+            }
+            else
             {
                 // Mechanism joint
-                weightAmountInput.Text = "22.05"; // TODO: Get actual weight value
-                jointDriverInput.Text = ToStringUtils.DriverString(node.GetSkeletalJoint());
+                jointTypeInput.SelectedIndex = 2;
+                weightAmountInput.Value = (decimal) (Math.Max(joint.weight, 0) * 2.20462f); // TODO: Re-use existing weight code
+
+                jointDriverInput.Items.Clear();
+                var typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
+                var textInfo = new CultureInfo("en-US", true).TextInfo;
+                foreach (var type in typeOptions)
+                {
+                    var name = Enum.GetName(typeof(JointDriverType), type);
+                    if (name != null) // TODO: Get rid of this mess
+                        jointDriverInput.Items.Add(textInfo.ToTitleCase(name.Replace('_', ' ').ToLowerInvariant()));
+                }
+                jointDriverInput.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType());
+
                 // TODO: Get limit values
             }
 
             LoadPreviewIcon(node);
         }
 
-        public void LoadPreviewIcon(RigidNode_Base node)
+        private void LoadPreviewIcon(RigidNode_Base node)
         {
 
             var iconCamera = RobotExporterAddInServer.Instance.Application.TransientObjects.CreateCamera();
@@ -147,7 +159,7 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
             const double zoom = 0.3; // Zoom, where a zoom of 1 makes the camera the size of the whole robot
 
-            const int widthConst = 1; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
+            const int widthConst = 3; // The image needs to be wide to hide the XYZ coordinate labels in the bottom left corner
 
             var occurrences = InventorUtils.GetComponentOccurrencesFromNodes(new List<RigidNode_Base> { node });
             iconCamera.Fit();
@@ -200,7 +212,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void BackButton_Click(object sender, EventArgs e)
         {
-            SaveChanges();
             if (jointNavigator.SelectedIndex - 1 > -1)
             {
                 jointNavigator.SelectedIndex -= 1;
@@ -209,7 +220,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
 
         private void NextButton_Click(object sender, EventArgs e)
         {
-            SaveChanges();
             if (jointNavigator.SelectedIndex + 1 < jointNavigator.Items.Count - 1)
             {
                 jointNavigator.SelectedIndex += 1;
@@ -224,10 +234,6 @@ namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
         private void AdvancedButton_Click(object sender, EventArgs e)
         {
             new AdvancedJointSettings().ShowDialog();
-        }
-        private void CancelButton_Click(object sender, EventArgs e)
-        {
-            Close();
         }
 
         private void OkButton_Click(object sender, EventArgs e)
