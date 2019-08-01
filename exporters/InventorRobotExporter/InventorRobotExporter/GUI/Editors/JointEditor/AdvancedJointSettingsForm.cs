@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using InventorRobotExporter.GUI.Editors.JointSubEditors;
 using InventorRobotExporter.Utilities;
 
-namespace InventorRobotExporter.GUI.Editors.SimpleJointEditor
+namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    public partial class AdvancedJointSettings : Form
+    public partial class AdvancedJointSettingsForm : Form
     {
-        private SkeletalJoint_Base joint;
+        private readonly SkeletalJoint_Base joint;
         public double GearRatio = 1;
         public int PortId = 3;
         public bool IsCan = true;
-        public bool EnableLimits = false;
-        public float LowerLimit = 0;
-        public float UpperLimit = 0;
-        
 
-        public AdvancedJointSettings(SkeletalJoint_Base passJoint)
+        public AdvancedJointSettingsForm(SkeletalJoint_Base passJoint)
         {
             joint = passJoint;
             AnalyticsUtils.LogPage("SensorListForm");

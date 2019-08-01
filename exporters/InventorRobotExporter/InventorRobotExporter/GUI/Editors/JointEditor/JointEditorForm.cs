@@ -5,11 +5,11 @@ using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    public partial class JointForm : Form
+    public partial class JointEditorForm : Form
     {
-        private readonly List<JointCard> jointCards = new List<JointCard>();
+        private readonly List<JointCardUC> jointCards = new List<JointCardUC>();
 
-        public JointForm()
+        public JointEditorForm()
         {
             AnalyticsUtils.LogPage("Joint Editor");
             InitializeComponent();
@@ -42,37 +42,52 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             {
                 if (node.GetSkeletalJoint() != null) // create new part panels for every node
                 {
-                    JointCard panel = new JointCard(node, this, robotDataManager);
-                    panel.Dock = DockStyle.Top;
+                    var panel = new JointCardUC(node, this, robotDataManager) {Dock = DockStyle.Top};
 
                     jointCards.Add(panel);
 
-                    WinFormsUtils.AddControlToNewTableRow(panel, DefinePartsLayout);
+                    AddControlToNewTableRow(panel, DefinePartsLayout);
                 }
             }
 
             ResumeLayout();
         }
+        
+        public static void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
+        {
+            if (rowStyle == null)
+            {
+                rowStyle = new RowStyle();
+                rowStyle.SizeType = SizeType.AutoSize;
+            }
+
+            table.RowCount++;
+            table.RowStyles.Add(rowStyle);
+            table.Controls.Add(control);
+            table.SetRow(control, table.RowCount - 2);
+            table.SetColumn(control, 0);
+        }
 
         public new void ShowDialog()
         {
-            CollapseAllCards();
-            jointCards.ForEach(card => card.LoadValuesRecursive());
+            jointCards.ForEach(card => card.LoadValues());
             base.ShowDialog();
-        }
-
-        public void CollapseAllCards(JointCard besides = null)
-        {
-            jointCards.ForEach(card =>
-            {
-                if (card != besides)
-                    card.SetCollapsed(true);
-            });
         }
 
         public void ResetAllHighlight()
         {
             jointCards.ForEach(card => card.ResetHighlight());
+        }
+
+        private void CancelButton_Click(object sender, System.EventArgs e)
+        {
+            Close();
+        }
+
+        private void OkButton_Click(object sender, System.EventArgs e)
+        {
+            jointCards.ForEach(card => card.SaveValues());
+            Close();
         }
     }
 }

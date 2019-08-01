@@ -4,25 +4,24 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using InventorRobotExporter.GUI.Editors.JointSubEditors;
-using InventorRobotExporter.GUI.Editors.SimpleJointEditor;
 using InventorRobotExporter.Managers;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.ImageFormat;
 
 namespace InventorRobotExporter.GUI.Editors.JointEditor
 {
-    public sealed partial class MiniJointCard : UserControl
+    public sealed partial class JointCardUC : UserControl
     {
-        private readonly JointFormSimple jointForm;
+        private readonly JointEditorForm jointEditorForm;
         private readonly RigidNode_Base node;
 
         private bool isHighlighted;
-        private AdvancedJointSettings advancedSettings;
+        private AdvancedJointSettingsForm advancedSettingsForm;
 
-        public MiniJointCard(RigidNode_Base node, JointFormSimple jointForm, RobotDataManager robotDataManager)
+        public JointCardUC(RigidNode_Base node, JointEditorForm jointEditorForm, RobotDataManager robotDataManager)
         {
             this.robotDataManager = robotDataManager;
-            this.jointForm = jointForm;
+            this.jointEditorForm = jointEditorForm;
             this.node = node;
 
             InitializeComponent();
@@ -35,7 +34,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         public void LoadValues()
         {
-            advancedSettings = new AdvancedJointSettings(node.GetSkeletalJoint());
+            advancedSettingsForm = new AdvancedJointSettingsForm(node.GetSkeletalJoint());
             var joint = node.GetSkeletalJoint();
             var jointDriver = joint.cDriver;
             var typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
@@ -131,7 +130,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 joint.cDriver.hasBrake = true;
                 joint.cDriver.motor = MotorType.GENERIC;
                 joint.cDriver.InputGear = 1;
-                joint.cDriver.OutputGear = advancedSettings.GearRatio;
+                joint.cDriver.OutputGear = advancedSettingsForm.GearRatio;
                 joint.cDriver.lowerLimit = 0;
                 joint.cDriver.upperLimit = 0;
 
@@ -156,23 +155,16 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
                 {
                     // Port/wheel side
-                    joint.cDriver.port1 = advancedSettings.PortId;
+                    joint.cDriver.port1 = advancedSettingsForm.PortId;
                     if (joint.cDriver.port1 <= 2)
                         joint.cDriver.port1 = 2;
-                    joint.cDriver.isCan = advancedSettings.IsCan;
+                    joint.cDriver.isCan = advancedSettingsForm.IsCan;
 
                     // Wheel driver
                     joint.cDriver.RemoveInfo<WheelDriverMeta>();
 
                     // Weight
                     joint.weight = (double) weightInput.Value;
-                    
-                    // Limits
-                    if (advancedSettings.EnableLimits && advancedSettings.LowerLimit < advancedSettings.UpperLimit)
-                    {
-                        joint.cDriver.lowerLimit = advancedSettings.LowerLimit;
-                        joint.cDriver.upperLimit = advancedSettings.UpperLimit;
-                    }
                 }
             }
         }
@@ -185,7 +177,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 return;
             }
 
-            jointForm.ResetAllHighlight();
+            jointEditorForm.ResetAllHighlight();
             isHighlighted = true;
 
             InventorUtils.FocusAndHighlightNode(node, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 0.8);
@@ -289,8 +281,8 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         {
             if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
                 return;
-            advancedSettings.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
-            advancedSettings.ShowDialog();
+            advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
+            advancedSettingsForm.ShowDialog();
         }
     }
 }
