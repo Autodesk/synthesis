@@ -176,11 +176,11 @@ namespace Synthesis.Robot
 
                 Resetting();
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
+            else if (InputControl.GetButtonDown(Controls.Players[ControlIndex].GetButtons().resetRobot))
             {
                 keyDownTime = Time.time;
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
+            else if (InputControl.GetButtonDown(Controls.Global.GetButtons().resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
                 MainState.timesLoaded--;
@@ -190,13 +190,13 @@ namespace Synthesis.Robot
                     AnalyticsLedger.TimingVarible.Playing,
                     AnalyticsLedger.TimingLabel.ChangeField);
             }
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
+            else if (InputControl.GetButton(Controls.Players[ControlIndex].GetButtons().resetRobot) &&
                 !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
             }
-            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot))
+            else if (InputControl.GetButtonUp(Controls.Players[ControlIndex].GetButtons().resetRobot))
             {
                 BeginReset();
                 EndReset();

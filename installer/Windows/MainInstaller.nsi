@@ -69,7 +69,15 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
-		; Remove outdated exporter plugins
+	    ; Remove inventor plugins
+	    Delete "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+		; Remove deprecated bxd inventor plugins
+		Delete "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -77,6 +85,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+		Delete "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
         RMDIR /r $APPDATA\RobotViewer
 
         ; Remove excess shortcuts
@@ -166,7 +175,7 @@ Section "Inventor Exporter Plugin" iExporter
   File /r "Exporter"
   
   SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
+  File /r "Exporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
 
@@ -245,6 +254,16 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $PROGRAMFILES\Autodesk\Synthesis
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
+  
+  ; Remove inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+  ; Remove deprecated bxd inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -252,6 +271,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
   
   ; Remove excess shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"
@@ -261,11 +281,12 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   
-  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
+  ; Execute Docker Toolbox Uninstaller
+  IfFileExists "$PROGRAMFILES64\Docker Toolbox" file_found uninstall_complete
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
-	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
+	MessageBox MB_YESNO "Would you like to uninstall Dcoker Toolbox as well?" IDNO uninstall_complete
+	Exec '"$PROGRAMFILES64\Docker Toolbox\unins000.exe"'
 	Quit
 	
 	uninstall_complete:
