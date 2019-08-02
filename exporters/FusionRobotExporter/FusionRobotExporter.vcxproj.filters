@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Text Include="FusionSynthV2.manifest" />
+    <Text Include="FusionRobotExporter.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -161,9 +161,6 @@
     <ClCompile Include="Source\AddIn\EUI.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AddIn\FusionSynthV2.cpp">
-      <Filter>Source\AddIn</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Data\BXDA\Vertex.cpp">
       <Filter>Source\Data\BXDA</Filter>
     </ClCompile>
@@ -239,6 +236,9 @@
     <ClCompile Include="Source\Data\BXDJ\Components\Elevator.cpp">
       <Filter>Source\Data\BXDJ\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AddIn\FusionRobotExporter.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\js\fusionInterface.js">
@@ -268,8 +268,6 @@
     <None Include="palette\js\utility.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
-    <None Include="palette\jointEditor.html" />
-    <None Include="palette\js\jointEditor.js" />
     <None Include="palette\dt_weight.html">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
@@ -280,6 +278,12 @@
       <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="palette\drivetrain.html">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\js\jointEditor.js">
+      <Filter>Source\AddIn\Palette</Filter>
+    </None>
+    <None Include="palette\jointEditor.html">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="packages.config" />
