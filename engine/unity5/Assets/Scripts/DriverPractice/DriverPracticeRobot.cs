@@ -44,17 +44,17 @@ namespace Synthesis.DriverPractice
         }
         private void ProcessControls()
         {
-            for (int i = 0; i < Input.Controls.buttons[controlIndex].pickup.Count; i++) //for each gamepiece
+            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().pickup.Count; i++) //for each gamepiece
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 && //existence check
-                     InputControl.GetButton(Controls.buttons[controlIndex].pickup[i])) Intake(i);
-            for (int i = 0; i < Input.Controls.buttons[controlIndex].release.Count; i++)
+                     InputControl.GetButton(Controls.Players[controlIndex].GetButtons().pickup[i])) Intake(i);
+            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().release.Count; i++)
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
-                    if (InputControl.GetButton(Controls.buttons[controlIndex].release[i])) Release(i);
+                    if (InputControl.GetButton(Controls.Players[controlIndex].GetButtons().release[i])) Release(i);
                     else HoldGamepiece(i); //when not releasing hold
-            for (int i = 0; i < Input.Controls.buttons[controlIndex].spawnPieces.Count; i++)
+            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().spawnPieces.Count; i++)
                 if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
-                    InputControl.GetButtonDown(Controls.buttons[controlIndex].spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
-            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].trajectory)) drawing = !drawing; //trajectory drawing toggle
+                    InputControl.GetButtonDown(Controls.Players[controlIndex].GetButtons().spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+            if (InputControl.GetButtonDown(Controls.Players[controlIndex].GetButtons().trajectory)) drawing = !drawing; //trajectory drawing toggle
         }
         #region DriverPractice Creation Stuff
         public DriverPractice GetDriverPractice(Gamepiece g)

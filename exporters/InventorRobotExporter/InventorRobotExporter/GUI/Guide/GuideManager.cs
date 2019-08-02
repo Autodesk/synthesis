@@ -21,6 +21,9 @@ namespace InventorRobotExporter.GUI.Guide
             var guidePanel = new ExportGuidePanel();
             dockableWindow.AddChild(guidePanel.Handle);
             dockableWindow.Visible = Visible;
+
+            RobotExporterAddInServer.Instance.AddInSettingsManager.SettingsChanged += values => Visible = values.ShowGuide; 
+            
             return dockableWindow;
         }
 

@@ -126,7 +126,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public virtual void UpdateAngleTransform()
         {
-            transform.Rotate(new Vector3(-UnityEngine.Input.GetAxis("CameraVertical") * rotationSpeed, UnityEngine.Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
+            transform.Rotate(new Vector3(-Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * rotationSpeed, Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraForward) * rotationSpeed, 0) * Time.deltaTime);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public virtual void UpdateHeightTransform()
         {
-            transform.Translate(new Vector3(0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
+            transform.Translate(new Vector3(0, Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * positionSpeed, 0) * Time.deltaTime);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Synthesis.Sensors
         /// </summary>
         public virtual void UpdateHorizontalPlaneTransform()
         {
-            transform.Translate(new Vector3(UnityEngine.Input.GetAxis("CameraHorizontal") * positionSpeed, 0, UnityEngine.Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
+            transform.Translate(new Vector3(Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraForward) * positionSpeed, 0, Input.InputControl.GetAxis(Input.Controls.Global.GetAxes().cameraLateral) * positionSpeed) * Time.deltaTime);
         }
 
         /// <summary>

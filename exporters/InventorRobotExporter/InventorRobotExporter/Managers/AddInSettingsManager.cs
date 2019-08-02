@@ -11,6 +11,7 @@ namespace InventorRobotExporter.Managers
     {
         // Environment
         public bool UseAnalytics;
+        public bool ShowGuide;
         public Color JointHighlightColor;
 
         // Export constants
@@ -40,6 +41,7 @@ namespace InventorRobotExporter.Managers
             Settings.Default.SaveLocation = ExportPath;
             Settings.Default.DefaultRobotCompetition = DefaultRobotCompetition;
             Settings.Default.UseAnalytics = UseAnalytics;
+            Settings.Default.ShowGuide = ShowGuide;
             Settings.Default.ConfigVersion = 3; // Update this config version number when changes are made to the exporter which require settings to be reset or changed when the exporter starts
             Settings.Default.Save();
             SettingsChanged?.Invoke(this);
@@ -62,6 +64,7 @@ namespace InventorRobotExporter.Managers
                 OpenSynthesis = Settings.Default.ExportToField;
                 DefaultRobotCompetition = "GENERIC";
                 UseAnalytics = true;
+                ShowGuide = true;
             }
             else
             {
@@ -71,6 +74,7 @@ namespace InventorRobotExporter.Managers
                 OpenSynthesis = Settings.Default.ExportToField;
                 DefaultRobotCompetition = Settings.Default.DefaultRobotCompetition;
                 UseAnalytics = Settings.Default.UseAnalytics;
+                ShowGuide = Settings.Default.ShowGuide;
             }
         }
     }

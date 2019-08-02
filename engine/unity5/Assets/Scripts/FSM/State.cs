@@ -59,5 +59,10 @@ namespace Synthesis.FSM
         /// Called when the GUI is updated in the State.
         /// </summary>
         public virtual void OnGUI() { }
+
+        /// <summary>
+        /// Called to hide or unhide the display.
+        /// </summary>
+        public virtual void ToggleHidden() { }
     }
 }
