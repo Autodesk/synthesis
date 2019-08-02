@@ -22,7 +22,7 @@ namespace InventorRobotExporter.GUI.Editors
             UnitBox.SelectedIndex = PreferMetric ? 1 : 0;
         }
 
-        private void SaveButton_Click(object sender, EventArgs e)
+        private void OkButton_Click(object sender, EventArgs e)
         {
             PreferMetric = UnitBox.SelectedIndex == 1;
 
