@@ -37,10 +37,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.jointName = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.weightInput = new System.Windows.Forms.NumericUpDown();
-            this.driverTypeComboBox = new System.Windows.Forms.ComboBox();
-            this.weightLabel = new System.Windows.Forms.Label();
-            this.jointDriverLabel = new System.Windows.Forms.Label();
             this.wheelTypeComboBox = new System.Windows.Forms.ComboBox();
             this.dtSideComboBox = new System.Windows.Forms.ComboBox();
             this.jointTypeLabel = new System.Windows.Forms.Label();
@@ -48,6 +44,10 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.wheelTypeLabel = new System.Windows.Forms.Label();
             this.jointTypeComboBox = new System.Windows.Forms.ComboBox();
             this.advancedButton = new System.Windows.Forms.Button();
+            this.weightInput = new System.Windows.Forms.NumericUpDown();
+            this.driverTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.weightLabel = new System.Windows.Forms.Label();
+            this.jointDriverLabel = new System.Windows.Forms.Label();
             this.DriverLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -124,7 +124,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel2.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 2);
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Controls.Add(this.wheelTypeComboBox, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.dtSideComboBox, 1, 1);
@@ -142,6 +142,93 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(400, 94);
             this.tableLayoutPanel2.TabIndex = 2;
+            // 
+            // wheelTypeComboBox
+            // 
+            this.wheelTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.wheelTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.wheelTypeComboBox.FormattingEnabled = true;
+            this.wheelTypeComboBox.Items.AddRange(new object[] {
+            "Normal",
+            "Omni",
+            "Mecanum"});
+            this.wheelTypeComboBox.Location = new System.Drawing.Point(115, 66);
+            this.wheelTypeComboBox.Name = "wheelTypeComboBox";
+            this.wheelTypeComboBox.Size = new System.Drawing.Size(281, 24);
+            this.wheelTypeComboBox.TabIndex = 5;
+            // 
+            // dtSideComboBox
+            // 
+            this.dtSideComboBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.dtSideComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.dtSideComboBox.FormattingEnabled = true;
+            this.dtSideComboBox.Items.AddRange(new object[] {
+            "Right",
+            "Left",
+            "H-Drive Center"});
+            this.dtSideComboBox.Location = new System.Drawing.Point(115, 35);
+            this.dtSideComboBox.Name = "dtSideComboBox";
+            this.dtSideComboBox.Size = new System.Drawing.Size(281, 24);
+            this.dtSideComboBox.TabIndex = 4;
+            // 
+            // jointTypeLabel
+            // 
+            this.jointTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jointTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.jointTypeLabel.Location = new System.Drawing.Point(4, 1);
+            this.jointTypeLabel.Name = "jointTypeLabel";
+            this.jointTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
+            this.jointTypeLabel.Size = new System.Drawing.Size(104, 30);
+            this.jointTypeLabel.TabIndex = 0;
+            this.jointTypeLabel.Text = "Joint Type:";
+            this.jointTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // sideLabel
+            // 
+            this.sideLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sideLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sideLabel.Location = new System.Drawing.Point(4, 32);
+            this.sideLabel.Name = "sideLabel";
+            this.sideLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
+            this.sideLabel.Size = new System.Drawing.Size(104, 30);
+            this.sideLabel.TabIndex = 1;
+            this.sideLabel.Text = "Side:";
+            this.sideLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // wheelTypeLabel
+            // 
+            this.wheelTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wheelTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.wheelTypeLabel.Location = new System.Drawing.Point(4, 63);
+            this.wheelTypeLabel.Name = "wheelTypeLabel";
+            this.wheelTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
+            this.wheelTypeLabel.Size = new System.Drawing.Size(104, 30);
+            this.wheelTypeLabel.TabIndex = 2;
+            this.wheelTypeLabel.Text = "Wheel Type:";
+            this.wheelTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // jointTypeComboBox
+            // 
+            this.jointTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.jointTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.jointTypeComboBox.FormattingEnabled = true;
+            this.jointTypeComboBox.Location = new System.Drawing.Point(115, 4);
+            this.jointTypeComboBox.Name = "jointTypeComboBox";
+            this.jointTypeComboBox.Size = new System.Drawing.Size(281, 24);
+            this.jointTypeComboBox.TabIndex = 3;
+            this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.JointTypeComboBox_SelectedIndexChanged);
+            // 
+            // advancedButton
+            // 
+            this.advancedButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.advancedButton.Location = new System.Drawing.Point(283, 5);
+            this.advancedButton.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.advancedButton.Name = "advancedButton";
+            this.advancedButton.Size = new System.Drawing.Size(116, 27);
+            this.advancedButton.TabIndex = 7;
+            this.advancedButton.Text = "Advanced...";
+            this.advancedButton.UseVisualStyleBackColor = true;
+            this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
             // weightInput
             // 
@@ -169,7 +256,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.driverTypeComboBox.FormattingEnabled = true;
             this.driverTypeComboBox.Location = new System.Drawing.Point(116, 128);
             this.driverTypeComboBox.Name = "driverTypeComboBox";
-            this.driverTypeComboBox.Size = new System.Drawing.Size(280, 24);
+            this.driverTypeComboBox.Size = new System.Drawing.Size(280, 25);
             this.driverTypeComboBox.TabIndex = 8;
             // 
             // weightLabel
@@ -196,94 +283,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.jointDriverLabel.Text = "Joint Driver:";
             this.jointDriverLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // wheelTypeComboBox
-            // 
-            this.wheelTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.wheelTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.wheelTypeComboBox.FormattingEnabled = true;
-            this.wheelTypeComboBox.Items.AddRange(new object[] {
-            "Normal",
-            "Omni",
-            "Mecanum"});
-            this.wheelTypeComboBox.Location = new System.Drawing.Point(116, 66);
-            this.wheelTypeComboBox.Name = "wheelTypeComboBox";
-            this.wheelTypeComboBox.Size = new System.Drawing.Size(280, 24);
-            this.wheelTypeComboBox.TabIndex = 5;
-            // 
-            // dtSideComboBox
-            // 
-            this.dtSideComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.dtSideComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.dtSideComboBox.FormattingEnabled = true;
-            this.dtSideComboBox.Items.AddRange(new object[] {
-            "Right",
-            "Left",
-            "H-Drive Center"});
-            this.dtSideComboBox.Location = new System.Drawing.Point(116, 35);
-            this.dtSideComboBox.Name = "dtSideComboBox";
-            this.dtSideComboBox.Size = new System.Drawing.Size(280, 24);
-            this.dtSideComboBox.TabIndex = 4;
-            // 
-            // jointTypeLabel
-            // 
-            this.jointTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jointTypeLabel.Location = new System.Drawing.Point(4, 1);
-            this.jointTypeLabel.Name = "jointTypeLabel";
-            this.jointTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.jointTypeLabel.Size = new System.Drawing.Size(105, 30);
-            this.jointTypeLabel.TabIndex = 0;
-            this.jointTypeLabel.Text = "Joint Type:";
-            this.jointTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // sideLabel
-            // 
-            this.sideLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sideLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sideLabel.Location = new System.Drawing.Point(4, 32);
-            this.sideLabel.Name = "sideLabel";
-            this.sideLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.sideLabel.Size = new System.Drawing.Size(105, 30);
-            this.sideLabel.TabIndex = 1;
-            this.sideLabel.Text = "Side:";
-            this.sideLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // wheelTypeLabel
-            // 
-            this.wheelTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wheelTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.wheelTypeLabel.Location = new System.Drawing.Point(4, 63);
-            this.wheelTypeLabel.Name = "wheelTypeLabel";
-            this.wheelTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.wheelTypeLabel.Size = new System.Drawing.Size(105, 30);
-            this.wheelTypeLabel.TabIndex = 2;
-            this.wheelTypeLabel.Text = "Wheel Type:";
-            this.wheelTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // jointTypeComboBox
-            // 
-            this.jointTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.jointTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.jointTypeComboBox.FormattingEnabled = true;
-            this.jointTypeComboBox.Location = new System.Drawing.Point(116, 4);
-            this.jointTypeComboBox.Name = "jointTypeComboBox";
-            this.jointTypeComboBox.Size = new System.Drawing.Size(280, 24);
-            this.jointTypeComboBox.TabIndex = 3;
-            this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.JointTypeComboBox_SelectedIndexChanged);
-            // 
-            // advancedButton
-            // 
-            this.advancedButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.advancedButton.Location = new System.Drawing.Point(283, 5);
-            this.advancedButton.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.advancedButton.Name = "advancedButton";
-            this.advancedButton.Size = new System.Drawing.Size(116, 27);
-            this.advancedButton.TabIndex = 7;
-            this.advancedButton.Text = "Advanced...";
-            this.advancedButton.UseVisualStyleBackColor = true;
-            this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
-            // 
-            // MiniJointCard
+            // JointCardUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
