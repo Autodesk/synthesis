@@ -38,16 +38,13 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             DefinePartsLayout.Controls.Clear();
             DefinePartsLayout.RowStyles.Clear();
 
-            foreach (RigidNode_Base node in robotDataManager.RobotBaseNode.ListAllNodes())
+            foreach (var node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
-                if (node.GetSkeletalJoint() != null) // create new part panels for every node
-                {
-                    var panel = new JointCardUC(node, this, robotDataManager) {Dock = DockStyle.Top};
-
-                    jointCards.Add(panel);
-
-                    AddControlToNewTableRow(panel, DefinePartsLayout);
-                }
+                if (node.GetSkeletalJoint() == null || JointDriver.GetAllowedDrivers(node.GetSkeletalJoint()).Length == 0) continue;
+                
+                var panel = new JointCardUC(node, this, robotDataManager) {Dock = DockStyle.Top};
+                jointCards.Add(panel);
+                AddControlToNewTableRow(panel, DefinePartsLayout);
             }
 
             ResumeLayout();
