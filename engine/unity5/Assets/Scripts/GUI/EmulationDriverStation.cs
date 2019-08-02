@@ -87,7 +87,7 @@ namespace Synthesis.GUI
             DynamicCamera.MovementEnabled = true;
         }
 
-        public void OnGUI()
+        public void Update()
         {
             if (lastGameSpecificMessageFocused != gameSpecificMessage.isFocused)
             {

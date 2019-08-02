@@ -142,6 +142,12 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
+        public void OnRobotIOPanelButtonClicked()
+        {
+            // TODO
+            RobotIOPanel.Instance.Toggle();
+        }
+
         public void OnVMConnectionStatusClicked()
         {
             if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
