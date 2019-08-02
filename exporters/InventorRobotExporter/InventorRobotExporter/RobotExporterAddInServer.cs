@@ -117,7 +117,12 @@ namespace InventorRobotExporter
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
             advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
-            advancedEditJointButton.OnExecute += context => advancedJointEditor.Visible = !advancedJointEditor.Visible;
+            advancedEditJointButton.OnExecute += context =>
+            {
+                if (advancedJointEditor.Visible) return;
+                advancedJointEditor.Visible = true;
+                jointEditorForm.Visible = false;
+            };
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
@@ -125,8 +130,14 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                jointEditorForm.ShowDialog();
-                advancedJointEditor.UpdateSkeleton(RobotDataManager);
+                if (jointEditorForm.Visible)
+                {
+                    jointEditorForm.Activate();
+                    return;
+                }
+                jointEditorForm.PreShow();
+                jointEditorForm.Show();
+                advancedJointEditor.Visible = false;
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
@@ -195,8 +206,8 @@ namespace InventorRobotExporter
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
-            advancedJointEditor.UpdateSkeleton(RobotDataManager);
-            jointEditorForm.UpdateSkeleton(RobotDataManager);
+            advancedJointEditor.LoadRobot(RobotDataManager);
+            jointEditorForm.LoadRobot(RobotDataManager);
             loadingBar.Close();
             Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
