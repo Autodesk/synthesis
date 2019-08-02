@@ -14,6 +14,8 @@ using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
+using NUnit.Framework;
+using OpenTK.Input;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 using Environment = Inventor.Environment;
 
@@ -129,14 +131,25 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
+                if (!jointEditorForm.HasJoints())
+                {
+                    var result = MessageBox.Show("No joints detected in the assembly! Add joints to your robot and restart the robot export environment to edit joints.\n\n" +
+                                    "Would you like to view a video tutorial on adding joints to your assembly?", "No Joints Found", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    if (result.Equals(DialogResult.Yes))
+                        System.Diagnostics.Process.Start("https://youtu.be/fY3Vdkh8L0Y");
+                    return;
+                }
+                
                 if (jointEditorForm.Visible)
                 {
                     jointEditorForm.Activate();
-                    return;
                 }
-                jointEditorForm.PreShow();
-                jointEditorForm.Show();
-                advancedJointEditor.Visible = false;
+                else
+                {
+                    jointEditorForm.PreShow();
+                    jointEditorForm.Show();
+                    advancedJointEditor.Visible = false;
+                }
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
