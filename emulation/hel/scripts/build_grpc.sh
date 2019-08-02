@@ -28,7 +28,23 @@ if [[ ${TOOLCHAIN} != "" ]] ; then
 
     export GRPC_CROSS_AROPTS="cr --target=elf32-little"
 fi
-make REQUIRE_CUSTOM_LIBRARIES_opt=1 plugins static -j10 \
+
+make plugins -j10 \
+     HAS_PKG_CONFIG=false \
+     CC=${TOOLCHAIN}gcc \
+     CXX=${TOOLCHAIN}g++ \
+     CPP=${TOOLCHAIN}cpp \
+     RANLIB=${TOOLCHAIN}ranlib \
+     LD=${TOOLCHAIN}ld \
+     LDXX=${TOOLCHAIN}g++ \
+     HOSTLD=${TOOLCHAIN}ld \
+     AR=${TOOLCHAIN}ar \
+     AS=${TOOLCHAIN}as \
+     AROPTS='-r' \
+     EMBED_ZLIB="true" \
+     PROTOBUF_CONFIG_OPTS="--host=${TARGET_TRIPLE} --build=$(gcc -dumpmachine) --with-protoc=$(find . -name protoc -print -quit)"
+
+make REQUIRE_CUSTOM_LIBRARIES_opt=1 static -j10 \
      HAS_PKG_CONFIG=false \
      CC=${TOOLCHAIN}gcc \
      CXX=${TOOLCHAIN}g++ \
