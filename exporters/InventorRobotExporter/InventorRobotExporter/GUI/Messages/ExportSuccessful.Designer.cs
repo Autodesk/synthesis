@@ -87,6 +87,7 @@
             this.MinimizeBox = false;
             this.Name = "ExportSuccessful";
             this.Text = "Export Complete";
+            this.TopMost = true;
             this.ResumeLayout(false);
 
         }
