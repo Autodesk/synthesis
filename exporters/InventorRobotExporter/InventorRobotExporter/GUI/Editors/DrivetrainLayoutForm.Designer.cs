@@ -186,7 +186,7 @@
             this.tankLabel.Name = "tankLabel";
             this.tankLabel.Size = new System.Drawing.Size(121, 20);
             this.tankLabel.TabIndex = 7;
-            this.tankLabel.Text = "Standard";
+            this.tankLabel.Text = "Basic";
             this.tankLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pictureBox1
