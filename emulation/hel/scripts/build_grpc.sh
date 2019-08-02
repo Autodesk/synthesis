@@ -28,7 +28,7 @@ if [[ ${TOOLCHAIN} != "" ]] ; then
 
     export GRPC_CROSS_AROPTS="cr --target=elf32-little"
 fi
-make REQUIRE_CUSTOM_LIBRARIES_opt=1 static -j10 \
+make REQUIRE_CUSTOM_LIBRARIES_opt=1 plugins static -j10 \
      HAS_PKG_CONFIG=false \
      CC=${TOOLCHAIN}gcc \
      CXX=${TOOLCHAIN}g++ \
