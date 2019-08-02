@@ -33,7 +33,6 @@ namespace InventorRobotExporter.GUI.Loading
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportingMeshesForm));
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProgressLabel = new System.Windows.Forms.Label();
-            this.ExportMeshWorker = new System.ComponentModel.BackgroundWorker();
             this.ExitButton = new System.Windows.Forms.Button();
             this.LoadingAnimation = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingAnimation)).BeginInit();
@@ -58,11 +57,6 @@ namespace InventorRobotExporter.GUI.Loading
             this.ProgressLabel.TabIndex = 2;
             this.ProgressLabel.Text = "Progress: ";
             // 
-            // ExporterWorker
-            // 
-            this.ExportMeshWorker.WorkerReportsProgress = true;
-            this.ExportMeshWorker.WorkerSupportsCancellation = true;
-            // 
             // ExitButton
             // 
             this.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
@@ -70,14 +64,14 @@ namespace InventorRobotExporter.GUI.Loading
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(354, 23);
             this.ExitButton.TabIndex = 3;
-            this.ExitButton.Text = "Close";
+            this.ExitButton.Text = "Cancel";
             this.ExitButton.UseVisualStyleBackColor = true;
-            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            this.ExitButton.Click += new System.EventHandler(this.CancelExportWorker);
             // 
             // LoadingAnimation
             // 
             this.LoadingAnimation.BackColor = System.Drawing.Color.Transparent;
-            this.LoadingAnimation.Image = Resources.SynthesisLogoLoading;
+            this.LoadingAnimation.Image = global::InventorRobotExporter.Properties.Resources.SynthesisLogoLoading;
             this.LoadingAnimation.Location = new System.Drawing.Point(12, 12);
             this.LoadingAnimation.Name = "LoadingAnimation";
             this.LoadingAnimation.Size = new System.Drawing.Size(354, 354);
@@ -85,7 +79,7 @@ namespace InventorRobotExporter.GUI.Loading
             this.LoadingAnimation.TabStop = false;
             this.LoadingAnimation.WaitOnLoad = true;
             // 
-            // LiteExporterForm
+            // ExportingMeshesForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
@@ -98,8 +92,10 @@ namespace InventorRobotExporter.GUI.Loading
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ExportingMeshesForm";
-            this.Text = "Exporting Meshes...";
+            this.Text = "Exporting Robot";
+            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.LoadingAnimation)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -110,7 +106,6 @@ namespace InventorRobotExporter.GUI.Loading
 
         private System.Windows.Forms.PictureBox LoadingAnimation;
         private System.Windows.Forms.Label ProgressLabel;
-        private System.ComponentModel.BackgroundWorker ExportMeshWorker;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.ProgressBar ProgressBar;
     }
