@@ -116,7 +116,12 @@ namespace InventorRobotExporter
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
             advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
-            advancedEditJointButton.OnExecute += context => advancedJointEditor.Visible = !advancedJointEditor.Visible;
+            advancedEditJointButton.OnExecute += context =>
+            {
+                if (advancedJointEditor.Visible) return;
+                advancedJointEditor.Visible = true;
+                jointForm.Visible = false;
+            };
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
@@ -124,8 +129,14 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                jointForm.ShowDialog();
-                advancedJointEditor.UpdateSkeleton(RobotDataManager);
+                if (jointForm.Visible)
+                {
+                    jointForm.Activate();
+                    return;
+                }
+                jointForm.PreShow();
+                jointForm.Show();
+                advancedJointEditor.Visible = false;
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
@@ -190,11 +201,9 @@ namespace InventorRobotExporter
             guideManager.Init(uiMan);
 
             guideManager.Visible = AddInSettingsManager.ShowGuide;
-
-            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
-            // Load skeleton into joint editors
-            advancedJointEditor.UpdateSkeleton(RobotDataManager);
-            jointForm.UpdateSkeleton(RobotDataManager);
+            
+            advancedJointEditor.LoadRobot(RobotDataManager);
+            jointForm.LoadRobot(RobotDataManager);
             loadingBar.Close();
         }
 
