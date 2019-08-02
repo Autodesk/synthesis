@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettingsForm));
             this.okButton = new System.Windows.Forms.Button();
             this.gearRatioInput = new System.Windows.Forms.NumericUpDown();
             this.sensorListView = new System.Windows.Forms.ListView();
@@ -234,11 +235,13 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AdvancedJointSettingsForm";
             this.Text = "Advanced Joint Settings";
+            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).EndInit();
             this.sensorBox.ResumeLayout(false);
             this.gearRatioBox.ResumeLayout(false);

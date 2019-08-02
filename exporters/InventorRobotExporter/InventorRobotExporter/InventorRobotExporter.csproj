@@ -149,19 +149,27 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.Designer.cs">
       <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.Designer.cs">
       <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.Designer.cs">
       <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.cs" />
+    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.Designer.cs">
       <DependentUpon>JointSensorListForm.cs</DependentUpon>
     </Compile>
