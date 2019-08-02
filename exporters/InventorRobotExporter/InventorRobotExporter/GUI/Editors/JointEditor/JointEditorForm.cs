@@ -33,6 +33,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             DefinePartsLayout.Controls.Clear();
             DefinePartsLayout.RowStyles.Clear();
 
+            jointCards.Clear();
             foreach (var node in robotDataManager.RobotBaseNode.ListAllNodes())
             {
                 if (node.GetSkeletalJoint() == null || JointDriver.GetAllowedDrivers(node.GetSkeletalJoint()).Length == 0) continue;
@@ -45,6 +46,11 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             jointCards.ForEach(card => card.LoadPreviewIcon());
 
             ResumeLayout();
+        }
+
+        public bool HasJoints()
+        {
+            return jointCards.Count != 0;
         }
         
         public static void AddControlToNewTableRow(Control control, TableLayoutPanel table, RowStyle rowStyle = null)
