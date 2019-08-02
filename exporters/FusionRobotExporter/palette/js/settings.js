@@ -3,10 +3,7 @@ var settings = { analytics: true, guide: true }; // properties to be expanded la
 function updateView() {
     "use strict";
     document.getElementById("guideCheckbox").checked = settings.guide; // saves the value
-    document.getElementById("guideCheckbox").click(); // physically checks the box based on the saved value
-    
     document.getElementById("analyticsCheckbox").checked = settings.analytics; // saves the value
-    document.getElementById("analyticsCheckbox").click(); // physically checks the box based on the saved value
 }
 
 window.fusionJavaScriptHandler = {handle: function(action, data) {
