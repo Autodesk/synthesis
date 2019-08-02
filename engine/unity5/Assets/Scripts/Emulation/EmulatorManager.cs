@@ -17,10 +17,13 @@ namespace Synthesis
         private const string USER = "lvuser";
         private const string PASSWORD = "";
 
+        private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
+
         private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1;";
         private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh</dev/null >/dev/null 2>&1 &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
         private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
+        private const string RECEIVE_PRINTS_COMMAND = "tail -f " + REMOTE_LOG_NAME;
 
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
@@ -261,26 +264,11 @@ namespace Synthesis
             });
         }
 
-        public static Task ReceiveProgramOutput()
+        public static StreamReader CreateRobotOutputStream()
         {
-            return Task.Run(() =>
-            {
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
-                {
-                    client.Connect();
-                    var command = client.CreateCommand("tail -f /home/lvuser/logs/log.log");
-                    command.BeginExecute();
-                    var reader = new StreamReader(command.OutputStream);
-                    var line = "";
-                    while (IsTryingToRunRobotCode())
-                    {
-                        line = reader.ReadLine(); // Different read function?
-                        if (line != null)
-                            GUI.UserMessageManager.Dispatch(line, 5);
-                    }
-                    client.Disconnect();
-                }
-            });
+            var command = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
+            command.BeginExecute();
+            return new StreamReader(command.OutputStream);
         }
 
         public static Task FetchLogFile()
@@ -299,7 +287,7 @@ namespace Synthesis
                     {
                         client.Connect();
                         Stream localLogFile = File.Create(folder + "/log.log");
-                        client.Download("/home/lvuser/logs/log.log", localLogFile);
+                        client.Download(REMOTE_LOG_NAME, localLogFile);
                         localLogFile.Close();
                         client.Disconnect();
                     }
