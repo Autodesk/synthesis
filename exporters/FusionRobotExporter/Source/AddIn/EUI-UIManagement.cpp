@@ -319,6 +319,7 @@ void EUI::closeGuidePalette()
 {
 	if (guideEnabled)
 	{
+
 		robotExportGuideButton->controlDefinition()->isEnabled(true);
 		guidePalette->isVisible(false);
 		guideEnabled = false;
@@ -326,7 +327,11 @@ void EUI::closeGuidePalette()
 		static std::thread* uiThread = nullptr;
 		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
-		uiThread = new std::thread([this](std::string isGuideEnabled) { jointEditorPalette->sendInfoToHTML("settings_guide", isGuideEnabled); }, guideEnabled ? "true" : "false");
+		uiThread = new std::thread([this]()
+		{
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+		});
 
 		//settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
 	}
@@ -720,23 +725,19 @@ void EUI::deleteSettingsPalette() {
 	settingsPalette = nullptr;
 }
 
-void EUI::openSettingsPalette(bool guideEnabled)
+void EUI::openSettingsPalette(bool nan)
 {
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
-	uiThread = new std::thread([this](std::string isGuideEnabled)
-	{
-		jointEditorPalette->sendInfoToHTML("settings_guide", isGuideEnabled);
-		settingsPalette->isVisible(true);
-		jointEditorPalette->sendInfoToHTML("settings_guide", isGuideEnabled);
-
-	}, guideEnabled ? "true" : "false");
-
-	//settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+	uiThread = new std::thread([this]()
+		{
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->isVisible(true);
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+		});
 
 	settingsButton->controlDefinition()->isEnabled(false);
-	//settingsPalette->isVisible(true);
 }
 
 void EUI::closeSettingsPalette(std::string guideEnabled) {
