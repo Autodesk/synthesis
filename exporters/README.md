@@ -16,8 +16,8 @@ This is the main Inventor exporter that is bundles with Synthesis. It is broken 
 * packages are external libs that the exporter uses to simplify meshes.
 * robot_exporter is the legacy Inventor plugin tha the BxDRobotExpoter uses for backend robot information and some GUI elements.
 
-## FusionExporter
-This is the new Fusion 360 Exporter
+## FusionRobotExporter
+This is the Fusion 360 Robot Exporter
 
 ## field_exporter
 This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields

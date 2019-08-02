@@ -10,6 +10,7 @@
             {
                 padding-left: 1rem;
                 padding-right: 1.5rem;
+                padding-bottom: 1rem;
             }
 
         </style>
@@ -22,14 +23,9 @@
                 <span class="field-input"><input type="text" id="name" value="unnamed" onchange="updateSubmitButton()"></span>
                 <input type="checkbox" value="Colors" checked> Export with colors<br>
                 <input type="checkbox" value="Open" checked> Open Synthesis<br>
-                <span class="field-select" style="margin-top: 4px;"><select id="frc-field-options" onchange="updateFieldOptions(this)">
-                        <option value="0">2019 Destination Deep Space</option>
-                    </select>
-                </span>
             </div>
         </div>
 
         <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
-        <button id='cancel-button' type='button' onclick='cancel()'>Cancel</button>
     </body>
 </html>
