@@ -33,6 +33,7 @@ namespace InventorRobotExporter.GUI.Editors
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.RobotNameLabel = new System.Windows.Forms.Label();
             this.RobotNameTextBox = new System.Windows.Forms.TextBox();
@@ -174,6 +175,7 @@ namespace InventorRobotExporter.GUI.Editors
             this.ClientSize = new System.Drawing.Size(576, 99);
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
