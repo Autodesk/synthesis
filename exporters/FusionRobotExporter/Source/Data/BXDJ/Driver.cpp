@@ -114,7 +114,7 @@ nlohmann::json BXDJ::Driver::GetExportJson()
 	exportJson["motor"] = motor + 1;
 	exportJson["InputGear"] = inputGear;
 	exportJson["OutputGear"] = outputGear;
-	exportJson["hasBreak"] = false;
+	exportJson["hasBrake"] = false;
 	
 	nlohmann::json metaJson;
 	if (getWheel() != nullptr) {
