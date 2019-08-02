@@ -52,7 +52,6 @@ RequestExecutionLevel admin
  ;--------------------------------
 Section
 
-;Where we can read registry data if we need it
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
     MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
       true:
@@ -104,7 +103,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 # default section end
 SectionEnd
 
-Section "Synthesis (required)" SynthesisRequired
+Section "Synthesis (required)"
 
   SectionIn RO
   
@@ -144,7 +143,7 @@ Section "Synthesis (required)" SynthesisRequired
 
 SectionEnd
 
-Section "MixAndMatch Files" MixMatch
+Section "MixAndMatch Files"
 
   ; Set extraction path for Mix&Match files
   SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
@@ -153,7 +152,7 @@ Section "MixAndMatch Files" MixMatch
 
 SectionEnd
 
-Section "Robot Files" RoboFiles
+Section "Robot Files"
 
   ; Set extraction path for preloaded robot files
   SetOutPath $APPDATA\Autodesk\Synthesis\Robots
@@ -177,6 +176,7 @@ Section "Uninstall"
   DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
+  ; Remove installation directories
   RMDir /r /REBOOTOK $INSTDIR
   RMDir /r /REBOOTOK $PROGRAMFILES64\Autodesk\Synthesis
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark

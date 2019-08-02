@@ -12,7 +12,6 @@ using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
-using Inventor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
