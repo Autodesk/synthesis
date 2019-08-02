@@ -10,6 +10,8 @@ namespace Synthesis.GUI
         public static EmulationDriverStation Instance { get; private set; }
         private bool VMConnectionCoroutineRunning = false;
 
+        private bool lastGameSpecificMessageFocused = false;
+
         GameObject canvas;
         InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
@@ -51,6 +53,7 @@ namespace Synthesis.GUI
             enableRobotImage = Auxiliary.FindObject(canvas, "Enable").GetComponentInChildren<Image>();
             disableRobotImage = Auxiliary.FindObject(canvas, "Disable").GetComponentInChildren<Image>();
 
+            RobotState("teleop");
             RobotDisabled();
             StopRobotCode();
             BeginTrackingVMConnectionStatus();
@@ -73,7 +76,11 @@ namespace Synthesis.GUI
 
         public void Update()
         {
-            InputControl.freeze = gameSpecificMessage.isFocused;
+            if (lastGameSpecificMessageFocused != gameSpecificMessage.isFocused)
+            {
+                InputControl.freeze = gameSpecificMessage.isFocused;
+                lastGameSpecificMessageFocused = gameSpecificMessage.isFocused;
+            }
         }
 
         /// <summary>
@@ -81,15 +88,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void ToggleDriverStation()
         {
-            if (emuDriverStationPanel.activeSelf == true) // Close it
-            {
-                emuDriverStationPanel.SetActive(false);
-            }
-            else // Open it
-            {
-                emuDriverStationPanel.SetActive(true);
-                RobotState("teleop");
-            }
+            emuDriverStationPanel.SetActive(!emuDriverStationPanel.activeSelf);
         }
 
         /// <summary>
@@ -121,7 +120,10 @@ namespace Synthesis.GUI
                     if (EmulatorNetworkConnection.Instance.IsConnected())
                         VMConnectionStatusMessage.text = "Connected";
                     else
+                    {
                         VMConnectionStatusMessage.text = "Ready";
+                        RobotDisabled();
+                    }
                 }
                 else if(EmulatorManager.IsVMRunning())
                 {
@@ -186,28 +188,29 @@ namespace Synthesis.GUI
         /// <param name="theState"></param>
         public void RobotState(string theState)
         {
+            EmulationService.RobotInputs.Types.RobotMode.Types.Mode last_mode = InputManager.Instance.RobotMode.Mode;
+
+            Auxiliary.FindObject(canvas, "TeleOp").GetComponentInChildren<Image>().sprite = DefaultColor;
+            Auxiliary.FindObject(canvas, "Auto").GetComponentInChildren<Image>().sprite = DefaultColor;
+            Auxiliary.FindObject(canvas, "Test").GetComponentInChildren<Image>().sprite = DefaultColor;
             switch (theState)
             {
                 case "auto":
                     InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = HighlightColor;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
+                    Auxiliary.FindObject(canvas, "Auto").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
                 case "test":
                     InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = HighlightColor;
+                    Auxiliary.FindObject(canvas, "Test").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
                 case "teleop":
                 default:
                     InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
-                    GameObject.Find("TeleOp").GetComponent<Image>().sprite = HighlightColor;
-                    GameObject.Find("Auto").GetComponent<Image>().sprite = DefaultColor;
-                    GameObject.Find("Test").GetComponent<Image>().sprite = DefaultColor;
+                    Auxiliary.FindObject(canvas, "TeleOp").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
             }
+            if(InputManager.Instance.RobotMode.Mode != last_mode)
+                RobotDisabled();
         }
 
         public void RobotEnabled()

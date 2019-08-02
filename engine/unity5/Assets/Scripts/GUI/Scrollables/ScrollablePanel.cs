@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,13 +39,17 @@ namespace Synthesis.GUI.Scrollables
             listStyle.active.background = Resources.Load("Images/New Textures/greenButton") as Texture2D;
             listStyle.font = Resources.Load("Fonts/Artifakt Element Regular") as Font;
             listStyle.alignment = TextAnchor.MiddleLeft;
+            listStyle.normal.textColor = Color.white;
+            listStyle.active.textColor = Color.black;
 
             if (ListTextColor == Color.clear) ListTextColor = Color.white;
-            if (ThumbTexture == null) ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
+            /*if (ThumbTexture == null)*/ ThumbTexture = Resources.Load("Images/New Textures/Button") as Texture2D;
 
             highlightStyle = new GUIStyle(listStyle);
             highlightStyle.normal.background = listStyle.active.background;
             highlightStyle.hover.background = highlightStyle.normal.background;
+            highlightStyle.normal.textColor = Color.black;
+            highlightStyle.hover.textColor = Color.black;
         }
 
         // Update is called once per frame

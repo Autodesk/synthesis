@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Synthesis.Input.Enums;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Synthesis.Input
         /// Gets the axis name.
         /// </summary>
         /// <value>Axis name.</value>
+        [JsonIgnore]
         public string Name
         {
             get
@@ -37,11 +39,6 @@ namespace Synthesis.Input
 
             set
             {
-                if (value == null)
-                {
-                    Debug.LogError("value can't be null");
-                }
-
                 mNegative = value;
             }
         }
@@ -59,11 +56,6 @@ namespace Synthesis.Input
 
             set
             {
-                if (value == null)
-                {
-                    Debug.LogError("value can't be null");
-                }
-
                 mPositive = value;
             }
         }
@@ -74,20 +66,7 @@ namespace Synthesis.Input
         /// <value><c>true</c> if inverted; otherwise, <c>false</c>.</value>
         public bool Inverted { get; set; }
 
-        public string MName
-        {
-            get
-            {
-                return MName1;
-            }
-
-            set
-            {
-                MName1 = value;
-            }
-        }
-
-        public string MName1 { get; set; }
+        public string MName { get; set; }
 
         /// <summary>
         /// Create a new instance of <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
@@ -95,12 +74,10 @@ namespace Synthesis.Input
         /// <param name="name">Axis name.</param>
         /// <param name="negativeKeyMapping">Negative KeyMapping.</param>
         /// <param name="positiveKeyMapping">Positive KeyMapping.</param>
-        public Axis(string name, KeyMapping negativeKeyMapping, KeyMapping positiveKeyMapping)
+        [Newtonsoft.Json.JsonConstructor]
+        public Axis(string name, KeyMapping negativeKeyMapping, KeyMapping positiveKeyMapping, bool inverted = false)
         {
-            MName = name;
-            Inverted = false;
-
-            set(negativeKeyMapping, positiveKeyMapping);
+            set(name, negativeKeyMapping, positiveKeyMapping, inverted);
         }
 
         /// <summary>
@@ -109,8 +86,6 @@ namespace Synthesis.Input
         /// <param name="another">Another Axis instance.</param>
         public Axis(Axis another)
         {
-            MName = another.MName;
-
             set(another);
         }
 
@@ -120,9 +95,7 @@ namespace Synthesis.Input
         /// <param name="another">Another Axis instance.</param>
         public void set(Axis another)
         {
-            mNegative = another.mNegative;
-            mPositive = another.mPositive;
-            Inverted = another.Inverted;
+            set(another.MName, another.mNegative, another.mPositive, another.Inverted);
         }
 
         /// <summary>
@@ -130,10 +103,22 @@ namespace Synthesis.Input
         /// </summary>
         /// <param name="negativeKeyMapping">Negative KeyMapping.</param>
         /// <param name="positiveKeyMapping">Positive KeyMapping.</param>
-        public void set(KeyMapping negativeKeyMapping, KeyMapping positiveKeyMapping)
+        public void set(KeyMapping negativeKeyMapping, KeyMapping positiveKeyMapping, bool inverted = false)
         {
+            Inverted = inverted;
             Negative = negativeKeyMapping;
             Positive = positiveKeyMapping;
+        }
+
+        /// <summary>
+        /// Set negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+        /// </summary>
+        /// <param name="negativeKeyMapping">Negative KeyMapping.</param>
+        /// <param name="positiveKeyMapping">Positive KeyMapping.</param>
+        public void set(string name, KeyMapping negativeKeyMapping, KeyMapping positiveKeyMapping, bool inverted = false)
+        {
+            MName = name;
+            set(negativeKeyMapping, positiveKeyMapping, inverted);
         }
 
         /// <summary>
@@ -146,7 +131,7 @@ namespace Synthesis.Input
         {
             if (Inverted)
             {
-                return mNegative.getValue(exactKeyModifiers, MName, device: device) - mPositive.getValue(exactKeyModifiers, MName, device);
+                return mNegative.getValue(exactKeyModifiers, MName, device) - mPositive.getValue(exactKeyModifiers, MName, device);
             }
             else
             {
