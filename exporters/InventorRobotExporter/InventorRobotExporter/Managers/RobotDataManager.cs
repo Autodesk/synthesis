@@ -153,7 +153,10 @@ namespace InventorRobotExporter.Managers
                 }
 
                 //MessageBox.Show("Your robot was successfully exported to " + robotFolderPath, "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                new ExportSuccessful(robotFolderPath).ShowDialog();
+                if (!RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis)
+                {
+                    new ExportSuccessful(robotFolderPath).ShowDialog();
+                }
 
                 return true;
             }
