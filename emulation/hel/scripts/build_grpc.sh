@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SUDO =${which sudo}
+
 # Exit script if any command fails
 set -e
 set -o pipefail
@@ -15,8 +17,8 @@ TARGET_TRIPLE=$(${TOOLCHAIN}gcc -dumpmachine)
 if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
     make -j10 && \
-        sudo make install && \
-        sudo ldconfig
+        ${SUDO} make install && \
+        ${${SUDO}} ldconfig
     make clean
 else
     printf "Native gRPC installed. Skipping native build.\n\n"
