@@ -39,7 +39,8 @@
             this.tankOption = new System.Windows.Forms.TableLayoutPanel();
             this.tankLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnOk = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.customOption.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -204,22 +205,37 @@
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(338, 196);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(121, 27);
-            this.btnOk.TabIndex = 4;
-            this.btnOk.Text = "OK";
-            this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
+            this.okButton.Location = new System.Drawing.Point(210, 197);
+            this.okButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(121, 27);
+            this.okButton.TabIndex = 4;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = false;
+            this.okButton.Click += new System.EventHandler(this.OkButton_Click);
+            // 
+            // cancelButton
+            // 
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.Location = new System.Drawing.Point(337, 197);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(121, 27);
+            this.cancelButton.TabIndex = 5;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // DrivetrainLayoutForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(480, 235);
-            this.Controls.Add(this.btnOk);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -254,6 +270,7 @@
         private System.Windows.Forms.TableLayoutPanel tankOption;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label tankLabel;
-        private System.Windows.Forms.Button btnOk;
+        private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.Button cancelButton;
     }
 }
