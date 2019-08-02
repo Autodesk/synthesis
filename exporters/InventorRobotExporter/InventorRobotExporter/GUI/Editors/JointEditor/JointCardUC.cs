@@ -36,7 +36,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         {
             advancedSettingsForm = new AdvancedJointSettingsForm(node.GetSkeletalJoint());
             var joint = node.GetSkeletalJoint();
-            var jointDriver = joint.cDriver;
             var typeOptions = JointDriver.GetAllowedDrivers(joint); // TODO: This doesn't protect multi-edit
 
             jointTypeComboBox.Items.Clear();
@@ -51,9 +50,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             }
             else
             {
-                if (jointDriver.port1 <= 2)
-                    jointDriver.port1 = 2;
-
                 jointTypeComboBox.Items.AddRange(new object[]
                 {
                     "(Select an option)",
@@ -78,7 +74,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             wheelTypeComboBox.SelectedIndex = 0;
             driverTypeComboBox.SelectedIndex = 0;
 
-
+            var jointDriver = joint.cDriver; // sometimes null
             if (jointDriver == null)
             {
                 jointTypeComboBox.SelectedItem = "(Select an option)";
