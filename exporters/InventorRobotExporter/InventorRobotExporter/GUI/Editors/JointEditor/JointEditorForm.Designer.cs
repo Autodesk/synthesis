@@ -67,12 +67,13 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.DefinePartsLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.DefinePartsLayout.Size = new System.Drawing.Size(682, 755);
+            this.DefinePartsLayout.Size = new System.Drawing.Size(558, 755);
             this.DefinePartsLayout.TabIndex = 3;
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(574, 766);
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.Location = new System.Drawing.Point(450, 766);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(100, 28);
@@ -84,7 +85,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(466, 766);
+            this.okButton.Location = new System.Drawing.Point(342, 766);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 28);
@@ -95,17 +96,18 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 772);
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.Location = new System.Drawing.Point(9, 764);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(436, 17);
+            this.label1.Size = new System.Drawing.Size(326, 40);
             this.label1.TabIndex = 6;
-            this.label1.Text = "Use this menu to configure each joint you want to move in Synthesis\r\n";
+            this.label1.Text = "Use this menu to configure each joint \r\nyou want to control in the Synthesis simu" +
+    "lator\r\n\r\n";
             // 
             // JointEditorForm
             // 
             this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(682, 803);
+            this.ClientSize = new System.Drawing.Size(558, 803);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
@@ -122,7 +124,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.DefinePartsLayout.ResumeLayout(false);
             this.DefinePartsLayout.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
