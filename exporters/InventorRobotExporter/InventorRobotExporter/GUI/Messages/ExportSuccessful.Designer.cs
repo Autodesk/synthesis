@@ -37,10 +37,10 @@
             // okButton
             // 
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.okButton.Location = new System.Drawing.Point(70, 112);
+            this.okButton.Location = new System.Drawing.Point(16, 112);
             this.okButton.Margin = new System.Windows.Forms.Padding(4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(144, 28);
+            this.okButton.Size = new System.Drawing.Size(273, 28);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "Open Output Folder";
             this.okButton.UseVisualStyleBackColor = true;
@@ -52,7 +52,7 @@
             this.description.Location = new System.Drawing.Point(13, 9);
             this.description.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(410, 89);
+            this.description.Size = new System.Drawing.Size(561, 89);
             this.description.TabIndex = 1;
             this.description.Text = "Your robot has been exported successfully to\r\n%path%\r\n\r\nTo use this robot with Sy" +
     "nthesis, open the Synthesis \r\napplication and pick this robot in the \"Robot Sele" +
@@ -62,10 +62,10 @@
             // button1
             // 
             this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button1.Location = new System.Drawing.Point(222, 112);
+            this.button1.Location = new System.Drawing.Point(297, 112);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(144, 28);
+            this.button1.Size = new System.Drawing.Size(277, 28);
             this.button1.TabIndex = 2;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
@@ -76,7 +76,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(436, 153);
+            this.ClientSize = new System.Drawing.Size(587, 153);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.description);
             this.Controls.Add(this.okButton);
