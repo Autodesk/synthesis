@@ -118,6 +118,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.MinimumSize = new System.Drawing.Size(0, 850);
             this.Name = "JointEditorForm";
             this.Text = "Joint Editor";
+            this.TopMost = true;
             this.DefinePartsLayout.ResumeLayout(false);
             this.DefinePartsLayout.PerformLayout();
             this.ResumeLayout(false);
