@@ -65,7 +65,7 @@ namespace InventorRobotExporter
         public readonly HighlightManager HighlightManager = new HighlightManager();
 
         // UI elements
-        private readonly JointForm jointForm = new JointForm();
+        private readonly JointEditorForm jointEditorForm = new JointEditorForm();
 
         protected override Environment CreateEnvironment()
         {
@@ -120,7 +120,7 @@ namespace InventorRobotExporter
             {
                 if (advancedJointEditor.Visible) return;
                 advancedJointEditor.Visible = true;
-                jointForm.Visible = false;
+                jointEditorForm.Visible = false;
             };
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
@@ -129,13 +129,13 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                if (jointForm.Visible)
+                if (jointEditorForm.Visible)
                 {
-                    jointForm.Activate();
+                    jointEditorForm.Activate();
                     return;
                 }
-                jointForm.PreShow();
-                jointForm.Show();
+                jointEditorForm.PreShow();
+                jointEditorForm.Show();
                 advancedJointEditor.Visible = false;
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
@@ -171,7 +171,8 @@ namespace InventorRobotExporter
         protected override void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
-            
+
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
@@ -201,21 +202,26 @@ namespace InventorRobotExporter
             guideManager.Init(uiMan);
 
             guideManager.Visible = AddInSettingsManager.ShowGuide;
-            
+
+            loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
+            // Load skeleton into joint editors
             advancedJointEditor.LoadRobot(RobotDataManager);
-            jointForm.LoadRobot(RobotDataManager);
+            jointEditorForm.LoadRobot(RobotDataManager);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
 
         protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
             
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
 
             var exportResult = MessageBox.Show(
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
