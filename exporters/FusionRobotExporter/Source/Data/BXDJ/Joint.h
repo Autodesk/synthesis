@@ -6,6 +6,7 @@
 #include "XmlWriter.h"
 #include "Driver.h"
 #include "JointSensor.h"
+#include <nlohmann/json.hpp>
 #include "../Vector3.h"
 
 using namespace adsk;
@@ -44,6 +45,7 @@ namespace BXDJ
 		std::shared_ptr<RigidNode> getChild() const; ///< \return The child RigidNode of the Joint.
 		Vector3<> getParentBasePoint() const; ///< \return The point in space at which the parent occurrence is connected to the child occurrence in Fusion.
 		Vector3<> getChildBasePoint() const; ///< \return The point in space at which the child occurrence is connected to the parent occurrence in Fusion.
+		double getWeightData() const;
 
 		///
 		/// Searches a collection of ConfigData for the driver assigned to this Joint, then copies said Driver onto this Joint.
@@ -56,6 +58,7 @@ namespace BXDJ
 
 		void addSensor(JointSensor); ///< Adds a JointSensor to this Joint.
 		void clearSensors(); ///< Removes all JointSensors from this Joint.
+		virtual nlohmann::json GetJson();
 
 	protected:
 		/// Used for specifying which occurrence in a Joint is recognized as the parent.
@@ -66,6 +69,7 @@ namespace BXDJ
 
 		OneTwo getParentOccNum() { return parentOcc; } ///< \return Which Fusion occurrence (One or Two) that the parent of this Joint is in the Fusion joint.
 		virtual void write(XmlWriter &) const; ///< This should be called by any derived Joint classes. Writes driver and sensors to the BXDJ file.
+		std::vector<std::shared_ptr<JointSensor>> sensors; ///< Contains any JointSensors attached to this Joint.
 
 	private:
 		OneTwo parentOcc; ///< Specifies which occurrence in the Fusion joint is recognized as the parent.
@@ -74,8 +78,8 @@ namespace BXDJ
 		RigidNode * parent; ///< The RigidNode that this Joint is a child of.
 		std::shared_ptr<RigidNode> child; ///< The RigidNode that is a child of this Joint.
 		std::unique_ptr<Driver> driver; ///< The Driver applied to this Joint.
-
-		std::vector<std::shared_ptr<JointSensor>> sensors; ///< Contains any JointSensors attached to this Joint.
+		
+		
 
 	};
 };
