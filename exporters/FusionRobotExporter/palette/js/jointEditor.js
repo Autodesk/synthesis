@@ -110,8 +110,7 @@ var delayHover = function (elem, callback) {
 // Populates the form with joints
 function applyConfigData(configData)
 {
-    console.log("ApplConfig", configData);
-    document.getElementById('name').value = configData.name;
+    console.log("ApplyConfig", configData);
 
     var joints = configData.joints;
 
@@ -145,34 +144,34 @@ function applyConfigData(configData)
         
 
         // Filter for angular or linear joints
-        var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
-        var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
-        var elsToHide = [];
-
-        if ((joints[i].type & JOINT_ANGULAR) != JOINT_ANGULAR)
-        {
-            elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('angular-driver')));
-            elsToHide.push(angularJointDiv);
-        }
-
-        if ((joints[i].type & JOINT_LINEAR) != JOINT_LINEAR)
-        {
-            elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('linear-driver')));
-            elsToHide.push(linearJointDiv);
-        }
-
-        for (var j = 0; j < elsToHide.length; j++)
-            elsToHide[j].style.display = 'none';
-
-        // Hide sensors button if joint is not angular
-        if ((joints[i].type & JOINT_LINEAR) == JOINT_LINEAR)
-            setVisible(getElByClass(fieldset, 'edit-sensors-button'), false);
+        // var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
+        // var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
+        // var elsToHide = [];
+        //
+        // if ((joints[i].type & JOINT_ANGULAR) != JOINT_ANGULAR)
+        // {
+        //     elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('angular-driver')));
+        //     elsToHide.push(angularJointDiv);
+        // }
+        //
+        // if ((joints[i].type & JOINT_LINEAR) != JOINT_LINEAR)
+        // {
+        //     elsToHide = elsToHide.concat(Array.from(fieldset.getElementsByClassName('linear-driver')));
+        //     elsToHide.push(linearJointDiv);
+        // }
+        //
+        // for (var j = 0; j < elsToHide.length; j++)
+        //     elsToHide[j].style.display = 'none';
+        //
+        // // Hide sensors button if joint is not angular
+        // if ((joints[i].type & JOINT_LINEAR) == JOINT_LINEAR)
+        //     setVisible(getElByClass(fieldset, 'edit-sensors-button'), false);
 
         // Set joint type
         fieldset.dataset.joint_type = joints[i].type;
 
         // Apply any existing configuration
-        applyDriverData(joints[i].driver, fieldset);
+        // applyDriverData(joints[i].driver, fieldset);
 
         // Show or hide other elements
         updateFieldOptions(fieldset);
@@ -233,93 +232,109 @@ function updateFieldOptions(fieldset)
     if (fieldset == null)
         return;
 
-    // Update view of fieldset
-    var driverType = parseInt(getElByClass(fieldset, 'driver-type').value);
-    var hasDriverDiv = getElByClass(fieldset, 'has-driver-div');
-
-    if (driverType == 0)
-        setVisible(hasDriverDiv, false);
-    else
-    {
-        setVisible(hasDriverDiv, true);
-
-        var jointType = parseInt(fieldset.dataset.joint_type);
-
-        var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
-        var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
-
-        var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
-        var portTwoSelector = getElByClass(fieldset, 'port-number-two');
-        setVisible(genericPortsDiv, true);
-        setVisible(portTwoSelector, false);
-        
-        setPortView(fieldset, 'motor');
-
-        // Angular Joint Info
-        if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
-        {
-            if (driverType == DRIVER_DUAL_MOTOR)
-                setVisible(portTwoSelector, true);
-
-            // Wheel Info
-            var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
-            var hasWheelDiv = getElByClass(fieldset, 'has-wheel-div');
-
-            if (selectedWheel == 0)
-            {
-                setVisible(hasWheelDiv, false);
-                setVisible(linearJointDiv, true);
-            }
-            else
-            {
-                setVisible(hasWheelDiv, true);
-                setVisible(linearJointDiv, false);
-
-                // Drive wheel
-                var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
-                var driveWheelPortsDiv = getElByClass(fieldset, 'wheel-side');
-                
-                if (!isDriveWheel)
-                    setVisible(driveWheelPortsDiv, false);
-                else
-                {
-                    setVisible(driveWheelPortsDiv, true);
-                    setVisible(genericPortsDiv, false);
-                }
-            }
-        }
-
-        // Linear Joint Info
-        if ((jointType & JOINT_LINEAR) == JOINT_LINEAR)
-        {
-            var pneumaticDiv = getElByClass(fieldset, 'pneumatic-div');
-            var elevatorDiv = getElByClass(fieldset, 'has-elevator-div');
-
-            if (driverType != DRIVER_BUMPER_PNEUMATIC &&
-                driverType != DRIVER_RELAY_PNEUMATIC)
-            {
-                setVisible(pneumaticDiv, false);
-
-                if (driverType == DRIVER_ELEVATOR)
-                    setVisible(elevatorDiv, true);
-                else
-                    setVisible(elevatorDiv, false);
-            }
-            else
-            {
-                if (driverType == DRIVER_BUMPER_PNEUMATIC)
-                {
-                    setVisible(portTwoSelector, true);
-                    setPortView(fieldset, 'pneumatic');
-                }
-                else
-                    setPortView(fieldset, 'relay');
-
-                setVisible(pneumaticDiv, true);
-                setVisible(elevatorDiv, false);
-            }
-        }
+    var jointType = getElByClass(fieldset, 'joint-type').value;
+    var drivetrainDiv = getElByClass(fieldset, 'drivetrain-options');
+    var mechanismDiv = getElByClass(fieldset, 'mechanism-options');
+    
+    if (jointType === "none") {
+        setVisible(drivetrainDiv, false);
+        setVisible(mechanismDiv, false);
+    } else if (jointType === "drivetrain") {
+        setVisible(drivetrainDiv, true);
+        setVisible(mechanismDiv, false);
+    } else {
+        setVisible(drivetrainDiv, false);
+        setVisible(mechanismDiv, true);
     }
+
+    //
+    // // Update view of fieldset
+    // var driverType = parseInt(getElByClass(fieldset, 'driver-type').value);
+    // var hasDriverDiv = getElByClass(fieldset, 'has-driver-div');
+    //
+    // if (driverType == 0)
+    //     setVisible(hasDriverDiv, false);
+    // else
+    // {
+    //     setVisible(hasDriverDiv, true);
+    //
+    //     var jointType = parseInt(fieldset.dataset.joint_type);
+    //
+    //     var angularJointDiv = getElByClass(fieldset, 'angular-joint-div');
+    //     var linearJointDiv = getElByClass(fieldset, 'linear-joint-div');
+    //
+    //     var genericPortsDiv = getElByClass(fieldset, 'generic-ports-div');
+    //     var portTwoSelector = getElByClass(fieldset, 'port-number-two');
+    //     setVisible(genericPortsDiv, true);
+    //     setVisible(portTwoSelector, false);
+    //    
+    //     setPortView(fieldset, 'motor');
+    //
+    //     // Angular Joint Info
+    //     if ((jointType & JOINT_ANGULAR) == JOINT_ANGULAR)
+    //     {
+    //         if (driverType == DRIVER_DUAL_MOTOR)
+    //             setVisible(portTwoSelector, true);
+    //
+    //         // Wheel Info
+    //         var selectedWheel = parseInt(getElByClass(fieldset, 'wheel-type').value);
+    //         var hasWheelDiv = getElByClass(fieldset, 'has-wheel-div');
+    //
+    //         if (selectedWheel == 0)
+    //         {
+    //             setVisible(hasWheelDiv, false);
+    //             setVisible(linearJointDiv, true);
+    //         }
+    //         else
+    //         {
+    //             setVisible(hasWheelDiv, true);
+    //             setVisible(linearJointDiv, false);
+    //
+    //             // Drive wheel
+    //             var isDriveWheel = getElByClass(fieldset, 'is-drive-wheel').checked;
+    //             var driveWheelPortsDiv = getElByClass(fieldset, 'wheel-side');
+    //            
+    //             if (!isDriveWheel)
+    //                 setVisible(driveWheelPortsDiv, false);
+    //             else
+    //             {
+    //                 setVisible(driveWheelPortsDiv, true);
+    //                 setVisible(genericPortsDiv, false);
+    //             }
+    //         }
+    //     }
+    //
+    //     // Linear Joint Info
+    //     if ((jointType & JOINT_LINEAR) == JOINT_LINEAR)
+    //     {
+    //         var pneumaticDiv = getElByClass(fieldset, 'pneumatic-div');
+    //         var elevatorDiv = getElByClass(fieldset, 'has-elevator-div');
+    //
+    //         if (driverType != DRIVER_BUMPER_PNEUMATIC &&
+    //             driverType != DRIVER_RELAY_PNEUMATIC)
+    //         {
+    //             setVisible(pneumaticDiv, false);
+    //
+    //             if (driverType == DRIVER_ELEVATOR)
+    //                 setVisible(elevatorDiv, true);
+    //             else
+    //                 setVisible(elevatorDiv, false);
+    //         }
+    //         else
+    //         {
+    //             if (driverType == DRIVER_BUMPER_PNEUMATIC)
+    //             {
+    //                 setVisible(portTwoSelector, true);
+    //                 setPortView(fieldset, 'pneumatic');
+    //             }
+    //             else
+    //                 setPortView(fieldset, 'relay');
+    //
+    //             setVisible(pneumaticDiv, true);
+    //             setVisible(elevatorDiv, false);
+    //         }
+    //     }
+    // }
 }
 
 // Outputs currently entered data as a JSON object
