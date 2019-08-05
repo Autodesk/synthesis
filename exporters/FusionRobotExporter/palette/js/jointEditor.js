@@ -59,6 +59,18 @@ function editSensors(fieldset)
     adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
 }
 
+function showJoints() {
+    document.getElementById("nodata").style.height = "0px";
+    document.getElementById("nodata").style.visibility = "hidden";
+    document.getElementById("save-button").style.visibility = "visible";
+}
+
+function noJoints() {
+    document.getElementById("nodata").style.height = "70px";
+    document.getElementById("nodata").style.visibility = "visible";
+    document.getElementById("save-button").style.visibility = "hidden";
+}
+
 // Handles the receiving of data from Fusion
 window.fusionJavaScriptHandler =
     {
@@ -68,15 +80,20 @@ window.fusionJavaScriptHandler =
             {
                 if (action == 'joints')
                 {
+                    showJoints();
                     console.log("Input Joint Data Data: ", JSON.parse(data));
                     applyConfigData(JSON.parse(data));
                 }
                 else if (action == 'sensors')
                 {
+                    showJoints();
                     console.log("Receiving sensor info...");
                     console.log(data);
                     if (openFieldsetSensors != null)
                         openFieldsetSensors.dataset.sensors = data;
+                }
+                else if (action == "joints_nodata") {
+                    noJoints();
                 }
                 else if (action == 'debugger')
                 {
