@@ -22,6 +22,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 RUN cd /root && \
+    git clone https://github.com/protocolbuffers/protobuf.git --branch v3.7.0 && \
+    cd protobuf && \
+    git submodule update --init --recursive && \
+    ./autogen.sh && \
+    ./configure && \
+    make -j12 && make check && \
+    make install && \
+    ldconfig
+
+RUN pwd
+RUN cd /root && \
     git clone https://github.com/Autodesk/synthesis.git --branch ${SYNTHESIS_BRANCH} --depth=1
 
 RUN ${ENTER_HEL} && \
@@ -41,12 +52,6 @@ RUN ${ENTER_HEL}/../wpi_cross && \
     (./gradlew wpilibj:build || true) 
 #A hack but it works
 
-EXPOSE 50051
-EXPOSE 10022
-EXPOSE 10023
-
-RUN mkdir /run/sshd
-
 FROM ubuntu:19.04
 
 ENV WPILIB_VERSION v2019.4.1
@@ -54,7 +59,6 @@ ENV SYNTHESIS_BRANCH 953-java-emulation
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-11-jdk \
     openjdk-11-jre \
     qemu \
     qemu-system-arm \
@@ -62,7 +66,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
     unzip && \
-    zlib1g-dev \ 
     rm -rf /var/lib/apt/lists/*
 
 RUN sed -i '#s/PermitRootLogin\ prohibit-password/PermitRootLogin\ yes/' /etc/ssh/sshd_config && \
@@ -72,8 +75,7 @@ RUN sed -i '#s/PermitRootLogin\ prohibit-password/PermitRootLogin\ yes/' /etc/ss
     sed -i 's/pam_unix.so nullok_secure/pam_unix.so nullok/' /etc/pam.d/common-auth
 
 RUN adduser --disabled-password --gecos "" lvuser && \
-    usermod -aG sudo lvuser
-RUN passwd -d lvuser
+    passwd -d lvuser
 
 WORKDIR /home/lvuser
 
