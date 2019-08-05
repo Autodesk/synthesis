@@ -223,7 +223,7 @@ namespace InventorRobotExporter
             loadingBar.Close();
             Application.UserInterfaceManager.UserInteractionDisabled = false;
 
-            var exportResult = MessageBox.Show(
+            var exportResult = MessageBox.Show(new Form { TopMost = true }, 
                 "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
                 "Robot Configuration Complete",
                 MessageBoxButtons.YesNo);

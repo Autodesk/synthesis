@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using InventorRobotExporter.OGLViewer;
 using InventorRobotExporter.RigidAnalyzer;
 using InventorRobotExporter.Utilities;
@@ -8,7 +9,7 @@ namespace InventorRobotExporter.Exporter
 {
     public static class MeshExporter
     {
-        public static List<BXDAMesh> ExportMeshes(IProgress<ProgressUpdate> progress, RigidNode_Base baseNode, float totalMassKg)
+        public static List<BXDAMesh> ExportMeshes(IProgress<ProgressUpdate> progress, RigidNode_Base baseNode, float totalMassKg, BackgroundWorker backgroundWorker = null)
         {
             SurfaceExporter surfs = new SurfaceExporter();
             BXDJSkeleton.SetupFileNames(baseNode);
@@ -18,7 +19,7 @@ namespace InventorRobotExporter.Exporter
 
             List<BXDAMesh> meshes = new List<BXDAMesh>();
 
-            progress.Report(new ProgressUpdate("Exporting Model", 0, 0));
+            progress.Report(new ProgressUpdate("Exporting Meshes...", 0, 0));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -30,10 +31,13 @@ namespace InventorRobotExporter.Exporter
                     {
                         CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
 
+                        var currentNodeIndex = i;
                         BXDAMesh output = surfs.ExportAll(@group, node.GUID, (progressValue, total) =>
                         {
-                            progress.Report(new ProgressUpdate(null, (int) (((double)progressValue / total / nodes.Count + (double)i / nodes.Count)*1000), 1000));
-                        });
+                            progress.Report(new ProgressUpdate("Exporting Meshes...  ("+(currentNodeIndex+1)+"/"+nodes.Count+")", (int) (((double)progressValue / total / nodes.Count + (double)currentNodeIndex / nodes.Count)*1000), 1000));
+                        }, backgroundWorker);
+                        
+                        if (backgroundWorker != null && backgroundWorker.CancellationPending) return null;
                     
                         output.colliders.Clear();
                         output.colliders.AddRange(ConvexHullCalculator.GetHull(output));
@@ -58,6 +62,7 @@ namespace InventorRobotExporter.Exporter
                 for (int i = 0; i < meshes.Count; i++)
                 {
                     meshes[i].physics.mass = totalMassKg * (float)(meshes[i].physics.mass / totalDefaultMass);
+                    if (backgroundWorker != null && backgroundWorker.CancellationPending) return null;
                 }
             }
 
@@ -89,6 +94,7 @@ namespace InventorRobotExporter.Exporter
                         joint.cDriver.AddInfo(wheelDriver);
                     }
                 }
+                if (backgroundWorker != null && backgroundWorker.CancellationPending) return null;
             }
 
             return meshes;

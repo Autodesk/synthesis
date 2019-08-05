@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using InventorRobotExporter.RigidAnalyzer;
 using Inventor;
@@ -17,8 +18,10 @@ namespace InventorRobotExporter.Exporter
         /// Exports all the components in this group to the in-RAM mesh.
         /// </summary>
         /// <param name="group">Group to export from</param>
+        /// <param name="guid"></param>
         /// <param name="reporter">Progress reporter</param>
-        public BXDAMesh ExportAll(CustomRigidGroup group, Guid guid, BXDIO.ProgressReporter reporter = null)
+        /// <param name="backgroundWorker"></param>
+        public BXDAMesh ExportAll(CustomRigidGroup @group, Guid guid, BXDIO.ProgressReporter reporter = null, BackgroundWorker backgroundWorker = null)
         {
             // Create output mesh
             MeshController outputMesh = new MeshController(guid);
@@ -38,7 +41,7 @@ namespace InventorRobotExporter.Exporter
 
                 Parallel.ForEach(plannedSurfaces, (SurfaceBody surface) =>
                 {
-                    CalculateSurfaceFacets(surface, outputMesh, RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors);
+                    CalculateSurfaceFacets(surface, outputMesh, RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors, backgroundWorker);
 
                     lock (finishLock)
                     {
@@ -46,6 +49,7 @@ namespace InventorRobotExporter.Exporter
                         reporter?.Invoke(totalJobsFinished, plannedSurfaces.Count);
                     }
                 });
+                if (backgroundWorker != null && backgroundWorker.CancellationPending) return null;
 
                 outputMesh.DumpOutput();
             }
