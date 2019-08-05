@@ -65,7 +65,7 @@
                 <div class="driver-div">
                     <span class="field-label">Joint Type: </span>
                     <span class="field-select">
-                        <select class="joint-type" onchange="updateFieldOptions(this)">
+                        <select class="joint-type" onchange="doLayout(this)">
                             <option value="none">(Select an Option)</option>
                             <option value="drivetrain">Drivetrain Wheel</option>
                             <option value="mechanism">Mechanism Joint</option>
@@ -74,7 +74,7 @@
                     <div class="drivetrain-options">
                         <span class="field-label">Side: </span>
                         <span class="field-select">
-                        <select class="dt-side" onchange="updateFieldOptions(this)">
+                        <select class="dt-side" onchange="doLayout(this)">
                             <option value="0">Right</option>
                             <option value="1">Left</option>
                             <option value="2">H-Drive Center</option>
@@ -82,10 +82,10 @@
                         </span>
                         <span class="field-label">Wheel Type: </span>
                         <span class="field-select" style="margin-bottom: 0px;">
-                        <select class="wheel-type" onchange="updateFieldOptions(this)">
-                            <option value="0">Normal</option>
-                            <option value="1">Omni</option>
-                            <option value="2">Mecanum</option>
+                        <select class="wheel-type" onchange="doLayout(this)">
+                            <option value="1">Normal</option>
+                            <option value="2">Omni</option>
+                            <option value="3">Mecanum</option>
                         </select>
                         </span>
                     </div>
@@ -96,14 +96,13 @@
                         </span>
                         <span class="field-label">Driver Type: </span>
                         <span class="field-select" style="margin-bottom: 0px;">
-                        <select class="driver-type" onchange="updateFieldOptions(this)">
-                            <option value="0">None</option>
+                        <select class="driver-type" onchange="doLayout(this)">
                             <option value="1" class="angular-driver">Motor</option>
-                            <option value="2" class="angular-driver">Servo</option>
-                            <option value="3" class="linear-driver" style="display: none">Worm Screw</option>
-                            <option value="4" class="linear-driver" style="display: none">Bumper Pnuematic</option>
-                            <option value="5" class="linear-driver" style="display: none">Relay Pnuematic</option>
-                            <option value="6" class="angular-driver">Dual Motor</option>
+<!--                            <option value="2" class="angular-driver">Servo</option>-->
+<!--                            <option value="6" class="angular-driver">Dual Motor</option>-->
+<!--                            <option value="3" class="linear-driver">Worm Screw</option>-->
+<!--                            <option value="4" class="linear-driver">Bumper Pnuematic</option>-->
+<!--                            <option value="5" class="linear-driver">Relay Pnuematic</option>-->
                             <option value="7" class="linear-driver">Elevator</option>
                         </select>
                     </span>

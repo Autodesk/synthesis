@@ -5,13 +5,13 @@ window.fusionJavaScriptHandler =
         {
             try
             {
-                if (action == 'sensors')
+                if (action === 'sensors')
                 {
                     console.log("Receiving sensor info...");
                     console.log(data);
                     applyConfigData(JSON.parse(data));
                 }
-                else if (action == 'debugger')
+                else if (action === 'debugger')
                 {
                     debugger;
                 }
