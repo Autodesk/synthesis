@@ -44,13 +44,14 @@ void EUI::deleteWorkspace()
 	clearHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
 	// Delete palettes
+	deleteDriveWeightPalette();
 	deleteDriveTypePalette();
 	deleteJointEditorPalette();
 	deleteSensorsPalette();
+	// deleteKeyPalette();
 	deleteGuidePalette();
-	deleteFinishPalette();
-	deleteKeyPalette();
 	deleteSettingsPalette();
+	deleteFinishPalette();
 	deleteProgressPalette();
 
 	// Delete buttons
@@ -69,14 +70,14 @@ void EUI::deleteWorkspace()
 void EUI::prepareAllPalettes()
 {
 	createDriveTypePalette();
+	createDriveWeightPalette();
 	createJointEditorPalette();
 	createSensorsPalette();
+	// createKeyPalette();
 	createGuidePalette();
-	createKeyPalette();
 	createSettingsPalette();
 	createFinishPalette();
 	createProgressPalette();
-	createDriveWeightPalette();
 }
 
 void EUI::closeAllPalettes()
@@ -84,8 +85,8 @@ void EUI::closeAllPalettes()
 	closeDriveTypePalette("");
 	closeDriveWeightPalette("");
 	closeJointEditorPalette();
-	closeGuidePalette();
 	closeSensorsPalette();
+	closeGuidePalette();
 	closeSettingsPalette("");
 	cancelExportRobot();
 }
@@ -97,7 +98,7 @@ void EUI::hideAllPalettes()
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	guidePalette->isVisible(false);
-	keyPalette->isVisible(false);
+	// keyPalette->isVisible(false);
 	settingsPalette->isVisible(false);
 	finishPalette->isVisible(false);
 }
@@ -319,64 +320,76 @@ void EUI::closeGuidePalette()
 {
 	if (guideEnabled)
 	{
+
 		robotExportGuideButton->controlDefinition()->isEnabled(true);
 		guidePalette->isVisible(false);
 		guideEnabled = false;
 
-		settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+		static std::thread* uiThread = nullptr;
+		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+		uiThread = new std::thread([this]()
+		{
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+		});
+
+		//settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
 	}
 }
 
 // Key Palette
 
-bool EUI::createKeyPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return false;
+// TO BE RE-IMPLEMENTED LATER
 
-	// Check if palette already exists
-	keyPalette = palettes->itemById(PALETTE_KEY);
-	if (!keyPalette)
-	{
-		// Create palette
-		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "palette/dofkey.html", false, true, false, 220, 165);
-		if (!keyPalette)
-			return false;
-
-		// Dock the palette to float
-		keyPalette->dockingState(PaletteDockStateFloating);
-		keyPalette->setPosition(500, 500);
-
-		addHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
-		addHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
-	}
-
-	return true;
-}
-
-void EUI::deleteKeyPalette()
-{
-	Ptr<Palettes> palettes = UI->palettes();
-	if (!palettes)
-		return;
-
-	// Check if palette already exists
-	keyPalette = palettes->itemById(PALETTE_KEY);
-	if (!keyPalette)
-		return;
-
-	clearHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
-	clearHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
-
-	keyPalette->deleteMe();
-	keyPalette = nullptr;
-}
-
-void EUI::toggleKeyPalette()
-{
-	keyPalette->isVisible(dofViewEnabled);
-}
+//bool EUI::createKeyPalette()
+//{
+//	Ptr<Palettes> palettes = UI->palettes();
+//	if (!palettes)
+//		return false;
+//
+//	// Check if palette already exists
+//	keyPalette = palettes->itemById(PALETTE_KEY);
+//	if (!keyPalette)
+//	{
+//		// Create palette
+//		keyPalette = palettes->add(PALETTE_KEY, "Degrees of Freedom Key", "palette/dofkey.html", false, true, false, 220, 165);
+//		if (!keyPalette)
+//			return false;
+//
+//		// Dock the palette to float
+//		keyPalette->dockingState(PaletteDockStateFloating);
+//		keyPalette->setPosition(500, 500);
+//
+//		addHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+//		addHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+//	}
+//
+//	return true;
+//}
+//
+//void EUI::deleteKeyPalette()
+//{
+//	Ptr<Palettes> palettes = UI->palettes();
+//	if (!palettes)
+//		return;
+//
+//	// Check if palette already exists
+//	keyPalette = palettes->itemById(PALETTE_KEY);
+//	if (!keyPalette)
+//		return;
+//
+//	clearHandler<ReceiveFormDataHandler>(keyPalette, keyCloseFormDataEventHandler);
+//	clearHandler<ClosePaletteEventHandler>(keyPalette, keyClosePaletteEventHandler);
+//
+//	keyPalette->deleteMe();
+//	keyPalette = nullptr;
+//}
+//
+//void EUI::toggleKeyPalette()
+//{
+//	keyPalette->isVisible(dofViewEnabled);
+//}
 
 // Finish palette
 
@@ -715,11 +728,19 @@ void EUI::deleteSettingsPalette() {
 	settingsPalette = nullptr;
 }
 
-void EUI::openSettingsPalette(bool guideEnabled)
+void EUI::openSettingsPalette(bool nan)
 {
-	settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
+		{
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->isVisible(true);
+			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+		});
+
 	settingsButton->controlDefinition()->isEnabled(false);
-	settingsPalette->isVisible(true);
 }
 
 void EUI::closeSettingsPalette(std::string guideEnabled) {
@@ -735,7 +756,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
 		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string guideEnabled) { settingsPalette->sendInfoToHTML("settings_guide", guideEnabled); }, guideEnabled);
+		uiThread = new std::thread([this](std::string isGuideEnabled) { settingsPalette->sendInfoToHTML("settings_guide", isGuideEnabled); }, guideEnabled);
 	}
 }
 
@@ -745,7 +766,7 @@ void EUI::createPanels()
 {
 	driveTrainPanel = workSpace->toolbarPanels()->add(PANEL_DT, "Drive Train Setup");
 	jointSetupPanel = workSpace->toolbarPanels()->add(PANEL_JOINT, "Joint Setup");
-	precheckPanel = workSpace->toolbarPanels()->add(PANEL_PRECHECK, "Export Precheck");
+	// precheckPanel = workSpace->toolbarPanels()->add(PANEL_PRECHECK, "Export Precheck");
 	settingsPanel = workSpace->toolbarPanels()->add(PANEL_SETTINGS, "Settings");
 	finishPanel = workSpace->toolbarPanels()->add(PANEL_FINISH, "Finish");
 }
@@ -765,8 +786,8 @@ void EUI::createButtons()
 	addHandler<ShowPaletteCommandCreatedHandler>(robotExportGuideButton, robotExportGuideShowPaletteCommandCreatedHandler);
 	robotExportGuideButton->controlDefinition()->isVisible(false);
 
-	editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Toggle Joint Viewer", "View degrees of freedom.", "Resources/DOFIcons");
-	addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
+	//editDOFButton = UI->commandDefinitions()->addButtonDefinition(BTN_DOF, "Toggle Joint Viewer", "View degrees of freedom.", "Resources/DOFIcons");
+	//addHandler<ShowPaletteCommandCreatedHandler>(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
 
 	settingsButton = UI->commandDefinitions()->addButtonDefinition(BTN_SETTINGS, "Add-In Settings", "Configure add-in settings.", "Resources/SettingsIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(settingsButton, settingsShowPaletteCommandCreatedHandler);
@@ -779,8 +800,8 @@ void EUI::createButtons()
 	driveTrainPanel->controls()->addCommand(driveTrainTypeButton)->isPromoted(true);
 	driveTrainPanel->controls()->addCommand(driveTrainWeightButton)->isPromoted(true);
 	jointSetupPanel->controls()->addCommand(editJointsButton)->isPromoted(true);
-	precheckPanel->controls()->addCommand(robotExportGuideButton)->isPromoted(true);
-	precheckPanel->controls()->addCommand(editDOFButton)->isPromoted(true);
+	// precheckPanel->controls()->addCommand(robotExportGuideButton)->isPromoted(true);
+	//precheckPanel->controls()->addCommand(editDOFButton)->isPromoted(true);
 	settingsPanel->controls()->addCommand(settingsButton)->isPromoted(true);
 	finishPanel->controls()->addCommand(finishButton)->isPromoted(true);
 }
@@ -822,7 +843,7 @@ void EUI::deleteButtons()
 	deleteButtonCommand(driveTrainTypeButton, driveTrainTypeShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(driveTrainWeightButton, driveTrainWeightShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(editJointsButton, editJointsShowPaletteCommandCreatedHandler);
-	deleteButtonCommand(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
+	//deleteButtonCommand(editDOFButton, editDOFShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(robotExportGuideButton, robotExportGuideShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(settingsButton, settingsShowPaletteCommandCreatedHandler);
 	deleteButtonCommand(finishButton, finishShowPaletteCommandCreatedHandler);

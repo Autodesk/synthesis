@@ -70,10 +70,10 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		eui->openDriveWeightPalette();
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
 		eui->openJointEditorPalette();
-	else if (id == SynthesisAddIn::BTN_DOF) {
-		eui->toggleDOF();
-		eui->toggleKeyPalette();
-	} else if (id == SynthesisAddIn::BTN_SETTINGS)
+	//else if (id == SynthesisAddIn::BTN_DOF) {
+	//	eui->toggleDOF();
+	//	eui->toggleKeyPalette();
+	/*} */ else if (id == SynthesisAddIn::BTN_SETTINGS)
 	{
 		eui->openSettingsPalette(eui->guideEnabled);
 	}
