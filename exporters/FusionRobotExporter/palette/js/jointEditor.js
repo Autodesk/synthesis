@@ -68,8 +68,9 @@ window.fusionJavaScriptHandler =
             {
                 if (action == 'joints')
                 {
-                    console.log("Input Joint Data Data: ", JSON.parse(data));
-                    applyConfigData(JSON.parse(data));
+                    var configData = JSON.parse(data);
+                    console.log("Input Joint Data Data: ", configData);
+                    applyConfigData(configData);
                 }
                 else if (action == 'sensors')
                 {
@@ -118,6 +119,11 @@ function applyConfigData(configData)
     var existing = document.getElementsByClassName('joint-config');
     while (existing.length > 0)
         existing[0].parentNode.removeChild(existing[0]);
+
+    var noJoints = joints.length === 0;
+    setVisible(document.getElementById("nodata"), noJoints);
+    setVisible(document.getElementById("save-button"), !noJoints);
+    if (noJoints) return;
 
     // Add slots for given joinst
     var template = jointTemplate;
