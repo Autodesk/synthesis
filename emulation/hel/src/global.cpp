@@ -27,9 +27,7 @@ Global::Global(const Global& source) noexcept {
 
 uint64_t Global::getCurrentTime() noexcept {
 	return std::chrono::duration_cast<std::chrono::microseconds>(
-			   std::chrono::high_resolution_clock::now().time_since_epoch() /
-			   TIME_CONSTANT)
-		.count();  // TODO system time runs fast, using a scalar for now
+			   std::chrono::high_resolution_clock::now().time_since_epoch()).count();  // TODO system time runs fast, using a scalar for now
 }
 
 uint64_t Global::getFPGAStartTime() const noexcept { return fpga_start_time; }

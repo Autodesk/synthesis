@@ -217,7 +217,8 @@ ADD_LIBRARY(hel SHARED
   ${GENERATED_FILES}
 )
 ADD_DEPENDENCIES(hel ni-libraries grpc_gen)
-TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libgrpc++.a)
+TARGET_LINK_LIBRARIES(hel pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libgrpc++.a)
+TARGET_COMPILE_OPTIONS(hel PUBLIC -pthread)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"

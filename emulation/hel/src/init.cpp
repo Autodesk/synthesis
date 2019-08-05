@@ -45,7 +45,6 @@ namespace hel{
         printf("Synthesis Emulation Startup Info: \n\tHEL Version: %s\n\tVirtual Machine Version: %s\n\tWPILib Version: %s\n\tNI Libraries Version: %s\n\n", LIBHEL_VERSION, vm_version.c_str(), wpilib_version.c_str(), nilib_version.c_str());
         RoboRIOManager::getInstance().first->robot_mode.setEnabled(HEL_DEFAULT_ENABLED_STATUS);
     }
-    
 }
 
 namespace nFPGA {
