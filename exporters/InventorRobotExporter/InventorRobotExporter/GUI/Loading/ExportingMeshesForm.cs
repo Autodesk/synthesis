@@ -13,7 +13,8 @@ namespace InventorRobotExporter.GUI.Loading
     {
         private List<BXDAMesh> exportMeshes = null;
         private RobotDataManager robotDataManager;
-        private BackgroundWorker ExportMeshWorker;
+        private readonly BackgroundWorker ExportMeshWorker;
+        private bool exportWasCancelled;
 
         public ExportingMeshesForm()
         {
@@ -24,8 +25,6 @@ namespace InventorRobotExporter.GUI.Loading
             ExportMeshWorker.DoWork += ExportMeshWorker_DoWork;
             ExportMeshWorker.RunWorkerCompleted += ExportMeshWorker_RunWorkerCompleted;
             
-            DialogResult = DialogResult.OK;
-
             Shown += (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
@@ -70,8 +69,7 @@ namespace InventorRobotExporter.GUI.Loading
         private void CancelExportWorker(object sender=null, EventArgs e=null)
         {
             ExportMeshWorker.CancelAsync();
-            ProgressLabel.Text = "Cancelling export, please wait...";
-            DialogResult = DialogResult.Cancel;
+            exportWasCancelled = true;
         }
 
         private void ExportMeshWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -81,6 +79,13 @@ namespace InventorRobotExporter.GUI.Loading
                 ProgressLabel.Text = "An error occurred.";
                 MessageBox.Show(e.Error.Message);
                 DialogResult = DialogResult.Abort;
+            } else if (exportWasCancelled)
+            {
+                DialogResult = DialogResult.Cancel;
+            }
+            else
+            {
+                DialogResult = DialogResult.OK;
             }
             Close();
             RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
