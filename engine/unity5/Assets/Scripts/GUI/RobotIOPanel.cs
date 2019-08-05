@@ -54,15 +54,22 @@ namespace Synthesis.GUI
         public GameObject robotIOFieldPrefab;
         private List<RobotIOField> robotIOFields;
 
+
+        private GameObject robotIOFooter;
+
         // Mini Camera
         private GameObject miniCameraView;
         private UnityEngine.Camera miniCamera = null;
+        float lastSetAspect = 0;
+        Rect lastSetPixelRect;
 
         // Robot Print-Outs
+        private GameObject robotPrintPanel;
         private GameObject robotPrintScrollRect;
         private GameObject robotPrintScrollContent;
         private GameObject robotPrintTextContainer;
         public GameObject robotPrintPrefab;
+        public GameObject robotPrintFooter;
 
         private StreamReader printReader = null;
         private string robotPrintBuffer = "";
@@ -77,13 +84,16 @@ namespace Synthesis.GUI
             mainPanel.SetActive(false); // Must start inactive, otherwise initializing mini camera will cause problems
 
             displayPanel = Auxiliary.FindObject(mainPanel, "RobotIODisplayPanel");
+            robotIOFooter = Auxiliary.FindObject(mainPanel, "RobotIOFooter");
             robotIOFields = new List<RobotIOField>();
 
             miniCameraView = Auxiliary.FindObject(mainPanel, "MiniCameraView");
 
-            robotPrintScrollRect = Auxiliary.FindObject(mainPanel, "RobotPrintScrollRect");
+            robotPrintPanel = Auxiliary.FindObject(mainPanel, "RobotPrintPanel");
+            robotPrintScrollRect = Auxiliary.FindObject(robotPrintPanel, "RobotPrintScrollRect");
             robotPrintScrollContent = Auxiliary.FindObject(robotPrintScrollRect, "Content");
             robotPrintTextContainer = Auxiliary.FindObject(robotPrintScrollContent, "PrintContainer");
+            robotPrintFooter = Auxiliary.FindObject(robotPrintPanel, "RobotPrintFooter");
 
             Populate();
         }
@@ -158,7 +168,7 @@ namespace Synthesis.GUI
                             {
                                 inputField.text = "0";
                             }
-                            inputField.interactable = true;
+                            inputField.interactable = false;
                         }
                     )
                 );
@@ -178,24 +188,51 @@ namespace Synthesis.GUI
         /// </summary>
         private void InitMiniCamera()
         {
-            miniCamera = Instantiate(UnityEngine.Camera.main, miniCameraView.transform);
-            foreach (Transform child in miniCamera.transform)
-                Destroy(child.gameObject);
+            try
+            {
+                miniCamera = Instantiate(UnityEngine.Camera.main, miniCameraView.transform);
+                foreach (Transform child in miniCamera.transform)
+                    Destroy(child.gameObject);
 
-            RenderTexture renderTexture = new RenderTexture(new RenderTextureDescriptor(
-                (int)miniCameraView.GetComponent<RectTransform>().rect.width,
-                (int)miniCameraView.GetComponent<RectTransform>().rect.height));
-            miniCameraView.GetComponent<RawImage>().texture = renderTexture;
-            miniCamera.targetTexture = renderTexture;
-
-            Destroy(miniCamera.GetComponent<DynamicCamera>()); // Shouldn't handle it's own position, so copy from main camera instead
+                Destroy(miniCamera.GetComponent<DynamicCamera>()); // Shouldn't handle it's own position, so copy from main camera instead
+            }
+            catch (Exception)
+            {
+                miniCamera = null;
+                throw;
+            }
         }
 
         /// <summary>
-        /// Update the mini camera posiiton
+        /// Update the mini camera view
         /// </summary>
         private void UpdateMiniCamera()
         {
+            // Update size of mini camera to match the camera aspect ratio
+            if (lastSetAspect != UnityEngine.Camera.main.aspect || lastSetPixelRect != UnityEngine.Camera.main.pixelRect)
+            {
+                // Maintain main camera aspect ratio in mini camera view
+                miniCameraView.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                    miniCameraView.GetComponent<RectTransform>().sizeDelta.y * UnityEngine.Camera.main.aspect,
+                    miniCameraView.GetComponent<RectTransform>().sizeDelta.y);
+
+                // Update camera texture size as well
+                if (miniCamera.targetTexture != null)
+                    miniCamera.targetTexture.Release();
+                miniCamera.targetTexture = new RenderTexture(new RenderTextureDescriptor(
+                        (int)miniCameraView.GetComponent<RectTransform>().sizeDelta.x,
+                        (int)miniCameraView.GetComponent<RectTransform>().sizeDelta.y));
+                miniCameraView.GetComponent<RawImage>().texture = miniCamera.targetTexture;
+
+                // Fill remaining width of screen with the robot print panel
+                robotPrintPanel.GetComponent<LayoutElement>().preferredWidth = (UnityEngine.Camera.main.pixelRect.width - miniCameraView.GetComponent<RectTransform>().sizeDelta.x) / miniCameraView.GetComponent<RectTransform>().sizeDelta.x;
+                robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight = robotPrintPanel.GetComponent<RectTransform>().sizeDelta.y - robotPrintFooter.GetComponent<RectTransform>().sizeDelta.y;
+
+                lastSetAspect = UnityEngine.Camera.main.aspect;
+                lastSetPixelRect = UnityEngine.Camera.main.pixelRect;
+            }
+
+            // Update position and orientation
             miniCamera.transform.position = UnityEngine.Camera.main.transform.position;
             miniCamera.transform.rotation = UnityEngine.Camera.main.transform.rotation;
         }
