@@ -9,7 +9,7 @@ window.fusionJavaScriptHandler =
                 {
                     console.log("Receiving sensor info...");
                     console.log(data);
-                    applyConfigData(JSON.parse(data));
+                    loadData(JSON.parse(data));
                 }
                 else if (action === 'debugger')
                 {
@@ -46,8 +46,19 @@ function deleteSensor(fieldset)
 }
 
 // Populates the form with sensors
-function applyConfigData(sensors)
+function loadData(data)
 {
+    var sensors = data.sensors;
+    var signal = document.getElementById('signal');
+    var port = document.getElementById('port');
+    var gear = document.getElementById('gear');
+    
+    signal.value = data.signal;
+    port.value = data.portOne;
+    gear.value = data.gear;
+    
+    setVisible(document.getElementById('port-fieldset'), port.value > 2);
+
     // Delete all existing slots
     var existing = document.getElementsByClassName('sensor-config');
     while (existing.length > 0)
@@ -82,7 +93,7 @@ function updateFieldOptions(fieldset)
 }
 
 // Outputs currently entered data as a JSON object
-function readConfigData()
+function saveData()
 {
     var configData = [];
 
@@ -102,12 +113,16 @@ function readConfigData()
 
         configData.push(sensor);
     }
+
+    var signal = document.getElementById('signal');
+    var port = document.getElementById('port');
+    var gear = document.getElementById('gear');
     
-    return configData;
+    return {'sensors': configData, 'gear': gear.value, 'signal': parseInt(signal.value), 'portOne': Math.round(port.value)};
 }
 
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
 {
-    adsk.fusionSendData('save_sensors', JSON.stringify(readConfigData()));
+    adsk.fusionSendData('save_sensors', JSON.stringify(saveData()));
 }
