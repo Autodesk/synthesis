@@ -105,6 +105,7 @@
             // 
             // portTypeInput
             // 
+            this.portTypeInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.portTypeInput.FormattingEnabled = true;
             this.portTypeInput.Items.AddRange(new object[] {
             "CAN",
@@ -114,7 +115,6 @@
             this.portTypeInput.Name = "portTypeInput";
             this.portTypeInput.Size = new System.Drawing.Size(88, 24);
             this.portTypeInput.TabIndex = 9;
-            this.portTypeInput.Text = "CAN";
             // 
             // addSensorButton
             // 
@@ -213,7 +213,7 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
-            // btnOk
+            // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.Location = new System.Drawing.Point(272, 329);
