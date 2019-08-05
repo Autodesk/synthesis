@@ -28,6 +28,15 @@ namespace BXDJ
 			CUSTOM = 3 ///< Custom Drivetrain
 		};
 
+		enum ConvexType : int
+		{
+			BOX = 1,
+			VHACD_LOW = 2,
+			VHACD_MID = 3,
+			VHACD_HIGH = 4
+		};
+
+		ConvexType convexType;
 		std::string robotName; ///< Name of the robot. Used for writing to the robot directory.
 		DrivetrainType drivetrainType; ///< The type of the robot's drivetrain.
 

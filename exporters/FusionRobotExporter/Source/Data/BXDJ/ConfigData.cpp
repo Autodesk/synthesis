@@ -16,6 +16,7 @@ ConfigData::ConfigData()
 	drivetrainType = TANK;
 	weight.value = 10;
 	tempIconDir = "";
+	convexType = BOX;
 }
 
 ConfigData::ConfigData(const ConfigData & other)
@@ -183,6 +184,7 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 	// General Information
 	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
 	configJSON.AddMember("drivetrainType", rapidjson::Value((int)drivetrainType), allocator);
+	configJSON.AddMember("convex", rapidjson::Value((int)convexType), allocator);
 
 	// Weight
 
@@ -247,6 +249,10 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
+
+	if (configJSON.HasMember("convex") && configJSON["convex"].IsNumber()) {
+		//convexType = (ConvexType)configJSON["convex"].GetInt();
+	}
 
 	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {
 		const auto weightJson = configJSON["weight"].GetObject();
