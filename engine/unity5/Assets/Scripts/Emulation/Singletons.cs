@@ -9,7 +9,11 @@ namespace Synthesis
         static OutputManager() { }
         public static RobotOutputs Instance { get { return OutputInternal.instance; } set { OutputInternal.instance = value; } }
 
-        public const uint NUM_PWM_HDRS  = 10;
+        public const uint NUM_PWM_HDRS = 10;
+        public const uint NUM_PWM_MXP  = 10;
+        public const uint NUM_DIO_HDRS = 10;
+        public const uint NUM_DIO_MXP  = 10;
+        public const uint NUM_AO_MXP   = 2;
 
         private class OutputInternal
         {
@@ -21,6 +25,9 @@ namespace Synthesis
     public static class InputManager
     {
         public static RobotInputs Instance { get { return InputInternal.instance; } set { InputInternal.instance = value; } }
+
+        public const uint NUM_AI_HDRS = 4;
+        public const uint NUM_AI_MXP  = 4;
 
         public const uint NUM_JOYSTICKS = 6;
         public const uint NUM_DIGITAL_HEADERS = 10;
