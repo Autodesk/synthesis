@@ -246,24 +246,12 @@ void EUI::openJointEditorPalette()
 
 	EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
 
-	if (index > 0)
+	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
-		uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
-			{
-				jointEditorPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
-				jointEditorPalette->isVisible(true);
-				jointEditorPalette->sendInfoToHTML("joints", configJSON);
-			}, config.toJSONString());
-	} else
-	{
-		uiThread = new std::thread([this]()
-		{
-			jointEditorPalette->sendInfoToHTML("joints_nodata", "");
-			jointEditorPalette->isVisible(true);
-			jointEditorPalette->sendInfoToHTML("joints_nodata", "");
-		});
-	}
-
+		jointEditorPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
+		jointEditorPalette->isVisible(true);
+		jointEditorPalette->sendInfoToHTML("joints", configJSON);
+	}, config.toJSONString());
 }
 
 
