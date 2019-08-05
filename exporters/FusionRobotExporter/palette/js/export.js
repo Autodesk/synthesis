@@ -380,7 +380,7 @@ function readConfigData()
 
                     if (isDriveWheel)
                     {
-                        joint.driver.signal = PWM;
+                        joint.driver.signal = CAN;
                         joint.driver.portOne = parseInt(getElByClass(fieldset, 'wheel-side').value);
                         joint.driver.portTwo = parseInt(getElByClass(fieldset, 'wheel-side').value);
                     }

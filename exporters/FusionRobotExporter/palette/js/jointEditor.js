@@ -90,7 +90,10 @@ function loadData(configData)
         fieldset.id = 'joint-config-' + String(i);
         fieldset.dataset.jointId = joints[i].id;
         fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
-        fieldset.dataset.sensors = JSON.stringify(joints[i].sensors);
+        
+        // TODO: This is lazy, don't do this
+        let gearRatio = joints[i].driver.outputGear === undefined || joints[i].driver.inputGear === undefined ? 0 : joints[i].driver.outputGear / joints[i].driver.inputGear;
+        fieldset.dataset.sensors = JSON.stringify({'sensors': joints[i].sensors, 'gear': gearRatio, 'signal': joints[i].driver.signal, 'portOne': joints[i].driver.portOne});
 
         // Highlight joint if hover for 0.5 seconds
         (function(id){delayHover(fieldset, function() {highlightJoint(id)})}(fieldset.dataset.jointId));
@@ -184,13 +187,14 @@ function saveValues()
     {
         const fieldset = jointOptions[i];
 
+        let advanced = JSON.parse(fieldset.dataset.sensors);
         const joint = {
             'driver': null,
             'id': fieldset.dataset.jointId,
             'asBuilt': fieldset.dataset.asBuilt === 'true',
             'name': getElByClass(fieldset, 'joint-config-legend').innerHTML,
             'type': parseInt(fieldset.dataset.joint_type),
-            'sensors': JSON.parse(fieldset.dataset.sensors)
+            'sensors': advanced.sensors
         };
 
         const jointTypeComboBox = getElByClass(fieldset, 'joint-type');
@@ -209,6 +213,8 @@ function saveValues()
             // joint.driver.motor = MotorType.GENERIC;
             // joint.driver.InputGear = 1;
             // joint.driver.OutputGear = advancedSettingsForm.GearRatio;
+            joint.driver.inputGear = 1;
+            joint.driver.outputGear = advanced.gear;
             // joint.driver.lowerLimit = 0;
             // joint.driver.upperLimit = 0;
             
@@ -217,7 +223,7 @@ function saveValues()
                 // Port/wheel side
                 joint.driver.portOne = parseInt(dtSideComboBox.value);
                 joint.driver.portTwo = parseInt(dtSideComboBox.value);
-                joint.driver.isCan = true;
+                joint.driver.signal = CAN;
 
                 // Wheel type
                 const selectedWheel = parseInt(wheelTypeComboBox.value);
@@ -228,11 +234,11 @@ function saveValues()
                 
             } else if (jointTypeComboBox.value === 'mechanism') {
                 // Port/wheel side
-                joint.driver.portOne = 3; // TODO: advancedSettingsForm.PortId;
-                joint.driver.portTwo = 3; // TODO: advancedSettingsForm.PortId;
+                joint.driver.portOne = advanced.portOne;
+                joint.driver.portTwo = 0;
                 if (joint.driver.portOne <= 2)
                     joint.driver.portOne = 2;
-                joint.driver.isCan = true; // TODO: advancedSettingsForm.IsCan;
+                joint.driver.signal = advanced.signal;
 
                 // Wheel driver
                 joint.driver.wheel = null;
