@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SUDO =${which sudo}
+SUDO=${which sudo}
 
 # Exit script if any command fails
 set -e
@@ -18,7 +18,7 @@ if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
     make -j10 && \
         ${SUDO} make install && \
-        ${${SUDO}} ldconfig
+        ${SUDO} ldconfig
     make clean
 else
     printf "Native gRPC installed. Skipping native build.\n\n"
