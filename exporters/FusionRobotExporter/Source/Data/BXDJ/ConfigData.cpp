@@ -250,8 +250,11 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
 
-	if (configJSON.HasMember("convex") && configJSON["convex"].IsNumber()) {
-		//convexType = (ConvexType)configJSON["convex"].GetInt();
+	if (configJSON.HasMember("convex")) {
+
+		
+		
+		convexType = (ConvexType)configJSON["convex"].GetInt();
 	}
 
 	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {
