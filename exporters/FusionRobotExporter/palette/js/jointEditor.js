@@ -59,18 +59,6 @@ function editSensors(fieldset)
     adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
 }
 
-function showJoints() {
-    document.getElementById("nodata").style.height = "0px";
-    document.getElementById("nodata").style.visibility = "hidden";
-    document.getElementById("save-button").style.visibility = "visible";
-}
-
-function noJoints() {
-    document.getElementById("nodata").style.height = "70px";
-    document.getElementById("nodata").style.visibility = "visible";
-    document.getElementById("save-button").style.visibility = "hidden";
-}
-
 // Handles the receiving of data from Fusion
 window.fusionJavaScriptHandler =
     {
@@ -80,20 +68,16 @@ window.fusionJavaScriptHandler =
             {
                 if (action == 'joints')
                 {
-                    showJoints();
-                    console.log("Input Joint Data Data: ", JSON.parse(data));
-                    applyConfigData(JSON.parse(data));
+                    var configData = JSON.parse(data);
+                    console.log("Input Joint Data Data: ", configData);
+                    applyConfigData(configData);
                 }
                 else if (action == 'sensors')
                 {
-                    showJoints();
                     console.log("Receiving sensor info...");
                     console.log(data);
                     if (openFieldsetSensors != null)
                         openFieldsetSensors.dataset.sensors = data;
-                }
-                else if (action == "joints_nodata") {
-                    noJoints();
                 }
                 else if (action == 'debugger')
                 {
@@ -128,7 +112,6 @@ var delayHover = function (elem, callback) {
 function applyConfigData(configData)
 {
     console.log("ApplConfig", configData);
-    document.getElementById('name').value = configData.name;
 
     var joints = configData.joints;
 
@@ -136,6 +119,11 @@ function applyConfigData(configData)
     var existing = document.getElementsByClassName('joint-config');
     while (existing.length > 0)
         existing[0].parentNode.removeChild(existing[0]);
+
+    var noJoints = joints.length === 0;
+    setVisible(document.getElementById("nodata"), noJoints);
+    setVisible(document.getElementById("save-button"), !noJoints);
+    if (noJoints) return;
 
     // Add slots for given joinst
     var template = jointTemplate;
