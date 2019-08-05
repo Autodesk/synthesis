@@ -154,6 +154,7 @@ namespace Synthesis.GUI
             {
                 runButton.GetComponentInChildren<Text>().text = "Stop Code";
                 runRobotCodeImage.sprite = StopCode;
+                runRobotCodeImage.color = Color.red;
                 EmulatorManager.StartRobotCode();
             }
         }
@@ -162,6 +163,7 @@ namespace Synthesis.GUI
         {
             runButton.GetComponentInChildren<Text>().text = "Run Code";
             runRobotCodeImage.sprite = StartCode;
+            runRobotCodeImage.color = Color.green;
             if (EmulatorManager.IsRunningRobotCode())
                 EmulatorManager.StopRobotCode();
             RobotDisabled();
