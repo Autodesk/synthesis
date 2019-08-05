@@ -67,7 +67,10 @@ namespace SynthesisAddIn
 		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
 		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
 
-		void toggleKeyPalette();
+		void openSettingsPalette(bool guideEnabled);
+		void closeSettingsPalette(std::string guideEnabled);
+
+		// void toggleKeyPalette();
 
 		void openFinishPalette();
 		void closeFinishPalette();
@@ -99,10 +102,11 @@ namespace SynthesisAddIn
 		/// \param percent Current progress (0 to 1).
 		///
 		void updateProgress(double percent);
-		void toggleDOF();
+		// void toggleDOF();
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
-		bool dofViewEnabled = false;
+		// bool dofViewEnabled = false;
+		bool guideEnabled = false;
 
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
@@ -112,7 +116,8 @@ namespace SynthesisAddIn
 		Ptr<ToolbarPanel> finishPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> driveTrainPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
-		Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
+		// Ptr<ToolbarPanel> precheckPanel; ///< Synthesis control finishPanel.
+		Ptr<ToolbarPanel> settingsPanel;
 
 		Ptr<Palette> driveTypePalette; ///< Drive train type configuration palette.
 		Ptr<Palette> driveWeightPalette; ///< Robot export configuration palette.
@@ -120,16 +125,18 @@ namespace SynthesisAddIn
 		Ptr<Palette> jointEditorPalette; ///< Robot export configuration palette.
 		Ptr<Palette> sensorsPalette; ///< Sensor configuration palette.
 		Ptr<Palette> guidePalette; ///< Robot export guide palette.
-		Ptr<Palette> keyPalette; ///< Degree of Freedom color key dialog
+		// Ptr<Palette> keyPalette; ///< Degree of Freedom color key dialog
+		Ptr<Palette> settingsPalette; ///< Settings palette.
 		Ptr<Palette> finishPalette; ///< Robot export configuration palette.
 		Ptr<Palette> progressPalette; ///< Progress bar palette.
 
 		Ptr<CommandDefinition> driveTrainTypeButton; ///< Export robot button.
 		Ptr<CommandDefinition> driveTrainWeightButton; ///< Export robot button.
 		Ptr<CommandDefinition> editJointsButton; ///< Export robot button.
-		Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
+		// Ptr<CommandDefinition> editDOFButton; ///< Export robot button.
 		Ptr<CommandDefinition> keyDOFButton; ///< Export robot button.
 		Ptr<CommandDefinition> robotExportGuideButton; ///< Export robot button.
+		Ptr<CommandDefinition> settingsButton;
 		Ptr<CommandDefinition> finishButton; ///< Export robot button.
 
 		// Event Handlers
@@ -145,17 +152,19 @@ namespace SynthesisAddIn
 		ShowPaletteCommandCreatedHandler* driveTrainWeightShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editJointsShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* editDOFShowPaletteCommandCreatedHandler = nullptr;
-		ShowPaletteCommandCreatedHandler* keyShowPaletteCommandCreatedHandler = nullptr;
+		// ShowPaletteCommandCreatedHandler* keyShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* robotExportGuideShowPaletteCommandCreatedHandler = nullptr;
+		ShowPaletteCommandCreatedHandler* settingsShowPaletteCommandCreatedHandler = nullptr;
 		ShowPaletteCommandCreatedHandler* finishShowPaletteCommandCreatedHandler = nullptr;
 
 		ClosePaletteEventHandler* driveTypeClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* driveWeightClosePaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorPaletteHandler = nullptr;
 		ClosePaletteEventHandler* jointEditorClosePaletteEventHandler = nullptr;
-		ClosePaletteEventHandler* keyClosePaletteEventHandler = nullptr;
+		// ClosePaletteEventHandler* keyClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* guideCloseGuideFormEventHandler = nullptr;
 		ClosePaletteEventHandler* closeExporterFormEventHandler = nullptr;
+		ClosePaletteEventHandler* settingsClosePaletteEventHandler = nullptr;
 		ClosePaletteEventHandler* finishPaletteCloseEventHandler = nullptr;
 
 		ReceiveFormDataHandler* receiveFormDataHandler = nullptr;
@@ -164,7 +173,8 @@ namespace SynthesisAddIn
 		ReceiveFormDataHandler* jointEditorReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* sensorsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* guideReceiveFormDataHandler = nullptr;
-		ReceiveFormDataHandler* keyCloseFormDataEventHandler = nullptr;
+		// ReceiveFormDataHandler* keyCloseFormDataEventHandler = nullptr;
+		ReceiveFormDataHandler* settingsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
 
 		template<typename E, typename T>
@@ -198,8 +208,11 @@ namespace SynthesisAddIn
 		bool createGuidePalette(); ///< Creates the robot export guide configuration palette.
 		void deleteGuidePalette(); ///< Deletes the robot export guide configuration palette.
 
-		bool createKeyPalette(); ///< Creates the DOF color key palette
-		void deleteKeyPalette(); ///< Deletes the DOF color key palette
+		// bool createKeyPalette(); ///< Creates the DOF color key palette
+		// void deleteKeyPalette(); ///< Deletes the DOF color key palette
+
+		bool createSettingsPalette();
+		void deleteSettingsPalette();
 
 		bool createProgressPalette(); ///< Creates the progress bar palette.
 		void deleteProgressPalette(); ///< Deletes the progress bar palette.
