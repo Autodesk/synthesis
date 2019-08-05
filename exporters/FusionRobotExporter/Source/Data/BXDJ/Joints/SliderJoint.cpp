@@ -39,7 +39,7 @@ float SliderJoint::getMinTranslation() const
 	if (fusionJointMotion->slideLimits()->isMinimumValueEnabled())
 		return (float)fusionJointMotion->slideLimits()->minimumValue();
 	else
-		return std::numeric_limits<float>::min();
+		return -999;
 }
 
 float SliderJoint::getMaxTranslation() const
@@ -47,7 +47,7 @@ float SliderJoint::getMaxTranslation() const
 	if (fusionJointMotion->slideLimits()->isMaximumValueEnabled())
 		return (float)fusionJointMotion->slideLimits()->maximumValue();
 	else
-		return std::numeric_limits<float>::max();
+		return 999;
 }
 
 void SliderJoint::applyConfig(const ConfigData & config)
