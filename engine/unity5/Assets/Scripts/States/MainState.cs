@@ -89,7 +89,6 @@ namespace Synthesis.States
 
         public bool IsMetric;
         public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
-        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -117,9 +116,10 @@ namespace Synthesis.States
 
                 var check = localVersion.CompareTo(globalVersion);
 
-                //if (check < 0) {
-                //    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-                //}
+                if (check < 0)
+                {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
             }
 
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
