@@ -70,11 +70,12 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		eui->openDriveWeightPalette();
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
 		eui->openJointEditorPalette();
-	else if (id == SynthesisAddIn::BTN_GUIDE)
-		eui->openGuidePalette();
-	else if (id == SynthesisAddIn::BTN_DOF) {
-		eui->toggleDOF();
-		eui->toggleKeyPalette();
+	//else if (id == SynthesisAddIn::BTN_DOF) {
+	//	eui->toggleDOF();
+	//	eui->toggleKeyPalette();
+	/*} */ else if (id == SynthesisAddIn::BTN_SETTINGS)
+	{
+		eui->openSettingsPalette(eui->guideEnabled);
 	}
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
@@ -94,6 +95,8 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->openSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "save_sensors")
 		eui->closeSensorsPalette(eventArgs->data());
+	else if (eventArgs->action() == "settings_guide")
+		eui->closeSettingsPalette(eventArgs->data());
 	else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
 		eui->saveConfiguration(eventArgs->data());
 
@@ -115,6 +118,8 @@ void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& 
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_GUIDE)
 		eui->closeGuidePalette();
+	else if (id == SynthesisAddIn::PALETTE_SETTINGS)
+		eui->closeSettingsPalette("");
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
 		eui->closeFinishPalette();
 }
