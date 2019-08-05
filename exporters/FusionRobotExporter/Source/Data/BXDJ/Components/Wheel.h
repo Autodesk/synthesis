@@ -69,6 +69,7 @@ namespace BXDJ
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json GetExportJson();
 
 	private:
 		double radius; ///< Radius of the wheel.

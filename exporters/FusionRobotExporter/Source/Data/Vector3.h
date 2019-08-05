@@ -3,7 +3,7 @@
 #include <string>
 #include "BXDA/BinaryWriter.h"
 #include "BXDJ/XmlWriter.h"
-
+#include "nlohmann/json.hpp"
 /// A three-number vector.
 /// \param T The type of number stored.
 template<typename T = double>
@@ -35,6 +35,7 @@ public:
 	template<typename U> void getRadialCoordinates(Vector3<U>, Vector3<U>, T &, T &) const;
 
 	std::string toString(); ///< \return A debug string representing the Vector's coordinates.
+	nlohmann::json GetJson();
 
 protected:
 	void write(BXDA::BinaryWriter &) const;
@@ -97,6 +98,17 @@ template<typename T>
 std::string Vector3<T>::toString()
 {
 	return "(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
+}
+
+template<typename T>
+inline nlohmann::json Vector3<T>::GetJson()
+{	
+	nlohmann::json vecJson = {
+		{"x", x},
+		{"y", y},
+		{"z", z}
+	};
+	return vecJson;
 }
 
 template<typename T>
