@@ -1,4 +1,4 @@
-#include "CustomHandlers.h"
+ #include "CustomHandlers.h"
 #include "Identifiers.h"
 #include "EUI.h"
 #include "../Data/BXDJ/Utility.h"
@@ -101,7 +101,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->saveConfiguration(eventArgs->data());
 
 		if (eventArgs->action() == "export")
-			eui->startExportRobot();
+			eui->startExportRobot(eventArgs->data());
 		else if (eventArgs->action() == "save")
 			eui->closeJointEditorPalette();
 	}

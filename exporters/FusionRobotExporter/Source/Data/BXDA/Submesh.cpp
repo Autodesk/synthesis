@@ -1,11 +1,21 @@
 #include "Submesh.h"
 #include "Triangle.h"
 #include "Surface.h"
+#include <VHACD.h>
+#include "../BXDJ/ConfigData.h"
 
 using namespace BXDA;
 
+VHACD::IVHACD* SubMesh::decomper = nullptr;
+
 SubMesh::SubMesh()
-{}
+{
+
+	if (decomper == nullptr) {
+		decomper = VHACD::CreateVHACD();
+		
+	}
+}
 
 SubMesh::SubMesh(const SubMesh & s) : vertices(s.vertices.size()), surfaces(s.surfaces.size())
 {
@@ -62,76 +72,145 @@ int SubMesh::getVertCount()
 	return (int)vertices.size();
 }
 
-void SubMesh::getConvexCollider(SubMesh & outputMesh) const
+void SubMesh::getConvexCollider(SubMesh & outputMesh, int level) const
 {
+	level = BXDJ::ConfigData::ConvexType::VHACD_LOW;
 	outputMesh = SubMesh();
-
-	// Find bounding box
-	Vector3<> min, max; bool first = true;
-
-	for (Vertex vertex : vertices)
-	{
-		if (vertex.location.x < min.x || first) min.x = vertex.location.x;
-		if (vertex.location.x > max.x || first) max.x = vertex.location.x;
-		if (vertex.location.y < min.y || first) min.y = vertex.location.y;
-		if (vertex.location.y > max.y || first) max.y = vertex.location.y;
-		if (vertex.location.z < min.z || first) min.z = vertex.location.z;
-		if (vertex.location.z > max.z || first) max.z = vertex.location.z;
-		first = false;
-	}
-
-	// Create vertices
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
-
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
-
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
-
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(1, 0, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
-
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 1, 0)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 1, 0)));
-
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 0, 1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 0, 1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, 0, 1)));
-	outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, 0, 1)));
-
-	// Create triangles
 	std::vector<Triangle> triangles;
 
-	triangles.push_back(Triangle(0, 1, 2));
-	triangles.push_back(Triangle(2, 3, 0));
+	if (level == BXDJ::ConfigData::ConvexType::BOX || level == 0) {
+		Vector3<> min, max; bool first = true;
 
-	triangles.push_back(Triangle(4, 5, 6));
-	triangles.push_back(Triangle(6, 7, 4));
+		for (Vertex vertex : vertices)
+		{
+			if (vertex.location.x < min.x || first) min.x = vertex.location.x;
+			if (vertex.location.x > max.x || first) max.x = vertex.location.x;
+			if (vertex.location.y < min.y || first) min.y = vertex.location.y;
+			if (vertex.location.y > max.y || first) max.y = vertex.location.y;
+			if (vertex.location.z < min.z || first) min.z = vertex.location.z;
+			if (vertex.location.z > max.z || first) max.z = vertex.location.z;
+			first = false;
+		}
 
-	triangles.push_back(Triangle(8, 9, 10));
-	triangles.push_back(Triangle(10, 11, 8));
+		// Create vertices
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
 
-	triangles.push_back(Triangle(12, 13, 14));
-	triangles.push_back(Triangle(14, 15, 12));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
 
-	triangles.push_back(Triangle(16, 17, 18));
-	triangles.push_back(Triangle(18, 19, 16));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
 
-	triangles.push_back(Triangle(20, 21, 22));
-	triangles.push_back(Triangle(22, 23, 20));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
 
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 1, 0)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, 0, 1)));
+
+	
+		triangles.push_back(Triangle(0, 1, 2));
+		triangles.push_back(Triangle(2, 3, 0));
+
+		triangles.push_back(Triangle(4, 5, 6));
+		triangles.push_back(Triangle(6, 7, 4));
+
+		triangles.push_back(Triangle(8, 9, 10));
+		triangles.push_back(Triangle(10, 11, 8));
+
+		triangles.push_back(Triangle(12, 13, 14));
+		triangles.push_back(Triangle(14, 15, 12));
+
+		triangles.push_back(Triangle(16, 17, 18));
+		triangles.push_back(Triangle(18, 19, 16));
+
+		triangles.push_back(Triangle(20, 21, 22));
+		triangles.push_back(Triangle(22, 23, 20));
+
+	}
+
+	if (level == BXDJ::ConfigData::ConvexType::VHACD_LOW || level == BXDJ::ConfigData::ConvexType::VHACD_MID|| level == BXDJ::ConfigData::ConvexType::VHACD_HIGH) {
+		VHACD::IVHACD::Parameters parms;
+
+		parms.Init();
+		if (level == BXDJ::ConfigData::ConvexType::VHACD_LOW) {
+			parms.m_resolution = 1000;
+			parms.m_convexhullDownsampling = 5;
+			parms.m_concavity = 1.0;
+		}
+		
+		if (level == BXDJ::ConfigData::ConvexType::VHACD_MID){
+			parms.m_resolution = 10000;
+			parms.m_convexhullDownsampling = 5;
+			parms.m_concavity = 0.25;
+		}
+		if (level == BXDJ::ConfigData::ConvexType::VHACD_HIGH) {
+			parms.m_resolution = 150000;
+			parms.m_convexhullDownsampling = 4;
+			parms.m_concavity = 0.0075;
+		}
+
+		// Find bounding box
+		Vector3<> min, max; bool first = true;
+		std::vector<double> mPoints;
+		std::vector<int> mTriangles;
+
+		for (int i = 0; i < vertices.size(); i++) {
+			mPoints.push_back(vertices[i].location.x);
+			mPoints.push_back(vertices[i].location.y);
+			mPoints.push_back(vertices[i].location.z);
+		}
+
+		for (int i = 0; i < surfaces.size(); i++) {
+			for (int j = 0; j < surfaces[i]->triangles.size(); j++) {
+				mTriangles.push_back(surfaces[i]->triangles[j].vertexIndices[0]);
+				mTriangles.push_back(surfaces[i]->triangles[j].vertexIndices[1]);
+				mTriangles.push_back(surfaces[i]->triangles[j].vertexIndices[2]);
+
+			}
+		}
+
+		bool result = decomper->Compute(&mPoints[0], (unsigned int)mPoints.size() / 3,
+			(const uint32_t*)& mTriangles[0], (unsigned int)mTriangles.size() / 3, parms);
+
+		unsigned int nConvexHulls = decomper->GetNConvexHulls();
+		VHACD::IVHACD::ConvexHull ch;
+
+		int vOffset = 1;
+		for (int x = 0; x < nConvexHulls; x++) {
+			decomper->GetConvexHull(x, ch);
+
+
+			for (int i = 0; i < ch.m_nPoints * 3; i += 3) {
+				outputMesh.vertices.push_back(Vertex(Vector3<>(ch.m_points[i], ch.m_points[i + 1], ch.m_points[i + 2]), Vector3<>(0, 0, 0)));
+			}
+
+			for (int i = 0; i < ch.m_nTriangles * 3; i += 3)
+			{
+				triangles.push_back(Triangle(ch.m_triangles[i] + vOffset - 1, ch.m_triangles[i + 1] + vOffset - 1, ch.m_triangles[i + 2] + vOffset - 1));
+
+			}
+			vOffset += ch.m_nPoints;
+
+		}
+
+		decomper->Clean();
+	}
 	// Create surface
 	Surface newSurface;
 	newSurface.addTriangles(triangles);
