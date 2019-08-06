@@ -278,19 +278,19 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		
 		std::string con = configJSON["convex"].GetString();
 		if (con == "BOX") {
-			con = BOX;
+			convexType = BOX;
 		}
 
 		if (con == "VHACD_LOW") {
-			con = VHACD_LOW;
+			convexType = VHACD_LOW;
 		}
 
 		if (con == "VHACD_MID") {
-			con = VHACD_MID;
+			convexType = VHACD_MID;
 		}
 
 		if (con == "VHACD_HIGH") {
-			con = VHACD_HIGH;
+			convexType = VHACD_HIGH;
 		}
 	}
 
