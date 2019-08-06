@@ -31,11 +31,14 @@ echo "Copying Program Files..."
 sudo rsync -a --info=progress2 Synthesis $ROOT/usr/share/Autodesk
 draw_progress_bar 60
 sudo rsync -a --info=progress2 synthesis.png $ROOT/usr/share/pixmaps
-draw_progress_bar 70
+draw_progress_bar 65
 sudo rsync -a --info=progress2 Synthesis.desktop $ROOT/usr/share/applications
-draw_progress_bar 80
+draw_progress_bar 70
+sudo rsync -a --info=progress2 SynthesisUninstaller.sh $HOME/.config/Autodesk/Synthesis
+chmod +x $HOME/.config/Autodesk/Synthesis/SynthesisUninstaller.sh
+draw_progress_bar 75
 sudo chmod +x $ROOT/usr/share/Autodesk/Synthesis/Synthesis.x86_64
-block_progress_bar 85
+block_progress_bar 80
 
 read -r -p "Would you like to install the Code Emulator as well? [ Y / N ] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
