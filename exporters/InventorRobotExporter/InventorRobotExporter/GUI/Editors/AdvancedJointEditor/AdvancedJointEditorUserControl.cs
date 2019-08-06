@@ -263,7 +263,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
         /// <summary>
         /// Update the list of joints
         /// </summary>
-        private void UpdateJointList()
+        public void UpdateJointList()
         {
             lstJoints.Items.Clear();
 

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using InventorRobotExporter.Managers;
 using InventorRobotExporter.Utilities;
 using Inventor;
@@ -62,7 +63,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
             }
         }
 
-        public void UpdateSkeleton(RobotDataManager robotDataManager)
+        public void LoadRobot(RobotDataManager robotDataManager)
         {
             advancedJointEditorUserControl.UpdateSkeleton(robotDataManager);
         }
@@ -90,6 +91,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
         {
             if (embeddedAdvancedJointEditorPane != null)
             {
+                advancedJointEditorUserControl.UpdateJointList();
                 embeddedAdvancedJointEditorPane.Visible = true;
             }
         }

@@ -55,7 +55,7 @@ namespace InventorRobotExporter.Exporter
         }
 
         /// <summary>
-        /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
+        /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll"/>
         /// </summary>
         /// <param name="group">The group to export from</param>
         /// <param name="mesh">Mesh to store physics data in.</param>

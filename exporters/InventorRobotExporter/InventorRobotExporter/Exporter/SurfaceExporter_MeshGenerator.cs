@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Inventor;
 
 namespace InventorRobotExporter.Exporter
@@ -91,8 +92,10 @@ namespace InventorRobotExporter.Exporter
         /// <summary>
         /// Calculates the facets of a surface, storing them in a <see cref="MeshController"/>.
         /// </summary>
-        private void CalculateSurfaceFacets(SurfaceBody surf, MeshController outputMesh, bool separateFaces = false)
+        private void CalculateSurfaceFacets(SurfaceBody surf, MeshController outputMesh, bool separateFaces = false, BackgroundWorker backgroundWorker = null)
         {
+            if (backgroundWorker != null && backgroundWorker.CancellationPending) return;
+
             double tolerance = DEFAULT_TOLERANCE;
 
             PartialSurface bufferSurface = new PartialSurface();

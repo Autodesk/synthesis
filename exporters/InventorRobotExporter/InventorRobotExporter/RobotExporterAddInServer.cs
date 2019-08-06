@@ -14,6 +14,8 @@ using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
+using NUnit.Framework;
+using OpenTK.Input;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 using Environment = Inventor.Environment;
 
@@ -65,7 +67,7 @@ namespace InventorRobotExporter
         public readonly HighlightManager HighlightManager = new HighlightManager();
 
         // UI elements
-        private readonly JointForm jointForm = new JointForm();
+        private readonly JointEditorForm jointEditorForm = new JointEditorForm();
 
         protected override Environment CreateEnvironment()
         {
@@ -116,7 +118,12 @@ namespace InventorRobotExporter
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
             advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
-            advancedEditJointButton.OnExecute += context => advancedJointEditor.Visible = !advancedJointEditor.Visible;
+            advancedEditJointButton.OnExecute += context =>
+            {
+                if (advancedJointEditor.Visible) return;
+                advancedJointEditor.Visible = true;
+                jointEditorForm.Visible = false;
+            };
             jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
 
             editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
@@ -124,8 +131,25 @@ namespace InventorRobotExporter
             editJointButton.OnExecute += context =>
             {
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
-                jointForm.ShowDialog();
-                advancedJointEditor.UpdateSkeleton(RobotDataManager);
+                if (!jointEditorForm.HasJoints())
+                {
+                    var result = MessageBox.Show("No joints detected in the assembly! Add joints to your robot by using the \"Joint\" button under \"Assemble\" and restart the robot export environment to edit joints.\n\n" +
+                                    "Would you like to view a video tutorial on adding joints to your assembly?", "No Joints Found", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    if (result.Equals(DialogResult.Yes))
+                        System.Diagnostics.Process.Start("https://youtu.be/fY3Vdkh8L0Y");
+                    return;
+                }
+                
+                if (jointEditorForm.Visible)
+                {
+                    jointEditorForm.Activate();
+                }
+                else
+                {
+                    jointEditorForm.PreShow();
+                    jointEditorForm.Show();
+                    advancedJointEditor.Visible = false;
+                }
             };
             jointPanel.CommandControls.AddButton(editJointButton, true);
 
@@ -160,7 +184,8 @@ namespace InventorRobotExporter
         protected override void OnEnvironmentOpen()
         {
             AnalyticsUtils.StartSession();
-            
+
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
@@ -175,9 +200,14 @@ namespace InventorRobotExporter
             RobotDataManager = new RobotDataManager();
             if (!RobotDataManager.LoadRobotSkeleton(new Progress<ProgressUpdate>(loadingBar.SetProgress)))
             {
+                loadingBar.Close();
+                Application.UserInterfaceManager.UserInteractionDisabled = false;
                 InventorUtils.ForceQuitExporter(OpenAssemblyDocument);
                 return;
             }
+
+            if (RobotDataManager.wasForceQuit)
+                return;
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Joint Data...", 7, 10));
             RobotDataManager.LoadRobotData(OpenAssemblyDocument);
@@ -193,31 +223,37 @@ namespace InventorRobotExporter
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
-            advancedJointEditor.UpdateSkeleton(RobotDataManager);
-            jointForm.UpdateSkeleton(RobotDataManager);
+            advancedJointEditor.LoadRobot(RobotDataManager);
+            jointEditorForm.LoadRobot(RobotDataManager);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
 
         protected override void OnEnvironmentClose()
         {
             AnalyticsUtils.EndSession();
             
+            Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
             RobotDataManager.SaveRobotData(OpenAssemblyDocument);
             loadingBar.Close();
+            Application.UserInterfaceManager.UserInteractionDisabled = false;
 
-            var exportResult = MessageBox.Show(
-                "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
-                "Robot Configuration Complete",
-                MessageBoxButtons.YesNo);
-
-            if (exportResult == DialogResult.Yes)
+            if (!RobotDataManager.wasForceQuit)
             {
-                if (ExportForm.PromptExportSettings(RobotDataManager))
-                    if (RobotDataManager.ExportRobot())
-                        SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
+                var exportResult = MessageBox.Show(new Form { TopMost = true },
+                    "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
+                    "Robot Configuration Complete",
+                    MessageBoxButtons.YesNo);
+
+                if (exportResult == DialogResult.Yes)
+                {
+                    if (ExportForm.PromptExportSettings(RobotDataManager))
+                        if (RobotDataManager.ExportRobot())
+                            SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
+                }
             }
 
             // Re-enable disabled components
