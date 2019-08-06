@@ -48,6 +48,7 @@ namespace SynthesisAddIn
 		/// \param cancel If this value ever becomes true, exporting will be stopped as soon as possible.
 		///
 		static void exportMeshes(BXDJ::ConfigData, Ptr<FusionDocument>, std::function<void(double)> = nullptr, const bool * = nullptr);
-
+	private:
+		static BXDJ::ConfigData mConfig;
 	};
 }

@@ -126,7 +126,7 @@ function applyFieldList(configData) {
 function applyConfigData(configData)
 {
     document.getElementById('name').value = configData.name;
-
+    document.getElementById('convex').value = configData.convex;
     var joints = configData.joints;
 
     // Delete all existing slots
@@ -341,7 +341,10 @@ function updateFieldOptions(fieldset)
 // Outputs currently entered data as a JSON object
 function readConfigData()
 {
-    var configData = { 'name': document.getElementById('name').value };
+    var configData = { 
+        'name': document.getElementById('name').value, 
+        'convex': document.getElementById('convex').value
+    };
     var joints = [];
 
     var jointOptions = document.getElementsByClassName('joint-config');
