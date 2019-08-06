@@ -184,6 +184,10 @@
     <None Include="palette\progress.html" />
     <None Include="palette\sensors.html" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="palette\js\drivetrain_type.js" />
+    <Content Include="palette\js\settings.js" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\nlohmann.json.3.6.1\build\native\nlohmann.json.targets" Condition="Exists('packages\nlohmann.json.3.6.1\build\native\nlohmann.json.targets')" />

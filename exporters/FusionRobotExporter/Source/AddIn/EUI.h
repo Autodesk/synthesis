@@ -42,7 +42,9 @@ namespace SynthesisAddIn
 
 		// UI Management
 		void prepareAllPalettes(); ///< Creates all palettes
-		void hideAllPalettes();
+		void closeEditorPalettes();
+		void disableEditorButtons();
+		void enableEditorButtons();
 		void closeAllPalettes();
 
 		void openDriveTypePalette();
