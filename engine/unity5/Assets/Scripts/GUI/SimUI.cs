@@ -311,7 +311,7 @@ namespace Synthesis.GUI
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", 3);
+            else UserMessageManager.Dispatch("No Game pieces Available In Field.", 3);
         }
 
         public void OnScoringTab()
@@ -332,7 +332,7 @@ namespace Synthesis.GUI
                 currentTab = "ScoringTab";
                 tabStateMachine.ChangeState(new ScoringToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", 3);
+            else UserMessageManager.Dispatch("No Game pieces Available In Field. Scoring Disabled.", 3);
         }
 
         public void OnSensorTab()
