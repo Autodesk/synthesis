@@ -26,7 +26,7 @@ namespace InventorRobotExporter.Managers
         // Robot export settings
         public bool RobotPreferMetric = false;
 
-        public bool hasGround = true;
+        public bool wasForceQuit = false;
 
         public RobotDataManager()
         {
