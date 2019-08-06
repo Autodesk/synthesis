@@ -24,21 +24,13 @@ function setDriveTrain(selected) {
 }
 
 function highlightDriveTrain() {
-    if (driveType === 1) {
-        document.getElementById("left-highlight").style.visibility = "visible";
-    } else if (driveType === 2) {
-        document.getElementById("middle-highlight").style.visibility = "visible";
-    } else if (driveType === 3) {
-        document.getElementById("right-highlight").style.visibility = "visible";
-    } else {
-        document.getElementById("left-highlight").style.visibility = "visible";
-    }
+    document.getElementById("highlight-"+driveType).style.visibility = "visible";
 }
 
 function unhighlightAll() {
-    document.getElementById("left-highlight").style.visibility = "hidden";
-    document.getElementById("middle-highlight").style.visibility = "hidden";
-    document.getElementById("right-highlight").style.visibility = "hidden";
+    Array.from(document.getElementsByClassName("highlight")).forEach(element => {
+        element.style.visibility = "hidden";
+    });
 }
 
 function sendInfoToFusion() {
