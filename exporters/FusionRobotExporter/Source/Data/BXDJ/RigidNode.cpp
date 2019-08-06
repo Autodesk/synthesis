@@ -62,6 +62,44 @@ void RigidNode::write(XmlWriter & output) const
 		output.write(*joint->getChild());
 	}
 }
+using json = nlohmann::json;
+
+json RigidNode::GetJson()
+{
+	json nodeArrayJson = json::array();
+
+	//process root node
+	json rootNodeJson;
+	std::string filename = "node_" + std::to_string(guid.getSeed()) + ".bxda";
+	rootNodeJson["GUID"] = guid.toString();
+	rootNodeJson["ParentID"] = "-1";
+	rootNodeJson["ModelFileName"] = filename;
+	rootNodeJson["ModelID"] = getModelId();
+	rootNodeJson["joint"] = nullptr;
+	nodeArrayJson.push_back(rootNodeJson);
+	//process children
+	for (std::shared_ptr<Joint> joint : childrenJoints)
+	{	
+
+		std::shared_ptr< RigidNode> node = joint->getChild();
+		std::string filename = "node_" + std::to_string(node->guid.getSeed()) + ".bxda";
+		json nodeJson;
+		nodeJson["GUID"] = node->guid.toString();
+		nodeJson["ParentID"] = (node->parent == NULL) ? "-1" : std::to_string(node->parent->getParent()->guid.getSeed());
+		nodeJson["ModelFileName"] = filename;
+		nodeJson["ModelID"] = node->getModelId();
+		nodeJson["joint"] = joint->GetJson();
+		nodeArrayJson.push_back(nodeJson);
+	}
+
+	
+
+	
+	
+	
+
+	return nodeArrayJson;
+}
 
 std::string RigidNode::JointSummary::toString() const
 {

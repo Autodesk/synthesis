@@ -6,6 +6,7 @@
 #include <Fusion/Components/Component.h>
 #include <Fusion/Components/Occurrence.h>
 #include "XmlWriter.h"
+#include <nlohmann/json.hpp>
 #include "../Guid.h"
 
 using namespace adsk;
@@ -48,7 +49,7 @@ namespace BXDJ
 		Joint * getParent() const; ///< \return The Joint connecting the RigidNode to its parent.
 		int getOccurrenceCount() const; ///< \return The number of Fusion occurrences contained in this RigidNode.
 		
-		
+		nlohmann::json GetJson();
 		///
 		/// Creates a vector containing the children of this RigidNode.
 		/// \param[out] children Vector to place all child RigidNodes into.
@@ -129,6 +130,9 @@ namespace BXDJ
 		void addJoint(core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
 		
 		void write(XmlWriter &) const;
+
+		
+		
 
 	};
 };

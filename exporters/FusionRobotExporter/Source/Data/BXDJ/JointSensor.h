@@ -4,6 +4,7 @@
 #include "XmlWriter.h"
 #include "CustomJSONObject.h"
 #include "Components.h"
+#include <nlohmann/json.hpp>
 
 namespace BXDJ
 {
@@ -43,6 +44,7 @@ namespace BXDJ
 
 		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
 		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json GetExportJSON();
 
 	private:
 		static std::string toString(Type); ///< \return The name of the sensor type.

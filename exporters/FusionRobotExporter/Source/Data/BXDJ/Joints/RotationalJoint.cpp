@@ -107,3 +107,40 @@ void RotationalJoint::write(XmlWriter & output) const
 	// Write driver information
 	Joint::write(output);
 }
+
+
+nlohmann::json RotationalJoint::GetJson() {
+	nlohmann::json jointJson;
+	jointJson["$type"] = "RotationalJoint, RobotExportAPI";
+	jointJson["axis"] = getAxisOfRotation().GetJson();
+	jointJson["basePoint"] = getChildBasePoint().GetJson();
+	jointJson["currentAngularPosition"] = getCurrentAngle();
+	jointJson["hasAngularLimit"] = hasLimits();
+
+	double min = roundf(getMinAngle() * 100) / 100;
+	if(!min){
+		min = 0;
+ 	}
+
+	double max = roundf(getMaxAngle() * 100) / 100;
+	if (max == NULL) {
+		max = 0;
+	}
+
+	jointJson["angularLimitLow"] =  min;
+	jointJson["angularLimitHigh"] = max;
+	jointJson["typeSave"] = "ROTATIONAL";
+	jointJson["weight"] = getWeightData();
+
+
+	nlohmann::json sensorJson = nlohmann::json::array();
+
+	for (int i = 0; i < sensors.size(); i++) {
+		sensorJson.push_back(sensors[i]->GetExportJSON());
+	}
+
+	jointJson["attachedSensors"] = sensorJson;
+	jointJson["cDriver"] = getDriver()->GetExportJson();
+	
+	return jointJson;
+}

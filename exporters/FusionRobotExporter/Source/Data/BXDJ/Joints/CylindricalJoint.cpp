@@ -119,3 +119,33 @@ void CylindricalJoint::write(XmlWriter & output) const
 	// Write driver information
 	Joint::write(output);
 }
+
+
+nlohmann::json CylindricalJoint::GetJson() {
+	nlohmann::json jointJson;
+	jointJson["$type"] = "CylindricalJoint, RobotExportAPI";
+	jointJson["axis"] = getAxis().GetJson();
+	jointJson["basePoint"] = getChildBasePoint().GetJson();
+	jointJson["currentAngularPosition"] = (getCurrentAngle());
+	jointJson["CurrentLinearPosition"] = (getCurrentTranslation());
+	jointJson["hasAngularLimit"] = hasLimits();
+	jointJson["angularLimitLow"] = getMinAngle();
+	jointJson["angularLimitHigh"] = getMaxAngle();
+	jointJson["linearLimitLow"] = getMinTranslation();
+	jointJson["linearLimitHigh"] = getMaxTranslation();
+	jointJson["typeSave"] = "CYNLINDRICAL";
+	jointJson["weight"] = getWeightData();
+
+	nlohmann::json driverJson;
+
+	jointJson["cDriver"] = driverJson;
+	nlohmann::json sensorJson = nlohmann::json::array();
+
+	for (int i = 0; i < sensors.size(); i++) {
+		sensorJson.push_back(sensors[i]->GetExportJSON());
+	}
+
+	jointJson["attachedSensors"] = sensorJson;
+
+	return jointJson;
+}

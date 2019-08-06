@@ -33,11 +33,12 @@ namespace BXDJ
 		BallJoint(RigidNode *, core::Ptr<fusion::AsBuiltJoint>, core::Ptr<fusion::Occurrence>);
 
 		void applyConfig(const ConfigData &);
-
+		nlohmann::json GetJson();
 	private:
 		core::Ptr<fusion::BallJointMotion> fusionJointMotion; ///< The ball joint in Fusion.
 
 		void write(XmlWriter &) const;
+
 
 	};
 }

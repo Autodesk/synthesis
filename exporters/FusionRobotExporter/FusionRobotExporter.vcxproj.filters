@@ -286,5 +286,6 @@
     <None Include="palette\jointEditor.html">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
