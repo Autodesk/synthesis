@@ -117,9 +117,9 @@ namespace Assets.Scripts.GUI
         {
             robotCameraGUI.ToggleCameraWindow();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RobotCamera,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Robot Camera",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -136,9 +136,9 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(ultrasonicDropdown, updatedList);
                 numUltrasonics++;
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddUltrasonic,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Ultrasonic",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
@@ -146,16 +146,16 @@ namespace Assets.Scripts.GUI
                 sensorManagerGUI.SetUltrasonicAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditUltrasonic,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Edited,
+                    "Ultrasonic",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             ultrasonicDropdown.value = 0;
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.UltrasonicDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Dropdown - Ultrasonic",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -172,9 +172,9 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(beamBreakerDropdown, updatedList);
                 numBeamBreakers++;
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddBeam,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Beam Break",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
@@ -182,16 +182,16 @@ namespace Assets.Scripts.GUI
                 sensorManagerGUI.SetBeamBreakerAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditBeam,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Edited,
+                    "Beam Break",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             beamBreakerDropdown.value = 0;
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.BeamBreakDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Dropdown - Beam Break",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -208,9 +208,9 @@ namespace Assets.Scripts.GUI
                 UpdateSensorDropdown(gyroDropdown, updatedList);
                 numGyros++;
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddGyro,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Gyroscope",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else //Edit one of the existing sensors
@@ -218,16 +218,16 @@ namespace Assets.Scripts.GUI
                 sensorManagerGUI.SetGyroAsCurrent(i - 1);
                 sensorManagerGUI.StartConfiguration();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditGyro,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Edited,
+                    "Gyroscope",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             gyroDropdown.value = 0;
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GyroDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Dropdown - Gyroscope",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -238,9 +238,9 @@ namespace Assets.Scripts.GUI
         {
             sensorManagerGUI.ToggleSensorOutput();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HideOutputs,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Hide,
+                "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -296,9 +296,9 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorHelp,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.Viewed,
+                "Help - Sensor Toolbar",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 

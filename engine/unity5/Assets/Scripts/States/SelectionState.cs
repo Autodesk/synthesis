@@ -11,7 +11,7 @@ namespace Synthesis.States
         public void OnMainSimulatorButtonClicked()
         {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainSimMenu,
-                AnalyticsLedger.EventAction.Start,
+                AnalyticsLedger.EventAction.StartSim,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSimMenu,
@@ -26,7 +26,7 @@ namespace Synthesis.States
         public void OnMixAndMatchButtonClicked()
         {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MixAndMatchMenu,
-                AnalyticsLedger.EventAction.Start,
+                AnalyticsLedger.EventAction.StartSim,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MixAndMatchMenu,
@@ -41,7 +41,7 @@ namespace Synthesis.States
         public void OnMultiplayerButtonClicked()
         {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerMenu,
-                AnalyticsLedger.EventAction.Start,
+                AnalyticsLedger.EventAction.StartSim,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu,

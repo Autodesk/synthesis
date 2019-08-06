@@ -424,9 +424,9 @@ namespace Synthesis.States
 
                     if (AnalyticsManager.GlobalInstance != null)
                     {
-                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
-                            AnalyticsLedger.EventAction.Changed,
-                            "",
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Mix and Match",
                             AnalyticsLedger.getMilliseconds().ToString());
                     }
                 }
@@ -437,9 +437,9 @@ namespace Synthesis.States
 
                     if (AnalyticsManager.GlobalInstance != null)
                     {
-                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
-                            AnalyticsLedger.EventAction.Changed,
-                            "",
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Exported",
                             AnalyticsLedger.getMilliseconds().ToString());
                     }
                 }
@@ -463,9 +463,9 @@ namespace Synthesis.States
 
                 if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
                 {
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
-                        AnalyticsLedger.EventAction.Changed,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                        AnalyticsLedger.EventAction.Load,
+                        robot.RootNode.GUID.ToString(),
                         AnalyticsLedger.getMilliseconds().ToString());
                 }
 

@@ -10,112 +10,68 @@ public class AnalyticsLedger
         return (int)(Time.unscaledTime * 1000);
     }
 
+    #region Anatomy of Analytics Events
+    /* Categories: Groups of objects
+     * Actions: Actions of objects
+     * Labels: Additional information */
+ 
+
+    #endregion
+
+    /// <summary>
+    /// Categories group multiple objects together. Each main category is grouped by the tabs
+    /// in the simulator. Most events will fall into one of the tab categories (e.g. HomeTab.)
+    /// </summary>
     public class EventCatagory {
         public const string
 
-            // Main Menu scene and events
-            MainSimMenu = "simMenu",
-            MixAndMatchMenu = "mixMenu",
-            SettingsMenu = "settingsMenu",
-            MultiplayerMenu = "multiplayerMenu",
-            MixAndMatchSimulator = "mixSimulator",
+            // Main Menu has been deprecated. May consider removing or archiving MainMenu code.
+            MainSimMenu = "Main Menu",
+            MixAndMatchMenu = "Mix and Match Menu",
+            MultiplayerMenu = "LAN Multiplayer Menu",
+            MixAndMatchSimulator = "Mix and Match Simulator",
 
-            // Activated scenes 
-            MainSimulator = "mainSimulator",
-            Tutorials = "tutorialLink",
+            // Start of analytics tracking
+            MainSimulator = "Main Simulator",
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs
-            ExitTab = "exitTab",
-            HomeTab = "homeTab",
-            DPMTab = "driverPracticeTab",
-            ScoringTab = "scoringTab",
-            SensorTab = "sensorTab",
-            EmulationTab = "emulationTab",
+            ExitTab = "Exit Tab",
+            HomeTab = "Home Tab",
+            DPMTab = "Gamepiece Tab",
+            ScoringTab = "Scoring Tab",
+            SensorTab = "Sensor Tab",
+            EmulationTab = "Emulation Tab",
 
-            // Main toolbar scene events
-            AddRobot = "addRobot",
-            ChangeRobot = "changeRobot",
-            MaMRobot = "mixandMatchRobot",  // changed to MaM robot
-            ExportedRobot = "exportedRobot", // changed to pre-exported robot
-            ChangeField = "changeField",
-
-            ResetDropdown = "resetDropdown",
-            ResetRobot = "resetRobot",
-            ResetSpawnpoint = "resetSpawnpoint",
-            ResetField = "resetField",
-
-            CameraDropdown = "camDropdown",
-            DriverView = "driverStationView",
-            OrbitView = "orbitView",
-            FreeroamView = "freeRoamView",
-            Overview = "overviewView",
-
-            ReplayMode = "replayMode",
-            Multiplayer = "multiplayer",
-            Stopwatch = "stopWatch",
-            Ruler = "ruler",
-            ControlPanel = "controlPanel",
-            MainHelp = "mainToolbarHelp",
-
-            // DPM toolbar events
-            GamepieceDropdown = "dpm_changeGamepiece",
-            DefineIntake = "dpm_defineIntake",
-            DefineRelease = "dpm_defineRelease",
-            EditTrajectory = "dpm_editTrajectory",
-            SetSpawnpoint = "dpm_setSpawnpoint",
-            SpawnGamepiece = "dpm_spawnGamepiece",
-            ClearGamepiece = "dpm_clearGamepiece",
-            DPMHelp = "dpm_Help",
-
-            // Scoring toolbar events
-            ScoreZones = "scoreZone",
-            ScoreBoard = "scoreBoard",
-            ScoreHelp = "scoreHelp",
-
-            // Sensor toolbar events
-            RobotCamera = "robotCamera",
-
-            UltrasonicDropdown = "ultraSensorDropdown",
-            AddUltrasonic = "ultraSensorAdd",
-            EditUltrasonic = "ultraSensorEdit",
-
-            BeamBreakDropdown = "beamBreakDropdown",
-            AddBeam = "beamBreakSensorAdd",
-            EditBeam = "beamBreakSensorEdit",
-
-            GyroDropdown = "gyroDropdown",
-            AddGyro = "gyroSensorAdd",
-            EditGyro = "gyroSensorEdit",
-
-            SensorNode = "sensorNode",
-            SensorAngle = "sensorAngle",
-            SensorRange = "sensorRange",
-            SensorPosition = "sensorPostion",
-            SensorHide = "sensorHide",
-            DeleteSensor = "sensorDelete",
-
-            HideOutputs = "sensorHideOutputs",
-            SensorHelp = "sensorHelp",
-
-            // Emulation toolbar events
-            SelectCode = "emulationSelectCode",
-            DriverStation = "emulationDriverStation",
-            RunCode = "emulationRunCode",
-            EmulationHelp = "emulationHelp";
-
+            // Global categories
+            AddRobot = "Add Robot",
+            ChangeRobot = "Change Robot",
+            LoadRobot = "Load Robot",
+            ChangeField = "Change Field",
+            Reset = "Reset",
+            CameraView = "Camera View",
+            Help = "Help Menu",
+            Tutorials = "Tutorials";
     }
 
     public class EventAction
     {
         public const string
-            Start = "start",
-            TutorialRequest = "requestedTutorial",
+            StartSim = "Started Simulator",
+            StartFeature = "Started Feature",
+            TutorialRequest = "Requested Tutorial",
             Saved = "saved",
-            BackedOut = "backedOut",
+            BackedOut = "Back",
+            Next = "Next",
             Continued = "continued",
             Clicked = "buttonClicked",
+            Added = "Added",
+            Removed = "Removed",
+            Edited = "Edited",
+            Hide = "Hide",
+            Active = "Using",
             Viewed = "viewed",
+            Load = "Load",
             Changed = "changed";
     }
 
