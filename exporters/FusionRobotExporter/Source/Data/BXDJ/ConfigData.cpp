@@ -262,37 +262,39 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		tempIconDir = configJSON["tempIconDir"].GetString();
 
 	// Read each joint configuration
-	auto jointsJSON = configJSON["joints"].GetArray();
-	for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
-	{
-		// Joint Info
-		std::string jointID = jointsJSON[i]["id"].GetString();
-
-		if (jointsJSON[i].HasMember("name") && jointsJSON[i]["name"].IsString())		joints[jointID].name = jointsJSON[i]["name"].GetString();
-		if (jointsJSON[i].HasMember("asBuilt") && jointsJSON[i]["asBuilt"].IsBool())	joints[jointID].asBuilt = jointsJSON[i]["asBuilt"].GetBool();
-		if (jointsJSON[i].HasMember("type") && jointsJSON[i]["type"].IsNumber())		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
-
-		// Driver Information
-		if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
+	if (configJSON.HasMember("joints") && configJSON["joints"].IsArray()) {
+		auto jointsJSON = configJSON["joints"].GetArray();
+		for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
 		{
-			Driver driver;
-			driver.loadJSONObject(jointsJSON[i]["driver"]);
-			joints[jointID].driver = std::make_unique<Driver>(driver);
-		}
-		else
-			joints[jointID].driver = nullptr;
+			// Joint Info
+			std::string jointID = jointsJSON[i]["id"].GetString();
 
-		// Sensor Information
-		if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
-		{
-			auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
-			for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
+			if (jointsJSON[i].HasMember("name") && jointsJSON[i]["name"].IsString())		joints[jointID].name = jointsJSON[i]["name"].GetString();
+			if (jointsJSON[i].HasMember("asBuilt") && jointsJSON[i]["asBuilt"].IsBool())	joints[jointID].asBuilt = jointsJSON[i]["asBuilt"].GetBool();
+			if (jointsJSON[i].HasMember("type") && jointsJSON[i]["type"].IsNumber())		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
+
+			// Driver Information
+			if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
 			{
-				if (sensorsJSONArray[j].IsObject())
+				Driver driver;
+				driver.loadJSONObject(jointsJSON[i]["driver"]);
+				joints[jointID].driver = std::make_unique<Driver>(driver);
+			}
+			else
+				joints[jointID].driver = nullptr;
+
+			// Sensor Information
+			if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
+			{
+				auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
+				for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
 				{
-					std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
-					sensor->loadJSONObject(sensorsJSONArray[j]);
-					joints[jointID].sensors.push_back(sensor);
+					if (sensorsJSONArray[j].IsObject())
+					{
+						std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
+						sensor->loadJSONObject(sensorsJSONArray[j]);
+						joints[jointID].sensors.push_back(sensor);
+					}
 				}
 			}
 		}

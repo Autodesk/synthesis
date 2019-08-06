@@ -94,7 +94,7 @@ namespace SynthesisAddIn
 		///
 		void saveConfiguration(std::string jsonConfig);
 
-		void startExportRobot(); ///< Starts a thread for exporting the robot (EUI::exportRobot).
+		void startExportRobot(bool openSynthesis); ///< Starts a thread for exporting the robot (EUI::exportRobot).
 		void cancelExportRobot(); ///< Cancels any export thread.
 
 		///
@@ -231,6 +231,6 @@ namespace SynthesisAddIn
 		/// Used with threading to export the robot.
 		/// \param config Configuration to export the robot with.
 		///
-		void exportRobot(BXDJ::ConfigData);
+		void exportRobot(BXDJ::ConfigData, bool openSynthesis);
 	};
 }
