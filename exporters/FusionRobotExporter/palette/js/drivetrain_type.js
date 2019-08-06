@@ -4,6 +4,7 @@ window.fusionJavaScriptHandler = {handle: function(action, data) {
     try {
         var parsedConfig = JSON.parse(data);
         if (action === "joints") {
+            document.getElementById('save').innerHTML = "OK";
             if (parsedConfig.drivetrainType !== undefined)
                 driveType = parsedConfig.drivetrainType;
             unhighlightAll();

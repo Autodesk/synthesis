@@ -7,6 +7,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action === 'joints')
                 {
+                    document.getElementById('finished-button').innerHTML = "Export Robot";
                     console.log("Receiving joint info...");
                     console.log(data);
                     loadConfig(JSON.parse(data));

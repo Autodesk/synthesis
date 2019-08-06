@@ -25,6 +25,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action === 'joints')
                 {
+                    document.getElementById('save-button').innerHTML = "OK";
                     const configData = JSON.parse(data);
                     console.log("Input Joint Data Data: ", configData);
                     loadData(configData);
