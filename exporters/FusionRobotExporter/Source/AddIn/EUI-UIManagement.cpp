@@ -93,14 +93,14 @@ void EUI::closeAllPalettes()
 
 void EUI::hideAllPalettes()
 {
-	driveTypePalette->isVisible(false);
-	driveWeightPalette->isVisible(false);
-	jointEditorPalette->isVisible(false);
-	sensorsPalette->isVisible(false);
-	guidePalette->isVisible(false);
-	// keyPalette->isVisible(false);
-	settingsPalette->isVisible(false);
-	finishPalette->isVisible(false);
+	closeDriveTypePalette("");
+	closeDriveWeightPalette("");
+	closeJointEditorPalette();
+	closeSensorsPalette();
+	closeGuidePalette();
+	//closeKeyPalette();
+	closeSettingsPalette("");
+	closeFinishPalette();
 }
 
 // Drivetrain Weight Palette
@@ -221,10 +221,6 @@ void EUI::deleteJointEditorPalette()
 void EUI::openJointEditorPalette()
 {
 	hideAllPalettes();
-	editJointsButton->controlDefinition()->isEnabled(false);
-	driveTrainTypeButton->controlDefinition()->isEnabled(true);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
