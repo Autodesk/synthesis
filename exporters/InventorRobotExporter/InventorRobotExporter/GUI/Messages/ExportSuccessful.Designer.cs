@@ -31,44 +31,59 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportSuccessful));
             this.okButton = new System.Windows.Forms.Button();
             this.description = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(192, 65);
+            this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.okButton.Location = new System.Drawing.Point(21, 106);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.Size = new System.Drawing.Size(173, 23);
             this.okButton.TabIndex = 0;
-            this.okButton.Text = "OK";
+            this.okButton.Text = "Open Output Folder";
             this.okButton.UseVisualStyleBackColor = true;
-            this.okButton.Click += new System.EventHandler(this.OkButton_Click);
+            this.okButton.Click += new System.EventHandler(this.OpenClick);
             // 
             // description
             // 
             this.description.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.description.Location = new System.Drawing.Point(12, 9);
+            this.description.Location = new System.Drawing.Point(10, 7);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(432, 39);
+            this.description.Size = new System.Drawing.Size(357, 96);
             this.description.TabIndex = 1;
-            this.description.Text = "Your robot was successfully exported and can be found at:\r\n%path%";
+            this.description.Text = "Your robot has been exported successfully to\r\n%path%\r\n\r\nTo use this robot with Sy" +
+    "nthesis, open the Synthesis \r\napplication and pick this robot in the \"Robot Sele" +
+    "ct\" menu.";
             this.description.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button1.Location = new System.Drawing.Point(200, 106);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(176, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "OK";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.OkClick);
             // 
             // ExportSuccessful
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(459, 96);
+            this.ClientSize = new System.Drawing.Size(395, 139);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.description);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(475, 135);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(475, 135);
             this.Name = "ExportSuccessful";
-            this.Text = "Export Successful";
+            this.Text = "Export Complete";
+            this.TopMost = true;
             this.ResumeLayout(false);
 
         }
@@ -77,5 +92,6 @@
 
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Label description;
+        private System.Windows.Forms.Button button1;
     }
 }

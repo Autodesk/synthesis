@@ -33,16 +33,15 @@ namespace InventorRobotExporter.GUI.Editors
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.RobotNameLabel = new System.Windows.Forms.Label();
             this.RobotNameTextBox = new System.Windows.Forms.TextBox();
             this.ColorBox = new System.Windows.Forms.CheckBox();
             this.OpenSynthesisBox = new System.Windows.Forms.CheckBox();
-            this.WindowControlLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.ButtonCancel = new System.Windows.Forms.Button();
-            this.ButtonOk = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.MainLayout.SuspendLayout();
-            this.WindowControlLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainLayout
@@ -52,21 +51,19 @@ namespace InventorRobotExporter.GUI.Editors
             this.MainLayout.ColumnCount = 2;
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.MainLayout.Controls.Add(this.RobotNameLabel, 0, 0);
             this.MainLayout.Controls.Add(this.RobotNameTextBox, 1, 0);
             this.MainLayout.Controls.Add(this.ColorBox, 0, 1);
             this.MainLayout.Controls.Add(this.OpenSynthesisBox, 1, 1);
-            this.MainLayout.Controls.Add(this.WindowControlLayout, 0, 3);
             this.MainLayout.Location = new System.Drawing.Point(4, 4);
             this.MainLayout.Margin = new System.Windows.Forms.Padding(4);
             this.MainLayout.Name = "MainLayout";
-            this.MainLayout.RowCount = 4;
+            this.MainLayout.RowCount = 2;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MainLayout.Size = new System.Drawing.Size(570, 91);
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.MainLayout.Size = new System.Drawing.Size(570, 59);
             this.MainLayout.TabIndex = 7;
             // 
             // RobotNameLabel
@@ -117,63 +114,45 @@ namespace InventorRobotExporter.GUI.Editors
             this.OpenSynthesisBox.UseVisualStyleBackColor = true;
             this.OpenSynthesisBox.CheckedChanged += new System.EventHandler(this.OpenSynthesisBox_CheckedChanged);
             // 
-            // WindowControlLayout
+            // cancelButton
             // 
-            this.WindowControlLayout.AutoSize = true;
-            this.WindowControlLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.WindowControlLayout.ColumnCount = 3;
-            this.MainLayout.SetColumnSpan(this.WindowControlLayout, 2);
-            this.WindowControlLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.WindowControlLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 4F));
-            this.WindowControlLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.WindowControlLayout.Controls.Add(this.ButtonCancel, 0, 0);
-            this.WindowControlLayout.Controls.Add(this.ButtonOk, 2, 0);
-            this.WindowControlLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.WindowControlLayout.Location = new System.Drawing.Point(3, 61);
-            this.WindowControlLayout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.WindowControlLayout.Name = "WindowControlLayout";
-            this.WindowControlLayout.RowCount = 1;
-            this.WindowControlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.WindowControlLayout.Size = new System.Drawing.Size(564, 28);
-            this.WindowControlLayout.TabIndex = 3;
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.Location = new System.Drawing.Point(447, 41);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(121, 27);
+            this.cancelButton.TabIndex = 9;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
             // 
-            // ButtonCancel
+            // okButton
             // 
-            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ButtonCancel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ButtonCancel.Location = new System.Drawing.Point(0, 0);
-            this.ButtonCancel.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(280, 28);
-            this.ButtonCancel.TabIndex = 6;
-            this.ButtonCancel.Text = "Cancel";
-            this.ButtonCancel.UseVisualStyleBackColor = true;
-            // 
-            // ButtonOk
-            // 
-            this.ButtonOk.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ButtonOk.Enabled = false;
-            this.ButtonOk.Location = new System.Drawing.Point(284, 0);
-            this.ButtonOk.Margin = new System.Windows.Forms.Padding(0);
-            this.ButtonOk.Name = "ButtonOk";
-            this.ButtonOk.Size = new System.Drawing.Size(280, 28);
-            this.ButtonOk.TabIndex = 5;
-            this.ButtonOk.Text = "OK";
-            this.ButtonOk.UseVisualStyleBackColor = true;
-            this.ButtonOk.Click += new System.EventHandler(this.ButtonOK_Click);
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(320, 41);
+            this.okButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(121, 27);
+            this.okButton.TabIndex = 8;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = false;
+            this.okButton.Click += new System.EventHandler(this.ButtonOK_Click);
             // 
             // ExportForm
             // 
-            this.AcceptButton = this.ButtonOk;
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
-            this.CancelButton = this.ButtonCancel;
-            this.ClientSize = new System.Drawing.Size(576, 99);
+            this.CancelButton = this.cancelButton;
+            this.ClientSize = new System.Drawing.Size(580, 80);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -183,7 +162,6 @@ namespace InventorRobotExporter.GUI.Editors
             this.Text = "Export Robot to Synthesis";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
-            this.WindowControlLayout.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -193,10 +171,9 @@ namespace InventorRobotExporter.GUI.Editors
         private TableLayoutPanel MainLayout;
         private CheckBox OpenSynthesisBox;
         private CheckBox ColorBox;
-        private Button ButtonCancel;
-        private Button ButtonOk;
-        private TableLayoutPanel WindowControlLayout;
         private Label RobotNameLabel;
         private TextBox RobotNameTextBox;
+        private Button cancelButton;
+        private Button okButton;
     }
 }
