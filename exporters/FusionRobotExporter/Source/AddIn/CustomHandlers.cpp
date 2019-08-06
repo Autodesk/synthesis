@@ -99,7 +99,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	{
 		if (eventArgs->data() == "drivetrain_type")
 		{
-			eui->closeDriveTypePalette("");
+			eui->closeDriveTypePalette();
 		} else if (eventArgs->data() == "drivetrain_weight")
 		{
 			eui->closeDriveWeightPalette("");
