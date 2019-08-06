@@ -95,8 +95,16 @@ function loadData(configData)
         fieldset.dataset.asBuilt = joints[i].asBuilt ? 'true' : 'false';
         
         // TODO: This is lazy, don't do this
-        let gearRatio = joints[i].driver.outputGear === undefined || joints[i].driver.inputGear === undefined ? 0 : joints[i].driver.outputGear / joints[i].driver.inputGear;
-        fieldset.dataset.sensors = JSON.stringify({'sensors': joints[i].sensors, 'gear': gearRatio, 'signal': joints[i].driver.signal, 'portOne': joints[i].driver.portOne});
+        let gearRatio = 0;
+        let signal = 2;
+        let portOne = 3;
+        
+        if (joints[i].driver) {
+            gearRatio = joints[i].driver.outputGear === undefined || joints[i].driver.inputGear === undefined ? 0 : joints[i].driver.outputGear / joints[i].driver.inputGear;
+            signal = joints[i].driver.signal;
+            portOne = joints[i].driver.portOne;
+        }
+        fieldset.dataset.sensors = JSON.stringify({'sensors': joints[i].sensors, 'gear': gearRatio, 'signal': signal, 'portOne': portOne});
 
         // Highlight joint if hover for 0.5 seconds
         (function(id){delayHover(fieldset, function() {highlightJoint(id)})}(fieldset.dataset.jointId));
