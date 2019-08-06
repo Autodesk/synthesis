@@ -15,6 +15,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action === 'state')
                 {
+                    document.getElementById('save-button').innerHTML = "OK";
                     console.log("Receiving DT weight info...");
                     console.log(data);
                     applyConfigData(JSON.parse(data));

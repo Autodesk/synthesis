@@ -31,7 +31,7 @@
             </div>
         </div>
         <br/>
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>OK</button>
+        <button id='save-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         <button id="cancel" type="button" onclick="cancel()">Cancel</button>
     </body>
 </html>

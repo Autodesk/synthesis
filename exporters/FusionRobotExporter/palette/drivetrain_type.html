@@ -58,7 +58,7 @@
             <input id="highlight-2" class="highlight" style="visibility: hidden" type="image" src="resources/overlay.png" width="100" height="100" />
             <input id="highlight-3" class="highlight" style="visibility: hidden" type="image" src="resources/overlay.png" width="100" height="100" />
         </div>
-        <button id="save" class="save" type="button" style="margin-top: 30px;" onclick="sendInfoToFusion()">OK</button>
+        <button id="save" class="save" type="button" style="margin-top: 30px;" onclick="this.innerHTML = 'Saving...';setTimeout(sendInfoToFusion, 500)">OK</button>
         <button type="button" onclick="cancel()">Cancel</button>
     </body>    
 </html>

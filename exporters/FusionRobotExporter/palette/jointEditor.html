@@ -108,7 +108,7 @@
                 </div>
             </fieldset>
         </div>
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>OK</button>
+        <button id='save-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         <button type="button" onclick="cancel()">Cancel</button>
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
