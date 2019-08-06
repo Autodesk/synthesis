@@ -1,3 +1,4 @@
+var noJoints = false;
 let openFieldsetSensors = null;
 
 // Prompts the Fusion add-in for joint data
@@ -74,7 +75,9 @@ function loadData(configData)
     while (existing.length > 0)
         existing[0].parentNode.removeChild(existing[0]);
 
-    const noJoints = joints.length === 0;
+    noJoints = joints.length === 0;
+    if (noJoints)
+        document.getElementById("nodata").style.display = "none";
     setVisible(document.getElementById("nodata"), noJoints);
     setVisible(document.getElementById("save-button"), !noJoints);
     if (noJoints) return;
@@ -277,4 +280,8 @@ function exportRobot()
     }
 
     adsk.fusionSendData('export', JSON.stringify(saveValues()));
+}
+
+function cancel() {
+    adsk.fusionSendData("close", "joint_editor");
 }

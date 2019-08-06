@@ -42,3 +42,7 @@ function unhighlightAll() {
 function sendInfoToFusion() {
     adsk.fusionSendData("drivetrain_type", driveType);
 }
+
+function cancel() {
+    adsk.fusionSendData("close", "drivetrain_type");
+}
