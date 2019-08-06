@@ -782,7 +782,7 @@ namespace Synthesis.Sensors
             Auxiliary.FindObject(configureSensorPanel, "VisibilityButton").GetComponentInChildren<Text>().text = currentSensor.IsVisible ? "Hide" : "Show";
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
-                AnalyticsLedger.EventAction.Hide,
+                AnalyticsLedger.EventAction.Toggled,
                 "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
         }

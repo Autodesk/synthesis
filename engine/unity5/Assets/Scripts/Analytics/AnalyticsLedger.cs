@@ -54,27 +54,29 @@ public class AnalyticsLedger
             Tutorials = "Tutorials";
     }
 
+    /// <summary>
+    /// Actions for user behaviors
+    /// </summary>
     public class EventAction
     {
         public const string
             StartSim = "Started Simulator",
-            StartFeature = "Started Feature",
             TutorialRequest = "Requested Tutorial",
-            Saved = "saved",
             BackedOut = "Back",
             Next = "Next",
-            Continued = "continued",
-            Clicked = "buttonClicked",
+            Clicked = "Clicked Button",
             Added = "Added",
             Removed = "Removed",
             Edited = "Edited",
-            Hide = "Hide",
-            Active = "Using",
-            Viewed = "viewed",
+            Toggled = "Toggled",
+            Viewed = "Viewed",
             Load = "Load",
-            Changed = "changed";
+            Changed = "Changed";
     }
 
+    /// <summary>
+    /// Not currently in use but implemented on backend 08/2019
+    /// </summary>
     public class PageView
     {
         public const string
@@ -86,49 +88,59 @@ public class AnalyticsLedger
             MultiplayerSimulator = "multiplayerSimulator";
     }
 
+    /// <summary>
+    /// Similar to event categories, timing categories organize objects
+    /// into various groups. 
+    /// </summary>
     public class TimingCatagory
     {
         public const string
-            Main = "main",
-            MixMatch = "mixAndMatch",
-            Multiplater = "multiplayer",
+            Main = "Main Menu",
+            MixMatch = "Mix and Match",
+            Multiplater = "Multiplayer",
 
-            MainSimulator = "inSimulator",
-            HomeTab = "homeTab",
-            DPMTab = "dpmTab",
-            ScoringTab = "scoringTab",
-            SensorTab = "sensorTab",
-            EmulationTab = "emulationTab",
-            Tab = "toolbarTab";
+            MainSimulator = "In Simulator",
+            HomeTab = "Home Tab",
+            DPMTab = "Gamepiece Tab",
+            ScoringTab = "Scoring Tab",
+            SensorTab = "Sensor Tab",
+            EmulationTab = "Emulation Tab",
+            Tab = "Toolbar Tab";
     }
 
+    /// <summary>
+    /// Actions for timing events
+    /// </summary>
     public class TimingVarible
     {
         public const string
-            Loading = "loading",
-            Playing = "playing",
-            Customizing = "customizing",
-            Viewing = "viewing",
-            Starting = "starting";
+            Loading = "Loading",
+            Playing = "Playing",
+            Customizing = "Customizing",
+            Viewing = "Viewing",
+            Starting = "Starting";
     }
 
+    /// <summary>
+    /// Additional information to expand on the timing categories. 
+    /// </summary>
     public class TimingLabel
     {
         public const string
-            MixAndMatchMenu = "mixMenu",
-            MainSimMenu = "mainSimMenu",
-            MultiplayerLobbyMenu = "multiplayerLobbyMenu",
+            MixAndMatchMenu = "Mix and Match Menu",
+            MainSimMenu = "Main Menu",
+            MultiplayerLobbyMenu = "Multiplayer Lobby Menu",
 
-            MainSimulator = "mainSimulator",
-            ResetField = "resetField",
-            ChangeField = "changedField",
-            MixAndMatch = "mixAndMatchMode",
-            ReplayMode = "replayMode",
+            MainSimulator = "Main Simulator",
+            ResetField = "Reset Field",
+            ChangeField = "Change Field",
+            MixAndMatch = "Mix and Match Mode",
+            ReplayMode = "Replay Mode",
 
-            HomeTab = "homeTab",
-            DPMTab = "dpmTab",
-            ScoringTab = "scoringTab",
-            SensorTab = "sensorTab",
-            EmulationTab = "emulationTab";
+            HomeTab = "Home Tab",
+            DPMTab = "Gamepiece Tab",
+            ScoringTab = "Scoring Tab",
+            SensorTab = "Sensor Tab",
+            EmulationTab = "Emulation Tab";
     }
 }

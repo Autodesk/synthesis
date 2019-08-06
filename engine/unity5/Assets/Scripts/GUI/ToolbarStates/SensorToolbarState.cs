@@ -239,7 +239,7 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI.ToggleSensorOutput();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
-                AnalyticsLedger.EventAction.Hide,
+                AnalyticsLedger.EventAction.Toggled,
                 "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
