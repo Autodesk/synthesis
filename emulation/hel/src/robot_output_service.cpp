@@ -15,7 +15,7 @@ Status RobotOutputService::RobotOutputs(
 		auto instance = hel::RobotOutputsManager::getInstance();
 
 		if (instance.first->hasNewData()) {
-			auto data = instance.first->syncShallow();
+			auto data = instance.first->syncDeep();
 			instance.second.unlock();
 			auto res = RobotOutputsResponse{};
 			res.set_api("v1");

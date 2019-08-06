@@ -26,7 +26,7 @@ RobotOutputs::RobotOutputs()
 	  relays(RelaySystem::State::OFF),
 	  analog_outputs(0.0),
 	  digital_mxp({}),
-	  digital_hdrs(false),
+	  digital_hdrs({DigitalSystem::HeaderConfig::DI, false}),
 	  can_motor_controllers({}) {
 		  output = generateZeroedOutput();
 	  }
@@ -45,21 +45,25 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 	}
 
 	for (auto i = 0u; i < pwm_hdrs.size(); i++) {
+		while(i >= (unsigned)output.pwm_headers_size()){
+			output.add_pwm_headers(0);
+		}
 		output.set_pwm_headers(i, pwm_hdrs[i]);
 	}
 	for (auto i = 0u; i < digital_mxp.size(); i++) {
 		switch (digital_mxp[i].config) {
 			case MXPData::Config::PWM:
-			case MXPData::Config::DO: {
-				auto elem = output.mutable_mxp_data(i); // TODO add to repeated field first for all of these
-				EmulationService::MXPData mxp;
-				mxp.set_mxp_config(
-					static_cast<EmulationService::MXPData::MXPConfig>(
-						digital_mxp[i].config));
-				mxp.set_value(digital_mxp[i].value);
-				*elem = mxp;
-				break;
-			}
+			case MXPData::Config::DO:
+				{
+					EmulationService::MXPData mxp;
+					while(i >= (unsigned)output.mxp_data_size()){
+						output.add_mxp_data();
+					}
+					mxp.set_config(static_cast<EmulationService::MXPData::Config>(digital_mxp[i].config));
+					mxp.set_value(digital_mxp[i].value);
+					*output.mutable_mxp_data(i) = mxp;
+					break;
+				}
 			default:
 				break;
 		}
@@ -70,9 +74,8 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 		can.set_can_type(static_cast<EmulationService::RobotOutputs::CANType>(
 			can_motor_controllers[i]->getType()));
 		can.set_id(can_motor_controllers[i]->getID());
-		can.set_inverted(false);
 		can.set_percent_output(can_motor_controllers[i]->getPercentOutput());
-		if(i >= output.can_motor_controllers_size()){
+		while(i >= (unsigned)output.can_motor_controllers_size()){
 			output.add_can_motor_controllers();
 		}
 		*output.mutable_can_motor_controllers(i) = can;
@@ -126,15 +129,25 @@ void RobotOutputs::updateShallow() {
 EmulationService::RobotOutputs RobotOutputs::syncDeep() {
 	syncShallow();
 	for (auto i = 0u; i < relays.size(); i++) {
-		output.set_relays(
-			i,
-			static_cast<EmulationService::RobotOutputs::RelayState>(relays[i]));
+		while(i >= (unsigned)output.relays_size()){
+			output.add_relays(EmulationService::RobotOutputs_RelayState_OFF);
+		}
+		output.set_relays(i, static_cast<EmulationService::RobotOutputs::RelayState>(relays[i]));
 	}
 	for (auto i = 0u; i < analog_outputs.size(); i++) {
+		while(i >= (unsigned)output.analog_outputs_size()){
+			output.add_analog_outputs(0);
+		}
 		output.set_analog_outputs(i, analog_outputs[i]);
 	}
 	for (auto i = 0u; i < digital_hdrs.size(); i++) {
-		output.set_digital_headers(i, digital_hdrs[i]);
+		while(i >= (unsigned)output.digital_headers_size()){
+			output.add_digital_headers();
+		}
+		EmulationService::DIOData dio;
+		dio.set_config(static_cast<EmulationService::DIOData::Config>(digital_hdrs[i].first));
+		dio.set_value(digital_hdrs[i].second);
+		*output.mutable_digital_headers(i) = dio;
 	}
 	return output;
 }
@@ -157,11 +170,9 @@ void RobotOutputs::updateDeep() {
 		auto values = roborio.digital_system.getOutputs().Headers;
 		auto pulses = roborio.digital_system.getPulses().Headers;
 		for (unsigned i = 0; i < digital_hdrs.size(); i++) {
-			if (checkBitHigh(output_mode.Headers,
-							 i)) {  // if digital port is set for output, then
-									// set digital output
-				digital_hdrs[i] =
-					(checkBitHigh(values, i) | checkBitHigh(pulses, i));
+			digital_hdrs[i].first = checkBitHigh(output_mode.Headers, i) ? DigitalSystem::HeaderConfig::DO : DigitalSystem::HeaderConfig::DI;
+			if (digital_hdrs[i].first == DigitalSystem::HeaderConfig::DO) {  // if digital port is set for output, then set digital output
+				digital_hdrs[i].second = (checkBitHigh(values, i) | checkBitHigh(pulses, i));
 			}
 		}
 	}
@@ -193,8 +204,11 @@ std::string RobotOutputs::toString() const {
 		 ", ";
 	s += "digital_hdrs:" +
 		 asString(digital_hdrs,
-				  std::function<std::string(bool)>(
-					  static_cast<std::string (*)(bool)>(asString))) +
+			std::function<std::string(
+				std::pair<DigitalSystem::HeaderConfig, bool>)>(
+					[&](std::pair<DigitalSystem::HeaderConfig, bool> a) {
+						return "(" + asString(a.first) + ", " + std::to_string(a.second) + ")";
+				})) +
 		 ", ";
 	s +=
 		"can_motor_controllers:" +
@@ -204,8 +218,8 @@ std::string RobotOutputs::toString() const {
 				std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>>)>(
 				[&](std::pair<uint32_t, std::shared_ptr<CANMotorControllerBase>>
 						a) {
-					return "[" + std::to_string(a.first) + ", " +
-						   a.second->toString() + "]";
+					return "(" + std::to_string(a.first) + ", " +
+						   a.second->toString() + ")";
 				}));
 	s += ")";
 	return s;
