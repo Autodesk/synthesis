@@ -232,6 +232,11 @@ namespace Assets.Scripts.GUI
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
                 GameObject.Destroy(o);
         }
+
+        public override void ToggleHidden()
+        {
+            dpmToolbar.SetActive(!dpmToolbar.activeSelf);
+        }
         public void OnHelpButtonClicked()
         {
             helpMenu.SetActive(true);

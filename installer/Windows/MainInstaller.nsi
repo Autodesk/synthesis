@@ -63,13 +63,20 @@ RequestExecutionLevel admin
 
 Section
 
-;Where we can read registry data if we need it
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
     MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 
-		; Remove outdated exporter plugins
+	    ; Remove inventor plugins
+	    Delete "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+	    Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+		; Remove deprecated bxd inventor plugins
+		Delete "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -77,6 +84,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+		RMDir "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
         RMDIR /r $APPDATA\RobotViewer
 
         ; Remove excess shortcuts
@@ -107,7 +115,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 # default section end
 SectionEnd
 
-Section "Synthesis (required)" SynthesisRequired
+Section "Synthesis (required)" Synthesis
 
   SectionIn RO
 
@@ -144,13 +152,13 @@ Section "Synthesis (required)" SynthesisRequired
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
-	; Extract field files
+	; Set extraction path for field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
 	File /r "Fields\*"
 
 SectionEnd
 
-Section "MixAndMatch Files" MixMatch
+Section "MixAndMatch Files" MaM
 
   ; Set extraction path for Mix&Match files
   SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
@@ -161,12 +169,12 @@ SectionEnd
 
 Section "Inventor Exporter Plugin" iExporter
 
-  ; Set extraction path Inventor plugin directory
+  ; Set extraction path to Inventor plugin directory
   SetOutPath $INSTDIR
   File /r "Exporter"
   
   SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "Exporter\Autodesk.BxDRobotExporter.Inventor.addin"
+  File /r "Exporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
 
@@ -202,7 +210,7 @@ Section "Code Emulator" Emulator
 	  ExecWait '"$PROGRAMFILES64\Docker Toolbox\docker.exe" run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel'
 	  ShowWindow hwnd show_state
 	${Else}
-	  MessageBox mb_iconstop "Error: $R0" ;Show cancel/error message
+	  MessageBox MB_ICONSTOP "Error: $R0" ;Show cancel/error message
 	${EndIf}
 		
 SectionEnd
@@ -210,16 +218,16 @@ SectionEnd
 ;--------------------------------
 ;Component Descriptions
 
-  LangString DESC_SynthesisRequired ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
-  LangString DESC_MixMatch ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
+  LangString DESC_Synthesis ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
+  LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
   LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator (Installs Docker Toolbox)"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SynthesisRequired} $(DESC_SynthesisRequired)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MixMatch} $(DESC_MixMatch)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
+  !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
@@ -241,10 +249,21 @@ Section "Uninstall"
   DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
+  ; Remove installation directories
   RMDir /r /REBOOTOK $INSTDIR
   RMDir /r /REBOOTOK $PROGRAMFILES\Autodesk\Synthesis
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
+  
+  ; Remove inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
+  Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  
+  ; Remove deprecated bxd inventor plugins
+  Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -252,6 +271,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
+  RMDir /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
   
   ; Remove excess shortcuts
   Delete "$SMPROGRAMS\Synthesis.lnk"
@@ -261,11 +281,12 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   
-  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
+  ; Execute Docker Toolbox Uninstaller
+  IfFileExists "$PROGRAMFILES64\Docker Toolbox" file_found uninstall_complete
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
-	exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe" \s'
+	MessageBox MB_YESNO "Would you like to uninstall Docker Toolbox as well?" IDNO uninstall_complete
+	Exec '"$PROGRAMFILES64\Docker Toolbox\unins000.exe"'
 	Quit
 	
 	uninstall_complete:

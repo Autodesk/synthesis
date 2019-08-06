@@ -270,6 +270,11 @@ namespace Assets.Scripts.GUI
             }
         }
 
+        public override void ToggleHidden()
+        {
+            sensorToolbar.SetActive(!sensorToolbar.activeSelf);
+        }
+
         #region Help Button and Menu for Sensors
         /// <summary>
         /// Open sensor toolbar help screen

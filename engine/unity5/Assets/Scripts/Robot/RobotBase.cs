@@ -8,7 +8,6 @@ using Synthesis.MixAndMatch;
 using Synthesis.RN;
 using Synthesis.Camera;
 using Synthesis.Sensors;
-using Synthesis.StatePacket;
 using Synthesis.States;
 using Synthesis.Utils;
 using System;
@@ -32,11 +31,6 @@ namespace Synthesis.Robot
     /// </summary>
     public class RobotBase : MonoBehaviour
     {
-        /// <summary>
-        /// The <see cref="UnityPacket.OutputStatePacket"/> of the robot.
-        /// </summary>
-        public UnityPacket.OutputStatePacket Packet { get; set; }
-
 
         /// <summary>
         /// Informational class for emulation to grab encoder tick count
@@ -108,11 +102,6 @@ namespace Synthesis.Robot
         /// </summary>
         public BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
-        /// <summary>
-        /// The default state packet sent by the robot.
-        /// </summary>
-        protected readonly UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
-
         private float oldSpeed;
 
         /// <summary>
@@ -164,9 +153,6 @@ namespace Synthesis.Robot
             RootNode = BXDExtensions.ReadSkeletonSafe(directory + Path.DirectorySeparatorChar + "skeleton") as RigidNode;
 
             RootNode.ListAllNodes(nodes);
-            
-
-            Debug.Log(RootNode.driveTrainType.ToString());
 
             emuList = new List<EmuNetworkInfo>();
 
@@ -174,23 +160,21 @@ namespace Synthesis.Robot
             {
                 try
                 {
-                    if (Base.GetSkeletalJoint().attachedSensors != null)
+                    if (Base.GetSkeletalJoint() != null && Base.GetSkeletalJoint().attachedSensors != null)
                     {
                         foreach (RobotSensor sensor in Base.GetSkeletalJoint().attachedSensors)
                         {
                             if(sensor.type == RobotSensorType.ENCODER)
                             {
-                                EmuNetworkInfo emuStruct = new EmuNetworkInfo();
-                                emuStruct.encoderTickCount = 0;
-                                emuStruct.RobotSensor = sensor;
-                                emuStruct.wheel = Base;
-                                emuStruct.wheel_radius = 0;
-
-                                emuList.Add(emuStruct);
+                                emuList.Add(new EmuNetworkInfo
+                                {
+                                    encoderTickCount = 0,
+                                    RobotSensor = sensor,
+                                    wheel = Base,
+                                    wheel_radius = 0
+                                });
                             }
                         }
-
-                       
                     }
                 }
                 catch (Exception e)
@@ -356,7 +340,7 @@ namespace Synthesis.Robot
         /// </summary>
         protected virtual void UpdateMotors()
         {
-            DriveJoints.UpdateAllMotors(RootNode, DriveJoints.GetPwmValues(Packet == null ? emptyDIO : Packet.dio, ControlIndex, IsMecanum()), emuList);
+            DriveJoints.UpdateAllMotors(RootNode, ControlIndex, emuList);
         }
 
         /// <summary>
