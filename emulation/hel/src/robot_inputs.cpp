@@ -10,7 +10,7 @@ using namespace nRoboRIO_FPGANamespace;
 namespace hel {
 
 RobotInputs::RobotInputs()
-	: digital_hdrs(false),
+	: digital_hdrs({DigitalSystem::HeaderConfig::DI, false}),
 	  digital_mxp({}),
 	  joysticks({}),
 	  match_info({}),
@@ -44,12 +44,9 @@ void RobotInputs::updateDeep() const {
 	updateShallow();
 	{
 		tDIO::tDI di = instance.first->digital_system.getInputs();
-		tDIO::tOutputEnable output_mode =
-			instance.first->digital_system.getEnabledOutputs();
 		for (unsigned i = 0; i < digital_hdrs.size(); i++) {
-			if (checkBitLow(output_mode.Headers,
-							i)) {  // if set for input, then read in the inputs
-				di.Headers = setBit(di.Headers, digital_hdrs[i], i);
+			if (digital_hdrs[i].first == DigitalSystem::HeaderConfig::DI) {  // if set for input, then read in the inputs
+				di.Headers = setBit(di.Headers, digital_hdrs[i].second, i);
 			}
 		}
 		// TODO add MXP digital inputs
@@ -61,7 +58,7 @@ void RobotInputs::updateDeep() const {
 std::string RobotInputs::toString() const {
 	std::string s = "(";
 	s += "digital_hdrs:" +
-		 asString(digital_hdrs, [](auto d) { return std::to_string(d); }) +
+		asString(digital_hdrs, [](auto d) { return "(" + asString(d.first) + " " + std::to_string(d.second) + ")"; }) +
 		 ", ";
 	s += "joysticks:" +
 		 asString(joysticks, [](auto j) { return j.toString(); }) + ", ";
@@ -145,18 +142,22 @@ void RobotInputs::sync(const EmulationService::RobotInputs& req) {
 
 void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	sync(req);
-	for (size_t i = 0; i < std::min(this->digital_hdrs.size(),
-									(size_t) req.digital_headers_size());
-		 i++) {
-		this->digital_hdrs[i] = req.digital_headers(i);
+
+	// Update digital header config from internal state
+	auto instance = RoboRIOManager::getInstance();
+	tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
+	for (unsigned i = 0; i < digital_hdrs.size(); i++) {
+		digital_hdrs[i].first = checkBitHigh(output_mode.Headers, i) ? DigitalSystem::HeaderConfig::DO : DigitalSystem::HeaderConfig::DI;
 	}
 
-	for (size_t i = 0;
-		 i < std::min(this->digital_mxp.size(), (size_t) req.mxp_data_size());
-		 i++) {
+	for (size_t i = 0; i < std::min(this->digital_hdrs.size(), (size_t) req.digital_headers_size()); i++) {
+		this->digital_hdrs[i].second = req.digital_headers(i).value();
+	}
+
+	for (size_t i = 0; i < std::min(this->digital_mxp.size(), (size_t) req.mxp_data_size()); i++) {
 		auto mxp = &this->digital_mxp[i];
 		auto mxp_data = req.mxp_data(i);
-		mxp->config = static_cast<MXPData::Config>(mxp_data.mxp_config());
+		mxp->config = static_cast<MXPData::Config>(mxp_data.config());
 		mxp->value = mxp_data.value();
 	}
 }

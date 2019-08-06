@@ -28,7 +28,7 @@ struct RobotInputs {
 	 * \brief The states of all the digital headers configured in input mode
 	 */
 
-	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs; // TODO capture the third state where the digital headers are configured for output somehow
+	BoundsCheckedArray<std::pair<DigitalSystem::HeaderConfig, bool>, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
 	/**
 	 * \brief The states of all the digital MXP pins configured in input mode

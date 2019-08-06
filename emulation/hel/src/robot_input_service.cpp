@@ -12,8 +12,8 @@ Status RobotInputService::RobotInputs(
 	UpdateRobotInputsRequest req;
 	while (stream->Read(&req)) {
 		auto instance = hel::RobotInputsManager::getInstance();
-		instance.first->sync(req.input_data());
-		instance.first->updateShallow();
+		instance.first->syncDeep(req.input_data());
+		instance.first->updateDeep();
 		instance.second.unlock();
 	}
 

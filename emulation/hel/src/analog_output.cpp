@@ -1,4 +1,5 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
 #include "system_interface.hpp"
 
 using namespace nFPGA;
@@ -11,6 +12,9 @@ namespace hel{
 
     void AnalogOutputs::setMXPOutput(uint8_t index, uint16_t value){
         mxp_outputs[index] = value;
+        auto instance = RobotOutputsManager::getInstance();
+        instance.first->updateDeep();
+        instance.second.unlock();
     }
 
     AnalogOutputs::AnalogOutputs()noexcept:mxp_outputs(0){}

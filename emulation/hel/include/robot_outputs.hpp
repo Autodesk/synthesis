@@ -65,7 +65,7 @@ struct RobotOutputs {
 	 * \brief The interpreted states of all the digital header outputs
 	 */
 
-	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
+	BoundsCheckedArray<std::pair<DigitalSystem::HeaderConfig, bool>, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
 	/**
 	 * \brief All the CAN motor controller outputs
