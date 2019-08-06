@@ -616,7 +616,7 @@ void EUI::closeDriveTypePalette(std::string driveTypeData) {
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 	config.setDriveType(driveTypeData);
-	Exporter::saveConfiguration(config, app->activeDocument());
+	Exporter::saveConfiguration(&config, app->activeDocument());
 
 	if (driveTypeData.length() > 0)
 	{

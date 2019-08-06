@@ -31,8 +31,8 @@ namespace BXDJ
 		int getCommonWidth() const; ///< \return The index of the nearest common width in COMMON_WIDTHS.
 		int getCommonPressure() const; ///< \return The index of the nearest common pressure in COMMON_PRESSURES.
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
-		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json getJSONObject() const;
+		void loadJSONObject(nlohmann::json pneumaticJSON);
 
 	private:
 		void write(XmlWriter &) const;

@@ -4,19 +4,14 @@
 
 std::string BXDJ::CustomJSONObject::toJSONString() const
 {
-	rapidjson::Document doc;
-	doc.CopyFrom(getJSONObject(doc.GetAllocator()), doc.GetAllocator());
-	rapidjson::StringBuffer buffer;
-	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-	doc.Accept(writer);
-	return std::string(buffer.GetString());
+	nlohmann::json jsonObj;
+	jsonObj = getJSONObject();
+	return std::string(jsonObj.dump());
 }
 
 void BXDJ::CustomJSONObject::fromJSONString(std::string jsonStr)
 {
-	rapidjson::Document doc;
-	doc.Parse(jsonStr.c_str());
-	rapidjson::Value val;
-	val.CopyFrom(doc, doc.GetAllocator());
-	loadJSONObject(val);
+	nlohmann::json jsonObj;
+	jsonObj = nlohmann::json::parse(jsonStr);
+	loadJSONObject(jsonObj);
 }

@@ -68,43 +68,46 @@ void Driver::write(XmlWriter & output) const
 	output.endElement();
 }
 
-rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json Driver::getJSONObject() const
 {
-	rapidjson::Value driverJSON;
-	driverJSON.SetObject();
 
-	driverJSON.AddMember("type", rapidjson::Value((int)type), allocator);
-	driverJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
-	driverJSON.AddMember("portOne", rapidjson::Value(portOne), allocator);
-	driverJSON.AddMember("portTwo", rapidjson::Value(portTwo), allocator);
+	nlohmann::json driverJSON;
+	
+	driverJSON["type"] = (int)type;
+	driverJSON["signal"] = (int)portSignal;
+	driverJSON["portOne"] = portOne;
+	driverJSON["portTwo"] = portTwo;
 
 	// Components
 	// Wheel Information
-	rapidjson::Value wheelJSON;
+	nlohmann::json wheelJSON;
 	if (wheel != nullptr)
-		wheelJSON = wheel->getJSONObject(allocator);
+		wheelJSON = wheel->getJSONObject();
 
 	// Pneumatic Information
-	rapidjson::Value pneumaticJSON;
+	nlohmann::json pneumaticJSON;
 	if (pneumatic != nullptr)
-		pneumaticJSON = pneumatic->getJSONObject(allocator);
+		pneumaticJSON = pneumatic->getJSONObject();
 
 	// Elevator Information
-	rapidjson::Value elevatorJSON;
+	nlohmann::json elevatorJSON;
 	if (elevator != nullptr)
-		elevatorJSON = elevator->getJSONObject(allocator);
+		elevatorJSON = elevator->getJSONObject();
 
-	driverJSON.AddMember("wheel", wheelJSON, allocator);
-	driverJSON.AddMember("pneumatic", pneumaticJSON, allocator);
-	driverJSON.AddMember("elevator", elevatorJSON, allocator);
+	driverJSON["wheel"] = wheelJSON;
+	driverJSON["pneumatic"] = pneumaticJSON;
+	driverJSON["elevator"] = elevatorJSON;
 
 	return driverJSON;
 }
 
 nlohmann::json BXDJ::Driver::GetExportJson()
 {
-
 	nlohmann::json exportJson;
+	if (this == nullptr) {
+		return exportJson;
+	}
+	
 
 	exportJson["port1"] = portOne + 1;
 	exportJson["port2"] = portTwo + 1;
@@ -125,39 +128,46 @@ nlohmann::json BXDJ::Driver::GetExportJson()
 	return exportJson;
 }
 
-void Driver::loadJSONObject(const rapidjson::Value & driverJSON)
+void Driver::loadJSONObject(const nlohmann::json driverJSON)
 {
-	if (driverJSON.IsObject())
+	if (driverJSON.is_object())
 	{
 		// Driver Properties
-		if (driverJSON.HasMember("type") && driverJSON["type"].IsNumber())
-			type = (Driver::Type)driverJSON["type"].GetInt();
-		if (driverJSON.HasMember("signal") && driverJSON["signal"].IsNumber())
-			portSignal = (Driver::Signal)driverJSON["signal"].GetInt();
-		if (driverJSON.HasMember("portOne") && driverJSON["portOne"].IsNumber())
-			portOne = driverJSON["portOne"].GetInt();
-		if (driverJSON.HasMember("portTwo") && driverJSON["portTwo"].IsNumber())
-			portTwo = driverJSON["portTwo"].GetInt();
+
+		if (driverJSON["type"].is_number()) {
+			type = (Driver::Type)driverJSON["type"].get<int>();
+		}
+
+		if (driverJSON["signal"].is_number()) {
+			portSignal = (Driver::Signal)driverJSON["signal"].get<int>();
+		}
+
+		if (driverJSON["portOne"].is_number()) {
+			portOne = driverJSON["portOne"].get<int>();
+		}
+
+		if (driverJSON["portTwo"].is_number()) {
+			portTwo = driverJSON["portTwo"].get<int>();
+		}
+
 
 		// Components
-
-		if (driverJSON.HasMember("wheel") && driverJSON["wheel"].IsObject())
-		{
-			const rapidjson::Value& wheelJSON = driverJSON["wheel"];
+		if (driverJSON["wheel"].is_object()) {
+			nlohmann::json wheelJSON = driverJSON["wheel"];
 			Wheel wheel;
 			wheel.loadJSONObject(wheelJSON);
 			setComponent(wheel);
 		}
-		else if (driverJSON.HasMember("pneumatic") && driverJSON["pneumatic"].IsObject())
-		{
-			const rapidjson::Value& pneumaticJSON = driverJSON["pneumatic"];
+		else if(driverJSON["pneumatic"].is_object()){
+			nlohmann::json pneumaticJSON = driverJSON["pneumatic"];
 			Pneumatic pneumatic;
 			pneumatic.loadJSONObject(pneumaticJSON);
 			setComponent(pneumatic);
+
 		}
-		else if (driverJSON.HasMember("elevator") && driverJSON["elevator"].IsObject())
+		else if (driverJSON["elevator"].is_object())
 		{
-			const rapidjson::Value& elevatorJSON = driverJSON["elevator"];
+			nlohmann::json elevatorJSON = driverJSON["elevator"];
 			Elevator elevator;
 			elevator.loadJSONObject(elevatorJSON);
 			setComponent(elevator);
