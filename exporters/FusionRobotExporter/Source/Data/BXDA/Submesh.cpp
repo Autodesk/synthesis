@@ -74,7 +74,7 @@ int SubMesh::getVertCount()
 
 void SubMesh::getConvexCollider(SubMesh & outputMesh, int level) const
 {
-	level = BXDJ::ConfigData::ConvexType::VHACD_LOW;
+	
 	outputMesh = SubMesh();
 	std::vector<Triangle> triangles;
 

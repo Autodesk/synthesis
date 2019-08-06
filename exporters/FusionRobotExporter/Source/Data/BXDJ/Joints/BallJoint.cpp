@@ -82,7 +82,7 @@ nlohmann::json BallJoint::GetJson() {
 	jointJson["$type"] = "BallJoint, RobotExportAPI";
 	jointJson["basePoint"] = getParentBasePoint().GetJson();
 	jointJson["attachedSensors"] = nlohmann::json::array();
-	jointJson["cDrive"] = getDriver()->GetExportJson();
+	jointJson["cDriver"] = getDriver()->GetExportJson();
 	jointJson["weight"] = getWeightData();
 	jointJson["typeSave"] = "BALL";
 	nlohmann::json sensorJson = nlohmann::json::array();

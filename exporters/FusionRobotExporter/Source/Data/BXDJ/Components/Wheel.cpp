@@ -130,28 +130,28 @@ float BXDJ::Wheel::getSideExtremeValue() const
 
 #pragma endregion
 
-rapidjson::Value Wheel::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json Wheel::getJSONObject() const
 {
-	rapidjson::Value wheelJSON;
-	wheelJSON.SetObject();
+	nlohmann::json wheelJSON;
+	
 
-	wheelJSON.AddMember("type", rapidjson::Value((int)type), allocator);
-	wheelJSON.AddMember("frictionLevel", rapidjson::Value((int)frictionLevel), allocator);
-	wheelJSON.AddMember("isDriveWheel", rapidjson::Value(isDriveWheel), allocator);
+	wheelJSON["type"] = (int)type;
+	wheelJSON["frictionLevel"] = (int)frictionLevel;
+	wheelJSON["isDriveWheel"]=  isDriveWheel;
 
 	return wheelJSON;
 }
 
-void Wheel::loadJSONObject(const rapidjson::Value & wheelJSON)
+void Wheel::loadJSONObject(nlohmann::json wheelJSON)
 {
-	if (wheelJSON.IsObject())
+	if (wheelJSON.is_object())
 	{
-		if (wheelJSON["type"].IsNumber())
-			type = (Wheel::Type)wheelJSON["type"].GetInt();
-		if (wheelJSON["frictionLevel"].IsNumber())
-			frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].GetInt();
-		if (wheelJSON["isDriveWheel"].IsBool())
-			isDriveWheel = wheelJSON["isDriveWheel"].GetBool();
+		if (wheelJSON["type"].is_number())
+			type = (Wheel::Type)wheelJSON["type"].get<int>();
+		if (wheelJSON["frictionLevel"].is_number())
+			frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].get<int>();
+		if (wheelJSON["isDriveWheel"].is_boolean())
+			isDriveWheel = wheelJSON["isDriveWheel"].get<bool>();
 	}
 }
 

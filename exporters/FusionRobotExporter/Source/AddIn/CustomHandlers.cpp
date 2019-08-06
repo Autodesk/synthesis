@@ -70,7 +70,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 		eui->openDriveWeightPalette();
 	else if (id == SynthesisAddIn::BTN_EDIT_JOINTS)
 		eui->openJointEditorPalette();
-	//else if (id == SynthesisAddIn::BTN_DOF) {
+	//else if (id == Synthe sisAddIn::BTN_DOF) {
 	//	eui->toggleDOF();
 	//	eui->toggleKeyPalette();
 	/*} */ else if (id == SynthesisAddIn::BTN_SETTINGS)
@@ -97,13 +97,19 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
-	else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
-		eui->saveConfiguration(eventArgs->data());
-
-		if (eventArgs->action() == "export")
-			eui->startExportRobot(eventArgs->data());
-		else if (eventArgs->action() == "save")
+	else if (eventArgs->action() == "save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
+		if (eventArgs->action() == "save") {
 			eui->closeJointEditorPalette();
+			eui->saveConfiguration(eventArgs->data());
+		}
+		else if (eventArgs->action() == "drivetrain_type") {
+			eui->closeDriveTypePalette("");
+			eui->saveConfiguration(eventArgs->data());
+		}
+		else {// export
+			eui->saveConfiguration(eventArgs->data());
+			eui->startExportRobot(""); // TODO: export-and-open is lazy, include this in the JSON
+		}
 	}
 }
 

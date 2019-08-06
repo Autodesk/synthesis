@@ -47,25 +47,24 @@ int Pneumatic::getCommonPressure() const
 		return 2;
 }
 
-rapidjson::Value Pneumatic::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json Pneumatic::getJSONObject() const
 {
-	rapidjson::Value pneumaticJSON;
-	pneumaticJSON.SetObject();
-
-	pneumaticJSON.AddMember("width", rapidjson::Value(getCommonWidth()), allocator);
-	pneumaticJSON.AddMember("pressure", rapidjson::Value(getCommonPressure()), allocator);
+	nlohmann::json pneumaticJSON;
+	
+	pneumaticJSON["width"] = getCommonWidth();
+	pneumaticJSON["pressure"] = getCommonPressure();
 
 	return pneumaticJSON;
 }
 
-void Pneumatic::loadJSONObject(const rapidjson::Value & pneumaticJSON)
+void Pneumatic::loadJSONObject(nlohmann::json pneumaticJSON)
 {
-	if (pneumaticJSON.IsObject())
+	if (pneumaticJSON.is_object())
 	{
-		if (pneumaticJSON["width"].IsNumber())
-			widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].GetInt()];
-		if (pneumaticJSON["pressure"].IsNumber())
-			pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].GetInt()];
+		if (pneumaticJSON["width"].is_number())
+			widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].get<int>()];
+		if (pneumaticJSON["pressure"].is_number())
+			pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].get<int>()];
 	}
 }
 

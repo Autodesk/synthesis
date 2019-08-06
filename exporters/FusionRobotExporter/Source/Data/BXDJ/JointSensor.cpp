@@ -20,36 +20,35 @@ JointSensor::JointSensor(Type type)
 	conversionFactor = 1;
 }
 
-rapidjson::Value JointSensor::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json JointSensor::getJSONObject() const
 {
-	rapidjson::Value sensorJSON;
-	sensorJSON.SetObject();
-
-	sensorJSON.AddMember("type", rapidjson::Value((int)type), allocator);
-	sensorJSON.AddMember("signal", rapidjson::Value((int)portSignal), allocator);
-	sensorJSON.AddMember("portA", rapidjson::Value(portA), allocator);
-	sensorJSON.AddMember("portB", rapidjson::Value(portB), allocator);
-	sensorJSON.AddMember("conversionFactor", rapidjson::Value(conversionFactor), allocator);
+	nlohmann::json sensorJSON;
+	
+	sensorJSON["type"] = (int)type;
+	sensorJSON["signal"] = (int)portSignal;
+	sensorJSON["portA"] = portA;
+	sensorJSON["portB"] = portB;
+	sensorJSON["conversionFactor"] = conversionFactor;
 
 	return sensorJSON;
 }
 
-void JointSensor::loadJSONObject(const rapidjson::Value & sensorJSON)
+void JointSensor::loadJSONObject(nlohmann::json sensorJSON)
 {
-	if (sensorJSON.IsObject())
+	if (sensorJSON.is_object())
 	{
-		if (sensorJSON["type"].IsNumber())
-			type = (Type)sensorJSON["type"].GetInt();
-		if (sensorJSON["conTypePortA"].IsNumber())
-			portSignal = (Signal)sensorJSON["signal"].GetInt();
-		if (sensorJSON["conTypePortB"].IsNumber())
-			portSignal = (Signal)sensorJSON["signal"].GetInt();
-		if (sensorJSON["portA"].IsNumber())
-			portA = sensorJSON["portA"].GetInt();
-		if (sensorJSON["portB"].IsNumber())
-			portB = sensorJSON["portB"].GetInt();
-		if (sensorJSON["conversionFactor"].IsNumber())
-			conversionFactor = sensorJSON["conversionFactor"].GetDouble();
+		if (sensorJSON["type"].is_number())
+			type = (Type)sensorJSON["type"].get<int>();
+		if (sensorJSON["conTypePortA"].is_number())
+			portSignal = (Signal)sensorJSON["signal"].get<int>();
+		if (sensorJSON["conTypePortB"].is_number())
+			portSignal = (Signal)sensorJSON["signal"].get<int>();
+		if (sensorJSON["portA"].is_number())
+			portA = sensorJSON["portA"].get<int>();
+		if (sensorJSON["portB"].is_number())
+			portB = sensorJSON["portB"].get<int>();
+		if (sensorJSON["conversionFactor"].is_number())
+			conversionFactor = sensorJSON["conversionFactor"].get<double>();
 	}
 }
 

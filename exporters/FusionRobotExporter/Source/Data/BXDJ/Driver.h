@@ -89,10 +89,10 @@ namespace BXDJ
 		std::unique_ptr<Pneumatic> getPneumatic(); ///< Gets any pneumatic configuration from the Driver. If the Driver has no Pneumatic, returns nullptr.
 		std::unique_ptr<Elevator> getElevator(); ///< Gets any elevator configuration from the Driver. If the Driver has no Elevator, returns nullptr.
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
+		nlohmann::json getJSONObject() const;
 		nlohmann::json GetExportJson();
 
-		void loadJSONObject(const rapidjson::Value&);
+		void loadJSONObject(const nlohmann::json driverJSO);
 
 
 	private:

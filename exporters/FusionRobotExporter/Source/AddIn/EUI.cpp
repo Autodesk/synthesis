@@ -216,7 +216,7 @@ void EUI::saveConfiguration(std::string jsonConfig)
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // load the current config and apply changes, not generate new one
 	config.fromJSONString(jsonConfig);
-	Exporter::saveConfiguration(config, app->activeDocument());
+	Exporter::saveConfiguration(&config, app->activeDocument());
 
 }
 
@@ -226,7 +226,8 @@ void EUI::startExportRobot(std::string jsonData)
 	sensorsPalette->isVisible(false);
 
 	BXDJ::ConfigData config;
-	config.fromJSONString(jsonData);
+	config = Exporter::loadConfiguration(app->activeDocument());
+
 
 	//Check if file already exists
 	std::string filePath = Filesystem::getCurrentRobotDirectory(config.robotName);

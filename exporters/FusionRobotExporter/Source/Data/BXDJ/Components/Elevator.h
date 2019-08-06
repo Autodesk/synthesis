@@ -31,8 +31,8 @@ namespace BXDJ
 		///
 		Elevator(Type = SINGLE);
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
-		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json getJSONObject() const;
+		void loadJSONObject(nlohmann::json);
 
 	private:
 		void write(XmlWriter &) const;
