@@ -19,7 +19,7 @@ public class SettingsState : State {
     private int collect = 1;
 
     private List<string> resolutions;
-    private List<KeyValuePair<string, FullScreenMode>> screens;
+    private List<string> screens;
 
     private int selectedScreenMode;
     private int selectedQuality;
@@ -48,7 +48,17 @@ public class SettingsState : State {
         resolutions = new List<string>();
 
         foreach (Resolution a in Screen.resolutions) {
-            resolutions.Add(a.width + "x" + a.height);
+            bool g = false;
+            if (resolutions.Count > 0) {
+                resolutions.ForEach((x) => {
+                    if (x.Equals(a.width + "x" + a.height)) {
+                        g = true;
+                    }
+                });
+            }
+            if (!g) {
+                resolutions.Add(a.width + "x" + a.height);
+            }
         }
 
         foreach (string a in resolutions) {
@@ -58,14 +68,12 @@ public class SettingsState : State {
         resDD.options = resOps;
 
         // SCREENMODES
-        screens = new List<KeyValuePair<string, FullScreenMode>>();
-        screens.Add(new KeyValuePair<string, FullScreenMode>("Fullscreen", FullScreenMode.ExclusiveFullScreen));
-        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed Fullscreen", FullScreenMode.FullScreenWindow));
-        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed Maximized", FullScreenMode.MaximizedWindow));
-        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed", FullScreenMode.Windowed));
+        screens = new List<string>();
+        screens.Add("Windowed");
+        screens.Add("Fullscreen");
 
         List<Dropdown.OptionData> scrOps = new List<Dropdown.OptionData>();
-        screens.ForEach((x) => scrOps.Add(new Dropdown.OptionData(x.Key)));
+        screens.ForEach((x) => scrOps.Add(new Dropdown.OptionData(x)));
         scrDD.options = scrOps;
 
         // QUALITIES
@@ -79,7 +87,7 @@ public class SettingsState : State {
         collect = PlayerPrefs.GetInt("gatherData", 1);
 
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
-        screenT.text = screens[Screen.fullScreenMode.GetHashCode() == -1 ? 0 : Screen.fullScreenMode.GetHashCode()].Key;
+        screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
 
@@ -126,21 +134,14 @@ public class SettingsState : State {
         string[] split = selectedResolution.Split('x');
         int xRes = int.Parse(split[0]), yRes = int.Parse(split[1]);
         Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
-        Screen.fullScreenMode = screens.Find((x) => x.Value.GetHashCode() == selectedScreenMode).Value;
         QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
         OnCloseSettingsPanelClicked();
     }
 
-    public void OnScrSelChanged(int b) {
-        string entry = scrDD.options[b].text;
-        int a = 0;
-        screens.ForEach((x) => {
-            if (x.Key.Equals(entry)) {
-                a = x.Value.GetHashCode();
-            }
-        });
+    public void OnScrSelChanged(int a) {
+
         selectedScreenMode = a;
 
         SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
