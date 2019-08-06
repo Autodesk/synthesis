@@ -6,7 +6,7 @@ GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
 GOTIDY=$(GOMOD) tidy
 
-PROTOC=./gen-protobuf.sh
+PROTOC=./scripts/gen_grpc.sh
 
 BINARY_NAME=server
 
