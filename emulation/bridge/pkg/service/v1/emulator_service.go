@@ -92,6 +92,7 @@ func (eb *EmulationBridgeService) RobotOutputs(req *v1.RobotOutputsRequest, stea
 	if conn, ok := eb.activeConns[eb.defaultHandlers[handlerType]]; ok {
 		reader = v1.NewEmulationReaderClient(conn)
 	} else {
+		fmt.Printf("here\n")
 		return fmt.Errorf("handler not registered for 'RobotInputs'")
 	}
 
@@ -104,8 +105,10 @@ func (eb *EmulationBridgeService) RobotOutputs(req *v1.RobotOutputsRequest, stea
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%v\n", robotOutputs)
-		steam.Send(robotOutputs)
+		err = steam.Send(robotOutputs)
+		if err != nil {
+			return err
+		}
 	}
 }
 
