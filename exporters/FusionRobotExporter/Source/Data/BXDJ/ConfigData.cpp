@@ -333,6 +333,7 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 			if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
 			{
 				auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
+				joints[jointID].sensors.clear();
 				for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
 				{
 					if (sensorsJSONArray[j].IsObject())
