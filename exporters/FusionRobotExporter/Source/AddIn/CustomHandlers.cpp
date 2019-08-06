@@ -116,14 +116,18 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		}
 	}
 	else if (eventArgs->action() == "save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
-		eui->saveConfiguration(eventArgs->data());
-		
-		if (eventArgs->action() == "save")
+		if (eventArgs->action() == "save") {
 			eui->closeJointEditorPalette();
-		else if (eventArgs->action() == "drivetrain_type")
+			eui->saveConfiguration(eventArgs->data());
+		}
+		else if (eventArgs->action() == "drivetrain_type") {
 			eui->closeDriveTypePalette();
-		else // export
-			eui->startExportRobot(eventArgs->data(), eventArgs->action() == "export-and-open"); // TODO: export-and-open is lazy, include this in the JSON
+			eui->saveConfiguration(eventArgs->data());
+		}
+		else {// export
+			eui->saveConfiguration(eventArgs->data());
+			eui->startExportRobot(eventArgs->action() == "export-and-open"); // TODO: export-and-open is lazy, include this in the JSON
+		}
 	}
 }
 

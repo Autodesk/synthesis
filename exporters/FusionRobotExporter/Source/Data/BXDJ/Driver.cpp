@@ -103,6 +103,8 @@ rapidjson::Value Driver::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocat
 
 nlohmann::json BXDJ::Driver::GetExportJson()
 {
+	if (this == nullptr)
+		return nullptr;
 
 	nlohmann::json exportJson;
 
