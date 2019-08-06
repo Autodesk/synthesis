@@ -40,9 +40,7 @@ void JointSensor::loadJSONObject(const rapidjson::Value & sensorJSON)
 	{
 		if (sensorJSON["type"].IsNumber())
 			type = (Type)sensorJSON["type"].GetInt();
-		if (sensorJSON["conTypePortA"].IsNumber())
-			portSignal = (Signal)sensorJSON["signal"].GetInt();
-		if (sensorJSON["conTypePortB"].IsNumber())
+		if (sensorJSON["signal"].IsNumber())
 			portSignal = (Signal)sensorJSON["signal"].GetInt();
 		if (sensorJSON["portA"].IsNumber())
 			portA = sensorJSON["portA"].GetInt();
