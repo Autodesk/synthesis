@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
+using System;
 
 namespace Assets.Scripts.GUI
 {
@@ -114,6 +115,7 @@ namespace Assets.Scripts.GUI
                         loaded = true;
                     });
                     await Upload;
+                    Synthesis.GUI.UserMessageManager.Dispatch("Code successfully loaded.", 10);
                 }
             }
 
@@ -121,6 +123,11 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
+        }
+
+        private void UserMessageManager(string v)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
