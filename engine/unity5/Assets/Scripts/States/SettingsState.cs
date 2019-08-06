@@ -13,61 +13,83 @@ public class SettingsState : State {
 
     private static float initX = float.MaxValue, initY = float.MaxValue;
 
-    private Text resolutionT, screenT, qualityT, analyticsT;
+    private Dropdown resDD, scrDD, qualDD;
 
-    private int resolutionIndex = 0, screenIndex = 0, qualityIndex = 0;
+    private Text resolutionT, screenT, qualityT, analyticsT;
     private int collect = 1;
 
-    private string[] resolutions =
-    {
-        "1024x768",
-        "1280x720",
-        "1280x768",
-        "1280x1024",
-        "1400x900",
-        "1600x900",
-        "1680x1050",
-        "1920x1080"
-    };
+    private List<string> resolutions;
+    private List<KeyValuePair<string, FullScreenMode>> screens;
 
-    private string[] screenModes =
-    {
-        "Fullscreen",
-        "Windowed"
-    };
+    private int selectedScreenMode;
+    private int selectedQuality;
+    private string selectedResolution;
 
     public override void Start()
     {
         canvas = Auxiliary.FindGameObject("Canvas");
         me = Auxiliary.FindObject(canvas, "SettingsPanel");
         me.SetActive(true);
-        resolutionT = Auxiliary.FindObject(me, "ResolutionText").GetComponent<Text>();
-        screenT = Auxiliary.FindObject(me, "ScreenModeText").GetComponent<Text>();
-        qualityT = Auxiliary.FindObject(me, "QualitySettingsText").GetComponent<Text>();
+        resolutionT = Auxiliary.FindObject(me, "ResLabel").GetComponent<Text>();
+        screenT = Auxiliary.FindObject(me, "ScreenLabel").GetComponent<Text>();
+        qualityT = Auxiliary.FindObject(me, "QualLabel").GetComponent<Text>();
         analyticsT = Auxiliary.FindObject(me, "AnalyticsModeText").GetComponent<Text>();
 
-        screenIndex = PlayerPrefs.GetInt("fullscreen") == 0 ? 1 : 0;
-        int resInd = (new List<string>(resolutions)).IndexOf(PlayerPrefs.GetString("resolution"));
-        resolutionIndex = resInd == -1 ? 0 : resInd;
-        qualityIndex = PlayerPrefs.GetInt("qualityLevel");
+        resDD = Auxiliary.FindObject(me, "ResolutionButton").GetComponent<Dropdown>();
+        scrDD = Auxiliary.FindObject(me, "ScreenModeButton").GetComponent<Dropdown>();
+        qualDD = Auxiliary.FindObject(me, "QualitySettings").GetComponent<Dropdown>();
+        List<Dropdown.OptionData> resOps = new List<Dropdown.OptionData>();
+
+        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
+        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
+        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
+
+        // RESOLUTIONS
+        resolutions = new List<string>();
+
+        foreach (Resolution a in Screen.resolutions) {
+            resolutions.Add(a.width + "x" + a.height);
+        }
+
+        foreach (string a in resolutions) {
+            resOps.Add(new Dropdown.OptionData(a));
+        }
+
+        resDD.options = resOps;
+
+        // SCREENMODES
+        screens = new List<KeyValuePair<string, FullScreenMode>>();
+        screens.Add(new KeyValuePair<string, FullScreenMode>("Fullscreen", FullScreenMode.ExclusiveFullScreen));
+        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed Fullscreen", FullScreenMode.FullScreenWindow));
+        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed Maximized", FullScreenMode.MaximizedWindow));
+        screens.Add(new KeyValuePair<string, FullScreenMode>("Windowed", FullScreenMode.Windowed));
+
+        List<Dropdown.OptionData> scrOps = new List<Dropdown.OptionData>();
+        screens.ForEach((x) => scrOps.Add(new Dropdown.OptionData(x.Key)));
+        scrDD.options = scrOps;
+
+        // QUALITIES
+        List<Dropdown.OptionData> qualOps = new List<Dropdown.OptionData>();
+        (new List<string>(QualitySettings.names)).ForEach((x) => qualOps.Add(new Dropdown.OptionData(x)));
+        qualDD.options = qualOps;
+
+        selectedScreenMode = Screen.fullScreenMode.GetHashCode();
+        selectedResolution = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
+        selectedQuality = QualitySettings.GetQualityLevel();
         collect = PlayerPrefs.GetInt("gatherData", 1);
 
-
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
-        screenT.text = PlayerPrefs.GetInt("fullscreen") == 0 ? "Windowed" : "Fullscreen";
-        qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel")];
+        screenT.text = screens[Screen.fullScreenMode.GetHashCode() == -1 ? 0 : Screen.fullScreenMode.GetHashCode()].Key;
+        qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
 
         if (initX == float.MaxValue)
         {
-            Debug.Log("X " + me.transform.position.x);
             initX = 0;
             initY = me.GetComponent<RectTransform>().anchoredPosition.y;
-            Debug.Log("Init");
         } else
         {
             me.GetComponent<RectTransform>().anchoredPosition = new Vector2(initX, initY);
-            Debug.Log("Reset Pos");
         }
     }
 
@@ -77,7 +99,7 @@ public class SettingsState : State {
         analyticsT.text = collect == 1 ? "Yes" : "No";
     }
 
-    public void OnScreenModeButtonClicked()
+    /*public void OnScreenModeButtonClicked()
     {
         screenIndex = (screenIndex + 1) % screenModes.Length;
         screenT.text = screenModes[screenIndex];
@@ -93,21 +115,52 @@ public class SettingsState : State {
     {
         qualityIndex = (qualityIndex + 1) % QualitySettings.names.Length;
         qualityT.text = QualitySettings.names[qualityIndex];
-    }
+    }*/
 
     public void OnApplySettingsClicked()
     {
-        PlayerPrefs.SetString("resolution", resolutions[resolutionIndex]);
-        PlayerPrefs.SetInt("fullscreen", screenIndex == 0 ? 1 : 0);
-        PlayerPrefs.SetInt("qualityLevel", qualityIndex);
+        PlayerPrefs.SetString("resolution", selectedResolution);
+        PlayerPrefs.SetInt("fullscreen", selectedScreenMode);
+        PlayerPrefs.SetInt("qualityLevel", selectedQuality);
         PlayerPrefs.SetInt("gatherData", collect);
-        string[] split = resolutions[resolutionIndex].Split('x');
+        string[] split = selectedResolution.Split('x');
         int xRes = int.Parse(split[0]), yRes = int.Parse(split[1]);
         Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
-        QualitySettings.SetQualityLevel(qualityIndex);
+        Screen.fullScreenMode = screens.Find((x) => x.Value.GetHashCode() == selectedScreenMode).Value;
+        QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
         OnCloseSettingsPanelClicked();
+    }
+
+    public void OnScrSelChanged(int b) {
+        string entry = scrDD.options[b].text;
+        int a = 0;
+        screens.ForEach((x) => {
+            if (x.Key.Equals(entry)) {
+                a = x.Value.GetHashCode();
+            }
+        });
+        selectedScreenMode = a;
+
+        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
+    }
+
+    public void OnResSelChanged(int b) {
+        string entry = resDD.options[b].text;
+        selectedResolution = entry;
+
+        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
+    }
+
+    public void OnQuaSelChanged(int b) {
+        string entry = qualDD.options[b].text;
+        int a;
+        selectedQuality = (a = (new List<string>(QualitySettings.names)).IndexOf(entry)) == -1 ? 0 : a;
+
+        Debug.Log("Is your card... " + selectedQuality);
+
+        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
     }
 
     public void OnCloseSettingsPanelClicked()
