@@ -512,7 +512,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, true, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, false, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
