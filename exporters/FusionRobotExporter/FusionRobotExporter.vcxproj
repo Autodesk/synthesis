@@ -170,11 +170,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Palette\css\synthesisExporter.css" />
-    <None Include="palette\drivetrain.html" />
-    <None Include="palette\dt_weight.html" />
+    <None Include="palette\drivetrain_type.html" />
+    <None Include="palette\drivetrain_weight.html" />
     <None Include="palette\export.html" />
-    <None Include="palette\js\drivetrain.js" />
-    <None Include="palette\js\dt_weight.js" />
+    <None Include="palette\js\drivetrain_weight.js" />
     <None Include="Palette\js\fusionInterface.js" />
     <None Include="Palette\js\export.js" />
     <None Include="palette\jointEditor.html" />

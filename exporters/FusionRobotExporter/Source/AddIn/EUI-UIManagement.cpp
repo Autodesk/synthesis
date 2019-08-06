@@ -93,7 +93,7 @@ void EUI::closeAllPalettes()
 
 void EUI::hideAllPalettes()
 {
-	closeDriveTypePalette("");
+	closeDriveTypePalette();
 	closeDriveWeightPalette("");
 	closeJointEditorPalette();
 	closeSensorsPalette();
@@ -257,8 +257,7 @@ void EUI::closeJointEditorPalette()
 	sensorsPalette->isVisible(false);
 	editJointsButton->controlDefinition()->isEnabled(true);
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	finishButton->controlDefinition()->isEnabled(true);
-	
+	finishButton->controlDefinition()->isEnabled(true);	
 }
 
 // Guide Palette
