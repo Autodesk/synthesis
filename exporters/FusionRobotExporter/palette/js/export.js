@@ -343,7 +343,7 @@ function readConfigData()
 {
     var configData = { 
         'name': document.getElementById('name').value, 
-        'convex': parseInt(document.getElementById('convex').value)
+        'convex': document.getElementById('convex').value
     };
     var joints = [];
 
