@@ -6,7 +6,6 @@ WEIGHT PACKET:
 }
 
 */
-var lastPacket = {}
 // Handles the receiving of data from Fusion
 window.fusionJavaScriptHandler =
     {
@@ -14,13 +13,13 @@ window.fusionJavaScriptHandler =
         {
             try
             {
-                if (action == 'dt_weight_load')
+                if (action === 'state')
                 {
                     console.log("Receiving DT weight info...");
                     console.log(data);
                     applyConfigData(JSON.parse(data));
                 }
-                else if (action == 'debugger')
+                else if (action === 'debugger')
                 {
                     debugger;
                 }
@@ -38,29 +37,38 @@ window.fusionJavaScriptHandler =
         }
     };
 
-
-
-    
 // Populates the form with sensors
 function applyConfigData(dt_weight)
 {
-    lastPacket = dt_weight;
-    document.getElementById("dt-weight-value").value = dt_weight.weight.value;
-    document.getElementById("dt-weight-unit").value = dt_weight.weight.unit;
+    let dtWeight = document.getElementById("dt-weight-value");
+    let weightUnit = document.getElementById("dt-weight-unit");
+    dtWeight.value = 0;
+    if (dt_weight.weight !== undefined) {
+        dtWeight.value = dt_weight.weight;
+        if (weightUnit.value === "kgs") {
+            dtWeight.value *= 0.453592;
+        }
+    }
 }
 
 // Outputs currently entered data as a JSON object
 function readConfigData()
 {
-    lastPacket.value = parseFloat(document.getElementById("dt-weight-value").value);
-    lastPacket.unit = parseFloat(document.getElementById("dt-weight-unit").value);
-    return lastPacket;
+    let data = {"weight": {}};
+    data.weight = parseFloat(document.getElementById("dt-weight-value").value);
+
+    if (document.getElementById("dt-weight-unit").value === "kgs") {
+        data.weight /= 0.453592;
+    }
+    return data;
 }
 
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
 {
-    adsk.fusionSendData('dt_weight_save', JSON.stringify(readConfigData()));
+    let jsonString = JSON.stringify(readConfigData());
+    console.log("Sending JSON to fusion: "+jsonString);
+    adsk.fusionSendData('dt_weight_save', jsonString);
 }
 
 function cancel() {

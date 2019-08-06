@@ -51,7 +51,7 @@ namespace SynthesisAddIn
 		void closeDriveTypePalette();
 
 		void openDriveWeightPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
-		void closeDriveWeightPalette(std::string data); ///< Closes the robot exporter configuration palette. Enables the export button.
+		void closeDriveWeightPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
 		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.

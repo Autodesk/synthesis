@@ -83,7 +83,7 @@ void EUI::prepareAllPalettes()
 void EUI::closeAllPalettes()
 {
 	closeDriveTypePalette();
-	closeDriveWeightPalette("");
+	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
 	closeGuidePalette();
@@ -94,7 +94,7 @@ void EUI::closeAllPalettes()
 void EUI::closeEditorPalettes()
 {
 	closeDriveTypePalette();
-	closeDriveWeightPalette("");
+	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
 	// closeGuidePalette();
@@ -186,18 +186,9 @@ void EUI::openDriveWeightPalette() {
 	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 }
 
-void EUI::closeDriveWeightPalette(std::string weightData) {
+void EUI::closeDriveWeightPalette() {
 	driveWeightPalette->isVisible(false);
 	enableEditorButtons();
-
-	if (weightData.length() > 0)
-	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		//Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string weightData) { driveWeightPalette->sendInfoToHTML("dt_weight", weightData); }, weightData);
-	}
 }
 
 // Export Palette
