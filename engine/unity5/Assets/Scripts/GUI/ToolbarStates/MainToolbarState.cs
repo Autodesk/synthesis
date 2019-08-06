@@ -125,8 +125,8 @@ namespace Synthesis.GUI
                 addPanel.SetActive(false);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "change",
+                    AnalyticsLedger.EventAction.StartFeature,
+                    "Change Robot Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
             }
         }
@@ -137,9 +137,9 @@ namespace Synthesis.GUI
         /// </summary>
         /// <param name="i"></param>
         public void OnResetRobotDropdownValueChanged(int i) {
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Reset,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Reset - Dropdown",
                 AnalyticsLedger.getMilliseconds().ToString());
 
             switch (i) {
@@ -148,9 +148,9 @@ namespace Synthesis.GUI
                     State.EndRobotReset();
                     resetDropdown.GetComponent<Dropdown>().value = 0;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetRobot,
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Reset,
                         AnalyticsLedger.EventAction.Clicked,
-                        "",
+                        "Reset - Robot",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 2:
@@ -159,9 +159,9 @@ namespace Synthesis.GUI
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     State.BeginRobotReset();
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetSpawnpoint,
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Reset,
                         AnalyticsLedger.EventAction.Clicked,
-                        "",
+                        "Reset - Robot Spawnpoint",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 3:
@@ -171,9 +171,9 @@ namespace Synthesis.GUI
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ResetField,
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Reset,
                         AnalyticsLedger.EventAction.Clicked,
-                        "",
+                        "Reset - Field",
                         AnalyticsLedger.getMilliseconds().ToString());
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                         AnalyticsLedger.TimingVarible.Playing,
@@ -199,9 +199,9 @@ namespace Synthesis.GUI
         /// </summary>
         /// <param name="mode"></param>
         public void OnCameraDropdownValueChanged(int mode) {
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "View - Camera Dropdown",
                 AnalyticsLedger.getMilliseconds().ToString());
 
             switch (mode) {
@@ -209,36 +209,36 @@ namespace Synthesis.GUI
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
                     DynamicCamera.ControlEnabled = true;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverView,
-                        AnalyticsLedger.EventAction.Clicked,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
+                        AnalyticsLedger.EventAction.Changed,
+                        "View - Driver Station",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 2:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
                     DynamicCamera.ControlEnabled = true;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.OrbitView,
-                        AnalyticsLedger.EventAction.Clicked,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
+                        AnalyticsLedger.EventAction.Changed,
+                        "View - Orbit",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 3:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
                     DynamicCamera.ControlEnabled = true;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.FreeroamView,
-                        AnalyticsLedger.EventAction.Clicked,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
+                        AnalyticsLedger.EventAction.Changed,
+                        "View - Freeroam",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
                 case 4:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                     DynamicCamera.ControlEnabled = true;
 
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Overview,
-                        AnalyticsLedger.EventAction.Clicked,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
+                        AnalyticsLedger.EventAction.Changed,
+                        "View - Overview",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
             }
@@ -257,8 +257,8 @@ namespace Synthesis.GUI
                 changeFieldPanel.SetActive(true);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "change",
+                    AnalyticsLedger.EventAction.StartFeature,
+                    "Change Field Panel",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
         }
@@ -269,9 +269,9 @@ namespace Synthesis.GUI
         public void OnReplayModeButtonClicked() {
             State.EnterReplayState();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ReplayMode,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Replay Mode",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -287,9 +287,9 @@ namespace Synthesis.GUI
                 multiplayerPanel.SetActive(true);
                 multiplayer.UpdateUI();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Multiplayer,
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                     AnalyticsLedger.EventAction.Clicked,
-                    "",
+                    "Multiplayer",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
         }
@@ -300,9 +300,9 @@ namespace Synthesis.GUI
         public void OnStopwatchClicked() {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Stopwatch,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Stopwatch",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -319,9 +319,9 @@ namespace Synthesis.GUI
         public void OnRulerClicked() {
             toolkit.ToggleRulerWindow(!rulerWindow.activeSelf);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Ruler,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Ruler",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -332,9 +332,9 @@ namespace Synthesis.GUI
         {
             simUI.ShowControlPanel();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Control Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -358,9 +358,9 @@ namespace Synthesis.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainHelp,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
                 AnalyticsLedger.EventAction.Viewed,
-                "",
+                "Help - Main Toolbar",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 

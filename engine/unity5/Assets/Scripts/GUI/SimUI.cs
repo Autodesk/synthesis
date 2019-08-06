@@ -464,7 +464,7 @@ namespace Synthesis.GUI
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
                     AnalyticsLedger.EventAction.Clicked,
-                    "change",
+                    "Robot - Exported",
                     AnalyticsLedger.getMilliseconds().ToString());
 
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
@@ -543,6 +543,10 @@ namespace Synthesis.GUI
                 AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                     AnalyticsLedger.TimingVarible.Playing,
                     AnalyticsLedger.TimingLabel.ResetField);
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
+                    AnalyticsLedger.EventAction.Changed,
+                    panel.GetComponent<ChangeFieldScrollable>().selectedEntry.ToString(),
+                    AnalyticsLedger.getMilliseconds().ToString());
 
                 //FieldDataHandler.Load();
                 //DPMDataHandler.Load();
@@ -879,9 +883,10 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreHelp,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.TutorialRequest,
+                "Help - Tutorials",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -1015,6 +1020,11 @@ namespace Synthesis.GUI
                     break;
                 case "exit":
                     LogTabTiming();
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
+                        AnalyticsLedger.EventAction.Clicked,
+                        "",
+                        AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
                     if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
                     break;
                 case "cancel":
@@ -1024,7 +1034,7 @@ namespace Synthesis.GUI
 
             // log any timing events and log that the button was clicked
             
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
                 AnalyticsLedger.EventAction.Clicked,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
