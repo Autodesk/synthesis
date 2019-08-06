@@ -82,7 +82,7 @@ void EUI::prepareAllPalettes()
 
 void EUI::closeAllPalettes()
 {
-	closeDriveTypePalette("");
+	closeDriveTypePalette();
 	closeDriveWeightPalette("");
 	closeJointEditorPalette();
 	closeSensorsPalette();
@@ -600,33 +600,20 @@ void EUI::openDriveTypePalette() {
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
-	uiThread = new std::thread([this](std::string configJSON)
-		{
-			driveTypePalette->sendInfoToHTML("state", configJSON);
-			driveTypePalette->isVisible(true);
-			driveTypePalette->sendInfoToHTML("state", configJSON);
-		}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // Load joint config and update with current joints in document
+	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
+	{
+		driveTypePalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
+		driveTypePalette->isVisible(true);
+		driveTypePalette->sendInfoToHTML("joints", configJSON);
+	}, config.toJSONString());
 }
 
-void EUI::closeDriveTypePalette(std::string driveTypeData) {
+void EUI::closeDriveTypePalette() {
 
 	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
-
-	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
-	config.setDriveType(driveTypeData);
-	Exporter::saveConfiguration(config, app->activeDocument());
-
-	if (driveTypeData.length() > 0)
-	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrain_type", driveTypeData); }, driveTypeData);
-	}
 }
-
 // Progress Palette
 
 bool EUI::createProgressPalette()

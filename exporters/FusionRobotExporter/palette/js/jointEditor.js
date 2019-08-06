@@ -266,15 +266,3 @@ function sendInfoToFusion()
     console.log("Saving Data: ", result);
     adsk.fusionSendData('save', result);
 }
-
-// Sends the data to the Fusion add-in
-function exportRobot()
-{
-    if (document.getElementById('name').value.length === 0)
-    {
-        alert("Please enter a name.");
-        return;
-    }
-
-    adsk.fusionSendData('export', JSON.stringify(saveValues()));
-}

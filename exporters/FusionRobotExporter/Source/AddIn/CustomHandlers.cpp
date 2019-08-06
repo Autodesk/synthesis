@@ -85,9 +85,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
-	if (eventArgs->action() == "drivetrain_type")
-		eui->closeDriveTypePalette(eventArgs->data());
-	else if (eventArgs->action() == "dt_weight_save")
+	if (eventArgs->action() == "dt_weight_save")
 		eui->closeDriveWeightPalette("");
 	else if (eventArgs->action() == "highlight")
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
@@ -97,14 +95,15 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
-	else if (eventArgs->action() == "save" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
+	else if (eventArgs->action() == "save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
 		eui->saveConfiguration(eventArgs->data());
+		
 		if (eventArgs->action() == "save")
 			eui->closeJointEditorPalette();
+		else if (eventArgs->action() == "drivetrain_type")
+			eui->closeDriveTypePalette();
 		else // export
-		{
 			eui->startExportRobot(eventArgs->data(), eventArgs->action() == "export-and-open"); // TODO: export-and-open is lazy, include this in the JSON
-		}
 	}
 }
 
@@ -112,7 +111,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
 	if (id == SynthesisAddIn::PALETTE_DT_TYPE)
-		eui->closeDriveTypePalette("");
+		eui->closeDriveTypePalette();
 	else if (id == SynthesisAddIn::PALETTE_DT_WEIGHT)
 		eui->closeDriveWeightPalette("");
 	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
