@@ -260,6 +260,9 @@ void EUI::closeJointEditorPalette()
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 	editJointsButton->controlDefinition()->isEnabled(true);
+	robotExportGuideButton->controlDefinition()->isEnabled(true);
+	finishButton->controlDefinition()->isEnabled(true);
+	
 }
 
 // Guide Palette
@@ -461,12 +464,12 @@ void EUI::openFinishPalette()
 	fieldNames += "]";
 
 	CoTaskMemFree(path);
-
+	finishPalette->sendInfoToHTML("fieldNames", fieldNames); // TODO: Why is this duplicated
+	finishPalette->isVisible(true);
+	finishPalette->sendInfoToHTML("fieldNames", fieldNames);
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
-		finishPalette->sendInfoToHTML("fieldNames", configJSON); // TODO: Why is this duplicated
-		finishPalette->isVisible(true);
-		finishPalette->sendInfoToHTML("fieldNames", configJSON);
+		
 	}, fieldNames);
 }
 

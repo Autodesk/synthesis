@@ -67,6 +67,7 @@ namespace BXDA
 		///
 		void setColor(core::Ptr<core::Material>, core::Ptr<core::Appearance>);
 
+		std::vector<Triangle> triangles; ///< The Triangles that make up the surface.
 		void removeColor(); ///< Sets hasColor to true, removing color from the surface.
 
 	private:
@@ -78,7 +79,7 @@ namespace BXDA
 		float translucency; ///< Translucency of the surface. While this is currently written to the BXDA file, it seems to be unused, so it is not implemented in the exporter either.
 		float specular; ///< Specular value of the surface. Reading this value from Fusion materials is not yet supported.
 
-		std::vector<Triangle> triangles; ///< The Triangles that make up the surface.
+		
 
 		void write(BinaryWriter &) const;
 

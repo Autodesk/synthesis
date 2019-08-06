@@ -6,6 +6,7 @@
 #include "Physics.h"
 #include "../Guid.h"
 #include "../Vector3.h"
+#include "../BXDJ/ConfigData.h"
 
 namespace BXDA
 {
@@ -39,7 +40,7 @@ namespace BXDA
 		void calculateWheelShape(Vector3<>, Vector3<>, double & minWidth, double & maxWidth, double & maxRadius) const;
 
 		std::string toString(); ///< \return A debug string representing the Mesh.
-
+		BXDJ::ConfigData config;
 	private:
 		const int CURRENT_VERSION = 0; ///< The current BXDA version.
 

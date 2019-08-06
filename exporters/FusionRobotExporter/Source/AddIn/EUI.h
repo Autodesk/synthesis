@@ -94,7 +94,7 @@ namespace SynthesisAddIn
 		///
 		void saveConfiguration(std::string jsonConfig);
 
-		void startExportRobot(); ///< Starts a thread for exporting the robot (EUI::exportRobot).
+		void startExportRobot(std::string); ///< Starts a thread for exporting the robot (EUI::exportRobot).
 		void cancelExportRobot(); ///< Cancels any export thread.
 
 		///

@@ -17,6 +17,7 @@
 using namespace SynthesisAddIn;
 
 const std::string CURRENT_VERSION = "4.2.0";
+ BXDJ::ConfigData Exporter::mConfig = BXDJ::ConfigData();
 
 std::vector<Ptr<Joint>> Exporter::collectJoints(Ptr<FusionDocument> document)
 {
@@ -65,9 +66,10 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 	Ptr<Attribute> attr = document->attributes()->itemByName("Synthesis", "RobotConfigData.json");
 
 	BXDJ::ConfigData config;
-	if (attr != nullptr)
+	if (attr != nullptr) {
+		std::string test = attr->value();
 		config.fromJSONString(attr->value());
-
+	}
 	config.filterJoints(collectJoints(document));
 	config.filterJoints(collectAsBuiltJoints(document));
 
@@ -77,6 +79,8 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 void Exporter::saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document)
 {
 	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toJSONString());
+	std::string debug = config.toJSONString();
+	document->save("Synthesis");
 }
 
 void Exporter::exportExample()
@@ -190,24 +194,30 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		// Prepare binary writer for writing mesh
 		std::string filenameBXDA = "node_" + std::to_string(allNodes[i]->getGUID().getSeed()) + ".bxda";
 		BXDA::BinaryWriter binary(Filesystem::getCurrentRobotDirectory(config.robotName) + filenameBXDA);
-
+		
 		// Generate mesh
 		BXDA::Mesh mesh(allNodes[i]->getGUID());
+		
 		int occurrencesInNode = allNodes[i]->getOccurrenceCount();
 		allNodes[i]->getMesh(mesh, false, [progressCallback, completedOccurrences, occurrencesInNode, totalOccurrences](double percent)
 		{
+				
 			if (progressCallback)
-				progressCallback((completedOccurrences + percent * occurrencesInNode) / totalOccurrences); // Scale percent of each node by the number of occurrences in that node
+				progressCallback((completedOccurrences + percent * occurrencesInNode) / (totalOccurrences )); // Scale percent of each node by the number of occurrences in that node
 		}, cancel);
-		completedOccurrences += occurrencesInNode;
+		
 
 		// Check if thread is being canceled
 		if (cancel != nullptr)
 			if (*cancel)
 				break;
 
+		mesh.config = config;
 		// Write mesh
 		binary.write(mesh);
+		if (progressCallback)
+			progressCallback((completedOccurrences + 1.0 * occurrencesInNode) / totalOccurrences);
+		completedOccurrences += occurrencesInNode;
 	}
 
 	// If canceled, delete the created robot folder
