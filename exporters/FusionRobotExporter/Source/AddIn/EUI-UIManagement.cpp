@@ -74,10 +74,10 @@ void EUI::prepareAllPalettes()
 	createJointEditorPalette();
 	createSensorsPalette();
 	// createKeyPalette();
-	createGuidePalette();
 	createSettingsPalette();
 	createFinishPalette();
 	createProgressPalette();
+	createGuidePalette();
 }
 
 void EUI::closeAllPalettes()
@@ -91,16 +91,40 @@ void EUI::closeAllPalettes()
 	cancelExportRobot();
 }
 
-void EUI::hideAllPalettes()
+void EUI::closeEditorPalettes()
 {
 	closeDriveTypePalette();
 	closeDriveWeightPalette("");
 	closeJointEditorPalette();
 	closeSensorsPalette();
-	closeGuidePalette();
+	// closeGuidePalette();
 	//closeKeyPalette();
 	closeSettingsPalette("");
 	closeFinishPalette();
+}
+
+void EUI::disableEditorButtons()
+{
+	driveTrainTypeButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	driveTrainWeightButton->controlDefinition()->isEnabled(false);
+	editJointsButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// editDOFButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// keyDOFButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// robotExportGuideButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	settingsButton->controlDefinition()->isEnabled(false);
+	finishButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+}
+
+void EUI::enableEditorButtons()
+{
+	driveTrainTypeButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	driveTrainWeightButton->controlDefinition()->isEnabled(true);
+	editJointsButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// editDOFButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// keyDOFButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// robotExportGuideButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	settingsButton->controlDefinition()->isEnabled(true);
+	finishButton->controlDefinition()->isEnabled(true); ///< Export robot button.
 }
 
 // Drivetrain Weight Palette
@@ -146,6 +170,8 @@ void EUI::deleteDriveWeightPalette() {
 }
 
 void EUI::openDriveWeightPalette() {
+	closeEditorPalettes();
+	disableEditorButtons();
 	driveTrainWeightButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
@@ -162,7 +188,7 @@ void EUI::openDriveWeightPalette() {
 
 void EUI::closeDriveWeightPalette(std::string weightData) {
 	driveWeightPalette->isVisible(false);
-	driveTrainWeightButton->controlDefinition()->isEnabled(true);
+	enableEditorButtons();
 
 	if (weightData.length() > 0)
 	{
@@ -220,8 +246,8 @@ void EUI::deleteJointEditorPalette()
 
 void EUI::openJointEditorPalette()
 {
-	hideAllPalettes();
-
+	closeEditorPalettes();
+	disableEditorButtons();
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
@@ -253,11 +279,9 @@ void EUI::openJointEditorPalette()
 
 void EUI::closeJointEditorPalette()
 {
+	enableEditorButtons();
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
-	editJointsButton->controlDefinition()->isEnabled(true);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	finishButton->controlDefinition()->isEnabled(true);	
 }
 
 // Guide Palette
@@ -436,6 +460,8 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
+	closeEditorPalettes();
+	disableEditorButtons();
 	finishButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
@@ -469,7 +495,7 @@ void EUI::openFinishPalette()
 
 void EUI::closeFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(true);
+	enableEditorButtons();
 	finishPalette->isVisible(false);
 }
 
@@ -588,7 +614,8 @@ void EUI::deleteDriveTypePalette() {
 }
 
 void EUI::openDriveTypePalette() {
-	
+	closeEditorPalettes();
+	disableEditorButtons();
 	driveTrainTypeButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
@@ -605,7 +632,7 @@ void EUI::openDriveTypePalette() {
 }
 
 void EUI::closeDriveTypePalette() {
-
+	enableEditorButtons();
 	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
 }
@@ -716,6 +743,8 @@ void EUI::deleteSettingsPalette() {
 
 void EUI::openSettingsPalette(bool nan)
 {
+	closeEditorPalettes();
+	disableEditorButtons();
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
@@ -730,19 +759,15 @@ void EUI::openSettingsPalette(bool nan)
 }
 
 void EUI::closeSettingsPalette(std::string guideEnabled) {
-
-	settingsButton->controlDefinition()->isEnabled(true);
+	enableEditorButtons();
 	settingsPalette->isVisible(false);
 
-	(guideEnabled == "true") ? openGuidePalette() : closeGuidePalette();
-
-	if (guideEnabled.length() > 0)
+	if (guideEnabled == "true") // TODO: This is lazy, use JSON
 	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string isGuideEnabled) { settingsPalette->sendInfoToHTML("settings_guide", isGuideEnabled); }, guideEnabled);
+		openGuidePalette();
+	} else if (guideEnabled == "false")
+	{
+		closeGuidePalette();
 	}
 }
 
