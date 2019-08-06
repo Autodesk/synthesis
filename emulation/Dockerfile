@@ -2,7 +2,12 @@ FROM ubuntu:19.04 AS builder
 
 ENV WPILIB_VERSION v2019.4.1
 ENV SYNTHESIS_BRANCH 953-java-emulation
-ENV ENTER_HEL cd /root/synthesis/emulation/hel
+ENV GOPATH /go
+ENV GO111MODULE=on
+ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH
+ENV ENTER_HEL cd $GOPATH/src/github.com/autodesk/synthesis/hel
+
+RUN mkdir /go
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jdk \
     openjdk-11-jre \
     cmake \
+    curl \
     unzip && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,9 +37,15 @@ RUN cd /root && \
     make install && \
     ldconfig
 
-RUN pwd
-RUN cd /root && \
+RUN curl -O https://storage.googleapis.com/golang/go1.12.7.linux-amd64.tar.gz && \
+    tar -xvf go1.12.7.linux-amd64.tar.gz && \
+    mv go /usr/local
+
+RUN mkdir -p $GOPATH/src/github.com/autodesk && \ 
+    cd $GOPATH/src/github.com/autodesk/ && \
     git clone https://github.com/Autodesk/synthesis.git --branch ${SYNTHESIS_BRANCH} --depth=1
+
+ENV ENTER_HEL cd $GOPATH/src/github.com/autodesk/synthesis/emulation/hel
 
 RUN ${ENTER_HEL} && \
     cmake . -DARCH=X86_64 -DWPILIB=${WPILIB_VERSION} && \
@@ -50,6 +62,16 @@ RUN ${ENTER_HEL}/../wpi_cross && \
     cat ../shim_jni.cpp >> hal/src/main/native/cpp/jni/HALUtil.cpp && \
     ./gradlew halBaseReleaseSharedLibrary halJNISharedReleaseSharedLibrary :wpilibj:assemble && \
     (./gradlew wpilibj:build || true) 
+
+
+RUN go get github.com/golang/protobuf/protoc-gen-go
+RUN find / -name protoc-gen-go
+RUN cd ${GOPATH}/src/github.com/autodesk/synthesis/emulation/bridge && \
+    mkdir -p pkg/api/v1 && \
+    make build-protobuf && \
+    go build -o bridge ./cmd/main.go && \
+    cp ./bridge ~
+
 #A hack but it works
 
 FROM ubuntu:19.04
@@ -79,17 +101,19 @@ RUN adduser --disabled-password --gecos "" lvuser && \
 
 WORKDIR /home/lvuser
 
-RUN curl -O https://storage.googleapis.com/golang/go1.12.7.linux-amd64.tar.gz && \
-    tar -xvf go1.12.7.linux-amd64.tar.gz && \
-    mv go /usr/local
-
 COPY --from=builder /root /home/lvuser
+COPY --from=builder /go/src/github.com/autodesk /home/lvuser
 
+RUN ls /home/lvuser/synthesis
+
+RUN pwd
 RUN cd protobuf make install && ldconfig
 
 RUN mkdir scripts && \
     cp synthesis/emulation/hel/scripts/download_vm.sh ./scripts && \
-    cp synthesis/emulation/hel/run_vm.sh . 
+    cp synthesis/emulation/hel/scripts/docker_runner.sh ./scripts && \
+    cp synthesis/emulation/hel/run_vm.sh . && \
+    scripts/download_vm.sh 
 
 RUN find . -regex ".*\.\(so\|jar\)\(\.[0-9]*\)*" -exec mv {} . \;
 
@@ -114,4 +138,4 @@ RUN mkdir /run/sshd
 
 CMD /usr/sbin/sshd && \
     nohup ./run_vm.sh && \
-    tail -f /dev/null
+    scripts/docker_runner.sh
