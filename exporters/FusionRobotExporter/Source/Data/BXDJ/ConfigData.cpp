@@ -290,7 +290,7 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		}
 	}
 
-	if (configJSON.HasMember("weight")) {
+	if (configJSON.HasMember("weight") && configJSON.IsNumber()) {
 		weight = configJSON["weight"].GetFloat();
 	}
 
@@ -323,6 +323,7 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 			if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
 			{
 				auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
+				joints[jointID].sensors.clear();
 				for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
 				{
 					if (sensorsJSONArray[j].IsObject())
