@@ -200,6 +200,8 @@ namespace InventorRobotExporter
             RobotDataManager = new RobotDataManager();
             if (!RobotDataManager.LoadRobotSkeleton(new Progress<ProgressUpdate>(loadingBar.SetProgress)))
             {
+                loadingBar.Close();
+                Application.UserInterfaceManager.UserInteractionDisabled = false;
                 InventorUtils.ForceQuitExporter(OpenAssemblyDocument);
                 return;
             }
