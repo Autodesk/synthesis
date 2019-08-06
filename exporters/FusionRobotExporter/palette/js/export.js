@@ -32,8 +32,8 @@ window.fusionJavaScriptHandler =
 // Populates the form with joints
 function loadConfig(configData)
 {
-    document.getElementById('name').value = configData.name;
-    document.getElementById('convex').value = configData.convex;
+    document.getElementById('name').value = configData.name === undefined ? "unnamed" : configData.name;
+    document.getElementById('convex').value = configData.convex === undefined ? "BOX" : configData.convex;
 }
 
 // Disable submit button if no name entered
