@@ -97,13 +97,14 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
-	else if (eventArgs->action() == "save" || eventArgs->action() == "export") {
+	else if (eventArgs->action() == "save" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
 		eui->saveConfiguration(eventArgs->data());
-
-		if (eventArgs->action() == "export")
-			eui->startExportRobot();
-		else if (eventArgs->action() == "save")
+		if (eventArgs->action() == "save")
 			eui->closeJointEditorPalette();
+		else // export
+		{
+			eui->startExportRobot(eventArgs->action() == "export-and-open"); // TODO: export-and-open is lazy, include this in the JSON
+		}
 	}
 }
 
