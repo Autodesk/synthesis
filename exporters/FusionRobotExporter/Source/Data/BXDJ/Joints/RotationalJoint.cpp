@@ -127,8 +127,8 @@ nlohmann::json RotationalJoint::GetJson() {
 		max = 0;
 	}
 
-	jointJson["angularLimitLow"] =  min;
-	jointJson["angularLimitHigh"] = max;
+	jointJson["angularLimitLow"] = 0.0;
+	jointJson["angularLimitHigh"] = 0.0;
 	jointJson["typeSave"] = "ROTATIONAL";
 	jointJson["weight"] = getWeightData();
 

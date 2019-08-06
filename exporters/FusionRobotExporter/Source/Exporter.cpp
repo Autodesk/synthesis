@@ -178,7 +178,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		baseJson["SoftwareExportedWith"] = "FUSION_360";
 
 
-		baseJson["nodes"] = rootNode->GetJson();
+		baseJson["Nodes"] = rootNode->GetJson();
 
 		std::ofstream writeStream(filenameBXDJ);
 
