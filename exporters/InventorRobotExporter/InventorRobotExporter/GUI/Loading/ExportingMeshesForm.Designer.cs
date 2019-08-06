@@ -83,7 +83,6 @@ namespace InventorRobotExporter.GUI.Loading
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.CancelButton = this.ExitButton;
             this.ClientSize = new System.Drawing.Size(374, 466);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.ProgressLabel);

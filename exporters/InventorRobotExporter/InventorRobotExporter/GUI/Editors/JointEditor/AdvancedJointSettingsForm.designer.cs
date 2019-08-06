@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedJointSettingsForm));
-            this.okButton = new System.Windows.Forms.Button();
             this.gearRatioInput = new System.Windows.Forms.NumericUpDown();
             this.sensorListView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -43,24 +42,13 @@
             this.portBox = new System.Windows.Forms.GroupBox();
             this.portInput = new System.Windows.Forms.NumericUpDown();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gearRatioInput)).BeginInit();
             this.sensorBox.SuspendLayout();
             this.gearRatioBox.SuspendLayout();
             this.portBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portInput)).BeginInit();
             this.SuspendLayout();
-            // 
-            // okButton
-            // 
-            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(315, 326);
-            this.okButton.Margin = new System.Windows.Forms.Padding(4);
-            this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(100, 28);
-            this.okButton.TabIndex = 0;
-            this.okButton.Text = "OK";
-            this.okButton.UseVisualStyleBackColor = true;
-            this.okButton.Click += new System.EventHandler(this.OkButton_Click);
             // 
             // gearRatioInput
             // 
@@ -117,6 +105,7 @@
             // 
             // portTypeInput
             // 
+            this.portTypeInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.portTypeInput.FormattingEnabled = true;
             this.portTypeInput.Items.AddRange(new object[] {
             "CAN",
@@ -126,7 +115,6 @@
             this.portTypeInput.Name = "portTypeInput";
             this.portTypeInput.Size = new System.Drawing.Size(88, 24);
             this.portTypeInput.TabIndex = 9;
-            this.portTypeInput.Text = "CAN";
             // 
             // addSensorButton
             // 
@@ -215,25 +203,40 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(423, 326);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(4);
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.Location = new System.Drawing.Point(399, 329);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(100, 28);
-            this.cancelButton.TabIndex = 1;
+            this.cancelButton.Size = new System.Drawing.Size(121, 27);
+            this.cancelButton.TabIndex = 16;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // okButton
+            // 
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(272, 329);
+            this.okButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(121, 27);
+            this.okButton.TabIndex = 15;
+            this.okButton.Text = "OK";
+            this.okButton.UseVisualStyleBackColor = false;
+            this.okButton.Click += new System.EventHandler(this.OkButton_Click);
+            // 
             // AdvancedJointSettingsForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(536, 367);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.okButton);
             this.Controls.Add(this.portBox);
             this.Controls.Add(this.gearRatioBox);
             this.Controls.Add(this.sensorBox);
-            this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -252,8 +255,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.NumericUpDown gearRatioInput;
         private System.Windows.Forms.ListView sensorListView;
         private System.Windows.Forms.ComboBox portTypeInput;
@@ -267,5 +268,6 @@
         private System.Windows.Forms.GroupBox portBox;
         private System.Windows.Forms.NumericUpDown portInput;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button okButton;
     }
 }
