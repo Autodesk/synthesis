@@ -437,3 +437,7 @@ function exportRobot()
 
     adsk.fusionSendData('export', JSON.stringify(readConfigData()));
 }
+
+function cancel() {
+    adsk.fusionSendData("close", "export");
+}

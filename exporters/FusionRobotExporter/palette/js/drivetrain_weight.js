@@ -62,3 +62,7 @@ function sendInfoToFusion()
 {
     adsk.fusionSendData('dt_weight_save', JSON.stringify(readConfigData()));
 }
+
+function cancel() {
+    adsk.fusionSendData("close", "drivetrain_weight");
+}
