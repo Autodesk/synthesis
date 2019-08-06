@@ -68,3 +68,7 @@ function exportRobot()
     var openSynthesisCheckbox = document.getElementById('open-synthesis');
     adsk.fusionSendData(openSynthesisCheckbox.checked ? 'export-and-open' : 'export', JSON.stringify(saveConfig()));
 }
+
+function cancel() {
+    adsk.fusionSendData("close", "export");
+}

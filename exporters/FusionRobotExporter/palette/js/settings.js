@@ -35,3 +35,7 @@ function sendInfoToFusion() {
     adsk.fusionSendData("settings_analytics", settings.analytics.toString());
     adsk.fusionSendData("settings_guide", settings.guide.toString());
 }
+
+function cancel() {
+    adsk.fusionSendData("close", "settings");
+}
