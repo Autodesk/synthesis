@@ -328,8 +328,9 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state
         /// </summary>
-        public void OnInfoButtonClicked() {
-            simUI.ShowControlPanel(!inputManagerPanel.activeSelf);
+        public void OnControlsButtonClicked()
+        {
+            simUI.ShowControlPanel();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ControlPanel,
                 AnalyticsLedger.EventAction.Clicked,
@@ -430,6 +431,11 @@ namespace Synthesis.GUI
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();
             robotCameraGUI.EndProcesses();
+        }
+
+        public override void ToggleHidden()
+        {
+            toolbar.SetActive(!toolbar.activeSelf);
         }
     }
 }

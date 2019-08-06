@@ -1007,5 +1007,13 @@ namespace Synthesis.Input.Inputs
 
             return mModifiers == mCachedModifiersState;
         }
+
+        public override bool Equals(CustomInput b)
+        {
+            if (!(b is KeyboardInput))
+                return false;
+            var b2 = (KeyboardInput)b;
+            return mModifiers == b2.mModifiers && mKey == b2.mKey;
+        }
     }
 }

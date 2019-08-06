@@ -267,6 +267,7 @@
     <Compile Include="Assets\Scripts\Input\Enums\KeyModifier.cs" />
     <Compile Include="Assets\Scripts\Input\Enums\MouseAxis.cs" />
     <Compile Include="Assets\Scripts\Input\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\Input\GlobalProfile.cs" />
     <Compile Include="Assets\Scripts\Input\InputControl.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\CustomInput.cs" />
     <Compile Include="Assets\Scripts\Input\Inputs\JoystickInput.cs" />
@@ -275,6 +276,7 @@
     <Compile Include="Assets\Scripts\Input\JoystickSerializer.cs" />
     <Compile Include="Assets\Scripts\Input\KeyMapping.cs" />
     <Compile Include="Assets\Scripts\Input\Player.cs" />
+    <Compile Include="Assets\Scripts\Input\Profile.cs" />
     <Compile Include="Assets\Scripts\Input\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\Media\GIF.cs" />
@@ -316,8 +318,6 @@
     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
     <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
     <Compile Include="Assets\Scripts\SimStart.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
-    <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
     <Compile Include="Assets\Scripts\States\AnalyzingResourcesState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
     <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
@@ -391,7 +391,7 @@
     <None Include="Assets\Packages\Google.Apis.Core.1.21.0\License.txt" />
     <None Include="Assets\Packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.xml" />
     <None Include="Assets\Packages\Google.Protobuf.3.9.0\lib\net45\Google.Protobuf.xml" />
-    <None Include="Assets\Scripts\Input\Documentation\Readme.txt" />
+    <None Include="Assets\Scripts\Input\Readme.txt" />
     <None Include="Assets\Packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.xml" />
     <None Include="Assets\Packages\Grpc.Reflection.1.22.0\lib\net45\Grpc.Reflection.xml" />
     <Reference Include="Unity.Timeline.Editor">

@@ -109,14 +109,8 @@ public class DynamicCamera : MonoBehaviour
 
             if (ControlEnabled && RobotProvider.RobotActive)
             {
-                if (!opposite)
-                {
-                    currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
-                else
-                {
-                    currentPosition -= Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                }
+                var delta = InputControl.GetAxis(Controls.Global.GetAxes().cameraLateral) * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                currentPosition += opposite ? -delta : delta;
             }
 
             Mono.transform.rotation = currentRotation;
@@ -256,28 +250,21 @@ public class DynamicCamera : MonoBehaviour
         Vector3 lagPosVector;
         Vector3 rotationVector;
         Vector3 lagRotVector;
-        float zoomValue;
-        float lagZoom;
         const float lagResponsiveness = 15f;
-        float rotationSpeed;
-        float transformSpeed;
-        float scrollWheelSensitivity;
+        const float rotationSpeed = 10f;
+        const float transformSpeed = 5f;
+        const float zoomSpeed = 400f;
 
         public FreeroamState(MonoBehaviour mono)
             : base(mono) { }
 
         public override void Init()
         {
-            Mono.transform.position = new Vector3(0f, 1f, 0f);
-            positionVector = new Vector3(0f, 1f, 0f);
+            Mono.transform.position = StateMachine.SceneGlobal.FindState<MainState>().GetCamera().transform.position;
+            positionVector = new Vector3(0f, 0f, 0f);
             lagPosVector = positionVector;
-            rotationVector = Vector3.zero;
+            rotationVector = StateMachine.SceneGlobal.FindState<MainState>().GetCamera().transform.eulerAngles;
             lagRotVector = rotationVector;
-            zoomValue = 60f;
-            lagZoom = zoomValue;
-            rotationSpeed = 3f;
-            transformSpeed = 2.5f;
-            scrollWheelSensitivity = 40f;
         }
 
         public override void Update()
@@ -292,25 +279,46 @@ public class DynamicCamera : MonoBehaviour
                     }
                     else
                     {
-                        rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
-                        rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
+                        float deltaX = InputControl.GetAxis("Mouse Y") * InputControl.MouseSensitivity * rotationSpeed;
+                        float deltaY =- InputControl.GetAxis("Mouse X") * InputControl.MouseSensitivity * rotationSpeed;
+
+                        const float MAX = 89; // deg
+                        // Negative deltaX is up
+                        if (deltaX < 0 && (rotationVector.x > -MAX) || (deltaX > 0 && rotationVector.x < MAX))
+                        {
+                            rotationVector.x += deltaX;
+                            if (rotationVector.x < -MAX)
+                                rotationVector.x = -MAX;
+                            else if (rotationVector.x > MAX)
+                                rotationVector.x = MAX;
+                        }
+                        rotationVector.y += deltaY;
                         ControlEnabled = true;
                     }
                 }
 
-                //Use WASD to move camera position
-                positionVector += Input.GetAxis("CameraHorizontal") * Mono.transform.right * transformSpeed * Time.deltaTime;
-                positionVector += Input.GetAxis("CameraVertical") * Mono.transform.forward * transformSpeed * Time.deltaTime;
+                positionVector = Vector3.zero;
+                var camera = StateMachine.SceneGlobal.FindState<MainState>().GetCamera();
 
-                zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
+                var forward_raw = camera.transform.forward;
+                forward_raw.y = 0; // Take forward direction without vertical component
+                var forward = InputControl.GetAxis(Controls.Global.GetAxes().cameraForward) * forward_raw.normalized * transformSpeed * Time.deltaTime;
+                var right_raw = camera.transform.right;
+                right_raw.y = 0; // Take lateral direction without vertical component
+                var right = InputControl.GetAxis(Controls.Global.GetAxes().cameraLateral) * right_raw.normalized * transformSpeed * Time.deltaTime;
+                right.y = 0; // Take lateral direction without vertical component
+                var up = InputControl.GetAxis(Controls.Global.GetAxes().cameraVertical) * Vector3.up * transformSpeed * Time.deltaTime;
+
+                //Move camera position using global controls
+                positionVector += forward;
+                positionVector += right;
+                positionVector += up;
 
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
-                lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
                 Mono.transform.position += positionVector;
-                positionVector = Vector3.zero;
+                Mono.transform.position += InputControl.GetAxis("Mouse ScrollWheel") * camera.transform.forward.normalized * zoomSpeed* Time.deltaTime; // zoom along camera
                 Mono.transform.eulerAngles = lagRotVector;
-                Mono.GetComponent<Camera>().fieldOfView = lagZoom;
             }
         }
 
@@ -338,7 +346,10 @@ public class DynamicCamera : MonoBehaviour
             : base(mono)
         {
             field = GameObject.Find("Field");
-            fieldVector = field.transform.position;
+            if (field != null)
+                fieldVector = field.transform.position;
+            else
+                fieldVector = Vector3.down;
         }
 
         public override void Init()
