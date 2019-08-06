@@ -37,6 +37,7 @@ namespace BXDJ
 		float getMaxTranslation() const; ///< \return The maximum position of the child.
 
 		void applyConfig(const ConfigData &);
+		nlohmann::json GetJson();
 
 	private:
 		core::Ptr<fusion::SliderJointMotion> fusionJointMotion; ///< The slider joint in Fusion.

@@ -33,6 +33,7 @@ window.fusionJavaScriptHandler =
 function loadConfig(configData)
 {
     document.getElementById('name').value = configData.name;
+    document.getElementById('convex').value = configData.convex;
 }
 
 // Disable submit button if no name entered
@@ -46,7 +47,10 @@ function validateForm()
 // Outputs currently entered data as a JSON object
 function saveConfig()
 {
-    var configData = { 'name': document.getElementById('name').value };
+    var configData = { 
+        'name': document.getElementById('name').value, 
+        'convex': document.getElementById('convex').value
+    };
     console.log(configData);
     return configData;
 }

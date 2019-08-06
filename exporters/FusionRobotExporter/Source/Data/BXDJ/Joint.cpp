@@ -100,6 +100,11 @@ Vector3<> Joint::getChildBasePoint() const
 	return Vector3<>(geometry->origin()->x(), geometry->origin()->y(), geometry->origin()->z());
 }
 
+double BXDJ::Joint::getWeightData() const
+{
+	return 10;
+}
+
 void Joint::setDriver(Driver driver)
 {
 	this->driver = std::make_unique<Driver>(driver);
@@ -151,4 +156,10 @@ void Joint::write(XmlWriter & output) const
 
 	for (std::shared_ptr<JointSensor> sensor : sensors)
 		output.write(*sensor);
+}
+
+nlohmann::json BXDJ::Joint::GetJson()
+{
+
+	return nlohmann::json();
 }

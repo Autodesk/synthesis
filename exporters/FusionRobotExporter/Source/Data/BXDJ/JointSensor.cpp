@@ -40,7 +40,9 @@ void JointSensor::loadJSONObject(const rapidjson::Value & sensorJSON)
 	{
 		if (sensorJSON["type"].IsNumber())
 			type = (Type)sensorJSON["type"].GetInt();
-		if (sensorJSON["signal"].IsNumber())
+		if (sensorJSON["conTypePortA"].IsNumber())
+			portSignal = (Signal)sensorJSON["signal"].GetInt();
+		if (sensorJSON["conTypePortB"].IsNumber())
 			portSignal = (Signal)sensorJSON["signal"].GetInt();
 		if (sensorJSON["portA"].IsNumber())
 			portA = sensorJSON["portA"].GetInt();
@@ -49,6 +51,17 @@ void JointSensor::loadJSONObject(const rapidjson::Value & sensorJSON)
 		if (sensorJSON["conversionFactor"].IsNumber())
 			conversionFactor = sensorJSON["conversionFactor"].GetDouble();
 	}
+}
+
+nlohmann::json BXDJ::JointSensor::GetExportJSON()
+{
+	nlohmann::json json;
+	json["type"] = type;
+	json["signal"] = portSignal;
+	json["portA"] = portA;
+	json["portB"] = portB;
+	json["conversionFactor"] = conversionFactor;
+	return json;
 }
 
 void JointSensor::write(XmlWriter & output) const

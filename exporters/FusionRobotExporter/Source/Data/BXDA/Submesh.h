@@ -4,7 +4,7 @@
 #include "BinaryWriter.h"
 #include "Vertex.h"
 #include "../Vector3.h"
-
+#include <VHACD.h>
 namespace BXDA
 {
 	class Vertex;
@@ -34,7 +34,7 @@ namespace BXDA
 		void mergeMesh(const SubMesh &); ///< Merge another SubMesh's Vertices and Surfaces with this SubMesh
 
 		int getVertCount(); ///< \return The number of vertices currently stored by the submesh
-		void getConvexCollider(SubMesh &) const; ///< Fills a submesh with a convex collider of this mesh. Currently, this is simply a bounding box of the SubMesh.
+		void getConvexCollider(SubMesh &, int level) const; ///< Fills a submesh with a convex collider of this mesh. Currently, this is simply a bounding box of the SubMesh.
 		
 		///
 		/// Calculates the radial limits of the SubMesh.
@@ -51,6 +51,9 @@ namespace BXDA
 		std::vector<std::shared_ptr<Surface>> surfaces; ///< The surfaces of the SubMesh.
 
 		void write(BinaryWriter &) const;
+
+		static VHACD::IVHACD* decomper;
+		
 
 	};
 }

@@ -49,3 +49,48 @@ void BallJoint::write(XmlWriter & output) const
 	// Write driver information
 	// Joint::write(output); // No drivers are compatible with ball joint
 }
+
+
+nlohmann::json BallJoint::GetJson() {
+	/*
+	nlohmann::json jointJson;
+	jointJson["$type"] = "RotationalJoint, RobotExportAPI";
+	jointJson["axis"] = getAxisOfRotation().GetJson();
+	jointJson["basePoint"] = getChildBasePoint().GetJson();
+	jointJson["currentAngularPosition"] = getCurrentAngle();
+	jointJson["hasAngularLimit"] = hasLimits();
+
+	double min = roundf(getMinAngle() * 100) / 100;
+	if(!min){
+		min = 0;
+ 	}
+
+	double max = roundf(getMaxAngle() * 100) / 100;
+	if (max == NULL) {
+		max = 0;
+	}
+
+	jointJson["angularLimitLow"] =  min;
+	jointJson["angularLimitHigh"] = max;
+	jointJson["typeSave"] = "ROTATIONAL";
+	jointJson["weight"] = getWeightData();
+
+
+	jointJson["attachedSensors"] = nlohmann::json::array();
+	jointJson["cDriver"] = getDriver()->GetExportJson();*/
+	nlohmann::json jointJson;
+	jointJson["$type"] = "BallJoint, RobotExportAPI";
+	jointJson["basePoint"] = getParentBasePoint().GetJson();
+	jointJson["attachedSensors"] = nlohmann::json::array();
+	jointJson["cDrive"] = getDriver()->GetExportJson();
+	jointJson["weight"] = getWeightData();
+	jointJson["typeSave"] = "BALL";
+	nlohmann::json sensorJson = nlohmann::json::array();
+
+	for (int i = 0; i < sensors.size(); i++) {
+		sensorJson.push_back(sensors[i]->GetExportJSON());
+	}
+
+	jointJson["attachedSensors"] = sensorJson;
+	return jointJson;
+}

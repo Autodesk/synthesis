@@ -72,7 +72,7 @@ void Mesh::write(BinaryWriter & output) const
 	for (std::shared_ptr<SubMesh> submesh : subMeshes)
 	{
 		std::shared_ptr<SubMesh> tempColliderMesh = std::make_shared<SubMesh>();
-		submesh->getConvexCollider(*tempColliderMesh);
+		submesh->getConvexCollider(*tempColliderMesh, config.convexType);
 		colliders.push_back(tempColliderMesh);
 	}
 

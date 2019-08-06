@@ -39,6 +39,8 @@ namespace BXDJ
 
 		void applyConfig(const ConfigData &);
 
+		nlohmann::json GetJson();
+
 	private:
 		core::Ptr<fusion::RevoluteJointMotion> fusionJointMotion; ///< The revolute joint in Fusion.
 
