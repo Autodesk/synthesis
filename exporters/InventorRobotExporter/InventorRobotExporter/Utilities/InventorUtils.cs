@@ -318,6 +318,7 @@ namespace InventorRobotExporter.Utilities
         /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
         public static async void ForceQuitExporter(AssemblyDocument document)
         {
+            RobotExporterAddInServer.Instance.RobotDataManager.wasForceQuit = true;
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
             document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
         }

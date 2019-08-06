@@ -28,9 +28,6 @@ namespace InventorRobotExporter.Exporter.Skeleton
             var rawRigidResults = asmDocument.ComponentDefinition.RigidBodyAnalysis(rigidGetOptions);
             var rigidResults = new CustomRigidResults(rawRigidResults);
 
-            //Building Model...
-            progress?.Report(new ProgressUpdate("Building model...", 2, 4));
-
             try
             {
                 RigidBodyCleaner.CleanGroundedBodies(rigidResults);
@@ -38,9 +35,11 @@ namespace InventorRobotExporter.Exporter.Skeleton
             catch (NoGroundException)
             {
                 WinFormsUtils.ShowErrorDialog("Please ground a part in your assembly to export your robot.", "No Ground");
-                RobotExporterAddInServer.Instance.RobotDataManager.hasGround = false;
                 return null;
             }
+
+            //Building Model...
+            progress?.Report(new ProgressUpdate("Building model...", 2, 4));
 
             var skeletonBase = RigidBodyCleaner.BuildAndCleanDijkstra(rigidResults);
 

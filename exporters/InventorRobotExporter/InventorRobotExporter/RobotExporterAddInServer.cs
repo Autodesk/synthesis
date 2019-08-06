@@ -206,6 +206,9 @@ namespace InventorRobotExporter
                 return;
             }
 
+            if (RobotDataManager.wasForceQuit)
+                return;
+
             loadingBar.SetProgress(new ProgressUpdate("Loading Joint Data...", 7, 10));
             RobotDataManager.LoadRobotData(OpenAssemblyDocument);
 
@@ -238,7 +241,7 @@ namespace InventorRobotExporter
             loadingBar.Close();
             Application.UserInterfaceManager.UserInteractionDisabled = false;
 
-            if (RobotDataManager.hasGround)
+            if (!RobotDataManager.wasForceQuit)
             {
                 var exportResult = MessageBox.Show(new Form { TopMost = true },
                     "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
