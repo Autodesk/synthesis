@@ -95,6 +95,26 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
+	else if (eventArgs->action() == "close")
+	{
+		if (eventArgs->data() == "drivetrain_type")
+		{
+			eui->closeDriveTypePalette("");
+		} else if (eventArgs->data() == "drivetrain_weight")
+		{
+			eui->closeDriveWeightPalette("");
+		}
+		else if (eventArgs->data() == "joint_editor")
+		{
+			eui->closeSensorsPalette();
+			eui->closeJointEditorPalette();
+		} else if (eventArgs->data() == "settings") {
+			eui->closeSettingsPalette("");
+		} else if (eventArgs->data() == "export")
+		{
+			eui->closeFinishPalette();
+		}
+	}
 	else if (eventArgs->action() == "save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
 		eui->saveConfiguration(eventArgs->data());
 		

@@ -93,14 +93,14 @@ void EUI::closeAllPalettes()
 
 void EUI::hideAllPalettes()
 {
-	driveTypePalette->isVisible(false);
-	driveWeightPalette->isVisible(false);
-	jointEditorPalette->isVisible(false);
-	sensorsPalette->isVisible(false);
-	guidePalette->isVisible(false);
-	// keyPalette->isVisible(false);
-	settingsPalette->isVisible(false);
-	finishPalette->isVisible(false);
+	closeDriveTypePalette("");
+	closeDriveWeightPalette("");
+	closeJointEditorPalette();
+	closeSensorsPalette();
+	closeGuidePalette();
+	//closeKeyPalette();
+	closeSettingsPalette("");
+	closeFinishPalette();
 }
 
 // Drivetrain Weight Palette
@@ -114,7 +114,7 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/dt_weight.html", false, true, true, 300, 150);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 150);
 		if (!driveWeightPalette)
 			return false;
 
@@ -186,7 +186,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, true, true, 450, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -221,10 +221,6 @@ void EUI::deleteJointEditorPalette()
 void EUI::openJointEditorPalette()
 {
 	hideAllPalettes();
-	editJointsButton->controlDefinition()->isEnabled(false);
-	driveTrainTypeButton->controlDefinition()->isEnabled(true);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
@@ -407,7 +403,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, true, true, 300, 200);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, true, 300, 200);
 		if (!finishPalette)
 			return false;
 
@@ -560,7 +556,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain.html", false, true, false, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain_type.html", false, false, false, 350, 200);
 		if (!driveTypePalette)
 			return false;
 
@@ -659,6 +655,8 @@ void EUI::openProgressPalette()
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
+	closeFinishPalette();
+
 	uiThread = new std::thread([this]()
 	{
 		progressPalette->sendInfoToHTML("progress", "0");
@@ -685,7 +683,7 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, true, true, 350, 200);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, true, 350, 200);
 		if (!settingsPalette)
 			return false;
 
