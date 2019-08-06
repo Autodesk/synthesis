@@ -1,9 +1,11 @@
-var driveType = "tank";
+var driveType = 1;
 
 window.fusionJavaScriptHandler = {handle: function(action, data) {
     try {
-        if (action === "drivetrain_type") {
-            driveType = data;
+        var parsedConfig = JSON.parse(data);
+        if (action === "joints") {
+            if (parsedConfig.drivetrainType !== undefined)
+                driveType = parsedConfig.drivetrainType;
             unhighlightAll();
             highlightDriveTrain();
         }
@@ -22,11 +24,11 @@ function setDriveTrain(selected) {
 }
 
 function highlightDriveTrain() {
-    if (driveType === "tank") {
+    if (driveType === 1) {
         document.getElementById("left-highlight").style.visibility = "visible";
-    } else if (driveType === "h-drive") {
+    } else if (driveType === 2) {
         document.getElementById("middle-highlight").style.visibility = "visible";
-    } else if (driveType === "other") {
+    } else if (driveType === 3) {
         document.getElementById("right-highlight").style.visibility = "visible";
     } else {
         document.getElementById("left-highlight").style.visibility = "visible";
@@ -40,5 +42,5 @@ function unhighlightAll() {
 }
 
 function sendInfoToFusion() {
-    adsk.fusionSendData("drivetrain_type", driveType);
+    adsk.fusionSendData("drivetrain_type", JSON.stringify({"drivetrainType": driveType}));
 }
