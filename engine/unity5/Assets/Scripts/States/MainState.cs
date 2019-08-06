@@ -101,6 +101,22 @@ namespace Synthesis.States
         public override void Awake()
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
+            FullScreenMode a = FullScreenMode.ExclusiveFullScreen;
+            switch (PlayerPrefs.GetInt("fullscreen", 0)) {
+                case 0:
+                    a = FullScreenMode.ExclusiveFullScreen;
+                    break;
+                case 1:
+                    a = FullScreenMode.FullScreenWindow;
+                    break;
+                case 2:
+                    a = FullScreenMode.MaximizedWindow;
+                    break;
+                case 3:
+                    a = FullScreenMode.Windowed;
+                    break;
+            }
+            Screen.fullScreenMode = a;
 
             string CurrentVersion = "4.2.3";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
