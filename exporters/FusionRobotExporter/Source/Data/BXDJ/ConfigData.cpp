@@ -184,7 +184,29 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 	// General Information
 	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
 	configJSON.AddMember("drivetrainType", rapidjson::Value((int)drivetrainType), allocator);
-	configJSON.AddMember("convex", rapidjson::Value((int)convexType), allocator);
+	std::string convex = "BOX";
+	switch (convexType) {
+	case BOX:
+		convex = "BOX";
+		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
+		break;
+	case VHACD_LOW:
+		convex = "VHACD_LOW";
+		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
+		break;
+
+	case VHACD_MID:
+		convex = "VHACD_MID";
+		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
+		break;
+
+	case VHACD_HIGH:
+		convex = "VHACD_HIGH";
+		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
+		break;
+
+	}
+
 
 	// Weight
 
@@ -250,11 +272,26 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
 		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
 
-	if (configJSON.HasMember("convex")) {
+	if (configJSON.HasMember("convex") && configJSON["convex"].IsString()) {
 
 		
 		
-		convexType = (ConvexType)configJSON["convex"].GetInt();
+		std::string con = configJSON["convex"].GetString();
+		if (con == "BOX") {
+			con = BOX;
+		}
+
+		if (con == "VHACD_LOW") {
+			con = VHACD_LOW;
+		}
+
+		if (con == "VHACD_MID") {
+			con = VHACD_MID;
+		}
+
+		if (con == "VHACD_HIGH") {
+			con = VHACD_HIGH;
+		}
 	}
 
 	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {

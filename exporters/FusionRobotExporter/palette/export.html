@@ -24,12 +24,12 @@
                 <input type="checkbox" value="Colors" checked> Export with colors<br>
                 <input type="checkbox" value="Open" checked> Open Synthesis<br>
                 <span class="field-label">Collision Quality: </span>
-                <span class="field-input"><select id="convex">
-                        <option value=1>Rough (Bounding Box)</option>
-                        <option value=2>Basic (VHACD Low)</option>
-                        <option value=3>Medium (VHACD Mid)</option>
-                        <option value=4>High (VHACD High)</option>
-    
+                <span class="field-input">
+                    <select id="convex">
+                        <option value="BOX">Rough (Bounding Box)</option>
+                        <option value="VHACD_LOW">Basic (VHACD Low)</option>
+                        <option value="VHACD_MID">Medium (VHACD Mid)</option>
+                        <option value="VHACD_HIGH">High (VHACD High)</option>
                     </select>
                 </span>
             </div>
