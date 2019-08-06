@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 55, y: 0}
-  m_SizeDelta: {x: 150, y: 250}
+  m_SizeDelta: {x: 170, y: 250}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &222487667313153076
 CanvasRenderer:
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 100
   m_MinHeight: 100
-  m_PreferredWidth: 150
+  m_PreferredWidth: 170
   m_PreferredHeight: 250
   m_FlexibleWidth: 1
   m_FlexibleHeight: 1
@@ -381,6 +381,7 @@ GameObject:
   - component: {fileID: 4805917076397495043}
   - component: {fileID: 832284814705080845}
   - component: {fileID: 6378905805065172435}
+  - component: {fileID: 51700492998682833}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -499,6 +500,26 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &51700492998682833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4022911281553495075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: 4
+  m_LayoutPriority: 1
 --- !u!1 &4166574233860856057
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,7 +580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.22352943, g: 0.27058825, b: 0.32156864, a: 1}
+  m_Color: {r: 0.13333334, g: 0.16078432, b: 0.20000002, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -595,10 +616,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.1137255, g: 0.13333334, b: 0.16862746, a: 1}
+    m_NormalColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_HighlightedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_PressedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
-    m_SelectedColor: {r: 0.1137255, g: 0.13333334, b: 0.16862746, a: 1}
+    m_SelectedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -636,6 +657,7 @@ GameObject:
   - component: {fileID: 3698549101505763768}
   - component: {fileID: 1769593227557440762}
   - component: {fileID: 114373402178192659}
+  - component: {fileID: 8653446615735627709}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -695,15 +717,35 @@ MonoBehaviour:
     m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 1
-    m_MaxSize: 40
+    m_MinSize: 12
+    m_MaxSize: 50
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: Title
+--- !u!114 &8653446615735627709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5442068658296064065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 1
+  m_FlexibleHeight: 1
+  m_LayoutPriority: 1
 --- !u!1 &7292280792595985570
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,7 +842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.22352943, g: 0.27058825, b: 0.32156864, a: 1}
+  m_Color: {r: 0.13333334, g: 0.16078432, b: 0.20000002, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -836,10 +878,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.1137255, g: 0.13333334, b: 0.16862746, a: 1}
+    m_NormalColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_HighlightedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_PressedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
-    m_SelectedColor: {r: 0.1137255, g: 0.13333334, b: 0.16862746, a: 1}
+    m_SelectedColor: {r: 0.2901961, g: 0.31764707, b: 0.38823533, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1

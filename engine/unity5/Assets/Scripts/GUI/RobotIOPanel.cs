@@ -14,20 +14,23 @@ namespace Synthesis.GUI
     {
         public class RobotIOField
         {
-            public GameObject robotIOField;
+            public GameObject gameObject;
             public Text label;
             public InputField inputField;
-            private Action<Text, InputField> updateFunction;
+            private Action<RobotIOField> updateFunction;
 
-            public RobotIOField(string name, GameObject parent, Action<Text, InputField> update)
+            private static Color ENABLED_COLOR = Color.white;
+            private static Color DISABLED_COLOR = new Color(0.47f, 0.47f, 0.47f);
+
+            public RobotIOField(string name, GameObject parent, Action<RobotIOField> update)
             {
-                robotIOField = Instantiate(RobotIOPanel.Instance.robotIOFieldPrefab, parent.transform) as GameObject;
-                robotIOField.name = name;
+                gameObject = Instantiate(RobotIOPanel.Instance.robotIOFieldPrefab, parent.transform) as GameObject;
+                gameObject.name = name;
 
-                label = robotIOField.GetComponentInChildren<Text>();
+                label = gameObject.GetComponentInChildren<Text>();
                 label.text = name;
 
-                inputField = robotIOField.GetComponentInChildren<InputField>();
+                inputField = gameObject.GetComponentInChildren<InputField>();
 
                 updateFunction = update;
                 Update();
@@ -36,7 +39,13 @@ namespace Synthesis.GUI
             // Update displayed values
             public void Update()
             {
-                updateFunction(label, inputField);
+                updateFunction(this);
+            }
+
+            public void SetEnable(bool e)
+            {
+                label.color = e ? ENABLED_COLOR : DISABLED_COLOR;
+                inputField.textComponent.color = e ? ENABLED_COLOR : DISABLED_COLOR;
             }
         }
 
@@ -77,6 +86,7 @@ namespace Synthesis.GUI
 
         private GameObject canvas;
         private GameObject mainPanel;
+        private bool shouldBeActive = false;
 
         // Robot IO view
         private GameObject displayPanel;
@@ -135,6 +145,10 @@ namespace Synthesis.GUI
 
         public void Update()
         {
+            if (shouldBeActive && InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true))
+            {
+                mainPanel.SetActive(!mainPanel.activeSelf);
+            }
             if (mainPanel.activeSelf) // Update rest of UI
             {
                 bool freeze = false;
@@ -197,128 +211,225 @@ namespace Synthesis.GUI
                 robotIOGroups[i] = new RobotIOGroup((RobotIOGroup.Type)i, displayPanel);
             }
 
-            for (int i = 0; i < OutputManager.NUM_PWM_HDRS + OutputManager.NUM_PWM_MXP; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_PWM_HDRS + RoboRIOConstants.NUM_PWM_MXP; i++)
             {
                 int j = i; // Create copy of iterator
+                string name = (j < RoboRIOConstants.NUM_PWM_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_PWM_HDRS).ToString();
                 robotIOGroups[(int)RobotIOGroup.Type.PWM].robotIOFields.Add(
                     new RobotIOField(
-                        j.ToString(),
+                        name,
                         robotIOGroups[(int)RobotIOGroup.Type.PWM].GetPanel(),
-                        (Text label, InputField inputField) =>
+                        (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                inputField.text = OutputManager.Instance.PwmHeaders[j].ToString();
+                                if (j < RoboRIOConstants.NUM_PWM_HDRS)
+                                {
+                                    robotIOField.inputField.text = OutputManager.Instance.PwmHeaders[j].ToString();
+                                }
+                                else
+                                {
+                                    int digital_index = j - (int)RoboRIOConstants.NUM_PWM_HDRS;
+                                    if(digital_index >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
+                                    {
+                                        digital_index += 4;
+                                    }
+                                    if (OutputManager.Instance.MxpData[digital_index].Config == EmulationService.MXPData.Types.Config.Pwm)
+                                    {
+                                        robotIOField.inputField.text = OutputManager.Instance.MxpData[digital_index].Value.ToString();
+                                        robotIOField.SetEnable(true);
+                                    }
+                                    else
+                                    {
+                                        robotIOField.inputField.text = "0";
+                                        robotIOField.SetEnable(false);
+                                    }
+                                }
                             }
                             catch (Exception)
                             {
-                                inputField.text = "0";
+                                robotIOField.inputField.text = "0";
+                                if (j >= RoboRIOConstants.NUM_PWM_HDRS)
+                                {
+                                    robotIOField.SetEnable(false);
+                                }
                             }
-                            inputField.interactable = false;
+                            robotIOField.inputField.interactable = false;
                         }
                     )
                 );
             }
 
-            for (int i = 0; i < 63; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_CAN_ADDRESSES; i++)
             {
                 int j = i; // Create copy of iterator
                 robotIOGroups[(int)RobotIOGroup.Type.CAN].robotIOFields.Add(
                     new RobotIOField(
                         j.ToString(),
                         robotIOGroups[(int)RobotIOGroup.Type.CAN].GetPanel(),
-                        (Text label, InputField inputField) =>
+                        (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                label.text = j.ToString();
-                                //label.text = OutputManager.Instance.CanMotorControllers[j].Id.ToString();
-                                inputField.text = OutputManager.Instance.CanMotorControllers[j].PercentOutput.ToString();
+                                var can = OutputManager.Instance.CanMotorControllers.First(e => e.Id == j); // Throws on failure
+                                robotIOField.gameObject.SetActive(true);
+                                robotIOField.label.text = can.Id.ToString();
+                                robotIOField.inputField.text = can.PercentOutput.ToString();
                             }
                             catch (Exception)
                             {
-                                //label.text = "0";
-                                inputField.text = "0";
+                                robotIOField.gameObject.SetActive(false);
+                                robotIOField.inputField.text = "0";
                             }
-                            inputField.interactable = false;
+                            robotIOField.inputField.interactable = false;
                         }
                     )
                 );
             }
-            for (int i = 0; i < OutputManager.NUM_DIO_HDRS + OutputManager.NUM_DIO_MXP; i++)
+            robotIOGroups[(int)RobotIOGroup.Type.CAN].robotIOFields.Add(
+                new RobotIOField( // Custom field to display a warning when there are no active CAN devices
+                    "CAN Warning",
+                    robotIOGroups[(int)RobotIOGroup.Type.CAN].GetPanel(),
+                    (RobotIOField robotIOField) =>
+                    {
+                        robotIOField.label.text = "No active CAN\nmotor controllers";
+                        robotIOField.label.alignment = TextAnchor.MiddleCenter;
+                        robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta.y);
+                        robotIOField.inputField.gameObject.SetActive(false);
+                        robotIOField.gameObject.SetActive(OutputManager.Instance.CanMotorControllers.Count == 0);
+                    }
+                )
+            );
+            for (int i = 0; i < RoboRIOConstants.NUM_DIGITAL_HDRS + RoboRIOConstants.NUM_DIGITAL_MXP; i++)
             {
                 int j = i; // Create copy of iterator
-                string name = (j < OutputManager.NUM_DIO_HDRS) ? j.ToString() : "MXP " + (j - OutputManager.NUM_DIO_HDRS).ToString();
+                string name = (j < RoboRIOConstants.NUM_DIGITAL_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_DIGITAL_HDRS).ToString();
                 robotIOGroups[(int)RobotIOGroup.Type.DIO].robotIOFields.Add(
                     new RobotIOField(
                         name,
                         robotIOGroups[(int)RobotIOGroup.Type.DIO].GetPanel(),
-                        (Text label, InputField inputField) =>
+                        (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                if (j < OutputManager.NUM_DIO_HDRS)
+                                if (j < RoboRIOConstants.NUM_DIGITAL_HDRS)
                                 {
-                                    // label.text = ""; // TODO
-                                    inputField.text = OutputManager.Instance.DigitalHeaders[j].ToString();
-                                    inputField.interactable = false; // TODO
+                                    if (OutputManager.Instance.DigitalHeaders[j].Config == EmulationService.DIOData.Types.Config.Di) // TODO which manager should control this?
+                                    {
+                                        try
+                                        {
+                                            robotIOField.inputField.interactable = true;
+                                            robotIOField.label.text = j.ToString() + " (DI)";
+                                            InputManager.Instance.DigitalHeaders[j].Value = int.Parse(robotIOField.inputField.text) != 0;
+                                        }
+                                        catch (Exception)
+                                        {
+                                            if (!robotIOField.inputField.isFocused && robotIOField.inputField.text == "")
+                                            {
+                                                robotIOField.inputField.text = "0";
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        robotIOField.inputField.interactable = false;
+                                        robotIOField.label.text = j.ToString() + " (DO)";
+                                        robotIOField.inputField.text = OutputManager.Instance.DigitalHeaders[j].Value ? "1" : "0";
+                                    }
                                 }
                                 else
                                 {
-                                    // label.text = ""; // TODO
-                                    inputField.text = ((int)OutputManager.Instance.MxpData[j].Value).ToString(); // TODO
-                                    inputField.interactable = false; // TODO
+                                    int mxp_index = j - (int)RoboRIOConstants.NUM_DIGITAL_HDRS;
+                                    string new_label = "MXP " + mxp_index.ToString() + " ";
+                                    if (OutputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Di)
+                                    {
+                                        try
+                                        {
+                                            new_label += "(DI)";
+                                            robotIOField.inputField.interactable = true;
+                                            robotIOField.inputField.text = ((int)InputManager.Instance.MxpData[mxp_index].Value).ToString();
+                                        }
+                                        catch (Exception)
+                                        {
+                                            if (!robotIOField.inputField.isFocused && robotIOField.inputField.text == "")
+                                            {
+                                                robotIOField.inputField.text = "0";
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        robotIOField.inputField.interactable = false;
+                                        if (OutputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Do)
+                                        {
+                                            new_label += "(DO)";
+                                            robotIOField.inputField.text = ((int)OutputManager.Instance.MxpData[mxp_index].Value).ToString();
+                                            robotIOField.SetEnable(true);
+                                        }
+                                        else
+                                        {
+                                            robotIOField.inputField.text = "0";
+                                            robotIOField.SetEnable(false);
+                                        }
+                                    }
+                                    robotIOField.label.text = new_label;
                                 }
                             }
                             catch (Exception)
                             {
-                                inputField.text = "0";
+                                robotIOField.inputField.text = "0";
+                                if (j >= RoboRIOConstants.NUM_DIGITAL_HDRS)
+                                {
+                                    robotIOField.SetEnable(false);
+                                }
                             }
                         }
                     )
                 );
             }
-            for (int i = 0; i < InputManager.NUM_AI_HDRS + InputManager.NUM_AI_MXP; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP; i++)
             {
                 int j = i; // Create copy of iterator
                 robotIOGroups[(int)RobotIOGroup.Type.AI].robotIOFields.Add(
                     new RobotIOField(
                         j.ToString(),
                         robotIOGroups[(int)RobotIOGroup.Type.AI].GetPanel(),
-                        (Text label, InputField inputField) =>
+                        (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                inputField.text = "0";
-                                //inputField.text = InputManager.Instance.AnalogInputs[j].ToString(); // TODO
+                                InputManager.Instance.AnalogInputs[j] = float.Parse(robotIOField.inputField.text);
                             }
                             catch (Exception)
                             {
-                                inputField.text = "0";
+                                if (!robotIOField.inputField.isFocused && robotIOField.inputField.text == "")
+                                {
+                                    robotIOField.inputField.text = "0";
+                                }
                             }
-                            inputField.interactable = true;
+                            robotIOField.inputField.interactable = true;
                         }
                     )
                 );
             }
-            for (int i = 0; i < OutputManager.NUM_AO_MXP; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_AO_MXP; i++)
             {
                 int j = i; // Create copy of iterator
                 robotIOGroups[(int)RobotIOGroup.Type.AO].robotIOFields.Add(
                     new RobotIOField(
                         j.ToString(),
                         robotIOGroups[(int)RobotIOGroup.Type.AO].GetPanel(),
-                        (Text label, InputField inputField) =>
+                        (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                inputField.text = OutputManager.Instance.AnalogOutputs[j].ToString();
+                                robotIOField.inputField.text = OutputManager.Instance.AnalogOutputs[j].ToString();
                             }
                             catch (Exception)
                             {
-                                inputField.text = "0";
+                                robotIOField.inputField.text = "0";
                             }
-                            inputField.interactable = false;
+                            robotIOField.inputField.interactable = false;
                         }
                     )
                 );
@@ -331,6 +442,7 @@ namespace Synthesis.GUI
         public void Toggle()
         {
             mainPanel.SetActive(!mainPanel.activeSelf);
+            shouldBeActive = mainPanel.activeSelf;
         }
 
         /// <summary>
@@ -435,6 +547,7 @@ namespace Synthesis.GUI
             }
             printReader.Close();
             printReader = null;
+            EmulatorManager.CloseRobotOutputStream();
         }
 
         /// <summary>

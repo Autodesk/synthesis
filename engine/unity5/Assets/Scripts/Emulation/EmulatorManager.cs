@@ -42,6 +42,8 @@ namespace Synthesis
         private static System.Diagnostics.Process qemuProcess = null;
         private static bool updatingStatus = false;
 
+        private static SshCommand outputStreamCommand = null;
+
         private static SshClient Client
         {
             get
@@ -226,7 +228,8 @@ namespace Synthesis
                     if(UseEmulation && autorun)
                         await RestartRobotCode();
                 }
-                catch (Exception) {
+                catch (Exception e) {
+                    Debug.Log(e.ToString());
                     isUserProgramFree = true;
                 }
             });
@@ -264,11 +267,19 @@ namespace Synthesis
             });
         }
 
+        public static void CloseRobotOutputStream()
+        {
+            outputStreamCommand.Dispose();
+            outputStreamCommand = null;
+        }
+
         public static StreamReader CreateRobotOutputStream()
         {
-            var command = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
-            command.BeginExecute();
-            return new StreamReader(command.OutputStream);
+            if (outputStreamCommand == null) {
+                outputStreamCommand = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
+                outputStreamCommand.BeginExecute();
+            }
+            return new StreamReader(outputStreamCommand.OutputStream);
         }
 
         public static Task FetchLogFile()

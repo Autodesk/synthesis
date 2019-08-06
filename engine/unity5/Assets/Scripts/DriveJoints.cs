@@ -280,7 +280,7 @@ public class DriveJoints
 
         can_motor_controllers.Clear();
         foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
-            can_motor_controllers.Add(CAN.Id, CAN.Inverted ? -CAN.PercentOutput : CAN.PercentOutput);
+            can_motor_controllers.Add(CAN.Id, CAN.PercentOutput);
     }
 
     /// <summary>
