@@ -20,14 +20,14 @@ namespace InventorRobotExporter.GUI.Editors
 
             LoadValues();
 
-            buttonOK.Click += (sender, args) =>
+            okButton.Click += (sender, args) =>
             {
                 SaveValues();
                 Close();
                 values.SaveSettings();
             };
 
-            buttonCancel.Click += (sender, args) => Close();
+            cancelButton.Click += (sender, args) => Close();
         }
 
         /// <summary>
