@@ -26,6 +26,8 @@ namespace InventorRobotExporter.Managers
         // Robot export settings
         public bool RobotPreferMetric = false;
 
+        public bool hasGround = true;
+
         public RobotDataManager()
         {
             RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid); // TODO: Remove this and refactor BXDJReader versions

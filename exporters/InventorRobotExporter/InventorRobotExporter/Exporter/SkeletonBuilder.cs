@@ -38,6 +38,7 @@ namespace InventorRobotExporter.Exporter.Skeleton
             catch (NoGroundException)
             {
                 WinFormsUtils.ShowErrorDialog("Please ground a part in your assembly to export your robot.", "No Ground");
+                RobotExporterAddInServer.Instance.RobotDataManager.hasGround = false;
                 return null;
             }
 
