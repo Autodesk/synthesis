@@ -133,7 +133,7 @@ namespace InventorRobotExporter
                 AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
                 if (!jointEditorForm.HasJoints())
                 {
-                    var result = MessageBox.Show("No joints detected in the assembly! Add joints to your robot by using the \"Joint\" button under \"Assemble\" and restart the robot export environment to edit joints.\n\n" +
+                    var result = MessageBox.Show("No rotational or slider joints detected in the assembly! Add joints to your robot by using the \"Joint\" button under \"Assemble\" and restart the robot export environment to edit joints.\n\n" +
                                     "Would you like to view a video tutorial on adding joints to your assembly?", "No Joints Found", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
                     if (result.Equals(DialogResult.Yes))
                         System.Diagnostics.Process.Start("https://youtu.be/fY3Vdkh8L0Y");
