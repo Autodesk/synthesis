@@ -13,7 +13,6 @@ namespace InventorRobotExporter.GUI.Editors
         public DrivetrainWeightForm(RobotDataManager robotDataManager)
         {
             InitializeComponent();
-            AnalyticsUtils.LogPage("SetWeightForm");
             TotalWeightKg = robotDataManager.RobotWeightKg;
             PreferMetric = robotDataManager.RobotPreferMetric;
 

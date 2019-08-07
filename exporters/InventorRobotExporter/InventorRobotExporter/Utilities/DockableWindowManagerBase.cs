@@ -9,6 +9,8 @@ namespace InventorRobotExporter.Utilities
         private DockableWindow dockableWindow;
         private bool visible;
 
+        public event EventHandler Activated;
+
         public bool Visible
         {
             get => visible;
@@ -22,6 +24,7 @@ namespace InventorRobotExporter.Utilities
         private void SoftSetVisibility(bool value)
         {
             if (dockableWindow != null) dockableWindow.Visible = value;
+            if (value) Activated?.Invoke(this, EventArgs.Empty);
         }
 
         protected abstract DockableWindow CreateDockableWindow(UserInterfaceManager uiMan);
