@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using InventorRobotExporter.Managers;
+using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Editors
 {
@@ -17,7 +18,6 @@ namespace InventorRobotExporter.GUI.Editors
         public ExporterSettingsForm()
         {
             InitializeComponent();
-
             LoadValues();
 
             okButton.Click += (sender, args) =>

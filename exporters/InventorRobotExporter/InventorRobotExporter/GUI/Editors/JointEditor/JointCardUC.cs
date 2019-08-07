@@ -26,7 +26,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
             InitializeComponent();
             
-            AnalyticsUtils.LogEvent("Joint Editor", "System", "Init");
             WinFormsUtils.DisableScrollSelection(this);
 
             AddHighlightAction(this);
@@ -167,7 +166,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void HighlightSelf()
         {
-            AnalyticsUtils.LogEvent("Joint Editor", "System", "Highlight");
             if (isHighlighted)
             {
                 return;
@@ -277,6 +275,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         {
             if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
                 return;
+            AnalyticsUtils.LogPage("Optional Settings Editor");
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }

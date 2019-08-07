@@ -13,7 +13,7 @@ namespace InventorRobotExporter.GUI.Editors.JointSubEditors
         public JointSensorEditorForm(SkeletalJoint_Base passJoint, int sourceIndex = -1)
         {
             InitializeComponent();
-            AnalyticsUtils.LogPage("EditSensorForm");
+            AnalyticsUtils.LogPage("Advanced Sensor Editor");
             this.sourceIndex = sourceIndex;
             joint = passJoint;
             typeBox.Items.Clear();

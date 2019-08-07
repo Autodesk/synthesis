@@ -6,10 +6,6 @@ namespace InventorRobotExporter.GUI.Guide
 {
     public class GuideManager : DockableWindowManagerBase
     {
-        public GuideManager(bool startVisible)
-        {
-            Visible = startVisible;
-        }
 
         protected override DockableWindow CreateDockableWindow(UserInterfaceManager uiMan)
         {
