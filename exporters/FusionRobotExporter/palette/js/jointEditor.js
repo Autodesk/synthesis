@@ -171,9 +171,12 @@ function doLayout(fieldset)
     if (fieldset == null)
         return;
 
-    const jointType = getElByClass(fieldset, 'joint-type').value;
+    const jointTypeDiv = getElByClass(fieldset, 'joint-type');
+    const jointType = jointTypeDiv.value;
     const drivetrainDiv = getElByClass(fieldset, 'drivetrain-options');
     const mechanismDiv = getElByClass(fieldset, 'mechanism-options');
+
+    jointTypeDiv.style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
 
     if (jointType === "none") {
         setVisible(drivetrainDiv, false);
@@ -185,8 +188,6 @@ function doLayout(fieldset)
         setVisible(drivetrainDiv, false);
         setVisible(mechanismDiv, true);
     }
-    
-    getElByClass(fieldset, "joint-type").style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
 }
 
 // Outputs currently entered data as a JSON object

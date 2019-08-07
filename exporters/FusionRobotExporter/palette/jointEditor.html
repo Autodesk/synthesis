@@ -7,7 +7,6 @@
         <style>
             #joint-config-template
             {
-                display: none;
             }
             #basic-info
             {
@@ -55,6 +54,9 @@
                 padding: 10px;
                 background-color: rgb(242, 242, 242);
             }
+            .driver-div option {
+                background: white;
+            }
         </style>
     </head>
     <body>
@@ -70,7 +72,7 @@
                     <span class="field-label">Joint Type: </span>
                     <span class="field-select">
                         <select class="joint-type" onchange="doLayout(this)">
-                            <option value="none">(Select an Option)</option>
+                            <option value="none" style="background: rgb(255, 153, 0)">(Select an Option)</option>
                             <option value="drivetrain">Drivetrain Wheel</option>
                             <option value="mechanism">Mechanism Joint</option>
                         </select>
