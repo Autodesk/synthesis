@@ -24,7 +24,10 @@
                 Enter the weight of the drive base of the robot, not including the weight of jointed subsystems:
             </p>
             <div class="dt-weight-input"><input id="dt-weight-value" type="number" min="0" max="9999" value="100">
-                <select id="dt-weight-unit" onchange="document.getElementById('dt-weight-value').value *= this.value === 'kg' ? 1/0.453592 : 0.453592">
+                <select id="dt-weight-unit" onchange="
+                let weightInput = document.getElementById('dt-weight-value');
+                weightInput.value *= this.value === 'kg' ? 1/0.453592 : 0.453592;
+                weightInput.value = Math.round(weightInput.value * 100) / 100">
                     <option value="lbs" selected>Imperal (lbs)</option>
                     <option value="kg">Metric (kgs)</option>
                 </select>
