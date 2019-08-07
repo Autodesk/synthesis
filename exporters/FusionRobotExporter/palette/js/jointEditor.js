@@ -185,6 +185,8 @@ function doLayout(fieldset)
         setVisible(drivetrainDiv, false);
         setVisible(mechanismDiv, true);
     }
+    
+    getElByClass(fieldset, "joint-type").style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
 }
 
 // Outputs currently entered data as a JSON object
