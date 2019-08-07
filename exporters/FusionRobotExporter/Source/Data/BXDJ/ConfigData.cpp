@@ -290,7 +290,7 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		}
 	}
 
-	if (configJSON.HasMember("weight") && configJSON.IsNumber()) {
+	if (configJSON.HasMember("weight") && configJSON["weight"].IsNumber()) {
 		weight = configJSON["weight"].GetFloat();
 	}
 

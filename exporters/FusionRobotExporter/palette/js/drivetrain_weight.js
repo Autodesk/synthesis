@@ -50,6 +50,7 @@ function applyConfigData(dt_weight)
             dtWeight.value *= 0.453592;
         }
     }
+    dtWeight.value = Math.round(dtWeight.value * 100) / 100
 }
 
 // Outputs currently entered data as a JSON object
