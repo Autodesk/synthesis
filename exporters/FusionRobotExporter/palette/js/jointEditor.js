@@ -13,7 +13,11 @@ function highlightJoint(jointID)
 function editSensors(fieldset)
 {
     openFieldsetSensors = fieldset;
-    adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
+    const jointTypeComboBox = getElByClass(fieldset, 'joint-type');
+    if (jointTypeComboBox.value === "none") return;
+    const sensors = JSON.parse(fieldset.dataset.sensors);
+    sensors.isDrivetrain = jointTypeComboBox.value === "drivetrain";
+    adsk.fusionSendData('edit_sensors', JSON.stringify(sensors));
 }
 
 // Handles the receiving of data from Fusion
@@ -175,18 +179,23 @@ function doLayout(fieldset)
     const jointType = jointTypeDiv.value;
     const drivetrainDiv = getElByClass(fieldset, 'drivetrain-options');
     const mechanismDiv = getElByClass(fieldset, 'mechanism-options');
+    const advancedButton = getElByClass(fieldset, 'edit-sensors-button');
 
     jointTypeDiv.style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
 
     if (jointType === "none") {
         setVisible(drivetrainDiv, false);
         setVisible(mechanismDiv, false);
-    } else if (jointType === "drivetrain") {
-        setVisible(drivetrainDiv, true);
-        setVisible(mechanismDiv, false);
+        setVisible(advancedButton, false);
     } else {
-        setVisible(drivetrainDiv, false);
-        setVisible(mechanismDiv, true);
+        setVisible(advancedButton, true);
+        if (jointType === "drivetrain") {
+            setVisible(drivetrainDiv, true);
+            setVisible(mechanismDiv, false);
+        } else {
+            setVisible(drivetrainDiv, false);
+            setVisible(mechanismDiv, true);
+        }
     }
 }
 
