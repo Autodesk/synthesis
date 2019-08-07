@@ -125,7 +125,7 @@ namespace Synthesis.GUI
                 addPanel.SetActive(false);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
-                    AnalyticsLedger.EventAction.StartFeature,
+                    AnalyticsLedger.EventAction.Changed,
                     "Change Robot Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
             }
@@ -257,7 +257,7 @@ namespace Synthesis.GUI
                 changeFieldPanel.SetActive(true);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
-                    AnalyticsLedger.EventAction.StartFeature,
+                    AnalyticsLedger.EventAction.Changed,
                     "Change Field Panel",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
@@ -380,6 +380,10 @@ namespace Synthesis.GUI
             } else {
                 EndOtherProcesses();
                 pointImpulsePanel.SetActive(true);
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Impulse",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
         }
 

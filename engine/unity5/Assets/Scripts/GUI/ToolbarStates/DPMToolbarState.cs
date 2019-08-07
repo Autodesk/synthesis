@@ -231,6 +231,11 @@ namespace Assets.Scripts.GUI
             //Destory all clones
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
                 GameObject.Destroy(o);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Clear Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public override void ToggleHidden()

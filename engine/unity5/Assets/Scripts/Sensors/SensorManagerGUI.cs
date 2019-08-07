@@ -739,14 +739,14 @@ namespace Synthesis.Sensors
             ShiftOutputPanels();
             currentSensor = null;
 
-            EndProcesses();
-            tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
-                sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
-
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Removed,
                 "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
+
+            EndProcesses();
+            tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
+                sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
         }
 
         /// <summary>

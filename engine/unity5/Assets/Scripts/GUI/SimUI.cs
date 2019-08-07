@@ -276,7 +276,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Tab",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
@@ -293,7 +293,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Tab",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.DPMTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
@@ -314,7 +314,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoringTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Tab",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ScoringTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
@@ -335,7 +335,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Tab",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.SensorTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
@@ -352,7 +352,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Tab",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.EmulationTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
@@ -1021,8 +1021,8 @@ namespace Synthesis.GUI
                 case "exit":
                     LogTabTiming();
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
-                        AnalyticsLedger.EventAction.Clicked,
-                        "",
+                        AnalyticsLedger.EventAction.Exit,
+                        "Exit",
                         AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
 
                     if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
@@ -1035,8 +1035,8 @@ namespace Synthesis.GUI
             // log any timing events and log that the button was clicked
             
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+                AnalyticsLedger.EventAction.Exit,
+                "Exit",
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
