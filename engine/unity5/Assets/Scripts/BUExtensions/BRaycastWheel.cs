@@ -24,7 +24,7 @@ namespace Synthesis.BUExtensions
         private const float MaxAngularSpeed = 40f;
         private const float RollingFriction = 0.01f;
 
-        public const float MassTorqueScalar = 0.05f;
+        public float MassTorqueScalar = 0.1f;
 
         /// <summary>
         /// Sets or gets the radius of the wheel.
