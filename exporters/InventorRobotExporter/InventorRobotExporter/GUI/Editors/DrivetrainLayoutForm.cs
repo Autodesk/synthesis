@@ -59,9 +59,15 @@ namespace InventorRobotExporter.GUI.Editors
                 value.BackColor = SelectedColor;
             }
         }
-        private void BtnOk_Click(object sender, EventArgs e)
+        private void OkButton_Click(object sender, EventArgs e)
         {
             robotDataManager.RobotBaseNode.driveTrainType = driveTrainType;
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
             Close();
         }
     }

@@ -31,10 +31,27 @@ echo "Copying Program Files..."
 sudo rsync -a --info=progress2 Synthesis $ROOT/usr/share/Autodesk
 draw_progress_bar 60
 sudo rsync -a --info=progress2 synthesis.png $ROOT/usr/share/pixmaps
-draw_progress_bar 70
+draw_progress_bar 65
 sudo rsync -a --info=progress2 Synthesis.desktop $ROOT/usr/share/applications
-draw_progress_bar 80
+draw_progress_bar 70
+sudo rsync -a --info=progress2 SynthesisUninstaller.sh $HOME/.config/Autodesk/Synthesis
+chmod +x $HOME/.config/Autodesk/Synthesis/SynthesisUninstaller.sh
+draw_progress_bar 75
 sudo chmod +x $ROOT/usr/share/Autodesk/Synthesis/Synthesis.x86_64
-block_progress_bar 85
+block_progress_bar 80
+
+read -r -p "Would you like to install the Code Emulator as well? [ Y / N ] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+then
+	echo "Downloading Docker Shell Installer..."
+	curl -fsSL https://get.docker.com -o get-docker.sh
+	draw_progress_bar 90
+	echo "Installing Docker For Linux..."
+	sudo sh get-docker.sh
+	draw_progress_bar 95
+	docker run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel
+fi
+
+draw_progress_bar 100
 destroy_scroll_area
 echo "Autodesk Synthesis $VERSION For Linux Installation Complete"
