@@ -101,6 +101,13 @@ public class SettingsState : State {
         }
     }
 
+    public override void LateUpdate() {
+        resolutionT.text = selectedResolution;
+        screenT.text = scrDD.options[selectedScreenMode].text;
+        qualityT.text = QualitySettings.names[selectedQuality];
+        analyticsT.text = collect == 1 ? "Yes" : "No";
+    }
+
     public void OnToggleAnalyticsClicked()
     {
         collect = collect == 1 ? 0 : 1;
