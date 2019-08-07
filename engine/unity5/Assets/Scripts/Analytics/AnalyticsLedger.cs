@@ -64,13 +64,14 @@ public class AnalyticsLedger
             TutorialRequest = "Requested Tutorial",
             BackedOut = "Back",
             Next = "Next",
-            Clicked = "Clicked Button",
+            Clicked = "Clicked",
             Added = "Added",
             Removed = "Removed",
             Edited = "Edited",
             Toggled = "Toggled",
             Viewed = "Viewed",
             Load = "Load",
+            Exit = "Exit",
             Changed = "Changed";
     }
 
