@@ -103,7 +103,7 @@ namespace InventorRobotExporter.GUI.Editors.JointSubEditors
             }
         }
 
-        private void btnOkay_Click(object sender, EventArgs e)
+        private void okButton_Click(object sender, EventArgs e)
         {
             CheckInputs();
             if (!(((InventorSkeletalJoint)joint).GetWrapped().asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
@@ -188,7 +188,7 @@ namespace InventorRobotExporter.GUI.Editors.JointSubEditors
             }
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void cancelButton_Click(object sender, EventArgs e)
         {
             Close();
         }
