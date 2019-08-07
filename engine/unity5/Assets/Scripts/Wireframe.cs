@@ -6,7 +6,7 @@ public class Wireframe : MonoBehaviour
 {
 
     public bool render_mesh_normaly = true;
-    public bool render_lines_1st = true;
+    public bool render_lines_1st = false;
     public bool render_lines_2nd = false;
     public bool render_lines_3rd = false;
     public Color lineColor = new Color(0.0f, 1.0f, 1.0f);
@@ -14,7 +14,7 @@ public class Wireframe : MonoBehaviour
     public bool ZWrite = true;
     public bool AWrite = true;
     public bool blend = true;
-    public float lineWidth = 3;
+    public float lineWidth = 4;
     public int size = 0;
 
     private Vector3[] lines;
@@ -90,7 +90,15 @@ public class Wireframe : MonoBehaviour
 
     void OnRenderObject()
     {
-       // gameObject.renderer.enabled = render_mesh_normaly;
+        // gameObject.renderer.enabled = render_mesh_normaly;
+        if (Input.GetKey(KeyCode.P))
+        {
+            render_lines_1st = true;
+        }
+        if (Input.GetKey(KeyCode.O))
+        {
+            render_lines_1st = false;
+        }
         if (lines == null || lines.Length < lineWidth)
         {
             print("No lines");
