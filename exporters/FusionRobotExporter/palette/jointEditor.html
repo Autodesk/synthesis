@@ -49,6 +49,12 @@
             .drivetrain-options, .mechanism-options {
                 display: none;
             }
+            .control-panel-container {
+                position: sticky;
+                bottom: 0;
+                padding: 10px;
+                background-color: rgb(242, 242, 242);
+            }
         </style>
     </head>
     <body>
@@ -108,8 +114,10 @@
                 </div>
             </fieldset>
         </div>
-        <button id='save-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
-        <button type="button" onclick="cancel()">Cancel</button>
+        <div class="control-panel-container">
+            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
+            <button type="button" onclick="cancel()">Cancel</button>
+        </div>
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
         </script>
