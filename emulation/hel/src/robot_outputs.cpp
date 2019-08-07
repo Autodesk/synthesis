@@ -52,8 +52,9 @@ EmulationService::RobotOutputs RobotOutputs::syncShallow() {
 	}
 	for (auto i = 0u; i < digital_mxp.size(); i++) {
 		switch (digital_mxp[i].config) {
-			case MXPData::Config::PWM:
+			case MXPData::Config::DI:
 			case MXPData::Config::DO:
+			case MXPData::Config::PWM:
 				{
 					EmulationService::MXPData mxp;
 					while(i >= (unsigned)output.mxp_data_size()){
@@ -92,8 +93,7 @@ void RobotOutputs::updateShallow() {
 	RoboRIO roborio = RoboRIOManager::getCopy();
 
 	for (unsigned i = 0; i < pwm_hdrs.size(); i++) {
-		pwm_hdrs[i] =
-			PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
+		pwm_hdrs[i] = PWMSystem::getPercentOutput(roborio.pwm_system.getHdrPulseWidth(i));
 	}
 
 	for (unsigned i = 0; i < digital_mxp.size(); i++) {
@@ -107,13 +107,10 @@ void RobotOutputs::updateShallow() {
 				break;
 			case MXPData::Config::PWM: {
 				int remapped_i = i;
-				if (remapped_i >=
-					4) {  // digital ports 0-3 line up with mxp pwm ports 0-3,
-						  // the rest are offset by 4
+				if (remapped_i >= 4) {  // digital ports 0-3 line up with mxp pwm ports 0-3, the rest are offset by 4
 					remapped_i -= 4;
 				}
-				digital_mxp[i].value = PWMSystem::getPercentOutput(
-					roborio.pwm_system.getMXPPulseWidth(remapped_i));
+				digital_mxp[i].value = PWMSystem::getPercentOutput(roborio.pwm_system.getMXPPulseWidth(remapped_i));
 				break;
 			}
 			case MXPData::Config::SPI:
