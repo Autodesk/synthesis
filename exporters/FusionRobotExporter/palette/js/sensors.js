@@ -57,7 +57,8 @@ function loadData(data)
     port.value = data.portOne;
     gear.value = data.gear;
     
-    setVisible(document.getElementById('port-fieldset'), port.value > 2);
+    setVisible(document.getElementById('port-fieldset'), !data.isDrivetrain);
+    if (!data.isDrivetrain && port.value < 3) port.value = 3; 
 
     // Delete all existing slots
     var existing = document.getElementsByClassName('sensor-config');
