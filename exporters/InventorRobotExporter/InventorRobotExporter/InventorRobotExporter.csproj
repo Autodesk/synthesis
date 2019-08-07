@@ -230,6 +230,12 @@
     <Compile Include="GUI\Messages\ExportSuccessful.Designer.cs">
       <DependentUpon>ExportSuccessful.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Messages\UnsupportedComponents.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Messages\UnsupportedComponents.Designer.cs">
+      <DependentUpon>UnsupportedComponents.cs</DependentUpon>
+    </Compile>
     <Compile Include="Managers\AddInSettingsManager.cs" />
     <Compile Include="Managers\HighlightManager.cs" />
     <Compile Include="Managers\RobotDataManager.cs" />
@@ -364,6 +370,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Messages\UnsupportedComponents.resx">
+      <DependentUpon>UnsupportedComponents.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

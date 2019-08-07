@@ -250,9 +250,10 @@ namespace InventorRobotExporter
 
                 if (exportResult == DialogResult.Yes)
                 {
-                    if (ExportForm.PromptExportSettings(RobotDataManager))
-                        if (RobotDataManager.ExportRobot())
-                            SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
+                    RobotDataManager.VerifyJoints();
+                        if (ExportForm.PromptExportSettings(RobotDataManager))
+                            if (RobotDataManager.ExportRobot())
+                                SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
                 }
             }
 
