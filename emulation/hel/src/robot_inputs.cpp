@@ -155,10 +155,14 @@ void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	}
 
 	for (size_t i = 0; i < std::min(this->digital_mxp.size(), (size_t) req.mxp_data_size()); i++) {
-		auto mxp = &this->digital_mxp[i];
 		auto mxp_data = req.mxp_data(i);
-		mxp->config = static_cast<MXPData::Config>(mxp_data.config());
-		mxp->value = mxp_data.value();
+		digital_mxp[i].value = mxp_data.value();
+		// Don't sync MXP config, let robot code handle that
 	}
+
+	for (unsigned i = 0; i < digital_mxp.size(); i++) {
+		digital_mxp[i].config = instance.first->digital_system.getMXPConfig(i);
+	}
+	instance.second.unlock();
 }
 }  // namespace hel

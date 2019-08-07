@@ -37,18 +37,18 @@ message MXPData {
 
 message RobotOutputs {
     enum RelayState {
-        FORWARD            = 0;
+        OFF                = 0;
 		REVERSE            = 1;
-        OFF                = 2;
+        FORWARD            = 2;
         INVALID_STATE      = 3;
     }
     enum CANType {
         TALON_SRX           = 0;
         VICTOR_SPX          = 1;
         SPARK_MAX           = 2;
-        UNKNOWN             = 3;
-        PCM                 = 4;
-        PDP                 = 5;
+        PCM                 = 3;
+        PDP                 = 4;
+        UNKNOWN             = 5;
         INVALID_CAN_TYPE    = 6;
     }
 
@@ -129,9 +129,9 @@ message RobotInputs {
             AI = 1;
         }
         enum EncoderType {
-            FPGA_ENCODER = 0;
-            COUNTER      = 1;
-            INVALID      = 2;
+            INVALID      = 0;
+            FPGA_ENCODER = 1;
+            COUNTER      = 2;
         }
 
         EncoderType type = 1;
