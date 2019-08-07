@@ -21,9 +21,9 @@ public class SettingsState : State {
     private List<string> resolutions;
     private List<string> screens;
 
-    private int selectedScreenMode;
-    private int selectedQuality;
-    private string selectedResolution;
+    private int selectedScreenMode = 0;
+    private int selectedQuality = 0;
+    private string selectedResolution = "0x0";
 
     public override void Start()
     {
@@ -81,8 +81,8 @@ public class SettingsState : State {
         (new List<string>(QualitySettings.names)).ForEach((x) => qualOps.Add(new Dropdown.OptionData(x)));
         qualDD.options = qualOps;
 
-        selectedScreenMode = Screen.fullScreenMode.GetHashCode();
-        selectedResolution = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
+        selectedScreenMode = Screen.fullScreen ? 1 : 0;
+        selectedResolution = PlayerPrefs.GetString("resolution", Screen.currentResolution.width + "x" + Screen.currentResolution.height);
         selectedQuality = QualitySettings.GetQualityLevel();
         collect = PlayerPrefs.GetInt("gatherData", 1);
 
