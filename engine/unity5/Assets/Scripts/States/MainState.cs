@@ -101,7 +101,7 @@ namespace Synthesis.States
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
 
-            string CurrentVersion = "4.2.3";
+            string CurrentVersion = "4.3.0";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection()) {
