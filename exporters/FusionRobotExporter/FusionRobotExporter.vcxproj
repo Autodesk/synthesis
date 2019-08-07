@@ -185,6 +185,7 @@
     <None Include="palette\sensors.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="palette\guide.html" />
     <Content Include="palette\js\drivetrain_type.js" />
     <Content Include="palette\js\settings.js" />
   </ItemGroup>
