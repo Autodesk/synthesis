@@ -40,9 +40,10 @@
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(452, 289);
+            this.okButton.Location = new System.Drawing.Point(603, 356);
+            this.okButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.Size = new System.Drawing.Size(100, 28);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -50,9 +51,10 @@
             // description
             // 
             this.description.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.description.Location = new System.Drawing.Point(12, 9);
+            this.description.Location = new System.Drawing.Point(16, 11);
+            this.description.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(423, 32);
+            this.description.Size = new System.Drawing.Size(564, 39);
             this.description.TabIndex = 1;
             this.description.Text = "Your robot currently has unsupported components.  You may still export your robot" +
     ", but the following details will not be accounted for in Synthesis:";
@@ -63,10 +65,11 @@
             this.componentName,
             this.componentCategory,
             this.componentType});
-            this.componentListView.Location = new System.Drawing.Point(15, 44);
+            this.componentListView.Location = new System.Drawing.Point(20, 54);
+            this.componentListView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.componentListView.MultiSelect = false;
             this.componentListView.Name = "componentListView";
-            this.componentListView.Size = new System.Drawing.Size(420, 97);
+            this.componentListView.Size = new System.Drawing.Size(559, 118);
             this.componentListView.TabIndex = 2;
             this.componentListView.UseCompatibleStateImageBehavior = false;
             this.componentListView.View = System.Windows.Forms.View.Details;
@@ -89,9 +92,11 @@
             // 
             // continueButton
             // 
-            this.continueButton.Location = new System.Drawing.Point(186, 147);
+            this.continueButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.continueButton.Location = new System.Drawing.Point(228, 181);
+            this.continueButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.continueButton.Name = "continueButton";
-            this.continueButton.Size = new System.Drawing.Size(75, 23);
+            this.continueButton.Size = new System.Drawing.Size(146, 28);
             this.continueButton.TabIndex = 3;
             this.continueButton.Text = "Continue";
             this.continueButton.UseVisualStyleBackColor = true;
@@ -99,19 +104,18 @@
             // 
             // UnsupportedComponents
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(447, 178);
+            this.ClientSize = new System.Drawing.Size(600, 215);
             this.Controls.Add(this.continueButton);
             this.Controls.Add(this.componentListView);
             this.Controls.Add(this.description);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(463, 217);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(463, 217);
             this.Name = "UnsupportedComponents";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Unsupported Components";
