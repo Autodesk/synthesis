@@ -74,16 +74,16 @@ void EUI::prepareAllPalettes()
 	createJointEditorPalette();
 	createSensorsPalette();
 	// createKeyPalette();
-	createGuidePalette();
 	createSettingsPalette();
 	createFinishPalette();
 	createProgressPalette();
+	createGuidePalette();
 }
 
 void EUI::closeAllPalettes()
 {
-	closeDriveTypePalette("");
-	closeDriveWeightPalette("");
+	closeDriveTypePalette();
+	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
 	closeGuidePalette();
@@ -91,16 +91,40 @@ void EUI::closeAllPalettes()
 	cancelExportRobot();
 }
 
-void EUI::hideAllPalettes()
+void EUI::closeEditorPalettes()
 {
-	driveTypePalette->isVisible(false);
-	driveWeightPalette->isVisible(false);
-	jointEditorPalette->isVisible(false);
-	sensorsPalette->isVisible(false);
-	guidePalette->isVisible(false);
-	// keyPalette->isVisible(false);
-	settingsPalette->isVisible(false);
-	finishPalette->isVisible(false);
+	closeDriveTypePalette();
+	closeDriveWeightPalette();
+	closeJointEditorPalette();
+	closeSensorsPalette();
+	// closeGuidePalette();
+	//closeKeyPalette();
+	closeSettingsPalette("");
+	closeFinishPalette();
+}
+
+void EUI::disableEditorButtons()
+{
+	driveTrainTypeButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	driveTrainWeightButton->controlDefinition()->isEnabled(false);
+	editJointsButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// editDOFButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// keyDOFButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	// robotExportGuideButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+	settingsButton->controlDefinition()->isEnabled(false);
+	finishButton->controlDefinition()->isEnabled(false); ///< Export robot button.
+}
+
+void EUI::enableEditorButtons()
+{
+	driveTrainTypeButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	driveTrainWeightButton->controlDefinition()->isEnabled(true);
+	editJointsButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// editDOFButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// keyDOFButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	// robotExportGuideButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+	settingsButton->controlDefinition()->isEnabled(true);
+	finishButton->controlDefinition()->isEnabled(true); ///< Export robot button.
 }
 
 // Drivetrain Weight Palette
@@ -114,7 +138,7 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/dt_weight.html", false, true, true, 300, 150);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 150);
 		if (!driveWeightPalette)
 			return false;
 
@@ -146,6 +170,8 @@ void EUI::deleteDriveWeightPalette() {
 }
 
 void EUI::openDriveWeightPalette() {
+	closeEditorPalettes();
+	disableEditorButtons();
 	driveTrainWeightButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
@@ -160,18 +186,9 @@ void EUI::openDriveWeightPalette() {
 	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
 }
 
-void EUI::closeDriveWeightPalette(std::string weightData) {
+void EUI::closeDriveWeightPalette() {
 	driveWeightPalette->isVisible(false);
-	driveTrainWeightButton->controlDefinition()->isEnabled(true);
-
-	if (weightData.length() > 0)
-	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		//Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string weightData) { driveWeightPalette->sendInfoToHTML("dt_weight", weightData); }, weightData);
-	}
+	enableEditorButtons();
 }
 
 // Export Palette
@@ -186,7 +203,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, true, true, 450, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -220,12 +237,8 @@ void EUI::deleteJointEditorPalette()
 
 void EUI::openJointEditorPalette()
 {
-	hideAllPalettes();
-	editJointsButton->controlDefinition()->isEnabled(false);
-	driveTrainTypeButton->controlDefinition()->isEnabled(true);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	
-
+	closeEditorPalettes();
+	disableEditorButtons();
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
@@ -257,12 +270,9 @@ void EUI::openJointEditorPalette()
 
 void EUI::closeJointEditorPalette()
 {
+	enableEditorButtons();
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
-	editJointsButton->controlDefinition()->isEnabled(true);
-	robotExportGuideButton->controlDefinition()->isEnabled(true);
-	finishButton->controlDefinition()->isEnabled(true);
-	
 }
 
 // Guide Palette
@@ -407,7 +417,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, true, true, 300, 200);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, true, 300, 200);
 		if (!finishPalette)
 			return false;
 
@@ -441,6 +451,8 @@ void EUI::deleteFinishPalette()
 
 void EUI::openFinishPalette()
 {
+	closeEditorPalettes();
+	disableEditorButtons();
 	finishButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
@@ -474,7 +486,7 @@ void EUI::openFinishPalette()
 
 void EUI::closeFinishPalette()
 {
-	finishButton->controlDefinition()->isEnabled(true);
+	enableEditorButtons();
 	finishPalette->isVisible(false);
 }
 
@@ -491,7 +503,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, true, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, false, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
@@ -560,7 +572,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain.html", false, true, false, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain_type.html", false, false, false, 350, 200);
 		if (!driveTypePalette)
 			return false;
 
@@ -593,40 +605,28 @@ void EUI::deleteDriveTypePalette() {
 }
 
 void EUI::openDriveTypePalette() {
-	
+	closeEditorPalettes();
+	disableEditorButtons();
 	driveTrainTypeButton->controlDefinition()->isEnabled(false);
 
 	// In some cases, sending info to the HTML of a palette on the same thread causes issues
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
-	uiThread = new std::thread([this](std::string configJSON)
-		{
-			driveTypePalette->sendInfoToHTML("state", configJSON);
-			driveTypePalette->isVisible(true);
-			driveTypePalette->sendInfoToHTML("state", configJSON);
-		}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // Load joint config and update with current joints in document
+	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
+	{
+		driveTypePalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
+		driveTypePalette->isVisible(true);
+		driveTypePalette->sendInfoToHTML("joints", configJSON);
+	}, config.toJSONString());
 }
 
-void EUI::closeDriveTypePalette(std::string driveTypeData) {
-
+void EUI::closeDriveTypePalette() {
+	enableEditorButtons();
 	driveTrainTypeButton->controlDefinition()->isEnabled(true);
 	driveTypePalette->isVisible(false);
-
-	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
-	config.setDriveType(driveTypeData);
-	Exporter::saveConfiguration(config, app->activeDocument());
-
-	if (driveTypeData.length() > 0)
-	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string driveTypeData) { driveTypePalette->sendInfoToHTML("drivetrain_type", driveTypeData); }, driveTypeData);
-	}
 }
-
 // Progress Palette
 
 bool EUI::createProgressPalette()
@@ -672,6 +672,8 @@ void EUI::openProgressPalette()
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
+	closeFinishPalette();
+
 	uiThread = new std::thread([this]()
 	{
 		progressPalette->sendInfoToHTML("progress", "0");
@@ -698,7 +700,7 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, true, true, 350, 200);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, true, 350, 200);
 		if (!settingsPalette)
 			return false;
 
@@ -732,6 +734,8 @@ void EUI::deleteSettingsPalette() {
 
 void EUI::openSettingsPalette(bool nan)
 {
+	closeEditorPalettes();
+	disableEditorButtons();
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
@@ -746,19 +750,15 @@ void EUI::openSettingsPalette(bool nan)
 }
 
 void EUI::closeSettingsPalette(std::string guideEnabled) {
-
-	settingsButton->controlDefinition()->isEnabled(true);
+	enableEditorButtons();
 	settingsPalette->isVisible(false);
 
-	(guideEnabled == "true") ? openGuidePalette() : closeGuidePalette();
-
-	if (guideEnabled.length() > 0)
+	if (guideEnabled == "true") // TODO: This is lazy, use JSON
 	{
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		// Pass the weight value to the export palette as it store all the export data.
-		uiThread = new std::thread([this](std::string isGuideEnabled) { settingsPalette->sendInfoToHTML("settings_guide", isGuideEnabled); }, guideEnabled);
+		openGuidePalette();
+	} else if (guideEnabled == "false")
+	{
+		closeGuidePalette();
 	}
 }
 

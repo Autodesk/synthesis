@@ -220,13 +220,12 @@ void EUI::saveConfiguration(std::string jsonConfig)
 
 }
 
-void EUI::startExportRobot(std::string jsonData, bool openSynthesis)
+void EUI::startExportRobot(bool openSynthesis)
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 
-	BXDJ::ConfigData config;
-	config.fromJSONString(jsonData);
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 
 	//Check if file already exists
 	std::string filePath = Filesystem::getCurrentRobotDirectory(config.robotName);
