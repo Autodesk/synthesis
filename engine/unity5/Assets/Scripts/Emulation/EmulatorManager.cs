@@ -24,6 +24,7 @@ namespace Synthesis
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
         private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &>/dev/null";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
+        private const string CLEAR_LOG_COMMAND = "cat /dev/null > " + REMOTE_LOG_NAME;
 
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
@@ -272,12 +273,13 @@ namespace Synthesis
                 if (isRunningRobotCode)
                 {
                     isTryingToRunRobotCode = false; // To reset the gRPC connection
+                    isRunningRobotCode = false;
                     Client.RunCommand(STOP_COMMAND);
                 }
                 isTryingToRunRobotCode = true;
-                isRunningRobotCode = true;
                 EmulatorNetworkConnection.Instance.OpenConnection();
                 Client.RunCommand(START_COMMAND);
+                isRunningRobotCode = true;
                 isUserProgramFree = true;
             });
         }
@@ -285,6 +287,14 @@ namespace Synthesis
         public static bool IsRobotOutputStreamGood()
         {
             return outputStreamCommand != null && !outputStreamCommandResult.IsCompleted;
+        }
+
+        public static Task ClearRobotOutputLog()
+        {
+            return Task.Run(() =>
+            {
+                Client.RunCommand(CLEAR_LOG_COMMAND);
+            });
         }
 
         public static void CloseRobotOutputStream()

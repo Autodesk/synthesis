@@ -180,14 +180,33 @@ namespace Synthesis.GUI
         /// Manager class for the robot prints panel
         /// Receives data and adds it to the UI
         /// </summary>
-        public class RobotPrintManager
+        public static class RobotPrintManager
         {
             private const float HEIGHT_REF = 160;
-            private static int FontSize;
+            private static float scrollHeight = 0;
+            private static int FontSize = 0;
 
-            private static string lineBuffer;
+            private const int MIN_LINE_BUFFER_LEN = 30; // characters
+            private static System.Diagnostics.Stopwatch timeoutTimer = new System.Diagnostics.Stopwatch();
+            private const long TIMEOUT = 100; // ms
+
+            private const int RENDER_LIMIT = 200; // Number of prints to keep. Large numbers cause lag before Unity crashes.
+            private static Queue<Text> renderedPrints = new Queue<Text>();
+
+            private static RectTransform scrollView = null;
+            private static RectTransform scrollContent = null;
+            private static ScrollRect scrollRect = null;
+
             private static StreamReader remoteReader = null;
-            private static Queue<Optional<string>> lineQueue = new Queue<Optional<string>>();
+            private static string newPrintBuffer = "";
+            private static Queue<string> newPrintQueue = new Queue<string>();
+
+            public static void Init()
+            {
+                scrollView = RobotIOPanel.Instance.robotPrintScrollContent.GetComponent<RectTransform>();
+                scrollContent = RobotIOPanel.Instance.robotPrintTextContainer.GetComponent<RectTransform>();
+                scrollRect = RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<ScrollRect>();
+            }
 
             /// <summary>
             /// Empty stream buffer into UI
@@ -198,25 +217,37 @@ namespace Synthesis.GUI
                 {
                     Task.Run(OpenPrintStream);
                 }
-                while (lineQueue.Count > 0) {
-                    var line = lineQueue.Dequeue();
-                    if (line.IsValid())
-                    {
-                        Text newPrint = Instantiate(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>(), RobotIOPanel.Instance.robotPrintTextContainer.transform); // Add buffer to console
-                        newPrint.text = line.Get();
-                        newPrint.fontSize = FontSize;
-
-                        RectTransform rect = RobotIOPanel.Instance.robotPrintScrollContent.GetComponent<RectTransform>(); // Resize scroll area
-                        rect.sizeDelta = new Vector2(rect.sizeDelta.x, RobotIOPanel.Instance.robotPrintTextContainer.GetComponent<RectTransform>().sizeDelta.y);
-
-                        if (RobotIOPanel.Instance.autoScroll)
-                        {
-                            RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<ScrollRect>().verticalNormalizedPosition = 0; // Scroll to bottom
-                        }
-
-                        Canvas.ForceUpdateCanvases();
-                    }
+                while (newPrintQueue.Count > 0)
+                {
+                    AddLine(newPrintQueue.Dequeue());
                 }
+            }
+
+            public static void ScrollToBottom()
+            {
+                scrollRect.verticalNormalizedPosition = 0;
+            }
+
+            public static void AddLine(string line)
+            {
+                var newPrint = Instantiate(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>(), RobotIOPanel.Instance.robotPrintTextContainer.transform);
+                newPrint.fontSize = FontSize;
+                newPrint.text = line;
+                renderedPrints.Enqueue(newPrint);
+                if (renderedPrints.Count > RENDER_LIMIT)
+                {
+                    Destroy(renderedPrints.Dequeue().gameObject);
+                }
+                timeoutTimer.Restart();
+
+                scrollView.sizeDelta = new Vector2(scrollView.sizeDelta.x, scrollContent.sizeDelta.y); // Resize scroll area
+
+                if (RobotIOPanel.Instance.autoScroll)
+                {
+                    ScrollToBottom();
+                }
+
+                Canvas.ForceUpdateCanvases();
             }
 
             /// <summary>
@@ -225,15 +256,20 @@ namespace Synthesis.GUI
             /// <param name="forceUpdate"></param>
             public static void Resize(bool forceUpdate = false)
             {
-                var lastSize = FontSize;
-                FontSize = (int)(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>().fontSize *
-                    RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight / HEIGHT_REF); // Width isn't as important as height for these
-                if (lastSize != FontSize || forceUpdate)
+                var lastHeight = scrollHeight;
+                scrollHeight = RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<RectTransform>().sizeDelta.y;
+                if (Math.Abs(lastHeight - scrollHeight) > EPSILON || forceUpdate)
                 {
-                    for (int i = 0; i < RobotIOPanel.Instance.robotPrintTextContainer.transform.childCount; i++)
+                    var lastSize = FontSize;
+                    FontSize = (int)Math.Ceiling(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>().fontSize *
+                        scrollHeight / HEIGHT_REF); // Width isn't as important as height for these
+                    if (lastSize != FontSize || forceUpdate)
                     {
-                        var print = RobotIOPanel.Instance.robotPrintTextContainer.transform.GetChild(i);
-                        print.GetComponent<Text>().fontSize = FontSize;
+                        for (int i = 0; i < RobotIOPanel.Instance.robotPrintTextContainer.transform.childCount; i++)
+                        {
+                            var print = RobotIOPanel.Instance.robotPrintTextContainer.transform.GetChild(i);
+                            print.GetComponent<Text>().fontSize = FontSize;
+                        }
                     }
                 }
             }
@@ -251,17 +287,19 @@ namespace Synthesis.GUI
                 {
                     try
                     {
-                        var c = remoteReader.Read();
-                        if (c >= 0)
+                        var r = remoteReader.Read();
+                        if (r >= 0)
                         {
-                            if ((char)c == '\n')
+                            char c = (char)r;
+                            if (c == '\n' && (newPrintBuffer.Length > MIN_LINE_BUFFER_LEN || timeoutTimer.ElapsedMilliseconds > TIMEOUT)) // Concatenate multiple short prints if in quick enough succession
                             {
-                                lineQueue.Enqueue(new Optional<string>(lineBuffer));
-                                lineBuffer = "";
+                                timeoutTimer.Restart();
+                                newPrintQueue.Enqueue(newPrintBuffer);
+                                newPrintBuffer = "";
                             }
                             else
                             {
-                                lineBuffer += (char)c;
+                                newPrintBuffer += c;
                             }
                         }
                     }
@@ -274,6 +312,13 @@ namespace Synthesis.GUI
                 remoteReader.Close();
                 remoteReader = null;
                 EmulatorManager.CloseRobotOutputStream();
+            }
+
+            public static void Clear()
+            {
+                renderedPrints.Clear();
+                foreach (Transform child in RobotIOPanel.Instance.robotPrintTextContainer.transform)
+                    Destroy(child.gameObject);
             }
         }
 
@@ -296,7 +341,6 @@ namespace Synthesis.GUI
         // Mini Camera
         private GameObject miniCameraView;
         private UnityEngine.Camera miniCamera = null;
-        private float lastSetAspect = 0;
         private Rect lastSetPixelRect;
 
         // Robot Print-Outs
@@ -310,9 +354,9 @@ namespace Synthesis.GUI
         private Image autoScrollButtonImage;
         public Sprite SelectedButtonImage;
         public Sprite UnselectedButtonImage;
-        public bool enablePrints = false;
+        private bool autoScroll = true;
+        public bool enablePrints = true;
 
-        private bool autoScroll;
 
         public void Awake()
         {
@@ -333,10 +377,9 @@ namespace Synthesis.GUI
             robotPrintTextContainer = Auxiliary.FindObject(robotPrintScrollContent, "PrintContainer");
             robotPrintFooter = Auxiliary.FindObject(robotPrintPanel, "RobotPrintFooter");
             autoScrollButtonImage = Auxiliary.FindObject(robotPrintFooter, "RobotPrintAutoScrollButton").GetComponent<Image>();
-
-            autoScroll = true;
             autoScrollButtonImage.sprite = SelectedButtonImage;
 
+            RobotPrintManager.Init();
             Populate();
         }
 
@@ -382,12 +425,9 @@ namespace Synthesis.GUI
 
                 DynamicCamera.ControlEnabled = false;
             }
-            else
+            else if (lastActive)
             {
-                if (lastActive)
-                {
-                    DynamicCamera.ControlEnabled = true;
-                }
+                DynamicCamera.ControlEnabled = true;
             }
             if (enablePrints && EmulatorManager.IsVMConnected()) // Update robot prints
             {
@@ -417,7 +457,7 @@ namespace Synthesis.GUI
         /// <param name="forceUpdate"></param>
         private void Resize(bool forceUpdate = false)
         {
-            if (lastSetAspect != UnityEngine.Camera.main.aspect || lastSetPixelRect != UnityEngine.Camera.main.pixelRect || forceUpdate)
+            if (!lastSetPixelRect.Equals(UnityEngine.Camera.main.pixelRect) || forceUpdate)
             {
                 // Update size of mini camera to match the camera aspect ratio
                 try
@@ -441,7 +481,6 @@ namespace Synthesis.GUI
                     robotPrintPanel.GetComponent<LayoutElement>().preferredWidth = (UnityEngine.Camera.main.pixelRect.width - size_delta.x) / size_delta.x;
                     robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight = robotPrintPanel.GetComponent<RectTransform>().sizeDelta.y - robotPrintFooter.GetComponent<RectTransform>().sizeDelta.y;
 
-                    lastSetAspect = UnityEngine.Camera.main.aspect;
                     lastSetPixelRect = UnityEngine.Camera.main.pixelRect;
                 }
                 catch (Exception e)
@@ -449,6 +488,7 @@ namespace Synthesis.GUI
                     Debug.Log(e.ToString());
                 }
             }
+            RobotPrintManager.Resize(forceUpdate);
         }
 
         /// <summary>
@@ -486,8 +526,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void ClearPrintConsole()
         {
-            foreach (Transform child in robotPrintTextContainer.transform)
-                Destroy(child.gameObject);
+            RobotPrintManager.Clear();
         }
 
         /// <summary>
@@ -496,6 +535,10 @@ namespace Synthesis.GUI
         public void ToggleAutoScroll()
         {
             autoScroll = !autoScroll;
+            if (autoScroll)
+            {
+                RobotPrintManager.ScrollToBottom();
+            }
             autoScrollButtonImage.sprite = autoScroll ? SelectedButtonImage : UnselectedButtonImage;
         }
 
