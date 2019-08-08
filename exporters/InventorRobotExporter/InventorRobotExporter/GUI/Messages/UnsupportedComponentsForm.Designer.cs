@@ -1,6 +1,6 @@
 ﻿namespace InventorRobotExporter.GUI.Messages
 {
-    partial class UnsupportedComponents
+    partial class UnsupportedComponentsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UnsupportedComponents));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UnsupportedComponentsForm));
             this.okButton = new System.Windows.Forms.Button();
             this.description = new System.Windows.Forms.Label();
             this.componentListView = new System.Windows.Forms.ListView();
@@ -116,7 +116,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "UnsupportedComponents";
+            this.Name = "UnsupportedComponentsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Unsupported Components";
             this.ResumeLayout(false);
