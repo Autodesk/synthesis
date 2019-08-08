@@ -150,12 +150,12 @@ namespace Assets.Scripts.GUI
 
         public void OnVMConnectionStatusClicked()
         {
-            if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
+            EmulatorManager.StartUpdatingStatus();
+            EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
+            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
-                EmulatorManager.StartUpdatingStatus();
                 if (!EmulatorManager.StartEmulator())
                     UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
-                EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
             }
         }
 

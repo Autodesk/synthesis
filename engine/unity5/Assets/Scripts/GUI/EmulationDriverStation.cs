@@ -133,8 +133,6 @@ namespace Synthesis.GUI
             {
                 if (EmulatorManager.IsVMConnected())
                 {
-                    if(!EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
-                        EmulatorManager.RestartRobotCode();
                     VMConnectionStatusImage.sprite = EmulatorConnection;
                     if (EmulatorNetworkConnection.Instance.IsConnected())
                         VMConnectionStatusMessage.text = "Connected";
@@ -143,6 +141,8 @@ namespace Synthesis.GUI
                         VMConnectionStatusMessage.text = "Ready";
                         RobotDisabled();
                     }
+                    if (!EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
+                        EmulatorManager.RestartRobotCode();
                 }
                 else
                 {
