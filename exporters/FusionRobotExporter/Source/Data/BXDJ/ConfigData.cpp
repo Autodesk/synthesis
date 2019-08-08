@@ -186,14 +186,8 @@ nlohmann::json ConfigData::getJSONObject() const
 	configJSON["convex"] = (int)convexType;
 
 
-	// Weight
-	configJSON.AddMember("weight", rapidjson::Value(weight), allocator);
 
-	nlohmann::json weightJSON;	
-	weightJSON["value"] = weight.value;
-	weightJSON["unit"] = weight.type;
-
-	configJSON["weight"] = weightJSON;
+	configJSON["weight"] = weight;
 
 
 	configJSON["tempIconDir"] = tempIconDir;
@@ -257,17 +251,8 @@ void ConfigData::loadJSONObject(nlohmann::json configJson)
 		convexType = (ConvexType)configJson["convex"];
 	}
 
-	if (configJson["weight"].is_object()) {
-		nlohmann::json weightJSON =  configJson["weight"];
-		
-		if (weightJSON["value"].is_number()) {
-			weight.value = weightJSON["value"].get<double>();
-		}
-
-		if (weightJSON["unit"].is_number()) {
-			weight.type = weightJSON["unit"].get<int>();
-			weight.value /= 2.20462f;
-		}
+	if (configJson["weight"].is_number()) {
+		weight = configJson["weight"].get<double>();
 	}
 	
 	if (configJson["tempIconDir"].is_string()) {
