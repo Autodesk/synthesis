@@ -77,6 +77,8 @@ nlohmann::json Driver::getJSONObject() const
 	driverJSON["signal"] = (int)portSignal;
 	driverJSON["portOne"] = portOne;
 	driverJSON["portTwo"] = portTwo;
+	driverJSON["inputGear"] = inputGear;
+	driverJSON["outputGear"] = outputGear;
 
 	// Components
 	// Wheel Information
