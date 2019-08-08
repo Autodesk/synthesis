@@ -149,6 +149,11 @@ namespace Synthesis
                     FileName = EMULATION_DIR + "grpc-bridge.exe",
                     Verb = "runas"
                 });
+
+                AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+                {
+                    KillEmulator();
+                };
             }
             catch (Exception)
             {
@@ -159,7 +164,19 @@ namespace Synthesis
 
         public static void KillEmulator()
         {
-            if (qemuNativeProcess != null)
+            if (Client.IsConnected)
+            {
+                Client.Disconnect();
+            }
+            StopUpdatingStatus();
+
+            VMConnected = false;
+            isUserProgramFree = true;
+            frcUserProgramPresent = false;
+            isTryingToRunRobotCode = false;
+            isRunningRobotCode = false;
+
+            if (IsVMRunning())
             {
                 qemuNativeProcess.Kill();
                 qemuNativeProcess = null;
@@ -168,16 +185,23 @@ namespace Synthesis
                 grpcBridgeProcess.Kill();
                 grpcBridgeProcess = null;
             }
-            if (Client.IsConnected)
-            {
-                Client.Disconnect();
-            }
+        }
 
-            VMConnected = false;
-            isUserProgramFree = true;
-            frcUserProgramPresent = false;
-            isTryingToRunRobotCode = false;
-            isRunningRobotCode = false;
+        public static async void GracefulExit()
+        {
+            // outputCommander.Send(new StandardMessage.ExitMessage());
+            if (IsVMConnected())
+            {
+                if (IsRunningRobotCode() && IsUserProgramFree())
+                {
+                    await StopRobotCode();
+                }
+                await ClearRobotOutputLog();
+            }
+            if (IsVMRunning())
+            {
+                KillEmulator();
+            }
         }
 
         private static void StatusUpdater()
@@ -198,6 +222,7 @@ namespace Synthesis
                     VMConnected = false;
                     frcUserProgramPresent = false;
                     isRunningRobotCode = false;
+                    isUserProgramFree = true;
                 }
                 Thread.Sleep(1000); // ms
             }

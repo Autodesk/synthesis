@@ -23,7 +23,6 @@ namespace Assets.Scripts.GUI
         int dotCount = 0;
 
         GameObject canvas;
-        GameObject tabs;
         GameObject emulationToolbar;
         GameObject loadingPanel = null;
 
@@ -33,7 +32,6 @@ namespace Assets.Scripts.GUI
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
-            tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
 
@@ -163,6 +161,5 @@ namespace Assets.Scripts.GUI
         {
             emulationToolbar.SetActive(!emulationToolbar.activeSelf);
         }
-
     }
 }

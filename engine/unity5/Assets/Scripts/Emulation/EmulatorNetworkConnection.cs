@@ -128,12 +128,6 @@ namespace Synthesis
         {
             // inputCommander.Send(new StandardMessage.ExitMessage());
             // outputCommander.Send(new StandardMessage.ExitMessage());
-            if (EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
-                EmulatorManager.StopRobotCode();
-            EmulatorManager.ClearRobotOutputLog().RunSynchronously();
-            if (EmulatorManager.IsVMRunning())
-                EmulatorManager.KillEmulator();
-            EmulatorManager.StopUpdatingStatus();
         }
 
         public bool IsConnected()
