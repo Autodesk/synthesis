@@ -14,6 +14,7 @@ using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
+using InventorRobotExporter.GUI.Messages;
 using NUnit.Framework;
 using OpenTK.Input;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
@@ -146,6 +147,7 @@ namespace InventorRobotExporter
                 }
                 else
                 {
+                    UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
                     jointEditorForm.PreShow();
                     jointEditorForm.Show();
                     advancedJointEditor.Visible = false;
@@ -250,7 +252,7 @@ namespace InventorRobotExporter
 
                 if (exportResult == DialogResult.Yes)
                 {
-                    RobotDataManager.VerifyJoints();
+                    UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
                     if (ExportForm.PromptExportSettings(RobotDataManager))
                         if (RobotDataManager.ExportRobot())
                             SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
