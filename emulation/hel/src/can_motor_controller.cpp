@@ -66,7 +66,7 @@ namespace hel{
                 Dividing by 0x0400 scales the value to the proper -1.0 to 1.0
             */
             bool inverted = checkBitHigh(command_byte,SendCommandByteMask::INVERT);
-            double power = (((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400;
+            double power = (double)(((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400;
 			setPercentOutput(inverted ? -power : power);
 
             for(unsigned i = 0; i < 8; i++){ //check for unrecognized command bits

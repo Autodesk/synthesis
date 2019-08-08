@@ -15,7 +15,8 @@ RobotInputs::RobotInputs()
 	  joysticks({}),
 	  match_info({}),
 	  robot_mode({}),
-	  encoder_managers({}) {}
+	  encoder_managers({}),
+	  analog_inputs(0) {}
 
 void RobotInputs::updateShallow() const {
 	if (!hal_is_initialized) {
@@ -39,9 +40,9 @@ void RobotInputs::updateDeep() const {
 	if (!hal_is_initialized) {
 		return;
 	}
+	updateShallow();
 	auto instance = RoboRIOManager::getInstance();
 
-	updateShallow();
 	{
 		tDIO::tDI di = instance.first->digital_system.getInputs();
 		for (unsigned i = 0; i < digital_hdrs.size(); i++) {
@@ -49,8 +50,21 @@ void RobotInputs::updateDeep() const {
 				di.Headers = setBit(di.Headers, digital_hdrs[i].second, i);
 			}
 		}
-		// TODO add MXP digital inputs
+
+		for (auto i = 0u; i < digital_mxp.size(); i++) {
+			switch (digital_mxp[i].config) {
+				case MXPData::Config::DI:
+					di.MXP = setBit(di.MXP, digital_mxp[i].value, i);
+					break;
+				default:
+					break;
+			}
+		}
 		instance.first->digital_system.setInputs(di);
+
+		for (unsigned i = 0; i < analog_inputs.size(); i++) {
+			instance.first->analog_inputs.setValues(i, {(int32_t)analog_inputs[i]});
+		}
 	}
 	instance.second.unlock();
 }
@@ -143,10 +157,9 @@ void RobotInputs::sync(const EmulationService::RobotInputs& req) {
 void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	sync(req);
 
-	// Update digital header config from internal state
 	auto instance = RoboRIOManager::getInstance();
-	tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs();
-	for (unsigned i = 0; i < digital_hdrs.size(); i++) {
+	tDIO::tOutputEnable output_mode = instance.first->digital_system.getEnabledOutputs(); // Update digital header config from internal state
+	for (size_t i = 0; i < digital_hdrs.size(); i++) {
 		digital_hdrs[i].first = checkBitHigh(output_mode.Headers, i) ? DigitalSystem::HeaderConfig::DO : DigitalSystem::HeaderConfig::DI;
 	}
 
@@ -155,14 +168,18 @@ void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	}
 
 	for (size_t i = 0; i < std::min(this->digital_mxp.size(), (size_t) req.mxp_data_size()); i++) {
-		auto mxp_data = req.mxp_data(i);
-		digital_mxp[i].value = mxp_data.value();
+		digital_mxp[i].value = req.mxp_data(i).value();
 		// Don't sync MXP config, let robot code handle that
 	}
 
-	for (unsigned i = 0; i < digital_mxp.size(); i++) {
-		digital_mxp[i].config = instance.first->digital_system.getMXPConfig(i);
+	for (size_t i = 0; i < digital_mxp.size(); i++) {
+		digital_mxp[i].config = instance.first->digital_system.getMXPConfig(i); // Update config from internal state
 	}
+
+	for (size_t i = 0; i < std::min(analog_inputs.size(), (size_t) req.analog_inputs_size()); i++) {
+		analog_inputs[i] = req.analog_inputs(i);
+	}
+
 	instance.second.unlock();
 }
 }  // namespace hel
