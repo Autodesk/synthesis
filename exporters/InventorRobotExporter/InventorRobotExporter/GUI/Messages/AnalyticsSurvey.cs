@@ -2,18 +2,15 @@ using System.Windows.Forms;
 
 namespace InventorRobotExporter.Messages
 {
-    public partial class FirstLaunchInfo : Form
+    public partial class AnalyticsSurvey : Form
     {
-        public FirstLaunchInfo()
+        public AnalyticsSurvey()
         {
             InitializeComponent();
         }
         private void SubmitButton_Click(object sender, System.EventArgs e)
         {
             Close();
-
-            Properties.Settings.Default.UseAnalytics = analyticsCheckBox.Checked;
-            Properties.Settings.Default.ShowFirstLaunchInfo = false;
             Properties.Settings.Default.Save();
 
             if (Properties.Settings.Default.UseAnalytics)
@@ -37,17 +34,18 @@ namespace InventorRobotExporter.Messages
 
         private void ReasonTextList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            // These are checkboxes, not radio buttons
             // Prevents from multiple options being checked at once. The notification asks for the /main/ reason for using Synthesis
-            if (e.NewValue == CheckState.Checked)
-            {
-                for (int i = 0; i < reasonTextList.Items.Count; ++i)
-                {
-                    if (e.Index != i)
-                    {
-                        reasonTextList.SetItemChecked(i, false);
-                    }
-                }
-            }
+//            if (e.NewValue == CheckState.Checked)
+//            {
+//                for (int i = 0; i < reasonTextList.Items.Count; ++i)
+//                {
+//                    if (e.Index != i)
+//                    {
+//                        reasonTextList.SetItemChecked(i, false);
+//                    }
+//                }
+//            }
             // If selecting the "Other" (should be last item in list) make a text box visible to create your own reason
             otherTextBox.Visible = (e.Index == (reasonTextList.Items.Count - 1));
         }
@@ -55,6 +53,16 @@ namespace InventorRobotExporter.Messages
         private void SkipButton_Click(object sender, System.EventArgs e)
         {
             Close();
+        }
+
+        private void TeamTextBox_TextChanged(object sender, System.EventArgs e)
+        {
+
+        }
+
+        private void TeamLabel_Click(object sender, System.EventArgs e)
+        {
+
         }
     }
 }

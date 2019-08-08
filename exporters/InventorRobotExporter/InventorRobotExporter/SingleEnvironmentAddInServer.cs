@@ -161,8 +161,12 @@ namespace InventorRobotExporter
                 if (IsDocumentOpenInTheExporter(documentObject))
                     EnvironmentVisible = true;
             }
-            else if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject)) 
-                new FirstLaunchInfo().ShowDialog();
+            else if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject))
+            {
+                MessageBox.Show("The Synthesis robot exporter add-in has been installed.\nTo access the exporter, select the \"Robot Export\" button under the \"Environments\" tab.", "Synthesis Add-In", MessageBoxButtons.OK);
+                Settings.Default.ShowFirstLaunchInfo = false;
+                Settings.Default.Save();
+            }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
         }
