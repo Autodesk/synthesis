@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -78,6 +79,9 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             if (jointDriver == null)
             {
                 jointTypeComboBox.SelectedItem = "(Select an option)";
+
+                HighlightCard();
+
             }
             else if (jointDriver.port1 <= 2) // Drivetrain wheel
             {
@@ -217,6 +221,8 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DoLayout();
+
+            HighlightCard();
         }
 
         private void DoLayout()
@@ -280,5 +286,22 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }
+
+        private void HighlightCard()
+        {
+            Color highlightColor = Color.FromArgb(35, 224, 145, 0);
+
+            DriverLayout.BackColor = highlightColor;
+
+            if (jointTypeComboBox.SelectedIndex != 0)
+            {
+                DriverLayout.ResetBackColor();
+            }
+            else
+            {
+                DriverLayout.BackColor = highlightColor;
+            }
+        }
     }
+
 }
