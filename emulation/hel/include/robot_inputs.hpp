@@ -6,6 +6,7 @@
 
 #include <emulator_service.grpc.pb.h>
 
+#include "analog_inputs.hpp"
 #include "bounds_checked_array.hpp"
 #include "digital_system.hpp"
 #include "encoder_manager.hpp"
@@ -60,6 +61,16 @@ struct RobotInputs {
 
 	BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS>
 		encoder_managers;
+
+	/**
+	 * \brief The states of all the analog input headers and mxp
+	 */
+
+	BoundsCheckedArray<double, AnalogInputs::NUM_ANALOG_INPUTS> analog_inputs;
+
+	/**
+	 * \brief The states of all the analog inputs on the MXP
+	 */
 
    public:
 	/**

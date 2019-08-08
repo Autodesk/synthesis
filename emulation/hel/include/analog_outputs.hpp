@@ -18,12 +18,11 @@ namespace hel{
          * \brief The number of analog outputs on the RoboRIO (positioned on the MXP)
          */
 
-        static constexpr int32_t NUM_ANALOG_OUTPUTS = 2; //nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters
+        static constexpr int32_t NUM_ANALOG_OUTPUTS = nFPGA::nRoboRIO_FPGANamespace::tAO::kNumMXPRegisters; // 2
 
     private:
         /**
          * \brief Analog output data
-         *
          */
 
         BoundsCheckedArray<uint16_t, NUM_ANALOG_OUTPUTS> mxp_outputs;
