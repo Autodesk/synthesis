@@ -5,7 +5,7 @@ namespace Synthesis
 {
     public class EmulationWarnings
     {
-        public const float WARNING_DURATION = 10; // s
+        public const float WARNING_DURATION = 3; // s
 
         public enum Requirement
         {

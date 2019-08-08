@@ -64,6 +64,8 @@ namespace Synthesis
                 for (var i = 0; i < RoboRIOConstants.NUM_JOYSTICKS; i++)
                     inputs.Joysticks.Add(InitJoystick());
                 // Let DriveJoints handle EncoderManagers
+                for (var i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP; i++)
+                    inputs.AnalogInputs.Add(0);
                 return inputs;
             }
 

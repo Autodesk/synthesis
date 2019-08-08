@@ -10,18 +10,31 @@ using UnityEngine.UI;
 
 namespace Synthesis.GUI
 {
+    /// <summary>
+    /// User interface for viewing emulated RoboRIO outputs and setting its inputs
+    /// </summary>
     public class RobotIOPanel : MonoBehaviour
     {
+        /// <summary>
+        /// Representation of the field which displays a single input or output
+        /// </summary>
         public class RobotIOField
         {
             public GameObject gameObject;
             public Text label;
             public InputField inputField;
             private Action<RobotIOField> updateFunction;
+            private float scaleFactor = 1;
 
             private static Color ENABLED_COLOR = Color.white;
             private static Color DISABLED_COLOR = new Color(0.47f, 0.47f, 0.47f);
 
+            /// <summary>
+            /// Instantiates a new RobotIOField UI element
+            /// </summary>
+            /// <param name="name"></param> The name of the field to use in the editor and in the label
+            /// <param name="parent"></param> The parent underwhich to instantiate this element
+            /// <param name="update"></param> The update function to call to handle its value
             public RobotIOField(string name, GameObject parent, Action<RobotIOField> update)
             {
                 gameObject = Instantiate(RobotIOPanel.Instance.robotIOFieldPrefab, parent.transform) as GameObject;
@@ -36,12 +49,36 @@ namespace Synthesis.GUI
                 Update();
             }
 
-            // Update displayed values
+            /// <summary>
+            /// Update the displayed values and input state for transmission
+            /// </summary>
             public void Update()
             {
                 updateFunction(this);
             }
 
+            /// <summary>
+            /// Update the displayed values and input state for transmission and resize
+            /// </summary>
+            /// <param name="factor"></param> Resize factor
+            public void Update(float factor)
+            {
+                Update();
+                if (Math.Abs(factor - scaleFactor) > EPSILON) // Scale UI
+                {
+                    scaleFactor = factor;
+
+                    label.fontSize = (int)(RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<Text>().fontSize * scaleFactor);
+                    label.gameObject.GetComponent<RectTransform>().sizeDelta = RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<Text>().gameObject.GetComponent<RectTransform>().sizeDelta * scaleFactor;
+                    inputField.textComponent.fontSize = (int)(RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<InputField>().textComponent.fontSize * factor);
+                    inputField.gameObject.GetComponent<RectTransform>().sizeDelta = RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<InputField>().gameObject.GetComponent<RectTransform>().sizeDelta * scaleFactor;
+                }
+            }
+
+            /// <summary>
+            /// Enable or disable the field--grey out
+            /// </summary>
+            /// <param name="e"></param> Whether to enable or not
             public void SetEnable(bool e)
             {
                 label.color = e ? ENABLED_COLOR : DISABLED_COLOR;
@@ -49,8 +86,14 @@ namespace Synthesis.GUI
             }
         }
 
+        /// <summary>
+        /// Representation of a group of RobotIOField UI elements, including a scroll rect and a title
+        /// </summary>
         public class RobotIOGroup
         {
+            /// <summary>
+            /// The various group types
+            /// </summary>
             public enum Type
             {
                 PWM,
@@ -60,7 +103,12 @@ namespace Synthesis.GUI
                 AO
             }
 
+            private const float HEIGHT_REF = 270;
+            private const float WIDTH_REF = 170;
+            private float scaleFactor;
+
             public GameObject gameObject;
+            private Text title;
             public List<RobotIOField> robotIOFields;
 
             public GameObject GetPanel()
@@ -68,25 +116,175 @@ namespace Synthesis.GUI
                 return Auxiliary.FindObject(gameObject, "Content");
             }
 
+            /// <summary>
+            /// Instantiate a new RobotIOGroup UI element
+            /// </summary>
+            /// <param name="type"></param> The type, used to set the title
+            /// <param name="parent"></param> The parent to instantiate the new element under
             public RobotIOGroup(Type type, GameObject parent)
             {
                 gameObject = Instantiate(RobotIOPanel.Instance.robotIOGroupPrefab, parent.transform) as GameObject;
                 gameObject.name = type.ToString();
 
-                Text title = gameObject.GetComponentInChildren<Text>();
+                title = gameObject.GetComponentInChildren<Text>();
                 title.name = type.ToString() + " Title";
                 title.text = type.ToString();
 
 
                 robotIOFields = new List<RobotIOField>();
             }
+
+            /// <summary>
+            /// Update the RobotIOGroup UI element
+            /// </summary>
+            /// <returns>True if any input field is focused</returns>
+            public bool Update()
+            {
+                bool focused = false;
+
+                // Calculate factor to scale UI by
+                float yFactor = gameObject.GetComponent<RectTransform>().sizeDelta.y / HEIGHT_REF;
+                float xFactor = gameObject.GetComponent<RectTransform>().sizeDelta.x / WIDTH_REF;
+                float factor = Math.Min(xFactor, yFactor); // Find which dimension is the size limiting factor
+
+                if (Math.Abs(factor - scaleFactor) > EPSILON)
+                {
+                    scaleFactor = factor;
+                    title.fontSize = (int)(RobotIOPanel.Instance.robotIOGroupPrefab.GetComponentInChildren<Text>().fontSize * scaleFactor);
+
+                    foreach (var i in robotIOFields)
+                    {
+                        focused = focused || i.inputField.isFocused;
+                        i.Update(scaleFactor);
+                    }
+                }
+                else
+                {
+                    foreach (var i in robotIOFields)
+                    {
+                        focused = focused || i.inputField.isFocused;
+                        i.Update();
+                    }
+                }
+
+                if (GetPanel().GetComponent<RectTransform>().sizeDelta.y > gameObject.GetComponent<RectTransform>().sizeDelta.y)
+                {
+                    GetPanel().GetComponent<VerticalLayoutGroup>().padding.right = (int)(20 * scaleFactor); // Shift RobotIOFields over when scroll bar activates
+                }
+
+                return focused;
+            }
+        }
+
+        /// <summary>
+        /// Manager class for the robot prints panel
+        /// Receives data and adds it to the UI
+        /// </summary>
+        public class RobotPrintManager
+        {
+            private const float HEIGHT_REF = 160;
+            private static int FontSize;
+
+            private static string lineBuffer;
+            private static StreamReader remoteReader = null;
+            private static Queue<Optional<string>> lineQueue = new Queue<Optional<string>>();
+
+            /// <summary>
+            /// Empty stream buffer into UI
+            /// </summary>
+            public static void Update()
+            {
+                if (EmulatorManager.IsVMConnected() && remoteReader == null) // Start stream if needed
+                {
+                    Task.Run(OpenPrintStream);
+                }
+                while (lineQueue.Count > 0) {
+                    var line = lineQueue.Dequeue();
+                    if (line.IsValid())
+                    {
+                        Text newPrint = Instantiate(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>(), RobotIOPanel.Instance.robotPrintTextContainer.transform); // Add buffer to console
+                        newPrint.text = line.Get();
+                        newPrint.fontSize = FontSize;
+
+                        RectTransform rect = RobotIOPanel.Instance.robotPrintScrollContent.GetComponent<RectTransform>(); // Resize scroll area
+                        rect.sizeDelta = new Vector2(rect.sizeDelta.x, RobotIOPanel.Instance.robotPrintTextContainer.GetComponent<RectTransform>().sizeDelta.y);
+
+                        if (RobotIOPanel.Instance.autoScroll)
+                        {
+                            RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<ScrollRect>().verticalNormalizedPosition = 0; // Scroll to bottom
+                        }
+
+                        Canvas.ForceUpdateCanvases();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Resize text as screen size changes
+            /// </summary>
+            /// <param name="forceUpdate"></param>
+            public static void Resize(bool forceUpdate = false)
+            {
+                var lastSize = FontSize;
+                FontSize = (int)(RobotIOPanel.Instance.robotPrintPrefab.GetComponent<Text>().fontSize *
+                    RobotIOPanel.Instance.robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight / HEIGHT_REF); // Width isn't as important as height for these
+                if (lastSize != FontSize || forceUpdate)
+                {
+                    for (int i = 0; i < RobotIOPanel.Instance.robotPrintTextContainer.transform.childCount; i++)
+                    {
+                        var print = RobotIOPanel.Instance.robotPrintTextContainer.transform.GetChild(i);
+                        print.GetComponent<Text>().fontSize = FontSize;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Begin reading robot print-outs into the string buffer
+            /// </summary>
+            private static void OpenPrintStream()
+            {
+                if (remoteReader == null)
+                {
+                    remoteReader = EmulatorManager.CreateRobotOutputStream();
+                }
+                while (EmulatorManager.IsVMConnected() && EmulatorManager.IsRobotOutputStreamGood())
+                {
+                    try
+                    {
+                        var c = remoteReader.Read();
+                        if (c >= 0)
+                        {
+                            if ((char)c == '\n')
+                            {
+                                lineQueue.Enqueue(new Optional<string>(lineBuffer));
+                                lineBuffer = "";
+                            }
+                            else
+                            {
+                                lineBuffer += (char)c;
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.Log(e.ToString());
+                        break;
+                    }
+                }
+                remoteReader.Close();
+                remoteReader = null;
+                EmulatorManager.CloseRobotOutputStream();
+            }
         }
 
         public static RobotIOPanel Instance { get; private set; }
+        private const float EPSILON = 0.01f;
 
         private GameObject canvas;
         private GameObject mainPanel;
+        private bool lastActive = false;
         private bool shouldBeActive = false;
+        private bool settingsTabActive = false;
 
         // Robot IO view
         private GameObject displayPanel;
@@ -98,8 +296,8 @@ namespace Synthesis.GUI
         // Mini Camera
         private GameObject miniCameraView;
         private UnityEngine.Camera miniCamera = null;
-        float lastSetAspect = 0;
-        Rect lastSetPixelRect;
+        private float lastSetAspect = 0;
+        private Rect lastSetPixelRect;
 
         // Robot Print-Outs
         private GameObject robotPrintPanel;
@@ -109,12 +307,11 @@ namespace Synthesis.GUI
         public GameObject robotPrintPrefab;
 
         private GameObject robotPrintFooter;
-        private GameObject autoScrollButton;
+        private Image autoScrollButtonImage;
         public Sprite SelectedButtonImage;
         public Sprite UnselectedButtonImage;
+        public bool enablePrints = false;
 
-        private StreamReader printReader = null;
-        private string robotPrintBuffer = "";
         private bool autoScroll;
 
         public void Awake()
@@ -126,7 +323,7 @@ namespace Synthesis.GUI
             mainPanel.SetActive(false); // Must start inactive, otherwise initializing mini camera will cause problems
 
             displayPanel = Auxiliary.FindObject(mainPanel, "RobotIODisplayPanel");
-            robotIOGroups = new RobotIOGroup[(int)Enum.GetValues(typeof(RobotIOGroup.Type)).Cast<RobotIOGroup.Type>().Max() + 1];
+            robotIOGroups = new RobotIOGroup[(int)Enum.GetValues(typeof(RobotIOGroup.Type)).Cast<RobotIOGroup.Type>().Max() + 1]; // Set size to number of enum values
 
             miniCameraView = Auxiliary.FindObject(mainPanel, "MiniCameraView");
 
@@ -135,69 +332,181 @@ namespace Synthesis.GUI
             robotPrintScrollContent = Auxiliary.FindObject(robotPrintScrollRect, "Content");
             robotPrintTextContainer = Auxiliary.FindObject(robotPrintScrollContent, "PrintContainer");
             robotPrintFooter = Auxiliary.FindObject(robotPrintPanel, "RobotPrintFooter");
-            autoScrollButton = Auxiliary.FindObject(robotPrintFooter, "RobotPrintAutoScrollButton");
+            autoScrollButtonImage = Auxiliary.FindObject(robotPrintFooter, "RobotPrintAutoScrollButton").GetComponent<Image>();
 
             autoScroll = true;
-            autoScrollButton.GetComponent<Image>().sprite = SelectedButtonImage;
+            autoScrollButtonImage.sprite = SelectedButtonImage;
 
             Populate();
         }
 
         public void Update()
         {
-            if (shouldBeActive && InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true))
+            if (shouldBeActive) // Handle hiding the panel. Other UIs don't hide automatically, but this one is big and should.
             {
-                mainPanel.SetActive(!mainPanel.activeSelf);
+                if (InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true)) // TODO make global control
+                {
+                    mainPanel.SetActive(!mainPanel.activeSelf);
+                }
+                if (SimUI.getSimUI().getTabStateMachine().CurrentState is SettingsState)
+                {
+                    if (mainPanel.activeSelf)
+                    {
+                        mainPanel.SetActive(false);
+                    }
+                    settingsTabActive = true;
+                } else if (settingsTabActive)
+                {
+                    if (!mainPanel.activeSelf)
+                    {
+                        mainPanel.SetActive(true);
+                    }
+                    settingsTabActive = false;
+                }
             }
             if (mainPanel.activeSelf) // Update rest of UI
             {
-                bool freeze = false;
+                bool focused = false;
                 foreach (var group in robotIOGroups)
                 {
-                    foreach (var i in group.robotIOFields)
-                    {
-                        freeze = freeze || i.inputField.isFocused;
-                        i.Update();
-                    }
+                    focused = focused || group.Update();
                 }
-                InputControl.freeze = freeze;
+                InputControl.freeze = focused; // Prevent user inputting values from triggering controls
 
                 if (miniCamera == null)
                 {
                     InitMiniCamera();
                 }
                 UpdateMiniCamera();
+                Resize();
 
-                for (var i = 0; i < robotIOGroups.Length; i++) // Shift RobotIOFields over when scroll bar activates
+                DynamicCamera.ControlEnabled = false;
+            }
+            else
+            {
+                if (lastActive)
                 {
-                    if (robotIOGroups[i].GetPanel().GetComponent<RectTransform>().sizeDelta.y > robotIOGroups[i].gameObject.GetComponent<RectTransform>().sizeDelta.y)
-                        robotIOGroups[i].GetPanel().GetComponent<VerticalLayoutGroup>().padding.right = 20;
+                    DynamicCamera.ControlEnabled = true;
                 }
             }
-            if (EmulatorManager.IsTryingToRunRobotCode()) // Update robot prints
+            if (enablePrints && EmulatorManager.IsVMConnected()) // Update robot prints
             {
-                if (printReader == null) // Start stream if needed
-                {
-                    Task.Run(OpenPrintStream);
+                RobotPrintManager.Update();
+            }
+
+            lastActive = mainPanel.activeSelf;
+        }
+
+        /// <summary>
+        /// Toggle panel
+        /// </summary>
+        public void Toggle()
+        {
+            mainPanel.SetActive(!mainPanel.activeSelf);
+            shouldBeActive = mainPanel.activeSelf;
+        }
+
+        public void SetActive(bool active)
+        {
+            mainPanel.SetActive(active);
+        }
+
+        /// <summary>
+        /// Resize the UI so it scales with different resolutions and aspect ratios
+        /// </summary>
+        /// <param name="forceUpdate"></param>
+        private void Resize(bool forceUpdate = false)
+        {
+            if (lastSetAspect != UnityEngine.Camera.main.aspect || lastSetPixelRect != UnityEngine.Camera.main.pixelRect || forceUpdate)
+            {
+                // Update size of mini camera to match the camera aspect ratio
+                try
+                { 
+                    var size_delta = miniCameraView.GetComponent<RectTransform>().sizeDelta;
+
+                    // Maintain main camera aspect ratio in mini camera view
+                    miniCameraView.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                        size_delta.y * UnityEngine.Camera.main.aspect,
+                        size_delta.y);
+
+                    // Update camera texture size as well
+                    if (miniCamera.targetTexture != null)
+                        miniCamera.targetTexture.Release();
+                    miniCamera.targetTexture = new RenderTexture(new RenderTextureDescriptor(
+                            UnityEngine.Camera.main.pixelWidth,
+                            UnityEngine.Camera.main.pixelHeight));
+                    miniCameraView.GetComponent<RawImage>().texture = miniCamera.targetTexture;
+
+                    // Fill remaining width of screen with the robot print panel
+                    robotPrintPanel.GetComponent<LayoutElement>().preferredWidth = (UnityEngine.Camera.main.pixelRect.width - size_delta.x) / size_delta.x;
+                    robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight = robotPrintPanel.GetComponent<RectTransform>().sizeDelta.y - robotPrintFooter.GetComponent<RectTransform>().sizeDelta.y;
+
+                    lastSetAspect = UnityEngine.Camera.main.aspect;
+                    lastSetPixelRect = UnityEngine.Camera.main.pixelRect;
                 }
-
-                if (robotPrintBuffer != "")
+                catch (Exception e)
                 {
-                    Text a = Instantiate(robotPrintPrefab.GetComponent<Text>(), robotPrintTextContainer.transform); // Add buffer to console
-                    a.text = robotPrintBuffer;
-                    robotPrintBuffer = ""; // Reset buffer
-
-                    RectTransform rect = robotPrintScrollContent.GetComponent<RectTransform>(); // Resize scroll area
-                    rect.sizeDelta = new Vector2(rect.sizeDelta.x, robotPrintTextContainer.GetComponent<RectTransform>().sizeDelta.y);
-
-                    if (autoScroll)
-                    {
-                        var scrollRect = robotPrintScrollRect.GetComponent<ScrollRect>();
-                        scrollRect.verticalNormalizedPosition = 0; // Scroll to bottom
-                    }
-
-                    Canvas.ForceUpdateCanvases();
+                    Debug.Log(e.ToString());
                 }
+            }
+        }
+
+        /// <summary>
+        /// Configure the mini camera for use
+        /// </summary>
+        private void InitMiniCamera()
+        {
+            try
+            {
+                miniCamera = Instantiate(UnityEngine.Camera.main, miniCameraView.transform); // Clone main camera
+                foreach (Transform child in miniCamera.transform)
+                    Destroy(child.gameObject);
+
+                Destroy(miniCamera.GetComponent<DynamicCamera>()); // Shouldn't handle it's own position, so copy from main camera instead
+            }
+            catch (Exception)
+            {
+                miniCamera = null;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Update the mini camera view
+        /// </summary>
+        private void UpdateMiniCamera()
+        {
+            // Update position and orientation
+            miniCamera.transform.position = UnityEngine.Camera.main.transform.position;
+            miniCamera.transform.rotation = UnityEngine.Camera.main.transform.rotation;
+        }
+
+        /// <summary>
+        /// Reset the robot print-out console
+        /// </summary>
+        public void ClearPrintConsole()
+        {
+            foreach (Transform child in robotPrintTextContainer.transform)
+                Destroy(child.gameObject);
+        }
+
+        /// <summary>
+        /// Toggles whether the print-out panel automatically scrolls down to the most recent prints
+        /// </summary>
+        public void ToggleAutoScroll()
+        {
+            autoScroll = !autoScroll;
+            autoScrollButtonImage.sprite = autoScroll ? SelectedButtonImage : UnselectedButtonImage;
+        }
+
+        /// <summary>
+        /// Prompt user to download the log file
+        /// </summary>
+        public void DownloadLog()
+        {
+            if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.VMConnected))
+            {
+                EmulatorManager.FetchLogFile();
             }
         }
 
@@ -230,7 +539,7 @@ namespace Synthesis.GUI
                                 else
                                 {
                                     int digital_index = j - (int)RoboRIOConstants.NUM_PWM_HDRS;
-                                    if(digital_index >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
+                                    if (digital_index >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
                                     {
                                         digital_index += 4;
                                     }
@@ -294,7 +603,8 @@ namespace Synthesis.GUI
                     {
                         robotIOField.label.text = "No active CAN\nmotor controllers";
                         robotIOField.label.alignment = TextAnchor.MiddleCenter;
-                        robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta.y);
+                        robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(
+                            Instance.robotIOFieldPrefab.gameObject.GetComponent<RectTransform>().sizeDelta.x * 1.5f, robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta.y);
                         robotIOField.inputField.gameObject.SetActive(false);
                         robotIOField.gameObject.SetActive(OutputManager.Instance.CanMotorControllers.Count == 0);
                     }
@@ -314,12 +624,14 @@ namespace Synthesis.GUI
                             {
                                 if (j < RoboRIOConstants.NUM_DIGITAL_HDRS)
                                 {
-                                    if (OutputManager.Instance.DigitalHeaders[j].Config == EmulationService.DIOData.Types.Config.Di) // TODO which manager should control this?
+                                    string mode = "";
+                                    InputManager.Instance.DigitalHeaders[j].Config = (OutputManager.Instance.DigitalHeaders.Count > j) ? OutputManager.Instance.DigitalHeaders[j].Config : EmulationService.DIOData.Types.Config.Di; // Sync
+                                    if (InputManager.Instance.DigitalHeaders[j].Config == EmulationService.DIOData.Types.Config.Di)
                                     {
                                         try
                                         {
+                                            mode = "(DI)";
                                             robotIOField.inputField.interactable = true;
-                                            robotIOField.label.text = j.ToString() + " (DI)";
                                             InputManager.Instance.DigitalHeaders[j].Value = int.Parse(robotIOField.inputField.text) != 0;
                                         }
                                         catch (Exception)
@@ -332,22 +644,25 @@ namespace Synthesis.GUI
                                     }
                                     else
                                     {
+                                        mode = "(DO)";
                                         robotIOField.inputField.interactable = false;
-                                        robotIOField.label.text = j.ToString() + " (DO)";
                                         robotIOField.inputField.text = OutputManager.Instance.DigitalHeaders[j].Value ? "1" : "0";
                                     }
+                                    robotIOField.label.text = j.ToString() + " " + mode;
                                 }
                                 else
                                 {
                                     int mxp_index = j - (int)RoboRIOConstants.NUM_DIGITAL_HDRS;
-                                    string new_label = "MXP " + mxp_index.ToString() + " ";
-                                    if (OutputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Di)
+                                    string mode = "";
+                                    InputManager.Instance.MxpData[mxp_index].Config = (OutputManager.Instance.MxpData.Count > mxp_index) ? OutputManager.Instance.MxpData[mxp_index].Config : EmulationService.MXPData.Types.Config.Di; // Sync
+                                    if (InputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Di)
                                     {
                                         try
                                         {
-                                            new_label += "(DI)";
+                                            mode = "(DI)";
+                                            robotIOField.SetEnable(true);
                                             robotIOField.inputField.interactable = true;
-                                            robotIOField.inputField.text = ((int)InputManager.Instance.MxpData[mxp_index].Value).ToString();
+                                            InputManager.Instance.MxpData[mxp_index].Value = (int.Parse(robotIOField.inputField.text) != 0) ? 1 : 0;
                                         }
                                         catch (Exception)
                                         {
@@ -362,9 +677,9 @@ namespace Synthesis.GUI
                                         robotIOField.inputField.interactable = false;
                                         if (OutputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Do)
                                         {
-                                            new_label += "(DO)";
-                                            robotIOField.inputField.text = ((int)OutputManager.Instance.MxpData[mxp_index].Value).ToString();
                                             robotIOField.SetEnable(true);
+                                            mode = "(DO)";
+                                            robotIOField.inputField.text = ((int)OutputManager.Instance.MxpData[mxp_index].Value).ToString();
                                         }
                                         else
                                         {
@@ -372,11 +687,12 @@ namespace Synthesis.GUI
                                             robotIOField.SetEnable(false);
                                         }
                                     }
-                                    robotIOField.label.text = new_label;
+                                    robotIOField.label.text = "MXP " + mxp_index.ToString() + " " + mode;
                                 }
                             }
                             catch (Exception)
                             {
+                                robotIOField.inputField.interactable = false;
                                 robotIOField.inputField.text = "0";
                                 if (j >= RoboRIOConstants.NUM_DIGITAL_HDRS)
                                 {
@@ -390,9 +706,10 @@ namespace Synthesis.GUI
             for (int i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP; i++)
             {
                 int j = i; // Create copy of iterator
+                string name = (j < RoboRIOConstants.NUM_AI_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_AI_HDRS).ToString();
                 robotIOGroups[(int)RobotIOGroup.Type.AI].robotIOFields.Add(
                     new RobotIOField(
-                        j.ToString(),
+                        name,
                         robotIOGroups[(int)RobotIOGroup.Type.AI].GetPanel(),
                         (RobotIOField robotIOField) =>
                         {
@@ -434,147 +751,6 @@ namespace Synthesis.GUI
                     )
                 );
             }
-        }
-
-        /// <summary>
-        /// Toggle panel
-        /// </summary>
-        public void Toggle()
-        {
-            mainPanel.SetActive(!mainPanel.activeSelf);
-            shouldBeActive = mainPanel.activeSelf;
-        }
-
-        /// <summary>
-        /// Configure the mini camera for use
-        /// </summary>
-        private void InitMiniCamera()
-        {
-            try
-            {
-                miniCamera = Instantiate(UnityEngine.Camera.main, miniCameraView.transform);
-                foreach (Transform child in miniCamera.transform)
-                    Destroy(child.gameObject);
-
-                Destroy(miniCamera.GetComponent<DynamicCamera>()); // Shouldn't handle it's own position, so copy from main camera instead
-            }
-            catch (Exception)
-            {
-                miniCamera = null;
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Update the mini camera view
-        /// </summary>
-        private void UpdateMiniCamera()
-        {
-            // Update size of mini camera to match the camera aspect ratio
-            if (lastSetAspect != UnityEngine.Camera.main.aspect || lastSetPixelRect != UnityEngine.Camera.main.pixelRect)
-            {
-                try
-                {
-                    var size_delta = miniCameraView.GetComponent<RectTransform>().sizeDelta;
-
-                    // Maintain main camera aspect ratio in mini camera view
-                    miniCameraView.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                        size_delta.y * UnityEngine.Camera.main.aspect,
-                        size_delta.y);
-
-                    size_delta = miniCameraView.GetComponent<RectTransform>().sizeDelta;
-
-                    // Update camera texture size as well
-                    if (miniCamera.targetTexture != null)
-                        miniCamera.targetTexture.Release();
-                    miniCamera.targetTexture = new RenderTexture(new RenderTextureDescriptor(
-                            (int)size_delta.x,
-                            (int)size_delta.y));
-                    miniCameraView.GetComponent<RawImage>().texture = miniCamera.targetTexture;
-
-                    // Fill remaining width of screen with the robot print panel
-                    robotPrintPanel.GetComponent<LayoutElement>().preferredWidth = (UnityEngine.Camera.main.pixelRect.width - size_delta.x) / size_delta.x;
-                    robotPrintScrollRect.GetComponent<LayoutElement>().preferredHeight = robotPrintPanel.GetComponent<RectTransform>().sizeDelta.y - robotPrintFooter.GetComponent<RectTransform>().sizeDelta.y;
-
-                    lastSetAspect = UnityEngine.Camera.main.aspect;
-                    lastSetPixelRect = UnityEngine.Camera.main.pixelRect;
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e.ToString());
-                }
-            }
-
-            // Update position and orientation
-            miniCamera.transform.position = UnityEngine.Camera.main.transform.position;
-            miniCamera.transform.rotation = UnityEngine.Camera.main.transform.rotation;
-        }
-
-        /// <summary>
-        /// Disable user camera control
-        /// </summary>
-        public void DisableCameraControl()
-        {
-            DynamicCamera.ControlEnabled = false;
-        }
-
-        /// <summary>
-        /// Enable user camera control
-        /// </summary>
-        public void EnableCameraControl()
-        {
-            DynamicCamera.ControlEnabled = true;
-        }
-
-        /// <summary>
-        /// Begin reading robot print-outs into the string buffer
-        /// </summary>
-        private void OpenPrintStream()
-        {
-            if(printReader == null)
-                printReader = EmulatorManager.CreateRobotOutputStream();
-            string line;
-
-            while (EmulatorManager.IsTryingToRunRobotCode())
-            {
-                line = printReader.ReadLine(); // Different read function?
-                if (line != null)
-                {
-                    if (robotPrintBuffer != "")
-                        robotPrintBuffer += "\n";
-                    robotPrintBuffer += line;
-                }
-            }
-            printReader.Close();
-            printReader = null;
-            EmulatorManager.CloseRobotOutputStream();
-        }
-
-        /// <summary>
-        /// Reset the robot print-out console
-        /// </summary>
-        public void ClearPrintConsole()
-        {
-            foreach (Transform child in robotPrintTextContainer.transform)
-                Destroy(child.gameObject);
-        }
-
-        /// <summary>
-        /// Toggles whether the print-out panel automatically scrolls down to the most recent prints
-        /// </summary>
-        public void ToggleAutoScroll()
-        {
-            autoScroll = !autoScroll;
-            autoScrollButton.GetComponent<Image>().sprite = autoScroll ? SelectedButtonImage : UnselectedButtonImage;
-        }
-
-        /// <summary>
-        /// Prompt user to download the log file
-        /// </summary>
-        public void DownloadLog()
-        {
-            if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.VMConnected))
-                EmulatorManager.FetchLogFile();
         }
     }
 }

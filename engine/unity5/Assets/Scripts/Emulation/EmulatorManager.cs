@@ -19,11 +19,11 @@ namespace Synthesis
 
         private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
 
-        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh >/dev/null 2>&1; sudo killall java >/dev/null 2>&1; sudo killall FRCUserProgram >/dev/null 2>&1;";
-        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh</dev/null >/dev/null 2>&1 &";
+        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh &>/dev/null; sudo killall java &>/dev/null; sudo killall FRCUserProgram &>/dev/null;";
+        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh </dev/null &>/dev/null &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
-        private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
-        private const string RECEIVE_PRINTS_COMMAND = "tail -f " + REMOTE_LOG_NAME;
+        private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &>/dev/null";
+        private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
 
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
@@ -43,15 +43,20 @@ namespace Synthesis
         private static bool updatingStatus = false;
 
         private static SshCommand outputStreamCommand = null;
+        private static IAsyncResult outputStreamCommandResult = null;
 
         private static SshClient Client
         {
             get
             {
                 if (SSHClientInternal.instance == null)
+                {
                     SSHClientInternal.instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                }
                 if (!SSHClientInternal.instance.IsConnected)
+                {
                     SSHClientInternal.instance.Connect();
+                }
                 return SSHClientInternal.instance;
             }
         }
@@ -162,6 +167,16 @@ namespace Synthesis
                 grpcBridgeProcess.Kill();
                 grpcBridgeProcess = null;
             }
+            if (Client.IsConnected)
+            {
+                Client.Disconnect();
+            }
+
+            VMConnected = false;
+            isUserProgramFree = true;
+            frcUserProgramPresent = false;
+            isTryingToRunRobotCode = false;
+            isRunningRobotCode = false;
         }
 
         private static void StatusUpdater()
@@ -211,7 +226,7 @@ namespace Synthesis
                         await StopRobotCode();
 
                     isUserProgramFree = false;
-                    Client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                    Client.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
                     frcUserProgramPresent = false;
 
                     using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
@@ -267,8 +282,14 @@ namespace Synthesis
             });
         }
 
+        public static bool IsRobotOutputStreamGood()
+        {
+            return outputStreamCommand != null && !outputStreamCommandResult.IsCompleted;
+        }
+
         public static void CloseRobotOutputStream()
         {
+            outputStreamCommand.CancelAsync();
             outputStreamCommand.Dispose();
             outputStreamCommand = null;
         }
@@ -277,7 +298,7 @@ namespace Synthesis
         {
             if (outputStreamCommand == null) {
                 outputStreamCommand = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
-                outputStreamCommand.BeginExecute();
+                outputStreamCommandResult = outputStreamCommand.BeginExecute();
             }
             return new StreamReader(outputStreamCommand.OutputStream);
         }
