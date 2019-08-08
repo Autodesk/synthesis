@@ -178,164 +178,126 @@ void ConfigData::filterJoints(std::vector<core::Ptr<fusion::AsBuiltJoint>> filte
 		joints.erase(jointToErase);
 }
 
-rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json ConfigData::getJSONObject() const
 {
-	rapidjson::Value configJSON;
-	configJSON.SetObject();
-
-	// General Information
-	configJSON.AddMember("name", rapidjson::Value(robotName.c_str(), robotName.length(), allocator), allocator);
-	configJSON.AddMember("drivetrainType", rapidjson::Value((int)drivetrainType), allocator);
-	std::string convex = "BOX";
-	switch (convexType) {
-	case BOX:
-		convex = "BOX";
-		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
-		break;
-	case VHACD_LOW:
-		convex = "VHACD_LOW";
-		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
-		break;
-
-	case VHACD_MID:
-		convex = "VHACD_MID";
-		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
-		break;
-
-	case VHACD_HIGH:
-		convex = "VHACD_HIGH";
-		configJSON.AddMember("convex", rapidjson::Value(convex.c_str(), convex.length(), allocator), allocator);
-		break;
-
-	}
+	nlohmann::json configJSON;
+	configJSON["name"] = robotName;
+	configJSON["driveTrainType"] = (int)drivetrainType;
+	configJSON["convex"] = (int)convexType;
 
 
-	// Weight
-	configJSON.AddMember("weight", rapidjson::Value(weight), allocator);
 
-	configJSON.AddMember("tempIconDir", rapidjson::Value(tempIconDir.c_str(), tempIconDir.length(), allocator), allocator);
+	configJSON["weight"] = weight;
+
+
+	configJSON["tempIconDir"] = tempIconDir;
 
 	// Joints
-	rapidjson::Value jointsJSON;
-	jointsJSON.SetArray();
+	nlohmann::json jointsJson = nlohmann::json::array();
+	
 
 	for (auto i = joints.begin(); i != joints.end(); i++)
 	{
 		std::string jointID = i->first;
 		JointConfig jointConfig = i->second;
 
-		rapidjson::Value jointJSON;
-		jointJSON.SetObject();
-
+		nlohmann::json jointJSON;
+		
 		// Joint Info
-		jointJSON.AddMember("id", rapidjson::Value(jointID.c_str(), jointID.length(), allocator), allocator);
-		jointJSON.AddMember("name", rapidjson::Value(jointConfig.name.c_str(), jointConfig.name.length(), allocator), allocator);
-		jointJSON.AddMember("asBuilt", jointConfig.asBuilt, allocator);
-		jointJSON.AddMember("type", rapidjson::Value((int)jointConfig.motion), allocator);
-
-
-
+		jointJSON["id"] = jointID;
+		jointJSON["name"] = jointConfig.name;
+		jointJSON["asBuilt"] = jointConfig.asBuilt;
+		jointJSON["type"] = (int)jointConfig.motion;
+		
 		// Driver Information
-		rapidjson::Value driverJSON;
+		nlohmann::json driverJSON;
 		if (jointConfig.driver != nullptr)
-			driverJSON = jointConfig.driver->getJSONObject(allocator);
+			driverJSON = jointConfig.driver->getJSONObject();
 
-		jointJSON.AddMember("driver", driverJSON, allocator);
+		jointJSON["driver"] = driverJSON;
+		
 
 		// Sensor Information
-		rapidjson::Value sensorsJSON;
-		sensorsJSON.SetArray();
+		nlohmann::json sensorsJSON = nlohmann::json::array();
 
 		for (std::shared_ptr<JointSensor> sensor : jointConfig.sensors)
-			sensorsJSON.PushBack(sensor->getJSONObject(allocator), allocator);
+			sensorsJSON.push_back(sensor->getJSONObject());
 
-		jointJSON.AddMember("sensors", sensorsJSON, allocator);
+		jointJSON["sensors"] = sensorsJSON;
 
 		// Add joint to JSON array
-		jointsJSON.PushBack(jointJSON, allocator);
+		jointsJson.push_back(jointJSON);
 	}
 
-	configJSON.AddMember("joints", jointsJSON, allocator);
+	configJSON["joints"] = jointsJson;
+
+	std::string jsonString = configJSON.dump();
 	return configJSON;
 }
 
-void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
+void ConfigData::loadJSONObject(nlohmann::json configJson)
 {
 	// Get general information 
-	if (configJSON.HasMember("name") && configJSON["name"].IsString())
-		robotName = configJSON["name"].GetString();
-
-	if (configJSON.HasMember("drivetrainType") && configJSON["drivetrainType"].IsNumber())
-		drivetrainType = (DrivetrainType)configJSON["drivetrainType"].GetInt();
-
-	if (configJSON.HasMember("convex") && configJSON["convex"].IsString()) {
-
-		
-		
-		std::string con = configJSON["convex"].GetString();
-		if (con == "BOX") {
-			convexType = BOX;
-		}
-
-		if (con == "VHACD_LOW") {
-			convexType = VHACD_LOW;
-		}
-
-		if (con == "VHACD_MID") {
-			convexType = VHACD_MID;
-		}
-
-		if (con == "VHACD_HIGH") {
-			convexType = VHACD_HIGH;
-		}
+	std::string jsonString = configJson.dump();
+	if (configJson["name"].is_string()) {
+		robotName = configJson["name"].get<std::string>();
 	}
 
-	if (configJSON.HasMember("weight") && configJSON["weight"].IsNumber()) {
-		weight = configJSON["weight"].GetFloat();
+	if (configJson["driveTrainType"].is_number_integer()) {
+		drivetrainType = (DrivetrainType)configJson["driveTrainType"].get<int>();
 	}
 
-	if (configJSON.HasMember("tempIconDir") && configJSON["tempIconDir"].IsString())
-		tempIconDir = configJSON["tempIconDir"].GetString();
+	if (configJson["convex"].is_number_integer()) {
+		convexType = (ConvexType)configJson["convex"];
+	}
+
+	if (configJson["weight"].is_number()) {
+		weight = configJson["weight"].get<double>();
+	}
+	
+	if (configJson["tempIconDir"].is_string()) {
+		tempIconDir = configJson["tempIconDir"].get<std::string>();
+	}
 
 	// Read each joint configuration
-	if (configJSON.HasMember("joints") && configJSON["joints"].IsArray()) {
-		auto jointsJSON = configJSON["joints"].GetArray();
-		for (rapidjson::SizeType i = 0; i < jointsJSON.Size(); i++)
+	nlohmann::json jointsJSON = configJson["joints"];
+	for (auto& joint : jointsJSON) {
+		std::string jointID = joint["id"].get<std::string>();
+		if (joint["name"].is_string()) {
+			joints[jointID].name = joint["name"].get<std::string>();
+		}
+		if (joint["asBuilt"].is_boolean()) {
+			joints[jointID].asBuilt = joint["asBuilt"].get<bool>();
+		}
+		if (joint["type"].is_number()) {
+			joints[jointID].motion = (ConfigData::JointMotionType)joint["type"].get<int>();
+		}
+
+
+		if (joint["driver"].is_object()) {
+			Driver driver;
+			driver.loadJSONObject(joint["driver"]);
+			joints[jointID].driver = std::make_unique<Driver>(driver);
+		}
+		else
+			joints[jointID].driver = nullptr;
+
+		if (joint["sensors"].is_array())
 		{
-			// Joint Info
-			std::string jointID = jointsJSON[i]["id"].GetString();
-
-			if (jointsJSON[i].HasMember("name") && jointsJSON[i]["name"].IsString())		joints[jointID].name = jointsJSON[i]["name"].GetString();
-			if (jointsJSON[i].HasMember("asBuilt") && jointsJSON[i]["asBuilt"].IsBool())	joints[jointID].asBuilt = jointsJSON[i]["asBuilt"].GetBool();
-			if (jointsJSON[i].HasMember("type") && jointsJSON[i]["type"].IsNumber())		joints[jointID].motion = (JointMotionType)jointsJSON[i]["type"].GetInt();
-
-			// Driver Information
-			if (jointsJSON[i].HasMember("driver") && jointsJSON[i]["driver"].IsObject())
-			{
-				Driver driver;
-				driver.loadJSONObject(jointsJSON[i]["driver"]);
-				joints[jointID].driver = std::make_unique<Driver>(driver);
-			}
-			else
-				joints[jointID].driver = nullptr;
-
-			// Sensor Information
-			if (jointsJSON[i].HasMember("sensors") && jointsJSON[i]["sensors"].IsArray())
-			{
-				auto sensorsJSONArray = jointsJSON[i]["sensors"].GetArray();
-				joints[jointID].sensors.clear();
-				for (rapidjson::SizeType j = 0; j < sensorsJSONArray.Size(); j++)
+			nlohmann::json sensorsJSONArray = joint["sensors"];
+			for (auto& sensorJson : sensorsJSONArray) {
+				if (sensorJson.is_object())
 				{
-					if (sensorsJSONArray[j].IsObject())
-					{
-						std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
-						sensor->loadJSONObject(sensorsJSONArray[j]);
-						joints[jointID].sensors.push_back(sensor);
-					}
+					std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
+					sensor->loadJSONObject(sensorJson);
+					joints[jointID].sensors.push_back(sensor);
 				}
 			}
 		}
 	}
+
+	
+	
 }
 
 std::string BXDJ::ConfigData::toString(DrivetrainType type)

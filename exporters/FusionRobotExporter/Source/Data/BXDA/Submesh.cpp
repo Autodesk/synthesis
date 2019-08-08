@@ -74,75 +74,10 @@ int SubMesh::getVertCount()
 
 void SubMesh::getConvexCollider(SubMesh & outputMesh, int level) const
 {
-	level = BXDJ::ConfigData::ConvexType::BOX;
+	
 	outputMesh = SubMesh();
 	std::vector<Triangle> triangles;
 
-	if (level == BXDJ::ConfigData::ConvexType::BOX || level == 0) {
-		Vector3<> min, max; bool first = true;
-
-		for (Vertex vertex : vertices)
-		{
-			if (vertex.location.x < min.x || first) min.x = vertex.location.x;
-			if (vertex.location.x > max.x || first) max.x = vertex.location.x;
-			if (vertex.location.y < min.y || first) min.y = vertex.location.y;
-			if (vertex.location.y > max.y || first) max.y = vertex.location.y;
-			if (vertex.location.z < min.z || first) min.z = vertex.location.z;
-			if (vertex.location.z > max.z || first) max.z = vertex.location.z;
-			first = false;
-		}
-
-		// Create vertices
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
-
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
-
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
-
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(1, 0, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
-
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 1, 0)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 1, 0)));
-
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 0, 1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 0, 1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, 0, 1)));
-		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, 0, 1)));
-
-	
-		triangles.push_back(Triangle(0, 1, 2));
-		triangles.push_back(Triangle(2, 3, 0));
-
-		triangles.push_back(Triangle(4, 5, 6));
-		triangles.push_back(Triangle(6, 7, 4));
-
-		triangles.push_back(Triangle(8, 9, 10));
-		triangles.push_back(Triangle(10, 11, 8));
-
-		triangles.push_back(Triangle(12, 13, 14));
-		triangles.push_back(Triangle(14, 15, 12));
-
-		triangles.push_back(Triangle(16, 17, 18));
-		triangles.push_back(Triangle(18, 19, 16));
-
-		triangles.push_back(Triangle(20, 21, 22));
-		triangles.push_back(Triangle(22, 23, 20));
-
-	}
 
 	if (level == BXDJ::ConfigData::ConvexType::VHACD_LOW || level == BXDJ::ConfigData::ConvexType::VHACD_MID|| level == BXDJ::ConfigData::ConvexType::VHACD_HIGH) {
 		VHACD::IVHACD::Parameters parms;
@@ -211,6 +146,72 @@ void SubMesh::getConvexCollider(SubMesh & outputMesh, int level) const
 
 		decomper->Clean();
 	}
+	else {
+		Vector3<> min, max; bool first = true;
+
+		for (Vertex vertex : vertices)
+		{
+			if (vertex.location.x < min.x || first) min.x = vertex.location.x;
+			if (vertex.location.x > max.x || first) max.x = vertex.location.x;
+			if (vertex.location.y < min.y || first) min.y = vertex.location.y;
+			if (vertex.location.y > max.y || first) max.y = vertex.location.y;
+			if (vertex.location.z < min.z || first) min.z = vertex.location.z;
+			if (vertex.location.z > max.z || first) max.z = vertex.location.z;
+			first = false;
+		}
+
+		// Create vertices
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(-1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(-1, 0, 0)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, -1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, -1, 0)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 0, -1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(0, 0, -1)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, min.z), Vector3<>(1, 0, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(1, 0, 0)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, min.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, min.z), Vector3<>(0, 1, 0)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 1, 0)));
+
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, max.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, max.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(min.x, min.y, max.z), Vector3<>(0, 0, 1)));
+		outputMesh.vertices.push_back(Vertex(Vector3<>(max.x, min.y, max.z), Vector3<>(0, 0, 1)));
+
+
+		triangles.push_back(Triangle(0, 1, 2));
+		triangles.push_back(Triangle(2, 3, 0));
+
+		triangles.push_back(Triangle(4, 5, 6));
+		triangles.push_back(Triangle(6, 7, 4));
+
+		triangles.push_back(Triangle(8, 9, 10));
+		triangles.push_back(Triangle(10, 11, 8));
+
+		triangles.push_back(Triangle(12, 13, 14));
+		triangles.push_back(Triangle(14, 15, 12));
+
+		triangles.push_back(Triangle(16, 17, 18));
+		triangles.push_back(Triangle(18, 19, 16));
+
+		triangles.push_back(Triangle(20, 21, 22));
+		triangles.push_back(Triangle(22, 23, 20));
+
+	}
+	
 	// Create surface
 	Surface newSurface;
 	newSurface.addTriangles(triangles);

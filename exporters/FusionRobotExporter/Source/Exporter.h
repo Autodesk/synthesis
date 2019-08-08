@@ -35,7 +35,7 @@ namespace SynthesisAddIn
 		/// \param config ConfigData to save.
 		/// \param document Fusion document to save ConfigData to.
 		///
-		static void saveConfiguration(BXDJ::ConfigData, Ptr<FusionDocument>);
+		static void saveConfiguration(BXDJ::ConfigData*, Ptr<FusionDocument>);
 
 		static void exportExample(); ///< Exports a basic BXDA file for binary analysis.
 		static void exportExampleXml(); ///< Exports a basic BXDJ file for XML analysis.

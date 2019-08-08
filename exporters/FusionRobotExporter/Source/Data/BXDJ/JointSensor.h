@@ -42,8 +42,8 @@ namespace BXDJ
 		///
 		JointSensor(Type = UNKNOWN);
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
-		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json getJSONObject() const;
+		void loadJSONObject(nlohmann::json);
 		nlohmann::json GetExportJSON();
 
 	private:

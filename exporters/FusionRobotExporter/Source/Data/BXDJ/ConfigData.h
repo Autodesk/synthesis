@@ -26,10 +26,10 @@ namespace BXDJ
 
 		enum ConvexType : int
 		{
-			BOX = 1,
-			VHACD_LOW = 2,
-			VHACD_MID = 3,
-			VHACD_HIGH = 4
+			BOX = 0,
+			VHACD_LOW = 1,
+			VHACD_MID = 2,
+			VHACD_HIGH = 3
 		};
 
 		ConvexType convexType;
@@ -92,8 +92,8 @@ namespace BXDJ
 		///
 		void filterJoints(std::vector<core::Ptr<fusion::AsBuiltJoint>> filterJoints);
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
-		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json getJSONObject() const;
+		void loadJSONObject(const nlohmann::json);
 
 		static std::string toString(DrivetrainType); ///< \return The name of the drivetrain.
 
