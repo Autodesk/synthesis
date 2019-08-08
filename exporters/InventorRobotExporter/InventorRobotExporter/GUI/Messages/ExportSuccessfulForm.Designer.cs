@@ -1,6 +1,6 @@
 ﻿namespace InventorRobotExporter.GUI.Messages
 {
-    partial class ExportSuccessful
+    partial class ExportSuccessfulForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportSuccessful));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportSuccessfulForm));
             this.okButton = new System.Windows.Forms.Button();
             this.description = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -81,7 +81,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ExportSuccessful";
+            this.Name = "ExportSuccessfulForm";
             this.Text = "Export Complete";
             this.TopMost = true;
             this.ResumeLayout(false);
