@@ -157,7 +157,7 @@ namespace InventorRobotExporter.Managers
                 //MessageBox.Show("Your robot was successfully exported to " + robotFolderPath, "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (!RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis)
                 {
-                    new ExportSuccessful(robotFolderPath).ShowDialog();
+                    new ExportSuccessfulForm(robotFolderPath).ShowDialog();
                 }
 
                 return true;
@@ -511,37 +511,5 @@ namespace InventorRobotExporter.Managers
         {
             return RobotMeshes[RobotBaseNode.ListAllNodes().IndexOf(node)];
         }
-
-        /// <summary>
-        /// Loops through the robot's joints to check whether the user has joints not supported by Synthesis.
-        /// </summary>
-        /// <returns></returns>
-        public bool VerifyJoints()
-        {
-            bool allValidJoints = true;
-            UnsupportedComponents unsupportedComponents = new UnsupportedComponents();
-
-            foreach (RigidNode_Base node in RobotExporterAddInServer.Instance.RobotDataManager.RobotBaseNode.ListAllNodes())
-            {
-                if (node.GetSkeletalJoint() != null)
-                {
-                    if (node.GetSkeletalJoint().GetJointType() != SkeletalJointType.ROTATIONAL &&
-                        node.GetSkeletalJoint().GetJointType() != SkeletalJointType.LINEAR)
-                    {
-                        unsupportedComponents.AddUnsupportedComponent(ToStringUtils.NodeNameString(node), "Joint", node.GetSkeletalJoint().GetJointType().ToString());
-                        allValidJoints = false;
-                    }
-                }
-            }
-
-            if (!allValidJoints)
-            {
-                unsupportedComponents.ShowDialog();
-            }
-
-            return allValidJoints;
-
-        }
-
     }
 }
