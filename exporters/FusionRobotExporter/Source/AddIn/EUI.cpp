@@ -220,7 +220,7 @@ void EUI::saveConfiguration(std::string jsonConfig)
 
 }
 
-void EUI::startExportRobot(std::string jsonData)
+void EUI::startExportRobot(std::string jsonData, bool openSynthesis)
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
@@ -249,7 +249,7 @@ void EUI::startExportRobot(std::string jsonData)
 	}
 
 	killExportThread = false;
-	exportRobotThread = new std::thread(&EUI::exportRobot, this, config);
+	exportRobotThread = new std::thread(&EUI::exportRobot, this, config, openSynthesis);
 #else
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
@@ -284,7 +284,7 @@ void EUI::updateProgress(double percent)
 
 }
 
-void EUI::exportRobot(BXDJ::ConfigData config)
+void EUI::exportRobot(BXDJ::ConfigData config, bool openSynthesis)
 {
 	//UI->messageBox("Robot Exported successfully to: ");
 	openProgressPalette();
@@ -299,7 +299,16 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 		// Add delay before closing so that loading bar has time to animate
 		if (!killExportThread)
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
-		
+
+		if (openSynthesis)
+		{
+			std::string cs = "start \"\" \"C:/Program Files/Autodesk/Synthesis/Synthesis/Synthesis.exe\" -robot \"" + Filesystem::getCurrentRobotDirectory(config.robotName) + "\"";
+			try
+			{
+				system(cs.c_str());
+			}
+			catch (const std::exception& e) {}
+		}
 
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		//UI->messageBox("Robot Exported successfully to: ");

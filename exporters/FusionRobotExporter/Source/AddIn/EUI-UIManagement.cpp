@@ -186,7 +186,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, true, true, 370, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, true, true, 450, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -240,7 +240,7 @@ void EUI::openJointEditorPalette()
 	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
 	{
 		EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
-		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 200, 200); // TODO: Make this cross-platform
+		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 90, 90); // TODO: Is this cross-platform?
 		index++;
 	};
 
@@ -449,28 +449,27 @@ void EUI::openFinishPalette()
 
 	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument()); // Load joint config and update with current joints in document
 
-
-	PWSTR path = NULL;
-
-	std::string fieldNames = "[";
-
-	HRESULT result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
-	if (SUCCEEDED(result)) {
-		std::wstring relativeSynthesis = L"\\Autodesk\\Synthesis\\Fields";
-		for (const auto& entry : std::experimental::filesystem::directory_iterator(path+relativeSynthesis))
-			fieldNames+="\""+entry.path().filename().string()+"\",";
-	}
-	fieldNames.pop_back(); // remove last comma
-	fieldNames += "]";
-
-	CoTaskMemFree(path);
-	finishPalette->sendInfoToHTML("fieldNames", fieldNames); // TODO: Why is this duplicated
-	finishPalette->isVisible(true);
-	finishPalette->sendInfoToHTML("fieldNames", fieldNames);
+	// Field Names
+	// PWSTR path = NULL;
+	//
+	// std::string fieldNames = "[";
+	//
+	// HRESULT result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &path);
+	// if (SUCCEEDED(result)) {
+	// 	std::wstring relativeSynthesis = L"\\Autodesk\\Synthesis\\Fields";
+	// 	for (const auto& entry : std::experimental::filesystem::directory_iterator(path+relativeSynthesis))
+	// 		fieldNames+="\""+entry.path().filename().string()+"\",";
+	// }
+	// fieldNames.pop_back(); // remove last comma
+	// fieldNames += "]";
+	//
+	// CoTaskMemFree(path);
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
-		
-	}, fieldNames);
+		finishPalette->sendInfoToHTML("joints", configJSON); // TODO: Why is this duplicated
+		finishPalette->isVisible(true);
+		finishPalette->sendInfoToHTML("joints", configJSON);
+	}, config.toJSONString());
 }
 
 void EUI::closeFinishPalette()
@@ -492,7 +491,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Sensors", "palette/sensors.html", false, true, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, true, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
