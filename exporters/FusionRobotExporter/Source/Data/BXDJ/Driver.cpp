@@ -118,6 +118,7 @@ nlohmann::json BXDJ::Driver::GetExportJson()
 	exportJson["InputGear"] = inputGear;
 	exportJson["OutputGear"] = outputGear;
 	exportJson["hasBrake"] = false;
+
 	
 	nlohmann::json metaJson;
 	if (getWheel() != nullptr) {
@@ -148,6 +149,14 @@ void Driver::loadJSONObject(const nlohmann::json driverJSON)
 
 		if (driverJSON["portTwo"].is_number()) {
 			portTwo = driverJSON["portTwo"].get<int>();
+		}
+
+		if (driverJSON["outputGear"].is_number()) {
+			outputGear = driverJSON["outputGear"].get<double>();
+		}
+
+		if (driverJSON["inputGear"].is_number()) {
+			inputGear = driverJSON["inputGear"].get<double>();
 		}
 
 
