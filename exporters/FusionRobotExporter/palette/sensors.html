@@ -7,49 +7,69 @@
     </head>
     <body>
         <script src="js/sensors.js"></script>
-        <div id="sensor-settings">
-            <fieldset id="sensor-config-template" class="sensor-config">
-                <span class="field-label">Sensor: </span>
-                <span class="field-select"><select class="sensor-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
-                    <option value="1">Encoder</option>
-                </select></span>
+        <fieldset id="port-fieldset">
+            <legend class="port-fieldset-legend">Driver Port</legend>
+            <select id="signal" class="field-label">
+                <option value="2">CAN</option>
+                <option value="1">PWM</option>
+            </select>
+            <span class="field-select" style="padding-right: 2px">
+                <input id="port" type="number" min="3" max="999" step="1">
+            </span>
+        </fieldset>
+        <fieldset id="gear-fieldset">
+            <legend class="gear-fieldset-legend">Gear Ratio</legend>
+            <span class="field-select" style="padding-right: 2px">
+                <input id="gear" type="number" min="0.001" max="999">
+            </span>
+        </fieldset>
+        <fieldset id="sensor-fieldset">
+            <legend class="sensor-fieldset-legend">Sensor Setup</legend>
+            <div id="sensor-settings">
+                <fieldset id="sensor-config-template" class="sensor-config">
+                    <span class="field-label">Sensor: </span>
+                    <span class="field-select"><select class="sensor-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
+                        <option value="1">Encoder</option>
+                    </select></span>
+    
+                    <select class="field-label port-signal">
+                        <option value="1">DIO</option>
+                        <!--<option value="2">Analog</option>-->
+                    </select>
+                    <span class="field-select"><select class="port-number-a">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                    <select class="port-number-b">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select></span>
+                    
+                    <span class="field-label"><span class="conversion-factor-label">Conversion Factor</span>: </span>
+                    <span class="field-input"><input class="conversion-factor" type="number" value="1.0"></span>
+    
+                    <button class="delete-sensor-button" type="button" onclick="deleteSensor(this.parentNode)">Delete</button>
+                </fieldset>
+            </div>
+            
+            <button id='new-sensor-button' type='button' onclick='newSensor()'>New Sensor</button>
+        </fieldset>
 
-                <select class="field-label port-signal">
-                    <option value="1">DIO</option>
-                    <!--<option value="2">Analog</option>-->
-                </select>
-                <span class="field-select"><select class="port-number-a">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                </select>
-                <select class="port-number-b">
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                </select></span>
-                
-                <span class="field-label"><span class="conversion-factor-label">Conversion Factor</span>: </span>
-                <span class="field-input"><input class="conversion-factor" type="number" value="1.0"></span>
-
-                <button class="delete-sensor-button" type="button" onclick="deleteSensor(this.parentNode)">Delete</button>
-            </fieldset>
-        </div>
-        
-        <button id='new-sensor-button' type='button' onclick='newSensor()'>New Sensor</button>
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>Save</button>
+        <button id='save-button' type='button' onclick='sendInfoToFusion()'>OK</button>
 
         <script>
             var sensorTemplate = document.getElementById('sensor-config-template').cloneNode(true);

@@ -14,7 +14,7 @@ ConfigData::ConfigData()
 {
 	robotName = "unnamed";
 	drivetrainType = TANK;
-	weight.value = 10;
+	weight = 10;
 	tempIconDir = "";
 	convexType = BOX;
 }
@@ -24,7 +24,9 @@ ConfigData::ConfigData(const ConfigData & other)
 	robotName = other.robotName;
 	drivetrainType = other.drivetrainType;
 	tempIconDir = other.tempIconDir;
+	weight = other.weight;
 	convexType = other.convexType;
+
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
 		joints[i->first] = i->second;
 }
@@ -185,6 +187,7 @@ nlohmann::json ConfigData::getJSONObject() const
 
 
 	// Weight
+	configJSON.AddMember("weight", rapidjson::Value(weight), allocator);
 
 	nlohmann::json weightJSON;	
 	weightJSON["value"] = weight.value;

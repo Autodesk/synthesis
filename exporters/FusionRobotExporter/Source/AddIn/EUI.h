@@ -42,14 +42,16 @@ namespace SynthesisAddIn
 
 		// UI Management
 		void prepareAllPalettes(); ///< Creates all palettes
-		void hideAllPalettes();
+		void closeEditorPalettes();
+		void disableEditorButtons();
+		void enableEditorButtons();
 		void closeAllPalettes();
 
 		void openDriveTypePalette();
-		void closeDriveTypePalette(std::string data);
+		void closeDriveTypePalette();
 
 		void openDriveWeightPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
-		void closeDriveWeightPalette(std::string data); ///< Closes the robot exporter configuration palette. Enables the export button.
+		void closeDriveWeightPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
 		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
@@ -94,7 +96,7 @@ namespace SynthesisAddIn
 		///
 		void saveConfiguration(std::string jsonConfig);
 
-		void startExportRobot(std::string); ///< Starts a thread for exporting the robot (EUI::exportRobot).
+		void startExportRobot(bool openSynthesis); ///< Starts a thread for exporting the robot (EUI::exportRobot).
 		void cancelExportRobot(); ///< Cancels any export thread.
 
 		///
@@ -231,6 +233,6 @@ namespace SynthesisAddIn
 		/// Used with threading to export the robot.
 		/// \param config Configuration to export the robot with.
 		///
-		void exportRobot(BXDJ::ConfigData);
+		void exportRobot(BXDJ::ConfigData, bool openSynthesis);
 	};
 }

@@ -220,13 +220,12 @@ void EUI::saveConfiguration(std::string jsonConfig)
 
 }
 
-void EUI::startExportRobot(std::string jsonData)
+void EUI::startExportRobot(bool openSynthesis)
 {
 	jointEditorPalette->isVisible(false);
 	sensorsPalette->isVisible(false);
 
-	BXDJ::ConfigData config;
-	config = Exporter::loadConfiguration(app->activeDocument());
+	BXDJ::ConfigData config = Exporter::loadConfiguration(app->activeDocument());
 
 
 	//Check if file already exists
@@ -236,6 +235,7 @@ void EUI::startExportRobot(std::string jsonData)
 		DialogResults res = UI->messageBox("Robot Export Already Exists! Overwrite?", "Robot Export", MessageBoxButtonTypes::YesNoButtonType, WarningIconType);
 		if (res != DialogYes) {
 			cancelExportRobot();
+			return;
 		}
 	}
 
@@ -250,7 +250,7 @@ void EUI::startExportRobot(std::string jsonData)
 	}
 
 	killExportThread = false;
-	exportRobotThread = new std::thread(&EUI::exportRobot, this, config);
+	exportRobotThread = new std::thread(&EUI::exportRobot, this, config, openSynthesis);
 #else
 	Exporter::exportMeshes(config, app->activeDocument(), [this](double percent)
 	{
@@ -285,7 +285,7 @@ void EUI::updateProgress(double percent)
 
 }
 
-void EUI::exportRobot(BXDJ::ConfigData config)
+void EUI::exportRobot(BXDJ::ConfigData config, bool openSynthesis)
 {
 	//UI->messageBox("Robot Exported successfully to: ");
 	openProgressPalette();
@@ -300,7 +300,16 @@ void EUI::exportRobot(BXDJ::ConfigData config)
 		// Add delay before closing so that loading bar has time to animate
 		if (!killExportThread)
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
-		
+
+		if (openSynthesis)
+		{
+			std::string cs = "start \"\" \"C:/Program Files/Autodesk/Synthesis/Synthesis/Synthesis.exe\" -robot \"" + Filesystem::getCurrentRobotDirectory(config.robotName) + "\"";
+			try
+			{
+				system(cs.c_str());
+			}
+			catch (const std::exception& e) {}
+		}
 
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		//UI->messageBox("Robot Exported successfully to: ");

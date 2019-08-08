@@ -37,7 +37,7 @@ float RotationalJoint::getCurrentAngle() const
 
 bool RotationalJoint::hasLimits() const
 {
-	return fusionJointMotion->rotationLimits()->isMinimumValueEnabled() || fusionJointMotion->rotationLimits()->isMaximumValueEnabled();
+	return fusionJointMotion->rotationLimits()->isMinimumValueEnabled() && fusionJointMotion->rotationLimits()->isMaximumValueEnabled();
 }
 
 float RotationalJoint::getMinAngle() const
@@ -45,7 +45,7 @@ float RotationalJoint::getMinAngle() const
 	if (fusionJointMotion->rotationLimits()->isMinimumValueEnabled())
 		return (float)fusionJointMotion->rotationLimits()->minimumValue();
 	else
-		return std::numeric_limits<float>::min();
+		return 0;
 }
 
 float RotationalJoint::getMaxAngle() const
@@ -53,7 +53,7 @@ float RotationalJoint::getMaxAngle() const
 	if (fusionJointMotion->rotationLimits()->isMaximumValueEnabled())
 		return (float)fusionJointMotion->rotationLimits()->maximumValue();
 	else
-		return std::numeric_limits<float>::max();
+		return 0;
 }
 
 void RotationalJoint::applyConfig(const ConfigData & config)
@@ -117,18 +117,16 @@ nlohmann::json RotationalJoint::GetJson() {
 	jointJson["currentAngularPosition"] = getCurrentAngle();
 	jointJson["hasAngularLimit"] = hasLimits();
 
-	double min = roundf(getMinAngle() * 100) / 100;
-	if(!min){
-		min = 0;
- 	}
-
-	double max = roundf(getMaxAngle() * 100) / 100;
-	if (max == NULL) {
-		max = 0;
+	// Limits
+	if (hasLimits())
+	{
+		jointJson["angularLimitLow"] = getMinAngle();
+		jointJson["angularLimitHigh"] = getMaxAngle();
+	}else{
+	    jointJson["angularLimitLow"] = 0.0;
+		jointJson["angularLimitHigh"] = 0.0;
 	}
-
-	jointJson["angularLimitLow"] = 0.0;
-	jointJson["angularLimitHigh"] = 0.0;
+		
 	jointJson["typeSave"] = "ROTATIONAL";
 	jointJson["weight"] = getWeightData();
 

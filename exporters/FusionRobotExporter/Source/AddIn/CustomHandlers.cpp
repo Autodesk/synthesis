@@ -85,11 +85,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 // Submit Exporter Form Event
 void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
-	if (eventArgs->action() == "drivetrain_type")
-		eui->closeDriveTypePalette(eventArgs->data());
-	else if (eventArgs->action() == "dt_weight_save")
-		eui->closeDriveWeightPalette("");
-	else if (eventArgs->action() == "highlight")
+	if (eventArgs->action() == "highlight")
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
 	else if (eventArgs->action() == "edit_sensors")
 		eui->openSensorsPalette(eventArgs->data());
@@ -97,18 +93,40 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
-	else if (eventArgs->action() == "save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
+	else if (eventArgs->action() == "close")
+	{
+		if (eventArgs->data() == "drivetrain_type")
+		{
+			eui->closeDriveTypePalette();
+		} else if (eventArgs->data() == "drivetrain_weight")
+		{
+			eui->closeDriveWeightPalette();
+		}
+		else if (eventArgs->data() == "joint_editor")
+		{
+			eui->closeSensorsPalette();
+			eui->closeJointEditorPalette();
+		} else if (eventArgs->data() == "settings") {
+			eui->closeSettingsPalette("");
+		} else if (eventArgs->data() == "export")
+		{
+			eui->closeFinishPalette();
+		}
+	}
+	else if (eventArgs->action() == "save" || eventArgs->action() == "dt_weight_save" || eventArgs->action() == "drivetrain_type" || eventArgs->action() == "export" || eventArgs->action() == "export-and-open") {
+		eui->saveConfiguration(eventArgs->data());
+
 		if (eventArgs->action() == "save") {
 			eui->closeJointEditorPalette();
-			eui->saveConfiguration(eventArgs->data());
 		}
 		else if (eventArgs->action() == "drivetrain_type") {
-			eui->closeDriveTypePalette("");
-			eui->saveConfiguration(eventArgs->data());
+			eui->closeDriveTypePalette();
+		}
+		else if (eventArgs->action() == "dt_weight_save") {
+			eui->closeDriveWeightPalette();
 		}
 		else {// export
-			eui->saveConfiguration(eventArgs->data());
-			eui->startExportRobot(""); // TODO: export-and-open is lazy, include this in the JSON
+			eui->startExportRobot(eventArgs->action() == "export-and-open"); // TODO: export-and-open is lazy, include this in the JSON
 		}
 	}
 }
@@ -117,9 +135,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& eventArgs)
 {
 	if (id == SynthesisAddIn::PALETTE_DT_TYPE)
-		eui->closeDriveTypePalette("");
+		eui->closeDriveTypePalette();
 	else if (id == SynthesisAddIn::PALETTE_DT_WEIGHT)
-		eui->closeDriveWeightPalette("");
+		eui->closeDriveWeightPalette();
 	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_GUIDE)
