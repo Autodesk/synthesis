@@ -51,7 +51,8 @@ namespace InventorRobotExporter.GUI.Messages
                     if (node.GetSkeletalJoint().GetJointType() != SkeletalJointType.ROTATIONAL &&
                         node.GetSkeletalJoint().GetJointType() != SkeletalJointType.LINEAR)
                     {
-                        unsupportedComponents.AddUnsupportedComponent(ToStringUtils.NodeNameString(node), "Joint", node.GetSkeletalJoint().GetJointType().ToString());
+                        var jointName = node.GetSkeletalJoint().GetJointType().ToString();
+                        unsupportedComponents.AddUnsupportedComponent(ToStringUtils.NodeNameString(node), "Joint", jointName.Substring(0, 1).ToUpper()+jointName.Substring(1).ToLower());
                         allValidJoints = false;
                     }
                 }
