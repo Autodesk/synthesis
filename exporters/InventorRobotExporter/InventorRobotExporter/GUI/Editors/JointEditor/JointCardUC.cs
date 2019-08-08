@@ -79,9 +79,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             if (jointDriver == null)
             {
                 jointTypeComboBox.SelectedItem = "(Select an option)";
-
-                HighlightCard();
-
             }
             else if (jointDriver.port1 <= 2) // Drivetrain wheel
             {
@@ -218,30 +215,23 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 AddHighlightAction(control);
         }
 
-        private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            DoLayout();
-
-            HighlightCard();
-        }
+        private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) => DoLayout();
 
         private void DoLayout()
         {
-            switch ((string) jointTypeComboBox.SelectedItem)
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
             {
-                case "Drivetrain Wheel":
+                RemoveMechControls();
+                RemoveDrivetrainControls();
+                advancedButton.Visible = false;
+                DriverLayout.BackColor = Color.FromArgb(227, 206, 169);
+            } else {
+                advancedButton.Visible = true;
+                DriverLayout.ResetBackColor();
+                if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                     InsertDriveTrainControls();
-                    advancedButton.Visible = true;
-                    return;
-                case "Mechanism Joint":
+                else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
                     InsertTableLayoutControls();
-                    advancedButton.Visible = true;
-                    return;
-                default:
-                    RemoveMechControls();
-                    RemoveDrivetrainControls();
-                    advancedButton.Visible = false;
-                    return;
             }
         }
 
@@ -281,27 +271,9 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void AdvancedButton_Click(object sender, EventArgs e)
         {
-            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
-                return;
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)") return;
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }
-
-        private void HighlightCard()
-        {
-            Color highlightColor = Color.FromArgb(227,206,169);
-
-            DriverLayout.BackColor = highlightColor;
-
-            if (jointTypeComboBox.SelectedIndex != 0)
-            {
-                DriverLayout.ResetBackColor();
-            }
-            else
-            {
-                DriverLayout.BackColor = highlightColor;
-            }
-        }
     }
-
 }
