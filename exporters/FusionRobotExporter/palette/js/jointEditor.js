@@ -1,3 +1,4 @@
+var noJoints = false;
 let openFieldsetSensors = null;
 
 // Prompts the Fusion add-in for joint data
@@ -12,7 +13,11 @@ function highlightJoint(jointID)
 function editSensors(fieldset)
 {
     openFieldsetSensors = fieldset;
-    adsk.fusionSendData('edit_sensors', fieldset.dataset.sensors);
+    const jointTypeComboBox = getElByClass(fieldset, 'joint-type');
+    if (jointTypeComboBox.value === "none") return;
+    const sensors = JSON.parse(fieldset.dataset.sensors);
+    sensors.isDrivetrain = jointTypeComboBox.value === "drivetrain";
+    adsk.fusionSendData('edit_sensors', JSON.stringify(sensors));
 }
 
 // Handles the receiving of data from Fusion
@@ -24,6 +29,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action === 'joints')
                 {
+                    document.getElementById('save-button').innerHTML = "OK";
                     const configData = JSON.parse(data);
                     console.log("Input Joint Data Data: ", configData);
                     loadData(configData);
@@ -74,7 +80,9 @@ function loadData(configData)
     while (existing.length > 0)
         existing[0].parentNode.removeChild(existing[0]);
 
-    const noJoints = joints.length === 0;
+    noJoints = joints.length === 0;
+    if (noJoints)
+        document.getElementById("nodata").style.display = "none";
     setVisible(document.getElementById("nodata"), noJoints);
     setVisible(document.getElementById("save-button"), !noJoints);
     if (noJoints) return;
@@ -167,19 +175,27 @@ function doLayout(fieldset)
     if (fieldset == null)
         return;
 
-    const jointType = getElByClass(fieldset, 'joint-type').value;
+    const jointTypeDiv = getElByClass(fieldset, 'joint-type');
+    const jointType = jointTypeDiv.value;
     const drivetrainDiv = getElByClass(fieldset, 'drivetrain-options');
     const mechanismDiv = getElByClass(fieldset, 'mechanism-options');
+    const advancedButton = getElByClass(fieldset, 'edit-sensors-button');
+
+    jointTypeDiv.style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
 
     if (jointType === "none") {
         setVisible(drivetrainDiv, false);
         setVisible(mechanismDiv, false);
-    } else if (jointType === "drivetrain") {
-        setVisible(drivetrainDiv, true);
-        setVisible(mechanismDiv, false);
+        setVisible(advancedButton, false);
     } else {
-        setVisible(drivetrainDiv, false);
-        setVisible(mechanismDiv, true);
+        setVisible(advancedButton, true);
+        if (jointType === "drivetrain") {
+            setVisible(drivetrainDiv, true);
+            setVisible(mechanismDiv, false);
+        } else {
+            setVisible(drivetrainDiv, false);
+            setVisible(mechanismDiv, true);
+        }
     }
 }
 
@@ -276,13 +292,6 @@ function sendInfoToFusion()
 }
 
 // Sends the data to the Fusion add-in
-function exportRobot()
-{
-    if (document.getElementById('name').value.length === 0)
-    {
-        alert("Please enter a name.");
-        return;
-    }
-
-    adsk.fusionSendData('export', JSON.stringify(saveValues()));
+function cancel() {
+    adsk.fusionSendData("close", "joint_editor");
 }

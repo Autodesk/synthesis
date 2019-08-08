@@ -14,7 +14,7 @@ ConfigData::ConfigData()
 {
 	robotName = "unnamed";
 	drivetrainType = TANK;
-	weight.value = 10;
+	weight = 10;
 	tempIconDir = "";
 	convexType = BOX;
 }
@@ -24,6 +24,8 @@ ConfigData::ConfigData(const ConfigData & other)
 	robotName = other.robotName;
 	drivetrainType = other.drivetrainType;
 	tempIconDir = other.tempIconDir;
+	weight = other.weight;
+	convexType = other.convexType;
 
 	for (auto i = other.joints.begin(); i != other.joints.end(); i++)
 		joints[i->first] = i->second;
@@ -209,13 +211,7 @@ rapidjson::Value ConfigData::getJSONObject(rapidjson::MemoryPoolAllocator<>& all
 
 
 	// Weight
-
-	rapidjson::Value weightJSON;
-	weightJSON.SetObject();
-	weightJSON.AddMember("value", rapidjson::Value(weight.value), allocator);
-
-
-	configJSON.AddMember("weight", weightJSON, allocator);
+	configJSON.AddMember("weight", rapidjson::Value(weight), allocator);
 
 	configJSON.AddMember("tempIconDir", rapidjson::Value(tempIconDir.c_str(), tempIconDir.length(), allocator), allocator);
 
@@ -278,30 +274,24 @@ void ConfigData::loadJSONObject(const rapidjson::Value& configJSON)
 		
 		std::string con = configJSON["convex"].GetString();
 		if (con == "BOX") {
-			con = BOX;
+			convexType = BOX;
 		}
 
 		if (con == "VHACD_LOW") {
-			con = VHACD_LOW;
+			convexType = VHACD_LOW;
 		}
 
 		if (con == "VHACD_MID") {
-			con = VHACD_MID;
+			convexType = VHACD_MID;
 		}
 
 		if (con == "VHACD_HIGH") {
-			con = VHACD_HIGH;
+			convexType = VHACD_HIGH;
 		}
 	}
 
-	if (configJSON.HasMember("weight") && configJSON["weight"].IsObject()) {
-		const auto weightJson = configJSON["weight"].GetObject();
-
-		if (weightJson.HasMember("value")) {
-			weight.value = weightJson["value"].GetDouble();
-			if (weightJson.HasMember("unit") && weightJson["unit"].GetInt() == 0)
-				weight.value /= 2.20462f;
-		}
+	if (configJSON.HasMember("weight") && configJSON["weight"].IsNumber()) {
+		weight = configJSON["weight"].GetFloat();
 	}
 
 	if (configJSON.HasMember("tempIconDir") && configJSON["tempIconDir"].IsString())

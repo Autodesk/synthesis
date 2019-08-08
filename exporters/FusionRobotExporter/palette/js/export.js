@@ -7,6 +7,7 @@ window.fusionJavaScriptHandler =
             {
                 if (action === 'joints')
                 {
+                    document.getElementById('finished-button').innerHTML = "Export Robot";
                     console.log("Receiving joint info...");
                     console.log(data);
                     loadConfig(JSON.parse(data));
@@ -32,8 +33,8 @@ window.fusionJavaScriptHandler =
 // Populates the form with joints
 function loadConfig(configData)
 {
-    document.getElementById('name').value = configData.name;
-    document.getElementById('convex').value = configData.convex;
+    document.getElementById('name').value = configData.name === undefined ? "unnamed" : configData.name;
+    document.getElementById('convex').value = configData.convex === undefined ? "BOX" : configData.convex;
 }
 
 // Disable submit button if no name entered
@@ -67,4 +68,8 @@ function exportRobot()
     // TODO: This is lazy, put this in the JSON
     var openSynthesisCheckbox = document.getElementById('open-synthesis');
     adsk.fusionSendData(openSynthesisCheckbox.checked ? 'export-and-open' : 'export', JSON.stringify(saveConfig()));
+}
+
+function cancel() {
+    adsk.fusionSendData("close", "export");
 }

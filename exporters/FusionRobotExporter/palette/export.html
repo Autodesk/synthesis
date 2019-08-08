@@ -21,20 +21,22 @@
             <div id="basic-info">
                 <span class="field-label">Robot Name: </span>
                 <span class="field-input"><input type="text" id="name" value="unnamed" onchange="validateForm()"></span>
-<!--                <input type="checkbox" checked> Export with colors<br>-->
-                <input id="open-synthesis" type="checkbox" checked> Open Synthesis<br>
-                <span class="field-label">Collision Quality: </span>
-                <span class="field-input">
+                <span class="field-label" style="display:none">Collision Mesh Quality: </span>
+                <span class="field-input" style="display:none">
                     <select id="convex">
-                        <option value="BOX">Rough (Bounding Box)</option>
+                        <option value="BOX" selected>Rough (Bounding Box)</option>
                         <option value="VHACD_LOW">Basic (VHACD Low)</option>
                         <option value="VHACD_MID">Medium (VHACD Mid)</option>
                         <option value="VHACD_HIGH">High (VHACD High)</option>
                     </select>
                 </span>
+                <span class="field-label">Open Synthesis After Export: </span>
+                <span class="field-input">
+                    <input id="open-synthesis" style="width: auto" type="checkbox" checked><br>
+                </span>
             </div>
         </div>
-
-        <button id='finished-button' type='button' onclick='exportRobot()'>Export Robot</button>
+        <button id='finished-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(exportRobot, 100)'>Export Robot</button>
+        <button type="button" onclick="cancel()">Cancel</button>
     </body>
 </html>
