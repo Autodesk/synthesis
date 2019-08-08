@@ -275,7 +275,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         {
             if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
                 return;
-            AnalyticsUtils.LogPage("Optional Settings Editor");
+            AnalyticsUtils.LogPage("Joint Editor", "Optional Settings Editor");
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }

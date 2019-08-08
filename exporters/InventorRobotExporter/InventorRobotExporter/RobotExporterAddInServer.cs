@@ -169,7 +169,8 @@ namespace InventorRobotExporter
             {
                 jointViewKey.Visible = !jointViewKey.Visible;
                 HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
-                if (jointViewKey.Visible) AnalyticsUtils.LogPage("Joint View");
+                if (jointViewKey.Visible)
+                    AnalyticsUtils.LogPage("Joint View");
             };
             precheckPanel.CommandControls.AddButton(dofButton, true);
 
@@ -263,12 +264,12 @@ namespace InventorRobotExporter
                     {
                         if (RobotDataManager.ExportRobot())
                         {
-                            AnalyticsUtils.LogEvent("Exporter", "Succeeded");
+                            AnalyticsUtils.LogEvent("Export", "Succeeded");
                             if (Instance.AddInSettingsManager.OpenSynthesis) SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
                         }
                         else
                         {
-                            AnalyticsUtils.LogEvent("Exporter", "Cancelled");
+                            AnalyticsUtils.LogEvent("Export", "Cancelled");
                         }
                     }
                 }

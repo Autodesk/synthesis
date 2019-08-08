@@ -40,8 +40,12 @@ namespace InventorRobotExporter.Utilities
             var res = BASE_URL;
             res += "?v=1";
             res += "&tid=" + TRACKING;
-            res += "&ds=" + "inventor"; // TODO: Inventor version analytics
             res += "&uid="+ userId;
+            res += "&ds=" + "app";
+            var version = RobotExporterAddInServer.Instance.Application.SoftwareVersion;
+            res += "&dr=" + "inventor";
+            res += "&ck=" + ToUrlString(version.DisplayVersion);
+            res += "&cc=" + ToUrlString(version.BuildIdentifier.ToString());
             return res;
         }
 
@@ -76,10 +80,15 @@ namespace InventorRobotExporter.Utilities
         }
         public static void LogPage(string page)
         {
+            LogPage("", page);
+        }
+        
+        public static void LogPage(string baseUrl, string page)
+        {
             var url = GetBaseURL();
             url += "&t=pageview";
-            url += "&dh=inventor.plugin";
-            url += "&dp=" + "/" + ToUrlString(page.Replace(" ", string.Empty));
+            url += "&dh=inventor";
+            url += "&dp=" + ToUrlString(baseUrl.Replace(" ", string.Empty)) + "/" + ToUrlString(page.Replace(" ", string.Empty));
             url += "&dt=" + ToUrlString(page);
             PostAsync(url);
         }

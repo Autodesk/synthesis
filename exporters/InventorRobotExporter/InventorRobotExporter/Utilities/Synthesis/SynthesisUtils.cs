@@ -15,7 +15,7 @@ namespace InventorRobotExporter.Utilities.Synthesis
             if (robotName != null)
             {
                 Process.Start(SynthesisPath, $"-robot \"{RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + robotName}\"");
-                AnalyticsUtils.LogEvent("Exporter", "Opened Synthesis");
+                AnalyticsUtils.LogEvent("System", "Launched Synthesis");
             }
         }
     }
