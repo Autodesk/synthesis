@@ -224,11 +224,17 @@
     <Compile Include="GUI\Messages\FirstLaunchInfoForm.Designer.cs">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Messages\ExportSuccessful.cs">
+    <Compile Include="GUI\Messages\ExportSuccessfulForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Messages\ExportSuccessful.Designer.cs">
-      <DependentUpon>ExportSuccessful.cs</DependentUpon>
+    <Compile Include="GUI\Messages\ExportSuccessfulForm.Designer.cs">
+      <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Messages\UnsupportedComponentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Messages\UnsupportedComponentsForm.Designer.cs">
+      <DependentUpon>UnsupportedComponentsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Managers\AddInSettingsManager.cs" />
     <Compile Include="Managers\HighlightManager.cs" />
@@ -359,11 +365,14 @@
     <EmbeddedResource Include="GUI\Loading\LoadingBar.resx">
       <DependentUpon>LoadingBar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Messages\ExportSuccessful.resx">
-      <DependentUpon>ExportSuccessful.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Messages\ExportSuccessfulForm.resx">
+      <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
       <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Messages\UnsupportedComponentsForm.resx">
+      <DependentUpon>UnsupportedComponentsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
