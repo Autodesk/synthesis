@@ -86,6 +86,17 @@ public class SettingsState : State {
         selectedQuality = QualitySettings.GetQualityLevel();
         collect = PlayerPrefs.GetInt("gatherData", 1);
 
+        int resID = 0;
+        for (int i = 0; i < resDD.options.Count; i++) {
+            if (resDD.options[i].text.Equals(selectedResolution)) {
+                resID = i;
+                break;
+            }
+        }
+        resDD.SetValueWithoutNotify(resID);
+        scrDD.SetValueWithoutNotify(selectedScreenMode);
+        qualDD.SetValueWithoutNotify(selectedQuality);
+
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
