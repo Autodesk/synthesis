@@ -330,7 +330,7 @@ function updateFieldOptions(fieldset)
 // Outputs currently entered data as a JSON object
 function readConfigData()
 {
-    var configData = { 'name': document.getElementById('name').value };
+    var configData = {  };
     var joints = [];
 
     var jointOptions = document.getElementsByClassName('joint-config');
@@ -406,11 +406,7 @@ function readConfigData()
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
 {
-    if (document.getElementById('name').value.length == 0)
-    {
-        alert("Please enter a name.");
-        return;
-    }
+
     var result = JSON.stringify(readConfigData());
     console.log("Saving Data: ", result);
     adsk.fusionSendData('save', result);
