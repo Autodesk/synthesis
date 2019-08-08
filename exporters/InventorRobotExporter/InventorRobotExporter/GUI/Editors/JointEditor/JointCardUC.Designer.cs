@@ -32,59 +32,28 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JointCardUC));
-            this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.weightInput = new System.Windows.Forms.NumericUpDown();
             this.driverTypeComboBox = new System.Windows.Forms.ComboBox();
             this.weightLabel = new System.Windows.Forms.Label();
             this.jointDriverLabel = new System.Windows.Forms.Label();
+            this.DriverLayout = new System.Windows.Forms.TableLayoutPanel();
             this.advancedButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.jointName = new System.Windows.Forms.Label();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.jointTypeComboBox = new System.Windows.Forms.ComboBox();
             this.wheelTypeLabel = new System.Windows.Forms.Label();
             this.sideLabel = new System.Windows.Forms.Label();
             this.jointTypeLabel = new System.Windows.Forms.Label();
             this.dtSideComboBox = new System.Windows.Forms.ComboBox();
             this.wheelTypeComboBox = new System.Windows.Forms.ComboBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.DriverLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.jointName = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.weightInput)).BeginInit();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.DriverLayout.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // DriverLayout
-            // 
-            this.DriverLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DriverLayout.BackColor = System.Drawing.SystemColors.Control;
-            this.DriverLayout.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.DriverLayout.ColumnCount = 2;
-            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.DriverLayout.Controls.Add(this.pictureBox1, 0, 0);
-            this.DriverLayout.Controls.Add(this.tableLayoutPanel1, 1, 0);
-            this.DriverLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.DriverLayout.Location = new System.Drawing.Point(0, 0);
-            this.DriverLayout.Margin = new System.Windows.Forms.Padding(0);
-            this.DriverLayout.Name = "DriverLayout";
-            this.DriverLayout.RowCount = 1;
-            this.DriverLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.DriverLayout.Size = new System.Drawing.Size(300, 136);
-            this.DriverLayout.TabIndex = 2;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(4, 4);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(125, 128);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox1.TabIndex = 3;
-            this.pictureBox1.TabStop = false;
             // 
             // weightInput
             // 
@@ -97,7 +66,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             0,
             0});
             this.weightInput.Name = "weightInput";
-            this.weightInput.Size = new System.Drawing.Size(280, 22);
+            this.weightInput.Size = new System.Drawing.Size(280, 20);
             this.weightInput.TabIndex = 9;
             this.weightInput.Value = new decimal(new int[] {
             225,
@@ -112,7 +81,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.driverTypeComboBox.FormattingEnabled = true;
             this.driverTypeComboBox.Location = new System.Drawing.Point(116, 128);
             this.driverTypeComboBox.Name = "driverTypeComboBox";
-            this.driverTypeComboBox.Size = new System.Drawing.Size(280, 25);
+            this.driverTypeComboBox.Size = new System.Drawing.Size(280, 21);
             this.driverTypeComboBox.TabIndex = 8;
             // 
             // weightLabel
@@ -139,58 +108,71 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             this.jointDriverLabel.Text = "Joint Driver:";
             this.jointDriverLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // DriverLayout
+            // 
+            this.DriverLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DriverLayout.BackColor = System.Drawing.SystemColors.Control;
+            this.DriverLayout.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.DriverLayout.ColumnCount = 2;
+            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.DriverLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.DriverLayout.Controls.Add(this.pictureBox1, 0, 0);
+            this.DriverLayout.Controls.Add(this.tableLayoutPanel1, 1, 0);
+            this.DriverLayout.Dock = System.Windows.Forms.DockStyle.Top;
+            this.DriverLayout.Location = new System.Drawing.Point(0, 0);
+            this.DriverLayout.Margin = new System.Windows.Forms.Padding(0);
+            this.DriverLayout.Name = "DriverLayout";
+            this.DriverLayout.RowCount = 1;
+            this.DriverLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.DriverLayout.Size = new System.Drawing.Size(225, 110);
+            this.DriverLayout.TabIndex = 2;
+            // 
             // advancedButton
             // 
             this.advancedButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.advancedButton.Location = new System.Drawing.Point(43, 5);
-            this.advancedButton.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.advancedButton.Location = new System.Drawing.Point(32, 4);
+            this.advancedButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 0);
             this.advancedButton.Name = "advancedButton";
-            this.advancedButton.Size = new System.Drawing.Size(116, 27);
+            this.advancedButton.Size = new System.Drawing.Size(87, 22);
             this.advancedButton.TabIndex = 7;
             this.advancedButton.Text = "Advanced...";
             this.advancedButton.UseVisualStyleBackColor = true;
             this.advancedButton.Click += new System.EventHandler(this.AdvancedButton_Click);
             // 
-            // tableLayoutPanel1
+            // tableLayoutPanel2
             // 
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 126F));
-            this.tableLayoutPanel1.Controls.Add(this.jointName, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.advancedButton, 1, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(133, 1);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(166, 131);
-            this.tableLayoutPanel1.TabIndex = 4;
-            // 
-            // jointName
-            // 
-            this.jointName.AutoEllipsis = true;
-            this.jointName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.jointName.Location = new System.Drawing.Point(3, 3);
-            this.jointName.Margin = new System.Windows.Forms.Padding(3);
-            this.jointName.Name = "jointName";
-            this.jointName.Size = new System.Drawing.Size(34, 28);
-            this.jointName.TabIndex = 0;
-            this.jointName.Text = "am-3047_4inDuraOmniV2:1";
-            this.jointName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel2.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 2);
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.wheelTypeComboBox, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.dtSideComboBox, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.jointTypeLabel, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.sideLabel, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.wheelTypeLabel, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.jointTypeComboBox, 1, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 30);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(120, 76);
+            this.tableLayoutPanel2.TabIndex = 2;
             // 
             // jointTypeComboBox
             // 
             this.jointTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.jointTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.jointTypeComboBox.FormattingEnabled = true;
-            this.jointTypeComboBox.Location = new System.Drawing.Point(115, 4);
+            this.jointTypeComboBox.Location = new System.Drawing.Point(86, 3);
+            this.jointTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.jointTypeComboBox.Name = "jointTypeComboBox";
-            this.jointTypeComboBox.Size = new System.Drawing.Size(41, 24);
+            this.jointTypeComboBox.Size = new System.Drawing.Size(31, 21);
             this.jointTypeComboBox.TabIndex = 3;
             this.jointTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.JointTypeComboBox_SelectedIndexChanged);
             // 
@@ -198,10 +180,11 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // 
             this.wheelTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wheelTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.wheelTypeLabel.Location = new System.Drawing.Point(4, 63);
+            this.wheelTypeLabel.Location = new System.Drawing.Point(3, 51);
+            this.wheelTypeLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.wheelTypeLabel.Name = "wheelTypeLabel";
-            this.wheelTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.wheelTypeLabel.Size = new System.Drawing.Size(104, 30);
+            this.wheelTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 2, 1);
+            this.wheelTypeLabel.Size = new System.Drawing.Size(78, 24);
             this.wheelTypeLabel.TabIndex = 2;
             this.wheelTypeLabel.Text = "Wheel Type:";
             this.wheelTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -210,10 +193,11 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // 
             this.sideLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sideLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sideLabel.Location = new System.Drawing.Point(4, 32);
+            this.sideLabel.Location = new System.Drawing.Point(3, 26);
+            this.sideLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.sideLabel.Name = "sideLabel";
-            this.sideLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.sideLabel.Size = new System.Drawing.Size(104, 30);
+            this.sideLabel.Padding = new System.Windows.Forms.Padding(0, 1, 2, 1);
+            this.sideLabel.Size = new System.Drawing.Size(78, 24);
             this.sideLabel.TabIndex = 1;
             this.sideLabel.Text = "Side:";
             this.sideLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -222,10 +206,11 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             // 
             this.jointTypeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointTypeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jointTypeLabel.Location = new System.Drawing.Point(4, 1);
+            this.jointTypeLabel.Location = new System.Drawing.Point(3, 1);
+            this.jointTypeLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.jointTypeLabel.Name = "jointTypeLabel";
-            this.jointTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 3, 1);
-            this.jointTypeLabel.Size = new System.Drawing.Size(104, 30);
+            this.jointTypeLabel.Padding = new System.Windows.Forms.Padding(0, 1, 2, 1);
+            this.jointTypeLabel.Size = new System.Drawing.Size(78, 24);
             this.jointTypeLabel.TabIndex = 0;
             this.jointTypeLabel.Text = "Joint Type:";
             this.jointTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -239,9 +224,10 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             "Right",
             "Left",
             "H-Drive Center"});
-            this.dtSideComboBox.Location = new System.Drawing.Point(115, 35);
+            this.dtSideComboBox.Location = new System.Drawing.Point(86, 28);
+            this.dtSideComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.dtSideComboBox.Name = "dtSideComboBox";
-            this.dtSideComboBox.Size = new System.Drawing.Size(41, 24);
+            this.dtSideComboBox.Size = new System.Drawing.Size(31, 21);
             this.dtSideComboBox.TabIndex = 4;
             // 
             // wheelTypeComboBox
@@ -253,64 +239,85 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
             "Normal",
             "Omni",
             "Mecanum"});
-            this.wheelTypeComboBox.Location = new System.Drawing.Point(115, 66);
+            this.wheelTypeComboBox.Location = new System.Drawing.Point(86, 53);
+            this.wheelTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.wheelTypeComboBox.Name = "wheelTypeComboBox";
-            this.wheelTypeComboBox.Size = new System.Drawing.Size(41, 24);
+            this.wheelTypeComboBox.Size = new System.Drawing.Size(31, 21);
             this.wheelTypeComboBox.TabIndex = 5;
             // 
-            // tableLayoutPanel2
+            // tableLayoutPanel1
             // 
-            this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel2.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel1.SetColumnSpan(this.tableLayoutPanel2, 2);
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 110F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.wheelTypeComboBox, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.dtSideComboBox, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.jointTypeLabel, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.sideLabel, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.wheelTypeLabel, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.jointTypeComboBox, 1, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 37);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(160, 94);
-            this.tableLayoutPanel2.TabIndex = 2;
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 94F));
+            this.tableLayoutPanel1.Controls.Add(this.jointName, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.advancedButton, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(100, 1);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(124, 106);
+            this.tableLayoutPanel1.TabIndex = 4;
+            // 
+            // jointName
+            // 
+            this.jointName.AutoEllipsis = true;
+            this.jointName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.jointName.Location = new System.Drawing.Point(2, 2);
+            this.jointName.Margin = new System.Windows.Forms.Padding(2);
+            this.jointName.Name = "jointName";
+            this.jointName.Size = new System.Drawing.Size(26, 24);
+            this.jointName.TabIndex = 0;
+            this.jointName.Text = "am-3047_4inDuraOmniV2:1";
+            this.jointName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.InitialImage = null;
+            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(94, 104);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
             // 
             // JointCardUC
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.DriverLayout);
-            this.Margin = new System.Windows.Forms.Padding(0, 0, 0, 15);
-            this.MinimumSize = new System.Drawing.Size(300, 0);
+            this.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
+            this.MinimumSize = new System.Drawing.Size(225, 0);
             this.Name = "JointCardUC";
-            this.Size = new System.Drawing.Size(300, 136);
-            this.DriverLayout.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.Size = new System.Drawing.Size(225, 110);
             ((System.ComponentModel.ISupportInitialize)(this.weightInput)).EndInit();
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.DriverLayout.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private readonly RobotDataManager robotDataManager;
-        private System.Windows.Forms.TableLayoutPanel DriverLayout;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.NumericUpDown weightInput;
         private System.Windows.Forms.ComboBox driverTypeComboBox;
         private System.Windows.Forms.Label weightLabel;
         private System.Windows.Forms.Label jointDriverLabel;
+        private System.Windows.Forms.TableLayoutPanel DriverLayout;
+        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label jointName;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
