@@ -12,22 +12,21 @@ Elevator::Elevator(Type type)
 	this->type = type;
 }
 
-rapidjson::Value Elevator::getJSONObject(rapidjson::MemoryPoolAllocator<>& allocator) const
+nlohmann::json Elevator::getJSONObject() const
 {
-	rapidjson::Value elevatorJSON;
-	elevatorJSON.SetObject();
+	nlohmann::json elevatorJSON;
 
-	elevatorJSON.AddMember("type", rapidjson::Value((int)type), allocator);
+	elevatorJSON["type"] = (int)type;
 
 	return elevatorJSON;
 }
 
-void Elevator::loadJSONObject(const rapidjson::Value & elevatorJSON)
+void Elevator::loadJSONObject(nlohmann::json elevatorJSON)
 {
-	if (elevatorJSON.IsObject())
+	if (elevatorJSON.is_object())
 	{
-		if (elevatorJSON["type"].IsNumber())
-			type = (Elevator::Type)elevatorJSON["type"].GetInt();
+		if (elevatorJSON["type"].is_number())
+			type = (Elevator::Type)elevatorJSON["type"].get<int>();
 	}
 }
 

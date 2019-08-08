@@ -67,8 +67,8 @@ namespace BXDJ
 		float getSideExtremeSlip() const;
 		float getSideExtremeValue() const;
 
-		rapidjson::Value getJSONObject(rapidjson::MemoryPoolAllocator<>&) const;
-		void loadJSONObject(const rapidjson::Value&);
+		nlohmann::json getJSONObject() const;
+		void loadJSONObject(nlohmann::json wheelJSON);
 		nlohmann::json GetExportJson();
 
 	private:

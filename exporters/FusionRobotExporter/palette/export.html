@@ -21,13 +21,13 @@
             <div id="basic-info">
                 <span class="field-label">Robot Name: </span>
                 <span class="field-input"><input type="text" id="name" value="unnamed" onchange="validateForm()"></span>
-                <span class="field-label" style="display:none">Collision Mesh Quality: </span>
-                <span class="field-input" style="display:none">
+                <span class="field-label">Collision Mesh Quality: </span>
+                <span class="field-input" >
                     <select id="convex">
-                        <option value="BOX" selected>Rough (Bounding Box)</option>
-                        <option value="VHACD_LOW">Basic (VHACD Low)</option>
-                        <option value="VHACD_MID">Medium (VHACD Mid)</option>
-                        <option value="VHACD_HIGH">High (VHACD High)</option>
+                        <option value=0>Rough (Bounding Box)</option>
+                        <option value=1>Basic (VHACD Low)</option>
+                        <option value=2>Medium (VHACD Mid)</option>
+                        <option value=3>High (VHACD High)</option>
                     </select>
                 </span>
                 <span class="field-label">Open Synthesis After Export: </span>

@@ -50,7 +50,7 @@ function saveConfig()
 {
     var configData = { 
         'name': document.getElementById('name').value, 
-        'convex': document.getElementById('convex').value
+        'convex': parseInt(document.getElementById('convex').value)
     };
     console.log(configData);
     return configData;

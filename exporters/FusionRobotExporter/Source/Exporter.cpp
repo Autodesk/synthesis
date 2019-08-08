@@ -76,11 +76,11 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 	return config;
 }
 
-void Exporter::saveConfiguration(BXDJ::ConfigData config, Ptr<FusionDocument> document)
+void Exporter::saveConfiguration(BXDJ::ConfigData* toSave, Ptr<FusionDocument> document)
 {
-	document->attributes()->add("Synthesis", "RobotConfigData.json", config.toJSONString());
-	std::string debug = config.toJSONString();
-	document->save("Synthesis");
+	document->attributes()->add("Synthesis", "RobotConfigData.json", toSave->toJSONString());
+	std::string debug = toSave->toJSONString();
+
 }
 
 void Exporter::exportExample()
@@ -178,7 +178,7 @@ void Exporter::exportMeshes(BXDJ::ConfigData config, Ptr<FusionDocument> documen
 		baseJson["SoftwareExportedWith"] = "FUSION_360";
 
 
-		baseJson["nodes"] = rootNode->GetJson();
+		baseJson["Nodes"] = rootNode->GetJson();
 
 		std::ofstream writeStream(filenameBXDJ);
 
