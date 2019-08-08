@@ -147,6 +147,7 @@ namespace InventorRobotExporter
                 }
                 else
                 {
+                    UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
                     jointEditorForm.PreShow();
                     jointEditorForm.Show();
                     advancedJointEditor.Visible = false;
