@@ -289,7 +289,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void HighlightCard()
         {
-            Color highlightColor = Color.FromArgb(35, 224, 145, 0);
+            Color highlightColor = Color.FromArgb(227,206,169);
 
             DriverLayout.BackColor = highlightColor;
 
