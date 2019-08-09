@@ -23,11 +23,7 @@ nlohmann::json Elevator::getJSONObject() const
 
 void Elevator::loadJSONObject(nlohmann::json elevatorJSON)
 {
-	if (elevatorJSON.is_object())
-	{
-		if (elevatorJSON["type"].is_number())
-			type = (Elevator::Type)elevatorJSON["type"].get<int>();
-	}
+	type = elevatorJSON.contains("type") && elevatorJSON["type"].is_number() ? (Elevator::Type)elevatorJSON["type"].get<int>() : Type::SINGLE;
 }
 
 void Elevator::write(XmlWriter & output) const
