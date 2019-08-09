@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+            }
+            p {
+                margin: 0px 50px 0px 50px;
+            }
+            p.instructions {
+                margin: 15px 50px 0px 50px;
+            }
+            p.description {
+                margin: 0px 0px 0px 90px;
+            }
+            p.number {
+                font-size: 48px;
+                margin: 0px 0px 0px 10px;
+                font-weight: bold;
+            }
+            p.step-title {
+                margin: 0px;
+                font-weight: bold;
+            }
+            h1 {
+                font-size: 35px;
+                margin: 0;
+                padding: 10px 10px 10px 15px;
+                background-color: #3D3D3D;
+                color: white;
+                font-weight: normal;
+            }
+            h2 {
+                font-size: 14px;
+                margin: 0px 0px 15px 55px;
+                font-weight: bold;
+            }
+            hr {
+                margin: 15px 25px 15px 25px;
+                border-width: 3px;
+                border-style: inset;
+                border-color: blueviolet;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Robot Export Guide</h1>
+        <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
+        <hr>
+        <h2>Pre-Check</h2>
+        <p>✔ <a href="#">Restructure your assemblies</a></p>
+        <p class="description">This makes moving parts accessible to the Robot Exporter plugin.</p>
+        <p>✔ <a href="#">Adding joints</a></p>
+        <p class="description">Joints support your robot's movement.</p>
+        <hr>
+        <ul style="list-style: none; float: left; display: block;">
+            <li><p class="number">1</p></li>
+            <li><img src="drivetrain.PNG"></li>
+            <li><p class="step-title">Select your robot's drivetrain.</p></li>
+        </ul>
+    </body>
+</html>
