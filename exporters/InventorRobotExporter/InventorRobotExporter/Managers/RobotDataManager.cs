@@ -158,7 +158,7 @@ namespace InventorRobotExporter.Managers
                 //MessageBox.Show("Your robot was successfully exported to " + robotFolderPath, "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (!RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis)
                 {
-                    new ExportSuccessful(robotFolderPath).ShowDialog();
+                    new ExportSuccessfulForm(robotFolderPath).ShowDialog();
                 }
 
                 Settings.Default.ExportCount += 1; // possibly track the number of exports a user has as another Google Analytics custom field?

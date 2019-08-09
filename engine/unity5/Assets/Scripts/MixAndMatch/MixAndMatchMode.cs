@@ -229,9 +229,9 @@ namespace Synthesis.MixAndMatch
 
             StateMachine.SceneGlobal.gameObject.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
                 AnalyticsLedger.EventAction.Changed,
-                "mixAndMatch",
+                "Robot - Mix and Match",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -264,6 +264,11 @@ namespace Synthesis.MixAndMatch
 
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             GameObject simulatorObject = GameObject.Find("Simulator");
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddRobot,
+                AnalyticsLedger.EventAction.Changed,
+                "Local Multiplayer - Mix and Match Robot",
+                AnalyticsLedger.getMilliseconds().ToString());
 
             simulatorObject.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, RobotTypeManager.HasManipulator);
         }

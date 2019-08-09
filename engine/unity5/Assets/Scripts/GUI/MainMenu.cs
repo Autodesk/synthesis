@@ -27,8 +27,6 @@ namespace Synthesis.GUI
         private Canvas canvas;
         public string updater;
 
-        GameObject releaseNumber;
-
         /// <summary>
         /// Runs every frame to update the GUI elements.
         /// </summary>
