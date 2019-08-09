@@ -31,7 +31,7 @@ namespace Synthesis.States
         public void OnNextButtonClicked()
         {
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MixAndMatchMenu,
-                AnalyticsLedger.EventAction.Continued,
+                AnalyticsLedger.EventAction.Next,
                 "",
                 AnalyticsLedger.getMilliseconds().ToString());
             StateMachine.PushState(new LoadFieldState());

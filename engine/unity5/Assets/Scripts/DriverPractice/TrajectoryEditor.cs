@@ -118,9 +118,9 @@ namespace Synthesis.DriverPractice
             }
             //else prompt user to define intake and release first
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EditTrajectory,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Edit Trajectory",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         public void CloseEditor()
