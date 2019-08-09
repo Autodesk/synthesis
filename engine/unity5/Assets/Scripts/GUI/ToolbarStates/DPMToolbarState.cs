@@ -145,9 +145,9 @@ namespace Assets.Scripts.GUI
                 gamepieceDropdownExtension.SetActive(true);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.GamepieceDropdown,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Changed,
-                "",
+                "Dropdown - Gamepiece",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
@@ -173,9 +173,9 @@ namespace Assets.Scripts.GUI
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot), true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DefineIntake,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Define Intake",
             AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
@@ -185,9 +185,9 @@ namespace Assets.Scripts.GUI
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot), true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DefineRelease,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Define Release",
             AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
@@ -197,9 +197,9 @@ namespace Assets.Scripts.GUI
         {
             StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex), true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SetSpawnpoint,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Set Gamepiece Spawnpoint",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
@@ -207,9 +207,9 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSpawnButtonClicked()
         {
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SpawnGamepiece,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Spawn Gamepiece",
                 AnalyticsLedger.getMilliseconds().ToString());
 
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
@@ -231,6 +231,11 @@ namespace Assets.Scripts.GUI
             //Destory all clones
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
                 GameObject.Destroy(o);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Clear Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public override void ToggleHidden()
@@ -260,9 +265,9 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ClearGamepiece,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Clear Gamepiece",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         private void CloseHelpMenu()
@@ -274,9 +279,9 @@ namespace Assets.Scripts.GUI
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMHelp,
-                AnalyticsLedger.EventAction.Clicked,
-                "change",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.Viewed,
+                "Help - Gamepiece Toolbar",
             AnalyticsLedger.getMilliseconds().ToString());
         }
         public override void End()

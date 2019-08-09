@@ -316,9 +316,9 @@ namespace Synthesis.Sensors
                 //Add a sensor
                 AddUltrasonic();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddUltrasonic,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Ultrasonic",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else
@@ -345,9 +345,9 @@ namespace Synthesis.Sensors
 
                 AddBeamBreaker();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddBeam,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Beam Break",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else
@@ -372,9 +372,9 @@ namespace Synthesis.Sensors
                 addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
                 //AddGyro();
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddGyro,
-                    AnalyticsLedger.EventAction.Clicked,
-                    "",
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                    AnalyticsLedger.EventAction.Added,
+                    "Gyroscope",
                     AnalyticsLedger.getMilliseconds().ToString());
             }
             else
@@ -531,9 +531,9 @@ namespace Synthesis.Sensors
         {
             StateMachine.SceneGlobal.PushState(new DefineSensorAttachmentState(currentSensor), true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorNode,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Changed,
+                "Sensor Node",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -573,9 +573,9 @@ namespace Synthesis.Sensors
             sensorAnglePanel.SetActive(currentSensor.IsChangingAngle);
             isEditingAngle = currentSensor.IsChangingAngle;
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorAngle,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Changed,
+                "Sensor Angle",
                 AnalyticsLedger.getMilliseconds().ToString());
 
             //if (currentSensor.IsChangingAngle)
@@ -679,9 +679,9 @@ namespace Synthesis.Sensors
 
             sensorRangePanel.SetActive(currentSensor.IsChangingRange);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorRange,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Changed,
+                "Sensor Range",
                 AnalyticsLedger.getMilliseconds().ToString());
 
             //if (!currentSensor.IsChangingRange) SyncSensorRange();
@@ -706,9 +706,9 @@ namespace Synthesis.Sensors
         {
             StateMachine.SceneGlobal.PushState(new SensorSpawnState(currentSensor.gameObject), true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorPosition,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Changed,
+                "Sensor Position",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -739,14 +739,14 @@ namespace Synthesis.Sensors
             ShiftOutputPanels();
             currentSensor = null;
 
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Removed,
+                "Sensors",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             EndProcesses();
             tabStateMachine.FindState<SensorToolbarState>().RemoveSensorFromDropdown(type,
                 sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DeleteSensor,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
-                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -768,9 +768,9 @@ namespace Synthesis.Sensors
                     sensorManager.ultrasonicList, sensorManager.beamBreakerList, sensorManager.gyroList);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DeleteSensor,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Removed,
+                "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
@@ -781,9 +781,9 @@ namespace Synthesis.Sensors
             currentSensor.ChangeVisibility(!currentSensor.IsVisible);
             Auxiliary.FindObject(configureSensorPanel, "VisibilityButton").GetComponentInChildren<Text>().text = currentSensor.IsVisible ? "Hide" : "Show";
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorHide,
-                AnalyticsLedger.EventAction.Clicked,
-                "changed",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Toggled,
+                "Sensors",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
