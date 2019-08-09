@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using InventorRobotExporter.Messages;
+using InventorRobotExporter.GUI.Messages;
 using InventorRobotExporter.Properties;
 using InventorRobotExporter.Utilities;
 using Inventor;

@@ -1,6 +1,9 @@
+using System;
+using System.Linq;
 using System.Windows.Forms;
+using InventorRobotExporter.Properties;
 
-namespace InventorRobotExporter.Messages
+namespace InventorRobotExporter.GUI.Messages
 {
     public partial class AnalyticsSurvey : Form
     {
@@ -11,43 +14,32 @@ namespace InventorRobotExporter.Messages
         private void SubmitButton_Click(object sender, System.EventArgs e)
         {
             Close();
-            Properties.Settings.Default.Save();
 
-            if (Properties.Settings.Default.UseAnalytics)
+            if (Settings.Default.UseAnalytics)
             {
-                if (teamTextBox.TextLength > 0)
+                if (teamInput.TextLength > 0)
                 {
-                    string team = teamTextBox.Text;
+                    string team = teamInput.Text;
                     // send analytics for team data, to be implemented
                 }
 
-                if (reasonTextList.CheckedItems.Count > 0)
+                var checkedOption = this.Controls.OfType<RadioButton>().FirstOrDefault(n => n.Checked);
+                if (checkedOption != null)
                 {
-                    // Only one item can be checked, so the reason has to be the first one
-                    string reason = reasonTextList.CheckedItems[0].ToString();
-
-                    if (reason.Equals("Other") && otherTextBox.Text.Length > 0) reason = otherTextBox.Text;
+                    string reason = checkedOption.Text;
                     // send analytics for reason data, to be implemented
                 }
             }
         }
 
-        private void ReasonTextList_ItemCheck(object sender, ItemCheckEventArgs e)
+        private void TeamInput_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // These are checkboxes, not radio buttons
-            // Prevents from multiple options being checked at once. The notification asks for the /main/ reason for using Synthesis
-//            if (e.NewValue == CheckState.Checked)
-//            {
-//                for (int i = 0; i < reasonTextList.Items.Count; ++i)
-//                {
-//                    if (e.Index != i)
-//                    {
-//                        reasonTextList.SetItemChecked(i, false);
-//                    }
-//                }
-//            }
-            // If selecting the "Other" (should be last item in list) make a text box visible to create your own reason
-            otherTextBox.Visible = (e.Index == (reasonTextList.Items.Count - 1));
+            e.Handled = !Char.IsDigit(e.KeyChar) && e.KeyChar != 8; // only allows entering of up to 4 digits (only numbers allowed)
+        }
+
+        private void ChoiceOtherButton_CheckedChanged(object sender, System.EventArgs e)
+        {
+            otherInput.Visible = choiceOtherButton.Checked;
         }
 
         private void SkipButton_Click(object sender, System.EventArgs e)
@@ -55,14 +47,5 @@ namespace InventorRobotExporter.Messages
             Close();
         }
 
-        private void TeamTextBox_TextChanged(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void TeamLabel_Click(object sender, System.EventArgs e)
-        {
-
-        }
     }
 }
