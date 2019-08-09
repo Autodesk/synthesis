@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Synthesis.Sensors;
 using Synthesis.Camera;
+using Synthesis.GUI;
 
 namespace Assets.Scripts.GUI
 {
@@ -17,11 +18,7 @@ namespace Assets.Scripts.GUI
 
         GameObject menuPanel;
 
-        GameObject robotControlPanel;
-        GameObject globalControlPanel;
-        GameObject settingsPanel;
-        GameObject viewReplaysPanel;
-        GameObject helpPanel;
+        private MenuUI menuUI;
 
         public override void Start()
         {
@@ -29,36 +26,17 @@ namespace Assets.Scripts.GUI
             
             menuPanel = Auxiliary.FindObject(canvas, "MenuPanel");
 
-            robotControlPanel = Auxiliary.FindObject(canvas, "RobotControlPanel");
-            globalControlPanel = Auxiliary.FindObject(canvas, "GlobalControlPanel");
-            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
-            viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
-            helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
-            
-            robotControlPanel.SetActive(true);
-        }
+            menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
 
-        private void CloseAll()
-        {
-            robotControlPanel.SetActive(false);
-            globalControlPanel.SetActive(false);
-            settingsPanel.SetActive(false);
-            viewReplaysPanel.SetActive(false);
-            helpPanel.SetActive(false);
+            OnRobotControlsButtonClicked();
         }
-
-        private void SwitchMenu(GameObject newMenu)
-        {
-            CloseAll();
-            newMenu.SetActive(true);
-        }
-
+    
         /// <summary>
         /// Opens the robot controls panel
         /// </summary>
         public void OnRobotControlsButtonClicked()
         {
-            SwitchMenu(robotControlPanel);
+            menuUI.SwitchRobotControls();
         }
 
         /// <summary>
@@ -66,7 +44,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnGlobalControlsButtonClicked()
         {
-            SwitchMenu(globalControlPanel);
+            menuUI.SwitchGlobalControls();
         }
 
         /// <summary>
@@ -74,7 +52,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSettingsButtonClicked()
         {
-            SwitchMenu(settingsPanel);
+            menuUI.SwitchSettings();
         }
 
         /// <summary>
@@ -82,7 +60,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnViewReplaysButtonClicked()
         {
-            SwitchMenu(viewReplaysPanel);
+            menuUI.SwitchViewReplays();
         }
 
         /// <summary>
@@ -90,12 +68,12 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnHelpButtonClicked()
         {
-            SwitchMenu(helpPanel);
+            menuUI.SwitchHelp();
         }
 
         public override void End()
         {
-            CloseAll();
+            menuUI.EndOtherProcesses();
         }
 
     }

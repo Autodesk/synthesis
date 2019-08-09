@@ -273,7 +273,7 @@ namespace Synthesis.GUI
         {
             if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             currentTab = "MenuTab";
-            tabStateMachine.ChangeState(new MenuToolbarState());
+            tabStateMachine.PushState(new MenuToolbarState(), true);
         }
         
         public void OnMainTab()
