@@ -2,6 +2,7 @@
 
 namespace Synthesis
 {
+
     public static class OutputManager
     {
 
