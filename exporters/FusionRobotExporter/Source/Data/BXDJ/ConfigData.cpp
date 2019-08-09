@@ -288,6 +288,7 @@ void ConfigData::loadJSONObject(nlohmann::json configJson)
 
 			if (joint.contains("sensors") && joint["sensors"].is_array())
 			{
+				joints[jointID].sensors.clear();
 				nlohmann::json sensorsJSONArray = joint["sensors"];
 				for (auto& sensorJson : sensorsJSONArray) {
 					if (sensorJson.is_object())
