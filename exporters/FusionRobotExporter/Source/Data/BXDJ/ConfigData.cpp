@@ -239,65 +239,68 @@ void ConfigData::loadJSONObject(nlohmann::json configJson)
 {
 	// Get general information 
 	std::string jsonString = configJson.dump();
-	if (configJson["name"].is_string()) {
+	if (configJson.contains("name") && configJson["name"].is_string()) {
 		robotName = configJson["name"].get<std::string>();
 	}
 
-	if (configJson["driveTrainType"].is_number_integer()) {
+	if (configJson.contains("driveTrainType") && configJson["driveTrainType"].is_number_integer()) {
 		drivetrainType = (DrivetrainType)configJson["driveTrainType"].get<int>();
 	}
 
-	if (configJson["convex"].is_number_integer()) {
+	if (configJson.contains("convex") && configJson["convex"].is_number_integer()) {
 		convexType = (ConvexType)configJson["convex"];
 	}
 
-	if (configJson["weight"].is_number()) {
+	if (configJson.contains("weight") && configJson["weight"].is_number()) {
 		weight = configJson["weight"].get<double>();
 	}
 	
-	if (configJson["tempIconDir"].is_string()) {
+	if (configJson.contains("tempIconDir") && configJson["tempIconDir"].is_string()) {
 		tempIconDir = configJson["tempIconDir"].get<std::string>();
 	}
 
 	// Read each joint configuration
-	nlohmann::json jointsJSON = configJson["joints"];
-	for (auto& joint : jointsJSON) {
-		std::string jointID = joint["id"].get<std::string>();
-		if (joint["name"].is_string()) {
-			joints[jointID].name = joint["name"].get<std::string>();
-		}
-		if (joint["asBuilt"].is_boolean()) {
-			joints[jointID].asBuilt = joint["asBuilt"].get<bool>();
-		}
-		if (joint["type"].is_number()) {
-			joints[jointID].motion = (ConfigData::JointMotionType)joint["type"].get<int>();
-		}
+	if (configJson.contains("joints") && configJson["joints"].is_array()) {
+		nlohmann::json jointsJSON = configJson["joints"];
+		for (auto& joint : jointsJSON) {
+			if (!joint.contains("id") || !joint["id"].is_string()) {
+				continue; // ID is required
+			}
+			std::string jointID = joint["id"].get<std::string>();
+			if (joint.contains("name") && joint["name"].is_string()) {
+				joints[jointID].name = joint["name"].get<std::string>();
+			}
+			if (joint.contains("asBuilt") && joint["asBuilt"].is_boolean()) {
+				joints[jointID].asBuilt = joint["asBuilt"].get<bool>();
+			}
+			if (joint.contains("type") && joint["type"].is_number()) {
+				joints[jointID].motion = (ConfigData::JointMotionType)joint["type"].get<int>();
+			}
 
 
-		if (joint["driver"].is_object()) {
-			Driver driver;
-			driver.loadJSONObject(joint["driver"]);
-			joints[jointID].driver = std::make_unique<Driver>(driver);
-		}
-		else
-			joints[jointID].driver = nullptr;
+			if (joint.contains("driver") && joint["driver"].is_object()) {
+				Driver driver;
+				driver.loadJSONObject(joint["driver"]);
+				joints[jointID].driver = std::make_unique<Driver>(driver);
+			}
+			else
+				joints[jointID].driver = nullptr;
 
-		if (joint["sensors"].is_array())
-		{
-			nlohmann::json sensorsJSONArray = joint["sensors"];
-			for (auto& sensorJson : sensorsJSONArray) {
-				if (sensorJson.is_object())
-				{
-					std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
-					sensor->loadJSONObject(sensorJson);
-					joints[jointID].sensors.push_back(sensor);
+			if (joint.contains("sensors") && joint["sensors"].is_array())
+			{
+				joints[jointID].sensors.clear();
+				nlohmann::json sensorsJSONArray = joint["sensors"];
+				for (auto& sensorJson : sensorsJSONArray) {
+					if (sensorJson.is_object())
+					{
+						std::shared_ptr<JointSensor> sensor = std::make_shared<JointSensor>();
+						sensor->loadJSONObject(sensorJson);
+						joints[jointID].sensors.push_back(sensor);
+					}
 				}
 			}
 		}
 	}
-
-	
-	
 }
 
 std::string BXDJ::ConfigData::toString(DrivetrainType type)
