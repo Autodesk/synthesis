@@ -35,21 +35,11 @@ nlohmann::json JointSensor::getJSONObject() const
 
 void JointSensor::loadJSONObject(nlohmann::json sensorJSON)
 {
-	if (sensorJSON.is_object())
-	{
-		if (sensorJSON["type"].is_number())
-			type = (Type)sensorJSON["type"].get<int>();
-		if (sensorJSON["conTypePortA"].is_number())
-			portSignal = (Signal)sensorJSON["signal"].get<int>();
-		if (sensorJSON["conTypePortB"].is_number())
-			portSignal = (Signal)sensorJSON["signal"].get<int>();
-		if (sensorJSON["portA"].is_number())
-			portA = sensorJSON["portA"].get<int>();
-		if (sensorJSON["portB"].is_number())
-			portB = sensorJSON["portB"].get<int>();
-		if (sensorJSON["conversionFactor"].is_number())
-			conversionFactor = sensorJSON["conversionFactor"].get<double>();
-	}
+	type = sensorJSON.contains("type") && sensorJSON["type"].is_number() ? (Type)sensorJSON["type"].get<int>() : Type::ENCODER;
+	portSignal = sensorJSON.contains("signal") && sensorJSON["signal"].is_number() ? (Signal)sensorJSON["signal"].get<int>() : Signal::DIO;
+	portA = sensorJSON.contains("portA") && sensorJSON["portA"].is_number() ? sensorJSON["portA"].get<int>() : 0;
+	portB = sensorJSON.contains("portB") && sensorJSON["portB"].is_number() ? sensorJSON["portB"].get<int>() : 0;
+	conversionFactor = sensorJSON.contains("conversionFactor") && sensorJSON["conversionFactor"].is_number() ? sensorJSON["conversionFactor"].get<double>() : 1;
 }
 
 nlohmann::json BXDJ::JointSensor::GetExportJSON()

@@ -59,13 +59,8 @@ nlohmann::json Pneumatic::getJSONObject() const
 
 void Pneumatic::loadJSONObject(nlohmann::json pneumaticJSON)
 {
-	if (pneumaticJSON.is_object())
-	{
-		if (pneumaticJSON["width"].is_number())
-			widthMillimeter = Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].get<int>()];
-		if (pneumaticJSON["pressure"].is_number())
-			pressurePSI = Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].get<int>()];
-	}
+	widthMillimeter = pneumaticJSON.contains("width") && pneumaticJSON["width"].is_number() ? Pneumatic::COMMON_WIDTHS[pneumaticJSON["width"].get<int>()] : COMMON_WIDTHS[0];
+	pressurePSI = pneumaticJSON.contains("pressure") && pneumaticJSON["pressure"].is_number() ? Pneumatic::COMMON_PRESSURES[pneumaticJSON["pressure"].get<int>()] : COMMON_PRESSURES[0];
 }
 
 void Pneumatic::write(XmlWriter & output) const
