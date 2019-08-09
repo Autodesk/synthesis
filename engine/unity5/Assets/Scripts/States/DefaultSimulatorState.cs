@@ -39,6 +39,15 @@ namespace Synthesis.States
         /// </summary>
         public void OnBackButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Main,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimMenu);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainSimMenu,
+                AnalyticsLedger.EventAction.BackedOut,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             StateMachine.PopState();
         }
 
@@ -76,9 +85,23 @@ namespace Synthesis.States
 
             if (Directory.Exists(selectedField) && Directory.Exists(selectedRobot))
             {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Main,
+                    AnalyticsLedger.TimingVarible.Customizing,
+                    AnalyticsLedger.TimingLabel.MainSimMenu);
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainSimulator,
+                    AnalyticsLedger.EventAction.StartSim,
+                    "",
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 splashScreen.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 SceneManager.LoadScene("Scene");
+
+                // Start timer to later log event when user reloads field
+                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Starting);
+
                 RobotTypeManager.SetProperties(false);
             }
             else

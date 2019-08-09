@@ -1,7 +1,5 @@
 #include "roborio_manager.hpp"
 
-#include "json_util.hpp"
-
 using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
@@ -169,27 +167,6 @@ namespace hel{
         instance.second.unlock();
     }
 
-    std::string EncoderManager::serialize()const{
-        std::string s = "{";
-        s += "\"a_channel\":" + std::to_string(a_channel) + ", ";
-        s += "\"a_type\":" + quote(asString(a_type)) + ", ";
-        s += "\"b_channel\":" + std::to_string(b_channel) + ", ";
-        s += "\"b_type\":" + quote(asString(b_type)) + ", ";
-        s += "\"ticks\":" + std::to_string(ticks);
-        s += "}";
-        return s;
-    }
-
-    EncoderManager EncoderManager::deserialize(std::string input){
-        EncoderManager a;
-        a.a_channel = std::stoi(pullObject("\"a_channel\"",input));
-        a.b_channel = std::stoi(pullObject("\"b_channel\"",input));
-        a.a_type = s_to_encoder_port_type(unquote(pullObject("\"a_type\"",input)));
-        a.b_type = s_to_encoder_port_type(unquote(pullObject("\"b_type\"",input)));
-        a.ticks = std::stoi(pullObject("\"ticks\"",input));
-        return a;
-    }
-
     std::string EncoderManager::toString()const{
         std::string s = "(";
         s += "type:" + asString(type) + ", ";
@@ -199,7 +176,7 @@ namespace hel{
         s += "b_channel:" + std::to_string(b_channel) + ", ";
         s += "b_type:" + asString(b_type) + ", ";
         s += "ticks:" + std::to_string(ticks);
-        s += "}";
+        s += ")";
         return s;
     }
 

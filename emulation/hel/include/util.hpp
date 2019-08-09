@@ -1,9 +1,12 @@
 #ifndef _UTIL_HPP_
 #define _UTIL_HPP_
 
-#include <functional>
-#include <vector>
 #include <cassert>
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #define NYI {                                             \
         printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");  \
@@ -15,15 +18,15 @@ namespace hel{
     /**
      * \fn constexpr unsigned findMostSignificantBit(T value)
      * \brief Finds the most significant bit in an integer
-     * Finds the index of the high bit of the greatest value; returns zero if zero is passed in
+     * Finds the index of the high bit of the greatest value; returns -1 if zero
      * \tparam T The type of integer
      * \param value The integer to analyze
      * \return The zero-indexed index of the most significant bit
      */
 
     template<typename T, typename = std::enable_if<std::is_integral<T>::value>>
-    constexpr unsigned findMostSignificantBit(T value){
-        unsigned most_significant_bit = 0;
+    constexpr int findMostSignificantBit(T value){
+        int most_significant_bit = -1;
 
         while(value != 0){
             value >>= 1;
@@ -120,12 +123,19 @@ namespace hel{
             assert(_is_valid);
             return _data;
         }
+
         void set(T data){
             _data = data;
             _is_valid = true;
         }
 
-        constexpr operator bool()const noexcept{
+        Maybe& operator=(const T& t)noexcept {
+            _data = t;
+            _is_valid = true;
+            return *this;
+        }
+
+        constexpr bool isValid()const noexcept{
             return _is_valid;
         }
 
@@ -219,23 +229,14 @@ namespace hel{
 
     /**
      * \brief Compare the bits in two integers given a comparison mask
-     * \param a The first integer to compare
-     * \param b The second integer to compare
-     * \param comparison_mask The comparison mask to use. The function will compare all the bits where the comparison mask is high
-     * \return True if all the specified bits match
+     * \param a The integer to check
+     * \param comparison_mask The bit mask to use
+     * \return True if all bits in the bit mask are high in the integer
      */
 
-    constexpr bool compareBits(uint32_t a, uint32_t b, uint32_t comparison_mask){
-        unsigned msb = std::max(findMostSignificantBit(a), findMostSignificantBit(b));
-        for(unsigned i = 0 ; i < msb; i++){
-            if(checkBitHigh(comparison_mask,i)){
-                if(checkBitHigh(a,i) != checkBitHigh(b,i)){
-                    return false;
-                }
-            }
-        }
-        return true;
+    constexpr bool containsBits(uint32_t a, uint32_t bit_mask){
+        return (a & bit_mask) == bit_mask;
     }
-}
+}  // namespace hel
 
 #endif

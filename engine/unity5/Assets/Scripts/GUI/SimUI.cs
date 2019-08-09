@@ -6,7 +6,6 @@ using BulletUnity;
 using Synthesis.FSM;
 using System.IO;
 using UnityEngine.SceneManagement;
-using UnityEngine.Analytics;
 using Synthesis.DriverPractice;
 using Synthesis.GUI;
 using Synthesis.GUI.Scrollables;
@@ -19,6 +18,8 @@ using Synthesis.Utils;
 using Synthesis.Robot;
 using Assets.Scripts.GUI;
 using Synthesis.Field;
+using System;
+using System.Diagnostics;
 
 namespace Synthesis.GUI
 {
@@ -61,7 +62,7 @@ namespace Synthesis.GUI
 
         GameObject hotKeyButton;
         GameObject hotKeyPanel;
-        GameObject analyticsPanel;
+        GameObject settingsPanel;
 
         GameObject exitPanel;
         GameObject loadingPanel;
@@ -80,15 +81,38 @@ namespace Synthesis.GUI
 
         private StateMachine tabStateMachine;
         string currentTab;
+        string lastTab = "MainMenuTab"; // Is only used for specific buttons such as settings
+
+        public static string updater;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
+        private Sprite hoverHighlight;
 
         GameObject helpMenu;
         GameObject overlay;
 
+        private static SimUI instance = null;
+
+        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
+
+        private void Start()
+        {
+            instance = this;
+            hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
+        }
+
+        public static SimUI getSimUI() { return instance; }
+
+        public StateMachine getTabStateMachine() { return tabStateMachine; }
+
         private void Update()
         {
+            if (InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true))
+            {
+                tabs.SetActive(!tabs.activeSelf);
+                tabStateMachine.CurrentState.ToggleHidden();
+            }
             if (toolkit == null)
             {
                 camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -107,7 +131,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) && !InputControl.freeze)
+                if (InputControl.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {
@@ -154,7 +178,6 @@ namespace Synthesis.GUI
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
-            analyticsPanel = Auxiliary.FindObject(canvas, "AnalyticsPanel");
             sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
             robotCameraGUI = GetComponent<RobotCameraGUI>();
@@ -165,6 +188,7 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
+            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -192,6 +216,53 @@ namespace Synthesis.GUI
             UpdateDriverStationPanel();
         }
 
+        public void CloseUpdatePrompt() {
+            GameObject.Find("UpdatePrompt").SetActive(false);
+        }
+
+        public void UpdateYes() {
+            Process.Start("http://synthesis.autodesk.com");
+            Process.Start(updater);
+            Application.Quit();
+        }
+        
+        private void LogTabTiming()
+        {
+            switch (currentTab)
+            {
+                case "HomeTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+                case "DriverPracticeTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.DPMTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+                case "ScoringTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.ScoringTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+                case "SensorTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.SensorTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+                case "EmulationTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.EmulationTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+                default:
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Tab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
+            }
+        }
+
         #region tab buttons
         /// <summary>
         /// Each tab in the simulator is tethered by an OnClick() scripted function (below). Once the tab is clicked,
@@ -200,6 +271,16 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnMainTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             currentTab = "HomeTab";
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -207,17 +288,37 @@ namespace Synthesis.GUI
 
         public void OnDPMTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.DPMTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.DPMTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             if (FieldDataHandler.gamepieces.Count > 0)
             {
                 if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Driver Practice Disabled.", 3);
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", 3);
         }
 
         public void OnScoringTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.ScoringTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoringTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ScoringTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             if (FieldDataHandler.gamepieces.Count > 0)
             {
                 if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
@@ -229,6 +330,16 @@ namespace Synthesis.GUI
 
         public void OnSensorTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.SensorTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SensorTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.SensorTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
@@ -236,10 +347,46 @@ namespace Synthesis.GUI
 
         public void OnEmulationTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.EmulationTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.EmulationTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
             currentTab = "EmulationTab";
-            EmulationToolbarState.s = new Serialization();
             tabStateMachine.ChangeState(new EmulationToolbarState());
+        }
+
+        public void OnSettingsTab()
+        {
+            if (!settingsPanel.activeSelf)
+            {
+                tabStateMachine.PushState(new SettingsState());
+                lastTab = currentTab;
+                UnityEngine.Debug.Log("Last tab: " + lastTab);
+                currentTab = "SettingsTab";
+            } else
+            {
+                tabStateMachine.PopState();
+                currentTab = lastTab;
+                UnityEngine.Debug.Log("Current tab: " + currentTab);
+            }
+
+            /*if (settingsPanel.activeSelf)
+            {
+                settingsPanel.SetActive(false);
+            }
+            else
+            {
+                EndOtherProcesses();
+                //settingsPanel.SetActive(true);
+                tabStateMachine.ChangeState(new OptionsTabState());
+            }*/
         }
 
         private void CloseHelpMenu(string currentID = " ")
@@ -256,6 +403,22 @@ namespace Synthesis.GUI
             }
         }
 
+        public void ShowError(string msg)
+        {
+            GameObject errorScreen = Auxiliary.FindGameObject("ErrorScreen");
+            errorScreen.transform.Find("ErrorText").GetComponent<Text>().text = msg;
+            errorScreen.SetActive(true);
+        }
+
+        public void CloseErrorScreen()
+        {
+            Auxiliary.FindGameObject("ErrorScreen").SetActive(false);
+        }
+
+        public void ClosePointImpulse() {
+            Auxiliary.FindGameObject("PointImpulsePanel").SetActive(false);
+        }
+
         /// <summary>
         /// Performs a sprite swap for the active tab.
         /// </summary>
@@ -265,9 +428,22 @@ namespace Synthesis.GUI
             {
                 if (t.gameObject.name.Equals(currentTab))
                 {
+                    // Showing it was choosen
                     t.gameObject.GetComponent<Image>().sprite = highlightButton;
+
+                    // Disabling orange hover color
+                    SpriteState s = new SpriteState();
+                    s.highlightedSprite = null;
+                    t.gameObject.GetComponent<Button>().spriteState = s;
                 }
-                else t.gameObject.GetComponent<Image>().sprite = normalButton;
+                else {
+                    try {
+                        t.gameObject.GetComponent<Image>().sprite = normalButton;
+                        SpriteState s = new SpriteState();
+                        s.highlightedSprite = hoverHighlight;
+                        t.gameObject.GetComponent<Button>().spriteState = s;
+                    } catch (Exception e) { }
+                }
             }
         }
         #endregion
@@ -286,12 +462,10 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 PlayerPrefs.Save();
 
-                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                {
-                    Analytics.CustomEvent("Changed Robot", new Dictionary<string, object>
-                    {
-                    });
-                }
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Robot - Exported",
+                    AnalyticsLedger.getMilliseconds().ToString());
 
                 robotCameraManager.DetachCamerasFromRobot(State.ActiveRobot);
                 sensorManager.RemoveSensorsFromRobot(State.ActiveRobot);
@@ -319,7 +493,9 @@ namespace Synthesis.GUI
             if (mamRobot != null && mamRobot.RobotHasManipulator)
                 State.DeleteManipulatorNodes();
 
-            State.ChangeRobot(robotDirectory, true);
+            if (!State.ChangeRobot(robotDirectory, true)) {
+                AppModel.ErrorToMenu("ROBOT_SELECT|Failed to load Mix & Match robot");
+            }
 
             //If the new robot has a manipulator, load the manipulator
             if (RobotTypeManager.HasManipulator)
@@ -340,7 +516,14 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
+                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             }
+        }
+
+        public void ChangeRobotDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseRobotState());
         }
 
         public void ChangeField()
@@ -357,20 +540,48 @@ namespace Synthesis.GUI
                 PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
                 PlayerPrefs.Save();
 
-                if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-                    Analytics.CustomEvent("Changed Field", new Dictionary<string, object>
-                    {
-                    });
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Playing,
+                    AnalyticsLedger.TimingLabel.ResetField);
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
+                    AnalyticsLedger.EventAction.Changed,
+                    panel.GetComponent<ChangeFieldScrollable>().selectedEntry.ToString(),
+                    AnalyticsLedger.getMilliseconds().ToString());
+
                 //FieldDataHandler.Load();
                 //DPMDataHandler.Load();
                 //Controls.Init();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
+
+                AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ChangeField,
+                    AnalyticsLedger.TimingVarible.Playing); // start timer for current field
             }
             else
             {
                 UserMessageManager.Dispatch("Field directory not found!", 5);
             }
+        }
+
+        /// <summary>
+        /// Reset to the empty grid
+        /// </summary>
+        public void LoadEmptyGrid()
+        {
+            MainState.timesLoaded = 0;
+            
+            changeFieldPanel.SetActive(false);
+            loadingPanel.SetActive(true);
+            FieldDataHandler.Load("");
+
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                AnalyticsLedger.TimingVarible.Playing,
+                AnalyticsLedger.TimingLabel.ResetField);
+
+            SceneManager.LoadScene("Scene");
+
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.ChangeField,
+                AnalyticsLedger.TimingVarible.Playing); // start timer for current field
         }
 
         /// <summary>
@@ -387,8 +598,16 @@ namespace Synthesis.GUI
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
+                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }
         }
+
+        public void ChangeFieldDirectory()
+        {
+            StateMachine.SceneGlobal.PushState(new BrowseFieldState());
+        }
+
         public void TogglePanel(GameObject panel)
         {
             if (panel.activeSelf == true)
@@ -577,10 +796,9 @@ namespace Synthesis.GUI
         #endregion
         #region control panel and analytics functions
         /// <summary>
-        /// Toggle the control panel ON/OFF based on the boolean passed.
+        /// Toggle the control panel ON/OFF based on its current state.
         /// </summary>
-        /// <param name="show"></param>
-        public void ShowControlPanel(bool alreadySaved)
+        public void ShowControlPanel()
         {
             if (!inputManagerPanel.activeSelf)
             {
@@ -589,37 +807,38 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 inputManagerPanel.SetActive(true);
                 inputPanelOn = true;
-
-                Controls.Load();
-                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
-                DynamicCamera.ControlEnabled = true;
-                InputControl.freeze = false;
-                inputManagerPanel.SetActive(false);
-                inputPanelOn = false;
-                ToggleHotKeys(false);
-
-                if (!alreadySaved && Controls.CheckIfSaved())
+                CheckUnsavedControls(() =>
                 {
-                    checkSavePanel.SetActive(true);
-                }
+                    DynamicCamera.ControlEnabled = true;
+                    InputControl.freeze = false;
+                    inputManagerPanel.SetActive(false);
+                    inputPanelOn = false;
+                    ToggleHotKeys(false);
+                });
             }
         }
 
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state
-        /// </summary>
-        public void ShowControlPanel()
+        public void CheckUnsavedControls(Action callback)
         {
-            ShowControlPanel(!inputManagerPanel.activeSelf);
+            ProcessControlsCallback = callback;
+            if (!Controls.HasBeenSaved())
+            {
+                checkSavePanel.SetActive(true);
+            } else
+            {
+                if(ProcessControlsCallback != null)
+                    ProcessControlsCallback.Invoke();
+            }
         }
 
         public void SaveAndClose()
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            inputManagerPanel.SetActive(false);
+            ShowControlPanel();
         }
 
         /// <summary>
@@ -650,12 +869,13 @@ namespace Synthesis.GUI
                     break;
                 case "no":
                     Controls.Load();
-                    inputManagerPanel.SetActive(false);
                     break;
+                default:
                 case "cancel":
-                    inputManagerPanel.SetActive(true);
-                    break;
+                    return;
             }
+            if (ProcessControlsCallback != null)
+                ProcessControlsCallback.Invoke();
         }
 
         /// <summary>
@@ -663,29 +883,11 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
-            if (PlayerPrefs.GetInt("analytics") == 1) //for analytics tracking
-            {
-                Analytics.CustomEvent("Clicked Tutorial Link", new Dictionary<string, object>
-                {
-                });
-            }
-        }
-        /// <summary>
-        /// Activates analytics panel
-        /// </summary>
-        public void ToggleAnalyticsPanel()
-        {
-            if (analyticsPanel.activeSelf)
-            {
-                analyticsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                analyticsPanel.SetActive(true);
-                inputManagerPanel.SetActive(true);
-            }
+            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.TutorialRequest,
+                "Help - Tutorials",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -711,10 +913,9 @@ namespace Synthesis.GUI
             if (canvas != null)
             {
                 unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-                int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-                State.IsMetric = (i == 1 ? true : false);
-                PlayerPrefs.SetString("Measure", i == 1 ? "Metric" : "Imperial");
-                //Debug.Log("Metric: " + main.IsMetric);
+                State.IsMetric = (int)unitConversionSwitch.GetComponent<Slider>().value == 0;
+                PlayerPrefs.SetString("Measure", State.IsMetric ? "Metric" : "Imperial");
+                // UnityEngine.Debug.Log("Metric: " + State.IsMetric);
             }
         }
 
@@ -791,6 +992,12 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                    MainState.timesLoaded--;
+
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                        AnalyticsLedger.TimingVarible.Playing,
+                        AnalyticsLedger.TimingLabel.ResetField);
+
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
                     break;
@@ -812,12 +1019,27 @@ namespace Synthesis.GUI
                     exitPanel.SetActive(true);
                     break;
                 case "exit":
-                    SceneManager.LoadScene("MainMenu");
+                    LogTabTiming();
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
+                        AnalyticsLedger.EventAction.Exit,
+                        "Exit",
+                        AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
+                    if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
                     break;
                 case "cancel":
                     exitPanel.SetActive(false);
                     break;
             }
+
+            // log any timing events and log that the button was clicked
+            
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
+                AnalyticsLedger.EventAction.Exit,
+                "Exit",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
         }
 
         /// <summary>
@@ -831,11 +1053,15 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            analyticsPanel.SetActive(false);
             inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
 
             CancelOrientation();
+
+            if (settingsPanel.activeSelf)
+            {
+                tabStateMachine.PopState();
+            }
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();

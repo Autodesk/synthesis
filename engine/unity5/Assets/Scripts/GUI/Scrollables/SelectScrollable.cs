@@ -11,7 +11,10 @@ namespace Synthesis.GUI.Scrollables
     public class SelectScrollable : ScrollablePanel
     {
         public string TargetFilename;
+        public string[] TargetExtensions;
         public string ErrorMessage;
+
+        public bool trigger = false;
 
         /// <summary>
         /// Refreshes the scrollable with the directory provided.
@@ -24,13 +27,17 @@ namespace Synthesis.GUI.Scrollables
             items.Clear();
 
             foreach (string robot in folders)
-                if (File.Exists(robot + Path.DirectorySeparatorChar + TargetFilename))
-                    items.Add(new DirectoryInfo(robot).Name);
+                foreach (string extension in TargetExtensions)
+                    if (File.Exists(robot + Path.DirectorySeparatorChar + TargetFilename + extension))
+                        items.Add(new DirectoryInfo(robot).Name);
 
             if (items.Count > 0)
                 selectedEntry = items[0];
 
-            position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
+            if (!trigger) {
+                position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
+                trigger = true;
+            }
         }
 
         /// <summary>

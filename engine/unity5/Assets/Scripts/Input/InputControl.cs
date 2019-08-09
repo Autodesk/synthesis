@@ -25,12 +25,6 @@ namespace Synthesis.Input
         private static List<KeyMapping> mKeysList = new List<KeyMapping>();
         private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
-        /// Set of players (player keys are declared in the <see cref="Player"/>)
-        public static Player[] mPlayerList = new Player[6];
-
-        // Variable to keep track of the active player
-        public static int activePlayerIndex;
-
         // Set of main axes
         private static List<Axis> mAxesList = new List<Axis>();
         private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
@@ -164,15 +158,6 @@ namespace Synthesis.Input
 
         #region Synthesis
 
-        //Contructor: Initialize players and player controls
-        static InputControl()
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                mPlayerList[i] = new Player();
-            }
-        }
-
         #region Synthesis Setup Keys
 
         /// <summary>
@@ -180,18 +165,18 @@ namespace Synthesis.Input
         /// and drive type.
         /// </summary>
         /// <returns>Created KeyMapping.</returns>
+        /// <param name="controlProfile">Control profile to save to.</param>
         /// <param name="name">KeyMapping name.</param>
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
-        /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping SetKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, CustomInput primary)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
-        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, bool isTankDrive)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, KeyCode primary)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), null, isTankDrive);
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), null);
         }
 
         /// <summary>
@@ -200,51 +185,13 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns>Created KeyMapping.</returns>
         /// <param name="name">KeyMapping name.</param>
+        /// <param name="controlProfile">Control profile to save to.</param>
         /// <param name="controlIndex">Integer index to specify which player is active.</param>
         /// <param name="primary">Primary input.</param>
         /// <param name="secondary">Secondary input.</param>
-        /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static KeyMapping SetKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
+        public static KeyMapping SetKey(Profile.Mode controlProfile, string name, int controlIndex, KeyCode primary, CustomInput secondary)
         {
-            return mPlayerList[controlIndex].SetKey(name, ArgToInput(primary), ArgToInput(secondary), isTankDrive);
-        }
-
-        /// <summary>
-        /// Gets the list of ALL the keys.
-        /// </summary>
-        /// <returns>List of keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetKeysList()
-        {
-            mKeysList.Clear();
-            foreach (Player player in mPlayerList)
-            {
-                foreach (KeyMapping key in player.GetActiveList())
-                {
-                    mKeysList.Add(key);
-                }
-            }
-            return mKeysList.AsReadOnly();
-        }
-
-        /// <summary>
-        /// Gets the list of a specific player's keys (player specified by controlIndex).
-        /// </summary>
-        /// <param name="controlIndex"></param>
-        /// <returns>List of a player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetPlayerKeys(int controlIndex)
-        {
-            // Set the activePlayerIndex equal to the selected player (controlIndex)
-            activePlayerIndex = controlIndex;
-            return mPlayerList[controlIndex].GetActiveList();
-        }
-
-        /// <summary>
-        /// Gets the list of the active player's keys. 
-        /// </summary>
-        /// <returns>The list of the active player's keys.</returns>
-        public static ReadOnlyCollection<KeyMapping> GetActivePlayerKeys()
-        {
-            return mPlayerList[activePlayerIndex].GetActiveList();
+            return null; // Controls.Players[controlIndex].SetKey(controlProfile, name, ArgToInput(primary), ArgToInput(secondary));
         }
 
         #endregion
@@ -260,9 +207,9 @@ namespace Synthesis.Input
         /// <param name="negative">Name of negative KeyMapping.</param>
         /// <param name="positive">Name of positive KeyMapping.</param>
         /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
-        public static Axis SetAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
+        public static Axis SetAxis(Profile.Mode controlProfile, string name, int controlIndex, KeyMapping negative, KeyMapping positive)
         {
-            return mPlayerList[controlIndex].SetAxis(name, negative, positive, isTankDrive);
+            return null; // Controls.Players[controlIndex].SetAxis(controlProfile, name, negative, positive);
         }
 
         #endregion
@@ -1477,7 +1424,7 @@ namespace Synthesis.Input
             {
                 outKey.primaryInput = primary;
                 outKey.secondaryInput = secondary;
-                outKey.thirdInput = third;
+                outKey.tertiaryInput = third;
             }
             else
             {

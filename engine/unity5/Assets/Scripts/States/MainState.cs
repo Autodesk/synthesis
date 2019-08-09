@@ -18,12 +18,14 @@ using Synthesis.Input;
 using Synthesis.MixAndMatch;
 using Synthesis.Camera;
 using Synthesis.Sensors;
-using Synthesis.StatePacket;
 using Synthesis.Utils;
 using Synthesis.Robot;
 using Synthesis.Field;
-using UnityEngine.Analytics;
-//using UnityEditor.Analytics;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+using Newtonsoft.Json;
+using Assets.Scripts;
 
 namespace Synthesis.States
 {
@@ -36,6 +38,8 @@ namespace Synthesis.States
     {
         private string[] SampleRobotGUIDs = { "ee85355c-6daf-4588-ba47-cdf3f9143922", "fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d", "d7f2959a-f9eb-4581-a4bb-898550193bda", "d1859211-db0f-4b75-866c-2d0e81b6732b", "52eb1ada-b051-461a-9cc4-1b5b74764ce5", "decdc6a1-5f76-4dea-add7-4c358f4a9921", "6b5d4484-db3c-425b-98b8-546c06d8d8bf", "c3bb1b94-dad8-4a8c-aa67-9c09eb9379c1", "ef4e3e2b-8cfb-437d-b63d-8bebc05fa3ba", "7d31cb8a-01e8-4eeb-9086-2955a993a374", "1478855a-60bd-42cb-8841-eece4fa0fbeb", "0b43729a-d8d3-4df2-bcbb-684343933c23", "9f19586c-a26f-4b28-9fb9-e06731178166", "f1225b7a-180e-456b-88d1-7315b0086001" };
 
+        public string robotDirectory;
+
         public static int timesLoaded = 0;
 
         private const int SolverIterations = 100;
@@ -45,8 +49,6 @@ namespace Synthesis.States
 
         public bool Tracking { get; private set; }
         private bool awaitingReplay;
-
-        private UnityPacket unityPacket;
 
         /// <summary>
         /// The active robot in this state.
@@ -86,8 +88,7 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = File.Exists(EmulationDriverStation.emulationDir+"zImage") && File.Exists(EmulationDriverStation.emulationDir + "rootfs.ext4") && File.Exists(EmulationDriverStation.emulationDir + "zynq-zed.dtb");
-        //public bool isEmulationDownloaded = true;
+        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
 
         bool reset;
 
@@ -98,6 +99,30 @@ namespace Synthesis.States
         /// </summary>
         public override void Awake()
         {
+            QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
+
+            string CurrentVersion = "4.3.0";
+            GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
+
+            if (CheckConnection()) {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+                var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
+                VersionManager update = JsonConvert.DeserializeObject<VersionManager>(json);
+                SimUI.updater = update.URL;
+
+                var localVersion = new Version(CurrentVersion);
+                var globalVersion = new Version(update.Version);
+
+                var check = localVersion.CompareTo(globalVersion);
+
+                if (check < 0)
+                {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
+            }
+
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
             //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
@@ -106,7 +131,6 @@ namespace Synthesis.States
             ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
 
             CollisionTracker = new CollisionTracker(this);
-            unityPacket = new UnityPacket();
             SpawnedRobots = new List<SimulatorRobot>();
         }
 
@@ -127,9 +151,6 @@ namespace Synthesis.States
             BPhysicsTickListener.Instance.OnTick -= BRobotManager.Instance.UpdateRaycastRobots;
             BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
 
-            //starts a new instance of unity packet which receives packets from the driver station
-            unityPacket.Start();
-
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
 
@@ -137,15 +158,30 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-                {
-                    AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                    return;
+                if (timesLoaded > 0) {
+                    if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
+                        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                        return;
+                    } else
+                    {
+                        MovePlane();
+                    }
+                } else {
+                    timesLoaded++;
                 }
 
-                if (!LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), RobotTypeManager.IsMixAndMatch))
+                bool result = false;
+
+                try
                 {
-                    AppModel.ErrorToMenu("Could not load robot: " + PlayerPrefs.GetString("simSelectedRobot") + "\nHas it been moved or deleted?)");
+                    result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), false);
+                } catch (Exception e) {
+                    MonoBehaviour.Destroy(GameObject.Find("Robot"));
+                }
+
+                if (!result)
+                {
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not find the selected robot");
                     return;
                 }
 
@@ -194,6 +230,8 @@ namespace Synthesis.States
                 directoryPath = defaultDirectory;
                 isEmulationDownloaded = true;
             }
+
+            MediaManager.getInstance();
         }
 
         /// <summary>
@@ -207,6 +245,11 @@ namespace Synthesis.States
                 return;
             }
 
+            if (ActiveRobot.transform.GetChild(0).transform.position.y < -10 || ActiveRobot.transform.GetChild(0).transform.position.y > 60) {
+                BeginRobotReset();
+                EndRobotReset();
+            }
+
             if (reset)
             {
                 BeginRobotReset();
@@ -216,18 +259,18 @@ namespace Synthesis.States
             //Spawn a new robot from the same path or switch active robot
             if (!ActiveRobot.IsResetting && ActiveRobot.ControlIndex == 0)
             {
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
-                if (InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().duplicateRobot)) LoadRobot(robotPath, ActiveRobot is MaMRobot);
+                if (InputControl.GetButtonDown(Controls.Players[ActiveRobot.ControlIndex].GetButtons().switchActiveRobot)) SwitchActiveRobot(SpawnedRobots.IndexOf(ActiveRobot) + 1 < SpawnedRobots.Count() ? SpawnedRobots.IndexOf(ActiveRobot) + 1 : 0);
 
             }
 
             // Toggles between the different camera states if the camera toggle button is pressed
-            if ((InputControl.GetButtonDown(Controls.buttons[0].cameraToggle)) &&
+            if ((InputControl.GetButtonDown(Controls.Global.GetButtons().cameraToggle)) &&
                 DynamicCameraObject.activeSelf && DynamicCamera.ControlEnabled)
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             // Switches to replay mode
-            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.buttons[ActiveRobot.ControlIndex].replayMode))
+            if (!ActiveRobot.IsResetting && InputControl.GetButtonDown(Controls.Global.GetButtons().replayMode))
             {
                 CollisionTracker.ContactPoints.Add(null);
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
@@ -246,8 +289,6 @@ namespace Synthesis.States
                 AppModel.ErrorToMenu("Robot instance not valid.");
                 return;
             }
-
-            SendRobotPackets();
         }
 
         /// <summary>
@@ -260,6 +301,54 @@ namespace Synthesis.States
                 awaitingReplay = false;
                 StateMachine.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
             }
+        }
+
+        public bool CheckConnection() {
+            try {
+                WebClient client = new WebClient();
+                ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json")) {
+                    return true;
+                }
+            }
+            catch {
+                return false;
+            }
+        }
+
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None) {
+                for (int i = 0; i < chain.ChainStatus.Length; i++) {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid) {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
+        }
+
+        public void MovePlane() {
+            GameObject plane = GameObject.Find("Environment");
+            MeshRenderer[] aLotOfMeshes = fieldObject.GetComponentsInChildren<MeshRenderer>();
+            float lowPoint = 0;
+            foreach (MeshRenderer singleMesh in aLotOfMeshes) {
+                if (singleMesh.bounds.min.y < lowPoint) {
+                    lowPoint = singleMesh.bounds.min.y;
+                    Debug.Log("LowPoint: " + lowPoint);
+                }
+            }
+
+            plane.transform.position = new Vector3(0, lowPoint, 0);
         }
 
         /// <summary>
@@ -283,14 +372,13 @@ namespace Synthesis.States
 
             FieldDataHandler.Load(fieldPath);
             timesLoaded++;
-            Controls.Load();
-            if (timesLoaded > 1)
-            {
-                Controls.UpdateFieldControls(false);
-            }
 
-            string loadResult;
-            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out loadResult);
+            Controls.Load();
+            Controls.UpdateFieldControls();
+            if (!Controls.HasBeenSaved())
+                Controls.Save();
+
+            fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
             Debug.Log(loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
@@ -303,6 +391,25 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         public bool LoadRobot(string directory, bool isMixAndMatch)
         {
+            bool b = true;
+
+            if (!Directory.Exists(directory)) {
+                return false;
+            }
+            else {
+                string[] files = Directory.GetFiles(directory);
+                foreach (string a in files) {
+                    string name = Path.GetFileName(a);
+                    if (name.ToLower().Contains("skeleton")) {
+                        b = false;
+                    }
+                }
+            }
+
+            if (b) {
+                return false;
+            }
+
             if (SpawnedRobots.Count < MAX_ROBOTS)
             {
                 GameObject robotObject = new GameObject("Robot");
@@ -314,11 +421,27 @@ namespace Synthesis.States
                     MaMRobot mamRobot = robotObject.AddComponent<MaMRobot>();
                     mamRobot.RobotHasManipulator = false; // Defaults to false
                     robot = mamRobot;
+
+                    if (AnalyticsManager.GlobalInstance != null)
+                    {
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Mix and Match",
+                            AnalyticsLedger.getMilliseconds().ToString());
+                    }
                 }
                 else
                 {
                     robotPath = directory;
                     robot = robotObject.AddComponent<SimulatorRobot>();
+
+                    if (AnalyticsManager.GlobalInstance != null)
+                    {
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Exported",
+                            AnalyticsLedger.getMilliseconds().ToString());
+                    }
                 }
 
                 robot.FilePath = robotPath;
@@ -340,11 +463,10 @@ namespace Synthesis.States
 
                 if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
                 {
-                    if (PlayerPrefs.GetInt("analytics") == 1)
-                    {
-                        PlayerPrefs.SetString(robot.RootNode.GUID.ToString(), "analyzed");
-                        Analytics.CustomEvent(robot.RootNode.exportedWith.ToString(), new Dictionary<string, object> { });
-                    }
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                        AnalyticsLedger.EventAction.Load,
+                        robot.RootNode.GUID.ToString(),
+                        AnalyticsLedger.getMilliseconds().ToString());
                 }
 
                 return true;
@@ -698,17 +820,11 @@ namespace Synthesis.States
         {
             ActiveRobot.CancelRobotOrientation();
         }
-        /// <summary>
-        /// Sends the received packets to the active robot
-        /// </summary>
-        private void SendRobotPackets()
-        {
-            ActiveRobot.Packet = unityPacket.GetLastPacket();
-            foreach (SimulatorRobot robot in SpawnedRobots)
-            {
-                if (robot != ActiveRobot) robot.Packet = null;
-            }
-        }
         #endregion
+
+        public UnityEngine.Camera GetCamera()
+        {
+            return DynamicCameraObject.GetComponent<UnityEngine.Camera>();
+        }
     }
 }

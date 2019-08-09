@@ -10,6 +10,13 @@ namespace Synthesis.States
         /// </summary>
         public void OnMainSimulatorButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainSimMenu,
+                AnalyticsLedger.EventAction.StartSim,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MainSimMenu,
+                AnalyticsLedger.TimingVarible.Customizing);
+
             StateMachine.PushState(new DefaultSimulatorState());
         }
 
@@ -18,6 +25,13 @@ namespace Synthesis.States
         /// </summary>
         public void OnMixAndMatchButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MixAndMatchMenu,
+                AnalyticsLedger.EventAction.StartSim,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MixAndMatchMenu,
+                AnalyticsLedger.TimingVarible.Customizing);
+
             StateMachine.PushState(new MixAndMatchState());
         }
 
@@ -26,6 +40,13 @@ namespace Synthesis.States
         /// </summary>
         public void OnMultiplayerButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerMenu,
+                AnalyticsLedger.EventAction.StartSim,
+                "",
+                AnalyticsLedger.getMilliseconds().ToString());
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu,
+                    AnalyticsLedger.TimingVarible.Customizing);
+
             SceneManager.LoadScene("MultiplayerScene");
         }
 

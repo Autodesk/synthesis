@@ -1,5 +1,7 @@
 #include "error.hpp"
 
+#include <iostream>
+
 namespace hel{
     std::string DSError::toString()const{
         std::string s = "(";
@@ -43,19 +45,18 @@ namespace hel{
     UnhandledEnumConstantException::UnhandledEnumConstantException(std::string s)noexcept:enum_type(s){}
 
     const char* UnhandledEnumConstantException::what()const throw(){
-        std::string s = "Synthesis exception: Unhandled enum constant for " + enum_type;
-        return s.c_str();
+      return makeExceptionMessage("Synthesis exception: Unhandled enum constant for " + enum_type).c_str();
     }
 
     const char* UnhandledCase::what()const throw(){
-        return "Synthesis exception: Unhandled case";
+      return makeExceptionMessage("Unhandled case").c_str();
     }
 
-    UnsupportedFeature::UnsupportedFeature(std::string s)noexcept:details(s){}
-    UnsupportedFeature::UnsupportedFeature()noexcept:UnsupportedFeature(""){}
+    UnsupportedFeatureException::UnsupportedFeatureException(std::string s)noexcept:details(s){}
+    UnsupportedFeatureException::UnsupportedFeatureException()noexcept:UnsupportedFeatureException(""){}
 
-    const char* UnsupportedFeature::what()const throw(){
-        std::string s = "Synthesis exception: Unsupported feature";
+    const char* UnsupportedFeatureException::what()const throw(){
+      std::string s = makeExceptionMessage("Unsupported feature", false);
         if(!details.empty()){
             s += ": " + details;
         }
@@ -67,8 +68,24 @@ namespace hel{
     InputConfigurationException::InputConfigurationException(std::string s)noexcept:details(s){}
 
     const char* InputConfigurationException::what()const throw(){
-        std::string s = "Synthesis exception: No matching input found in user code for input configured in robot model (" + details + ")\n";
-        return s.c_str();
+      return makeExceptionMessage("No matching input found in user code for input configured in robot model (" + details + ")").c_str();
     }
 
+    std::string makeExceptionMessage(const std::string& message, bool new_line){
+        return "Synthesis exception: " + message + (new_line ? "\n" : "");
+    }
+
+    std::string makeWarningMessage(const std::string& message, bool new_line){
+        return "Synthesis warning: " + message + (new_line ? "\n" : "");
+    }
+
+    void warn(const std::string& message){
+#ifdef HEL_ENABLE_WARNINGS
+        std::cerr << makeWarningMessage(message);
+#endif
+    }
+
+    void warnUnsupportedFeature(const std::string& message){
+        warn("Unsupported feature: " + message);
+    }
 }

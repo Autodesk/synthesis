@@ -10,7 +10,7 @@ namespace hel{
      * Currently unsupported by Synthesis
      */
 
-    struct PDP{ //TODO handle emulated data
+    struct PDP: public CANDevice{
 
         /**
          * \brief Interpretation definitions for CAN message data bytes
@@ -19,6 +19,12 @@ namespace hel{
         enum MessageData{
             SIZE = 8
         };
+
+        std::string toString()const;
+
+        void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
+
+        std::vector<uint8_t> generateCANPacket(const int32_t&)const;
 
         /**
          * Constructor for PDP

@@ -15,14 +15,19 @@ SET(hel_VERSION_MINOR 0)
 
 SET(NILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
-SET(ASIO_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ASIO/asio")
+SET(GRPC_DIRECTORY "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
+SET(PROTOBUF_SOURCE_DIR ${CMAKE_BINARY_DIR}/../api/v1/proto)
+SET(GRPC_GEN_DIR "${CMAKE_BINARY_DIR}/lib/gen")
+
+SET(GRPC "v1.21.4")
 # SET(CTRE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
-SET(CLONE_ASIO_COMMAND "${CMAKE_BINARY_DIR}/scripts/clone_asio.sh")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++14")
-
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
+IF(${HEL_DEFAULT_ENABLED_STATUS} MATCHES "(true|false)")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHEL_DEFAULT_ENABLED_STATUS=${HEL_DEFAULT_ENABLED_STATUS}")
+ENDIF()
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 
@@ -48,6 +53,8 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${NILIB_DIRECTORY}/src/lib
     ${NILIB_DIRECTORY}/src/lib/chipobject
     ${NILIB_DIRECTORY}/src/lib/netcomm
+    ${GRPC_DIRECTORY}/libs/opt
+    ${GRPC_DIRECTORY}/libs/opt/protobuf
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/athena/release
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/athena/release
@@ -76,7 +83,7 @@ else()
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/x86-64/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/x86-64/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-3-linuxx86-64debug.zip_4a64a99b7657804f077cb1086b2f7fb5/linux/x86-64/shared
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxx86-64.zip_fe8636d74ac63a8d6fc247de44ba271c/linux/x86-64/shared/
   )
 endif()
 
@@ -85,13 +92,6 @@ ADD_CUSTOM_TARGET(build_vm
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	COMMENT "Download, build, and run synthesis VM"
 	VERBATIM)
-
-ADD_CUSTOM_TARGET(asio ALL
-  COMMAND ${CLONE_ASIO_COMMAND}
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/scripts
-  COMMENT "Download the C++ ASIO library"
-  VERBATIM)
-
 
 EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
@@ -106,33 +106,65 @@ EXTERNALPROJECT_ADD(wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB}
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${WPILIB_DIRECTORY} ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so ./gradlew build WPILib
+  BUILD_COMMAND ""
   INSTALL_COMMAND "")
+
+ADD_CUSTOM_TARGET(wpilibc
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} "${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so" "./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Build WPILib for C++"
+  VERBATIM)
+ADD_DEPENDENCIES(wpilibc wpilib)
+
+ADD_CUSTOM_TARGET(wpilibj
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh WPILib ${WPILIB_DIRECTORY} "${WPILIB_DIRECTORY}/wpilibj/build/libs/wpilibj.jar" "./gradlew :wpilibj:assemble"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMENT "Build WPILib for Java"
+  VERBATIM)
+ADD_DEPENDENCIES(wpilibj wpilib)
+
 # EXTERNALPROJECT_ADD(ctre
 #   PREFIX lib/ctre
 #   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
 #   GIT_TAG v2018.19.0
 #   CONFIGURE_COMMAND cd ${CTRE_DIRECTORY} && chmod +x ./gradlew
 #   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/ctre.patch
-#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a ./gradlew arm:cpp:CTRE_PhoenixStaticLibrary CTRE
+#   BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh CRTE ${CTRE_DIRECTORY} ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a "./gradlew arm:cpp:CTRE_PhoenixStaticLibrary"
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
+
+ExternalProject_ADD(grpc
+  PREFIX lib/grpc
+  GIT_REPOSITORY https://github.com/grpc/grpc.git
+  GIT_TAG ${GRPC}
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
+  INSTALL_COMMAND "")
+
+FILE(GLOB PROTOBUF_SOURCE_FILES ${PROTOBUF_SOURCE_DIR}/*)
+SET(GENERATED_FILES ${GRPC_GEN_DIR}/emulator_service.grpc.pb.cc ${GRPC_GEN_DIR}/emulator_service.grpc.pb.h ${GRPC_GEN_DIR}/emulator_service.pb.cc ${GRPC_GEN_DIR}/emulator_service.pb.h)
+
+ADD_CUSTOM_COMMAND(
+  OUTPUT ${GENERATED_FILES}
+  COMMAND ${CMAKE_BINARY_DIR}/scripts/gen_grpc.sh --system-protoc
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+  COMMENT "Generate libhel protobuf and gRPC files"
+  DEPENDS ${PROTOBUF_SOURCE_FILES}
+  VERBATIM)
+ADD_CUSTOM_TARGET(grpc_gen DEPENDS ${GENERATED_FILES})
+ADD_DEPENDENCIES(grpc_gen grpc)
 
 ADD_LIBRARY(hel SHARED
   src/roborio.cpp
   src/roborio_manager.cpp
-  src/send_data.cpp
-  src/receive_data.cpp
-  src/sync_server.cpp
-  src/sync_client.cpp
+  src/robot_outputs.cpp
+  src/robot_inputs.cpp
   src/util.cpp
-  src/json_util.cpp
   src/init.cpp
   src/analog_input.cpp
   src/analog_output.cpp
   src/pwm_system.cpp
   src/digital_system.cpp
-  src/can_comm.cpp
   src/relay_system.cpp
   src/global.cpp
   src/comm.cpp
@@ -158,23 +190,30 @@ ADD_LIBRARY(hel SHARED
   src/pcm.cpp
   src/can_device.cpp
   src/can_motor_controller.cpp
-  src/pdp.cpp)
-ADD_DEPENDENCIES(hel asio ni-libraries)
-
+  src/can_comm.cpp
+  src/pdp.cpp
+  src/robot_input_service.cpp
+  src/robot_output_service.cpp
+  ${GENERATED_FILES}
+)
+ADD_DEPENDENCIES(hel ni-libraries grpc_gen)
+TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
+  "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"
-  "${ASIO_DIRECTORY}/include"
-  "${CMAKE_BINARY_DIR}/include")
-if(ARCH MATCHES "^[Aa][Rr][Mm]")
-  # TARGET_LINK_LIBRARIES(hel wpi)
-else()
-  # TARGET_LINK_LIBRARIES(hel wpi-x86)
-endif()
+  "${GRPC_DIRECTORY}/include"
+  "${GRPC_DIRECTORY}/third_party/protobuf/src"
+  "${GRPC_GEN_DIR}"
+)
 
 if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]")
+  IF(NOT DEFINED WPILIB)
+    MESSAGE(FATAL_ERROR "Please specify WPILib Version with WPILIB tag")
+  ENDIF()
+
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
-    ADD_DEPENDENCIES(FRCUserProgram wpilib ni-libraries)
+    ADD_DEPENDENCIES(FRCUserProgram wpilibc ni-libraries)
     # ADD_DEPENDENCIES(ctre)
     TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
@@ -219,9 +258,9 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       MESSAGE("Test \"${test_name}\" found. Generating build target.")
 
       ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
-      ADD_DEPENDENCIES(${test_name} hel GoogleTest asio wpilib)
+      ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilibc)
 
-      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread hel)
+      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
       if(ARCH MATCHES "^[Aa][Rr][Mm]")
@@ -241,11 +280,13 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-        "${NILIB_DIRECTORY}/src/include"
+  	"${GRPC_DIRECTORY}/include"
+	"${GRPC_DIRECTORY}/third_party/protobuf/src"
+  	"${CMAKE_BINARY_DIR}/lib/gen"
+	"${NILIB_DIRECTORY}/src/include"
         # "${CTRE_DIRECTORY}/cpp/include/"
         # "${CTRE_DIRECTORY}/libraries/driver/include"
         "${CMAKE_BINARY_DIR}/include"
-        "${ASIO_DIRECTORY}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
 
       SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
@@ -277,7 +318,7 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
     MESSAGE("Benchmark file discovered: ${benchmark_name}. Generating build target ${benchmark_name}_bench")
 
     ADD_EXECUTABLE(${benchmark_name} ${file})
-    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench asio wpilib)
+    ADD_DEPENDENCIES(${benchmark_name} hel GoogleTest GoogleBench wpilibc)
 
     TARGET_LINK_LIBRARIES(${benchmark_name} gtest gtest_main pthread hel benchmark benchmark_main wpi-x86)
     TARGET_COMPILE_OPTIONS(${benchmark_name} PUBLIC -pthread)
@@ -289,11 +330,13 @@ if((BENCHMARK MATCHES "^[Tt][Rr][Uu][Ee]" OR BENCHMARK MATCHES "^[Oo][Nn]") AND 
       "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
       "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
       "${WPILIB_DIRECTORY}/hal/src/main/native/include"
+      "${GRPC_DIRECTORY}/include"
+      "${GRPC_DIRECTORY}/third_party/protobuf/src"
+      "${CMAKE_BINARY_DIR}/lib/gen"
       "${NILIB_DIRECTORY}/src/include"
       # "${CTRE_DIRECTORY}/cpp/include/"
       # "${CTRE_DIRECTORY}/libraries/driver/include"
       "${CMAKE_BINARY_DIR}/include"
-      "${ASIO_DIRECTORY}/include"
       "${CMAKE_BINARY_DIR}/include"
       "${CMAKE_BINARY_DIR}/lib/include")
 

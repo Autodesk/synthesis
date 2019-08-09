@@ -57,6 +57,9 @@ namespace Synthesis.RN
                         }
 
                         MainObject.transform.parent = parent.MainObject.transform;
+
+                        robotBase.Weight += (float)GetSkeletalJoint().weight;
+
                     }
                     else
                     {
@@ -125,6 +128,23 @@ namespace Synthesis.RN
 
                     break;
             }
+
+            //float weight = (float)GetSkeletalJoint().weight;
+            //if (MainObject.GetComponent<BRigidBody>() != null)
+            //{
+                
+            //    MainObject.GetComponent<BRigidBody>().mass = weight;
+            //}
+            //else
+            //{
+            //    BRigidBody br = robotBase.RootNode.MainObject.GetComponent<BRigidBody>();
+            //    robotBase.Weight += (float)weight;
+            //    br.mass += weight;
+            //    RigidBody r = (RigidBody)br.GetCollisionObject();
+
+            //}
+            
+            
         }
 
         private MainState mainState;

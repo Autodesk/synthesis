@@ -9,6 +9,7 @@ using Synthesis.FSM;
 using Synthesis.BUExtensions;
 using Synthesis.States;
 using Synthesis.Utils;
+using System.IO;
 
 namespace Synthesis.RN
 {
@@ -84,7 +85,7 @@ namespace Synthesis.RN
                     //ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(m.vertices, x => x.ToBullet()), m.vertices.Length);
                     //hull.Margin = CollisionMargin;
                     //hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
-
+                    MainObject.AddComponent<Wireframe>().Init(collider, ComOffset);
                     ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
                     hull.Margin = CollisionMargin;
                     hullShape.AddShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
@@ -96,7 +97,18 @@ namespace Synthesis.RN
                 //Debug.Log(PhysicalProperties.centerOfMass);
 
                 BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
-                rigidBody.mass = mesh.physics.mass;
+                string jsonFile = Directory.GetParent(filePath).FullName + Path.DirectorySeparatorChar + "skeleton.json";
+                bool useJsonWeight = false;
+                if (File.Exists(jsonFile)) { useJsonWeight = true; }
+                float weight = mesh.physics.mass;
+                if (useJsonWeight) {
+                    try {
+                        weight = (float)GetSkeletalJoint().weight;
+                    } catch (Exception e) {
+                        weight = mesh.physics.mass;
+                    }
+                }
+                rigidBody.mass = weight;
                 rigidBody.friction = 0.25f;
                 rigidBody.linearSleepingThreshold = LinearSleepingThreshold;
                 rigidBody.angularSleepingThreshold = AngularSleepingThreshold;

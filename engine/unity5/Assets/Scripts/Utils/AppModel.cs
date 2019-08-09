@@ -14,14 +14,14 @@ namespace Synthesis.Utils
         /// <summary>
         /// The version number of this build.
         /// </summary>
-        public const string VersionNumber = "4.2.0.0";
+        public const string VersionNumber = "4.3.0.0";
 
         private static bool errorDefined;
 
         /// <summary>
         /// The error message to display when returning to the main menu.
         /// </summary>
-        public static string ErrorMessage { get; private set; }
+        public static string ErrorMessage { get; set; }
 
         /// <summary>
         /// Determines if this is the first time loading the main menu scene.
@@ -55,7 +55,7 @@ namespace Synthesis.Utils
             {
                 errorDefined = true;
                 ErrorMessage = message;
-                SceneManager.LoadScene("MainMenu");
+                SceneManager.LoadScene("ErrorScene");
             }
         }
     }

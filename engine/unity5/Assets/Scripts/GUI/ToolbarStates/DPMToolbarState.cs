@@ -14,7 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.GUI
@@ -146,12 +145,10 @@ namespace Assets.Scripts.GUI
                 gamepieceDropdownExtension.SetActive(true);
             }
 
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Changed Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Changed,
+                "Dropdown - Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Destroys current dropdown and hides it
@@ -175,6 +172,11 @@ namespace Assets.Scripts.GUI
         public void OnDefineIntakeButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, true, dpmRobot), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Define Intake",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Change to release state
@@ -182,6 +184,11 @@ namespace Assets.Scripts.GUI
         public void OnDefineReleaseButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new DefineNodeState(dpmRobot.GetDriverPractice(FieldDataHandler.gamepieces[gamepieceIndex]), dpmRobot.transform, false, dpmRobot), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Define Release",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Change to gamepiece spawnpoint state
@@ -189,24 +196,29 @@ namespace Assets.Scripts.GUI
         public void OnSetSpawnpointButtonClicked()
         {
             StateMachine.SceneGlobal.PushState(new GamepieceSpawnState(gamepieceIndex), true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Set Gamepiece Spawnpoint",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         /// <summary>
         /// Spawn gamepiece clone
         /// </summary>
         public void OnSpawnButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Spawn Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
+
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
             GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity); //clone gamepiece - exact clone will keep joints
             gamepieceClone.SetActive(true); //show in case all gamepieces are hidden
             if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>()); //remove joints from clone
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
-            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;  
-
-            if (PlayerPrefs.GetInt("analytics") == 1)
-                Analytics.CustomEvent("Spawned Gamepiece", new Dictionary<string, object> //for analytics tracking
-                {
-                });
+            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
         }
         /// <summary>
         /// Clear gamepiece clones
@@ -219,6 +231,16 @@ namespace Assets.Scripts.GUI
             //Destory all clones
             foreach (GameObject o in gameObjects.Where(o => o.name.Equals(g.name + "(Clone)")))
                 GameObject.Destroy(o);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Clear Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
+        }
+
+        public override void ToggleHidden()
+        {
+            dpmToolbar.SetActive(!dpmToolbar.activeSelf);
         }
         public void OnHelpButtonClicked()
         {
@@ -243,13 +265,10 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Driver Practice Help Pressed", new Dictionary<string, object> //for analytics tracking
-                {
-                });
-            }
-
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Clear Gamepiece",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         private void CloseHelpMenu()
         {
@@ -259,6 +278,11 @@ namespace Assets.Scripts.GUI
             foreach (Transform t in dpmToolbar.transform)
                 if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
                 else t.gameObject.SetActive(true);
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.Viewed,
+                "Help - Gamepiece Toolbar",
+            AnalyticsLedger.getMilliseconds().ToString());
         }
         public override void End()
         {
