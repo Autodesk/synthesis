@@ -3,6 +3,7 @@ using Renci.SshNet;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using UnityEngine;
 
 namespace Synthesis
 {
@@ -26,10 +27,11 @@ namespace Synthesis
         private static Process qemuJavaProcess = null;
         private static Process grpcBridgeProcess = null;
 
-        public static UserProgram UserProgramInfo = new UserProgram();
+        public static UserProgram.UserProgramType programType = UserProgram.UserProgramType.JAVA;
 
         public static void StartEmulator()
         {
+            Enum.TryParse(PlayerPrefs.GetString("UserProgramType"), out programType);
             qemuNativeProcess = Process.Start(new ProcessStartInfo
             {
                 CreateNoWindow = true,
@@ -122,12 +124,12 @@ namespace Synthesis
 
         public static void SCPFileSender(UserProgram userProgram)
         {
-            UserProgramInfo = userProgram;
+            programType = userProgram.type;
             try
             {
                 if (IsRunningRobotCode())
                     StopRobotCode();
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
                     client.RunCommand("rm FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
@@ -135,7 +137,7 @@ namespace Synthesis
                     client.Disconnect();
                 }
 
-                using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
                     using (Stream localFile = File.OpenRead(userProgram.fullFileName))
@@ -160,7 +162,7 @@ namespace Synthesis
             {
                 try
                 {
-                    using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
                         client.Connect();
                         VMConnected = client.IsConnected;
@@ -202,7 +204,7 @@ namespace Synthesis
             isRunningRobotCode = false;
             new Thread(() =>
             {
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
                     client.RunCommand(STOP_COMMAND);
@@ -217,7 +219,7 @@ namespace Synthesis
             EmulatorNetworkConnection.Instance.OpenConnection();
             new Thread(() =>
             {
-                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                 {
                     client.Connect();
                     client.RunCommand(STOP_COMMAND + START_COMMAND);
