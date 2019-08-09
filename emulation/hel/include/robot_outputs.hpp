@@ -23,12 +23,6 @@ namespace hel {
 struct RobotOutputs {
    private:
 	/**
-	 * \brief Whether RobotOutputs has been updated since last serialization
-	 */
-
-	bool new_data;
-
-	/**
 	 * \brief Whether the robot is enabled and RobotOutputs should send outputs
 	 */
 
