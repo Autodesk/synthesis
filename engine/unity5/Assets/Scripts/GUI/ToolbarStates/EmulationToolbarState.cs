@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
+using static Synthesis.EmulatorManager;
 using System;
 
 namespace Assets.Scripts.GUI
@@ -109,7 +110,9 @@ namespace Assets.Scripts.GUI
                     Synthesis.EmulatorManager.SCPFileSender(userProgram);
                     loaded = true;
                 });
+
                 await Upload;
+                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(UserProgram.UserProgramType), programType));
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,

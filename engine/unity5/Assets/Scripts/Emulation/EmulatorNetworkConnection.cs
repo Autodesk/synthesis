@@ -76,7 +76,7 @@ namespace Synthesis
                         await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
                         {
                             Api = API_VERSION,
-                            TargetPlatform = UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                            TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                             InputData = InputManager.Instance,
                         });
                         senderConnected = true;
@@ -105,7 +105,7 @@ namespace Synthesis
                 try
                 {
                     using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION,
-                        TargetPlatform = UserProgramInfo.type == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                        TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                     }))
                     {
                         while (await call.ResponseStream.MoveNext())
