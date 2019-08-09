@@ -5,6 +5,8 @@
 
 namespace hel{
 
+    extern int gRPCPort;
+
     /**
      * \brief Manages data associated with Ni FPGA's tGlobal class
      */
