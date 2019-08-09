@@ -372,9 +372,6 @@
     <EmbeddedResource Include="GUI\Messages\ExportSuccessfulForm.resx">
       <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Messages\FirstLaunchInfoForm.resx">
-      <DependentUpon>FirstLaunchInfoForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Messages\UnsupportedComponentsForm.resx">
       <DependentUpon>UnsupportedComponentsForm.cs</DependentUpon>
     </EmbeddedResource>
