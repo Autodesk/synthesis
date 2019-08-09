@@ -117,6 +117,11 @@ namespace Synthesis.DriverPractice
                 moveArrows.SetActive(true);
             }
             //else prompt user to define intake and release first
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Edit Trajectory",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
         public void CloseEditor()
         {
@@ -408,7 +413,9 @@ namespace Synthesis.DriverPractice
             dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             trajectoryLine.transform.parent = dpmRobot.transform;
             Destroy(moveArrows);
-            moveArrows = CreateMoveArrows();
+            if (Auxiliary.FindGameObject("Field") != null) {
+                moveArrows = CreateMoveArrows();
+            }
         }
     }
 }

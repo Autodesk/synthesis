@@ -1,7 +1,6 @@
 #ifndef _ROBORIO_MANAGER_HPP_
 #define _ROBORIO_MANAGER_HPP_
 
-#include <memory>
 #include <mutex>
 #include <thread>
 

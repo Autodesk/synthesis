@@ -1,6 +1,8 @@
 #ifndef _BOUNDS_CHECKED_ARRAY_HPP_
 #define _BOUNDS_CHECKED_ARRAY_HPP_
 
+#include "error.hpp"
+
 #include <array>
 #include <functional>
 
@@ -37,7 +39,7 @@ namespace hel{
 
         constexpr const T& at(std::size_t pos)const{
             if(pos < 0 || pos >= LEN){
-                throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN)));
             }
             return internal[pos];
         }
@@ -50,7 +52,7 @@ namespace hel{
 
         constexpr T& at(std::size_t pos){
             if(pos < 0 || pos >= LEN){
-                throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN)));
             }
             return internal[pos];
         }
@@ -63,7 +65,7 @@ namespace hel{
 
         constexpr const T& operator[](std::size_t pos)const{
             if(pos < 0 || pos >= LEN){
-                throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN)));
             }
             return internal[pos];
         }
@@ -76,7 +78,7 @@ namespace hel{
 
         constexpr T& operator[](std::size_t pos){
             if(pos < 0 || pos >= LEN){
-                throw std::out_of_range("Exception: array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: index " + std::to_string(pos) + " in array of size " + std::to_string(LEN)));
             }
             return internal[pos];
         }
@@ -88,7 +90,7 @@ namespace hel{
 
         constexpr const T& front()const{
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot reference front of array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: cannot reference front of array of size " + std::to_string(LEN)));
             }
             return internal.front();
         }
@@ -100,7 +102,7 @@ namespace hel{
 
         constexpr T& front(){
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot reference front of array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: cannot reference front of array of size " + std::to_string(LEN)));
             }
             return internal.front();
         }
@@ -112,7 +114,7 @@ namespace hel{
 
         constexpr const T& back()const{
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot reference back of array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: cannot reference back of array of size " + std::to_string(LEN)));
             }
             return internal.back();
         }
@@ -124,7 +126,7 @@ namespace hel{
 
         constexpr T& back(){
             if(LEN == 0){
-                throw std::out_of_range("Exception: array index out of bounds: cannot reference back of array of size " + std::to_string(LEN));
+                throw std::out_of_range(makeExceptionMessage("array index out of bounds: cannot reference back of array of size " + std::to_string(LEN)));
             }
             return internal.back();
         }
@@ -270,7 +272,7 @@ namespace hel{
         template<typename S, typename = std::enable_if<std::is_same<typename S::value_type,T>::value && !std::is_same<S,std::initializer_list<T>>::value>>
         BoundsCheckedArray(const S& iterable)noexcept{
             if(iterable.size() != LEN){
-                throw std::out_of_range("Exception: assignment to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size()));
+                throw std::out_of_range(makeExceptionMessage("assignment to array of size " + std::to_string(LEN) + " to iterable of different size " + std::to_string(iterable.size())));
             }
             std::copy(iterable.begin(), iterable.end(), internal.begin());
 
@@ -285,7 +287,7 @@ namespace hel{
         template<typename S, typename = std::enable_if<!std::is_same<S,T>::value>> //TODO template necessary?
         BoundsCheckedArray(std::initializer_list<T> list){
             if(list.size() != LEN){
-                throw std::out_of_range("Exception: assignment to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size()));
+                throw std::out_of_range(makeExceptionMessage("assignment to array of size " + std::to_string(LEN) + " to brace-enclosed initializer list of different size " + std::to_string(list.size())));
             }
             std::copy(list.begin(), list.end(), internal.begin());
         }

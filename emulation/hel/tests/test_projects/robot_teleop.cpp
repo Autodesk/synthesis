@@ -9,7 +9,7 @@
 #include <iostream>
 //#include "ctre/Phoenix.h"
 
-class Robot: public frc::IterativeRobot{
+class Robot: public frc::TimedRobot{
     frc::Spark m_leftMotor{0};
     frc::Spark m_rightMotor{1};
     frc::DifferentialDrive m_robotDrive{m_leftMotor, m_rightMotor};

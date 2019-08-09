@@ -1,4 +1,4 @@
-﻿//using Synthesis.FSM;
+//﻿using Synthesis.FSM;
 //using Synthesis.Network;
 //using Synthesis.States;
 //using Synthesis.Utils;
@@ -108,6 +108,14 @@
 
 //            if (UIStateMachine.CurrentState == null)
 //            {
+//                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.Multiplater,
+//                    AnalyticsLedger.TimingVarible.Customizing,
+//                    AnalyticsLedger.TimingLabel.MultiplayerLobbyMenu);
+//                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MultiplayerMenu,
+//                    AnalyticsLedger.EventAction.BackedOut,
+//                    "",
+//                    AnalyticsLedger.getMilliseconds().ToString());
+
 //                Auxiliary.FindGameObject("ExitingPanel").SetActive(true);
 //                SceneManager.LoadScene("MainMenu");
 //            }
@@ -151,13 +159,13 @@
 //            LinkPanel<HostJoinState>("HostJoinPanel");
 //            LinkPanel<EnterTagState>("EnterTagPanel");
 //            LinkPanel<EnterInfoState>("EnterInfoPanel");
-//            //LinkPanel<LobbyState>("LobbyPanel");
+//            LinkPanel<LobbyState>("LobbyPanel");
 //            LinkPanel<LoadFieldState>("SimLoadField");
 //            LinkPanel<LoadRobotState>("SimLoadRobot");
 //            LinkPanel<FetchingMetadataState>("FetchingMetadataPanel");
-//            //LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
-//            //LinkPanel<GatheringResourcesState>("GatheringResourcesPanel");
-//            //LinkPanel<DistributingResourcesState>("DistributingResourcesPanel");
+//            LinkPanel<AnalyzingResourcesState>("AnalyzingResourcesPanel");
+//            LinkPanel<GatheringResourcesState>("GatheringResourcesPanel");
+//            LinkPanel<DistributingResourcesState>("DistributingResourcesPanel");
 //            LinkPanel<GeneratingSceneState>("GeneratingScenePanel");
 //        }
 

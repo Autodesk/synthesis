@@ -1,4 +1,6 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
+#include "system_interface.hpp"
 #include "util.hpp"
 
 using namespace nFPGA;
@@ -11,6 +13,22 @@ namespace hel{
 
     void PWMSystem::setConfig(tPWM::tConfig value)noexcept{
         config = value;
+    }
+
+    bool PWMSystem::getHdrZeroLatch(uint8_t index)const{
+        return hdr[index].zero_latch;
+    }
+
+    void PWMSystem::setHdrZeroLatch(uint8_t index, bool value){
+        hdr[index].zero_latch = value;
+    }
+
+    bool PWMSystem::getMXPZeroLatch(uint8_t index)const{
+        return mxp[index].zero_latch;
+    }
+
+    void PWMSystem::setMXPZeroLatch(uint8_t index, uint32_t value){
+        mxp[index].zero_latch = value;
     }
 
     uint32_t PWMSystem::getHdrPeriodScale(uint8_t index)const{
@@ -35,7 +53,7 @@ namespace hel{
 
     void PWMSystem::setHdrPulseWidth(uint8_t index, uint32_t value){
         hdr[index].pulse_width = value;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
@@ -46,13 +64,12 @@ namespace hel{
 
     void PWMSystem::setMXPPulseWidth(uint8_t index, uint32_t value){
         mxp[index].pulse_width = value;
-        auto instance = SendDataManager::getInstance();
+        auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
     }
 
     double PWMSystem::getPercentOutput(uint32_t pulse_width)noexcept{
-        // All of these values were calculated based off of the WPILib defaults and the math used to calculate their respective fields
         if (pulse_width == 0) {
             return 0.0;
         } else if (pulse_width > pwm_pulse_width::MAX) {
@@ -67,9 +84,10 @@ namespace hel{
         return 0.0;
     }
 
-    PWMSystem::PWM::PWM()noexcept:period_scale(0), pulse_width(0){}
+    PWMSystem::PWM::PWM()noexcept: zero_latch(false), period_scale(0), pulse_width(0){}
     PWMSystem::PWM::PWM(const PWM& source)noexcept{
 #define COPY(NAME) NAME = source.NAME
+        COPY(zero_latch);
         COPY(period_scale);
         COPY(pulse_width);
 #undef COPY
@@ -166,10 +184,25 @@ namespace hel{
             return instance.first->pwm_system.getHdrPeriodScale(bitfield_index);
         }
 
-        void writeZeroLatch(uint8_t /*bitfield_index*/, bool /*value*/, tRioStatusCode* /*status*/){} //unnecessary for emulation
+        void writeZeroLatch(uint8_t bitfield_index, bool value, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            if(bitfield_index < tPWM::kNumHdrRegisters){
+                instance.first->pwm_system.setHdrZeroLatch(bitfield_index, value);
+            } else {
+                instance.first->pwm_system.setMXPZeroLatch(bitfield_index - tPWM::kNumHdrRegisters, value);
+            }
+            instance.second.unlock();
+        }
 
-        bool readZeroLatch(uint8_t /*bitfield_index*/, tRioStatusCode* /*status*/){ //unnecessary for emulation
-            return false;
+        bool readZeroLatch(uint8_t bitfield_index, tRioStatusCode* /*status*/){
+            auto instance = RoboRIOManager::getInstance();
+            if(bitfield_index < tPWM::kNumHdrRegisters){
+                instance.second.unlock();
+                return instance.first->pwm_system.getHdrZeroLatch(bitfield_index);
+            } else {
+                instance.second.unlock();
+                return instance.first->pwm_system.getMXPZeroLatch(bitfield_index - tPWM::kNumHdrRegisters);
+            }
         }
 
         void writeHdr(uint8_t reg_index, uint16_t value, tRioStatusCode* /*status*/){
@@ -193,9 +226,9 @@ namespace hel{
                 return;
             }
 
-            uint8_t DO_index = (reg_index < 4) ? reg_index : reg_index + 4; //Digital MXP 0-3 line up between PWM and digital ports, but the others are offset by 4
+			uint8_t DO_index = (reg_index < 4) ? reg_index : reg_index + 4; // Digital MXP 0-3 line up between PWM and digital ports, but the others are offset by 4
 
-            if(checkBitHigh(instance.first->digital_system.getMXPSpecialFunctionsEnabled(), DO_index)){ //Allow MXP outout if DO is using special function
+            if(instance.first->digital_system.getMXPConfig(DO_index) == MXPData::Config::PWM){ //Allow MXP outout if DO is using special function
                 instance.first->pwm_system.setMXPPulseWidth(reg_index, value);
                 instance.second.unlock();
             } else {

@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.FEA;
@@ -499,7 +498,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Update()
         {
-            if (InputControl.GetButtonDown(Controls.buttons[StateMachine.SceneGlobal.FindState<MainState>().ActiveRobot.ControlIndex].replayMode) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
+            if (InputControl.GetButtonDown(Controls.Global.GetButtons().replayMode) || UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 ReturnToMainState();
         }
 
@@ -514,7 +513,7 @@ namespace Synthesis.States
                 camera = dynamicCamera.GetComponent<UnityEngine.Camera>();
             }
 
-            if (Input.InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
+            if (Input.InputControl.GetButtonDown(Controls.Global.GetButtons().cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.ActiveState);
 
             if (firstFrame)
@@ -604,15 +603,6 @@ namespace Synthesis.States
         public override void End()
         {
             SelectedBody = null;
-            //(PlayerPrefs.GetInt("analytics") == 1.ToString());
-            //(SimUI.changeAnalytics.ToString());
-            if (PlayerPrefs.GetInt("analytics") == 1)
-            {
-                Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
-                {
-                    { "time", Time.time - tStart},
-                });
-            }
 
             foreach (Tracker t in trackers)
             {

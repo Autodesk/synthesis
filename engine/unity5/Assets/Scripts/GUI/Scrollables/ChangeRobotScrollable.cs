@@ -26,7 +26,7 @@ namespace Synthesis.GUI.Scrollables
 
         void OnEnable()
         {
-            directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             items = new List<string>();
             items.Clear();
 
@@ -38,9 +38,13 @@ namespace Synthesis.GUI.Scrollables
             if (directory != null && items.Count == 0)
             {
                 string[] folders = System.IO.Directory.GetDirectories(directory);
+                string[] extensions = { ".json", ".bxdj" };
                 foreach (string robot in folders)
                 {
-                    if (File.Exists(robot + Path.DirectorySeparatorChar + "skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
+                   foreach(string ext in extensions)
+                    {
+                        if (File.Exists(robot + Path.DirectorySeparatorChar + "skeleton" + ext)) items.Add(new DirectoryInfo(robot).Name);
+                    }
                 }
                 if (items.Count > 0) selectedEntry = items[0];
             }

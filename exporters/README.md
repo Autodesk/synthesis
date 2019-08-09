@@ -10,17 +10,13 @@ This repository consists of several libraries containing shared functionality of
 ## BxDFieldExpoter
 This is the old Inventor addin that was used to exporter fields to Synthesis, this has since been depracated
 
-## BxDRobotExporter
-This is the main Inventor exporter that is bundles with Synthesis. It is broken into a few subprojects:
-* BxDRobotExporter is the Inventor addin that interacts directly with the Inventor GUI.
-* packages are external libs that the exporter uses to simplify meshes.
-* robot_exporter is the legacy Inventor plugin tha the BxDRobotExpoter uses for backend robot information and some GUI elements.
+## InventorRobotExporter
+This is the main Inventor exporter that is bundled with Synthesis. It is broken into a few subprojects:
+* InventorRobotExporter is the Inventor addin
+* RobotExporterTests is the project with unit tests for the exporter addin
 
 ## FusionRobotExporter
 This is the Fusion 360 Robot Exporter
 
 ## field_exporter
 This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields
-
-## robot_exporter
-This is the old robot exporter, it has been deprecated in favor of the BxDRobotExporter. It is a plugin that can hook into the Inventor Instance and read the model data from Inventor to allow users to export their robots

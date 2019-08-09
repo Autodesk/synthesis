@@ -176,22 +176,27 @@ namespace Synthesis.Robot
 
                 Resetting();
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetRobot))
+            else if (InputControl.GetButtonDown(Controls.Players[ControlIndex].GetButtons().resetRobot))
             {
                 keyDownTime = Time.time;
             }
-            else if (InputControl.GetButtonDown(Controls.buttons[ControlIndex].resetField))
+            else if (InputControl.GetButtonDown(Controls.Global.GetButtons().resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
+                MainState.timesLoaded--;
                 SceneManager.LoadScene("Scene");
+
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Playing,
+                    AnalyticsLedger.TimingLabel.ChangeField);
             }
-            else if (InputControl.GetButton(Controls.buttons[ControlIndex].resetRobot) &&
+            else if (InputControl.GetButton(Controls.Players[ControlIndex].GetButtons().resetRobot) &&
                 !state.DynamicCameraObject.GetComponent<DynamicCamera>().ActiveState.GetType().Equals(typeof(DynamicCamera.ConfigurationState)))
             {
                 if (Time.time - keyDownTime > HoldTime)
                     BeginReset();
             }
-            else if (InputControl.GetButtonUp(Controls.buttons[ControlIndex].resetRobot))
+            else if (InputControl.GetButtonUp(Controls.Players[ControlIndex].GetButtons().resetRobot))
             {
                 BeginReset();
                 EndReset();
@@ -213,11 +218,12 @@ namespace Synthesis.Robot
                 Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
 
-            if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2)
-            {
-                if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
-                BeginReset();
-                EndReset();
+            if (GameObject.Find("Field") != null) {
+                if (gameObject.transform.GetChild(0).position.y < GameObject.Find("Field").transform.position.y - 2) {
+                    if (robotStartPosition.y < GameObject.Find("Field").transform.position.y) robotStartPosition.y = GameObject.Find("Field").transform.position.y + 1.25f;
+                    BeginReset();
+                    EndReset();
+                }
             }
 
             #region Encoder Calculations
