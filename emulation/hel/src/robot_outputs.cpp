@@ -20,8 +20,7 @@ const inline EmulationService::RobotOutputs generateZeroedOutput() {
 
 
 RobotOutputs::RobotOutputs()
-	: new_data(true),
-	  enabled(RobotMode::DEFAULT_ENABLED_STATUS),
+	: enabled(RobotMode::DEFAULT_ENABLED_STATUS),
 	  pwm_hdrs(0.0),
 	  relays(RelaySystem::State::OFF),
 	  analog_outputs(0.0),
@@ -31,14 +30,7 @@ RobotOutputs::RobotOutputs()
 		  output = generateZeroedOutput();
 	  }
 
-bool RobotOutputs::hasNewData() const { return new_data; }
-
 EmulationService::RobotOutputs RobotOutputs::syncShallow() {
-	if (!new_data) {
-		return output;
-	}
-	new_data = false;
-
 	if(!enabled){
 		output = generateZeroedOutput();
 		return output;
@@ -120,7 +112,6 @@ void RobotOutputs::updateShallow() {
 		}
 	}
 	can_motor_controllers = roborio.can_motor_controllers;
-	new_data = true;
 }
 
 EmulationService::RobotOutputs RobotOutputs::syncDeep() {
@@ -174,7 +165,6 @@ void RobotOutputs::updateDeep() {
 		}
 	}
 	can_motor_controllers = roborio.can_motor_controllers;
-	new_data = true;
 }
 
 std::string RobotOutputs::toString() const {
@@ -223,9 +213,6 @@ std::string RobotOutputs::toString() const {
 }
 
 void RobotOutputs::setEnable(bool e) {
-	if (e != enabled) {
-		new_data = true;
-		enabled = e;
-	}
+	enabled = e;
 }
 }  // namespace hel
