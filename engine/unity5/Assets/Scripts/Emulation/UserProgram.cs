@@ -18,23 +18,23 @@ namespace Synthesis
         public string targetFileName { get; private set; }
         public UserProgramType type { get; private set; }
 
-        public UserProgram(string fullFileName)
+        public UserProgram(string name)
         {
-            this.fullFileName = fullFileName;
+            fullFileName = name;
 
             string fileName = fullFileName.Substring(fullFileName.LastIndexOf('\\') + 1);
 
-            this.targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
+            targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
             const string JAR_EXTENSION = ".jar";
 
             if (fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
             {
-                this.targetFileName += JAR_EXTENSION;
-                this.type = UserProgramType.JAVA;
+                targetFileName += JAR_EXTENSION;
+                type = UserProgramType.JAVA;
             }
             else
             {
-                this.type = UserProgramType.CPP;
+                type = UserProgramType.CPP;
             }
         }
     }

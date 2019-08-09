@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using Synthesis.GUI;
 
 namespace Synthesis
 {
@@ -19,12 +20,12 @@ namespace Synthesis
 
         private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
 
-        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh &>/dev/null; sudo killall java &>/dev/null; sudo killall FRCUserProgram &>/dev/null;";
-        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh </dev/null &>/dev/null &";
+        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh FRCUserProgram java &> /dev/null;";
+        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh </dev/null &> /dev/null &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
-        private const string CHECK_RUNNING_COMMAND = "pidof frc_program_chooser.sh &>/dev/null";
+        private const string CHECK_RUNNER_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
+        private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram FRCUserProgram.jar &> /dev/null";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
-        private const string CLEAR_LOG_COMMAND = "cat /dev/null > " + REMOTE_LOG_NAME;
 
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
@@ -35,10 +36,11 @@ namespace Synthesis
 		// Last connection status
         public static bool UseEmulation = false;
         private static bool VMConnected = false;
-        private static bool isUserProgramFree = true;
         private static bool frcUserProgramPresent = false;
         private static bool isTryingToRunRobotCode = false;
+        private static bool isRunningRobotCodeRunner = false;
         private static bool isRunningRobotCode = false;
+        private static bool isRobotCodeRestarting = false;
 
         private static System.Diagnostics.Process qemuProcess = null;
         private static bool updatingStatus = false;
@@ -103,14 +105,19 @@ namespace Synthesis
             return isTryingToRunRobotCode;
         }
 
-        public static bool IsUserProgramFree()
+        public static bool IsRunningRobotCodeRunner()
         {
-            return isUserProgramFree || !IsFRCUserProgramPresent();
+            return isRunningRobotCodeRunner;
         }
 
         public static bool IsRunningRobotCode()
         {
             return isRunningRobotCode;
+        }
+
+        public static bool IsRobotCodeRestarting()
+        {
+            return isRobotCodeRestarting;
         }
 
         public static bool StartEmulator()
@@ -167,14 +174,15 @@ namespace Synthesis
             if (Client.IsConnected)
             {
                 Client.Disconnect();
+                Client.Dispose();
             }
+
             StopUpdatingStatus();
 
             VMConnected = false;
-            isUserProgramFree = true;
             frcUserProgramPresent = false;
             isTryingToRunRobotCode = false;
-            isRunningRobotCode = false;
+            isRunningRobotCodeRunner = false;
 
             if (IsVMRunning())
             {
@@ -192,11 +200,10 @@ namespace Synthesis
             // outputCommander.Send(new StandardMessage.ExitMessage());
             if (IsVMConnected())
             {
-                if (IsRunningRobotCode() && IsUserProgramFree())
+                if (IsRunningRobotCodeRunner())
                 {
                     await StopRobotCode();
                 }
-                await ClearRobotOutputLog();
             }
             if (IsVMRunning())
             {
@@ -206,25 +213,57 @@ namespace Synthesis
 
         private static void StatusUpdater()
         {
-            while (updatingStatus)
+            using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, DEFAULT_SSH_PORT, USER, PASSWORD))
             {
-                try
+                while (updatingStatus)
                 {
-                    VMConnected = Client.IsConnected;
-                    if (VMConnected)
+                    try
                     {
-                        frcUserProgramPresent = Client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
-                        isRunningRobotCode = Client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
+                        VMConnected = client.IsConnected;
+                        if (VMConnected)
+                        {
+                            frcUserProgramPresent = client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
+                            if (frcUserProgramPresent)
+                            {
+                                isRunningRobotCodeRunner = client.RunCommand(CHECK_RUNNER_RUNNING_COMMAND).ExitStatus == 0;
+                                isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
+                                if (isRunningRobotCode && !EmulatorNetworkConnection.Instance.IsConnectionOpen())
+                                {
+                                    EmulatorNetworkConnection.Instance.OpenConnection();
+                                }
+                                if (isRunningRobotCode)
+                                {
+                                    Thread.Sleep(3000); // ms
+                                }
+                                else
+                                {
+                                    Thread.Sleep(1000); // ms
+                                }
+                            }
+                            else
+                            {
+                                isRunningRobotCodeRunner = false;
+                                isRunningRobotCode = false;
+                                Thread.Sleep(1000); // ms
+                            }
+                        }
+                        else
+                        {
+                            frcUserProgramPresent = false;
+                            isRunningRobotCodeRunner = false;
+                            isRunningRobotCode = false;
+                            Thread.Sleep(3000); // ms
+                            client.Connect();
+                        }
+                    }
+                    catch
+                    {
+                        frcUserProgramPresent = false;
+                        isRunningRobotCodeRunner = false;
+                        isRunningRobotCode = false;
+                        Thread.Sleep(3000); // ms
                     }
                 }
-                catch
-                {
-                    VMConnected = false;
-                    frcUserProgramPresent = false;
-                    isRunningRobotCode = false;
-                    isUserProgramFree = true;
-                }
-                Thread.Sleep(1000); // ms
             }
         }
 
@@ -248,10 +287,15 @@ namespace Synthesis
             {
                 try
                 {
-                    if (IsRunningRobotCode() || IsTryingToRunRobotCode())
+                    if (IsRunningRobotCodeRunner() || IsTryingToRunRobotCode())
+                    {
                         await StopRobotCode();
+                    }
+                    if (IsRobotOutputStreamGood())
+                    {
+                        await CloseRobotOutputStream();
+                    }
 
-                    isUserProgramFree = false;
                     Client.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
                     frcUserProgramPresent = false;
 
@@ -260,18 +304,19 @@ namespace Synthesis
                         scpClient.Connect();
                         using (Stream localFile = File.OpenRead(userProgram.fullFileName))
                         {
-                            scpClient.Upload(localFile, @"/home/lvuser/" + userProgram.targetFileName);
+                            scpClient.Upload(localFile, "/home/lvuser/" + userProgram.targetFileName);
                             frcUserProgramPresent = true;
                         }
                         scpClient.Disconnect();
                     }
-                    isUserProgramFree = true;
-                    if(UseEmulation && autorun)
+                    if (UseEmulation && autorun)
+                    {
                         await RestartRobotCode();
+                    }
                 }
                 catch (Exception e) {
+                    UserMessageManager.Dispatch("Failed to upload", EmulationWarnings.WARNING_DURATION);
                     Debug.Log(e.ToString());
-                    isUserProgramFree = true;
                 }
             });
         }
@@ -280,12 +325,19 @@ namespace Synthesis
         {
             return Task.Run(() =>
             {
-                isTryingToRunRobotCode = false;
-                isUserProgramFree = false;
-                if (isRunningRobotCode)
-                    Client.RunCommand(STOP_COMMAND);
-                isRunningRobotCode = false;
-                isUserProgramFree = true;
+                try
+                {
+                    if (isRunningRobotCodeRunner || isRunningRobotCode)
+                    {
+                        Client.RunCommand(STOP_COMMAND);
+                    }
+                    isTryingToRunRobotCode = false;
+                    isRunningRobotCodeRunner = false;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
             });
         }
 
@@ -293,19 +345,29 @@ namespace Synthesis
         {
             return Task.Run(() =>
             {
-                isTryingToRunRobotCode = true;
-                isUserProgramFree = false;
-                if (isRunningRobotCode)
+                isRobotCodeRestarting = true;
+
+                try
                 {
-                    isTryingToRunRobotCode = false; // To reset the gRPC connection
-                    isRunningRobotCode = false;
-                    Client.RunCommand(STOP_COMMAND);
+                    if (isRunningRobotCodeRunner)
+                    {
+                        isTryingToRunRobotCode = false; // To reset the gRPC connection
+                        isRunningRobotCodeRunner = false;
+                        Client.RunCommand(STOP_COMMAND + "&&" + START_COMMAND);
+                    }
+                    else
+                    {
+                        Client.RunCommand(START_COMMAND);
+                    }
+                    isTryingToRunRobotCode = true;
+                    isRunningRobotCodeRunner = true;
+                    EmulatorNetworkConnection.Instance.OpenConnection();
                 }
-                isTryingToRunRobotCode = true;
-                EmulatorNetworkConnection.Instance.OpenConnection();
-                Client.RunCommand(START_COMMAND);
-                isRunningRobotCode = true;
-                isUserProgramFree = true;
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
+                isRobotCodeRestarting = false;
             });
         }
 
@@ -314,26 +376,35 @@ namespace Synthesis
             return outputStreamCommand != null && !outputStreamCommandResult.IsCompleted;
         }
 
-        public static Task ClearRobotOutputLog()
+        public static Task CloseRobotOutputStream()
         {
             return Task.Run(() =>
             {
-                Client.RunCommand(CLEAR_LOG_COMMAND);
+                try
+                {
+                    outputStreamCommand.CancelAsync();
+                    outputStreamCommand.Dispose();
+                    outputStreamCommand = null;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
             });
-        }
-
-        public static void CloseRobotOutputStream()
-        {
-            outputStreamCommand.CancelAsync();
-            outputStreamCommand.Dispose();
-            outputStreamCommand = null;
         }
 
         public static StreamReader CreateRobotOutputStream()
         {
             if (outputStreamCommand == null) {
-                outputStreamCommand = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
-                outputStreamCommandResult = outputStreamCommand.BeginExecute();
+                try
+                {
+                    outputStreamCommand = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
+                    outputStreamCommandResult = outputStreamCommand.BeginExecute();
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
             }
             return new StreamReader(outputStreamCommand.OutputStream);
         }
