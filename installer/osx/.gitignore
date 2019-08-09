@@ -1,9 +1,0 @@
-target/
-application/*
-Autdoesk
-!application/.gitkeep
-!application/uninstall.sh
-!application/background.png
-!application/spec.json
-*.pkg
-dmg
