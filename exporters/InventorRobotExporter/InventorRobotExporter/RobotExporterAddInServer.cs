@@ -14,6 +14,7 @@ using InventorRobotExporter.Utilities.Synthesis;
 using Inventor;
 using InventorRobotExporter.GUI.JointView;
 using InventorRobotExporter.GUI.Loading;
+using InventorRobotExporter.GUI.Messages;
 using NUnit.Framework;
 using OpenTK.Input;
 using static InventorRobotExporter.RobotExporterAddInServer;
