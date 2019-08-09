@@ -7,8 +7,6 @@ public class GIF {
     public string GifName { get; private set; }
     public int FrameCount { get; private set; }
 
-    private int index = 0;
-
     private List<Sprite> frames;
 
     public GIF(string Name, int FrameCount)

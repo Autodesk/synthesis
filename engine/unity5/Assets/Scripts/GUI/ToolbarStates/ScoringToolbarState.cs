@@ -63,9 +63,9 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreHelp,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.Viewed,
+                "Help - Scoring Toolbar",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         private void CloseHelpMenu()

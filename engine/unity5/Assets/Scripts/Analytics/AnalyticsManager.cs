@@ -12,7 +12,6 @@ public class AnalyticsManager : MonoBehaviour {
 
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
     public const string URL_BATCH = "https://www.google-analytics.com/batch";
-    public const string TESTING_TRACKING_ID = "UA-142391571-1";
     public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
     public const float DUMP_DELAY = 5;
     public bool DumpData = true;
