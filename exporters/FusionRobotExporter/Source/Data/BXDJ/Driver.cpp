@@ -136,47 +136,28 @@ void Driver::loadJSONObject(const nlohmann::json driverJSON)
 	if (driverJSON.is_object())
 	{
 		// Driver Properties
-
-		if (driverJSON["type"].is_number()) {
-			type = (Driver::Type)driverJSON["type"].get<int>();
-		}
-
-		if (driverJSON["signal"].is_number()) {
-			portSignal = (Driver::Signal)driverJSON["signal"].get<int>();
-		}
-
-		if (driverJSON["portOne"].is_number()) {
-			portOne = driverJSON["portOne"].get<int>();
-		}
-
-		if (driverJSON["portTwo"].is_number()) {
-			portTwo = driverJSON["portTwo"].get<int>();
-		}
-
-		if (driverJSON["outputGear"].is_number()) {
-			outputGear = driverJSON["outputGear"].get<double>();
-		}
-
-		if (driverJSON["inputGear"].is_number()) {
-			inputGear = driverJSON["inputGear"].get<double>();
-		}
-
+		type = driverJSON.contains("type") && driverJSON["type"].is_number() ? (Driver::Type)driverJSON["type"].get<int>() : Driver::Type::MOTOR;
+		portSignal = driverJSON.contains("signal") && driverJSON["signal"].is_number() ? (Driver::Signal)driverJSON["signal"].get<int>() : CAN;
+		portOne = driverJSON.contains("portOne") && driverJSON["portOne"].is_number() ? driverJSON["portOne"].get<int>() : 3;
+		portTwo = driverJSON.contains("portTwo") && driverJSON["portTwo"].is_number() ? driverJSON["portTwo"].get<int>() : 3;
+		outputGear = driverJSON.contains("outputGear") && driverJSON["outputGear"].is_number() ? driverJSON["outputGear"].get<float>() : 1;
+		inputGear = driverJSON.contains("inputGear") && driverJSON["inputGear"].is_number() ? driverJSON["inputGear"].get<float>() : 1;
 
 		// Components
-		if (driverJSON["wheel"].is_object()) {
+		if (driverJSON.contains("wheel") && driverJSON["wheel"].is_object()) {
 			nlohmann::json wheelJSON = driverJSON["wheel"];
 			Wheel wheel;
 			wheel.loadJSONObject(wheelJSON);
 			setComponent(wheel);
 		}
-		else if(driverJSON["pneumatic"].is_object()){
+		else if(driverJSON.contains("pneumatic") && driverJSON["pneumatic"].is_object()){
 			nlohmann::json pneumaticJSON = driverJSON["pneumatic"];
 			Pneumatic pneumatic;
 			pneumatic.loadJSONObject(pneumaticJSON);
 			setComponent(pneumatic);
 
 		}
-		else if (driverJSON["elevator"].is_object())
+		else if (driverJSON.contains("elevator") && driverJSON["elevator"].is_object())
 		{
 			nlohmann::json elevatorJSON = driverJSON["elevator"];
 			Elevator elevator;

@@ -144,15 +144,9 @@ nlohmann::json Wheel::getJSONObject() const
 
 void Wheel::loadJSONObject(nlohmann::json wheelJSON)
 {
-	if (wheelJSON.is_object())
-	{
-		if (wheelJSON["type"].is_number())
-			type = (Wheel::Type)wheelJSON["type"].get<int>();
-		if (wheelJSON["frictionLevel"].is_number())
-			frictionLevel = (Wheel::FrictionLevel)wheelJSON["frictionLevel"].get<int>();
-		if (wheelJSON["isDriveWheel"].is_boolean())
-			isDriveWheel = wheelJSON["isDriveWheel"].get<bool>();
-	}
+	type = wheelJSON.contains("type") && wheelJSON["type"].is_number() ? (Wheel::Type)wheelJSON["type"].get<int>() : Wheel::Type::NORMAL;
+	frictionLevel = wheelJSON.contains("frictionLevel") && wheelJSON["frictionLevel"].is_number() ? (Wheel::FrictionLevel)wheelJSON["frictionLevel"].get<int>() : FrictionLevel::MEDIUM;
+	isDriveWheel = wheelJSON.contains("isDriveWheel") && wheelJSON["isDriveWheel"].is_boolean()? wheelJSON["isDriveWheel"].get<bool>() : false;
 }
 
 nlohmann::json BXDJ::Wheel::GetExportJson()
