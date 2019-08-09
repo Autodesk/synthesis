@@ -100,6 +100,8 @@ namespace Synthesis.Field
                     Mesh meshu = currentSubMesh.Value;
 
                     meshObject.AddComponent<MeshFilter>().mesh = meshu;
+
+                    
                     meshObject.AddComponent<MeshRenderer>();
                     Material[] matls = new Material[meshu.subMeshCount];
 
@@ -164,7 +166,7 @@ namespace Synthesis.Field
                             {
                                 MeshCollider dummyMeshCollider = subObject.AddComponent<MeshCollider>();
                                 dummyMeshCollider.sharedMesh = meshObject.GetComponent<MeshFilter>().mesh;
-
+                               
                                 subObject.transform.position = meshObject.transform.TransformPoint(dummyMeshCollider.bounds.center);
                                 subObject.transform.rotation = meshObject.transform.rotation;
 

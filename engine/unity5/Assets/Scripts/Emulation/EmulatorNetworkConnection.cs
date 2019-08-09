@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Debug = UnityEngine.Debug;
 using System.Threading.Tasks;
+using static Synthesis.EmulatorManager;
 
 namespace Synthesis
 {
@@ -14,7 +15,9 @@ namespace Synthesis
 
         public const string DEFAULT_HOST = "127.0.0.1";
         public const string DEFAULT_PORT = "50051";
-
+        public const string DEFAULT_NATIVE_PORT = "50052";
+        public const string DEFAULT_JAVA_PORT = "50053";
+   
         private const int LOOP_DELAY = 50; // ms
         private const int ERROR_DELAY = 100; // ms
 
@@ -73,6 +76,7 @@ namespace Synthesis
                         await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
                         {
                             Api = API_VERSION,
+                            TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                             InputData = InputManager.Instance,
                         });
                         senderConnected = true;
@@ -100,7 +104,9 @@ namespace Synthesis
             {
                 try
                 {
-                    using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION }))
+                    using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION,
+                        TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                    }))
                     {
                         while (await call.ResponseStream.MoveNext())
                         {

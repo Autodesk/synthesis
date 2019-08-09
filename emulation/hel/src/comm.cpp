@@ -28,7 +28,13 @@ extern "C" {
         return 0;
     }
 
-    void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
+#ifdef _WIN32
+	void setNewDataSem(HANDLE){} //unnecessary for emulation
+#elif defined (__vxworks)
+	void setNewDataSem(SEM_ID){} //unnecessary for emulation
+#else
+	void setNewDataSem(pthread_cond_t*){} //unnecessary for emulation
+#endif
 
     int setNewDataOccurRef(uint32_t refnum){
         auto instance = hel::RoboRIOManager::getInstance();
@@ -38,6 +44,8 @@ extern "C" {
 
         instance.second.unlock();
 
+        // FIXME: |
+        //        ▼
         // Call the occur function repeatably in the background to signal HAL that the Driver Station has new data for it; this way it won't block and will actually receive HEL DS data
         ds_spoofer = std::thread(
 			[occurFunction, refnum](){
@@ -211,7 +219,7 @@ extern "C" {
     }
 
     void FRC_NetworkCommunication_getVersionString(char* /*version*/){} //unnecessary for emulation
-
+    
     int FRC_NetworkCommunication_observeUserProgramStarting(void){ //unnecessary for emulation
         // Communicate to DS that RoboRIO is ready
         return 0;

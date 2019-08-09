@@ -88,7 +88,13 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
+        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir + "kernel-native") &&
+            File.Exists(EmulatorManager.emulationDir + "rootfs-native.ext4") &&
+            File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb") &&
+            File.Exists(EmulatorManager.emulationDir + "kernel-java") &&
+            File.Exists(EmulatorManager.emulationDir + "rootfs-java.ext4") &&
+            File.Exists(EmulatorManager.emulationDir + "grpc-bridge.exe");
+        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -100,11 +106,13 @@ namespace Synthesis.States
         public override void Awake()
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
+            Screen.fullScreen = PlayerPrefs.GetInt("fullscreen", 1) == 1 ? true : false;
 
             string CurrentVersion = "4.3.0";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
-            if (CheckConnection()) {
+            if (CheckConnection())
+            {
                 WebClient client = new WebClient();
                 ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
                 var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
@@ -158,15 +166,20 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                if (timesLoaded > 0) {
-                    if (!LoadField(PlayerPrefs.GetString("simSelectedField"))) {
+                if (timesLoaded > 0)
+                {
+                    if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
+                    {
                         AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
                         return;
-                    } else
+                    }
+                    else
                     {
                         MovePlane();
                     }
-                } else {
+                }
+                else
+                {
                     timesLoaded++;
                 }
 
@@ -175,7 +188,9 @@ namespace Synthesis.States
                 try
                 {
                     result = LoadRobot(PlayerPrefs.GetString("simSelectedRobot"), false);
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     MonoBehaviour.Destroy(GameObject.Find("Robot"));
                 }
 
@@ -247,7 +262,8 @@ namespace Synthesis.States
                 return;
             }
 
-            if (ActiveRobot.transform.GetChild(0).transform.position.y < -10 || ActiveRobot.transform.GetChild(0).transform.position.y > 60) {
+            if (ActiveRobot.transform.GetChild(0).transform.position.y < -10 || ActiveRobot.transform.GetChild(0).transform.position.y > 60)
+            {
                 BeginRobotReset();
                 EndRobotReset();
             }
@@ -305,32 +321,41 @@ namespace Synthesis.States
             }
         }
 
-        public bool CheckConnection() {
-            try {
+        public bool CheckConnection()
+        {
+            try
+            {
                 WebClient client = new WebClient();
                 ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
 
-                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json")) {
+                using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
+                {
                     return true;
                 }
             }
-            catch {
+            catch
+            {
                 return false;
             }
         }
 
-        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+        public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
             bool isOk = true;
             // If there are errors in the certificate chain, look at each error to determine the cause.
-            if (sslPolicyErrors != SslPolicyErrors.None) {
-                for (int i = 0; i < chain.ChainStatus.Length; i++) {
-                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+            if (sslPolicyErrors != SslPolicyErrors.None)
+            {
+                for (int i = 0; i < chain.ChainStatus.Length; i++)
+                {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+                    {
                         chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
                         chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
                         chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
                         chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
                         bool chainIsValid = chain.Build((X509Certificate2)certificate);
-                        if (!chainIsValid) {
+                        if (!chainIsValid)
+                        {
                             isOk = false;
                         }
                     }
@@ -339,12 +364,15 @@ namespace Synthesis.States
             return isOk;
         }
 
-        public void MovePlane() {
+        public void MovePlane()
+        {
             GameObject plane = GameObject.Find("Environment");
             MeshRenderer[] aLotOfMeshes = fieldObject.GetComponentsInChildren<MeshRenderer>();
             float lowPoint = 0;
-            foreach (MeshRenderer singleMesh in aLotOfMeshes) {
-                if (singleMesh.bounds.min.y < lowPoint) {
+            foreach (MeshRenderer singleMesh in aLotOfMeshes)
+            {
+                if (singleMesh.bounds.min.y < lowPoint)
+                {
                     lowPoint = singleMesh.bounds.min.y;
                     Debug.Log("LowPoint: " + lowPoint);
                 }
@@ -395,20 +423,25 @@ namespace Synthesis.States
         {
             bool b = true;
 
-            if (!Directory.Exists(directory)) {
+            if (!Directory.Exists(directory))
+            {
                 return false;
             }
-            else {
+            else
+            {
                 string[] files = Directory.GetFiles(directory);
-                foreach (string a in files) {
+                foreach (string a in files)
+                {
                     string name = Path.GetFileName(a);
-                    if (name.ToLower().Contains("skeleton")) {
+                    if (name.ToLower().Contains("skeleton"))
+                    {
                         b = false;
                     }
                 }
             }
 
-            if (b) {
+            if (b)
+            {
                 return false;
             }
 
@@ -688,7 +721,7 @@ namespace Synthesis.States
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory)) return false;
-            
+
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (ActiveRobot == null)
                 ActiveRobot = robot;

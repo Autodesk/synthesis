@@ -20,7 +20,6 @@ namespace InventorRobotExporter.GUI.Editors
         public DrivetrainLayoutForm(RobotDataManager robotDataManager)
         {
             this.robotDataManager = robotDataManager;
-            AnalyticsUtils.LogPage("DriveTrainTypeForm");
             InitializeComponent();
 
             controls.Add(RigidNode_Base.DriveTrainType.TANK, tankOption);
