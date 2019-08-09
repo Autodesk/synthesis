@@ -84,7 +84,7 @@ namespace Synthesis.States
                         AnalyticsLedger.TimingLabel.MixAndMatchMenu);
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MixAndMatchSimulator,
-                        AnalyticsLedger.EventAction.Start,
+                        AnalyticsLedger.EventAction.StartSim,
                         "",
                         AnalyticsLedger.getMilliseconds().ToString());
 

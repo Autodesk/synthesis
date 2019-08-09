@@ -43,13 +43,32 @@ block_progress_bar 80
 read -r -p "Would you like to install the Code Emulator as well? [ Y / N ] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
 then
-	echo "Downloading Docker Shell Installer..."
-	curl -fsSL https://get.docker.com -o get-docker.sh
+	echo "Copying Emulator Files..."
+	rsync --info=progress2 Emulator $HOME/.config/Autodesk/Synthesis
 	draw_progress_bar 90
-	echo "Installing Docker For Linux..."
-	sudo sh get-docker.sh
-	draw_progress_bar 95
-	docker run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel
+
+	echo "Installing QEMU..."
+
+	APT_GET_CMD=$(which apt-get)
+	YUM_CMD=$(which yum)
+	PACMAN_CMD=$(which pacman)
+	ZYPPER_CMD=$(which zypper)
+	DNF_CMD=$(which dnf)
+
+	if [[ ! -z $APT_GET_CMD ]]; then
+		sudo apt-get install qemu
+	elif [[ ! -z $YUM_CMD ]]; then
+		sudo yum install qemu-kvm
+	elif [[ ! -z $PACMAN_CMD ]]; then
+		sudo pacman -S qemu
+	elif [[ ! -z $ZYPPER_CMD ]]; then
+		sudo zypper install qemu
+	elif [[ ! -z $DNF_CMD ]]; then
+		sudo dnf install @virtualization
+	else
+    echo "Failed to install QEMU. Install it manually from: https://www.qemu.org/download/"
+    exit 1;
+	fi
 fi
 
 draw_progress_bar 100

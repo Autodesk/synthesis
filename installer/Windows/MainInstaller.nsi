@@ -201,13 +201,14 @@ SectionEnd
 Section "Code Emulator" Emulator
 
 	; INetC.dll must be installed to proper NSIS Plugins x86 directories
-	inetc::get "https://github.com/docker/toolbox/releases/download/v18.09.3/DockerToolbox-18.09.3.exe" "$PLUGINSDIR\DockerToolbox-18.09.3.exe"
+	inetc::get "https://qemu.weilnetz.de/w64/2019/qemu-w64-setup-20190724.exe" "$PLUGINSDIR\qemu-w64-setup-20190724.exe"
 	Pop $R0 ;Get the return value
 	
 	${If} $R0 == "OK"  ;Return value should be "OK"
+	SetOutPath $APPDATA\Autodesk\Synthesis\Emulator
+	  File /r "Emulator\*"
 	  HideWindow
-	  ExecWait '"$PLUGINSDIR\DockerToolbox-18.09.3.exe" /SILENT'
-	  ExecWait '"$PROGRAMFILES64\Docker Toolbox\docker.exe" run -d -p 50051:50051 -p 10022:10022 -p 10023:10023 hel'
+	  ExecWait '"$PLUGINSDIR\qemu-w64-setup-20190724.exe" /SILENT'
 	  ShowWindow hwnd show_state
 	${Else}
 	  MessageBox MB_ICONSTOP "Error: $R0" ;Show cancel/error message
@@ -282,11 +283,11 @@ Section "Uninstall"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   
   ; Execute Docker Toolbox Uninstaller
-  IfFileExists "$PROGRAMFILES64\Docker Toolbox" file_found uninstall_complete
+  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
   
 	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall Docker Toolbox as well?" IDNO uninstall_complete
-	Exec '"$PROGRAMFILES64\Docker Toolbox\unins000.exe"'
+	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
+	Exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe"'
 	Quit
 	
 	uninstall_complete:

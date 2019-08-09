@@ -89,7 +89,7 @@ public class LocalMultiplayer : LinkedMonoBehaviour<MainState>
     {
         AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.AddRobot,
             AnalyticsLedger.EventAction.Clicked,
-            "",
+            "Local Multiplayer - Robot",
             AnalyticsLedger.getMilliseconds().ToString());
 
         GameObject panel = GameObject.Find("RobotListPanel");
