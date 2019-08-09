@@ -14,8 +14,8 @@ namespace Synthesis
             VMRunning,
             VMConnected,
             UserProgramPresent,
-            UserProgramFree,
-            UserProgramRunning,
+            UserProgramRunnerRunning,
+            UserProgramNotRestarting,
             UserProgramConnected,
         }
 
@@ -67,18 +67,15 @@ namespace Synthesis
                         return false;
                     }
                     return true;
-                case Requirement.UserProgramFree:
-                    if (!EmulatorManager.IsUserProgramFree())
+                case Requirement.UserProgramNotRestarting:
+                    if (EmulatorManager.IsRobotCodeRestarting())
                     {
-                        if (CheckRequirement(Requirement.VMConnected))
-                        {
-                             UserMessageManager.Dispatch("Wait for last emulator task to finish", WARNING_DURATION);
-                        }
+                        UserMessageManager.Dispatch("Waiting for user program to start", WARNING_DURATION);
                         return false;
                     }
                     return true;
-                case Requirement.UserProgramRunning:
-                    if (!EmulatorManager.IsRunningRobotCode())
+                case Requirement.UserProgramRunnerRunning:
+                    if (!EmulatorManager.IsRunningRobotCodeRunner())
                     {
                         if (CheckRequirement(Requirement.UserProgramPresent))
                         {
@@ -93,7 +90,7 @@ namespace Synthesis
                 case Requirement.UserProgramConnected:
                     if (!EmulatorNetworkConnection.Instance.IsConnected())
                     {
-                        if (CheckRequirement(Requirement.UserProgramRunning))
+                        if (CheckRequirement(Requirement.UserProgramRunnerRunning))
                         {
                             UserMessageManager.Dispatch("Connecting to user program (may take a few seconds)", WARNING_DURATION);
                         }

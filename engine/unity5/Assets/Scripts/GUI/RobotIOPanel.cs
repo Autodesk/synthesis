@@ -213,7 +213,7 @@ namespace Synthesis.GUI
             /// </summary>
             public static void Update()
             {
-                if (EmulatorManager.IsVMConnected() && remoteReader == null) // Start stream if needed
+                if (EmulatorManager.IsTryingToRunRobotCode() && remoteReader == null) // Start stream if needed
                 {
                     Task.Run(OpenPrintStream);
                 }
@@ -283,12 +283,12 @@ namespace Synthesis.GUI
                 {
                     remoteReader = EmulatorManager.CreateRobotOutputStream();
                 }
-                while (EmulatorManager.IsVMConnected() && EmulatorManager.IsRobotOutputStreamGood())
+                while (EmulatorManager.IsTryingToRunRobotCode() && EmulatorManager.IsRobotOutputStreamGood() && Instance)
                 {
                     try
                     {
-                        var r = remoteReader.Read();
-                        if (r >= 0)
+                        int r = remoteReader.Read();
+                        if (r != -1)
                         {
                             char c = (char)r;
                             if (c == '\n' && (newPrintBuffer.Length > MIN_LINE_BUFFER_LEN || timeoutTimer.ElapsedMilliseconds > TIMEOUT)) // Concatenate multiple short prints if in quick enough succession
@@ -309,7 +309,7 @@ namespace Synthesis.GUI
                         break;
                     }
                 }
-                remoteReader.Close();
+                remoteReader.Dispose();
                 remoteReader = null;
                 EmulatorManager.CloseRobotOutputStream();
             }
@@ -352,6 +352,7 @@ namespace Synthesis.GUI
 
         private GameObject robotPrintFooter;
         private Image autoScrollButtonImage;
+        private Image enablePrintsButtonImage;
         public Sprite SelectedButtonImage;
         public Sprite UnselectedButtonImage;
         private bool autoScroll = true;
@@ -378,6 +379,8 @@ namespace Synthesis.GUI
             robotPrintFooter = Auxiliary.FindObject(robotPrintPanel, "RobotPrintFooter");
             autoScrollButtonImage = Auxiliary.FindObject(robotPrintFooter, "RobotPrintAutoScrollButton").GetComponent<Image>();
             autoScrollButtonImage.sprite = SelectedButtonImage;
+            enablePrintsButtonImage = Auxiliary.FindObject(robotPrintFooter, "EnableRobotPrintButton").GetComponent<Image>();
+            enablePrintsButtonImage.sprite = SelectedButtonImage;
 
             RobotPrintManager.Init();
             Populate();
@@ -429,7 +432,7 @@ namespace Synthesis.GUI
             {
                 DynamicCamera.ControlEnabled = true;
             }
-            if (enablePrints && EmulatorManager.IsVMConnected()) // Update robot prints
+            if (enablePrints && EmulatorManager.IsTryingToRunRobotCode()) // Update robot prints
             {
                 RobotPrintManager.Update();
             }
@@ -529,17 +532,40 @@ namespace Synthesis.GUI
             RobotPrintManager.Clear();
         }
 
+        public void ToggleRobotPrints()
+        {
+            bool newEnable = !enablePrints;
+            // TODO warn and wait if last command didnt finish
+            if(!enablePrints && newEnable && EmulatorManager.IsRobotOutputStreamGood()) // When trying to enable, wait until old connection closes
+            {
+                UserMessageManager.Dispatch("Waiting to close last readout connection", EmulationWarnings.WARNING_DURATION);
+            }
+            else
+            {
+                enablePrints = newEnable;
+                enablePrintsButtonImage.sprite = enablePrints ? SelectedButtonImage : UnselectedButtonImage;
+                if(enablePrints && !EmulatorManager.IsTryingToRunRobotCode())
+                {
+                    UserMessageManager.Dispatch("Readout enabled, waiting for robot program to start", EmulationWarnings.WARNING_DURATION);
+                }
+                else if (!enablePrints && EmulatorManager.IsRobotOutputStreamGood())
+                {
+                    EmulatorManager.CloseRobotOutputStream();
+                }
+            }
+        }
+
         /// <summary>
         /// Toggles whether the print-out panel automatically scrolls down to the most recent prints
         /// </summary>
         public void ToggleAutoScroll()
         {
             autoScroll = !autoScroll;
+            autoScrollButtonImage.sprite = autoScroll ? SelectedButtonImage : UnselectedButtonImage;
             if (autoScroll)
             {
                 RobotPrintManager.ScrollToBottom();
             }
-            autoScrollButtonImage.sprite = autoScroll ? SelectedButtonImage : UnselectedButtonImage;
         }
 
         /// <summary>

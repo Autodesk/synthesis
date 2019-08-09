@@ -25,6 +25,8 @@ namespace Synthesis
 
         private const string API_VERSION = "v1";
 
+        private bool isConnectionOpen = false;
+
         /*
         private int? TIMEOUT = null;
         private uint? RETRIES = 5;
@@ -59,6 +61,7 @@ namespace Synthesis
 
         public void OpenConnection()
         {
+            isConnectionOpen = true;
             Task.Run(SendData);
             Task.Run(ReceiveData);
         }
@@ -73,15 +76,17 @@ namespace Synthesis
                 {
                     using (var call = client.RobotInputs())
                     {
-                        await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
-                        {
-                            Api = API_VERSION,
-                            TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
-                            InputData = InputManager.Instance,
-                        });
-                        senderConnected = true;
-                        // Debug.Log("Sending " + InputManager.Instance);
-                        await Task.Delay(LOOP_DELAY); // ms
+                        while(EmulatorManager.IsTryingToRunRobotCode() && Instance){
+                            await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
+                            {
+                                Api = API_VERSION,
+                            	TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                                InputData = InputManager.Instance,
+                            });
+                            senderConnected = true;
+                            // Debug.Log("Sending " + InputManager.Instance);
+                            await Task.Delay(LOOP_DELAY); // ms
+                        }
                     }
                 }
                 catch (Exception)
@@ -94,6 +99,8 @@ namespace Synthesis
             {
                 await call.RequestStream.CompleteAsync();
             }
+            senderConnected = false;
+            isConnectionOpen = false;
         }
 
         private async Task ReceiveData()
@@ -110,8 +117,8 @@ namespace Synthesis
                     {
                         while (await call.ResponseStream.MoveNext())
                         {
-                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
                             receiverConnected = true;
+                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
                             // Debug.Log("Received " + OutputManager.Instance);
                         }
                     }
@@ -122,12 +129,20 @@ namespace Synthesis
                     await Task.Delay(ERROR_DELAY); // ms
                 }
             }
+            receiverConnected = false;
+            isConnectionOpen = false;
+        }
+
+        public bool IsConnectionOpen()
+        {
+            return isConnectionOpen;
         }
 
         public void OnApplicationQuit()
         {
             // inputCommander.Send(new StandardMessage.ExitMessage());
             // outputCommander.Send(new StandardMessage.ExitMessage());
+            EmulatorManager.KillEmulator();
         }
 
         public bool IsConnected()

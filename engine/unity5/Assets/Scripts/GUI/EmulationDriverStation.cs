@@ -135,14 +135,18 @@ namespace Synthesis.GUI
                 {
                     VMConnectionStatusImage.sprite = EmulatorConnection;
                     if (EmulatorNetworkConnection.Instance.IsConnected())
+                    {
                         VMConnectionStatusMessage.text = "Connected";
+                    }
                     else
                     {
                         VMConnectionStatusMessage.text = "Ready";
                         RobotDisabled();
                     }
-                    if (!EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
+                    if (!EmulatorManager.IsRunningRobotCodeRunner() && !EmulatorManager.IsTryingToRunRobotCode() && !EmulatorManager.IsRobotCodeRestarting())
+                    {
                         EmulatorManager.RestartRobotCode();
+                    }
                 }
                 else
                 {
@@ -176,7 +180,7 @@ namespace Synthesis.GUI
 
         public void RestartRobotCode()
         {
-            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramPresent)) && EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramFree)))
+            if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.UserProgramPresent) && EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.UserProgramNotRestarting))
             {
                 EmulatorManager.RestartRobotCode();
             }
@@ -185,11 +189,11 @@ namespace Synthesis.GUI
         private async void RunPracticeMode()
         {
             InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
-            Debug.Log("Atuo");
             await Task.Delay(AUTONOMOUS_LENGTH);
             if (!InputManager.Instance.RobotMode.Enabled)
+            {
                 return;
-            Debug.Log("Tele");
+            }
             InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
         }
 

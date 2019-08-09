@@ -37,15 +37,12 @@ namespace Assets.Scripts.GUI
 
             useEmulationButtonText = Auxiliary.FindObject(canvas, "UseEmulationButton").GetComponentInChildren<Text>();
             useEmulationButtonImage = Auxiliary.FindObject(canvas, "UseEmulationImage").GetComponentInChildren<Image>();
+
+            EmulatorManager.StartUpdatingStatus();
+            EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
         }
 
-        public void OnDestroy()
-        {
-            if (EmulatorManager.IsRunningRobotCode() && EmulatorManager.IsUserProgramFree())
-                EmulatorManager.StopRobotCode();
-        }
-
-        public override void FixedUpdate()
+        public override void Update()
         {
             if (loadingPanel.activeSelf)
             {
@@ -94,7 +91,7 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSelectRobotCodeButtonClicked()
         {
-            if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMConnected)) && EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramFree)))
+            if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.VMConnected))
             {
                 LoadCode();
             }
@@ -148,8 +145,6 @@ namespace Assets.Scripts.GUI
 
         public void OnVMConnectionStatusClicked()
         {
-            EmulatorManager.StartUpdatingStatus();
-            EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
             if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
                 if (!EmulatorManager.StartEmulator())
