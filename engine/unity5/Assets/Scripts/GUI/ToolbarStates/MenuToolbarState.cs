@@ -15,71 +15,58 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
 
-        DynamicCamera camera;
-        MainState State;
-
         GameObject menuPanel;
 
-        GameObject controlPanel;
+        GameObject robotControlPanel;
+        GameObject globalControlPanel;
         GameObject settingsPanel;
-        GameObject changeFieldPanel;
         GameObject viewReplaysPanel;
-        
-        GameObject toolbar;
-        GameObject overlay;
-        GameObject tabs;
-        private StateMachine tabStateMachine;
-
-        Text helpBodyText;
-
-        public GameObject currentMenuOpen;
-        private bool popWhenSwitch;
+        GameObject helpPanel;
 
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
             
-            tabs = Auxiliary.FindObject(canvas, "Tabs");
             menuPanel = Auxiliary.FindObject(canvas, "MenuPanel");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
-            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
-            controlPanel = Auxiliary.FindObject(canvas, "ControlPanel");
+            robotControlPanel = Auxiliary.FindObject(canvas, "RobotControlPanel");
+            globalControlPanel = Auxiliary.FindObject(canvas, "GlobalControlPanel");
             settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
-            changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            viewReplaysPanel = Auxiliary.FindObject(canvas, "SelectReplayPanel");
+            viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
+            helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
             
-            // To access instatiate classes within a state, use the StateMachine.SceneGlobal
-
-            State = StateMachine.SceneGlobal.CurrentState as MainState;
-            tabStateMachine = tabs.GetComponent<StateMachine>();
-            popWhenSwitch = false;
-
-            currentMenuOpen = controlPanel;
-            currentMenuOpen.SetActive(true);
-
+            robotControlPanel.SetActive(true);
         }
 
-        public void SwitchMenu(GameObject newMenu)
+        private void CloseAll()
         {
-            currentMenuOpen.SetActive(false);
+            robotControlPanel.SetActive(false);
+            globalControlPanel.SetActive(false);
+            settingsPanel.SetActive(false);
+            viewReplaysPanel.SetActive(false);
+            helpPanel.SetActive(false);
+        }
 
-            if (popWhenSwitch)
-            {
-                tabStateMachine.PopState();
-            }
-            popWhenSwitch = false;
-
+        private void SwitchMenu(GameObject newMenu)
+        {
+            CloseAll();
             newMenu.SetActive(true);
-            currentMenuOpen = newMenu;
         }
 
         /// <summary>
         /// Opens the robot controls panel
         /// </summary>
-        public void OnControlPanelButtonClicked()
+        public void OnRobotControlsButtonClicked()
         {
-            SwitchMenu(controlPanel);
+            SwitchMenu(robotControlPanel);
+        }
+
+        /// <summary>
+        /// Opens the global controls panel
+        /// </summary>
+        public void OnGlobalControlsButtonClicked()
+        {
+            SwitchMenu(globalControlPanel);
         }
 
         /// <summary>
@@ -88,22 +75,6 @@ namespace Assets.Scripts.GUI
         public void OnSettingsButtonClicked()
         {
             SwitchMenu(settingsPanel);
-            tabStateMachine.PushState(new SettingsState());
-            popWhenSwitch = true;
-
-        }
-
-        /// <summary>
-        /// Opens the change field panel
-        /// </summary>
-        public void OnChangeFieldButtonClicked()
-        {
-            SwitchMenu(changeFieldPanel);
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
-                AnalyticsLedger.EventAction.Clicked,
-                "change",
-                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -114,9 +85,17 @@ namespace Assets.Scripts.GUI
             SwitchMenu(viewReplaysPanel);
         }
 
+        /// <summary>
+        /// Opens the help panel
+        /// </summary>
+        public void OnHelpButtonClicked()
+        {
+            SwitchMenu(helpPanel);
+        }
+
         public override void End()
         {
-            currentMenuOpen.SetActive(false);
+            CloseAll();
         }
 
     }
