@@ -24,6 +24,8 @@ SET(GRPC "v1.21.4")
 
 SET(VM_BUILD_COMMAND "./run_vm.sh")
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC ")
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS")
 IF(${HEL_DEFAULT_ENABLED_STATUS} MATCHES "(true|false)")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHEL_DEFAULT_ENABLED_STATUS=${HEL_DEFAULT_ENABLED_STATUS}")
@@ -34,7 +36,9 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 SET(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/lib)
 
 if(CMAKE_BUILD_TYPE MATCHES "^[Rr][Ee][Ll][Ee][Aa][Ss][Ee]")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
+	if(NOT WIN32)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wno-ignored-qualifiers")
+	endif()
 else()
   if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]") #Note: do not compile with optimizations
     SET(CMAKE_BUILD_TYPE DEBUG)
@@ -46,6 +50,16 @@ endif()
 if(ARCH MATCHES "^[Aa][Rr][Mm]")
   SET(CMAKE_C_COMPILER arm-frc2019-linux-gnueabi-gcc)
   SET(CMAKE_CXX_COMPILER arm-frc2019-linux-gnueabi-g++)
+
+
+  ExternalProject_ADD(grpc
+    PREFIX lib/grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    GIT_TAG ${GRPC}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" " ${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
+    INSTALL_COMMAND "")
+
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
@@ -61,7 +75,7 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
     ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxathena.zip_3e38e7c98115770c2774d54027662b61/linux/athena/shared/
+    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-5-linuxathena.zip_78eb9292b9fe0f4ac17c77a461f92bf4/linux/athena/shared/
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
   )
@@ -70,6 +84,15 @@ else()
     MESSAGE(WARNING "No architecture specified; defaulting to x86.")
     SET(ARCH "x86_64")
   endif()
+  
+  ExternalProject_ADD(grpc
+    PREFIX lib/grpc
+    GIT_REPOSITORY https://github.com/grpc/grpc.git
+    GIT_TAG ${GRPC}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
+    INSTALL_COMMAND "")
+
   SET(CMAKE_C_COMPILER gcc)
   SET(CMAKE_CXX_COMPILER g++)
 
@@ -78,6 +101,8 @@ else()
     ${CMAKE_BINARY_DIR}/lib/lib
     ${CMAKE_BINARY_DIR}/lib/lib64
     ${NILIB_DIRECTORY}/src/lib
+    ${GRPC_DIRECTORY}/libs/opt
+    ${GRPC_DIRECTORY}/libs/opt/protobuf
     ${WPILIB_DIRECTORY}/wpilibc/build/libs/wpilibc/shared/x86-64/release
     ${WPILIB_DIRECTORY}/wpiutil/build/libs/wpiutil/shared/x86-64/release
     ${WPILIB_DIRECTORY}/ntcore/build/libs/ntcore/shared/x86-64/release
@@ -133,14 +158,6 @@ ADD_DEPENDENCIES(wpilibj wpilib)
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
 
-ExternalProject_ADD(grpc
-  PREFIX lib/grpc
-  GIT_REPOSITORY https://github.com/grpc/grpc.git
-  GIT_TAG ${GRPC}
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_BINARY_DIR}/scripts/check_if_built.sh GRPC ${GRPC_DIRECTORY} "${GRPC_DIRECTORY}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIRECTORY}/libs/opt/libgrpc.a ${GRPC_DIRECTORY}/libs/opt/libgrpc++.a" "${CMAKE_BINARY_DIR}/scripts/build_grpc.sh ${GRPC_DIRECTORY}"
-  INSTALL_COMMAND "")
-
 FILE(GLOB PROTOBUF_SOURCE_FILES ${PROTOBUF_SOURCE_DIR}/*)
 SET(GENERATED_FILES ${GRPC_GEN_DIR}/emulator_service.grpc.pb.cc ${GRPC_GEN_DIR}/emulator_service.grpc.pb.h ${GRPC_GEN_DIR}/emulator_service.pb.cc ${GRPC_GEN_DIR}/emulator_service.pb.h)
 
@@ -180,7 +197,10 @@ ADD_LIBRARY(hel SHARED
   src/error.cpp
   src/alarm.cpp
   src/system.cpp
+  src/dma_manager.cpp
+  src/interrupt.cpp
   src/interrupt_manager.cpp
+  src/analog_trigger.cpp
   src/analog_input_calibration.cpp
   src/joystick.cpp
   src/match_info.cpp
@@ -197,7 +217,8 @@ ADD_LIBRARY(hel SHARED
   ${GENERATED_FILES}
 )
 ADD_DEPENDENCIES(hel ni-libraries grpc_gen)
-TARGET_LINK_LIBRARIES(hel libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libares.a libgrpc++.a)
+TARGET_LINK_LIBRARIES(hel pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a libgrpc_cronet.a libz.a libgrpc++.a)
+TARGET_COMPILE_OPTIONS(hel PUBLIC -pthread)
 TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
   "${CMAKE_BINARY_DIR}/include"
   "${NILIB_DIRECTORY}/src/include"
@@ -212,6 +233,9 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
   ENDIF()
 
   if(NOT NO_ROBOT MATCHES "[Tt][Rr][Uu][Ee]" OR NOT NO_ROBOT MATCHES "[Oo][Nn]" OR NOT ARCH MATCHES "([Xx]86([-_]64)?)")
+    SET(USER_CODE_DIR "${CMAKE_BINARY_DIR}/user-code")
+
+    # C++ Test Project
     ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
     ADD_DEPENDENCIES(FRCUserProgram wpilibc ni-libraries)
     # ADD_DEPENDENCIES(ctre)
@@ -225,10 +249,16 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
       # "${CTRE_DIRECTORY}/cpp/include/"
       # "${CTRE_DIRECTORY}/libraries/driver/include"
       )
-    SET_TARGET_PROPERTIES(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/user-code")
+    SET_TARGET_PROPERTIES(FRCUserProgram PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${USER_CODE_DIR}")
     TARGET_COMPILE_OPTIONS(FRCUserProgram PUBLIC -pthread)
     TARGET_LINK_LIBRARIES(FRCUserProgram wpi pthread)
     # TARGET_LINK_LIBRARIES(libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+
+    # Java Test Project
+    FIND_PACKAGE(Java REQUIRED)
+    INCLUDE(UseJava)
+    FILE(GLOB_RECURSE JAVA_SOURCES tests/test_projects/java/*.java)
+    ADD_JAR(JavaFRCUserProgram ${JAVA_SOURCES} INCLUDE_JARS "${WPILIB_DIRECTORY}/wpilibj/build/libs/wpilibj.jar" OUTPUT_DIR "${USER_CODE_DIR}")
   else()
     MESSAGE(WARNING "Robot code generation not supported on x86_64. Skipping test robot code generation.")
   endif()
@@ -280,12 +310,10 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
         "${WPILIB_DIRECTORY}/cameraserver/src/main/native/include"
         "${WPILIB_DIRECTORY}/wpilibc/src/main/native/include"
         "${WPILIB_DIRECTORY}/hal/src/main/native/include"
-  	"${GRPC_DIRECTORY}/include"
-	"${GRPC_DIRECTORY}/third_party/protobuf/src"
-  	"${CMAKE_BINARY_DIR}/lib/gen"
-	"${NILIB_DIRECTORY}/src/include"
-        # "${CTRE_DIRECTORY}/cpp/include/"
-        # "${CTRE_DIRECTORY}/libraries/driver/include"
+  	    "${GRPC_DIRECTORY}/include"
+	      "${GRPC_DIRECTORY}/third_party/protobuf/src"
+  	    "${CMAKE_BINARY_DIR}/lib/gen"
+	      "${NILIB_DIRECTORY}/src/include"
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
 

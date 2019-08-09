@@ -156,7 +156,6 @@ namespace hel{
             auto instance = RoboRIOManager::getInstance();
 			for(int i = 0; i <= findMostSignificantBit(output.MXP); i++){
 				if(checkBitHigh(output.MXP, i) && instance.first->digital_system.getMXPConfig(i) != MXPData::Config::DO){
-					printf("Config: %s", asString(instance.first->digital_system.getMXPConfig(i)).c_str());
 					throw DigitalSystem::DIOConfigurationException(DigitalSystem::DIOConfigurationException::Config::DO, DigitalSystem::DIOConfigurationException::Config::MXP_SPECIAL_FUNCTION, i + DigitalSystem::NUM_DIGITAL_HEADERS);
 				}
 			}

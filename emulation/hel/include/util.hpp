@@ -13,6 +13,20 @@
         exit(1);                                          \
     }
 
+// Millisecond sleep macro
+#ifdef __linux__
+	#include <unistd.h>
+	#define SLEEP(t) usleep(t * 1000)
+#elif defined(WIN32) || defined(__CYGWIN__)
+	#include <windows.h>
+	#undef max
+	#undef min
+	#undef ERROR
+	#define SLEEP(t) Sleep(t)
+#else
+	#error "Unsupported operating system"
+#endif
+
 namespace hel{
 
     /**
