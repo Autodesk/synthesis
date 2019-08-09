@@ -90,7 +90,7 @@ namespace Synthesis.States
                     AnalyticsLedger.TimingLabel.MainSimMenu);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MainSimulator,
-                    AnalyticsLedger.EventAction.Start,
+                    AnalyticsLedger.EventAction.StartSim,
                     "",
                     AnalyticsLedger.getMilliseconds().ToString());
 

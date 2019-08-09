@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
+using System;
 
 namespace Assets.Scripts.GUI
 {
@@ -114,13 +115,19 @@ namespace Assets.Scripts.GUI
                         loaded = true;
                     });
                     await Upload;
+                    Synthesis.GUI.UserMessageManager.Dispatch("Code successfully loaded.", 10);
                 }
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.SelectCode,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Select Code",
                 AnalyticsLedger.getMilliseconds().ToString());
+        }
+
+        private void UserMessageManager(string v)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -130,9 +137,9 @@ namespace Assets.Scripts.GUI
         {
             EmulationDriverStation.Instance.ToggleDriverStation();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DriverStation,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Emulation Driver Station",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -140,9 +147,9 @@ namespace Assets.Scripts.GUI
         {
             EmulationDriverStation.Instance.ToggleRobotCodeButton();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.RunCode,
-                AnalyticsLedger.EventAction.Start,
-                "",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Run Code",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
@@ -180,9 +187,9 @@ namespace Assets.Scripts.GUI
                 else t.gameObject.SetActive(false);
             }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationHelp,
-                AnalyticsLedger.EventAction.Clicked,
-                "",
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.Viewed,
+                "Help - Emulation Toolbar",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
