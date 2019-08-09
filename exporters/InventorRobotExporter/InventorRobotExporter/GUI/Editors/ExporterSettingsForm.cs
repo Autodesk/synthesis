@@ -46,6 +46,8 @@ namespace InventorRobotExporter.GUI.Editors
         /// </summary>
         private void SaveValues()
         {
+            if (values.ShowGuide != checkBox2.Checked) AnalyticsUtils.LogEvent("Settings", "Guide Toggle", checkBox2.Checked ? "Enabled" : "Disabled");
+            if (!values.JointHighlightColor.Equals(ChildHighlight.BackColor)) AnalyticsUtils.LogEvent("Settings", "Highlight Color Changed");
             values.JointHighlightColor = ChildHighlight.BackColor;
             values.UseAnalytics = checkBox1.Checked;
             values.ShowGuide = checkBox2.Checked;
