@@ -100,8 +100,8 @@ namespace InventorRobotExporter.GUI.Editors
 
         private bool CheckFormIsValid()
         {
-            ButtonOk.Enabled = RobotNameTextBox.Text.Length > 0;
-            return ButtonOk.Enabled;
+            okButton.Enabled = RobotNameTextBox.Text.Length > 0;
+            return okButton.Enabled;
         }
 
         private void RobotNameTextBox_TextChanged(object sender, EventArgs e)

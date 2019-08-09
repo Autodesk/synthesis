@@ -26,6 +26,8 @@ namespace InventorRobotExporter.Managers
         // Robot export settings
         public bool RobotPreferMetric = false;
 
+        public bool wasForceQuit = false;
+
         public RobotDataManager()
         {
             RigidNode_Base.NODE_FACTORY = guid => new OGL_RigidNode(guid); // TODO: Remove this and refactor BXDJReader versions
@@ -155,7 +157,7 @@ namespace InventorRobotExporter.Managers
                 //MessageBox.Show("Your robot was successfully exported to " + robotFolderPath, "Export Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (!RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis)
                 {
-                    new ExportSuccessful(robotFolderPath).ShowDialog();
+                    new ExportSuccessfulForm(robotFolderPath).ShowDialog();
                 }
 
                 return true;

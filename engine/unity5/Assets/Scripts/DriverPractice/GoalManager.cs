@@ -90,9 +90,9 @@ namespace Synthesis.DriverPractice
             }
             CreateTabs();
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreZones,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoringTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Score Zones",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
         public void CloseGoalManager()
@@ -301,9 +301,9 @@ namespace Synthesis.DriverPractice
         {
             scoreboard.SetActive(true);
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoreBoard,
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ScoringTab,
                 AnalyticsLedger.EventAction.Clicked,
-                "",
+                "Score Board",
                 AnalyticsLedger.getMilliseconds().ToString());
 
         }

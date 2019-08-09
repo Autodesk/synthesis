@@ -13,20 +13,30 @@ namespace InventorRobotExporter.GUI.Loading
     {
         private List<BXDAMesh> exportMeshes = null;
         private RobotDataManager robotDataManager;
+        private readonly BackgroundWorker ExportMeshWorker;
+        private bool exportWasCancelled;
 
         public ExportingMeshesForm()
         {
             InitializeComponent();
+            ExportMeshWorker = new BackgroundWorker();
+            ExportMeshWorker.WorkerReportsProgress = true;
+            ExportMeshWorker.WorkerSupportsCancellation = true;
             ExportMeshWorker.DoWork += ExportMeshWorker_DoWork;
             ExportMeshWorker.RunWorkerCompleted += ExportMeshWorker_RunWorkerCompleted;
-
+            
             Shown += (sender, args) =>
             {
                 RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = true;
                 ExportMeshWorker.RunWorkerAsync();
             };
 
-            FormClosing += (sender, args) => RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
+            FormClosing += (sender, args) =>
+            {
+                if (!ExportMeshWorker.IsBusy) return;
+                args.Cancel = true;
+                CancelExportWorker();
+            };
         }
         
         public async Task<List<BXDAMesh>> ExportMeshes(RobotDataManager robotDataManager)
@@ -53,32 +63,32 @@ namespace InventorRobotExporter.GUI.Loading
 
         private void ExportMeshWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            exportMeshes = MeshExporter.ExportMeshes(new Progress<ProgressUpdate>(SetProgress), robotDataManager.RobotBaseNode, robotDataManager.RobotWeightKg);
+            exportMeshes = MeshExporter.ExportMeshes(new Progress<ProgressUpdate>(SetProgress), robotDataManager.RobotBaseNode, robotDataManager.RobotWeightKg, ExportMeshWorker);
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
+        private void CancelExportWorker(object sender=null, EventArgs e=null)
         {
-            if (ExportMeshWorker.IsBusy)
-                ExportMeshWorker.CancelAsync();
-        
-            if (ExportMeshWorker.CancellationPending)
-                Dispose();
+            ExportMeshWorker.CancelAsync();
+            exportWasCancelled = true;
         }
 
         private void ExportMeshWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled)
-                ProgressLabel.Text = "Export Cancelled";
-            else if (e.Error != null)
+            if (e.Error != null)
             {
                 ProgressLabel.Text = "An error occurred.";
                 MessageBox.Show(e.Error.Message);
+                DialogResult = DialogResult.Abort;
+            } else if (exportWasCancelled)
+            {
+                DialogResult = DialogResult.Cancel;
             }
             else
             {
                 DialogResult = DialogResult.OK;
-                Close();
             }
+            Close();
+            RobotExporterAddInServer.Instance.Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
     }
 }

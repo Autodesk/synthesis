@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 namespace InventorRobotExporter.GUI.Messages
 {
-    public partial class ExportSuccessful : Form
+    public partial class ExportSuccessfulForm : Form
     {
         private readonly string path;
 
-        public ExportSuccessful(string path)
+        public ExportSuccessfulForm(string path)
         {
             this.path = path;
             InitializeComponent();

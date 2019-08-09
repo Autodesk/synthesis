@@ -89,7 +89,6 @@ namespace Synthesis.States
 
         public bool IsMetric;
         public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir+"zImage") && File.Exists(EmulatorManager.emulationDir + "rootfs.ext4") && File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb");
-        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -102,7 +101,7 @@ namespace Synthesis.States
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
 
-            string CurrentVersion = "4.2.3";
+            string CurrentVersion = "4.3.0";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection()) {
@@ -117,9 +116,10 @@ namespace Synthesis.States
 
                 var check = localVersion.CompareTo(globalVersion);
 
-                //if (check < 0) {
-                //    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
-                //}
+                if (check < 0)
+                {
+                    Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
+                }
             }
 
             robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
@@ -426,9 +426,9 @@ namespace Synthesis.States
 
                     if (AnalyticsManager.GlobalInstance != null)
                     {
-                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
-                            AnalyticsLedger.EventAction.Changed,
-                            "",
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Mix and Match",
                             AnalyticsLedger.getMilliseconds().ToString());
                     }
                 }
@@ -439,9 +439,9 @@ namespace Synthesis.States
 
                     if (AnalyticsManager.GlobalInstance != null)
                     {
-                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExportedRobot,
-                            AnalyticsLedger.EventAction.Changed,
-                            "",
+                        AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                            AnalyticsLedger.EventAction.Load,
+                            "Robot - Exported",
                             AnalyticsLedger.getMilliseconds().ToString());
                     }
                 }
@@ -465,9 +465,9 @@ namespace Synthesis.States
 
                 if (!isMixAndMatch && !PlayerPrefs.HasKey(robot.RootNode.GUID.ToString()) && !SampleRobotGUIDs.Contains(robot.RootNode.GUID.ToString()))
                 {
-                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MaMRobot,
-                        AnalyticsLedger.EventAction.Changed,
-                        "",
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.LoadRobot,
+                        AnalyticsLedger.EventAction.Load,
+                        robot.RootNode.GUID.ToString(),
                         AnalyticsLedger.getMilliseconds().ToString());
                 }
 

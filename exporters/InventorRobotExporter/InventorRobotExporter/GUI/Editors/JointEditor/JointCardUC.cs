@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -214,28 +215,23 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 AddHighlightAction(control);
         }
 
-        private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            DoLayout();
-        }
+        private void JointTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) => DoLayout();
 
         private void DoLayout()
         {
-            switch ((string) jointTypeComboBox.SelectedItem)
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
             {
-                case "Drivetrain Wheel":
+                RemoveMechControls();
+                RemoveDrivetrainControls();
+                advancedButton.Visible = false;
+                DriverLayout.BackColor = Color.FromArgb(227, 206, 169);
+            } else {
+                advancedButton.Visible = true;
+                DriverLayout.ResetBackColor();
+                if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                     InsertDriveTrainControls();
-                    advancedButton.Visible = true;
-                    return;
-                case "Mechanism Joint":
+                else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
                     InsertTableLayoutControls();
-                    advancedButton.Visible = true;
-                    return;
-                default:
-                    RemoveMechControls();
-                    RemoveDrivetrainControls();
-                    advancedButton.Visible = false;
-                    return;
             }
         }
 
@@ -275,8 +271,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void AdvancedButton_Click(object sender, EventArgs e)
         {
-            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)")
-                return;
+            if ((string) jointTypeComboBox.SelectedItem == "(Select an option)") return;
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }
