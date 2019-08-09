@@ -66,6 +66,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
                         var node = nodes[0];
                         if (node != null && node.GetSkeletalJoint() != null)// prevents the user from trying to edit a null joint
                         {
+                            AnalyticsUtils.LogPage("Advanced Joint Editor", "Limit Editor");
                             var limitEditor = new JointLimitEditorForm(node.GetSkeletalJoint());// show the limit editor form
                             limitEditor.ShowDialog(ParentForm);
                         }
@@ -203,6 +204,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
 
             currentlyEditing = true;
 
+            AnalyticsUtils.LogPage("Advanced Joint Editor", "Driver Editor");
             jointDriverEditorFormDialog.ShowDialog(nodes[0].GetSkeletalJoint(), nodes, ParentForm);
 
             if (ModifiedJoint != null && jointDriverEditorFormDialog.Saved)

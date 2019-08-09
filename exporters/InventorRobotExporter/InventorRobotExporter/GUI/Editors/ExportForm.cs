@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using InventorRobotExporter.Managers;
+using InventorRobotExporter.Utilities;
 
 namespace InventorRobotExporter.GUI.Editors
 {
@@ -14,6 +15,7 @@ namespace InventorRobotExporter.GUI.Editors
         public ExportForm(string initialRobotName)
         {
             InitializeComponent();
+            AnalyticsUtils.LogPage("Pre-Export Form");
             InitializeFields();
 
             RobotNameTextBox.Text = initialRobotName;
