@@ -92,43 +92,43 @@
     <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorInterface.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\Editor\PrimitiveEditor.cs" />
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.multiplayer-hlapi.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.multiplayer-weaver.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-weaver.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-weaver.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XR.LegacyInputHelpers">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.SpatialTracking">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.DataPrivacy">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.XR.LegacyInputHelpers">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.multiplayer-hlapi.Runtime">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -328,86 +328,95 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.OSXStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.LinuxStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
     <Reference Include="EmulationCommunication">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/EmulationCommunication.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/EmulationCommunication.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="NuGetForUnity">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/NuGet/Editor/NuGetForUnity.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/NuGet/Editor/NuGetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.PlatformServices.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth.PlatformServices">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.PlatformServices.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Core">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Apis.Core.1.21.0/lib/net45/Google.Apis.Core.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Apis.Core.1.21.0/lib/net45/Google.Apis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Google.Protobuf.3.9.0/lib/net45/Google.Protobuf.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Google.Protobuf.3.9.0/lib/net45/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Auth">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Grpc.Auth.1.22.0/lib/net45/Grpc.Auth.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Auth.1.22.0/lib/net45/Grpc.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Grpc.Core.1.22.0/lib/net45/Grpc.Core.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Core.1.22.0/lib/net45/Grpc.Core.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core.Api">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Grpc.Core.Api.1.22.0/lib/net45/Grpc.Core.Api.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Core.Api.1.22.0/lib/net45/Grpc.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Reflection">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Grpc.Reflection.1.22.0/lib/net45/Grpc.Reflection.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Grpc.Reflection.1.22.0/lib/net45/Grpc.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.12.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.12.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/SSH.NET.2016.1.0/lib/net40/Renci.SshNet.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/SSH.NET.2016.0.0/lib/net40/Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="System.Interactive.Async">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Packages/System.Interactive.Async.3.2.0/lib/net46/System.Interactive.Async.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Packages/System.Interactive.Async.3.2.0/lib/net46/System.Interactive.Async.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="CTCommon">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
     </Reference>
     <Reference Include="CTCommonEditor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Common/Editor/CTCommonEditor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Common/Editor/CTCommonEditor.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Advertisements">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Editor">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Tracker">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
-      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/unity5/Library/PackageCache/com.unity.purchasing@2.0.6/Editor/UnityEditor.Purchasing.dll</HintPath>
+      <HintPath>C:/Users/t_burrn/synthesis/engine/unity5/Library/PackageCache/com.unity.purchasing@2.0.6/Editor/UnityEditor.Purchasing.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.9f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
