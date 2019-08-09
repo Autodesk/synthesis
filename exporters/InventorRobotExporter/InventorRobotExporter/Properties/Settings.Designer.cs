@@ -133,7 +133,7 @@ namespace InventorRobotExporter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UseAnalytics {
             get {
                 return ((bool)(this["UseAnalytics"]));
@@ -152,6 +152,18 @@ namespace InventorRobotExporter.Properties {
             }
             set {
                 this["ShowGuide"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ExportCount {
+            get {
+                return ((int)(this["ExportCount"]));
+            }
+            set {
+                this["ExportCount"] = value;
             }
         }
     }

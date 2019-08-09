@@ -17,6 +17,7 @@ using InventorRobotExporter.GUI.Loading;
 using InventorRobotExporter.GUI.Messages;
 using NUnit.Framework;
 using OpenTK.Input;
+using static InventorRobotExporter.RobotExporterAddInServer;
 using static InventorRobotExporter.Utilities.ImageFormat.PictureDispConverter;
 using Environment = Inventor.Environment;
 
@@ -62,7 +63,7 @@ namespace InventorRobotExporter
         // Dockable window managers
         private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly JointViewKey jointViewKey = new JointViewKey();
-        public readonly GuideManager guideManager = new GuideManager(true);
+        private readonly GuideManager guideManager = new GuideManager();
 
         // Other managers
         public readonly HighlightManager HighlightManager = new HighlightManager();
@@ -74,7 +75,6 @@ namespace InventorRobotExporter
         {
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
             AnalyticsUtils.SetUser(Application.UserName);
-            AnalyticsUtils.LogPage("Inventor");
 
             InitEnvironment(clientId);
 
@@ -103,14 +103,21 @@ namespace InventorRobotExporter
             driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nLayout",
                 "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Select the drivetrain type (tank, H-drive, or mecanum).", ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)), ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)));
-            driveTrainTypeButton.OnExecute += context => new DrivetrainLayoutForm(RobotDataManager).ShowDialog();
+            driveTrainTypeButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogPage("Drivetrain Type Editor");
+                new DrivetrainLayoutForm(RobotDataManager).ShowDialog();
+            };
             driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
 
             drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
                 "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
                 "Assign the weight of the drivetrain.", ToIPictureDisp(new Bitmap(Resources.RobotWeight32)), ToIPictureDisp(new Bitmap(Resources.RobotWeight32)));
-            drivetrainWeightButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Set Weight");
-            drivetrainWeightButton.OnExecute += context => RobotDataManager.PromptRobotWeight();
+            drivetrainWeightButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogPage("Drivetrain Weight Editor");
+                RobotDataManager.PromptRobotWeight();
+            };
             driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
 
             // JOINT PANEL
@@ -118,10 +125,10 @@ namespace InventorRobotExporter
 
             advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
-            advancedEditJointButton.OnExecute += context => AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Advanced Edit Joint");
             advancedEditJointButton.OnExecute += context =>
             {
                 if (advancedJointEditor.Visible) return;
+                AnalyticsUtils.LogPage("Advanced Joint Editor");
                 advancedJointEditor.Visible = true;
                 jointEditorForm.Visible = false;
             };
@@ -131,7 +138,6 @@ namespace InventorRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
             editJointButton.OnExecute += context =>
             {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "Edit Joint");
                 if (!jointEditorForm.HasJoints())
                 {
                     var result = MessageBox.Show("No rotational or slider joints detected in the assembly! Add joints to your robot by using the \"Joint\" button under \"Assemble\" and restart the robot export environment to edit joints.\n\n" +
@@ -147,6 +153,7 @@ namespace InventorRobotExporter
                 }
                 else
                 {
+                    AnalyticsUtils.LogPage("Joint Editor");
                     UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
                     jointEditorForm.PreShow();
                     jointEditorForm.Show();
@@ -162,9 +169,10 @@ namespace InventorRobotExporter
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View status of all joints.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
             dofButton.OnExecute += context =>
             {
-                AnalyticsUtils.LogEvent("Toolbar", "Button Clicked", "DOF");
                 jointViewKey.Visible = !jointViewKey.Visible;
                 HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
+                if (jointViewKey.Visible)
+                    AnalyticsUtils.LogPage("Joint View");
             };
             precheckPanel.CommandControls.AddButton(dofButton, true);
 
@@ -173,7 +181,11 @@ namespace InventorRobotExporter
 
             settingsButton = controlDefs.AddButtonDefinition("Add-In Settings", "BxD:RobotExporter:Settings",
                 CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Configure add-in settings.", ToIPictureDisp(new Bitmap(Resources.Gears16)), ToIPictureDisp(new Bitmap(Resources.Gears32)));
-            settingsButton.OnExecute += context => new ExporterSettingsForm().ShowDialog();
+            settingsButton.OnExecute += context =>
+            {
+                AnalyticsUtils.LogPage("Exporter Settings");
+                new ExporterSettingsForm().ShowDialog();
+            };
             addInSettingsPanel.CommandControls.AddButton(settingsButton, true);
         }
 
@@ -233,8 +245,6 @@ namespace InventorRobotExporter
 
         protected override void OnEnvironmentClose()
         {
-            AnalyticsUtils.EndSession();
-            
             Application.UserInterfaceManager.UserInteractionDisabled = true;
             var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
@@ -254,8 +264,17 @@ namespace InventorRobotExporter
                 {
                     UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
                     if (ExportForm.PromptExportSettings(RobotDataManager))
+                    {
                         if (RobotDataManager.ExportRobot())
-                            SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
+                        {
+                            AnalyticsUtils.LogEvent("Export", "Succeeded");
+                            if (Instance.AddInSettingsManager.OpenSynthesis) SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
+                        }
+                        else
+                        {
+                            AnalyticsUtils.LogEvent("Export", "Cancelled");
+                        }
+                    }
                 }
             }
 
@@ -266,6 +285,7 @@ namespace InventorRobotExporter
             advancedJointEditor.DestroyDockableWindow();
             guideManager.DestroyDockableWindow();
             jointViewKey.DestroyDockableWindow();
+            AnalyticsUtils.EndSession();
         }
 
         protected override void OnEnvironmentHide()

@@ -10,6 +10,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
     {
         private DockableWindow embeddedAdvancedJointEditorPane;
         private readonly AdvancedJointEditorUserControl advancedJointEditorUserControl = new AdvancedJointEditorUserControl();
+        public event EventHandler Activated;
 
         private bool visible; // Whether the joint editor _should_ be visible
         public bool Visible
@@ -23,6 +24,7 @@ namespace InventorRobotExporter.GUI.Editors.AdvancedJointEditor
                 if (value)
                 {
                     Show();
+                    Activated?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
