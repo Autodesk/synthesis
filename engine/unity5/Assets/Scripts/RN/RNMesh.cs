@@ -85,7 +85,7 @@ namespace Synthesis.RN
                     //ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(m.vertices, x => x.ToBullet()), m.vertices.Length);
                     //hull.Margin = CollisionMargin;
                     //hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
-
+                    MainObject.AddComponent<Wireframe>().Init(collider, ComOffset);
                     ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
                     hull.Margin = CollisionMargin;
                     hullShape.AddShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
