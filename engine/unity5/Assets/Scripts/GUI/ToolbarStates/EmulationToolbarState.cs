@@ -37,6 +37,13 @@ namespace Assets.Scripts.GUI
 
             useEmulationButtonText = Auxiliary.FindObject(canvas, "UseEmulationButton").GetComponentInChildren<Text>();
             useEmulationButtonImage = Auxiliary.FindObject(canvas, "UseEmulationImage").GetComponentInChildren<Image>();
+            useEmulationButtonImage.color = Color.green;
+
+            try
+            {
+                EmulatorManager.programType = (UserProgram.UserProgramType)Enum.Parse(typeof(UserProgram.UserProgramType), PlayerPrefs.GetString("UserProgramType"), false);
+            }
+            catch (Exception) { }
 
             EmulatorManager.StartUpdatingStatus();
             EmulationDriverStation.Instance.BeginTrackingVMConnectionStatus();
@@ -76,11 +83,13 @@ namespace Assets.Scripts.GUI
             if (EmulatorManager.UseEmulation)
             {
                 useEmulationButtonImage.sprite = EmulationDriverStation.Instance.StopCode;
+                useEmulationButtonImage.color = Color.red;
                 useEmulationButtonText.text = "Stop Emulation";
             }
             else
             {
                 useEmulationButtonImage.sprite = EmulationDriverStation.Instance.StartCode;
+                useEmulationButtonImage.color = Color.green;
                 useEmulationButtonText.text = "Use Emulation";
                 EmulationDriverStation.Instance.RobotDisabled();
             }
@@ -106,7 +115,7 @@ namespace Assets.Scripts.GUI
             }
             else
             {
-                Synthesis.UserProgram userProgram = new Synthesis.UserProgram(selectedFiles[0]);
+                UserProgram userProgram = new UserProgram(selectedFiles[0]);
                 loadingPanel.SetActive(true);
                 Task Upload = Task.Factory.StartNew(async () =>
                 {
@@ -115,13 +124,18 @@ namespace Assets.Scripts.GUI
                 });
 
                 await Upload;
-                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(Synthesis.UserProgram.UserProgramType), EmulatorManager.programType));
+                PlayerPrefs.SetString("UserProgramType", EmulatorManager.programType.ToString());
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
                 "Select Code",
                 AnalyticsLedger.getMilliseconds().ToString());
+        }
+
+        public void OnDestroy()
+        {
+            PlayerPrefs.SetString("UserProgramType", EmulatorManager.programType.ToString());
         }
 
         /// <summary>
