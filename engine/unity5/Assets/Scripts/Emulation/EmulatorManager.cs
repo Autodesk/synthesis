@@ -42,7 +42,6 @@ namespace Synthesis
         private static bool isRunningRobotCode = false;
         private static bool isRobotCodeRestarting = false;
 
-        private static System.Diagnostics.Process qemuProcess = null;
         private static bool updatingStatus = false;
 
         private static SshCommand outputStreamCommand = null;
@@ -51,14 +50,28 @@ namespace Synthesis
         private static SshClient Client
         {
             get
-            {
+            { // TODO don't always connect?
+                if(SSHClientInternal.emulator != programType && SSHClientInternal.instance != null)
+                {
+                    SSHClientInternal.instance.Disconnect();
+                    SSHClientInternal.instance.Dispose();
+                    SSHClientInternal.instance = null;
+                }
                 if (SSHClientInternal.instance == null)
                 {
-                    SSHClientInternal.instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                    SSHClientInternal.emulator = programType;
+                    SSHClientInternal.instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, (SSHClientInternal.emulator == UserProgram.UserProgramType.JAVA) ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
                 }
                 if (!SSHClientInternal.instance.IsConnected)
                 {
-                    SSHClientInternal.instance.Connect();
+                    try
+                    {
+                        SSHClientInternal.instance.Connect();
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 }
                 return SSHClientInternal.instance;
             }
@@ -68,6 +81,7 @@ namespace Synthesis
         {
             static SSHClientInternal() { }
             internal static SshClient instance = null;
+            internal static UserProgram.UserProgramType emulator = UserProgram.UserProgramType.JAVA;
         }
 
         public static bool IsVMInstalled()
@@ -82,6 +96,7 @@ namespace Synthesis
         {
             if (qemuNativeProcess != null && qemuNativeProcess.HasExited)
                 qemuNativeProcess = null;
+
             if (qemuJavaProcess != null && qemuJavaProcess.HasExited)
                 qemuJavaProcess = null;
             if (grpcBridgeProcess != null && grpcBridgeProcess.HasExited)
@@ -102,7 +117,7 @@ namespace Synthesis
 
         public static bool IsTryingToRunRobotCode()
         {
-            return isTryingToRunRobotCode;
+            return isTryingToRunRobotCode || isRunningRobotCode;
         }
 
         public static bool IsRunningRobotCodeRunner()
@@ -125,7 +140,6 @@ namespace Synthesis
             bool exception = false;
             try
             {
-                Enum.TryParse(PlayerPrefs.GetString("UserProgramType"), out programType);
                 qemuNativeProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     CreateNoWindow = true,
@@ -135,17 +149,20 @@ namespace Synthesis
                     Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EMULATION_DIR + Path.DirectorySeparatorChar + "zImage " +
                             "-dtb " + EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb " +
                             "-display none -serial null -serial mon:stdio -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" " +
-                            "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_CPP + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "," +
+                            "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_CPP + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + "," +
                             "hostfwd=tcp::2354-:2354 -net nic -sd " + EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs.ext4",
                     Verb = "runas"
                 });
+
                 qemuJavaProcess = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = @"C:\Program Files\qemu\qemu-system-x86_64.exe",
+                    FileName = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu" + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe",
                     WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                    Arguments = " -m 2048 -kernel " + EMULATION_DIR + "kernel-java -nographic -append \"console=ttyPS0 root=/dev/sda rw\" -net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_JAVA + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_JAVA_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + " -net nic -hda " + EMULATION_DIR + "rootfs-java.ext4",
+                    Arguments = " -m 2048 -kernel " + EMULATION_DIR + "kernel-java -nographic -append \"console=ttyPS0 root=/dev/sda rw\" " +
+                    "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_JAVA + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_JAVA_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + " " +
+                    "-net nic -hda " + EMULATION_DIR + "rootfs-java.ext4",
                     Verb = "runas"
                 });
 
@@ -171,7 +188,7 @@ namespace Synthesis
 
         public static void KillEmulator()
         {
-            if (Client.IsConnected)
+            if (VMConnected)
             {
                 Client.Disconnect();
                 Client.Dispose();
@@ -213,7 +230,7 @@ namespace Synthesis
 
         private static void StatusUpdater()
         {
-            using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, DEFAULT_SSH_PORT, USER, PASSWORD))
+            using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
             {
                 while (updatingStatus)
                 {
@@ -298,7 +315,7 @@ namespace Synthesis
 
                     Client.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
                     frcUserProgramPresent = false;
-
+                    programType = userProgram.type;
                     using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.UserProgramType.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
                         scpClient.Connect();
