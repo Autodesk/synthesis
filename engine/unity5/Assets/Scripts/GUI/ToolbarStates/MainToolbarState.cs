@@ -23,10 +23,6 @@ namespace Synthesis.GUI
     /// <summary>
     /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
     /// change robots/fields, reset, camera views, etc. 
-    /// 
-    /// Toolbar state composition
-    /// -Button/Dropdowns for toolbar functions
-    /// -Help menu
     /// </summary>
     public class MainToolbarState : State {
         GameObject canvas;
