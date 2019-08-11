@@ -21,14 +21,6 @@ namespace Synthesis.States
 {
     public class ReplayState : State
     {
-        #region help ui variables
-        GameObject ui;
-        GameObject helpMenu;
-        GameObject toolbar;
-        GameObject overlay;
-        Text helpBodyText;
-        #endregion
-
         private const float CircleRenderDistance = 10f;
         private const float ConsolidationEpsilon = 0.25f;
 
@@ -244,12 +236,6 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            #region init
-            ui = GameObject.Find("ReplayUI");
-            helpMenu = Auxiliary.FindObject(ui, "Help");
-            toolbar = Auxiliary.FindObject(ui, "Toolbar");
-            overlay = Auxiliary.FindObject(ui, "Overlay");
-            #endregion
 
             foreach (Tracker t in trackers)
             {
@@ -280,16 +266,6 @@ namespace Synthesis.States
             Button saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
             saveButton.onClick.RemoveAllListeners();
             saveButton.onClick.AddListener(PushSaveReplayState);
-
-            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(HelpMenu);
-
-            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            closeHelp.onClick.RemoveAllListeners();
-            closeHelp.onClick.AddListener(CloseHelpMenu);
-
-            helpBodyText = Auxiliary.FindObject(helpMenu, "BodyText").GetComponent<Text>();
         }
 
         /// <summary>
@@ -297,7 +273,7 @@ namespace Synthesis.States
         /// </summary>
         public override void OnGUI()
         {
-            Rect controlRect = new Rect(helpMenu.activeSelf ? ControlButtonMargin + 200 : ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
+            Rect controlRect = new Rect(ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
                 ButtonSize, ButtonSize);
 
             if (UnityEngine.GUI.Button(controlRect, string.Empty, rewindStyle))
@@ -353,8 +329,8 @@ namespace Synthesis.States
                 UnityEngine.GUI.Label(new Rect(Screen.width - SliderLeftMargin, controlRect.y - InfoBoxHeight - CollisionSliderMargin,
                     Screen.width - SliderLeftMargin, InfoBoxHeight), "Select a collision to consolidate.", windowStyle);
 
-            Rect sliderRect = new Rect(helpMenu.activeSelf ? SliderLeftMargin + 200 : SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
-                helpMenu.activeSelf ? Screen.width - (SliderRightMargin + SliderLeftMargin + 200) : Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
+            Rect sliderRect = new Rect(SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
+                Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
 
             rewindTime = UnityEngine.GUI.HorizontalSlider(sliderRect, rewindTime, Tracker.Lifetime, 0.0f, windowStyle, thumbStyle);
 
@@ -472,7 +448,6 @@ namespace Synthesis.States
         /// </summary>
         private void ReturnToMainState()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu();
             StateMachine.PopState();
         }
 
@@ -719,37 +694,6 @@ namespace Synthesis.States
                 hover = new GUIStyleState { background = hoverTexture },
                 active = new GUIStyleState { background = pressedTexture }
             };
-        }
-        private void HelpMenu()
-        {
-            helpMenu.SetActive(true);
-            overlay.SetActive(true);
-
-            helpBodyText.GetComponent<Text>().text = "Play Replay: Click the play button or press SPACE" +
-                "\n\nView Significant Collisions: Click markers on the replay slider to jump to collisions" +
-                "\n\nChange Collision Threshold: Click and drag slider to desired impact force" +
-                "\n\nSave Replay: Click SAVE REPLAY, enter replay name, and press SAVE" +
-                "\n\nRun Through Replay: Drag slider at the bottom of the replay" +
-                "\n\nExit Replay Mode: Press TAB, press ESC, or click EXIT" +
-                "\n\nEnter Replay Mode Shortcut: Press TAB";
-
-            toolbar.transform.Translate(new Vector3(100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-        }
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            toolbar.transform.Translate(new Vector3(-100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
     }
 }
