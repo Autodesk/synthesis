@@ -632,7 +632,11 @@ namespace Synthesis.GUI
             }
             else
             {
-                addPanel.SetActive(true);
+                if (IsMaMInstalled()) {
+                    addPanel.SetActive(true);
+                } else {
+                    ToggleChangeRobotPanel();
+                }
                 changePanel.SetActive(false);
             }
         }
@@ -1117,6 +1121,12 @@ namespace Synthesis.GUI
 
         public void QualitySelectionChanged(int a) {
             OnQualitySelection(a);
+        }
+
+        public static bool IsMaMInstalled() {
+            return Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar
+                + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "MixAndMatch" + Path.DirectorySeparatorChar
+                + "DriveBases");
         }
     }
 }
