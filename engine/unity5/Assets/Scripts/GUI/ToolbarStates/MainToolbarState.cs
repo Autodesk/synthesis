@@ -121,7 +121,11 @@ namespace Synthesis.GUI
                 changePanel.SetActive(false);
             }
             else {
-                changePanel.SetActive(true);
+                if (SimUI.IsMaMInstalled()) {
+                    changePanel.SetActive(true);
+                } else {
+                    SimUI.getSimUI().ToggleChangeRobotPanel();
+                }
                 addPanel.SetActive(false);
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeRobot,
