@@ -23,10 +23,6 @@ namespace Synthesis.GUI
     /// <summary>
     /// The MainToolbarState controls the functions of each of the main toolbar functions such as 
     /// change robots/fields, reset, camera views, etc. 
-    /// 
-    /// Toolbar state composition
-    /// -Button/Dropdowns for toolbar functions
-    /// -Help menu
     /// </summary>
     public class MainToolbarState : State {
         GameObject canvas;
@@ -51,13 +47,8 @@ namespace Synthesis.GUI
         GameObject rulerWindow;
         GameObject inputManagerPanel;
         GameObject checkSavePanel;
-        GameObject helpMenu;
         GameObject toolbar;
-        GameObject overlay;
-        GameObject tabs;
         GameObject pointImpulsePanel;
-
-        Text helpBodyText;
 
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
@@ -65,12 +56,6 @@ namespace Synthesis.GUI
         public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-
-            tabs = Auxiliary.FindObject(canvas, "Tabs");
-            toolbar = Auxiliary.FindObject(canvas, "MainToolbar");
-            helpMenu = Auxiliary.FindObject(canvas, "Help");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
-            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
@@ -97,10 +82,6 @@ namespace Synthesis.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
-
-            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         public override void Update() {
@@ -340,42 +321,6 @@ namespace Synthesis.GUI
                 AnalyticsLedger.EventAction.Clicked,
                 "Control Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        /// <summary>
-        /// Help button and menu text.
-        /// </summary>
-        public void OnHelpButtonClicked() {
-            helpMenu.SetActive(true);
-
-            helpBodyText.GetComponent<Text>().text = "\n\nTutorials: synthesis.autodesk.com" +
-                "\n\nHome Tab: Main simulator functions" +
-                "\n\nDriver Practice Tab: Gamepiece setup and interaction" +
-                "\n\nScoring Tab: Match play" +
-                "\n\nSensors: Robot camera and sensor configurations";
-
-            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "MainToolbar";
-            overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(300, 0, 0));
-            foreach (Transform t in toolbar.transform) {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.Viewed,
-                "Help - Main Toolbar",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        private void CloseHelpMenu() {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in toolbar.transform) {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
 
         public void OnPointImpulseButtonClicked() {
