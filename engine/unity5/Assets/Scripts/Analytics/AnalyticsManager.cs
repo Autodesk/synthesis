@@ -68,17 +68,17 @@ public class AnalyticsManager : MonoBehaviour {
 
     public async void LogEventAsync(string Catagory, string Action, string Label, string Value)
     {
-        await LogEvent(Catagory, Action, Label, Value);
+        if (mutex != null) await LogEvent(Catagory, Action, Label, Value);
     }
 
     public async void LogScreenViewAsync(string ScreenName)
     {
-        await LogScreenView(ScreenName);
+        if (mutex != null) await LogScreenView(ScreenName);
     }
 
     public async void LogPageViewAsync(string Title)
     {
-        await LogPageView(Title);
+        if (mutex != null) await LogPageView(Title);
     }
 
     public void LogTimingAsync(string Catagory, string Vari, string Label)
@@ -90,12 +90,12 @@ public class AnalyticsManager : MonoBehaviour {
 
     public async void LogTimingAsync(string Catagory, string Vari, int Time, string Label)
     {
-        await LogTiming(Catagory, Vari, Time, Label);
+        if (mutex != null) await LogTiming(Catagory, Vari, Time, Label);
     }
 
     public async void UploadDumpAsync()
     {
-        await UploadDump();
+        if (mutex != null) await UploadDump();
     }
 
     #endregion
@@ -123,7 +123,6 @@ public class AnalyticsManager : MonoBehaviour {
             if (Label != null) loggedData.Enqueue(new KeyValuePair<string, string>("ev", Value));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
             mutex.ReleaseMutex();
-            Debug.Log("Event Logged");
         });
     }
 
@@ -140,7 +139,6 @@ public class AnalyticsManager : MonoBehaviour {
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "https://www.google.com/index.html"));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
             mutex.ReleaseMutex();
-            Debug.Log("Screenname Logged");
         });
     }
 
@@ -155,7 +153,6 @@ public class AnalyticsManager : MonoBehaviour {
             loggedData.Enqueue(new KeyValuePair<string, string>("dl", "http://test.com/" + Title));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
             mutex.ReleaseMutex();
-            Debug.Log("Pageview Logged");
         });
     }
 
@@ -173,7 +170,6 @@ public class AnalyticsManager : MonoBehaviour {
             loggedData.Enqueue(new KeyValuePair<string, string>("utl", Label));
             loggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
             mutex.ReleaseMutex();
-            Debug.Log("Timing Logged");
         });
     }
 
@@ -182,14 +178,10 @@ public class AnalyticsManager : MonoBehaviour {
         return Task.Factory.StartNew(() =>
         {
             mutex.WaitOne();
-            if (loggedData.Count < 1 || !DumpData)
-            {
+            if (loggedData.Count < 1 || !DumpData) {
                 loggedData = new Queue<KeyValuePair<string, string>>();
-                Debug.Log("Not Dumping");
                 return;
             }
-
-            Debug.Log("Starting Data Dump");
 
             string data = "";
 
@@ -242,8 +234,6 @@ public class AnalyticsManager : MonoBehaviour {
             }
 
             Debug.Log(result);
-
-            Debug.Log("Data Dumped\n'" + data + "'");
         });
     }
 
@@ -251,6 +241,6 @@ public class AnalyticsManager : MonoBehaviour {
 
     public void CleanUp() {
         mutex.Close();
-        Debug.Log("Closed mutex");
+        mutex = null;
     }
 }

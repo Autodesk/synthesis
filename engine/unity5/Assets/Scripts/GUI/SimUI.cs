@@ -285,7 +285,6 @@ namespace Synthesis.GUI
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
 
-            if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             currentTab = "HomeTab";
             tabStateMachine.ChangeState(new MainToolbarState());
         }
@@ -304,7 +303,6 @@ namespace Synthesis.GUI
 
             if (FieldDataHandler.gamepieces.Count > 0)
             {
-                if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
@@ -325,7 +323,6 @@ namespace Synthesis.GUI
 
             if (FieldDataHandler.gamepieces.Count > 0)
             {
-                if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
                 currentTab = "ScoringTab";
                 tabStateMachine.ChangeState(new ScoringToolbarState());
             }
@@ -343,8 +340,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.SensorTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
-
-            if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
+            
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
@@ -360,8 +356,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.EmulationTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
-
-            if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
+            
             currentTab = "EmulationTab";
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
@@ -391,20 +386,6 @@ namespace Synthesis.GUI
                 //settingsPanel.SetActive(true);
                 tabStateMachine.ChangeState(new OptionsTabState());
             }*/
-        }
-
-        private void CloseHelpMenu(string currentID = " ")
-        {
-            string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
-            if (toolbarID.Equals(currentID)) return;
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
 
         public void ShowError(string msg)
@@ -1015,7 +996,6 @@ namespace Synthesis.GUI
         /// <param name="option"></param>
         public void MainMenuExit(string option)
         {
-            if (helpMenu.activeSelf) CloseHelpMenu();
             EndOtherProcesses();
             switch (option)
             {
