@@ -19,13 +19,6 @@ namespace Synthesis.States
         private DynamicCamera.CameraState lastCameraState;
         private GameObject spawnIndicator;
 
-        #region help ui variables
-        GameObject ui;
-        GameObject helpMenu;
-        GameObject toolbar;
-        GameObject overlay;
-        #endregion
-
         public GamepieceSpawnState(int gamepieceIndex)
         {
             this.gamepieceIndex = gamepieceIndex;
@@ -33,13 +26,6 @@ namespace Synthesis.States
         // Use this for initialization
         public override void Start()
         {
-            #region init
-            ui = GameObject.Find("ResetGamepieceSpawnpointUI");
-            helpMenu = Auxiliary.FindObject(ui, "Help");
-            toolbar = Auxiliary.FindObject(ui, "ResetStateToolbar");
-            overlay = Auxiliary.FindObject(ui, "Overlay");
-            #endregion
-
             Gamepiece gamepiece = FieldDataHandler.gamepieces[gamepieceIndex];
             //gamepiece indicator
             if (spawnIndicator != null) GameObject.Destroy(spawnIndicator);
@@ -81,15 +67,9 @@ namespace Synthesis.States
             Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(ResetSpawn);
-            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(HelpMenu);
             Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
-            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            closeHelp.onClick.RemoveAllListeners();
-            closeHelp.onClick.AddListener(CloseHelpMenu);
         }
 
         // Update is called once per frame
@@ -116,7 +96,6 @@ namespace Synthesis.States
         }
         private void ReturnToMainState()
         {
-            if (helpMenu.activeSelf) CloseHelpMenu();
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
             GameObject.Destroy(spawnIndicator);
@@ -125,28 +104,6 @@ namespace Synthesis.States
         private void ResetSpawn()
         {
             spawnIndicator.transform.position = new Vector3(0f, 3f, 0f);
-        }
-        private void HelpMenu()
-        {
-            helpMenu.SetActive(true);
-            overlay.SetActive(true);
-            toolbar.transform.Translate(new Vector3(100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-        }
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            toolbar.transform.Translate(new Vector3(-100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
     }
 }
