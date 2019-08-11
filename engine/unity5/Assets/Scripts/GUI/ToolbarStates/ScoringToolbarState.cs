@@ -18,7 +18,6 @@ namespace Assets.Scripts.GUI
     public class ScoringToolbarState : State
     {
         GameObject canvas;
-        
         GameObject toolbar;
 
         public override void Start()

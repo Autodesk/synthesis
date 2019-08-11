@@ -63,12 +63,10 @@ namespace Assets.Scripts.GUI
             if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0 && Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
             {
                 Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
-                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(-100, 0, 0));
             }
             else if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() > 0 && !Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
             {
                 Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
-                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(100, 0, 0));
             }
         }
 

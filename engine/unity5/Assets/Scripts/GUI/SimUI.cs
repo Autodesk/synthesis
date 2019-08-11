@@ -89,9 +89,6 @@ namespace Synthesis.GUI
         public Sprite highlightButton; // in the Scene simulator
         private Sprite hoverHighlight;
 
-        GameObject helpMenu;
-        GameObject overlay;
-
         private static SimUI instance = null;
 
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
@@ -204,9 +201,6 @@ namespace Synthesis.GUI
 
             UICallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
             UICallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
-
-            helpMenu = Auxiliary.FindObject(canvas, "Help");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
 
         private void UpdateWindows()
@@ -367,13 +361,11 @@ namespace Synthesis.GUI
             {
                 tabStateMachine.PushState(new SettingsState());
                 lastTab = currentTab;
-                UnityEngine.Debug.Log("Last tab: " + lastTab);
                 currentTab = "SettingsTab";
             } else
             {
                 tabStateMachine.PopState();
                 currentTab = lastTab;
-                UnityEngine.Debug.Log("Current tab: " + currentTab);
             }
 
             /*if (settingsPanel.activeSelf)
