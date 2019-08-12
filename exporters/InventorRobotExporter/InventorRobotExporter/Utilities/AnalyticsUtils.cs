@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using InventorRobotExporter.Properties;
 
 namespace InventorRobotExporter.Utilities
 {
@@ -11,30 +13,18 @@ namespace InventorRobotExporter.Utilities
         private const string BASE_URL = "https://www.google-analytics.com/collect";
         private const string TRACKING = "UA-81892961-4";
         
-        private static string clientId = "unknown";
+        private static Guid clientId;
         
         private static readonly HttpClient client = new HttpClient();
+
+        public static void GenerateID()
+        {
+            if (Guid.TryParse(Settings.Default.AnalyticsID, out clientId)) return;
+            clientId = Guid.NewGuid();
+            Settings.Default.AnalyticsID = clientId.ToString();
+            Settings.Default.Save();
+        }
         
-        public static void SetUser(string user)
-        {
-            clientId = GetHashString(user);
-        }
-
-        private static IEnumerable<byte> GetHash(string inputString)
-        {
-            HashAlgorithm algorithm = SHA256.Create();
-            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-        }
-
-        private static string GetHashString(string inputString)
-        {
-            var sb = new StringBuilder();
-            foreach (var b in GetHash(inputString))
-                sb.Append(b.ToString("X2"));
-
-            return sb.ToString();
-        }
-
         private static string GetBaseURL()
         {
             var res = BASE_URL;

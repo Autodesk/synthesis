@@ -166,5 +166,17 @@ namespace InventorRobotExporter.Properties {
                 this["ExportCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("firstRun")]
+        public string AnalyticsID {
+            get {
+                return ((string)(this["AnalyticsID"]));
+            }
+            set {
+                this["AnalyticsID"] = value;
+            }
+        }
     }
 }
