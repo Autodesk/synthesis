@@ -85,6 +85,11 @@ namespace Assets.Scripts.GUI
                 useEmulationButtonImage.sprite = EmulationDriverStation.Instance.StopCode;
                 useEmulationButtonImage.color = Color.red;
                 useEmulationButtonText.text = "Stop Emulation";
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Emulation Stop",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else
             {
@@ -92,12 +97,12 @@ namespace Assets.Scripts.GUI
                 useEmulationButtonImage.color = Color.green;
                 useEmulationButtonText.text = "Use Emulation";
                 EmulationDriverStation.Instance.RobotDisabled();
-            }
 
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Emulation Start-Stop",
-                AnalyticsLedger.getMilliseconds().ToString());
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Emulation In-Use",
+                    AnalyticsLedger.getMilliseconds().ToString());
+            }
         }
 
         /// <summary>
@@ -108,12 +113,11 @@ namespace Assets.Scripts.GUI
             if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.VMConnected))
             {
                 LoadCode();
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Emulation Select Code",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Emulation Select Code",
-                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public async void LoadCode()
@@ -127,6 +131,7 @@ namespace Assets.Scripts.GUI
             {
                 UserProgram userProgram = new UserProgram(selectedFiles[0]);
                 PlayerPrefs.SetString("UserProgramType", userProgram.ProgramType.ToString());
+
                 loadingPanel.SetActive(true);
                 Task Upload = Task.Factory.StartNew(async () =>
                 {
@@ -158,13 +163,13 @@ namespace Assets.Scripts.GUI
 
         public void OnRobotIOPanelButtonClicked()
         {
-            // TODO
-            RobotIOPanel.Instance.Toggle();
-
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                 AnalyticsLedger.EventAction.Clicked,
                 "Emulation IO Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
+
+            // TODO
+            RobotIOPanel.Instance.Toggle();
         }
 
         public void OnVMConnectionStatusClicked()
