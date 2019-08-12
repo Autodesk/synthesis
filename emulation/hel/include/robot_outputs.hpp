@@ -29,6 +29,12 @@ struct RobotOutputs {
 	bool enabled;
 
 	/**
+	 * \brief Generate zeroed-output packet when disabled
+	 */
+
+	const inline EmulationService::RobotOutputs generateZeroedOutput()const;
+
+	/**
 	 * \brief The interpreted states of all the PWM header outputs
 	 */
 

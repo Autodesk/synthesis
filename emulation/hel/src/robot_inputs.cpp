@@ -43,28 +43,29 @@ void RobotInputs::updateDeep() const {
 	updateShallow();
 	auto instance = RoboRIOManager::getInstance();
 
-	{
-		tDIO::tDI di = instance.first->digital_system.getInputs();
-		for (unsigned i = 0; i < digital_hdrs.size(); i++) {
-			if (digital_hdrs[i].first == DigitalSystem::HeaderConfig::DI) {  // if set for input, then read in the inputs
-				di.Headers = setBit(di.Headers, digital_hdrs[i].second, i);
-			}
+	tDIO::tDI di = instance.first->digital_system.getInputs();
+	for (unsigned i = 0; i < digital_hdrs.size(); i++) {
+		if (digital_hdrs[i].first == DigitalSystem::HeaderConfig::DI) {  // if set for input, then read in the inputs
+			di.Headers = setBit(di.Headers, digital_hdrs[i].second, i);
+		} else {
+			di.Headers = setBit(di.Headers, false, i);
 		}
+	}
 
-		for (auto i = 0u; i < digital_mxp.size(); i++) {
-			switch (digital_mxp[i].config) {
-				case MXPData::Config::DI:
-					di.MXP = setBit(di.MXP, digital_mxp[i].value, i);
-					break;
-				default:
-					break;
-			}
+	for (auto i = 0u; i < digital_mxp.size(); i++) {
+		switch (digital_mxp[i].config) {
+		case MXPData::Config::DI:
+			di.MXP = setBit(di.MXP, digital_mxp[i].value, i);
+			break;
+		default:
+			break;
 		}
-		instance.first->digital_system.setInputs(di);
+	}
+	instance.first->digital_system.setInputs(di);
 
-		for (unsigned i = 0; i < analog_inputs.size(); i++) {
-			instance.first->analog_inputs.setValues(i, {(int32_t)analog_inputs[i]});
-		}
+	const double ANALOG_SCALAR = 1.0 / (AnalogInputs::LSB_WEIGHT * AnalogInputs::LSB_SCALAR);
+	for (unsigned i = 0; i < analog_inputs.size(); i++) {
+		instance.first->analog_inputs.setValues(i, {(int32_t)(ANALOG_SCALAR * analog_inputs[i])});
 	}
 	instance.second.unlock();
 }

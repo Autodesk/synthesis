@@ -7,13 +7,48 @@ using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
 
-const inline EmulationService::RobotOutputs generateZeroedOutput() {
+const inline EmulationService::RobotOutputs RobotOutputs::generateZeroedOutput()const{
 	auto res = EmulationService::RobotOutputs{};
-	for (auto i = 0u; i < PWMSystem::NUM_HDRS; i++) {
+	for (auto i = 0u; i < pwm_hdrs.size(); i++) {
 		res.add_pwm_headers(0);
 	}
-	for (auto i = 0u; i < RoboRIOManager::getInstance().first->can_motor_controllers.size(); i++) {
+	for (auto i = 0u; i < digital_mxp.size(); i++) {
+		switch (digital_mxp[i].config) {
+			case MXPData::Config::DI:
+			case MXPData::Config::DO:
+			case MXPData::Config::PWM:
+				{
+					while(i >= (unsigned)res.mxp_data_size()){
+						res.add_mxp_data();
+					}
+					auto mxp = res.mutable_mxp_data(i);
+					mxp->set_config(static_cast<EmulationService::MXPData::Config>(digital_mxp[i].config));
+					mxp->set_value(0);
+					break;
+				}
+			default:
+				break;
+		}
+	}
+	for (auto i = 0u; i < can_motor_controllers.size(); i++) {
 		res.add_can_motor_controllers();
+		auto can = res.mutable_can_motor_controllers(i);
+		can->set_can_type(static_cast<EmulationService::RobotOutputs::CANType>(can_motor_controllers.at(i)->getType()));
+		can->set_id(can_motor_controllers.at(i)->getID());
+		can->set_percent_output(0);
+	}
+
+	for (auto i = 0u; i < relays.size(); i++) {
+		res.add_relays(EmulationService::RobotOutputs_RelayState_OFF);
+	}
+	for (auto i = 0u; i < analog_outputs.size(); i++) {
+		res.add_analog_outputs(0);
+	}
+	for (auto i = 0u; i < digital_hdrs.size(); i++) {
+		res.add_digital_headers();
+		auto dio = res.mutable_digital_headers(i);
+		dio->set_config(static_cast<EmulationService::DIOData::Config>(digital_hdrs[i].first));
+		dio->set_value(false);
 	}
 	return res;
 }
