@@ -74,7 +74,6 @@ namespace InventorRobotExporter
         protected override Environment CreateEnvironment()
         {
             const string clientId = "{0c9a07ad-2768-4a62-950a-b5e33b88e4a3}";
-            AnalyticsUtils.GenerateID();
 
             InitEnvironment(clientId);
 
