@@ -10,7 +10,6 @@ namespace Synthesis
     {
         public static EmulatorNetworkConnection Instance { get; private set; }
 
-        public const string DEFAULT_HOST = "127.0.0.1";
         public const string DEFAULT_PORT = "50051";
         public const string DEFAULT_NATIVE_PORT = "50052";
         public const string DEFAULT_JAVA_PORT = "50053";
@@ -71,7 +70,7 @@ namespace Synthesis
 
         private async void SendData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationWriter.EmulationWriterClient(conn);
             while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
@@ -108,7 +107,7 @@ namespace Synthesis
 
         private async Task ReceiveData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
             while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
