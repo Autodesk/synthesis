@@ -6,9 +6,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 4.2.3 Setup [Snapshot Release]"
+Caption "Synthesis 4.3.0 Setup"
 
-OutFile "SynthesisWinBeta4.2.3.exe"
+OutFile "SynthesisWin4.3.0.exe"
 
 InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 
@@ -67,6 +67,12 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
     MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
       true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
+		
+		; Remove fusion plugins
+		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
+		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
+		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
 
 	    ; Remove inventor plugins
 	    Delete "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
@@ -84,7 +90,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDRobotExporter.inventor.addin"
         Delete "$APPDATA\Autodesk\Inventor 2017\Addins\autodesk.BxDFieldExporter.inventor.addin"
 		Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.BxDRobotExporter.Inventor.addin"
-		RMDir "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
+		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\BxDRobotExporter"
         RMDIR /r $APPDATA\RobotViewer
 
         ; Remove excess shortcuts
@@ -142,7 +148,7 @@ Section "Synthesis (required)" Synthesis
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.2.3" ;UPDATE ON RELEASE
+                 "DisplayVersion" "4.3.0" ;UPDATE ON RELEASE
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -181,11 +187,11 @@ SectionEnd
 Section "Fusion Exporter Plugin" fExporter
 
   ; Set extraction path to Fusion plugin directories
-  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns"
-  File /r "FusionExporter"
+  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+  File /r "FusionExporter\*"
   
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle\Contents\"
-  File /r "FusionExporter\FusionSynth.dll"
+  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
+  File /r "FusionExporter\FusionRobotExporter.dll"
 
 SectionEnd
 
@@ -256,6 +262,12 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $APPDATA\BXD_Aardvark
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
   
+  ; Remove fusion plugins
+  RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+  RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
+  RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
+  RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionSynth.bundle"
+  
   ; Remove inventor plugins
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2019\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
@@ -282,7 +294,7 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
   
-  ; Execute Docker Toolbox Uninstaller
+  ; Execute QEMU uninstaller
   IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
   
 	file_found:

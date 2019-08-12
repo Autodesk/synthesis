@@ -21,12 +21,7 @@ namespace Assets.Scripts.GUI
         SensorManagerGUI sensorManagerGUI;
 
         GameObject canvas;
-        GameObject tabs;
         GameObject sensorToolbar;
-
-        GameObject helpMenu;
-        GameObject overlay;
-        Text helpBodyText;
 
         Dropdown ultrasonicDropdown;
         Dropdown beamBreakerDropdown;
@@ -42,12 +37,7 @@ namespace Assets.Scripts.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             canvas = GameObject.Find("Canvas");
-            tabs = Auxiliary.FindObject(canvas, "Tabs");
             sensorToolbar = Auxiliary.FindObject(canvas, "SensorToolbar");
-
-            helpMenu = Auxiliary.FindObject(canvas, "Help");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
-            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
             beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
@@ -63,10 +53,6 @@ namespace Assets.Scripts.GUI
             numGyros = sensorManagerGUI.sensorManager.gyroList.Count();
 
             UpdateOutputButton();
-
-            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         /// <summary>
@@ -77,12 +63,10 @@ namespace Assets.Scripts.GUI
             if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() == 0 && Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
             {
                 Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(false);
-                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(-100, 0, 0));
             }
             else if (sensorManagerGUI.sensorManager.GetActiveSensors().Count() > 0 && !Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").activeSelf)
             {
                 Auxiliary.FindObject(sensorToolbar, "ShowOutputsButton").SetActive(true);
-                sensorToolbar.transform.Find("HelpButton").Translate(new Vector3(100, 0, 0));
             }
         }
 
@@ -274,48 +258,5 @@ namespace Assets.Scripts.GUI
         {
             sensorToolbar.SetActive(!sensorToolbar.activeSelf);
         }
-
-        #region Help Button and Menu for Sensors
-        /// <summary>
-        /// Open sensor toolbar help screen
-        /// </summary>
-        public void OnHelpButtonClicked()
-        {
-            helpMenu.SetActive(true);
-
-            helpBodyText.GetComponent<Text>().text = "\n\nRobot Cameras: Configure cameras for your robot" +
-                "\n\nSensor Dropdowns: CLICK on an existing sensor to configure OR" +
-                "\nAdd: Adds a selected sensor to robot and configuring tools";
-
-            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "SensorToolbar";
-            overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(300, 0, 0));
-            foreach (Transform t in sensorToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.Viewed,
-                "Help - Sensor Toolbar",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        /// <summary>
-        /// Close sensor toolbar help screen
-        /// </summary>
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in sensorToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
-        }
-        #endregion
     }
 }

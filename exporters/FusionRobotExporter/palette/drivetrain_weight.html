@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <script src="js/fusionInterface.js"></script>
+        <script src="js/utility.js"></script>
+        <script src="js/drivetrain_weight.js"></script>
+        <style>
+            h1 {
+                font-size: 18pt;
+            }
+            .dt-weight-input {
+                width: 100%;
+                text-align: center;
+            }
+            #dt-weight-value {
+                width: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="dt-weight">
+            <p>
+                Enter the weight of the drive base of the robot, not including the weight of jointed subsystems:
+            </p>
+            <div class="dt-weight-input"><input id="dt-weight-value" type="number" min="0" max="9999" value="100">
+                <select id="dt-weight-unit" onchange="
+                let weightInput = document.getElementById('dt-weight-value');
+                weightInput.value *= this.value === 'kg' ? 1/0.453592 : 0.453592;
+                weightInput.value = Math.round(weightInput.value * 100) / 100">
+                    <option value="lbs" selected>Imperal (lbs)</option>
+                    <option value="kg">Metric (kgs)</option>
+                </select>
+            </div>
+        </div>
+        <br/>
+        <button id='save-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
+        <button id="cancel" type="button" onclick="cancel()">Cancel</button>
+    </body>
+</html>
