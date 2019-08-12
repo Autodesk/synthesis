@@ -225,7 +225,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 DriverLayout.BackColor = Color.FromArgb(227, 206, 169);
             } else {
                 advancedButton.Visible = true;
-                DriverLayout.ResetBackColor();
+                DriverLayout.BackColor = SystemColors.Control;
                 if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                     InsertDriveTrainControls();
                 else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
