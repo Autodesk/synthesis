@@ -399,6 +399,9 @@
     <Content Include="Autodesk.InventorRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="GUI\Guide\drivetrain.png" />
+    <None Include="GUI\Guide\joints.png" />
+    <None Include="GUI\Guide\weight.png" />
     <Content Include="GUI\JointView\JointViewKey.html" />
     <Content Include="GUI\JointView\JointViewKeyPane.resx" />
     <Content Include="GUI\Guide\Guide.html" />
@@ -407,6 +410,9 @@
     <None Include="Resources\Branding\SynthesisLogoIco.ico" />
     <None Include="Resources\Other\ArrowLeft.png" />
     <None Include="Resources\Other\ArrowRight.png" />
+    <None Include="Resources\Guide\drivetrain.PNG" />
+    <None Include="Resources\Guide\joints.PNG" />
+    <None Include="Resources\Guide\weight.PNG" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />
     <Content Include="Resources\RibbonIcons\JointEditor32.png" />

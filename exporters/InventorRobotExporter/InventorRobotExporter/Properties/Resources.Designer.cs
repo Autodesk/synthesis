@@ -124,6 +124,16 @@ namespace InventorRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap drivetrain {
+            get {
+                object obj = ResourceManager.GetObject("drivetrain", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap DrivetrainType32 {
             get {
                 object obj = ResourceManager.GetObject("DrivetrainType32", resourceCulture);
@@ -133,26 +143,25 @@ namespace InventorRobotExporter.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
-        ///    &lt;title&gt;Robot Export Guide&lt;/title&gt;
-        ///    &lt;style&gt;
-        ///        body {
-        ///            font-family: Arial,sans-serif;
-        ///            margin: 0;
-        ///        }
-        ///        h1 {
-        ///            font-size: 35px;
-        ///            margin: 0;
-        ///            padding: 10px 10px 10px 15px;
-        ///            background-color: #3D3D3D;
-        ///            color: white;
-        ///            font-weight: normal;
-        ///        }
-        ///        h4 {
-        ///            color: GrayText;
-        ///            font-size: 17px [rest of string was truncated]&quot;;.
+        ///&lt;html&gt;
+        ///    &lt;head&gt;
+        ///        &lt;style&gt;
+        ///            body {
+        ///                font-family: Arial, sans-serif;
+        ///                margin: 0;
+        ///            }
+        ///            p {
+        ///                margin: 0px 50px 0px 50px;
+        ///            }
+        ///            p.instructions {
+        ///                margin: 15px 50px 0px 50px;
+        ///            }
+        ///            p.precheck-description {
+        ///                margin: 0px 0px 0px 90px;
+        ///            }
+        ///            p.step-number {
+        ///                font-size: 48px;
+        ///                margi [rest of string was truncated]&quot;;.
         /// </summary>
         public static string ExportGuide {
             get {
@@ -216,6 +225,16 @@ namespace InventorRobotExporter.Properties {
         public static System.Drawing.Bitmap JointEditor32 {
             get {
                 object obj = ResourceManager.GetObject("JointEditor32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap joints {
+            get {
+                object obj = ResourceManager.GetObject("joints", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -297,6 +316,16 @@ namespace InventorRobotExporter.Properties {
             get {
                 object obj = ResourceManager.GetObject("vertShader", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap weight {
+            get {
+                object obj = ResourceManager.GetObject("weight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
