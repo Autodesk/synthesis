@@ -311,7 +311,10 @@ namespace Synthesis.GUI
                 }
                 remoteReader.Dispose();
                 remoteReader = null;
-                EmulatorManager.CloseRobotOutputStream();
+                if (EmulatorManager.IsRobotOutputStreamGood())
+                {
+                    EmulatorManager.CloseRobotOutputStream();
+                }
             }
 
             public static void Clear()
@@ -547,10 +550,6 @@ namespace Synthesis.GUI
                 if(enablePrints && !EmulatorManager.IsTryingToRunRobotCode())
                 {
                     UserMessageManager.Dispatch("Readout enabled, waiting for robot program to start", EmulationWarnings.WARNING_DURATION);
-                }
-                else if (!enablePrints && EmulatorManager.IsRobotOutputStreamGood())
-                {
-                    EmulatorManager.CloseRobotOutputStream();
                 }
             }
         }

@@ -25,12 +25,15 @@ namespace Synthesis
         private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh </dev/null &> /dev/null &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
         private const string CHECK_RUNNER_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
-        private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram FRCUserProgram.jar &> /dev/null";
+        private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram java &> /dev/null";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
 
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
         private static System.Diagnostics.Process grpcBridgeProcess = null;
+
+        private static SshCommand outputStreamCommand = null;
+        private static IAsyncResult outputStreamCommandResult = null;
 
         public static UserProgram.Type programType = UserProgram.Type.JAVA;
         
@@ -44,9 +47,6 @@ namespace Synthesis
         private static bool isRobotCodeRestarting = false;
 
         private static bool updatingStatus = false;
-
-        private static SshCommand outputStreamCommand = null;
-        private static IAsyncResult outputStreamCommandResult = null;
 
         private static SshClient Client
         {
@@ -241,56 +241,69 @@ namespace Synthesis
 
         private static void StatusUpdater()
         {
-            using (SshClient client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+            var lastProgramType = programType;
+            SshClient client = null;
+            while (updatingStatus)
             {
-                while (updatingStatus)
+                if (programType != lastProgramType)
                 {
-                    try
+                    lastProgramType = programType;
+                    if(client != null)
                     {
-                        VMConnected = client.IsConnected;
-                        if (VMConnected)
+                        client.Disconnect();
+                        client.Dispose();
+                        client = null;
+                    }
+                }
+                if(client == null)
+                {
+                    client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, lastProgramType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                }
+                try
+                {
+                    VMConnected = client.IsConnected;
+                    if (VMConnected)
+                    {
+                        frcUserProgramPresent = client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
+                        if (frcUserProgramPresent)
                         {
-                            frcUserProgramPresent = client.RunCommand(CHECK_EXISTS_COMMAND).ExitStatus == 0;
-                            if (frcUserProgramPresent)
+                            isRunningRobotCodeRunner = client.RunCommand(CHECK_RUNNER_RUNNING_COMMAND).ExitStatus == 0;
+                            isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
+                            if (isRunningRobotCode && !EmulatorNetworkConnection.Instance.IsConnectionOpen())
                             {
-                                isRunningRobotCodeRunner = client.RunCommand(CHECK_RUNNER_RUNNING_COMMAND).ExitStatus == 0;
-                                isRunningRobotCode = client.RunCommand(CHECK_RUNNING_COMMAND).ExitStatus == 0;
-                                if (isRunningRobotCode && !EmulatorNetworkConnection.Instance.IsConnectionOpen())
-                                {
-                                    EmulatorNetworkConnection.Instance.OpenConnection();
-                                }
-                                if (isRunningRobotCode)
-                                {
-                                    Thread.Sleep(3000); // ms
-                                }
-                                else
-                                {
-                                    Thread.Sleep(1000); // ms
-                                }
+                                EmulatorNetworkConnection.Instance.OpenConnection();
+                            }
+                            if (isRunningRobotCode)
+                            {
+                                Thread.Sleep(3000); // ms
                             }
                             else
                             {
-                                isRunningRobotCodeRunner = false;
-                                isRunningRobotCode = false;
                                 Thread.Sleep(1000); // ms
                             }
                         }
                         else
                         {
-                            frcUserProgramPresent = false;
                             isRunningRobotCodeRunner = false;
                             isRunningRobotCode = false;
-                            Thread.Sleep(3000); // ms
-                            client.Connect();
+                            Thread.Sleep(1000); // ms
                         }
                     }
-                    catch
+                    else
                     {
                         frcUserProgramPresent = false;
                         isRunningRobotCodeRunner = false;
                         isRunningRobotCode = false;
                         Thread.Sleep(3000); // ms
+                        client.Connect();
                     }
+                }
+                catch
+                {
+                    frcUserProgramPresent = false;
+                    isRunningRobotCodeRunner = false;
+                    isRunningRobotCode = false;
+                    Thread.Sleep(3000); // ms
                 }
             }
         }
@@ -315,6 +328,7 @@ namespace Synthesis
             {
                 try
                 {
+                    isRobotCodeRestarting = true; // Prevent code from auto-restarting until this finishes
                     if (IsRunningRobotCodeRunner() || IsTryingToRunRobotCode())
                     {
                         await StopRobotCode();
@@ -324,15 +338,15 @@ namespace Synthesis
                         await CloseRobotOutputStream();
                     }
 
+                    programType = userProgram.ProgramType;
                     Client.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
                     frcUserProgramPresent = false;
-                    programType = userProgram.type;
                     using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
                         scpClient.Connect();
-                        using (Stream localFile = File.OpenRead(userProgram.fullFileName))
+                        using (Stream localFile = File.OpenRead(userProgram.FullFileName))
                         {
-                            scpClient.Upload(localFile, "/home/lvuser/" + userProgram.targetFileName);
+                            scpClient.Upload(localFile, "/home/lvuser/" + userProgram.TargetFileName);
                             frcUserProgramPresent = true;
                         }
                         scpClient.Disconnect();
@@ -340,6 +354,10 @@ namespace Synthesis
                     if (UseEmulation && autorun)
                     {
                         await RestartRobotCode();
+                    }
+                    else
+                    {
+                        isRobotCodeRestarting = false;
                     }
                 }
                 catch (Exception e) {
@@ -408,18 +426,18 @@ namespace Synthesis
         {
             return Task.Run(() =>
             {
-                try
+                if (outputStreamCommand != null)
                 {
-                    if (outputStreamCommand != null)
+                    try
                     {
                         outputStreamCommand.CancelAsync();
                         outputStreamCommand.Dispose();
                         outputStreamCommand = null;
                     }
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e.ToString());
+                    catch (Exception e)
+                    {
+                        Debug.Log(e.ToString());
+                    }
                 }
             });
         }
@@ -435,6 +453,7 @@ namespace Synthesis
                 catch (Exception e)
                 {
                     Debug.Log(e.ToString());
+                    outputStreamCommand = null;
                 }
             }
             return new StreamReader(outputStreamCommand.OutputStream);

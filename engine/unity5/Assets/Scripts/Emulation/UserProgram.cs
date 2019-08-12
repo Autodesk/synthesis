@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,27 +15,28 @@ namespace Synthesis
             CPP
         }
 
-        public string fullFileName { get; private set; }
-        public string targetFileName { get; private set; }
-        public Type type { get; private set; }
+        const string JAR_EXTENSION = ".jar";
+        const string DEFAULT_TARGET = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
+
+        public string FullFileName { get; private set; }
+        public string TargetFileName { get; private set; }
+        public Type ProgramType { get; private set; }
 
         public UserProgram(string name)
         {
-            fullFileName = name;
+            FullFileName = name;
 
-            string fileName = fullFileName.Substring(fullFileName.LastIndexOf('\\') + 1);
+            string fileName = FullFileName.Substring(FullFileName.LastIndexOf(Path.DirectorySeparatorChar) + 1);
 
-            targetFileName = "FRCUserProgram"; // Standardize target file name so the frc program chooser knows what to run
-            const string JAR_EXTENSION = ".jar";
-
-            if (fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
+            if (fileName.Length >= JAR_EXTENSION.Length && fileName.EndsWith(JAR_EXTENSION))
             {
-                targetFileName += JAR_EXTENSION;
-                type = Type.JAVA;
+                TargetFileName = DEFAULT_TARGET + JAR_EXTENSION;
+                ProgramType = Type.JAVA;
             }
             else
             {
-                type = Type.CPP;
+                TargetFileName = DEFAULT_TARGET;
+                ProgramType = Type.CPP;
             }
         }
     }
