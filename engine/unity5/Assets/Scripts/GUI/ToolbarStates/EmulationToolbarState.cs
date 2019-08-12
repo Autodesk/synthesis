@@ -116,6 +116,7 @@ namespace Assets.Scripts.GUI
             else
             {
                 UserProgram userProgram = new UserProgram(selectedFiles[0]);
+                PlayerPrefs.SetString("UserProgramType", userProgram.ProgramType.ToString());
                 loadingPanel.SetActive(true);
                 Task Upload = Task.Factory.StartNew(async () =>
                 {
@@ -124,7 +125,6 @@ namespace Assets.Scripts.GUI
                 });
 
                 await Upload;
-                PlayerPrefs.SetString("UserProgramType", EmulatorManager.programType.ToString());
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,

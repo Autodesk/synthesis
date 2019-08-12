@@ -114,7 +114,8 @@ namespace Synthesis
             {
                 try
                 {
-                    using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION,
+                    using (var call = client.RobotOutputs(new RobotOutputsRequest {
+                        Api = API_VERSION,
                         TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                     }))
                     {
