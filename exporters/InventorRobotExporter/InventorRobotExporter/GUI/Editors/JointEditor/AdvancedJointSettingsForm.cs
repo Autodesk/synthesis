@@ -15,7 +15,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         public AdvancedJointSettingsForm(SkeletalJoint_Base passJoint)
         {
             joint = passJoint;
-            AnalyticsUtils.LogPage("SensorListForm");
             InitializeComponent();
             UpdateSensorList();
             RestoreFields();

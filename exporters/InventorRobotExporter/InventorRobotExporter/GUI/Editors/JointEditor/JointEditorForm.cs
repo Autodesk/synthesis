@@ -11,9 +11,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         public JointEditorForm()
         {
-            AnalyticsUtils.LogPage("Joint Editor");
             InitializeComponent();
-
             Closing += (sender, e) => // Every close
             {
                 InventorUtils.FocusAndHighlightNodes(null, RobotExporterAddInServer.Instance.Application.ActiveView.Camera, 1);

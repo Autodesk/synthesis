@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package EmulationService;
 
+option go_package = "v1";
+
+enum TargetPlatform {
+    NATIVE = 0;
+    JAVA = 1;
+    OTHER = 2;
+}
+
 message MXPData {
     enum MXPConfig {
         INVALID_CONFIG = 0;
@@ -136,7 +144,8 @@ message RobotInputs {
 
 message UpdateRobotInputsRequest {
     string api = 1;
-    RobotInputs input_data = 2;
+    TargetPlatform target_platform = 2;
+    RobotInputs input_data = 3;
 }
 
 message UpdateRobotInputsResponse {
@@ -145,12 +154,14 @@ message UpdateRobotInputsResponse {
     }
 
     string api = 1;
-    ErrorCode error_code = 2;
-    bool success = 3;
+    TargetPlatform target_platform = 2;
+    ErrorCode error_code = 3;
+    bool success = 4;
 }
 
 message RobotOutputsRequest {
     string api = 1;
+    TargetPlatform target_platform = 2;
 }
 
 message RobotOutputsResponse {
@@ -159,9 +170,10 @@ message RobotOutputsResponse {
     }
 
     string api = 1;
-    ErrorCode error_code = 2;
-    bool success = 3;
-    RobotOutputs output_data = 4;
+    TargetPlatform target_platform = 2;
+    ErrorCode error_code = 3;
+    bool success = 4;
+    RobotOutputs output_data = 5;
 }
 
 service EmulationWriter {

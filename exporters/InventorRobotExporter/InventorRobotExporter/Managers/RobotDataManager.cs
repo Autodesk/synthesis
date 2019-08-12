@@ -12,6 +12,7 @@ using InventorRobotExporter.Utilities;
 using Inventor;
 using InventorRobotExporter.Exporter.Skeleton;
 using InventorRobotExporter.GUI.Messages;
+using InventorRobotExporter.Properties;
 
 namespace InventorRobotExporter.Managers
 {
@@ -158,6 +159,13 @@ namespace InventorRobotExporter.Managers
                 if (!RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis)
                 {
                     new ExportSuccessfulForm(robotFolderPath).ShowDialog();
+                }
+
+                Settings.Default.ExportCount += 1; // possibly track the number of exports a user has as another Google Analytics custom field?
+
+                if (Settings.Default.ExportCount == 2) // once user passes 2 exports it will never display again
+                {
+                    new AnalyticsSurvey().ShowDialog();
                 }
 
                 return true;
