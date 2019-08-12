@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
+using static Synthesis.EmulatorManager;
 using System;
 
 namespace Assets.Scripts.GUI
@@ -26,24 +27,12 @@ namespace Assets.Scripts.GUI
         GameObject emulationToolbar;
         GameObject loadingPanel = null;
 
-        GameObject helpMenu;
-        GameObject overlay;
-        Text helpBodyText;
-
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
             emulationToolbar = Auxiliary.FindObject(canvas, "EmulationToolbar");
             loadingPanel = Auxiliary.FindObject(canvas, "LoadingPanel");
-
-            helpMenu = Auxiliary.FindObject(canvas, "Help");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
-            helpBodyText = Auxiliary.FindObject(canvas, "BodyText").GetComponent<Text>();
-
-            Button helpButton = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(CloseHelpMenu);
         }
 
         public void OnDestroy()
@@ -63,7 +52,8 @@ namespace Assets.Scripts.GUI
                     t.text = "Loading...";
                     loadingPanel.SetActive(false);
                     loaded = false;
-                } else
+                }
+                else
                 {
                     if (Time.unscaledTime >= lastAdditionalDot + 0.75)
                     {
@@ -100,23 +90,17 @@ namespace Assets.Scripts.GUI
             else
             {
                 Synthesis.EmulatorManager.UserProgram userProgram = new Synthesis.EmulatorManager.UserProgram(selectedFiles[0]);
-                if (userProgram.type == Synthesis.EmulatorManager.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                if (Synthesis.EmulatorManager.IsRunningRobotCode())
+                    EmulationDriverStation.Instance.StopRobotCode();
+                loadingPanel.SetActive(true);
+                Task Upload = Task.Factory.StartNew(() =>
                 {
-                    EmulationDriverStation.Instance.ShowJavaNotSupportedPopUp();
-                }
-                else
-                {
-                    if(Synthesis.EmulatorManager.IsRunningRobotCode())
-                        EmulationDriverStation.Instance.StopRobotCode();
-                    loadingPanel.SetActive(true);
-                    Task Upload = Task.Factory.StartNew(() =>
-                    {
-                        Synthesis.EmulatorManager.SCPFileSender(userProgram);
-                        loaded = true;
-                    });
-                    await Upload;
-                    Synthesis.GUI.UserMessageManager.Dispatch("Code successfully loaded.", 10);
-                }
+                    Synthesis.EmulatorManager.SCPFileSender(userProgram);
+                    loaded = true;
+                });
+
+                await Upload;
+                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(UserProgram.UserProgramType), programType));
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
@@ -166,45 +150,6 @@ namespace Assets.Scripts.GUI
         {
             emulationToolbar.SetActive(!emulationToolbar.activeSelf);
         }
-
-        #region Help Button and Menu
-        public void OnHelpButtonClicked()
-        {
-            helpMenu.SetActive(true);
-
-            // Used to change the text of emulation help menu
-            helpBodyText.GetComponent<Text>().text = "\n\nConnection status: Shows connection status to the emulator and user program. Running user programs is disabled until connection is established." +
-            "\n\nSelect Code: Select the user program file to upload. Uploading may take a few seconds." +
-            "\n\nStart Code / Stop Code: Run or kill user program in the emulator. Starting and connecting may take a few seconds." +
-            "\n\nDriver Station: Access an FRC driver station-like tool to manipulate robot running state.";
-
-            Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text = "EmulationToolbar";
-            overlay.SetActive(true);
-            tabs.transform.Translate(new Vector3(300, 0, 0));
-            foreach (Transform t in emulationToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(300, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.Viewed,
-                "Help - Emulation Toolbar",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in emulationToolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
-        }
-        #endregion
 
     }
 }

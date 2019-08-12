@@ -89,12 +89,13 @@ namespace Synthesis.GUI
         public Sprite highlightButton; // in the Scene simulator
         private Sprite hoverHighlight;
 
-        GameObject helpMenu;
-        GameObject overlay;
-
         private static SimUI instance = null;
 
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
+
+        public delegate void EntryChanged(int a);
+
+        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
 
         private void Start()
         {
@@ -200,9 +201,6 @@ namespace Synthesis.GUI
 
             UICallbackManager.RegisterButtonCallbacks(tabStateMachine, canvas);
             UICallbackManager.RegisterDropdownCallbacks(tabStateMachine, canvas);
-
-            helpMenu = Auxiliary.FindObject(canvas, "Help");
-            overlay = Auxiliary.FindObject(canvas, "Overlay");
         }
 
         private void UpdateWindows()
@@ -281,7 +279,6 @@ namespace Synthesis.GUI
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
 
-            if (helpMenu.activeSelf) CloseHelpMenu("MainToolbar");
             currentTab = "HomeTab";
             tabStateMachine.ChangeState(new MainToolbarState());
         }
@@ -300,7 +297,6 @@ namespace Synthesis.GUI
 
             if (FieldDataHandler.gamepieces.Count > 0)
             {
-                if (helpMenu.activeSelf) CloseHelpMenu("DPMToolbar");
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
@@ -321,7 +317,6 @@ namespace Synthesis.GUI
 
             if (FieldDataHandler.gamepieces.Count > 0)
             {
-                if (helpMenu.activeSelf) CloseHelpMenu("ScoringToolbar");
                 currentTab = "ScoringTab";
                 tabStateMachine.ChangeState(new ScoringToolbarState());
             }
@@ -339,8 +334,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.SensorTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
-
-            if (helpMenu.activeSelf) CloseHelpMenu("SensorToolbar");
+            
             currentTab = "SensorTab";
             tabStateMachine.ChangeState(new SensorToolbarState());
         }
@@ -356,8 +350,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
             AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.EmulationTab,
                 AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
-
-            if (helpMenu.activeSelf) CloseHelpMenu("EmulationToolbar");
+            
             currentTab = "EmulationTab";
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
@@ -368,13 +361,11 @@ namespace Synthesis.GUI
             {
                 tabStateMachine.PushState(new SettingsState());
                 lastTab = currentTab;
-                UnityEngine.Debug.Log("Last tab: " + lastTab);
                 currentTab = "SettingsTab";
             } else
             {
                 tabStateMachine.PopState();
                 currentTab = lastTab;
-                UnityEngine.Debug.Log("Current tab: " + currentTab);
             }
 
             /*if (settingsPanel.activeSelf)
@@ -387,20 +378,6 @@ namespace Synthesis.GUI
                 //settingsPanel.SetActive(true);
                 tabStateMachine.ChangeState(new OptionsTabState());
             }*/
-        }
-
-        private void CloseHelpMenu(string currentID = " ")
-        {
-            string toolbarID = Auxiliary.FindObject(helpMenu, "Type").GetComponent<Text>().text;
-            if (toolbarID.Equals(currentID)) return;
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            tabs.transform.Translate(new Vector3(-300, 0, 0));
-            foreach (Transform t in Auxiliary.FindObject(toolbarID).transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-300, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
 
         public void ShowError(string msg)
@@ -628,7 +605,11 @@ namespace Synthesis.GUI
             }
             else
             {
-                addPanel.SetActive(true);
+                if (IsMaMInstalled()) {
+                    addPanel.SetActive(true);
+                } else {
+                    ToggleChangeRobotPanel();
+                }
                 changePanel.SetActive(false);
             }
         }
@@ -1011,7 +992,6 @@ namespace Synthesis.GUI
         /// <param name="option"></param>
         public void MainMenuExit(string option)
         {
-            if (helpMenu.activeSelf) CloseHelpMenu();
             EndOtherProcesses();
             switch (option)
             {
@@ -1101,6 +1081,24 @@ namespace Synthesis.GUI
 
             if (tab != null)
                 tabStateMachine.Link<T>(tab, strict);
+        }
+
+        public void ResolutionSelectionChanged(int a) {
+            OnResolutionSelection(a);
+        }
+
+        public void ScreenmodeSelectionChanged(int a) {
+            OnScreenmodeSelection(a);
+        }
+
+        public void QualitySelectionChanged(int a) {
+            OnQualitySelection(a);
+        }
+
+        public static bool IsMaMInstalled() {
+            return Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar
+                + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "MixAndMatch" + Path.DirectorySeparatorChar
+                + "DriveBases");
         }
     }
 }

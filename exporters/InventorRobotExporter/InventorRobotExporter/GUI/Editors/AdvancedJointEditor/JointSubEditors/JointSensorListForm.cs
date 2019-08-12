@@ -10,7 +10,7 @@ namespace InventorRobotExporter.GUI.Editors.JointSubEditors
 
         public JointSensorListForm(SkeletalJoint_Base passJoint)
         {
-            AnalyticsUtils.LogPage("SensorListForm");
+            AnalyticsUtils.LogPage("Advanced Joint Editor", "Sensor List");
             InitializeComponent();
 
             joint = passJoint;

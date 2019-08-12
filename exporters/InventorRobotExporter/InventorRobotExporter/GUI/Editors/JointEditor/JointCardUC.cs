@@ -27,7 +27,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
             InitializeComponent();
             
-            AnalyticsUtils.LogEvent("Joint Editor", "System", "Init");
             WinFormsUtils.DisableScrollSelection(this);
 
             AddHighlightAction(this);
@@ -168,7 +167,6 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
 
         private void HighlightSelf()
         {
-            AnalyticsUtils.LogEvent("Joint Editor", "System", "Highlight");
             if (isHighlighted)
             {
                 return;
@@ -227,7 +225,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
                 DriverLayout.BackColor = Color.FromArgb(227, 206, 169);
             } else {
                 advancedButton.Visible = true;
-                DriverLayout.ResetBackColor();
+                DriverLayout.BackColor = SystemColors.Control;
                 if ((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel")
                     InsertDriveTrainControls();
                 else if ((string) jointTypeComboBox.SelectedItem == "Mechanism Joint")
@@ -272,6 +270,7 @@ namespace InventorRobotExporter.GUI.Editors.JointEditor
         private void AdvancedButton_Click(object sender, EventArgs e)
         {
             if ((string) jointTypeComboBox.SelectedItem == "(Select an option)") return;
+            AnalyticsUtils.LogPage("Joint Editor", "Optional Settings Editor");
             advancedSettingsForm.DoLayout((string) jointTypeComboBox.SelectedItem == "Drivetrain Wheel");
             advancedSettingsForm.ShowDialog();
         }
