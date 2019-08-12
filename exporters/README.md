@@ -15,8 +15,8 @@ This is the main Inventor exporter that is bundled with Synthesis. It is broken 
 * InventorRobotExporter is the Inventor addin
 * RobotExporterTests is the project with unit tests for the exporter addin
 
-## FusionExporter
-This is the new Fusion 360 Exporter
+## FusionRobotExporter
+This is the Fusion 360 Robot Exporter
 
 ## field_exporter
 This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields
