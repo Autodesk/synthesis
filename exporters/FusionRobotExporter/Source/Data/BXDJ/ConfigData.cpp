@@ -3,7 +3,6 @@
 #include <Fusion/Components/JointMotion.h>
 #include <Fusion/Components/Occurrence.h>
 #include <Fusion/Components/AsBuiltJoint.h>
-#include <rapidjson/document.h>
 #include "Utility.h"
 #include <string>
 

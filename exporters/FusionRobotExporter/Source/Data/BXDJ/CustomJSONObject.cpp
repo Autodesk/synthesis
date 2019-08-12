@@ -1,6 +1,4 @@
 #include "CustomJSONObject.h"
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
 
 std::string BXDJ::CustomJSONObject::toJSONString() const
 {

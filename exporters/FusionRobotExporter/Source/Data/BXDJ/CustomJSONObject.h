@@ -1,6 +1,5 @@
 #pragma once
 
-#include <rapidjson/document.h>
 #include <nlohmann/json.hpp>
 namespace BXDJ
 {

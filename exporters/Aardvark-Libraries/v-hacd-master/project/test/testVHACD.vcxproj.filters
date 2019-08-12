@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Victo\Documents\Sythesis\synthesis\exporters\Aardvark-Libraries\v-hacd-master\src\test\src\main.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Victo\Documents\Sythesis\synthesis\exporters\Aardvark-Libraries\v-hacd-master\src\test\src\oclHelper.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Victo\Documents\Sythesis\synthesis\exporters\Aardvark-Libraries\v-hacd-master\src\test\inc\oclHelper.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Victo\Documents\Sythesis\synthesis\exporters\Aardvark-Libraries\v-hacd-master\src\test\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Inc">
+      <UniqueIdentifier>{734808E9-7312-357D-AD89-1C14E5A05210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{7118115A-38B2-336E-A3F6-02D6EED68053}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

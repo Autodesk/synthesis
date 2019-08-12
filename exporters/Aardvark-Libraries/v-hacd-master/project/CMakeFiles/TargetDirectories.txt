@@ -1,0 +1,9 @@
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/CMakeFiles/INSTALL.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/CMakeFiles/ALL_BUILD.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/VHACD_Lib/CMakeFiles/vhacd.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/VHACD_Lib/CMakeFiles/INSTALL.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/VHACD_Lib/CMakeFiles/ALL_BUILD.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/test/CMakeFiles/testVHACD.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/test/CMakeFiles/INSTALL.dir
+C:/Users/Victo/Documents/Sythesis/synthesis/exporters/Aardvark-Libraries/v-hacd-master/project/test/CMakeFiles/ALL_BUILD.dir
