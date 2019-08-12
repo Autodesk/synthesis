@@ -71,7 +71,7 @@ namespace Synthesis
 
         private async void SendData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.UserProgramType.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationWriter.EmulationWriterClient(conn);
             while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
@@ -83,7 +83,7 @@ namespace Synthesis
                             await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
                             {
                                 Api = API_VERSION,
-                                TargetPlatform = EmulatorManager.programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                                TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                                 InputData = InputManager.Instance,
                             });
                             senderConnected = true;
@@ -108,14 +108,14 @@ namespace Synthesis
 
         private async Task ReceiveData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.UserProgramType.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
             while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
                     using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION,
-                        TargetPlatform = EmulatorManager.programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                        TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                     }))
                     {
                         while (await call.ResponseStream.MoveNext())

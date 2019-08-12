@@ -8,7 +8,7 @@ namespace Synthesis
 {
     public class UserProgram
     {
-        public enum UserProgramType
+        public enum Type
         {
             JAVA,
             CPP
@@ -16,7 +16,7 @@ namespace Synthesis
 
         public string fullFileName { get; private set; }
         public string targetFileName { get; private set; }
-        public UserProgramType type { get; private set; }
+        public Type type { get; private set; }
 
         public UserProgram(string name)
         {
@@ -30,11 +30,11 @@ namespace Synthesis
             if (fileName.Length > JAR_EXTENSION.Length && fileName.Substring(fileName.Length - JAR_EXTENSION.Length) == JAR_EXTENSION)
             {
                 targetFileName += JAR_EXTENSION;
-                type = UserProgramType.JAVA;
+                type = Type.JAVA;
             }
             else
             {
-                type = UserProgramType.CPP;
+                type = Type.CPP;
             }
         }
     }
