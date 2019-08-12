@@ -150,6 +150,7 @@ message RobotInputs {
     RobotMode robot_mode                     = 5;
     repeated EncoderManager encoder_managers = 6;
     repeated float analog_inputs             = 7;
+	bool user_button                         = 8;
 }
 
 message UpdateRobotInputsRequest {

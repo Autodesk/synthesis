@@ -18,16 +18,63 @@ namespace Synthesis.GUI
         /// <summary>
         /// Representation of the field which displays a single input or output
         /// </summary>
-        public class RobotIOField
+        public abstract class RobotIOFieldBase
         {
             public GameObject gameObject;
+            protected float scaleFactor = 1;
+
+            protected static Color ENABLED_COLOR = Color.white;
+            protected static Color DISABLED_COLOR = new Color(0.47f, 0.47f, 0.47f);
+
+            /// <summary>
+            /// Instantiates a new RobotIOField UI element
+            /// </summary>
+            /// <param name="name"></param> The name of the field to use in the editor and in the label
+            /// <param name="parent"></param> The parent underwhich to instantiate this element
+            public RobotIOFieldBase(GameObject prefab, string name, GameObject parent)
+            {
+                gameObject = Instantiate(prefab, parent.transform) as GameObject;
+                gameObject.name = name;
+            }
+
+            /// <summary>
+            /// Update the displayed values and input state for transmission
+            /// </summary>
+            public abstract void Update();
+
+            /// <summary>
+            /// Update the displayed values and input state for transmission and resize
+            /// </summary>
+            /// <param name="factor"></param> Resize factor
+            /// <return>True if it resized</return>
+            public virtual bool Update(float factor)
+            {
+                Update();
+                if (Math.Abs(factor - scaleFactor) > EPSILON) // Scale UI
+                {
+                    scaleFactor = factor;
+                    return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// Enable or disable the field--grey out
+            /// </summary>
+            /// <param name="e"></param> Whether to enable or not
+            public virtual void SetEnable(bool e)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Representation of the field which displays a single text input or output
+        /// </summary>
+        public class RobotIOField: RobotIOFieldBase
+        {
             public Text label;
             public InputField inputField;
             private Action<RobotIOField> updateFunction;
-            private float scaleFactor = 1;
-
-            private static Color ENABLED_COLOR = Color.white;
-            private static Color DISABLED_COLOR = new Color(0.47f, 0.47f, 0.47f);
 
             /// <summary>
             /// Instantiates a new RobotIOField UI element
@@ -35,11 +82,8 @@ namespace Synthesis.GUI
             /// <param name="name"></param> The name of the field to use in the editor and in the label
             /// <param name="parent"></param> The parent underwhich to instantiate this element
             /// <param name="update"></param> The update function to call to handle its value
-            public RobotIOField(string name, GameObject parent, Action<RobotIOField> update)
+            public RobotIOField(string name, GameObject parent, Action<RobotIOField> update): base(RobotIOPanel.Instance.robotIOFieldPrefab, name, parent)
             {
-                gameObject = Instantiate(RobotIOPanel.Instance.robotIOFieldPrefab, parent.transform) as GameObject;
-                gameObject.name = name;
-
                 label = gameObject.GetComponentInChildren<Text>();
                 label.text = name;
 
@@ -52,7 +96,7 @@ namespace Synthesis.GUI
             /// <summary>
             /// Update the displayed values and input state for transmission
             /// </summary>
-            public void Update()
+            public override void Update()
             {
                 updateFunction(this);
             }
@@ -61,28 +105,94 @@ namespace Synthesis.GUI
             /// Update the displayed values and input state for transmission and resize
             /// </summary>
             /// <param name="factor"></param> Resize factor
-            public void Update(float factor)
+            /// <returns>True if it resized</returns>
+            public override bool Update(float factor)
             {
-                Update();
-                if (Math.Abs(factor - scaleFactor) > EPSILON) // Scale UI
+                if (base.Update(factor)) // Scale UI
                 {
-                    scaleFactor = factor;
-
                     label.fontSize = (int)(RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<Text>().fontSize * scaleFactor);
                     label.gameObject.GetComponent<RectTransform>().sizeDelta = RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<Text>().gameObject.GetComponent<RectTransform>().sizeDelta * scaleFactor;
-                    inputField.textComponent.fontSize = (int)(RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<InputField>().textComponent.fontSize * factor);
+
+                    inputField.textComponent.fontSize = (int)(RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<InputField>().textComponent.fontSize * scaleFactor);
                     inputField.gameObject.GetComponent<RectTransform>().sizeDelta = RobotIOPanel.Instance.robotIOFieldPrefab.GetComponentInChildren<InputField>().gameObject.GetComponent<RectTransform>().sizeDelta * scaleFactor;
+                    return true;
                 }
+                return false;
             }
 
             /// <summary>
             /// Enable or disable the field--grey out
             /// </summary>
             /// <param name="e"></param> Whether to enable or not
-            public void SetEnable(bool e)
+            public override void SetEnable(bool e)
             {
+                base.SetEnable(e);
                 label.color = e ? ENABLED_COLOR : DISABLED_COLOR;
                 inputField.textComponent.color = e ? ENABLED_COLOR : DISABLED_COLOR;
+            }
+        }
+
+        /// <summary>
+        /// Representation of the field with a single button input
+        /// </summary>
+        public class RobotIOButton : RobotIOFieldBase
+        {
+            public Button button;
+            public Text buttonText;
+            private Action<RobotIOButton> updateFunction;
+
+            /// <summary>
+            /// Instantiates a new RobotIOField UI element
+            /// </summary>
+            /// <param name="name"></param> The name of the field to use in the editor and in the label
+            /// <param name="parent"></param> The parent underwhich to instantiate this element
+            /// <param name="update"></param> The update function to call to handle its value
+            public RobotIOButton(string name, GameObject parent, Action<RobotIOButton> onClick, Action<RobotIOButton> update = null) : base(RobotIOPanel.Instance.robotIOButtonPrefab, name, parent)
+            {
+                button = gameObject.GetComponent<Button>();
+                buttonText = button.GetComponentInChildren<Text>();
+
+                updateFunction = update;
+
+                button.onClick.AddListener(() => { onClick(this); });
+                Update();
+            }
+
+            /// <summary>
+            /// Update the displayed values and input state for transmission
+            /// </summary>
+            public override void Update()
+            {
+                if (updateFunction != null)
+                {
+                    updateFunction(this);
+                }
+            }
+
+            /// <summary>
+            /// Update the displayed values and input state for transmission and resize
+            /// </summary>
+            /// <param name="factor"></param> Resize factor
+            /// <returns>True if it resized</returns>
+            public override bool Update(float factor)
+            {
+                if (base.Update(factor)) // Scale UI
+                {
+                    buttonText.fontSize = (int)(RobotIOPanel.Instance.robotIOButtonPrefab.GetComponentInChildren<Text>().fontSize * scaleFactor);
+                    buttonText.gameObject.GetComponent<RectTransform>().sizeDelta = RobotIOPanel.Instance.robotIOButtonPrefab.GetComponentInChildren<Text>().GetComponent<RectTransform>().sizeDelta * scaleFactor;
+                    return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// Enable or disable the field--grey out
+            /// </summary>
+            /// <param name="e"></param> Whether to enable or not
+            public override void SetEnable(bool e)
+            {
+                base.SetEnable(e);
+                button.enabled = e;
             }
         }
 
@@ -99,8 +209,8 @@ namespace Synthesis.GUI
                 PWM,
                 CAN,
                 DIO,
-                AI,
-                AO
+                AIO,
+                MISC
             }
 
             private const float HEIGHT_REF = 270;
@@ -109,7 +219,7 @@ namespace Synthesis.GUI
 
             public GameObject gameObject;
             private Text title;
-            public List<RobotIOField> robotIOFields;
+            public List<RobotIOFieldBase> robotIOFields;
 
             public GameObject GetPanel()
             {
@@ -130,8 +240,7 @@ namespace Synthesis.GUI
                 title.name = type.ToString() + " Title";
                 title.text = type.ToString();
 
-
-                robotIOFields = new List<RobotIOField>();
+                robotIOFields = new List<RobotIOFieldBase>();
             }
 
             /// <summary>
@@ -154,7 +263,6 @@ namespace Synthesis.GUI
 
                     foreach (var i in robotIOFields)
                     {
-                        focused = focused || i.inputField.isFocused;
                         i.Update(scaleFactor);
                     }
                 }
@@ -162,8 +270,15 @@ namespace Synthesis.GUI
                 {
                     foreach (var i in robotIOFields)
                     {
-                        focused = focused || i.inputField.isFocused;
                         i.Update();
+                    }
+                }
+
+                foreach (var i in robotIOFields)
+                {
+                    if (i is RobotIOField)
+                    {
+                        focused = focused || ((RobotIOField)i).inputField.isFocused;
                     }
                 }
 
@@ -337,6 +452,7 @@ namespace Synthesis.GUI
         // Robot IO view
         private GameObject displayPanel;
         public GameObject robotIOFieldPrefab;
+        public GameObject robotIOButtonPrefab;
         public GameObject robotIOGroupPrefab;
 
         private RobotIOGroup[] robotIOGroups;
@@ -771,54 +887,117 @@ namespace Synthesis.GUI
                     )
                 );
             }
-            for (int i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP + RoboRIOConstants.NUM_AO_MXP; i++)
             {
                 int j = i; // Create copy of iterator
-                string name = (j < RoboRIOConstants.NUM_AI_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_AI_HDRS).ToString();
-                robotIOGroups[(int)RobotIOGroup.Type.AI].robotIOFields.Add(
+                string name = "";
+                if (j < RoboRIOConstants.NUM_AI_HDRS)
+                {
+                    name = "AI " + j.ToString();
+                }
+                else if(j < RoboRIOConstants.NUM_AI_HDRS+ RoboRIOConstants.NUM_AI_MXP)
+                {
+                    name = "MXP AI " + (j - RoboRIOConstants.NUM_AI_HDRS).ToString();
+                }
+                else
+                {
+                    name = "MXP AO " + (j - RoboRIOConstants.NUM_AI_HDRS - RoboRIOConstants.NUM_AI_MXP).ToString();
+                }
+                robotIOGroups[(int)RobotIOGroup.Type.AIO].robotIOFields.Add(
                     new RobotIOField(
                         name,
-                        robotIOGroups[(int)RobotIOGroup.Type.AI].GetPanel(),
+                        robotIOGroups[(int)RobotIOGroup.Type.AIO].GetPanel(),
                         (RobotIOField robotIOField) =>
                         {
-                            try
+                            if (j < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP) // Analog Input
                             {
-                                InputManager.Instance.AnalogInputs[j] = float.Parse(robotIOField.inputField.text);
+                                try
+                                {
+                                    InputManager.Instance.AnalogInputs[j] = float.Parse(robotIOField.inputField.text);
+                                }
+                                catch (Exception)
+                                {
+                                    if (!robotIOField.inputField.isFocused && robotIOField.inputField.text == "")
+                                    {
+                                        robotIOField.inputField.text = "0";
+                                    }
+                                }
+                                robotIOField.inputField.interactable = true;
                             }
-                            catch (Exception)
+                            else // Analog Output
                             {
-                                if (!robotIOField.inputField.isFocused && robotIOField.inputField.text == "")
+                                try
+                                {
+                                    int ao_index = (int)(j - RoboRIOConstants.NUM_AI_HDRS - RoboRIOConstants.NUM_AI_MXP);
+                                    robotIOField.inputField.text = OutputManager.Instance.AnalogOutputs[ao_index].ToString();
+                                }
+                                catch (Exception)
                                 {
                                     robotIOField.inputField.text = "0";
                                 }
+                                robotIOField.inputField.interactable = false;
                             }
-                            robotIOField.inputField.interactable = true;
                         }
                     )
                 );
             }
-            for (int i = 0; i < RoboRIOConstants.NUM_AO_MXP; i++)
+            for (int i = 0; i < RoboRIOConstants.NUM_RELAYS; i++)
             {
                 int j = i; // Create copy of iterator
-                robotIOGroups[(int)RobotIOGroup.Type.AO].robotIOFields.Add(
+                robotIOGroups[(int)RobotIOGroup.Type.MISC].robotIOFields.Add(
                     new RobotIOField(
-                        j.ToString(),
-                        robotIOGroups[(int)RobotIOGroup.Type.AO].GetPanel(),
+                        "Relay " + j.ToString(),
+                        robotIOGroups[(int)RobotIOGroup.Type.MISC].GetPanel(),
                         (RobotIOField robotIOField) =>
                         {
                             try
                             {
-                                robotIOField.inputField.text = OutputManager.Instance.AnalogOutputs[j].ToString();
+                                robotIOField.inputField.characterValidation = InputField.CharacterValidation.Alphanumeric;
+                                switch (OutputManager.Instance.Relays[j])
+                                {
+                                    case EmulationService.RobotOutputs.Types.RelayState.Off:
+                                        robotIOField.inputField.text = "Off";
+                                        break;
+                                    case EmulationService.RobotOutputs.Types.RelayState.Forward:
+                                        robotIOField.inputField.text = "Forward";
+                                        break;
+                                    case EmulationService.RobotOutputs.Types.RelayState.Reverse:
+                                        robotIOField.inputField.text = "Reverse";
+                                        break;
+                                    case EmulationService.RobotOutputs.Types.RelayState.InvalidState:
+                                        robotIOField.inputField.text = "Error";
+                                        break;
+                                    default:
+                                        throw new Exception("Unhandled relay state");
+                                }
                             }
                             catch (Exception)
                             {
-                                robotIOField.inputField.text = "0";
+                                robotIOField.inputField.text = "Off";
                             }
                             robotIOField.inputField.interactable = false;
                         }
                     )
                 );
             }
+            robotIOGroups[(int)RobotIOGroup.Type.MISC].robotIOFields.Add(
+                new RobotIOButton(
+                    "User Button",
+                    robotIOGroups[(int)RobotIOGroup.Type.MISC].GetPanel(),
+                    async (RobotIOButton robotIOButton) =>
+                    {
+                        InputManager.Instance.UserButton = true;
+                        await Task.Delay(100);
+                        robotIOButton.button.interactable = false; // Toggling interactable deselects the button without deslecting any other buttons
+                        await Task.Delay(100); // Delay again to ensure its transmitted
+                        robotIOButton.button.interactable = true;
+                        InputManager.Instance.UserButton = false;
+                    },
+                    (RobotIOButton robotIOButton) =>
+                    {
+                        robotIOButton.buttonText.text = "User Button";
+                    }
+                ));
         }
     }
 }
