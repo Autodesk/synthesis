@@ -93,6 +93,11 @@ namespace Assets.Scripts.GUI
                 useEmulationButtonText.text = "Use Emulation";
                 EmulationDriverStation.Instance.RobotDisabled();
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Emulation Start-Stop",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         /// <summary>
@@ -104,6 +109,11 @@ namespace Assets.Scripts.GUI
             {
                 LoadCode();
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Emulation Select Code",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public async void LoadCode()
@@ -126,11 +136,6 @@ namespace Assets.Scripts.GUI
 
                 await Upload;
             }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Select Code",
-                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public void OnDestroy()
@@ -155,6 +160,11 @@ namespace Assets.Scripts.GUI
         {
             // TODO
             RobotIOPanel.Instance.Toggle();
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Emulation IO Panel",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public void OnVMConnectionStatusClicked()
@@ -164,6 +174,11 @@ namespace Assets.Scripts.GUI
                 if (!EmulatorManager.StartEmulator())
                     UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
             }
+
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Emulation Start",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public override void ToggleHidden()
