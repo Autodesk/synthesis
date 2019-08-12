@@ -150,6 +150,10 @@ void RobotOutputs::updateShallow() {
 }
 
 EmulationService::RobotOutputs RobotOutputs::syncDeep() {
+	if(!enabled){
+		output = generateZeroedOutput();
+		return output;
+	}
 	syncShallow();
 	for (auto i = 0u; i < relays.size(); i++) {
 		while(i >= (unsigned)output.relays_size()){
