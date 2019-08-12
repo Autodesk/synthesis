@@ -35,12 +35,18 @@ namespace hel{
         static constexpr int32_t NUM_ANALOG_INPUTS = NUM_ANALOG_INPUTS_HDRS + NUM_ANALOG_INPUTS_MXP; //hal::kNumAnalogInputs
 
         /**
-         * \brief The smallest increment the ADC can convert
-         *
-         * If 1E9 is used as the LSB weight, then the analog value and voltage can used interchangeably
+         * \brief The value in nanovolts of the increment between analog data values
          */
 
-        static constexpr uint32_t LSB_WEIGHT = 1E9;
+        static constexpr uint32_t LSB_WEIGHT = 1.221E6;
+
+		/**
+         * \brief A scalar HAL uses when interpreting analog input values
+         *
+         * This value converts LSB_WEIGHT to volts
+         */
+
+		static constexpr double LSB_SCALAR = 1.0E-9;
 
         /**
          * \brief The offset of the result of the ADC and the actual voltage

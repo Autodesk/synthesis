@@ -25,6 +25,6 @@ TEST(AnalogInputTest, GetVoltage){
 
 	frc::AnalogInput ai = frc::AnalogInput{PORT};
 
-	EXPECT_EQ(values.back(), ai.GetVoltage());
+	EXPECT_EQ(values.back() * hel::AnalogInputs::LSB_WEIGHT * hel::AnalogInputs::LSB_SCALAR, ai.GetVoltage());
 
 }

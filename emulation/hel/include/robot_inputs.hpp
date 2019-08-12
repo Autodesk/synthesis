@@ -63,7 +63,7 @@ struct RobotInputs {
 		encoder_managers;
 
 	/**
-	 * \brief The states of all the analog input headers and mxp
+	 * \brief The states of all the analog input headers and mxp as voltages
 	 */
 
 	BoundsCheckedArray<double, AnalogInputs::NUM_ANALOG_INPUTS> analog_inputs;
