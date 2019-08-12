@@ -69,8 +69,10 @@ struct RobotInputs {
 	BoundsCheckedArray<double, AnalogInputs::NUM_ANALOG_INPUTS> analog_inputs;
 
 	/**
-	 * \brief The states of all the analog inputs on the MXP
+	 * \brief The state of the user button
 	 */
+
+	bool user_button;
 
    public:
 	/**

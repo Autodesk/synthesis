@@ -67,6 +67,7 @@ void RobotInputs::updateDeep() const {
 	for (unsigned i = 0; i < analog_inputs.size(); i++) {
 		instance.first->analog_inputs.setValues(i, {(int32_t)(ANALOG_SCALAR * analog_inputs[i])});
 	}
+	instance.first->user_button = user_button;
 	instance.second.unlock();
 }
 
@@ -87,7 +88,8 @@ std::string RobotInputs::toString() const {
 				 return a.get().toString();
 			 }
 			 return std::string("null");
-		 });
+		 }) + ", ";
+	s += "user_button: " + std::to_string((int)user_button);
 	s += ")";
 	return s;
 }
@@ -180,6 +182,8 @@ void RobotInputs::syncDeep(const EmulationService::RobotInputs& req) {
 	for (size_t i = 0; i < std::min(analog_inputs.size(), (size_t) req.analog_inputs_size()); i++) {
 		analog_inputs[i] = req.analog_inputs(i);
 	}
+
+	user_button = req.user_button();
 
 	instance.second.unlock();
 }
