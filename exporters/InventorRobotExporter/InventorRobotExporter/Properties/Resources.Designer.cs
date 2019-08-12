@@ -63,26 +63,6 @@ namespace InventorRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap ArrowLeft {
-            get {
-                object obj = ResourceManager.GetObject("ArrowLeft", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap ArrowRight {
-            get {
-                object obj = ResourceManager.GetObject("ArrowRight", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap Checklist32 {
             get {
                 object obj = ResourceManager.GetObject("Checklist32", resourceCulture);
@@ -124,16 +104,6 @@ namespace InventorRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap drivetrain {
-            get {
-                object obj = ResourceManager.GetObject("drivetrain", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap DrivetrainType32 {
             get {
                 object obj = ResourceManager.GetObject("DrivetrainType32", resourceCulture);
@@ -145,23 +115,24 @@ namespace InventorRobotExporter.Properties {
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;html&gt;
         ///    &lt;head&gt;
+        ///        &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+        ///        &lt;script src=&quot;js/utility.js&quot;&gt;&lt;/script&gt;
         ///        &lt;style&gt;
         ///            body {
         ///                font-family: Arial, sans-serif;
-        ///                margin: 0;
+        ///                margin: 0px;
         ///            }
+        ///
         ///            p {
         ///                margin: 0px 50px 0px 50px;
         ///            }
-        ///            p.instructions {
-        ///                margin: 15px 50px 0px 50px;
-        ///            }
-        ///            p.precheck-description {
-        ///                margin: 0px 0px 0px 90px;
-        ///            }
-        ///            p.step-number {
-        ///                font-size: 48px;
-        ///                margi [rest of string was truncated]&quot;;.
+        ///
+        ///                p.instructions {
+        ///                    margin: 15px 60px 0px 60px;
+        ///                }
+        ///
+        ///                p.precheck-description {
+        ///       [rest of string was truncated]&quot;;.
         /// </summary>
         public static string ExportGuide {
             get {
@@ -232,29 +203,9 @@ namespace InventorRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap joints {
-            get {
-                object obj = ResourceManager.GetObject("joints", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap RobotWeight32 {
             get {
                 object obj = ResourceManager.GetObject("RobotWeight32", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap stockjoint {
-            get {
-                object obj = ResourceManager.GetObject("stockjoint", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -316,16 +267,6 @@ namespace InventorRobotExporter.Properties {
             get {
                 object obj = ResourceManager.GetObject("vertShader", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap weight {
-            get {
-                object obj = ResourceManager.GetObject("weight", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
