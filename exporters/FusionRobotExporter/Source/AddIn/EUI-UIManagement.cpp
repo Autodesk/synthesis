@@ -572,7 +572,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Type", "palette/drivetrain_type.html", false, false, false, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 200);
 		if (!driveTypePalette)
 			return false;
 
@@ -775,7 +775,7 @@ void EUI::createPanels()
 
 void EUI::createButtons()
 {
-	driveTrainTypeButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Type", "Select your drivetrain type (tank, H-drive, or other).", "Resources/DriveIcons");
+	driveTrainTypeButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_TYPE, "Drive Train Layout", "Select your drivetrain layout (basic, H-drive, or other).", "Resources/DriveIcons");
 	addHandler<ShowPaletteCommandCreatedHandler>(driveTrainTypeButton, driveTrainTypeShowPaletteCommandCreatedHandler);
 
 	driveTrainWeightButton = UI->commandDefinitions()->addButtonDefinition(BTN_DT_WEIGHT, "Drive Train Weight", "Assign the weight of the drivetrain.", "Resources/WeightIcons");
