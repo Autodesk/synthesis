@@ -14,6 +14,18 @@
 
 6. Run ` appdmg spec.json Synthesis.app `
 
+### Package
+
+1. Make a new folder 
+
+2. Put the now built Synthesis.dmg into the folder
+
+3. Copy post-install.sh into the new folder
+
+4. Copt instructions.txt into the new folder
+
+5. Zip that folder and publish
+
 
 ## Build steps (Not Working) :
 
