@@ -2,7 +2,6 @@
 #define _ERROR_HPP_
 
 #include <string>
-#include <iostream>
 
 namespace hel{
 
@@ -206,6 +205,14 @@ namespace hel{
 
         InputConfigurationException(std::string)noexcept;
     };
+
+    std::string makeExceptionMessage(const std::string&, bool new_line = true);
+
+    std::string makeWarningMessage(const std::string&, bool new_line = true);
+
+    void warn(const std::string&);
+
+    void warnUnsupportedFeature(const std::string&);
 }
 
 #endif

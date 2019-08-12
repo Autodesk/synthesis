@@ -5,41 +5,41 @@ using namespace nFPGA;
 
 namespace hel{
     const uint16_t SystemInterface::getExpectedFPGAVersion(){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getExpectedFPGAVersion\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getExpectedFPGAVersion");
         return 0;
     }
 
     const uint32_t SystemInterface::getExpectedFPGARevision(){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getExpectedFPGARevision\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getExpectedFPGARevision");
         return 0;
     }
 
     const uint32_t* const SystemInterface::getExpectedFPGASignature(){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getExpectedFPGASignature\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getExpectedFPGASignature");
         static const uint32_t i = 0;
         return &i;
     }
 
     void SystemInterface::getHardwareFpgaSignature(uint32_t* /*guid_ptr*/, tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getHardwareFpgaSignature\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getHardwareFpgaSignature");
     }
 
     uint32_t SystemInterface::getLVHandle(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getLVHandle\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getLVHandle");
         return 0;
     }
 
     uint32_t SystemInterface::getHandle(){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getHandle\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getHandle");
         return 0;
     }
 
     void SystemInterface::reset(tRioStatusCode* /*status*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::reset\n";
+        hel::warnUnsupportedFeature("Function call tSystem::reset");
     }
 
     void SystemInterface::getDmaDescriptor(int /*dmaChannelDescriptorIndex*/, tDMAChannelDescriptor* /*desc*/){
-        std::cerr<<"Synthesis warning: Unsupported feature: Function call tSystem::getDmaDescriptor\n";
+        hel::warnUnsupportedFeature("Function call tSystem::getDmaDescriptor");
     }
 }
 
