@@ -46613,11 +46613,11 @@ RectTransform:
   - {fileID: 1168846401}
   - {fileID: 716499743}
   m_Father: {fileID: 1376811996}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -0.504364}
+  m_AnchoredPosition: {x: 250, y: -0.504364}
   m_SizeDelta: {x: 100, y: -128.00873}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &882643104
@@ -46750,11 +46750,11 @@ RectTransform:
   - {fileID: 1792174656}
   - {fileID: 90891493}
   m_Father: {fileID: 1376811996}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 250, y: -0.504364}
+  m_AnchoredPosition: {x: 150, y: -0.504364}
   m_SizeDelta: {x: 100, y: -128.00873}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &885650370
@@ -71838,8 +71838,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 0.29999998, z: 1}
   m_Children:
   - {fileID: 1434899039}
-  - {fileID: 882643103}
   - {fileID: 885650369}
+  - {fileID: 882643103}
   - {fileID: 1408678180}
   - {fileID: 137024667}
   m_Father: {fileID: 1234831590}
@@ -88658,6 +88658,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   robotIOFieldPrefab: {fileID: 1333336039312162, guid: 3b5cc6446053488488a290151c13163b,
+    type: 3}
+  robotIOButtonPrefab: {fileID: 1333336039312162, guid: d7693859b4ab8624ba16b521ff7bdb0c,
     type: 3}
   robotIOGroupPrefab: {fileID: 1333336039312162, guid: 9e685d52feb06d848a099113b7795e66,
     type: 3}

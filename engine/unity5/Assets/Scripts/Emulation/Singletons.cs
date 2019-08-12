@@ -23,6 +23,7 @@ namespace Synthesis
 
         // Misc
         public const uint NUM_CAN_ADDRESSES = 63; // RoboRIO allows 0 - 62 inclusive
+        public const uint NUM_RELAYS = 4;
         public const uint NUM_ENCODERS = 8;
     }
 

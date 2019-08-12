@@ -368,7 +368,7 @@ namespace Synthesis
                     }
                 }
                 catch (Exception e) {
-                    UserMessageManager.Dispatch("Failed to upload", EmulationWarnings.WARNING_DURATION);
+                    UserMessageManager.Dispatch("Failed to upload new user program", EmulationWarnings.WARNING_DURATION);
                     Debug.Log(e.ToString());
                 }
             });
@@ -480,14 +480,20 @@ namespace Synthesis
                 }
                 else
                 {
-
-                    using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    try
                     {
-                        client.Connect();
-                        Stream localLogFile = File.Create(folder + "/log.log");
-                        client.Download(REMOTE_LOG_NAME, localLogFile);
-                        localLogFile.Close();
-                        client.Disconnect();
+                        using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                        {
+                            client.Connect();
+                            Stream localLogFile = File.Create(folder + "/log.log");
+                            client.Download(REMOTE_LOG_NAME, localLogFile);
+                            localLogFile.Close();
+                            client.Disconnect();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        UserMessageManager.Dispatch("Failed to download log file", EmulationWarnings.WARNING_DURATION);
                     }
                 }
             });
