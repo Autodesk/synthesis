@@ -10,15 +10,37 @@ namespace Synthesis
 {
     public static class EmulatorManager
     {
+        // Directory Info
         private static readonly string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
+
+#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+        private static readonly bool IS_WINDOWS = false;
+#elif UNITY_STANDALONE_WIN || UNITY_EDITOR
+        private static readonly bool IS_WINDOWS = true;
+#endif
         private static readonly string QEMU_DIR = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu";
 
+        // File Info
+        private static readonly string NATIVE_KERNEL = EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-native";
+        private static readonly string ROOTFS_NATIVE = EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-native.ext4";
+        private static readonly string NATIVE_DEVICE_TREE = EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb";
+
+        private static readonly string JAVA_KERNEL = EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-java";
+        private static readonly string ROOTFS_JAVA = EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-java.ext4";
+
+        private static readonly string GRPC_BRIDGE = EMULATION_DIR + Path.DirectorySeparatorChar + "grpc-bridge" + (IS_WINDOWS ? ".exe" : "");
+        private static readonly string QEMU_ARM = IS_WINDOWS ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe") : "qemu-system-arm";
+        private static readonly string QEMU_X86 = IS_WINDOWS ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe") : "qemu-system-x86_64";
+
+        // SSH Info
+        public const string DEFAULT_HOST = "127.0.0.1";
         private const int DEFAULT_SSH_PORT_CPP = 10022;
         private const int DEFAULT_SSH_PORT_JAVA = 10023;
 
         private const string USER = "lvuser";
         private const string PASSWORD = "";
 
+        // Commands
         private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
 
         private const string STOP_COMMAND = "sudo killall frc_program_runner.sh FRCUserProgram java &> /dev/null;";
@@ -28,12 +50,13 @@ namespace Synthesis
         private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram java &> /dev/null";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
 
+        private static SshCommand outputStreamCommand = null;
+        private static IAsyncResult outputStreamCommandResult = null;
+
+        // Process Info
         private static System.Diagnostics.Process qemuNativeProcess = null;
         private static System.Diagnostics.Process qemuJavaProcess = null;
         private static System.Diagnostics.Process grpcBridgeProcess = null;
-
-        private static SshCommand outputStreamCommand = null;
-        private static IAsyncResult outputStreamCommandResult = null;
 
         public static UserProgram.Type programType = UserProgram.Type.JAVA;
         
@@ -59,7 +82,7 @@ namespace Synthesis
                 if (Instance == null)
                 {
                     emulatorType = programType;
-                    Instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, (emulatorType == UserProgram.Type.JAVA) ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                    Instance = new SshClient(DEFAULT_HOST, (emulatorType == UserProgram.Type.JAVA) ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
                 }
                 if (!Instance.IsConnected)
                 {
@@ -95,15 +118,15 @@ namespace Synthesis
         public static bool IsVMInstalled()
         {
             return Directory.Exists(EMULATION_DIR) &&
-                Directory.Exists(QEMU_DIR) &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-native") &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-native.ext4") &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb") &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-java") &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-java.ext4") &&
-                File.Exists(EMULATION_DIR + Path.DirectorySeparatorChar + "grpc-bridge.exe") &&
-                File.Exists(QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe") &&
-                File.Exists(QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe");
+                Directory.Exists(QEMU_DIR) == IS_WINDOWS &&
+                File.Exists(NATIVE_KERNEL) &&
+                File.Exists(ROOTFS_NATIVE) &&
+                File.Exists(NATIVE_DEVICE_TREE) &&
+                File.Exists(JAVA_KERNEL) &&
+                File.Exists(ROOTFS_JAVA) &&
+                File.Exists(GRPC_BRIDGE) &&
+                File.Exists(QEMU_ARM) &&
+                File.Exists(QEMU_X86);
         }
 
         public static bool IsVMRunning()
@@ -161,13 +184,12 @@ namespace Synthesis
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe",
+                    FileName = QEMU_ARM,
                     WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                    Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-native " +
-                        "-dtb " + EMULATION_DIR + Path.DirectorySeparatorChar + "zynq-zed.dtb " +
+                    Arguments = " -machine xilinx-zynq-a9 -cpu cortex-a9 -m 2048 -kernel " + NATIVE_KERNEL + " -dtb " + NATIVE_DEVICE_TREE +" " +
                         "-display none -serial null -serial mon:stdio -append \"console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0 rw\" " +
                         "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_CPP + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_NATIVE_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + "," +
-                        "hostfwd=tcp::2354-:2354 -net nic -sd " + EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-native.ext4",
+                        "hostfwd=tcp::2354-:2354 -net nic -sd " + ROOTFS_NATIVE,
                     Verb = "runas"
                 });
 
@@ -175,11 +197,11 @@ namespace Synthesis
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe",
+                    FileName = QEMU_X86,
                     WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                    Arguments = " -m 2048 -kernel " + EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-java -nographic -append \"console=ttyPS0 root=/dev/sda rw\" " +
+                    Arguments = " -m 2048 -kernel " + JAVA_KERNEL + " -nographic -append \"console=ttyPS0 root=/dev/sda rw\" " +
                         "-net user,hostfwd=tcp::" + DEFAULT_SSH_PORT_JAVA + "-:22,hostfwd=tcp::" + EmulatorNetworkConnection.DEFAULT_JAVA_PORT + "-:" + EmulatorNetworkConnection.DEFAULT_PORT + " " +
-                        "-net nic -hda " + EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-java.ext4",
+                        "-net nic -hda " + ROOTFS_JAVA,
                     Verb = "runas"
                 });
 
@@ -187,7 +209,7 @@ namespace Synthesis
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = EMULATION_DIR + Path.DirectorySeparatorChar + "grpc-bridge.exe",
+                    FileName = GRPC_BRIDGE,
                     Verb = "runas"
                 });
 
@@ -263,7 +285,7 @@ namespace Synthesis
                 }
                 if(client == null)
                 {
-                    client = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, lastProgramType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                    client = new SshClient(DEFAULT_HOST, lastProgramType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
                 }
                 try
                 {
@@ -348,7 +370,7 @@ namespace Synthesis
                     ClientManager.Connect();
                     ClientManager.Instance.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar");
                     frcUserProgramPresent = false;
-                    using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                    using (ScpClient scpClient = new ScpClient(DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
                         scpClient.Connect();
                         using (Stream localFile = File.OpenRead(userProgram.FullFileName))
@@ -482,7 +504,7 @@ namespace Synthesis
                 {
                     try
                     {
-                        using (ScpClient client = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
+                        using (ScpClient client = new ScpClient(DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                         {
                             client.Connect();
                             Stream localLogFile = File.Create(folder + "/log.log");
