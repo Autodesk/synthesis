@@ -41,7 +41,7 @@ namespace Assets.Scripts.GUI
 
             try
             {
-                EmulatorManager.programType = (UserProgram.UserProgramType)Enum.Parse(typeof(UserProgram.UserProgramType), PlayerPrefs.GetString("UserProgramType"), false);
+                EmulatorManager.programType = (UserProgram.Type)Enum.Parse(typeof(UserProgram.Type), PlayerPrefs.GetString("UserProgramType"), false);
             }
             catch (Exception) { }
 
