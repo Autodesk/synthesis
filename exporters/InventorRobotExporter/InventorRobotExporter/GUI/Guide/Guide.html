@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!-- Use only for Inventor add-in to fix some CSS elements. -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <script src="js/utility.js"></script>
         <style>
             body {
                 font-family: Arial, sans-serif;
-                margin: 0;
+                margin: 0px;
             }
 
             p {
@@ -13,36 +14,32 @@
             }
 
                 p.instructions {
-                    margin: 15px 50px 0px 50px;
+                    margin: 15px 60px 0px 60px;
                 }
 
                 p.precheck-description {
                     margin: 0px 0px 0px 90px;
                 }
+            
+            table {
+                width: 90%;
+                display: block;
+                margin: auto;
+            }
+            
+                td {
+                    padding-bottom: 20px;
+                }
 
-                p.step-number {
+                td.number {
+                    width: 10%;
                     font-size: 48px;
-                    margin: 0px 10px 0px 10px;
-                    padding-bottom: 0px;
                     font-weight: bold;
                 }
 
-            ul {
-                margin: 0px;
-                padding: 0px;
-            }
-
-                ul.step-container li {
-                    list-style: none;
-                    display: inline-block;
-                    display: -moz-inline-stack;
-                    text-align: left;
+                td.icon {
+                    width: 20%;
                 }
-
-            div.step-separator {
-                padding-bottom: 10px;
-                text-align: center;
-            }
 
             h1 {
                 font-size: 35px;
@@ -60,19 +57,19 @@
             }
 
             hr {
-                border-style: inset;
-                border-color: blueviolet;
+                border-style: solid;
+                border-color: dodgerblue;
             }
 
                 hr.big {
                     margin: 15px 25px 15px 25px;
                     border-width: 3px;
                 }
-
-                hr.small {
-                    margin: 15px 25px 15px 25px;
-                    border-width: 1px;
-                }
+            
+            iframe {
+                padding: 10px;
+                margin: auto;
+            }
         </style>
     </head>
     <body>
@@ -80,33 +77,41 @@
         <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
         <hr class="big">
         <h2>Pre-Check</h2>
-        <p>&#10004; <a href="https://youtu.be/fY3Vdkh8L0Y">Restructure your assemblies</a></p>
+        <p>&#10004; <a href="#" onclick="toggleElement('assembly-video')">Restructure your assemblies</a></p>
         <p class="precheck-description">This makes moving parts accessible to the Robot Exporter plugin.</p>
-        <p>&#10004; <a href="https://youtu.be/_YCP-cWn1Gc">Adding joints</a></p>
+        <iframe id="assembly-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/fY3Vdkh8L0Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <p>&#10004; <a href="#" onclick="toggleElement('joint-video')">Adding joints</a></p>
         <p class="precheck-description">Joints support your robot's movement.</p>
+        <iframe id="joint-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/_YCP-cWn1Gc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         <hr class="big">
-        <div class="step-separator" name="drivetrain">
-            <ul class="step-container">
-                <li><p class="step-number">1</p></li>
-                <li><img src="https://i.imgur.com/eYJ9uPk.png"></li>
-                <li><p><b>Select your robot's drivetrain.</b><br>Standard: Simple drivetrain<br>H-Drive: 6 wheel...</p></li>
-            </ul>
-        </div>
-        <hr class="small">
-        <div class="step-separator" name="weight">
-            <ul class="step-container">
-                <li><p class="step-number">2</p></li>
-                <li><img src="https://i.imgur.com/NEVPB3F.png"></li>
-                <li><p><b>Enter your robot's weight.</b><br>This is only including the weight<br> of the drivetrain base.</p></li>
-            </ul>
-        </div>
-        <hr class="small">
-        <div class="step-separator" name="joints">
-            <ul class="step-container">
-                <li><p class="step-number">3</p></li>
-                <li><img src="https://i.imgur.com/4NUVoi4.png"></li>
-                <li><p><b>Edit wheels or mechanisms.</b><br>Joint Setup: Support movement</p></li>
-            </ul>
-        </div>
+        <table class="step-container">
+            <tr name="step-1">
+                <td class="number">1</td>
+                <td class="icon"><img src="https://i.imgur.com/eYJ9uPk.png"></td>
+                <td><b>Select your robot's drivetrain.</b><br>
+                    Standard: Basic drivetrain<br>
+                    H-Drive: Perpendicular wheel setup for moving sideways<br>
+                    Other: Alternative drivetrains
+                </td>
+            </tr>
+            <tr name="step-2">
+                <td class="number">2</td>
+                <td class="icon"><img src="https://i.imgur.com/NEVPB3F.png"></td>
+                <td><b>Enter you robot's weight.</b><br>
+                    This is only including the base of your<br>
+                    robot, excluding wheels.</td>
+            </tr>
+            <tr name="step-3">
+                <td class="number">3</td>
+                <td class="icon"><img src="https://i.imgur.com/4NUVoi4.png"></td>
+                <td><b>Edit wheels or mechanisms.</b><br>
+                    Support movement of wheels or<br>
+                    manipulators. This step is necessary<br>
+                    for an accurate simulation in Synthesis.
+                </td>
+            </tr>
+        
+        </table>
+        <hr class="big">
     </body>
 </html>
