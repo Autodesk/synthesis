@@ -10,8 +10,8 @@ namespace Synthesis
 {
     public static class EmulatorManager
     {
-        private static string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
-        private static string QEMU_DIR = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu";
+        private static readonly string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
+        private static readonly string QEMU_DIR = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu";
 
         private const int DEFAULT_SSH_PORT_CPP = 10022;
         private const int DEFAULT_SSH_PORT_JAVA = 10023;
@@ -21,10 +21,10 @@ namespace Synthesis
 
         private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
 
-        private const string STOP_COMMAND = "sudo killall frc_program_chooser.sh FRCUserProgram java &> /dev/null;";
-        private const string START_COMMAND = "nohup /home/lvuser/frc_program_chooser.sh </dev/null &> /dev/null &";
+        private const string STOP_COMMAND = "sudo killall frc_program_runner.sh FRCUserProgram java &> /dev/null;";
+        private const string START_COMMAND = "nohup /home/lvuser/frc_program_runner.sh </dev/null &> /dev/null &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
-        private const string CHECK_RUNNER_RUNNING_COMMAND = "pidof frc_program_chooser.sh &> /dev/null";
+        private const string CHECK_RUNNER_RUNNING_COMMAND = "pidof frc_program_runner.sh &> /dev/null";
         private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram java &> /dev/null";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
 
@@ -48,41 +48,48 @@ namespace Synthesis
 
         private static bool updatingStatus = false;
 
-        private static SshClient Client
+        private static class ClientManager
         {
-            get
-            { // TODO don't always connect?
-                if(SSHClientInternal.emulator != programType && SSHClientInternal.instance != null)
+            public static void Connect()
+            {
+                if (emulatorType != programType && Instance != null)
                 {
-                    SSHClientInternal.instance.Disconnect();
-                    SSHClientInternal.instance.Dispose();
-                    SSHClientInternal.instance = null;
+                    Close();
                 }
-                if (SSHClientInternal.instance == null)
+                if (Instance == null)
                 {
-                    SSHClientInternal.emulator = programType;
-                    SSHClientInternal.instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, (SSHClientInternal.emulator == UserProgram.Type.JAVA) ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                    emulatorType = programType;
+                    Instance = new SshClient(EmulatorNetworkConnection.DEFAULT_HOST, (emulatorType == UserProgram.Type.JAVA) ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
                 }
-                if (!SSHClientInternal.instance.IsConnected)
+                if (!Instance.IsConnected)
                 {
                     try
                     {
-                        SSHClientInternal.instance.Connect();
+                        Instance.Connect();
                     }
                     catch (Exception)
                     {
                         throw;
                     }
                 }
-                return SSHClientInternal.instance;
             }
-        }
 
-        private class SSHClientInternal
-        {
-            static SSHClientInternal() { }
-            internal static SshClient instance = null;
-            internal static UserProgram.Type emulator = UserProgram.Type.JAVA;
+            public static void Close()
+            {
+                if (Instance != null)
+                {
+                    if (Instance.IsConnected)
+                    {
+                        Instance.Disconnect();
+                    }
+                    Instance.Dispose();
+                    Instance = null;
+                }
+            }
+
+            public static SshClient Instance { get; private set; }
+
+            private static UserProgram.Type emulatorType = UserProgram.Type.JAVA;
         }
 
         public static bool IsVMInstalled()
@@ -201,8 +208,7 @@ namespace Synthesis
         {
             if (VMConnected)
             {
-                Client.Disconnect();
-                Client.Dispose();
+                ClientManager.Close();
             }
 
             StopUpdatingStatus();
@@ -339,7 +345,8 @@ namespace Synthesis
                     }
 
                     programType = userProgram.ProgramType;
-                    Client.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar"); // Delete existing files so the frc program chooser knows which to run
+                    ClientManager.Connect();
+                    ClientManager.Instance.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar");
                     frcUserProgramPresent = false;
                     using (ScpClient scpClient = new ScpClient(EmulatorNetworkConnection.DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
@@ -375,7 +382,8 @@ namespace Synthesis
                 {
                     if (isRunningRobotCodeRunner || isRunningRobotCode)
                     {
-                        Client.RunCommand(STOP_COMMAND);
+                        ClientManager.Connect();
+                        ClientManager.Instance.RunCommand(STOP_COMMAND);
                     }
                     isTryingToRunRobotCode = false;
                     isRunningRobotCodeRunner = false;
@@ -395,15 +403,16 @@ namespace Synthesis
 
                 try
                 {
+                    ClientManager.Connect();
                     if (isRunningRobotCodeRunner)
                     {
                         isTryingToRunRobotCode = false; // To reset the gRPC connection
                         isRunningRobotCodeRunner = false;
-                        Client.RunCommand(STOP_COMMAND + "&&" + START_COMMAND);
+                        ClientManager.Instance.RunCommand(STOP_COMMAND + "&&" + START_COMMAND);
                     }
                     else
                     {
-                        Client.RunCommand(START_COMMAND);
+                        ClientManager.Instance.RunCommand(START_COMMAND);
                     }
                     isTryingToRunRobotCode = true;
                     isRunningRobotCodeRunner = true;
@@ -447,7 +456,8 @@ namespace Synthesis
             if (outputStreamCommand == null) {
                 try
                 {
-                    outputStreamCommand = Client.CreateCommand(RECEIVE_PRINTS_COMMAND);
+                    ClientManager.Connect();
+                    outputStreamCommand = ClientManager.Instance.CreateCommand(RECEIVE_PRINTS_COMMAND);
                     outputStreamCommandResult = outputStreamCommand.BeginExecute();
                 }
                 catch (Exception e)
