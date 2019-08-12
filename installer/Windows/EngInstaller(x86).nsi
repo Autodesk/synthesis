@@ -5,9 +5,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 4.3.0 (x86) Setup [Snapshot Release]"
+Caption "Synthesis 4.3.0 (x86) Setup"
 
-OutFile "SynthesisWinBeta(x86)4.3.0.exe"
+OutFile "SynthesisWin(x86)4.3.0.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
