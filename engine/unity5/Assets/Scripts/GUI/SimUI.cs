@@ -96,6 +96,10 @@ namespace Synthesis.GUI
 
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
+        public delegate void EntryChanged(int a);
+
+        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
+
         private void Start()
         {
             instance = this;
@@ -1101,6 +1105,18 @@ namespace Synthesis.GUI
 
             if (tab != null)
                 tabStateMachine.Link<T>(tab, strict);
+        }
+
+        public void ResolutionSelectionChanged(int a) {
+            OnResolutionSelection(a);
+        }
+
+        public void ScreenmodeSelectionChanged(int a) {
+            OnScreenmodeSelection(a);
+        }
+
+        public void QualitySelectionChanged(int a) {
+            OnQualitySelection(a);
         }
     }
 }

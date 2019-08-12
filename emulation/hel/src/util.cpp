@@ -1,5 +1,7 @@
 #include "util.hpp"
 
+#include<string>
+
 namespace hel{
     bool stob(std::string a){
         try{

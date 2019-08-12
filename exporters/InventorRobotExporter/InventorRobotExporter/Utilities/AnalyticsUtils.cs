@@ -41,6 +41,11 @@ namespace InventorRobotExporter.Utilities
             res += "?v=1";
             res += "&tid=" + TRACKING;
             res += "&uid="+ userId;
+            res += "&ds=" + "app";
+            var version = RobotExporterAddInServer.Instance.Application.SoftwareVersion;
+            res += "&dr=" + "inventor";
+            res += "&ck=" + ToUrlString(version.DisplayVersion);
+            res += "&cc=" + ToUrlString(version.BuildIdentifier.ToString());
             return res;
         }
 
@@ -50,17 +55,7 @@ namespace InventorRobotExporter.Utilities
             {
                 return;
             }
-            var values = new Dictionary<string, string>
-            {
-                { "thing1", "hello" },
-                { "thing2", "world" }
-            };
-
-            var content = new FormUrlEncodedContent(values);
-
-            var response = await client.PostAsync(para, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
+            await client.PostAsync(para, null);
         }
 
 
@@ -68,6 +63,9 @@ namespace InventorRobotExporter.Utilities
         {
             var url = GetBaseURL();
             url += "&sc=start";
+            url += "&t=event";
+            url += "&ec=Environment";
+            url += "&ea=Opened";
             PostAsync(url);
         }
 
@@ -75,26 +73,39 @@ namespace InventorRobotExporter.Utilities
         {
             var url = GetBaseURL();
             url += "&sc=end";
+            url += "&t=event";
+            url += "&ec=Environment";
+            url += "&ea=Closed";
             PostAsync(url);
         }
         public static void LogPage(string page)
         {
+            LogPage("", page);
+        }
+        
+        public static void LogPage(string baseUrl, string page)
+        {
             var url = GetBaseURL();
             url += "&t=pageview";
-            url += "&dh=inventor.plugin";
-            url += "&dp=" + page;
+            url += "&dh=inventor";
+            url += "&dp=" + ToUrlString(baseUrl.Replace(" ", string.Empty)) + "/" + ToUrlString(page.Replace(" ", string.Empty));
+            url += "&dt=" + ToUrlString(page);
             PostAsync(url);
         }
 
-        public static void LogEvent(string catagory, string action, string label, int value = 0)
+        public static void LogEvent(string catagory, string action, string label = null)
         {
             var url = GetBaseURL();
             url += "&t=event";
-            url += "&ec="+catagory;
-            url += "&ea=" + action;
-            url += "&el=" + label;
-            url += "&ev=" + value;
+            url += "&ec="+ ToUrlString(catagory);
+            url += "&ea=" + ToUrlString(action);
+            if (label != null) url += "&el=" + ToUrlString(label);
             PostAsync(url);
+        }
+
+        private static string ToUrlString(string input)
+        {
+            return System.Web.HttpUtility.UrlEncode(Encoding.UTF8.GetString(Encoding.Default.GetBytes(input)));
         }
 
     }
