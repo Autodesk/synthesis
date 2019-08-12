@@ -17,14 +17,14 @@ namespace InventorRobotExporter.Utilities
         
         private static readonly HttpClient client = new HttpClient();
 
-        public static void GenerateID()
+        static AnalyticsUtils()
         {
             if (Guid.TryParse(Settings.Default.AnalyticsID, out clientId)) return;
             clientId = Guid.NewGuid();
             Settings.Default.AnalyticsID = clientId.ToString();
             Settings.Default.Save();
         }
-        
+
         private static string GetBaseURL()
         {
             var res = BASE_URL;
