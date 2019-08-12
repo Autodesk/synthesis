@@ -283,12 +283,14 @@ namespace Synthesis
                         client = null;
                     }
                 }
-                if(client == null)
-                {
-                    client = new SshClient(DEFAULT_HOST, lastProgramType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
-                }
                 try
                 {
+                    if (client == null)
+                    {
+                        client = new SshClient(DEFAULT_HOST, lastProgramType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD);
+                        client.Connect();
+                    }
+
                     VMConnected = client.IsConnected;
                     if (VMConnected)
                     {
