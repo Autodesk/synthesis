@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Threading.Tasks;
+using static Synthesis.EmulatorManager;
 using System;
 
 namespace Assets.Scripts.GUI
@@ -63,7 +64,8 @@ namespace Assets.Scripts.GUI
                     t.text = "Loading...";
                     loadingPanel.SetActive(false);
                     loaded = false;
-                } else
+                }
+                else
                 {
                     if (Time.unscaledTime >= lastAdditionalDot + 0.75)
                     {
@@ -100,23 +102,17 @@ namespace Assets.Scripts.GUI
             else
             {
                 Synthesis.EmulatorManager.UserProgram userProgram = new Synthesis.EmulatorManager.UserProgram(selectedFiles[0]);
-                if (userProgram.type == Synthesis.EmulatorManager.UserProgram.UserProgramType.JAVA) // TODO remove this once support is added
+                if (Synthesis.EmulatorManager.IsRunningRobotCode())
+                    EmulationDriverStation.Instance.StopRobotCode();
+                loadingPanel.SetActive(true);
+                Task Upload = Task.Factory.StartNew(() =>
                 {
-                    EmulationDriverStation.Instance.ShowJavaNotSupportedPopUp();
-                }
-                else
-                {
-                    if(Synthesis.EmulatorManager.IsRunningRobotCode())
-                        EmulationDriverStation.Instance.StopRobotCode();
-                    loadingPanel.SetActive(true);
-                    Task Upload = Task.Factory.StartNew(() =>
-                    {
-                        Synthesis.EmulatorManager.SCPFileSender(userProgram);
-                        loaded = true;
-                    });
-                    await Upload;
-                    Synthesis.GUI.UserMessageManager.Dispatch("Code successfully loaded.", 10);
-                }
+                    Synthesis.EmulatorManager.SCPFileSender(userProgram);
+                    loaded = true;
+                });
+
+                await Upload;
+                PlayerPrefs.SetString("UserProgramType", Enum.GetName(typeof(UserProgram.UserProgramType), programType));
             }
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,

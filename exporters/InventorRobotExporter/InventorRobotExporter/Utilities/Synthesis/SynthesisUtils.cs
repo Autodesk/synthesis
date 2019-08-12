@@ -12,9 +12,10 @@ namespace InventorRobotExporter.Utilities.Synthesis
         /// </summary>
         public static void OpenSynthesis(string robotName)
         {
-            if (RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis && robotName != null)
+            if (robotName != null)
             {
                 Process.Start(SynthesisPath, $"-robot \"{RobotExporterAddInServer.Instance.AddInSettingsManager.ExportPath + "\\" + robotName}\"");
+                AnalyticsUtils.LogEvent("System", "Launched Synthesis");
             }
         }
     }
