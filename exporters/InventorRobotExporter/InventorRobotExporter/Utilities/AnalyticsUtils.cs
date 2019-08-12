@@ -11,13 +11,13 @@ namespace InventorRobotExporter.Utilities
         private const string BASE_URL = "https://www.google-analytics.com/collect";
         private const string TRACKING = "UA-81892961-4";
         
-        private static string userId = "unknown";
+        private static string clientId = "unknown";
         
         private static readonly HttpClient client = new HttpClient();
         
         public static void SetUser(string user)
         {
-            userId = GetHashString(user);
+            clientId = GetHashString(user);
         }
 
         private static IEnumerable<byte> GetHash(string inputString)
@@ -40,7 +40,7 @@ namespace InventorRobotExporter.Utilities
             var res = BASE_URL;
             res += "?v=1";
             res += "&tid=" + TRACKING;
-            res += "&uid="+ userId;
+            res += "&cid="+ clientId;
             res += "&ds=" + "app";
             var version = RobotExporterAddInServer.Instance.Application.SoftwareVersion;
             res += "&dr=" + "inventor";
