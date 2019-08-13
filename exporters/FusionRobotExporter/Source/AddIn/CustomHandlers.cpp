@@ -96,6 +96,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
+	else if (eventArgs->action() == "settings_analytics")
+	{
+		Analytics::SetEnabled(eventArgs->data() == "true" ? true : false);
+	}
 	else if (eventArgs->action() == "close")
 	{
 		if (eventArgs->data() == "drivetrain_type")
