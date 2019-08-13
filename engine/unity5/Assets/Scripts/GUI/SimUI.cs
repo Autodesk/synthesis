@@ -168,7 +168,7 @@ namespace Synthesis.GUI
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
             inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+            //checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
@@ -193,7 +193,7 @@ namespace Synthesis.GUI
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
-            CheckControlPanel();
+            //CheckControlPanel();
 
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -774,85 +774,85 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state.
         /// </summary>
-        public void ShowControlPanel()
-        {
-            if (!inputManagerPanel.activeSelf)
-            {
-                DynamicCamera.ControlEnabled = false;
-                InputControl.freeze = true;
-                EndOtherProcesses();
-                inputManagerPanel.SetActive(true);
-                inputPanelOn = true;
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-            }
-            else
-            {
-                CheckUnsavedControls(() =>
-                {
-                    DynamicCamera.ControlEnabled = true;
-                    InputControl.freeze = false;
-                    inputManagerPanel.SetActive(false);
-                    inputPanelOn = false;
-                    ToggleHotKeys(false);
-                });
-            }
-        }
+        //public void ShowControlPanel()
+        //{
+        //    if (!inputManagerPanel.activeSelf)
+        //    {
+        //        DynamicCamera.ControlEnabled = false;
+        //        InputControl.freeze = true;
+        //        EndOtherProcesses();
+        //        inputManagerPanel.SetActive(true);
+        //        inputPanelOn = true;
+        //        GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+        //    }
+        //    else
+        //    {
+        //        CheckUnsavedControls(() =>
+        //        {
+        //            DynamicCamera.ControlEnabled = true;
+        //            InputControl.freeze = false;
+        //            inputManagerPanel.SetActive(false);
+        //            inputPanelOn = false;
+        //            ToggleHotKeys(false);
+        //        });
+        //    }
+        //}
 
-        public void CheckUnsavedControls(Action callback)
-        {
-            ProcessControlsCallback = callback;
-            if (!Controls.HasBeenSaved())
-            {
-                checkSavePanel.SetActive(true);
-            } else
-            {
-                if(ProcessControlsCallback != null)
-                    ProcessControlsCallback.Invoke();
-            }
-        }
+        //public void CheckUnsavedControls(Action callback)
+        //{
+        //    ProcessControlsCallback = callback;
+        //    if (!Controls.HasBeenSaved())
+        //    {
+        //        checkSavePanel.SetActive(true);
+        //    } else
+        //    {
+        //        if(ProcessControlsCallback != null)
+        //            ProcessControlsCallback.Invoke();
+        //    }
+        //}
 
-        public void SaveAndClose()
-        {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            ShowControlPanel();
-        }
+        //public void SaveAndClose()
+        //{
+        //    GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
+        //    ShowControlPanel();
+        //}
 
         /// <summary>
         /// Checks the last state of the control panel. Defaults to OFF
         /// unless the user leaves it on.
         /// </summary>
-        public void CheckControlPanel()
-        {
-            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
-            {
-                inputManagerPanel.SetActive(false);
-            }
-            else
-            {
-                inputManagerPanel.SetActive(true);
-                PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            }
-        }
+        //public void CheckControlPanel()
+        //{
+        //    if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
+        //    {
+        //        inputManagerPanel.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        inputManagerPanel.SetActive(true);
+        //        PlayerPrefs.SetInt("isInputManagerPanel", 0);
+        //    }
+        //}
 
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
+        //public void CheckForSavedControls(string option)
+        //{
+        //    checkSavePanel.SetActive(false);
 
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    break;
-                default:
-                case "cancel":
-                    return;
-            }
-            if (ProcessControlsCallback != null)
-                ProcessControlsCallback.Invoke();
-        }
+        //    switch (option)
+        //    {
+        //        case "yes":
+        //            Controls.Save();
+        //            break;
+        //        case "no":
+        //            Controls.Load();
+        //            break;
+        //        default:
+        //        case "cancel":
+        //            return;
+        //    }
+        //    if (ProcessControlsCallback != null)
+        //        ProcessControlsCallback.Invoke();
+        //}
 
         /// <summary>
         /// Open tutorial link
@@ -895,30 +895,30 @@ namespace Synthesis.GUI
             }
         }
 
-        /// <summary>
-        /// Toggle the hot key tool tips on/off based on the boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleHotKeys(bool show)
-        {
-            hotKeyPanel.SetActive(show);
-            if (show)
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
-            }
-            else
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
-            }
-        }
+        ///// <summary>
+        ///// Toggle the hot key tool tips on/off based on the boolean passed in
+        ///// </summary>
+        ///// <param name="show"></param>
+        //public void ToggleHotKeys(bool show)
+        //{
+        //    hotKeyPanel.SetActive(show);
+        //    if (show)
+        //    {
+        //        hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
+        //    }
+        //    else
+        //    {
+        //        hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
+        //    }
+        //}
 
-        /// <summary>
-        ///Toggle the hot key tool tips on/off based on its current state
-        /// </summary>
-        public void ToggleHotKeys()
-        {
-            ToggleHotKeys(!hotKeyPanel.activeSelf);
-        }
+        ///// <summary>
+        /////Toggle the hot key tool tips on/off based on its current state
+        ///// </summary>
+        //public void ToggleHotKeys()
+        //{
+        //    ToggleHotKeys(!hotKeyPanel.activeSelf);
+        //}
         #endregion
         #region reset functions
         /// <summary>
@@ -1029,7 +1029,7 @@ namespace Synthesis.GUI
             changePanel.SetActive(false);
             addPanel.SetActive(false);
             inputManagerPanel.SetActive(false);
-            ToggleHotKeys(false);
+            //ToggleHotKeys(false);
 
             CancelOrientation();
 

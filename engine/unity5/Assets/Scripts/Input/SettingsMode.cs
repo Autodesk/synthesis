@@ -98,7 +98,7 @@ namespace Synthesis.Input
         {
             if (activeProfileMode != (Profile.Mode)value)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                GameObject.Find("Simulator").GetComponent<MenuUI>().CheckUnsavedControls(() =>
                 {
                     activeProfileMode = (Profile.Mode)value;
 
@@ -121,7 +121,7 @@ namespace Synthesis.Input
         {
             if (index != activePlayerIndex)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                GameObject.Find("Simulator").GetComponent<MenuUI>().CheckUnsavedControls(() =>
                 {
                     activePlayerIndex = index;
                     UpdateProfileSelection();

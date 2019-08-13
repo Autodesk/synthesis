@@ -2,6 +2,8 @@
 using Synthesis.FSM;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Input;
+using System;
 
 namespace Synthesis.GUI
 {
@@ -19,10 +21,15 @@ namespace Synthesis.GUI
         GameObject viewReplaysPanel;
         GameObject helpPanel;
 
+        GameObject checkSavePanel;
+
         SettingsState settings;
         LoadReplayState loadReplay;
 
         public static MenuUI instance;
+
+        public static bool inputPanelOn = false;
+        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
         public delegate void EntryChanged(int a);
 
@@ -46,8 +53,13 @@ namespace Synthesis.GUI
             viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
             helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
 
+            //controls
+            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+
             settings = settingsPanel.GetComponent<SettingsState>();
             loadReplay = viewReplaysPanel.GetComponent<LoadReplayState>();
+
+            CheckControlPanel();
         }
 
         public void LateUpdate()
@@ -76,7 +88,80 @@ namespace Synthesis.GUI
         public void SwitchRobotControls()
         {
             EndOtherProcesses();
-            robotControlPanel.SetActive(true);
+
+            if (!robotControlPanel.activeSelf)
+            {
+                DynamicCamera.ControlEnabled = false;
+                InputControl.freeze = true;
+                EndOtherProcesses();
+                robotControlPanel.SetActive(true);
+                inputPanelOn = true;
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+            }
+            else
+            {
+                CheckUnsavedControls(() =>
+                {
+                    DynamicCamera.ControlEnabled = true;
+                    InputControl.freeze = false;
+                    robotControlPanel.SetActive(false);
+                    inputPanelOn = false;
+                    //ToggleHotKeys(false);
+                });
+            }
+        }
+
+        public void CheckUnsavedControls(Action callback)
+        {
+            ProcessControlsCallback = callback;
+            if (!Controls.HasBeenSaved())
+            {
+                checkSavePanel.SetActive(true);
+            }
+            else
+            {
+                if (ProcessControlsCallback != null)
+                    ProcessControlsCallback.Invoke();
+            }
+        }
+
+        public void CheckForSavedControls(string option)
+        {
+            checkSavePanel.SetActive(false);
+
+            switch (option)
+            {
+                case "yes":
+                    Controls.Save();
+                    break;
+                case "no":
+                    Controls.Load();
+                    break;
+                default:
+                case "cancel":
+                    return;
+            }
+            if (ProcessControlsCallback != null)
+                ProcessControlsCallback.Invoke();
+        }
+
+        public void SaveAndClose()
+        {
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
+            SwitchRobotControls();
+        }
+
+        public void CheckControlPanel()
+        {
+            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
+            {
+                robotControlPanel.SetActive(false);
+            }
+            else
+            {
+                robotControlPanel.SetActive(true);
+                PlayerPrefs.SetInt("isInputManagerPanel", 0);
+            }
         }
 
         #endregion
