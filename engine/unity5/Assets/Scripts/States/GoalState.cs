@@ -24,13 +24,6 @@ namespace Synthesis.States
         bool settingGamepieceGoalVertical = false;
         DynamicCamera.CameraState lastCameraState;
 
-        #region help ui variables
-        GameObject ui;
-        GameObject helpMenu;
-        GameObject toolbar;
-        GameObject overlay;
-        #endregion
-
         public GoalState(string color, int gamepieceIndex, int goalIndex, GoalManager gm, bool move)
         {
             this.color = color;
@@ -42,13 +35,6 @@ namespace Synthesis.States
         // Use this for initialization
         public override void Start()
         {
-            #region init
-            ui = GameObject.Find("GoalStateUI");
-            helpMenu = Auxiliary.FindObject(ui, "Help");
-            toolbar = Auxiliary.FindObject(ui, "ResetStateToolbar");
-            overlay = Auxiliary.FindObject(ui, "Overlay");
-            #endregion
-
             //create indicator
             if (goalIndicator != null) GameObject.Destroy(goalIndicator);
             if (goalIndicator == null)
@@ -83,19 +69,13 @@ namespace Synthesis.States
             lastCameraState = dynamicCamera.ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, goalIndicator));
 
-            //help menu stuff
+            //UI callbacks 
             Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(Reset);
-            Button helpButton = GameObject.Find("HelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(HelpMenu);
             Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
-            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            closeHelp.onClick.RemoveAllListeners();
-            closeHelp.onClick.AddListener(CloseHelpMenu);
         }
 
         // Update is called once per frame
@@ -146,35 +126,12 @@ namespace Synthesis.States
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
             GameObject.Destroy(goalIndicator);
-            if (helpMenu.activeSelf) CloseHelpMenu();
             StateMachine.PopState();
         }
         private void Reset()
         {
             if (move) goalIndicator.transform.position = new Vector3(0f, 4f, 0f);
             else goalIndicator.transform.localScale = Vector3.one;
-        }
-        private void HelpMenu()
-        {
-            helpMenu.SetActive(true);
-            overlay.SetActive(true);
-            toolbar.transform.Translate(new Vector3(100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-        }
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            toolbar.transform.Translate(new Vector3(-100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
-                else t.gameObject.SetActive(true);
-            }
         }
     }
 }
