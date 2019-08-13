@@ -69,7 +69,7 @@ namespace Synthesis.States
             lastCameraState = dynamicCamera.ActiveState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, goalIndicator));
 
-            //help menu stuff
+            //UI callbacks 
             Button resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(Reset);
