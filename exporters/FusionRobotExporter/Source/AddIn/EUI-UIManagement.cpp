@@ -748,8 +748,10 @@ void EUI::openSettingsPalette(bool nan)
 	uiThread = new std::thread([this]()
 		{
 			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 			settingsPalette->isVisible(true);
 			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 		});
 
 	settingsButton->controlDefinition()->isEnabled(false);
@@ -760,6 +762,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	enableEditorButtons();
 	settingsPalette->isVisible(false);
 
+	if ((guideEnabled == "true" || guideEnabled == "false") && ((guideEnabled == "true") != this->guideEnabled)) Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
 	if (guideEnabled == "true") // TODO: This is lazy, use JSON
 	{
 		openGuidePalette();
@@ -767,8 +770,6 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	{
 		closeGuidePalette();
 	}
-
-	if (guideEnabled == "true" || guideEnabled == "false") Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
 }
 
 // BUTTONS AND PANELS

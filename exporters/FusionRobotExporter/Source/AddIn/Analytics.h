@@ -10,8 +10,10 @@
 namespace SynthesisAddIn {
 	class Analytics
 	{
+		static bool enabled;
 		static std::string clientId;
-		static void setClientID();
+		static void LoadSettings();
+		static void SaveSettings();
 		static void Post(utility::string_t queryString);
 		static web::uri_builder GetBaseURL();
 		static void AppendEvent(web::uri_builder* url, utility::string_t ec, utility::string_t ea, utility::string_t el);
@@ -46,5 +48,7 @@ namespace SynthesisAddIn {
 		static void LogPage(utility::string_t baseUrl, utility::string_t page);
 		static void LogEvent(utility::string_t ec, utility::string_t ea);
 		static void LogEvent(utility::string_t ec, utility::string_t ea, utility::string_t el);
+		static void SetEnabled(bool enabled);
+		static bool IsEnabled() { return enabled; }
 	};
 }
