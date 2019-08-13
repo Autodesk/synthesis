@@ -63,26 +63,6 @@ namespace InventorRobotExporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap ArrowLeft {
-            get {
-                object obj = ResourceManager.GetObject("ArrowLeft", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap ArrowRight {
-            get {
-                object obj = ResourceManager.GetObject("ArrowRight", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         public static System.Drawing.Bitmap Checklist32 {
             get {
                 object obj = ResourceManager.GetObject("Checklist32", resourceCulture);
@@ -226,16 +206,6 @@ namespace InventorRobotExporter.Properties {
         public static System.Drawing.Bitmap RobotWeight32 {
             get {
                 object obj = ResourceManager.GetObject("RobotWeight32", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap stockjoint {
-            get {
-                object obj = ResourceManager.GetObject("stockjoint", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
