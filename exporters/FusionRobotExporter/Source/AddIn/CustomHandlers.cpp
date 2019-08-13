@@ -119,7 +119,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 #ifdef _WIN32
 		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
 #elif __APPLE__ || __linux || __unix || __posix
-		system("open http://google.com"); // opens link on Linux/macOS/Unix
+		system(result); // opens link on Linux/macOS/Unix
 #else
 #   error "Unsupported"
 #endif
