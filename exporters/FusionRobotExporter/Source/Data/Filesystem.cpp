@@ -40,3 +40,17 @@ bool Filesystem::directoryExists(std::string path)
 
 	return false;    // this is not a directory!
 }
+
+bool Filesystem::fileExists(std::string path)
+{
+	std::wstring sPath = std::wstring(path.begin(), path.end());
+
+	DWORD ftyp = GetFileAttributes(sPath.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return false;   // this is a directory!
+
+	return true;    // this is not a directory!
+}

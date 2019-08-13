@@ -6,8 +6,9 @@
 #include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Driver.h"
 #include "../Data/BXDJ/Components.h"
+#include "Analytics.h"
 
-using namespace SynthesisAddIn;
+ using namespace SynthesisAddIn;
 
 /// Workspace Events
 // Activate Workspace Event
@@ -15,6 +16,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
+		Analytics::StartSession(eui->getApp());
 		eui->prepareAllPalettes();
 		eui->openGuidePalette();
 	}
@@ -26,6 +28,7 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
 	{
 		eui->closeAllPalettes();
+		Analytics::EndSession();
 	}
 }
 

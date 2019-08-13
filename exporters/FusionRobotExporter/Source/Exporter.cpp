@@ -67,7 +67,6 @@ BXDJ::ConfigData Exporter::loadConfiguration(Ptr<FusionDocument> document)
 
 	BXDJ::ConfigData config;
 	if (attr != nullptr) {
-		std::string test = attr->value();
 		config.fromJSONString(attr->value());
 	}
 	config.filterJoints(collectJoints(document));
