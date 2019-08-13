@@ -141,6 +141,9 @@
     <ClInclude Include="Source\Data\BXDJ\Components\Elevator.h">
       <Filter>Headers\Data\BXDJ\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\AddIn\Analytics.h">
+      <Filter>Headers\AddIn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Data\BXDA\Mesh.cpp">
@@ -239,6 +242,9 @@
     <ClCompile Include="Source\AddIn\FusionRobotExporter.cpp">
       <Filter>Source\AddIn</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AddIn\Analytics.cpp">
+      <Filter>Source\AddIn</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Palette\js\fusionInterface.js">
@@ -268,18 +274,6 @@
     <None Include="palette\js\utility.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
-    <None Include="palette\dt_weight.html">
-      <Filter>Source\AddIn\Palette</Filter>
-    </None>
-    <None Include="palette\js\dt_weight.js">
-      <Filter>Source\AddIn\Palette</Filter>
-    </None>
-    <None Include="palette\js\drivetrain.js">
-      <Filter>Source\AddIn\Palette</Filter>
-    </None>
-    <None Include="palette\drivetrain.html">
-      <Filter>Source\AddIn\Palette</Filter>
-    </None>
     <None Include="palette\js\jointEditor.js">
       <Filter>Source\AddIn\Palette</Filter>
     </None>
@@ -287,5 +281,8 @@
       <Filter>Source\AddIn\Palette</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="palette\drivetrain_type.html" />
+    <None Include="palette\drivetrain_weight.html" />
+    <None Include="palette\js\drivetrain_weight.js" />
   </ItemGroup>
 </Project>

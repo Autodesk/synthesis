@@ -1,6 +1,7 @@
 #include "EUI.h"
 #include "../Exporter.h"
 #include "../Data/BXDJ/Utility.h"
+#include "Analytics.h"
 
 using namespace SynthesisAddIn;
 
@@ -184,6 +185,7 @@ void EUI::openDriveWeightPalette() {
 		driveWeightPalette->isVisible(true);
 		driveWeightPalette->sendInfoToHTML("state", configJSON);
 	}, Exporter::loadConfiguration(app->activeDocument()).toJSONString());
+	Analytics::LogPage(U("Drivetrain Weight Editor"));
 }
 
 void EUI::closeDriveWeightPalette() {
@@ -265,6 +267,7 @@ void EUI::openJointEditorPalette()
 		jointEditorPalette->isVisible(true);
 		jointEditorPalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
+	Analytics::LogPage(U("Joint Editor"));
 }
 
 
@@ -482,6 +485,7 @@ void EUI::openFinishPalette()
 		finishPalette->isVisible(true);
 		finishPalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
+	Analytics::LogPage(U("Pre-Export Form"));
 }
 
 void EUI::closeFinishPalette()
@@ -545,6 +549,7 @@ void EUI::openSensorsPalette(std::string sensors)
 		sensorsPalette->isVisible(true);
 		sensorsPalette->sendInfoToHTML("sensors", sensors);
 	}, sensors);
+	Analytics::LogPage(U("Joint Editor"), U("Optional Settings Editor"));
 }
 
 void EUI::closeSensorsPalette(std::string sensorsToSave)
@@ -620,6 +625,7 @@ void EUI::openDriveTypePalette() {
 		driveTypePalette->isVisible(true);
 		driveTypePalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
+	Analytics::LogPage(U("Drivetrain Type Editor"));
 }
 
 void EUI::closeDriveTypePalette() {
@@ -747,6 +753,7 @@ void EUI::openSettingsPalette(bool nan)
 		});
 
 	settingsButton->controlDefinition()->isEnabled(false);
+	Analytics::LogPage(U("Exporter Settings"));
 }
 
 void EUI::closeSettingsPalette(std::string guideEnabled) {
@@ -760,6 +767,8 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	{
 		closeGuidePalette();
 	}
+
+	if (guideEnabled == "true" || guideEnabled == "false") Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
 }
 
 // BUTTONS AND PANELS
