@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <boost/filesystem.hpp>
 
 /// Contains directory-related functions.
 namespace Filesystem
@@ -23,5 +24,4 @@ namespace Filesystem
 	///
 
 	bool directoryExists(std::string path);
-	bool fileExists(std::string path);
 };
