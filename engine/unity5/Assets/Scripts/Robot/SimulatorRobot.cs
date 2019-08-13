@@ -53,10 +53,7 @@ namespace Synthesis.Robot
 
         private MainState state;
 
-        #region help ui variables
         GameObject toolbar;
-        #endregion
-
         GameObject canvas;
         GameObject resetCanvas;
 
