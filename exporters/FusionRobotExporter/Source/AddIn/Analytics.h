@@ -49,5 +49,6 @@ namespace SynthesisAddIn {
 		static void LogEvent(utility::string_t ec, utility::string_t ea);
 		static void LogEvent(utility::string_t ec, utility::string_t ea, utility::string_t el);
 		static void SetEnabled(bool enabled);
+		static bool IsEnabled() { return enabled; }
 	};
 }
