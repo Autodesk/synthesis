@@ -21,8 +21,9 @@ utility::string_t removeSpaces(utility::string_t in)
 }
 
 std::string Analytics::clientId;
+bool Analytics::enabled;
 
-void Analytics::setClientID()
+void Analytics::LoadSettings()
 {
 	std::string jsonId = "";
 	try {
@@ -41,18 +42,32 @@ void Analytics::setClientID()
 	else
 	{
 		clientId = generate_guid();
+		SaveSettings();
+	}
 
-		std::string filenameBXDJ = "SynthesisAddInSettings.json"; // TODO: Settings manager class
-		nlohmann::json baseJson;
-		baseJson["AnalyticsID"] = clientId;
-		std::ofstream writeStream(filenameBXDJ);
-		std::string jsonStr = baseJson.dump(1);
-		writeStream << jsonStr << std::endl;
-		writeStream.close();
+	if (jsonObj.contains("AnalyticsEnabled") && jsonObj["AnalyticsEnabled"].is_boolean())
+	{
+		enabled = jsonObj["AnalyticsEnabled"].get<bool>();
+	} else
+	{
+		enabled = true;
 	}
 }
 
+void Analytics::SaveSettings()
+{
+	std::string filenameBXDJ = "SynthesisAddInSettings.json"; // TODO: Settings manager class
+	nlohmann::json baseJson;
+	baseJson["AnalyticsID"] = clientId;
+	baseJson["AnalyticsEnabled"] = enabled;
+	std::ofstream writeStream(filenameBXDJ);
+	std::string jsonStr = baseJson.dump(1);
+	writeStream << jsonStr << std::endl;
+	writeStream.close();
+}
+
 void Analytics::Post(utility::string_t queryString) {
+	if (!enabled) return;
 	http_client client(U("https://www.google-analytics.com/"));
 	http_response response = client.request(methods::GET, queryString).get();
 }
@@ -81,7 +96,7 @@ void Analytics::AppendEvent(uri_builder* url, const utility::string_t ec, const 
 
 void Analytics::StartSession(Ptr<Application> app)
 {
-	Analytics::setClientID();
+	Analytics::LoadSettings();
 	auto url = GetBaseURL();
 	url.append_query(U("sc"), U("start"));
 	AppendEvent(&url, U("Environment"), U("Opened"));
@@ -123,4 +138,12 @@ void Analytics::LogEvent(const utility::string_t ec, const utility::string_t ea,
 	auto url = GetBaseURL();
 	AppendEvent(&url, ec, ea, el);
 	Post(url.to_string());
+}
+
+void Analytics::SetEnabled(bool enabled)
+{
+	if (enabled == Analytics::enabled) return;
+	LoadSettings();
+	Analytics::enabled = enabled;
+	SaveSettings();
 }

@@ -189,9 +189,11 @@ xcopy /Y "$(SolutionDir)$(ProjectName).manifest" "$(SolutionDir)$(Configuration)
     <None Include="palette\sensors.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="palette\dofkey.html" />
     <Content Include="palette\guide.html" />
     <Content Include="palette\js\drivetrain_type.js" />
     <Content Include="palette\js\settings.js" />
+    <Content Include="palette\settings.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
