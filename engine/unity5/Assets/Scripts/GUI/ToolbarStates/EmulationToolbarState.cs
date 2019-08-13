@@ -18,7 +18,7 @@ namespace Assets.Scripts.GUI
     {
         public static bool exiting = false;
 
-        bool loaded = false;
+        bool loaded = false, success = false;
         float lastAdditionalDot = 0;
         int dotCount = 0;
 
@@ -57,6 +57,10 @@ namespace Assets.Scripts.GUI
 
                 if (loaded)
                 {
+                    if (!success)
+                    {
+                        UserMessageManager.Dispatch("Failed to upload new user program", EmulationWarnings.WARNING_DURATION);
+                    }
                     t.text = "Loading...";
                     loadingPanel.SetActive(false);
                     loaded = false;
@@ -112,11 +116,11 @@ namespace Assets.Scripts.GUI
         {
             if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.VMConnected))
             {
-                LoadCode();
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                     AnalyticsLedger.EventAction.Clicked,
                     "Emulation Select Code",
                     AnalyticsLedger.getMilliseconds().ToString());
+                LoadCode();
             }
         }
 
@@ -125,21 +129,24 @@ namespace Assets.Scripts.GUI
             string[] selectedFiles = SFB.StandaloneFileBrowser.OpenFilePanel("Robot Code Executable", "C:\\", "", false);
             if (selectedFiles.Length != 1)
             {
-                Debug.Log("No files selected for robot code upload");
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.CodeType,
+                    "No Code",
+                    AnalyticsLedger.getMilliseconds().ToString());
             }
             else
             {
                 UserProgram userProgram = new UserProgram(selectedFiles[0]);
                 PlayerPrefs.SetString("UserProgramType", userProgram.ProgramType.ToString());
 
-                loadingPanel.SetActive(true);
-                Task Upload = Task.Factory.StartNew(async () =>
-                {
-                    await EmulatorManager.SCPFileSender(userProgram);
-                    loaded = true;
-                });
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.CodeType,
+                    userProgram.ProgramType.ToString(),
+                    AnalyticsLedger.getMilliseconds().ToString());
 
-                await Upload;
+                loadingPanel.SetActive(true);
+                success = await EmulatorManager.SCPFileSender(userProgram);
+                loaded = true;
             }
         }
 
@@ -176,14 +183,14 @@ namespace Assets.Scripts.GUI
         {
             if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
+
+                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                    AnalyticsLedger.EventAction.Clicked,
+                    "Emulation Start",
+                    AnalyticsLedger.getMilliseconds().ToString());
                 if (!EmulatorManager.StartEmulator())
                     UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
             }
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Emulation Start",
-                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         public override void ToggleHidden()
