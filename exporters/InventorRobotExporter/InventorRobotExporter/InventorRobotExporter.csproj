@@ -401,9 +401,6 @@
     <Content Include="Autodesk.InventorRobotExporter.Inventor.addin">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="GUI\Guide\drivetrain.png" />
-    <None Include="GUI\Guide\joints.png" />
-    <None Include="GUI\Guide\weight.png" />
     <Content Include="GUI\JointView\JointViewKey.html" />
     <Content Include="GUI\JointView\JointViewKeyPane.resx" />
     <Content Include="GUI\Guide\Guide.html" />
@@ -433,6 +430,7 @@
       <Name>SimulatorAPI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>

@@ -15,7 +15,6 @@
         <style>
             body {
                 font-family: Arial, sans-serif;
-                font-size: 16px;
                 margin: 0px;
             }
 
@@ -25,7 +24,6 @@
 
                 p.instructions {
                     margin: 15px 60px 0px 60px;
-                    font-size: 15px;
                 }
 
                 p.precheck-description {
@@ -41,37 +39,26 @@
                 td {
                     padding-bottom: 20px;
                 }
-            
+
                 td.number {
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 3px;
-                    margin: 3px 10px 0px 0px;
-                    background: orange;
-                    border: 2px solid orange;
-                    color: #666;
-                    text-align: center;
-                    color: #fff;
-                    font: 20px Arial, sans-serif;
-                    display: inline-block;
+                    width: 10%;
+                    font-size: 48px;
+                    font-weight: bold;
                 }
 
                 td.icon {
                     width: 20%;
                 }
-            
-            img.logo {
-                width: 90%;
-                height: auto;
-                display: block;
-                margin: auto;
-            }
 
             h1 {
-                font-size: 25px;
+                font-size: 35px;
                 margin: 0px;
                 padding: 10px 10px 10px 15px;
                 color: darkslategray;
+/*
+                background-color: #3D3D3D;
+                color: white;
+*/
                 font-weight: normal;
             }
 
@@ -83,7 +70,7 @@
 
             hr {
                 border-style: solid;
-                border-color: darkslategray;
+                border-color: dodgerblue;
             }
 
                 hr.big {
@@ -95,61 +82,48 @@
                 padding: 10px;
                 margin: auto;
             }
-            circle {
-                width: 50px;
-                height: 50px;
-                -webkit-border-radius: 25px;
-                border-radius: 25px;
-                background: red;
-                border-color: pink;
-            }
-            a {
-                color: orange;
-            }
         </style>
     </head>
     <body>
-        <img class="logo" src="https://i.imgur.com/Vh27lE4.png">
+        <h1>Robot Export Guide</h1>
         <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
         <hr class="big">
         <h2>Pre-Check</h2>
-<!--        <p>&#10004; <a href="#" onclick="toggleElement('assembly-video')">Restructure your assemblies</a> </p>-->
-        <p>&#10004; <a href="https://www.youtube.com/embed/fY3Vdkh8L0Y" target="_blank">Restructure your assemblies</a> </p>
+        <p>&#10004; <a href="#" onclick="toggleElement('assembly-video')">Restructure your assemblies</a></p>
         <p class="precheck-description">This makes moving parts accessible to the Robot Exporter plugin.</p>
-<!--        <iframe id="assembly-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/fY3Vdkh8L0Y?showinfo=0&controls=0&autohide=1" frameborder="0"></iframe>-->
-<!--        <p>&#10004; <a href="#" onclick="toggleElement('joint-video')">Adding joints</a></p>-->
-        <p>&#10004; <a href="https://www.youtube.com/embed/_YCP-cWn1Gc" target="_blank">Adding joints</a></p>
+        <iframe id="assembly-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/fY3Vdkh8L0Y?showinfo=0&controls=0&autohide=1" frameborder="0"></iframe>
+        <p>&#10004; <a href="#" onclick="toggleElement('joint-video')">Adding joints</a></p>
         <p class="precheck-description">Joints support your robot's movement.</p>
-<!--        <iframe id="joint-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/_YCP-cWn1Gc" frameborder="0" allow="accelerometer; autoplay;  gyroscope; picture-in-picture"></iframe>-->
+        <iframe id="joint-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/_YCP-cWn1Gc" frameborder="0" allow="accelerometer; autoplay;  gyroscope; picture-in-picture"></iframe>
         <hr class="big">
         <table class="step-container">
             <tr name="step-1">
                 <td class="number">1</td>
+                <td class="icon"><img src="https://i.imgur.com/eYJ9uPk.png"></td>
                 <td><b>Select your robot's drivetrain.</b><br>
                     Standard: Basic drivetrain<br>
                     H-Drive: Perpendicular wheel setup for moving sideways<br>
                     Other: Alternative drivetrains
                 </td>
-                <td class="icon"><img src="https://i.imgur.com/eYJ9uPk.png"></td>
             </tr>
             <tr name="step-2">
                 <td class="number">2</td>
+                <td class="icon"><img src="https://i.imgur.com/NEVPB3F.png"></td>
                 <td><b>Enter you robot's weight.</b><br>
                     This is only including the base of your<br>
                     robot, excluding wheels.</td>
-                <td class="icon"><img src="https://i.imgur.com/NEVPB3F.png"></td>
             </tr>
             <tr name="step-3">
                 <td class="number">3</td>
+                <td class="icon"><img src="https://i.imgur.com/4NUVoi4.png"></td>
                 <td><b>Edit wheels or mechanisms.</b><br>
                     Support movement of wheels or<br>
                     manipulators. This step is necessary<br>
                     for an accurate simulation in Synthesis.
                 </td>
-                <td class="icon"><img src="https://i.imgur.com/4NUVoi4.png"></td>
             </tr>
         
         </table>
-        <hr class="big" style="margin-top: 0px;">
+        <hr class="big" style="padding-bottom: 0px;">
     </body>
 </html>
