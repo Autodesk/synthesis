@@ -291,7 +291,8 @@ bool EUI::createGuidePalette()
 	if (!guidePalette)
 	{
 		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "palette/guide.html", false, true, true, 400, 200);
+		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "palette/guide.html", false, true, true, 470, 200);
+
 		if (!guidePalette)
 			return false;
 
