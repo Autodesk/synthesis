@@ -352,7 +352,7 @@ namespace Synthesis
             updatingStatus = false;
         }
 
-        public static Task SCPFileSender(UserProgram userProgram, bool autorun = true)
+        public static Task<bool> SCPFileSender(UserProgram userProgram, bool autorun = true)
         {
             return Task.Run(async () =>
             {
@@ -391,10 +391,12 @@ namespace Synthesis
                         isRobotCodeRestarting = false;
                     }
                 }
-                catch (Exception e) {
-                    UserMessageManager.Dispatch("Failed to upload new user program", EmulationWarnings.WARNING_DURATION);
+                catch (Exception e)
+                {
                     Debug.Log(e.ToString());
+                    return false;
                 }
+                return true;
             });
         }
 
