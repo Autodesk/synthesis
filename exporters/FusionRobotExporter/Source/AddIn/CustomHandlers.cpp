@@ -116,9 +116,13 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	{
 		std::wstring stemp = s2ws(eventArgs->data());
 		LPCWSTR result = stemp.c_str();
+#ifdef _WIN32
 		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
-		//system("open http://google.com"); opens link on Linux/macOS/Unix
-
+#elif __APPLE__ || __linux || __unix || __posix
+		system("open http://google.com"); // opens link on Linux/macOS/Unix
+#else
+#   error "Unsupported"
+#endif
 	}
 	else if (eventArgs->action() == "close")
 	{
