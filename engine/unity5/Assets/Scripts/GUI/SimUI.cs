@@ -93,9 +93,9 @@ namespace Synthesis.GUI
 
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
-        public delegate void EntryChanged(int a);
+        //public delegate void EntryChanged(int a);
 
-        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
+        //public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
 
         private void Start()
         {
@@ -361,30 +361,19 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 
-        public void OnSettingsTab()
-        {
-            if (!settingsPanel.activeSelf)
-            {
-                tabStateMachine.PushState(new SettingsState());
-                lastTab = currentTab;
-                currentTab = "SettingsTab";
-            } else
-            {
-                tabStateMachine.PopState();
-                currentTab = lastTab;
-            }
-
-            /*if (settingsPanel.activeSelf)
-            {
-                settingsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                //settingsPanel.SetActive(true);
-                tabStateMachine.ChangeState(new OptionsTabState());
-            }*/
-        }
+        //public void OnSettingsTab()
+        //{
+        //    if (!settingsPanel.activeSelf)
+        //    {
+        //        tabStateMachine.PushState(new SettingsState());
+        //        lastTab = currentTab;
+        //        currentTab = "SettingsTab";
+        //    } else
+        //    {
+        //        tabStateMachine.PopState();
+        //        currentTab = lastTab;
+        //    }
+        //}
 
         public void ShowError(string msg)
         {
@@ -1110,17 +1099,17 @@ namespace Synthesis.GUI
                 tabStateMachine.Link<T>(tab, strict);
         }
 
-        public void ResolutionSelectionChanged(int a) {
-            OnResolutionSelection(a);
-        }
+        //public void ResolutionSelectionChanged(int a) {
+        //    OnResolutionSelection(a);
+        //}
 
-        public void ScreenmodeSelectionChanged(int a) {
-            OnScreenmodeSelection(a);
-        }
+        //public void ScreenmodeSelectionChanged(int a) {
+        //    OnScreenmodeSelection(a);
+        //}
 
-        public void QualitySelectionChanged(int a) {
-            OnQualitySelection(a);
-        }
+        //public void QualitySelectionChanged(int a) {
+        //    OnQualitySelection(a);
+        //}
 
         public static bool IsMaMInstalled() {
             return Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsState : State {
-
+public class SettingsState : MonoBehaviour
+{
     private GameObject canvas;
 
     private GameObject settingsPanel;
@@ -29,7 +29,7 @@ public class SettingsState : State {
     private int selectedQuality = 0;
     private string selectedResolution = "0x0";
 
-    public override void Start()
+    public void Start()
     {
         canvas = Auxiliary.FindGameObject("Canvas");
 
@@ -45,9 +45,9 @@ public class SettingsState : State {
         qualDD = Auxiliary.FindObject(settingsPanel, "QualitySettings").GetComponent<Dropdown>();
         List<Dropdown.OptionData> resOps = new List<Dropdown.OptionData>();
 
-        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
-        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
-        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
+        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
+        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
+        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
 
         // RESOLUTIONS
         resolutions = new List<string>();
@@ -117,14 +117,14 @@ public class SettingsState : State {
         }
     }
 
-    public override void LateUpdate() {
+    public void LateUpdate() {
         resolutionT.text = selectedResolution;
         screenT.text = scrDD.options[selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
         analyticsT.text = collect == 1 ? "Yes" : "No";
     }
 
-    public void OnToggleAnalyticsClicked()
+    public void ToggleAnalytics()
     {
         collect = collect == 1 ? 0 : 1;
         analyticsT.text = collect == 1 ? "Yes" : "No";
@@ -151,12 +151,12 @@ public class SettingsState : State {
     /// <summary>
     /// Pushes the load replay state.
     /// </summary>
-    private void PushLoadReplayState()
-    {
-        settingsPanel.SetActive(false);
-        StateMachine.ChangeState(new LoadReplayState());
-        Debug.Log("pushed");
-    }
+    //private void PushLoadReplayState()
+    //{
+    //    settingsPanel.SetActive(false);
+    //    StateMachine.ChangeState(new LoadReplayState());
+    //    Debug.Log("pushed");
+    //}
 
     /// <summary>
     /// Pops the current<see cref="State"/> when the back button is pressed.
@@ -166,7 +166,7 @@ public class SettingsState : State {
     //    StateMachine.PopState();
     //}
 
-    public void OnApplySettingsClicked()
+    public void ApplySettings()
     {
         PlayerPrefs.SetString("resolution", selectedResolution);
         PlayerPrefs.SetInt("fullscreen", selectedScreenMode);
@@ -178,21 +178,21 @@ public class SettingsState : State {
         QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
-        OnCloseSettingsPanelClicked();
+        //OnCloseSettingsPanelClicked();
     }
 
     public void OnScrSelChanged(int a) {
 
         selectedScreenMode = a;
 
-        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
+        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
     }
 
     public void OnResSelChanged(int b) {
         string entry = resDD.options[b].text;
         selectedResolution = entry;
 
-        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
+        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
     }
 
     public void OnQuaSelChanged(int b) {
@@ -202,17 +202,22 @@ public class SettingsState : State {
 
         Debug.Log("Is your card... " + selectedQuality);
 
-        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
+        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
     }
 
     public void OnCloseSettingsPanelClicked()
     {
-        SimUI.getSimUI().OnSettingsTab();
+        MenuUI.instance.SwitchSettings();
     }
 
-    public override void End()
+    public void End()
     {
         settingsPanel.SetActive(false);
+    }
+
+    public new void OnEnable()
+    {
+        this.Start();
     }
 
 }

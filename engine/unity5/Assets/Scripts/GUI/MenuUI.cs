@@ -19,6 +19,14 @@ namespace Synthesis.GUI
         GameObject viewReplaysPanel;
         GameObject helpPanel;
 
+        SettingsState settings;
+
+        public static MenuUI instance;
+
+        public delegate void EntryChanged(int a);
+
+        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
+
         // Robot controls
         // Global Controls
         // Settings
@@ -27,6 +35,8 @@ namespace Synthesis.GUI
 
         public void Start()
         {
+            instance = this;
+
             canvas = GameObject.Find("Canvas");
 
             robotControlPanel = Auxiliary.FindObject(canvas, "RobotControlPanel");
@@ -34,6 +44,17 @@ namespace Synthesis.GUI
             settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
             helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
+
+            settings = settingsPanel.GetComponent<SettingsState>();
+            if (settings == null) Debug.Log("Bad");
+        }
+
+        public void LateUpdate()
+        {
+            if (settingsPanel.activeSelf)
+            {
+                settings.LateUpdate();
+            }
         }
 
         private void OnGUI()
@@ -72,7 +93,41 @@ namespace Synthesis.GUI
         public void SwitchSettings()
         {
             EndOtherProcesses();
-            settingsPanel.SetActive(true);
+            if (!settingsPanel.activeSelf)
+            {
+                settingsPanel.SetActive(true);
+                settings.Start();
+            } else
+            {
+                settingsPanel.SetActive(false);
+                settings.End();
+            }
+        }
+
+        public void ResolutionSelectionChanged(int a)
+        {
+            OnResolutionSelection(a);
+            Debug.Log("a" + a);
+        }
+
+        public void ScreenmodeSelectionChanged(int a)
+        {
+            OnScreenmodeSelection(a);
+        }
+
+        public void QualitySelectionChanged(int a)
+        {
+            OnQualitySelection(a);
+        }
+
+        public void SettingsToggleAnalytics()
+        {
+            settings.ToggleAnalytics();
+        }
+
+        public void SettingsApply()
+        {
+            settings.ApplySettings();
         }
 
         #endregion
@@ -106,6 +161,6 @@ namespace Synthesis.GUI
             viewReplaysPanel.SetActive(false);
             helpPanel.SetActive(false);
         }
-        
+
     }
 }
