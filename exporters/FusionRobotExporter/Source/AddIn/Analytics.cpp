@@ -26,7 +26,7 @@ void Analytics::setClientID()
 {
 	std::string jsonId = "";
 	try {
-		std::ifstream t("SynthesisAddInSettings.json");
+		std::ifstream t("SynthesisAddInSettings.json"); // TODO: settings manager class
 		std::string jsonStr((std::istreambuf_iterator<char>(t)),
 			std::istreambuf_iterator<char>());
 		jsonId = jsonStr;
@@ -42,7 +42,7 @@ void Analytics::setClientID()
 	{
 		clientId = generate_guid();
 
-		std::string filenameBXDJ = "SynthesisAddInSettings.json";
+		std::string filenameBXDJ = "SynthesisAddInSettings.json"; // TODO: Settings manager class
 		nlohmann::json baseJson;
 		baseJson["AnalyticsID"] = clientId;
 		std::ofstream writeStream(filenameBXDJ);
@@ -62,7 +62,7 @@ uri_builder Analytics::GetBaseURL()
 	auto url = uri_builder(U("collect"));
 	url.append_query(U("v"), U("1"));
 	url.append_query(U("tid"), U("UA-81892961-5"));
-	url.append_query(U("cid"), std::wstring(clientId.begin(), clientId.end()));
+	url.append_query(U("cid"), std::wstring(clientId.begin(), clientId.end())); // TODO: string type conversion
 	return url;
 }
 
