@@ -506,7 +506,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 13401444}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4004063a87b882343abd8be3a01e2f2c, type: 3}
+  m_Script: {fileID: 11500000, guid: ea87ac35fb80fd340a281ac75401389c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &13401447
@@ -38302,7 +38302,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 615899806}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231148}
+        m_MethodName: SettingsApply
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &615899806
@@ -43329,7 +43340,7 @@ GameObject:
   - component: {fileID: 686257562}
   - component: {fileID: 686257561}
   m_Layer: 5
-  m_Name: DeleteButton
+  m_Name: Delete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43398,7 +43409,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 686257562}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231148}
+        m_MethodName: DeleteReplayButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &686257562
@@ -43647,6 +43669,7 @@ GameObject:
   - component: {fileID: 692278961}
   - component: {fileID: 692278963}
   - component: {fileID: 692278962}
+  - component: {fileID: 692278964}
   m_Layer: 5
   m_Name: LoadReplayPanel
   m_TagString: Untagged
@@ -43716,6 +43739,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 692278960}
   m_CullTransparentMesh: 0
+--- !u!114 &692278964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 692278960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 523d322b62004874e83b4182ba43348f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &692800216
 GameObject:
   m_ObjectHideFlags: 0
@@ -53995,7 +54030,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: QualitySelectionChanged
         m_Mode: 0
         m_Arguments:
@@ -62533,7 +62568,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1026148854}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741231148}
+        m_MethodName: SettingsToggleAnalytics
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1026148854
@@ -73005,7 +73051,7 @@ GameObject:
   - component: {fileID: 1220479548}
   - component: {fileID: 1220479547}
   m_Layer: 5
-  m_Name: LaunchButton
+  m_Name: Launch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73075,8 +73121,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: Launch
+      - m_Target: {fileID: 1741231148}
+        m_MethodName: LaunchReplayButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -93522,6 +93568,7 @@ GameObject:
   - component: {fileID: 1597018985}
   - component: {fileID: 1597018987}
   - component: {fileID: 1597018986}
+  - component: {fileID: 1597018988}
   m_Layer: 5
   m_Name: SettingsPanel
   m_TagString: Untagged
@@ -93593,6 +93640,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1597018984}
   m_CullTransparentMesh: 0
+--- !u!114 &1597018988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597018984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 679a78ea754714b4fa363c72608a860c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1597255187
 GameObject:
   m_ObjectHideFlags: 0
@@ -128184,7 +128243,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: ScreenmodeSelectionChanged
         m_Mode: 0
         m_Arguments:
@@ -128268,7 +128327,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: ResolutionSelectionChanged
         m_Mode: 0
         m_Arguments:

@@ -17,9 +17,12 @@ using Button = UnityEngine.UI.Button;
 
 namespace Synthesis.States
 {
-    public class LoadReplayState : State
+    public class LoadReplayState : MonoBehaviour
     {
+        GameObject mainCam;
         GameObject canvas;
+        GameObject loadingPanel;
+
         GameObject loadReplayPanel;
 
         Button deleteButton;
@@ -31,9 +34,12 @@ namespace Synthesis.States
         /// <summary>
         /// Initializes references to requried <see cref="GameObject"/>s.
         /// </summary>
-        public override void Start()
+        public void Start()
         {
+            mainCam = GameObject.Find("Main Camera");
             canvas = GameObject.Find("Canvas");
+            loadingPanel = Auxiliary.FindObject(mainCam, "LoadingPanel");
+
             loadReplayPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
 
             GameObject replayList = GameObject.Find("SimLoadReplayList");
@@ -41,7 +47,7 @@ namespace Synthesis.States
 
             deleteButton = Auxiliary.FindObject(canvas, "DeleteButton").GetComponent<Button>();
             deleteButton.onClick.RemoveAllListeners();
-            deleteButton.onClick.AddListener(OnDeleteButtonClicked);
+            deleteButton.onClick.AddListener(DeleteReplay);
 
             //cancelButton = Auxiliary.FindObject(canvas, "CancelButton").GetComponent<Button>();
             //cancelButton.onClick.RemoveAllListeners();
@@ -55,10 +61,15 @@ namespace Synthesis.States
             DynamicCamera.ControlEnabled = false;
         }
 
+        public void OnEnable()
+        {
+            this.Start();
+        }
+
         /// <summary>
         /// Renders the UserMessageManager.
         /// </summary>
-        public override void OnGUI()
+        public void OnGUI()
         {
             UserMessageManager.Render();
         }
@@ -66,7 +77,7 @@ namespace Synthesis.States
         /// <summary>
         /// Disables the canvas and re-enables camera movement.
         /// </summary>
-        public override void End()
+        public void End()
         {
             //canvas.SetActive(false);
             DynamicCamera.ControlEnabled = true;
@@ -75,7 +86,7 @@ namespace Synthesis.States
         /// <summary>
         /// Deletes the selected replay when the delete button is pressed.
         /// </summary>
-        public void OnDeleteButtonClicked()
+        public void DeleteReplay()
         {
             GameObject replayList = GameObject.Find("SimLoadReplayList");
             string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
@@ -99,25 +110,25 @@ namespace Synthesis.States
         /// <summary>
         /// Launches the selected replay when the launch replay button is pressed.
         /// </summary>
-        //public void OnLaunchButtonClicked()
-        //{
-        //    GameObject replayList = GameObject.Find("SimLoadReplayList");
-        //    string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
-        //    //loadingPanel.SetActive(true);
+        public void LaunchReplay()
+        {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
+            //loadingPanel.SetActive(true);
 
-        //    if (entry != null)
-        //    {
-        //        AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
-        //            AnalyticsLedger.TimingVarible.Viewing,
-        //            AnalyticsLedger.TimingLabel.ReplayMode);
+            if (entry != null)
+            {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Viewing,
+                    AnalyticsLedger.TimingLabel.ReplayMode);
 
-        //        //loadingPanel.SetActive(true);
-        //        PlayerPrefs.SetString("simSelectedReplay", entry);
-        //        PlayerPrefs.Save();
-        //        SceneManager.LoadScene("Scene");
-        //    }
+                loadingPanel.SetActive(true);
+                PlayerPrefs.SetString("simSelectedReplay", entry);
+                PlayerPrefs.Save();
+                SceneManager.LoadScene("Scene");
+            }
 
-        //    replayList.SetActive(false);
-        //}
+            replayList.SetActive(false);
+        }
     }
 }

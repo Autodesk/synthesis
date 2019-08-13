@@ -20,6 +20,7 @@ namespace Synthesis.GUI
         GameObject helpPanel;
 
         SettingsState settings;
+        LoadReplayState loadReplay;
 
         public static MenuUI instance;
 
@@ -46,7 +47,7 @@ namespace Synthesis.GUI
             helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
 
             settings = settingsPanel.GetComponent<SettingsState>();
-            if (settings == null) Debug.Log("Bad");
+            loadReplay = viewReplaysPanel.GetComponent<LoadReplayState>();
         }
 
         public void LateUpdate()
@@ -136,7 +137,25 @@ namespace Synthesis.GUI
         public void SwitchViewReplays()
         {
             EndOtherProcesses();
-            viewReplaysPanel.SetActive(true);
+            if (!viewReplaysPanel.activeSelf)
+            {
+                viewReplaysPanel.SetActive(true);
+                loadReplay.Start();
+            } else
+            {
+                viewReplaysPanel.SetActive(false);
+                loadReplay.End();
+            }
+        }
+
+        public void DeleteReplayButton()
+        {
+            loadReplay.DeleteReplay();
+        }
+
+        public void LaunchReplayButton()
+        {
+            loadReplay.LaunchReplay();
         }
 
         #endregion

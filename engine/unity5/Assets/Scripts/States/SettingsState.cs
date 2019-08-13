@@ -117,6 +117,11 @@ public class SettingsState : MonoBehaviour
         }
     }
 
+    public new void OnEnable()
+    {
+        this.Start();
+    }
+
     public void LateUpdate() {
         resolutionT.text = selectedResolution;
         screenT.text = scrDD.options[selectedScreenMode].text;
@@ -214,10 +219,4 @@ public class SettingsState : MonoBehaviour
     {
         settingsPanel.SetActive(false);
     }
-
-    public new void OnEnable()
-    {
-        this.Start();
-    }
-
 }
