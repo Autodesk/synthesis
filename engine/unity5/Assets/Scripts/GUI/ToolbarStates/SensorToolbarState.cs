@@ -22,6 +22,7 @@ namespace Assets.Scripts.GUI
 
         GameObject canvas;
         GameObject sensorToolbar;
+        GameObject tabs;
 
         Dropdown ultrasonicDropdown;
         Dropdown beamBreakerDropdown;
@@ -38,6 +39,7 @@ namespace Assets.Scripts.GUI
 
             canvas = GameObject.Find("Canvas");
             sensorToolbar = Auxiliary.FindObject(canvas, "SensorToolbar");
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
 
             ultrasonicDropdown = Auxiliary.FindObject(sensorToolbar, "UltrasonicDropdown").GetComponent<Dropdown>();
             beamBreakerDropdown = Auxiliary.FindObject(sensorToolbar, "BeamBreakDropdown").GetComponent<Dropdown>();
