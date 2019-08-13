@@ -54,10 +54,7 @@ namespace Synthesis.Robot
         private MainState state;
 
         #region help ui variables
-        GameObject helpMenu;
         GameObject toolbar;
-        GameObject overlay;
-        Text helpBodyText;
         #endregion
 
         GameObject canvas;
@@ -271,24 +268,15 @@ namespace Synthesis.Robot
             resetCanvas.SetActive(true);
 
             #region init
-            if (helpMenu == null) helpMenu = Auxiliary.FindObject(resetCanvas, "Help");
             if (toolbar == null) toolbar = Auxiliary.FindObject(resetCanvas, "ResetStateToolbar");
-            if (overlay == null) overlay = Auxiliary.FindObject(resetCanvas, "Overlay");
-            if (helpBodyText == null) helpBodyText = Auxiliary.FindObject(resetCanvas, "BodyText").GetComponent<Text>();
             #endregion
 
             Button resetButton = Auxiliary.FindObject(resetCanvas, "ResetButton").GetComponent<Button>();
             resetButton.onClick.RemoveAllListeners();
             resetButton.onClick.AddListener(BeginRevertSpawnpoint);
-            Button helpButton = Auxiliary.FindObject(resetCanvas, "HelpButton").GetComponent<Button>();
-            helpButton.onClick.RemoveAllListeners();
-            helpButton.onClick.AddListener(HelpMenu);
             Button returnButton = Auxiliary.FindObject(resetCanvas, "ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(EndReset);
-            Button closeHelp = Auxiliary.FindObject(helpMenu, "CloseHelpButton").GetComponent<Button>();
-            closeHelp.onClick.RemoveAllListeners();
-            closeHelp.onClick.AddListener(CloseHelpMenu);
 
             DynamicCamera dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
             lastCameraState = dynamicCamera.ActiveState;
@@ -394,7 +382,6 @@ namespace Synthesis.Robot
             foreach (Tracker t in GetComponentsInChildren<Tracker>())
                 t.Clear();
 
-            if (helpMenu.activeSelf) CloseHelpMenu();
             InputControl.freeze = false;
             canvas.GetComponent<Canvas>().enabled = true;
             resetCanvas.SetActive(false);
@@ -459,35 +446,6 @@ namespace Synthesis.Robot
                 RigidBody r = (RigidBody)br.GetCollisionObject();
 
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
-            }
-        }
-
-        private void HelpMenu()
-        {
-            helpMenu.SetActive(true);
-            overlay.SetActive(true);
-
-            helpBodyText.GetComponent<Text>().text = "Move Robot: WASD keys or drag navigation arrows. " +
-                "\nClick and drag a face of the navigation cube to move robot freely" +
-                "\n\nRotate Robot: Hold RIGHT MOUSE BUTTON, and use A and D keys to rotate" +
-                "\n\nSave: Press ENTER";
-
-            toolbar.transform.Translate(new Vector3(100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(100, 0, 0));
-                else t.gameObject.SetActive(false);
-            }
-        }
-        private void CloseHelpMenu()
-        {
-            helpMenu.SetActive(false);
-            overlay.SetActive(false);
-            toolbar.transform.Translate(new Vector3(-100, 0, 0));
-            foreach (Transform t in toolbar.transform)
-            {
-                if (t.gameObject.name != "HelpButton") t.Translate(new Vector3(-100, 0, 0));
-                else t.gameObject.SetActive(true);
             }
         }
 
