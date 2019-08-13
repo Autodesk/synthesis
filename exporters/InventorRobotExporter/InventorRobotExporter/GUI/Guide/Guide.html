@@ -2,16 +2,6 @@
 <html>
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <script type="text/javascript">
-            function toggleElement(id) {
-                if (document.getElementById(id).style.display === "none") {
-                    document.getElementById(id).style.display = "block";
-                } else {
-                    document.getElementById(id).style.display = "none";
-                }
-            }
-            
-        </script>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -67,14 +57,6 @@
                 margin: auto;
             }
 
-            h1 {
-                font-size: 25px;
-                margin: 0px;
-                padding: 10px 10px 10px 15px;
-                color: darkslategray;
-                font-weight: normal;
-            }
-
             h2 {
                 font-size: 16px;
                 margin: 0px 0px 15px 55px;
@@ -84,25 +66,10 @@
             hr {
                 border-style: solid;
                 border-color: darkslategray;
+                border-width: 3px;                
+                margin: 15px 25px 15px 25px;
             }
-
-                hr.big {
-                    margin: 15px 25px 15px 25px;
-                    border-width: 3px;
-                }
             
-            iframe {
-                padding: 10px;
-                margin: auto;
-            }
-            circle {
-                width: 50px;
-                height: 50px;
-                -webkit-border-radius: 25px;
-                border-radius: 25px;
-                background: red;
-                border-color: pink;
-            }
             a {
                 color: orange;
             }
@@ -111,18 +78,14 @@
     <body>
         <img class="logo" src="https://i.imgur.com/Vh27lE4.png">
         <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
-        <hr class="big">
+        <hr>
         <h2>Pre-Check</h2>
-<!--        <p>&#10004; <a href="#" onclick="toggleElement('assembly-video')">Restructure your assemblies</a> </p>-->
         <p>&#10004; <a href="https://youtu.be/fY3Vdkh8L0Y" target="_blank">Restructure your assemblies</a> </p>
         <p class="precheck-description">This makes moving parts accessible to the Robot Exporter plugin.</p>
-<!--        <iframe id="assembly-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/fY3Vdkh8L0Y?showinfo=0&controls=0&autohide=1" frameborder="0"></iframe>-->
-<!--        <p>&#10004; <a href="#" onclick="toggleElement('joint-video')">Adding joints</a></p>-->
         <p>&#10004; <a href="https://youtu.be/_YCP-cWn1Gc" target="_blank">Adding joints</a></p>
         <p class="precheck-description">Joints support your robot's movement.</p>
-<!--        <iframe id="joint-video" style="display: none;" width="450" height="250" src="https://www.youtube.com/embed/_YCP-cWn1Gc" frameborder="0" allow="accelerometer; autoplay;  gyroscope; picture-in-picture"></iframe>-->
-        <hr class="big">
-        <table class="step-container">
+        <hr>
+        <table>
             <tr name="step-1">
                 <td class="number">1</td>
                 <td><b>Select your robot's drivetrain.</b><br>
@@ -148,8 +111,7 @@
                 </td>
                 <td class="icon"><img src="https://i.imgur.com/4NUVoi4.png"></td>
             </tr>
-        
         </table>
-        <hr class="big" style="margin-top: 0px;">
+        <hr style="margin-top: 0px;">
     </body>
 </html>
