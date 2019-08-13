@@ -12,7 +12,6 @@
 #include <Fusion/FusionAll.h>
 #include "../Exporter.h"
 #include "../Data/BXDJ/Utility.h"
-#include <Windows.h>
 #include "Analytics.h"
 using namespace SynthesisAddIn;
 

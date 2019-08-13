@@ -41,7 +41,6 @@ extern "C" XI_EXPORT bool stop(const char* context)
 
 #ifdef XI_WIN
 
-#include <windows.h>
 
 BOOL APIENTRY DllMain(HMODULE hmodule, DWORD reason, LPVOID reserved)
 {

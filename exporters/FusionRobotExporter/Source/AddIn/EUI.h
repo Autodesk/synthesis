@@ -12,8 +12,6 @@
 #include <list>
 #include <experimental/filesystem>
 #include <Core/Application/Viewport.h>
-#include <windows.h>
-#include <KnownFolders.h>
 #include <ShlObj.h>
 #include "CustomHandlers.h"
 #include "Identifiers.h"

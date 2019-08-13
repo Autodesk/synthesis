@@ -119,9 +119,9 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 #ifdef _WIN32
 		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
 #elif __APPLE__ || __linux || __unix || __posix
-		system(result); // opens link on Linux/macOS/Unix
+		system("open "+result); // opens link on Linux/macOS/Unix
 #else
-#   error "Unsupported"
+#   error "Unsupported compiler"
 #endif
 	}
 	else if (eventArgs->action() == "close")
