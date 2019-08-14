@@ -162,6 +162,12 @@ namespace Synthesis.States
             //If a replay has been selected, load the replay. Otherwise, load the field and robot.
             string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
 
+            if (PlayerPrefs.GetString("simSelectedRobot", "").Equals(""))
+            {
+                AppModel.ErrorToMenu("ROBOT_SELECT|FIRST");
+                return;
+            }
+
             if (string.IsNullOrEmpty(selectedReplay))
             {
                 Tracking = true;

@@ -18,9 +18,9 @@ namespace Synthesis.States
             if (error.Split('|')[0].Equals("ROBOT_SELECT")) {
                 AppModel.ClearError();
                 StateMachine.ChangeState(new LoadRobotState());
-                Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
-            }
-            else {
+                if (error.Split('|')[1].Equals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
+                else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
+            } else {
                 Auxiliary.FindGameObject("ErrorScreen").SetActive(true);
                 Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
                 AppModel.ClearError();
