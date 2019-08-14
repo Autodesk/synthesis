@@ -409,6 +409,9 @@
     <None Include="Resources\Branding\SynthesisLogoIco.ico" />
     <None Include="Resources\Other\ArrowLeft.png" />
     <None Include="Resources\Other\ArrowRight.png" />
+    <None Include="Resources\Guide\drivetrain.PNG" />
+    <None Include="Resources\Guide\joints.PNG" />
+    <None Include="Resources\Guide\weight.PNG" />
     <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
     <Content Include="Resources\RibbonIcons\Book32.png" />
     <Content Include="Resources\RibbonIcons\JointEditor32.png" />
@@ -427,6 +430,7 @@
       <Name>SimulatorAPI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
