@@ -14,7 +14,7 @@
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		Analytics::StartSession(eui->getApp());
 		eui->prepareAllPalettes();
@@ -25,7 +25,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 // Deactivate Workspace Event
 void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->closeAllPalettes();
 		Analytics::EndSession();
