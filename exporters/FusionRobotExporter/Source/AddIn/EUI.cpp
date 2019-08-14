@@ -234,6 +234,7 @@ void EUI::startExportRobot(bool openSynthesis)
 	if (Filesystem::directoryExists(filePath)) {
 		DialogResults res = UI->messageBox("Robot Export Already Exists! Overwrite?", "Robot Export", MessageBoxButtonTypes::YesNoButtonType, WarningIconType);
 		if (res != DialogYes) {
+			closeFinishPalette();
 			cancelExportRobot();
 			return;
 		}
