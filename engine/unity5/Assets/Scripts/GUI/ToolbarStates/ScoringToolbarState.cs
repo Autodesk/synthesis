@@ -19,11 +19,13 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject toolbar;
+        GameObject tabs;
 
         public override void Start()
         {
             canvas = GameObject.Find("Canvas");
             toolbar = Auxiliary.FindObject(canvas, "ScoringToolbar");
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
         }
 
         public override void ToggleHidden()

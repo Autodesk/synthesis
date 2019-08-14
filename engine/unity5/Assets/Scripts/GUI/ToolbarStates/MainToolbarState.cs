@@ -49,6 +49,7 @@ namespace Synthesis.GUI
         GameObject inputManagerPanel;
         GameObject checkSavePanel;
         GameObject toolbar;
+        GameObject tabs;
         GameObject pointImpulsePanel;
 
         public bool dpmWindowOn = false; //if the driver practice mode window is active
@@ -57,6 +58,9 @@ namespace Synthesis.GUI
         public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
+            toolbar = Auxiliary.FindObject(canvas, "MainToolbar");
 
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");

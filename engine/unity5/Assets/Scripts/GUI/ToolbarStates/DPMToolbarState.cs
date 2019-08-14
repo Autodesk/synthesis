@@ -25,6 +25,7 @@ namespace Assets.Scripts.GUI
     {
         GameObject canvas;
         GameObject dpmToolbar;
+        GameObject tabs;
 
         GameObject gamepieceDropdownButton;
         GameObject gamepieceDropdownArrow;
@@ -49,6 +50,7 @@ namespace Assets.Scripts.GUI
 
             canvas = GameObject.Find("Canvas");
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
+            tabs = Auxiliary.FindObject(canvas, "Tabs");
 
             gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
             gamepieceDropdownArrow = Auxiliary.FindObject(gamepieceDropdownButton, "Arrow");
