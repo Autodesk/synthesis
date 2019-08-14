@@ -9,8 +9,7 @@ namespace hel{
         std::string s = "(";
         s += "type:" + asString(getType()) + ", ";
         s += "id:" + std::to_string(getID()) + ", ";
-        s += "percent_output:" + std::to_string(percent_output) + ", ";
-        s += "inverted:" + asString(inverted);
+        s += "percent_output:" + std::to_string(percent_output);
         s += ")";
         return s;
     }
@@ -26,16 +25,9 @@ namespace hel{
         return percent_output;
     }
 
-    void CANMotorControllerBase::setInverted(bool i)noexcept{
-        inverted = i;
-        auto instance = RobotOutputsManager::getInstance();
-        instance.first->updateShallow();
-        instance.second.unlock();
-    }
+    CANMotorControllerBase::CANMotorControllerBase()noexcept:CANDevice(), percent_output(0.0){}
 
-    CANMotorControllerBase::CANMotorControllerBase()noexcept:CANDevice(), percent_output(0.0), inverted(false){}
-
-    CANMotorControllerBase::CANMotorControllerBase(CANMessageID message_id)noexcept:CANDevice(message_id), percent_output(0.0), inverted(false){
+    CANMotorControllerBase::CANMotorControllerBase(CANMessageID message_id)noexcept:CANDevice(message_id), percent_output(0.0){
         auto instance = RobotOutputsManager::getInstance();
         instance.first->updateShallow();
         instance.second.unlock();
@@ -44,7 +36,6 @@ namespace hel{
     CANMotorControllerBase::CANMotorControllerBase(const CANMotorControllerBase& source)noexcept: CANDevice(source){
 #define COPY(NAME) NAME = source.NAME
         COPY(percent_output);
-        COPY(inverted);
 #undef COPY
     }
 
@@ -74,8 +65,9 @@ namespace hel{
                 DATA[1] is the first byte of the number and DATA[2] is the second
                 Dividing by 0x0400 scales the value to the proper -1.0 to 1.0
             */
-            setPercentOutput((double)(((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400);
-            setInverted(checkBitHigh(command_byte,SendCommandByteMask::INVERT));
+            bool inverted = checkBitHigh(command_byte,SendCommandByteMask::INVERT);
+            double power = (double)(((DATA[1] - DATA[0]) << 8) + (DATA[2] - DATA[0])) / 0x0400;
+			setPercentOutput(inverted ? -power : power);
 
             for(unsigned i = 0; i < 8; i++){ //check for unrecognized command bits
                 if(

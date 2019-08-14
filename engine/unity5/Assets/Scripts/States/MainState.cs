@@ -88,13 +88,6 @@ namespace Synthesis.States
         private const int MAX_ROBOTS = 6;
 
         public bool IsMetric;
-        public bool isEmulationDownloaded = File.Exists(EmulatorManager.emulationDir + "kernel-native") &&
-            File.Exists(EmulatorManager.emulationDir + "rootfs-native.ext4") &&
-            File.Exists(EmulatorManager.emulationDir + "zynq-zed.dtb") &&
-            File.Exists(EmulatorManager.emulationDir + "kernel-java") &&
-            File.Exists(EmulatorManager.emulationDir + "rootfs-java.ext4") &&
-            File.Exists(EmulatorManager.emulationDir + "grpc-bridge.exe");
-        //public bool isEmulationDownloaded = true;
 
         bool reset;
 
@@ -242,15 +235,6 @@ namespace Synthesis.States
             StateMachine.Link<GoalState>(Auxiliary.FindGameObject("GoalStateUI"));
             StateMachine.Link<SensorSpawnState>(Auxiliary.FindGameObject("ResetSensorSpawnpointUI"));
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
-
-            string defaultDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator");
-            string directoryPath = "";
-
-            if (Directory.Exists(defaultDirectory))
-            {
-                directoryPath = defaultDirectory;
-                isEmulationDownloaded = true;
-            }
 
             MediaManager.getInstance();
         }

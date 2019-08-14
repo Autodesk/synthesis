@@ -1,4 +1,5 @@
 #include "roborio_manager.hpp"
+#include "robot_outputs.hpp"
 #include "system_interface.hpp"
 
 using namespace nFPGA;
@@ -12,6 +13,9 @@ namespace hel{
 
     void RelaySystem::setValue(tRelay::tValue v)noexcept{
         value = v;
+        auto instance = RobotOutputsManager::getInstance();
+        instance.first->updateDeep();
+        instance.second.unlock();
     }
 
     RelaySystem::RelaySystem()noexcept:value(){}

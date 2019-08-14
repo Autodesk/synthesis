@@ -23,16 +23,16 @@ namespace hel {
 struct RobotOutputs {
    private:
 	/**
-	 * \brief Whether RobotOutputs has been updated since last serialization
-	 */
-
-	bool new_data;
-
-	/**
 	 * \brief Whether the robot is enabled and RobotOutputs should send outputs
 	 */
 
 	bool enabled;
+
+	/**
+	 * \brief Generate zeroed-output packet when disabled
+	 */
+
+	const inline EmulationService::RobotOutputs generateZeroedOutput()const;
 
 	/**
 	 * \brief The interpreted states of all the PWM header outputs
@@ -65,7 +65,7 @@ struct RobotOutputs {
 	 * \brief The interpreted states of all the digital header outputs
 	 */
 
-	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
+	BoundsCheckedArray<std::pair<DigitalSystem::HeaderConfig, bool>, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
 	/**
 	 * \brief All the CAN motor controller outputs

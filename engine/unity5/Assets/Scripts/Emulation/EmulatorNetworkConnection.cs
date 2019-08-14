@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using EmulationService;
 using UnityEngine;
 using System.Collections.Generic;
-using Debug = UnityEngine.Debug;
 using System.Threading.Tasks;
-using static Synthesis.EmulatorManager;
 
 namespace Synthesis
 {
@@ -13,7 +10,6 @@ namespace Synthesis
     {
         public static EmulatorNetworkConnection Instance { get; private set; }
 
-        public const string DEFAULT_HOST = "127.0.0.1";
         public const string DEFAULT_PORT = "50051";
         public const string DEFAULT_NATIVE_PORT = "50052";
         public const string DEFAULT_JAVA_PORT = "50053";
@@ -24,6 +20,8 @@ namespace Synthesis
         private bool senderConnected = false, receiverConnected = false;
 
         private const string API_VERSION = "v1";
+
+        private bool isConnectionOpen = false;
 
         /*
         private int? TIMEOUT = null;
@@ -59,29 +57,38 @@ namespace Synthesis
 
         public void OpenConnection()
         {
-            Task.Run(SendData);
-            Task.Run(ReceiveData);
+            isConnectionOpen = true;
+            if (!senderConnected)
+            {
+                Task.Run(SendData);
+            }
+            if (!receiverConnected)
+            {
+                Task.Run(ReceiveData);
+            }
         }
 
         private async void SendData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + DEFAULT_PORT, Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationWriter.EmulationWriterClient(conn);
-            while (EmulatorManager.IsRunningRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
                     using (var call = client.RobotInputs())
                     {
-                        await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
-                        {
-                            Api = API_VERSION,
-                            TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
-                            InputData = InputManager.Instance,
-                        });
-                        senderConnected = true;
-                        // Debug.Log("Sending " + InputManager.Instance);
-                        await Task.Delay(LOOP_DELAY); // ms
+                        while(EmulatorManager.IsTryingToRunRobotCode() && Instance){
+                            await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
+                            {
+                                Api = API_VERSION,
+                                TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                                InputData = InputManager.Instance,
+                            });
+                            senderConnected = true;
+                            // Debug.Log("Sending " + InputManager.Instance);
+                            await Task.Delay(LOOP_DELAY); // ms
+                        }
                     }
                 }
                 catch (Exception)
@@ -94,24 +101,27 @@ namespace Synthesis
             {
                 await call.RequestStream.CompleteAsync();
             }
+            senderConnected = false;
+            isConnectionOpen = false;
         }
 
         private async Task ReceiveData()
         {
-            var conn = new Grpc.Core.Channel(DEFAULT_HOST + ":" + DEFAULT_PORT, Grpc.Core.ChannelCredentials.Insecure);
+            var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
-            while (EmulatorManager.IsRunningRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
-                    using (var call = client.RobotOutputs(new RobotOutputsRequest { Api = API_VERSION,
-                        TargetPlatform = programType == UserProgram.UserProgramType.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
+                    using (var call = client.RobotOutputs(new RobotOutputsRequest {
+                        Api = API_VERSION,
+                        TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
                     }))
                     {
                         while (await call.ResponseStream.MoveNext())
                         {
-                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
                             receiverConnected = true;
+                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
                             // Debug.Log("Received " + OutputManager.Instance);
                         }
                     }
@@ -122,17 +132,20 @@ namespace Synthesis
                     await Task.Delay(ERROR_DELAY); // ms
                 }
             }
+            receiverConnected = false;
+            isConnectionOpen = false;
+        }
+
+        public bool IsConnectionOpen()
+        {
+            return isConnectionOpen;
         }
 
         public void OnApplicationQuit()
         {
             // inputCommander.Send(new StandardMessage.ExitMessage());
             // outputCommander.Send(new StandardMessage.ExitMessage());
-            if (EmulatorManager.IsRunningRobotCode())
-                EmulatorManager.StopRobotCode();
-            if (EmulatorManager.IsVMRunning())
-                EmulatorManager.KillEmulator();
-            EmulatorManager.KillTestVMConnectionThread();
+            EmulatorManager.KillEmulator();
         }
 
         public bool IsConnected()

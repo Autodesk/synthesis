@@ -72,7 +72,9 @@ public class AnalyticsLedger
             Viewed = "Viewed",
             Load = "Load",
             Exit = "Exit",
-            Changed = "Changed";
+            Changed = "Changed", 
+            
+            CodeType = "Code Language";
     }
 
     /// <summary>
