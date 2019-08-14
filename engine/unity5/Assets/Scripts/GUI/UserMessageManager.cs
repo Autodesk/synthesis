@@ -22,9 +22,11 @@ namespace Synthesis.GUI
         /// </summary>
         private class UserMessage
         {
+            public const float FADE_TIME = 1f; // s
             public readonly String message;
             public readonly Color foreground, background;
             public readonly float lifetime;
+            public readonly float endTime;
             public float ttl;
 
             public UserMessage(String msg, float ttl, Color foreground, Color background)
@@ -33,6 +35,7 @@ namespace Synthesis.GUI
                 this.foreground = foreground;
                 this.background = background;
                 this.lifetime = ttl;
+                this.endTime = Time.time + ttl;
                 this.ttl = ttl;
             }
         };
@@ -78,14 +81,14 @@ namespace Synthesis.GUI
                 Color initBG = UnityEngine.GUI.backgroundColor;
 
                 GUILayout.BeginArea(new Rect((Screen.width / 2) - (WIDTH / 2), Screen.height - HEIGHT - 10, WIDTH, HEIGHT));
-                float deltaTime = Time.deltaTime;
+
                 float y = 0;
 
                 foreach (UserMessage msg in messages)
                 {
-                    msg.ttl -= deltaTime;
+                    msg.ttl = msg.endTime - Time.time;
                     Color fg = msg.foreground, bg = msg.background;
-                    float alpha = Math.Min(2f * msg.ttl / msg.lifetime, 1f);
+                    float alpha = msg.ttl < UserMessage.FADE_TIME ? msg.ttl / UserMessage.FADE_TIME : 1f;
                     fg.a *= alpha;
                     bg.a *= alpha;
                     UnityEngine.GUI.color = fg;

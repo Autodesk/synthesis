@@ -23,6 +23,8 @@ You will also need to download and import NuGet to install more packages.
 * NuGet should automatically install the necessary pacakges. If not, from the navigation bar, select NugGet -> Restore Packages
 * The NuGet packages should now be integrated within the project
 
+**Note: If there are errors, verify that SSH.NET is SSH.NET[2016.0.0].**
+
 Lastly, a naming issue prevents Unity from linking against one of the gRPC libraries. To fix this, rename `grpc_csharp_ext.x64.dll` to `grpc_csharp_ext.dll`. This file can be found in the Windows gRPC core runtime in the Nuget for Unity packages folder.
 
 If you want to test, you will need to open the MainMenu.unity scene by double clicking the scene or dragging the scene to the 'Hiearchy' (the upper left hand column.) You can run it from there as you will need to select and load a robot and field for the simulator to properly intialize.

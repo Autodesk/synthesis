@@ -1,54 +1,118 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Robot Export Guide</title>
-    <style>
-        body {
-            font-family: Arial,sans-serif;
-            margin: 0;
-        }
-        h1 {
-            font-size: 35px;
-            margin: 0;
-            padding: 10px 10px 10px 15px;
-            background-color: #3D3D3D;
-            color: white;
-            font-weight: normal;
-        }
-        h4 {
-            color: GrayText;
-            font-size: 17px;
-            margin-left: 10px;
-            font-weight: normal;
-        }
-        ul ol {
-            font-size: 18px;
-            padding: 0;
-            margin-left: 40px;
-            margin-right: 30px;
-        }
-        li {
-            margin: 10px 0 10px 0;
-        }
-    </style>
-</head>
-<body>
-<h1>Robot Export Guide</h1>
-<ol>
-    <li><a href="https://youtu.be/fY3Vdkh8L0Y" target="_blank">Learn how to restructure assemblies within Inventor so that moving parts are accessible to the Synthesis Robot Exporter plugin.</a></li>
-    <li><a href="https://youtu.be/_YCP-cWn1Gc" target="_blank">At the top of the Inventor window, add joints to your assemblies. Under the <i style="font-weight: bold">Assemble</i> tab, click on the <i style="font-weight: bold">Joint</i> button.</a></li>
-    <li>Under the <i style="font-weight: bold">Environments</i> tab, click on the <i style="font-weight: bold">Robot Export</i> ribbon. Assign your drive train using the <i style="font-weight: bold">Drive Train Type</i> button.</li>
-    <li>Use the <i style="font-weight: bold">Drive Train Weight</i> button to set your drivetrain weight.</li>
-    <li>Configure the details of your joints using the <i style="font-weight: bold">Edit Joints</i> button.
-        <ol type="a">
-            <li>Joint setup</li>
-            <li>Limits setup</li>
-            <li>Sensor setup</li>
-        </ol>
-    </li>
-    <li>View the status of robot joints using the <i style="font-weight: bold">Toggle Joint Viewer</i> button.
-    </li>
-</ol>
-</body>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                margin: 0px;
+                background-color: rgb(248, 248, 248);
+            }
+
+            p {
+                margin: 0px 50px 0px 50px;
+            }
+
+                p.instructions {
+                    margin: 15px 60px 0px 60px;
+                    font-size: 15px;
+                }
+
+                p.precheck-description {
+                    margin: 0px 0px 0px 90px;
+                }
+            
+            table {
+                width: 90%;
+                display: block;
+                margin: auto;
+            }
+            
+                td {
+                    padding-bottom: 20px;
+                }
+            
+                td.number {
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 3px;
+                    margin: 3px 10px 0px 0px;
+                    background: orange;
+                    border: 2px solid orange;
+                    color: #666;
+                    text-align: center;
+                    color: #fff;
+                    font: 20px Arial, sans-serif;
+                    display: inline-block;
+                }
+
+                td.icon {
+                    width: 20%;
+                }
+            
+            img.logo {
+                width: 90%;
+                height: auto;
+                display: block;
+                margin: auto;
+            }
+
+            h2 {
+                font-size: 16px;
+                margin: 0px 0px 15px 55px;
+                font-weight: bold;
+            }
+
+            hr {
+                border-style: solid;
+                border-color: darkslategray;
+                border-width: 3px;                
+                margin: 15px 25px 15px 25px;
+            }
+            
+            a {
+                color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <img class="logo" src="https://i.imgur.com/Vh27lE4.png">
+        <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
+        <hr>
+        <h2>Pre-Check</h2>
+        <p>&#10004; <a href="https://youtu.be/fY3Vdkh8L0Y" target="_blank">Restructure your assemblies</a> </p>
+        <p class="precheck-description">This makes moving parts accessible to the Robot Exporter plugin.</p>
+        <p>&#10004; <a href="https://youtu.be/_YCP-cWn1Gc" target="_blank">Adding joints</a></p>
+        <p class="precheck-description">Joints support your robot's movement.</p>
+        <hr>
+        <table>
+            <tr name="step-1">
+                <td class="number">1</td>
+                <td><b>Select your robot's drivetrain.</b><br>
+                    Standard: Basic drivetrain<br>
+                    H-Drive: Perpendicular wheel setup for moving sideways<br>
+                    Other: Alternative drivetrains
+                </td>
+                <td class="icon"><img src="https://i.imgur.com/eYJ9uPk.png"></td>
+            </tr>
+            <tr name="step-2">
+                <td class="number">2</td>
+                <td><b>Enter you robot's weight.</b><br>
+                    This is only including the base of your<br>
+                    robot, excluding wheels.</td>
+                <td class="icon"><img src="https://i.imgur.com/NEVPB3F.png"></td>
+            </tr>
+            <tr name="step-3">
+                <td class="number">3</td>
+                <td><b>Edit wheels or mechanisms.</b><br>
+                    Support movement of wheels or<br>
+                    manipulators. This step is necessary<br>
+                    for an accurate simulation in Synthesis.
+                </td>
+                <td class="icon"><img src="https://i.imgur.com/4NUVoi4.png"></td>
+            </tr>
+        </table>
+        <hr style="margin-top: 0px;">
+    </body>
 </html>
