@@ -232,6 +232,8 @@ namespace Synthesis
                 Debug.Log(e.ToString());
                 exception = true;
             }
+
+            StartUpdatingStatus();
             return !exception && IsVMRunning();
         }
 
