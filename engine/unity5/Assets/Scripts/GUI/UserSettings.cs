@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsState : MonoBehaviour
+public class UserSettings : MonoBehaviour
 {
     private GameObject canvas;
 
@@ -182,6 +182,8 @@ public class SettingsState : MonoBehaviour
         Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
         QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
+
+        UserMessageManager.Dispatch("Settings applied", 10);
 
         //OnCloseSettingsPanelClicked();
     }

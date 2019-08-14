@@ -23,8 +23,8 @@ namespace Synthesis.GUI
 
         GameObject checkSavePanel;
 
-        SettingsState settings;
-        LoadReplayState loadReplay;
+        UserSettings settings;
+        LoadReplay loadReplay;
 
         public static MenuUI instance;
 
@@ -56,8 +56,8 @@ namespace Synthesis.GUI
             //controls
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
 
-            settings = settingsPanel.GetComponent<SettingsState>();
-            loadReplay = viewReplaysPanel.GetComponent<LoadReplayState>();
+            settings = settingsPanel.GetComponent<UserSettings>();
+            loadReplay = viewReplaysPanel.GetComponent<LoadReplay>();
 
             CheckControlPanel();
         }

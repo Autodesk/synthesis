@@ -17,7 +17,7 @@ using Button = UnityEngine.UI.Button;
 
 namespace Synthesis.States
 {
-    public class LoadReplayState : MonoBehaviour
+    public class LoadReplay : MonoBehaviour
     {
         GameObject mainCam;
         GameObject canvas;
