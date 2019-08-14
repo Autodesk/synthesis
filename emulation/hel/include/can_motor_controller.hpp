@@ -19,12 +19,6 @@ namespace hel{
 
         double percent_output;
 
-        /**
-         * \brief Whether to invert the percent_output signal or not
-         */
-
-        bool inverted; // Move to CTRE motor controllers only?
-
     public:
         /**
          * \brief Format the CANMotorControllerBase as a string
@@ -46,14 +40,6 @@ namespace hel{
          */
 
         double getPercentOutput()const noexcept;
-
-        /**
-         * \fn void setInverted(bool inverted)noexcept
-         * \brief Set the inverted flag of the motor controller
-         * \param i Whether to invert motor controller output
-         */
-
-        void setInverted(bool)noexcept;
 
         /**
          * Constructor for CANMotorControllerBase

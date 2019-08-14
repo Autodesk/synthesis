@@ -180,6 +180,7 @@ public class AnalyticsManager : MonoBehaviour {
             mutex.WaitOne();
             if (loggedData.Count < 1 || !DumpData) {
                 loggedData = new Queue<KeyValuePair<string, string>>();
+                mutex.ReleaseMutex();
                 return;
             }
 

@@ -1,13 +1,30 @@
-#include "gtest/gtest.h"
-#include "roborio_manager.hpp"
+#include "testing.hpp"
 
-TEST(AnalogInputTest, ReadWriteConfig) {
-    auto value = nFPGA::nRoboRIO_FPGANamespace::tAI::tConfig{};
-    value.ScanSize = 3;
-    value.ConvertRate = 65536;
-    auto instance = hel::RoboRIOManager::getInstance();
-    instance.first->analog_inputs.setConfig(value);
+TEST(AnalogInputTest, GetValue){
+	constexpr int PORT = 0;
 
-    EXPECT_EQ(65536u, instance.first->analog_inputs.getConfig().ConvertRate);
-    instance.second.unlock();
+	std::vector<int32_t> values = {5, 6, 7};
+
+	auto instance = hel::RoboRIOManager::getInstance();
+	instance.first->analog_inputs.setValues(PORT, values);
+	instance.second.unlock();
+
+	frc::AnalogInput ai = frc::AnalogInput{PORT};
+
+	EXPECT_EQ(values.back(), ai.GetValue());
+}
+
+TEST(AnalogInputTest, GetVoltage){
+	constexpr int PORT = 0;
+
+	std::vector<int32_t> values = {5, 6, 7};
+
+	auto instance = hel::RoboRIOManager::getInstance();
+	instance.first->analog_inputs.setValues(PORT, values);
+	instance.second.unlock();
+
+	frc::AnalogInput ai = frc::AnalogInput{PORT};
+
+	EXPECT_EQ(values.back() * hel::AnalogInputs::LSB_WEIGHT * hel::AnalogInputs::LSB_SCALAR, ai.GetVoltage());
+
 }

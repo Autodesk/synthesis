@@ -2,6 +2,30 @@
 
 namespace Synthesis
 {
+    public static class RoboRIOConstants
+    {
+        // PWM/DIO
+        public const uint NUM_PWM_HDRS = 10;
+        public const uint NUM_PWM_MXP = 10;
+        public const uint NUM_DIGITAL_HDRS = 10;
+        public const uint NUM_DIGITAL_MXP = 16;
+
+        // Analog
+        public const uint NUM_AI_HDRS = 4;
+        public const uint NUM_AI_MXP = 4;
+        public const uint NUM_AO_MXP = 2;
+
+        // Joysticks
+        public const uint NUM_JOYSTICKS = 6;
+        public const uint NUM_JOYSTICK_AXES = 12;
+        public const uint NUM_JOYSTICK_BUTTONS = 10;
+        public const uint NUM_JOYSTICK_POVS = 12;
+
+        // Misc
+        public const uint NUM_CAN_ADDRESSES = 63; // RoboRIO allows 0 - 62 inclusive
+        public const uint NUM_RELAYS = 4;
+        public const uint NUM_ENCODERS = 8;
+    }
 
     public static class OutputManager
     {
@@ -25,27 +49,24 @@ namespace Synthesis
             static InputInternal() { }
             internal static RobotInputs instance = InitRobotInputs();
 
-            private const uint NUM_JOYSTICKS = 6;
-            private const uint NUM_DIGITAL_HEADERS = 10;
-            private const uint NUM_DIGITAL_MXP = 16;
-            private const uint NUM_ENCODERS = 8;
-
-            private const uint NUM_JOYSTICK_AXES = 12;
-            private const uint NUM_JOYSTICK_BUTTONS = 10;
-            private const uint NUM_JOYSTICK_POVS = 12;
-
             private static RobotInputs InitRobotInputs()
             {
                 RobotInputs inputs = new RobotInputs();
-                for (var i = 0; i < NUM_DIGITAL_MXP; i++)
+                for (var i = 0; i < RoboRIOConstants.NUM_DIGITAL_MXP; i++)
                     inputs.MxpData.Add(InitMxpData());
-                for (var i = 0; i < NUM_DIGITAL_HEADERS; i++)
-                    inputs.DigitalHeaders.Add(false);
+                for (var i = 0; i < RoboRIOConstants.NUM_DIGITAL_HDRS; i++)
+                    inputs.DigitalHeaders.Add(new DIOData
+                    {
+                        Config = DIOData.Types.Config.Di,
+                        Value = false
+                    });
                 inputs.RobotMode = InitRobotMode();
                 inputs.MatchInfo = InitMatchInfo();
-                for (var i = 0; i < NUM_JOYSTICKS; i++)
+                for (var i = 0; i < RoboRIOConstants.NUM_JOYSTICKS; i++)
                     inputs.Joysticks.Add(InitJoystick());
                 // Let DriveJoints handle EncoderManagers
+                for (var i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP; i++)
+                    inputs.AnalogInputs.Add(0);
                 return inputs;
             }
 
@@ -54,7 +75,7 @@ namespace Synthesis
                 return new MXPData
                 {
                     Value = 0,
-                    MxpConfig = MXPData.Types.MXPConfig.Di
+                    Config = MXPData.Types.Config.Di
                 };
             }
 
@@ -62,15 +83,15 @@ namespace Synthesis
             {
                 var joystick = new RobotInputs.Types.Joystick();
                 joystick.Outputs = 0;
-                joystick.PovCount = (int)NUM_JOYSTICK_POVS;
+                joystick.PovCount = (int)RoboRIOConstants.NUM_JOYSTICK_POVS;
                 for (var i = 0; i < joystick.PovCount; i++)
                     joystick.Povs.Add(-1);
-                joystick.AxisCount = (int)NUM_JOYSTICK_AXES;
+                joystick.AxisCount = (int)RoboRIOConstants.NUM_JOYSTICK_AXES;
                 for (var i = 0; i < joystick.AxisCount; i++)
                     joystick.AxisTypes.Add(0);
                 for (var i = 0; i < joystick.AxisCount; i++)
                     joystick.Axes.Add(0);
-                joystick.ButtonCount = (int)NUM_JOYSTICK_BUTTONS;
+                joystick.ButtonCount = (int)RoboRIOConstants.NUM_JOYSTICK_BUTTONS;
                 joystick.Buttons = 0;
                 joystick.Name = "";
                 joystick.Type = 0;

@@ -216,6 +216,7 @@
     <Compile Include="Assets\Scripts\Emulation\ReceiverTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\SenderTask.cs" />
     <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
+    <Compile Include="Assets\Scripts\Emulation\UserProgram.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\RobotIOPanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
