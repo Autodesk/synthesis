@@ -165,7 +165,6 @@ namespace Synthesis.States
             if (PlayerPrefs.GetString("simSelectedRobot", "").Equals(""))
             {
                 AppModel.ErrorToMenu("ROBOT_SELECT|FIRST");
-                Debug.Log("ASKJHASDFKJHDSAKJHGDSAF");
                 return;
             }
 
