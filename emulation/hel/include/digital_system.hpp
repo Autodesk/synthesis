@@ -42,6 +42,11 @@ namespace hel{
 
         static constexpr uint16_t MAX_PULSE_LENGTH = 1600;
 
+		enum class HeaderConfig{
+			DI,
+			DO
+		};
+
     private:
 
         /**
@@ -283,6 +288,8 @@ namespace hel{
      */
 
     std::string asString(DigitalSystem::DIOConfigurationException::Config);
+
+	std::string asString(DigitalSystem::HeaderConfig);
 }
 
 #endif

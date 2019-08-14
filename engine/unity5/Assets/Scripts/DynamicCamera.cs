@@ -10,7 +10,7 @@ using Synthesis.Robot;
 public class DynamicCamera : MonoBehaviour
 {
     /// <summary>
-    /// The scrolling enabled.
+    /// User control enabled.
     /// </summary>
     public static bool ControlEnabled { get; set; }
 

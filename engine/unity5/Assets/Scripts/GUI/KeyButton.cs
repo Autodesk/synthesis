@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 //=========================================================================================
 //                                      KeyButton.cs
-// Description: OnGUI() script with functions for CreateButton.cs
+// Description: Handles reassignment of controls
 // Main Content: Various functions to assist in generating control buttons and player lists.
 // Adapted from: https://github.com/Gris87/InputControl
 //=========================================================================================
@@ -82,7 +82,7 @@ namespace Synthesis.GUI
         }
 
         // Update is called once per frame
-        public void OnGUI()
+        public void Update()
         {
             if (selectedButtons.Contains(this))
             {

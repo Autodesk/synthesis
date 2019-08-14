@@ -143,7 +143,6 @@ namespace Synthesis.GUI
                 }
             }
             HighlightTabs();
-            if (State.isEmulationDownloaded) emulationTab.SetActive(true);
         }
 
         private void OnGUI()
@@ -1005,7 +1004,7 @@ namespace Synthesis.GUI
                         "Exit",
                         AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
 
-                    if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    if (!Application.isEditor) Application.Quit();
                     break;
                 case "cancel":
                     exitPanel.SetActive(false);

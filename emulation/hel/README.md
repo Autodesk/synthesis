@@ -82,7 +82,7 @@ When built for x86 architecture, HEL's Google Test and Benchmark files can be ru
 ./scripts/login.sh                               # SSH and sign into the emulator instance
 
 # Running user code and tests from the emulator
-./frc_program_chooser.sh                         # Runs user code
+./frc_program_runner.sh                          # Runs user code
 ./tests/test_name                                # Run a given test
 
 # Testing outside of the emulator

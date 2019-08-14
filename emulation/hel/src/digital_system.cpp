@@ -15,6 +15,9 @@ namespace hel{
 
     void DigitalSystem::setOutputs(tDIO::tDO out)noexcept{
         outputs = out;
+        auto instance = RobotOutputsManager::getInstance();
+        instance.first->updateDeep();
+        instance.second.unlock();
     }
 
     tDIO::tOutputEnable DigitalSystem::getEnabledOutputs()const noexcept{
@@ -24,7 +27,7 @@ namespace hel{
     void DigitalSystem::setEnabledOutputs(tDIO::tOutputEnable enabled_out)noexcept{
         enabled_outputs = enabled_out;
         auto instance = RobotOutputsManager::getInstance();
-        instance.first->updateShallow();
+        instance.first->updateDeep();
         instance.second.unlock();
     }
 
@@ -34,6 +37,9 @@ namespace hel{
 
     void DigitalSystem::setPulses(tDIO::tPulse value)noexcept{
         pulses = value;
+        auto instance = RobotOutputsManager::getInstance();
+        instance.first->updateDeep();
+        instance.second.unlock();
     }
 
     tDIO::tDI DigitalSystem::getInputs()const noexcept{
@@ -136,6 +142,17 @@ namespace hel{
             return "mxp special function";
         default:
             throw UnhandledEnumConstantException("hel::DIOManager::DIOConfigurationException::Config");
+        }
+    }
+
+	std::string asString(DigitalSystem::HeaderConfig config){
+        switch(config){
+        case DigitalSystem::HeaderConfig::DI:
+            return "DI";
+        case DigitalSystem::HeaderConfig::DO:
+            return "DO";
+        default:
+            throw UnhandledEnumConstantException("hel::DIOManager::HeaderConfig");
         }
     }
 
