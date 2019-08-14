@@ -6,6 +6,7 @@
 
 #include <emulator_service.grpc.pb.h>
 
+#include "analog_inputs.hpp"
 #include "bounds_checked_array.hpp"
 #include "digital_system.hpp"
 #include "encoder_manager.hpp"
@@ -28,7 +29,7 @@ struct RobotInputs {
 	 * \brief The states of all the digital headers configured in input mode
 	 */
 
-	BoundsCheckedArray<bool, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs; // TODO capture the third state where the digital headers are configured for output somehow
+	BoundsCheckedArray<std::pair<DigitalSystem::HeaderConfig, bool>, DigitalSystem::NUM_DIGITAL_HEADERS> digital_hdrs;
 
 	/**
 	 * \brief The states of all the digital MXP pins configured in input mode
@@ -60,6 +61,18 @@ struct RobotInputs {
 
 	BoundsCheckedArray<Maybe<EncoderManager>, FPGAEncoder::NUM_ENCODERS>
 		encoder_managers;
+
+	/**
+	 * \brief The states of all the analog input headers and mxp as voltages
+	 */
+
+	BoundsCheckedArray<double, AnalogInputs::NUM_ANALOG_INPUTS> analog_inputs;
+
+	/**
+	 * \brief The state of the user button
+	 */
+
+	bool user_button;
 
    public:
 	/**

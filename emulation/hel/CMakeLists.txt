@@ -75,7 +75,7 @@ if(ARCH MATCHES "^[Aa][Rr][Mm]")
     ${WPILIB_DIRECTORY}/hal/build/libs/hal/shared/athena/release
     ${WPILIB_DIRECTORY}/cscore/build/libs/cscore/shared/athena/release
     ${WPILIB_DIRECTORY}/cameraserver/build/libs/cameraserver/shared/athena/release
-    ${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-5-linuxathena.zip_78eb9292b9fe0f4ac17c77a461f92bf4/linux/athena/shared/
+	${WPILIB_DIRECTORY}/build/tmp/expandedArchives/opencv-cpp-3.4.4-4-linuxathena.zip_3e38e7c98115770c2774d54027662b61/linux/athena/shared
     # ${CTRE_DIRECTORY}/arm/cpp/build/libs/cTRE_Phoenix/static
     # ${CTRE_DIRECTORY}/libraries/driver/lib
   )
@@ -259,6 +259,7 @@ if((TESTING MATCHES "^[Tt][Rr][Uu][Ee]" OR TESTING MATCHES "^[Oo][Nn]") AND CMAK
     INCLUDE(UseJava)
     FILE(GLOB_RECURSE JAVA_SOURCES tests/test_projects/java/*.java)
     ADD_JAR(JavaFRCUserProgram ${JAVA_SOURCES} INCLUDE_JARS "${WPILIB_DIRECTORY}/wpilibj/build/libs/wpilibj.jar" OUTPUT_DIR "${USER_CODE_DIR}")
+    ADD_DEPENDENCIES(JavaFRCUserProgram wpilibj ni-libraries)
   else()
     MESSAGE(WARNING "Robot code generation not supported on x86_64. Skipping test robot code generation.")
   endif()

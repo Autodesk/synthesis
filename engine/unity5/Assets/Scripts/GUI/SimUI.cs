@@ -29,6 +29,8 @@ namespace Synthesis.GUI
     /// </summary>
     public class SimUI : LinkedMonoBehaviour<MainState>
     {
+        public const float WARNING_TIME = 5; // seconds
+
         RobotBase Robot;
 
         new DynamicCamera camera;
@@ -143,7 +145,6 @@ namespace Synthesis.GUI
                 }
             }
             HighlightTabs();
-            if (State.isEmulationDownloaded) emulationTab.SetActive(true);
         }
 
         private void OnGUI()
@@ -300,7 +301,7 @@ namespace Synthesis.GUI
                 currentTab = "DriverPracticeTab";
                 tabStateMachine.ChangeState(new DPMToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", 3);
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field.", WARNING_TIME);
         }
 
         public void OnScoringTab()
@@ -320,7 +321,7 @@ namespace Synthesis.GUI
                 currentTab = "ScoringTab";
                 tabStateMachine.ChangeState(new ScoringToolbarState());
             }
-            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", 3);
+            else UserMessageManager.Dispatch("No Gamepieces Available In Field. Scoring Disabled.", WARNING_TIME);
         }
 
         public void OnSensorTab()
@@ -452,7 +453,7 @@ namespace Synthesis.GUI
             }
             else
             {
-                UserMessageManager.Dispatch("Robot directory not found!", 5);
+                UserMessageManager.Dispatch("Robot directory not found!", WARNING_TIME);
             }
         }
 
@@ -536,7 +537,7 @@ namespace Synthesis.GUI
             }
             else
             {
-                UserMessageManager.Dispatch("Field directory not found!", 5);
+                UserMessageManager.Dispatch("Field directory not found!", WARNING_TIME);
             }
         }
 
@@ -1005,7 +1006,7 @@ namespace Synthesis.GUI
                         "Exit",
                         AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
 
-                    if (!Application.isEditor) System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    if (!Application.isEditor) Application.Quit();
                     break;
                 case "cancel":
                     exitPanel.SetActive(false);
