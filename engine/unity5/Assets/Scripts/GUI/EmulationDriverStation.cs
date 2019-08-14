@@ -16,11 +16,11 @@ namespace Synthesis.GUI
         GameObject canvas;
         InputField gameSpecificMessage;
         GameObject emuDriverStationPanel;
-        GameObject javaEmulationNotSupportedPopUp; // TODO remove this once support is added
 
+        GameObject killEmulatorPanel;
         Text VMConnectionStatusMessage;
-
         Image VMConnectionStatusImage;
+
         Image enableRobotImage;
         Image disableRobotImage;
 
@@ -52,7 +52,7 @@ namespace Synthesis.GUI
         {
             canvas = GameObject.Find("Canvas");
             emuDriverStationPanel = Auxiliary.FindObject(canvas, "EmulationDriverStation");
-            javaEmulationNotSupportedPopUp = Auxiliary.FindObject(canvas, "JavaEmulationNotSupportedPopUp");
+            killEmulatorPanel = Auxiliary.FindObject(canvas, "KillEmulatorPanel");
 
             gameSpecificMessage = Auxiliary.FindObject(emuDriverStationPanel, "InputField").GetComponent<InputField>();
 
@@ -108,20 +108,9 @@ namespace Synthesis.GUI
             emuDriverStationPanel.SetActive(!emuDriverStationPanel.activeSelf);
         }
 
-        /// <summary>
-        /// Displays dialogue that Java emulation is not currently supproted (WPILib v2019)
-        /// </summary>
-        public void ShowJavaNotSupportedPopUp()
+        public void SetActive(bool active)
         {
-            javaEmulationNotSupportedPopUp.SetActive(true);
-        }
-
-        /// <summary>
-        /// Close dialogue that displays Java emulation is not currently supproted
-        /// </summary>
-        public void CloseJavaNotSupportedPopUp()
-        {
-            javaEmulationNotSupportedPopUp.SetActive(false);
+            emuDriverStationPanel.SetActive(active);
         }
 
         /// <summary>
@@ -297,6 +286,16 @@ namespace Synthesis.GUI
         public string GetGameSpecificMessage()
         {
             return gameSpecificMessage.text;
+        }
+
+        public void SetKillEmulatorDialogActive(bool active)
+        {
+            killEmulatorPanel.SetActive(active);
+        }
+
+        public void KillEmulator()
+        {
+            EmulatorManager.KillEmulator();
         }
     }
 }
