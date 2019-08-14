@@ -23,4 +23,5 @@ namespace Filesystem
 	///
 
 	bool directoryExists(std::string path);
+	bool fileExists(std::string path);
 };

@@ -44,9 +44,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\tmp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -70,7 +70,9 @@
       <AdditionalDependencies>core.lib;fusion.lib;cam.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Rpcrt4.lib;vhacd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /R /Y "$(SolutionDir)$(Configuration)\$(ProjectName).dll" "$(SolutionDir)"</Command>
+      <Command>xcopy /E /I /Y /S "$(SolutionDir)palette" "$(SolutionDir)$(Configuration)\palette"
+xcopy /E /I /Y /S "$(SolutionDir)Resources" "$(SolutionDir)$(Configuration)\Resources"
+xcopy /Y "$(SolutionDir)$(ProjectName).manifest" "$(SolutionDir)$(Configuration)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,6 +104,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AddIn\Analytics.h" />
     <ClInclude Include="Source\AddIn\CustomHandlers.h" />
     <ClInclude Include="Source\AddIn\EUI.h" />
     <ClInclude Include="Source\AddIn\Identifiers.h" />
@@ -134,6 +137,7 @@
     <ClInclude Include="Source\Exporter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AddIn\Analytics.cpp" />
     <ClCompile Include="Source\AddIn\CustomHandlers.cpp" />
     <ClCompile Include="Source\AddIn\EUI-Handlers.cpp" />
     <ClCompile Include="Source\AddIn\EUI-UIManagement.cpp" />
@@ -185,9 +189,11 @@
     <None Include="palette\sensors.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="palette\dofkey.html" />
     <Content Include="palette\guide.html" />
     <Content Include="palette\js\drivetrain_type.js" />
     <Content Include="palette\js\settings.js" />
+    <Content Include="palette\settings.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

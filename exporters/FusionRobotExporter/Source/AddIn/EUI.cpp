@@ -13,6 +13,7 @@
 #include "../Exporter.h"
 #include "../Data/BXDJ/Utility.h"
 #include <Windows.h>
+#include "Analytics.h"
 using namespace SynthesisAddIn;
 
 EUI::EUI(Ptr<UserInterface> UI, Ptr<Application> app)
@@ -301,8 +302,10 @@ void EUI::exportRobot(BXDJ::ConfigData config, bool openSynthesis)
 		if (!killExportThread)
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
+		Analytics::LogEvent(U("Export"), U("Succeeded"));
 		if (openSynthesis)
 		{
+			Analytics::LogEvent(U("System"), U("Launched Synthesis"));
 			std::string cs = "start \"\" \"C:/Program Files/Autodesk/Synthesis/Synthesis/Synthesis.exe\" -robot \"" + Filesystem::getCurrentRobotDirectory(config.robotName) + "\"";
 			try
 			{
@@ -317,6 +320,7 @@ void EUI::exportRobot(BXDJ::ConfigData config, bool openSynthesis)
 	catch (const std::exception& e)
 	{
 		progressPalette->sendInfoToHTML("error", "An error occurred while exporting \"" + config.robotName + "\":<br>" + std::string(e.what()));
+		Analytics::LogEvent(U("Export"), U("Failed"));
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 
