@@ -18,7 +18,10 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 	{
 		Analytics::StartSession(eui->getApp());
 		eui->prepareAllPalettes();
-		eui->openGuidePalette();
+		if (Analytics::guideEnabled)
+			eui->openGuidePalette();
+		else
+			eui->closeGuidePalette();
 	}
 }
 
@@ -78,7 +81,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	//	eui->toggleKeyPalette();
 	/*} */ else if (id == SynthesisAddIn::BTN_SETTINGS)
 	{
-		eui->openSettingsPalette(eui->guideEnabled);
+		eui->openSettingsPalette();
 	}
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
@@ -167,8 +170,10 @@ void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& 
 		eui->closeDriveWeightPalette();
 	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
-	else if (id == SynthesisAddIn::PALETTE_GUIDE)
+	else if (id == SynthesisAddIn::PALETTE_GUIDE) {
 		eui->closeGuidePalette();
+		Analytics::SaveSettings();
+	}
 	else if (id == SynthesisAddIn::PALETTE_SETTINGS)
 		eui->closeSettingsPalette("");
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
