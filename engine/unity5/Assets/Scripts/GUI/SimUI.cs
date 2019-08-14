@@ -855,7 +855,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
                 AnalyticsLedger.EventAction.TutorialRequest,
                 "Help - Tutorials",
