@@ -7,3 +7,6 @@ Autdoesk
 !application/spec.json
 *.pkg
 dmg
+
+build
+build.zip

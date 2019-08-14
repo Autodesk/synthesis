@@ -13,7 +13,7 @@ using namespace SynthesisAddIn;
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->prepareAllPalettes();
 		eui->openGuidePalette();
@@ -23,7 +23,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 // Deactivate Workspace Event
 void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->closeAllPalettes();
 	}

@@ -38,7 +38,7 @@ function install(){
     then
         printSuccess " Found Synthesis ";
     else
-        printWarning " Synthesis is not installed ";
+        printWarning " Synthesis config folder doesn't exist ";
         mkdir -p $HOME/.config/Autodesk/Synthesis
     fi
 
