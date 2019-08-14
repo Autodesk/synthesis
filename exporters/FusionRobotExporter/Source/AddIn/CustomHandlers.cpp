@@ -6,8 +6,9 @@
 #include "../Data/Filesystem.h"
 #include "../Data/BXDJ/Driver.h"
 #include "../Data/BXDJ/Components.h"
+#include "Analytics.h"
 
-using namespace SynthesisAddIn;
+ using namespace SynthesisAddIn;
 
 /// Workspace Events
 // Activate Workspace Event
@@ -15,6 +16,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
 	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
+		Analytics::StartSession(eui->getApp());
 		eui->prepareAllPalettes();
 		eui->openGuidePalette();
 	}
@@ -26,6 +28,7 @@ void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArg
 	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->closeAllPalettes();
+		Analytics::EndSession();
 	}
 }
 
@@ -112,6 +115,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
 		//system("open http://google.com"); opens link on Linux/macOS/Unix
 
+	}
+	else if (eventArgs->action() == "settings_analytics")
+	{
+		Analytics::SetEnabled(eventArgs->data() == "true" ? true : false);
 	}
 	else if (eventArgs->action() == "close")
 	{
