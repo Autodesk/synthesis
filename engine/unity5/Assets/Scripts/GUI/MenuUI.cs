@@ -20,6 +20,7 @@ namespace Synthesis.GUI
         GameObject settingsPanel;
         GameObject viewReplaysPanel;
         GameObject helpPanel;
+        GameObject exitPanel;
 
         GameObject checkSavePanel;
 
@@ -52,6 +53,7 @@ namespace Synthesis.GUI
             settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
             helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
+            exitPanel = Auxiliary.FindObject(canvas, "ExitPanel2");
 
             //controls
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
@@ -253,6 +255,15 @@ namespace Synthesis.GUI
         }
 
         #endregion
+        #region exit
+
+        public void SwitchExit()
+        {
+            EndOtherProcesses();
+            exitPanel.SetActive(true);
+        }
+
+        #endregion
 
         /// <summary>
         /// Call this function whenever the user enters a new state
@@ -264,6 +275,7 @@ namespace Synthesis.GUI
             settingsPanel.SetActive(false);
             viewReplaysPanel.SetActive(false);
             helpPanel.SetActive(false);
+            exitPanel.SetActive(false);
         }
 
     }
