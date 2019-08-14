@@ -328,33 +328,25 @@ void EUI::deleteGuidePalette()
 
 void EUI::openGuidePalette()
 {
-	if (!guideEnabled) {
-		robotExportGuideButton->controlDefinition()->isEnabled(false);
-		guidePalette->isVisible(true);
-		guideEnabled = true;
-	}
+	robotExportGuideButton->controlDefinition()->isEnabled(false);
+	guidePalette->isVisible(true);
+	Analytics::guideEnabled = true;
 }
 
 void EUI::closeGuidePalette()
 {
-	if (guideEnabled)
+	robotExportGuideButton->controlDefinition()->isEnabled(true);
+	guidePalette->isVisible(false);
+	Analytics::guideEnabled = false;
+
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
 	{
-
-		robotExportGuideButton->controlDefinition()->isEnabled(true);
-		guidePalette->isVisible(false);
-		guideEnabled = false;
-
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		uiThread = new std::thread([this]()
-		{
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-		});
-
-		//settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-	}
+		settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
+		settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
+	});
 }
 
 // Key Palette
@@ -741,7 +733,7 @@ void EUI::deleteSettingsPalette() {
 	settingsPalette = nullptr;
 }
 
-void EUI::openSettingsPalette(bool nan)
+void EUI::openSettingsPalette()
 {
 	closeEditorPalettes();
 	disableEditorButtons();
@@ -750,10 +742,10 @@ void EUI::openSettingsPalette(bool nan)
 
 	uiThread = new std::thread([this]()
 		{
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
 			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 			settingsPalette->isVisible(true);
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
 			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 		});
 
@@ -765,7 +757,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	enableEditorButtons();
 	settingsPalette->isVisible(false);
 
-	if ((guideEnabled == "true" || guideEnabled == "false") && ((guideEnabled == "true") != this->guideEnabled)) Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
+	if ((guideEnabled == "true" || guideEnabled == "false") && ((guideEnabled == "true") != Analytics::guideEnabled)) Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
 	if (guideEnabled == "true") // TODO: This is lazy, use JSON
 	{
 		openGuidePalette();
@@ -773,6 +765,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	{
 		closeGuidePalette();
 	}
+	Analytics::SaveSettings();
 }
 
 // BUTTONS AND PANELS

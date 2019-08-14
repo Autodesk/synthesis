@@ -22,6 +22,7 @@ utility::string_t removeSpaces(utility::string_t in)
 
 std::string Analytics::clientId;
 bool Analytics::enabled = true;
+bool Analytics::guideEnabled = true;
 
 void Analytics::LoadSettings()
 {
@@ -46,6 +47,11 @@ void Analytics::LoadSettings()
 	else
 		enabled = true;
 
+	if (jsonObj.contains("GuideEnabled") && jsonObj["GuideEnabled"].is_boolean()) // TODO: Move this to settings manager class
+		guideEnabled = jsonObj["GuideEnabled"].get<bool>();
+	else
+		guideEnabled = true;
+
 	SaveSettings();
 }
 
@@ -55,6 +61,7 @@ void Analytics::SaveSettings()
 	nlohmann::json baseJson;
 	baseJson["AnalyticsID"] = clientId;
 	baseJson["AnalyticsEnabled"] = enabled;
+	baseJson["GuideEnabled"] = guideEnabled;
 	std::ofstream writeStream(filenameBXDJ);
 	std::string jsonStr = baseJson.dump(1);
 	writeStream << jsonStr << std::endl;
