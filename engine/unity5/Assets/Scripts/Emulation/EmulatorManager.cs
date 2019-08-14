@@ -13,10 +13,19 @@ namespace Synthesis
         // Directory Info
         private static readonly string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
 
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-        private static readonly bool IS_WINDOWS = false;
+        private enum OS
+        {
+            Windows,
+            MacOS,
+            Linux
+        }
+
+#if UNITY_STANDALONE_OSX
+        private static readonly OS os = OS.MacOS;
+#elif UNITY_STANDALONE_LINUX
+        private static readonly OS os = OS.Linux;
 #elif UNITY_STANDALONE_WIN || UNITY_EDITOR
-        private static readonly bool IS_WINDOWS = true;
+        private static readonly OS os = OS.Windows;
 #endif
         private static readonly string QEMU_DIR = "C:" + Path.DirectorySeparatorChar + "Program Files" + Path.DirectorySeparatorChar + "qemu";
 
@@ -28,9 +37,9 @@ namespace Synthesis
         private static readonly string JAVA_KERNEL = EMULATION_DIR + Path.DirectorySeparatorChar + "kernel-java";
         private static readonly string ROOTFS_JAVA = EMULATION_DIR + Path.DirectorySeparatorChar + "rootfs-java.ext4";
 
-        private static readonly string GRPC_BRIDGE = EMULATION_DIR + Path.DirectorySeparatorChar + "grpc-bridge" + (IS_WINDOWS ? ".exe" : "");
-        private static readonly string QEMU_ARM = IS_WINDOWS ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe") : "qemu-system-arm";
-        private static readonly string QEMU_X86 = IS_WINDOWS ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe") : "qemu-system-x86_64";
+        private static readonly string GRPC_BRIDGE = EMULATION_DIR + Path.DirectorySeparatorChar + "grpc-bridge" + (os == OS.Windows ? ".exe" : (os == OS.MacOS ? "-macos" : ""));
+        private static readonly string QEMU_ARM = os == OS.Windows ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe") : "qemu-system-arm";
+        private static readonly string QEMU_X86 = os == OS.Windows ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe") : "qemu-system-x86_64";
 
         // SSH Info
         public const string DEFAULT_HOST = "127.0.0.1";
@@ -118,7 +127,7 @@ namespace Synthesis
         public static bool IsVMInstalled()
         {
             return Directory.Exists(EMULATION_DIR) &&
-                Directory.Exists(QEMU_DIR) == IS_WINDOWS &&
+                Directory.Exists(QEMU_DIR) == (os == OS.Windows) &&
                 File.Exists(NATIVE_KERNEL) &&
                 File.Exists(ROOTFS_NATIVE) &&
                 File.Exists(NATIVE_DEVICE_TREE) &&
