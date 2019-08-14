@@ -24,6 +24,7 @@ namespace Synthesis.Input
         public GameObject keyNamePrefab;
         public GameObject keyButtonsPrefab;
         public GameObject simpleKeyButtonsPrefab;
+        public bool globalControls;
         private GameObject controlLabelSwitch;
 
         private Transform namesTransform; //The string name of the control (the first column of the control panel; non-button)
@@ -43,7 +44,10 @@ namespace Synthesis.Input
         {
             CreateButtons();
 
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
+            if (!globalControls)
+            {
+                GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdatePlayerButtonStyle();
+            }
         }
 
         public void SelectButtons(Inputs.CustomInput selection)
@@ -56,13 +60,6 @@ namespace Synthesis.Input
                         button.Select();
                 }
             }
-        }
-
-        private ReadOnlyCollection<KeyMapping> CreateKeyMappingList()
-        {
-            var merged = Controls.Players[SettingsMode.activePlayerIndex].GetActiveList();
-            merged.AddRange(Controls.Global.GetList()); // TODO: move to separate global controls configuration tab of menu
-            return merged.AsReadOnly();
         }
 
         public void AddButtonRow(string label, KeyMapping key, ref float contentHeight, ref float maxNameWidth)
@@ -146,9 +143,9 @@ namespace Synthesis.Input
             float contentHeight = 4;
 
             //Retrieves and updates the active player's keys
-            ReadOnlyCollection<KeyMapping> keys = CreateKeyMappingList();
+            ReadOnlyCollection<KeyMapping> keys = globalControls ? Controls.Global.GetList().AsReadOnly() : Controls.Players[SettingsMode.activePlayerIndex].GetActiveList().AsReadOnly();
 
-            bool use_drive_base_labels = (int)controlLabelSwitch.GetComponent<Slider>().value == 0;
+            bool use_drive_base_labels = !globalControls && (int)controlLabelSwitch.GetComponent<Slider>().value == 0;
 
             if (use_drive_base_labels)
             {
@@ -321,16 +318,23 @@ namespace Synthesis.Input
             }
             foreach (KeyMapping key in keys)
             {
-                bool default_front = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM]) ||
+                if (!globalControls)
+                {
+                    bool default_front = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_LEFT_PWM]) ||
                     ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_LEFT_PWM]) ||
                     ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.FRONT_RIGHT_PWM]) ||
                     ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.FRONT_RIGHT_PWM]);
-                bool default_back = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM]) ||
-                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM]) ||
-                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM]) ||
-                    ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM]);
-                bool covered_in_simple = default_front || (SettingsMode.activeProfileMode == Profile.Mode.Mecanum && default_back);
-                if (!use_drive_base_labels || !covered_in_simple)
+                    bool default_back = ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_LEFT_PWM]) ||
+                        ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_LEFT_PWM]) ||
+                        ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmPos[Profile.BACK_RIGHT_PWM]) ||
+                        ReferenceEquals(key, Controls.Players[SettingsMode.activePlayerIndex].GetButtons().pwmNeg[Profile.BACK_RIGHT_PWM]);
+                    bool covered_in_simple = default_front || (SettingsMode.activeProfileMode == Profile.Mode.Mecanum && default_back);
+                    if (!use_drive_base_labels || !covered_in_simple)
+                    {
+                        AddButtonRow(key.name, key, ref contentHeight, ref maxNameWidth);
+                    }
+                }
+                else
                 {
                     AddButtonRow(key.name, key, ref contentHeight, ref maxNameWidth);
                 }

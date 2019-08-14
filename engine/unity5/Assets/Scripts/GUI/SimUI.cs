@@ -56,7 +56,6 @@ namespace Synthesis.GUI
         GameObject addPanel;
         GameObject driverStationPanel;
 
-        GameObject inputManagerPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
 
@@ -67,7 +66,6 @@ namespace Synthesis.GUI
         GameObject exitPanel;
         GameObject loadingPanel;
 
-        GameObject orientWindow;
         GameObject resetDropdown;
 
         GameObject tabs;
@@ -161,20 +159,18 @@ namespace Synthesis.GUI
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
-            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+            spawnpointPanel = Auxiliary.FindObject("ResetStateToolbar");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             //checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -928,13 +924,11 @@ namespace Synthesis.GUI
         {
             if (State.ActiveRobot.IsResetting)
             {
-                spawnpointPanel.SetActive(true);
-                orientWindow.SetActive(true);
+                resetUI.SetActive(true);
             }
             else
             {
-                spawnpointPanel.SetActive(false);
-                orientWindow.SetActive(false);
+                resetUI.SetActive(false);
             }
         }
 
@@ -1028,7 +1022,6 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
             //ToggleHotKeys(false);
 
             CancelOrientation();

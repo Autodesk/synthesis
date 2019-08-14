@@ -117,7 +117,7 @@ public class UserSettings : MonoBehaviour
         }
     }
 
-    public new void OnEnable()
+    public void OnEnable()
     {
         this.Start();
     }

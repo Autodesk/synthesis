@@ -58,8 +58,12 @@ namespace Synthesis.GUI
 
             settings = settingsPanel.GetComponent<UserSettings>();
             loadReplay = viewReplaysPanel.GetComponent<LoadReplay>();
+        }
 
-            CheckControlPanel();
+        public void Update()
+        {
+            DynamicCamera.ControlEnabled = !settingsPanel.activeSelf;
+            InputControl.freeze = settingsPanel.activeSelf;
         }
 
         public void LateUpdate()
@@ -91,8 +95,6 @@ namespace Synthesis.GUI
 
             if (!robotControlPanel.activeSelf)
             {
-                DynamicCamera.ControlEnabled = false;
-                InputControl.freeze = true;
                 EndOtherProcesses();
                 robotControlPanel.SetActive(true);
                 inputPanelOn = true;
@@ -102,8 +104,6 @@ namespace Synthesis.GUI
             {
                 CheckUnsavedControls(() =>
                 {
-                    DynamicCamera.ControlEnabled = true;
-                    InputControl.freeze = false;
                     robotControlPanel.SetActive(false);
                     inputPanelOn = false;
                     //ToggleHotKeys(false);
@@ -151,26 +151,26 @@ namespace Synthesis.GUI
             SwitchRobotControls();
         }
 
-        public void CheckControlPanel()
-        {
-            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
-            {
-                robotControlPanel.SetActive(false);
-            }
-            else
-            {
-                robotControlPanel.SetActive(true);
-                PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            }
-        }
-
         #endregion
         #region global controls
 
         public void SwitchGlobalControls()
         {
             EndOtherProcesses();
-            globalControlPanel.SetActive(true);
+            if (!globalControlPanel.activeSelf)
+            {
+                //EndOtherProcesses();
+                globalControlPanel.SetActive(true);
+                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+            }
+            else
+            {
+                CheckUnsavedControls(() =>
+                {
+                    globalControlPanel.SetActive(false);
+                    //ToggleHotKeys(false);
+                });
+            }
         }
 
         #endregion
