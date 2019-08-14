@@ -53,9 +53,6 @@ namespace SynthesisAddIn
 		void openDriveWeightPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeDriveWeightPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
-		void openExportPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
-		void closeExportPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
-
 		void openJointEditorPalette();///< Loads and opens the robot exporter configuration palette. Disables the export button.
 		void closeJointEditorPalette(); ///< Closes the robot exporter configuration palette. Enables the export button.
 
@@ -109,6 +106,8 @@ namespace SynthesisAddIn
 
 		// bool dofViewEnabled = false;
 		bool guideEnabled = false;
+
+		Ptr<Application> getApp() { return app; }
 
 	private:
 		Ptr<Application> app; ///< Active Fusion application.
