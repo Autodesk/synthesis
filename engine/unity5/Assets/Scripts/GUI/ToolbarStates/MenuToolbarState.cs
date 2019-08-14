@@ -71,14 +71,6 @@ namespace Assets.Scripts.GUI
             menuUI.SwitchHelp();
         }
 
-        /// <summary>
-        /// Opens the exit panel
-        /// </summary>
-        public void OnExitButtonClicked()
-        {
-            menuUI.SwitchExit();
-        }
-
         public override void End()
         {
             menuUI.EndOtherProcesses();
