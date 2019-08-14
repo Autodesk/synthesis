@@ -13,7 +13,7 @@ using namespace SynthesisAddIn;
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->prepareAllPalettes();
 		eui->openGuidePalette();
@@ -23,7 +23,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 // Deactivate Workspace Event
 void WorkspaceDeactivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 {
-	if (eventArgs->workspace()->id() == WORKSPACE_SYNTHESIS)
+	if (eventArgs->workspace()->id() == "FusionSolidEnvironment")
 	{
 		eui->closeAllPalettes();
 	}
@@ -80,6 +80,18 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
 }
+// Conversion helper
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
 
 /// Palette Events
 // Submit Exporter Form Event
@@ -93,6 +105,14 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
+	else if (eventArgs->action() == "open_link")
+	{
+		std::wstring stemp = s2ws(eventArgs->data());
+		LPCWSTR result = stemp.c_str();
+		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
+		//system("open http://google.com"); opens link on Linux/macOS/Unix
+
+	}
 	else if (eventArgs->action() == "close")
 	{
 		if (eventArgs->data() == "drivetrain_type")
