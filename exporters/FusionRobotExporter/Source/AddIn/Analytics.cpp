@@ -21,7 +21,7 @@ utility::string_t removeSpaces(utility::string_t in)
 }
 
 std::string Analytics::clientId;
-bool Analytics::enabled;
+bool Analytics::enabled = true;
 
 void Analytics::LoadSettings()
 {
@@ -36,22 +36,17 @@ void Analytics::LoadSettings()
 	nlohmann::json jsonObj;
 	jsonObj = nlohmann::json::parse(jsonId, nullptr, false);
 
-	if (jsonObj.contains("AnalyticsID") && jsonObj["AnalyticsID"].is_string() && jsonObj["AnalyticsID"].get<std::string>().length() == 36) {
+	if (jsonObj.contains("AnalyticsID") && jsonObj["AnalyticsID"].is_string() && jsonObj["AnalyticsID"].get<std::string>().length() == 36)
 		clientId = jsonObj["AnalyticsID"].get<std::string>();
-	}
 	else
-	{
 		clientId = generate_guid();
-		SaveSettings();
-	}
 
 	if (jsonObj.contains("AnalyticsEnabled") && jsonObj["AnalyticsEnabled"].is_boolean())
-	{
 		enabled = jsonObj["AnalyticsEnabled"].get<bool>();
-	} else
-	{
+	else
 		enabled = true;
-	}
+
+	SaveSettings();
 }
 
 void Analytics::SaveSettings()
@@ -74,6 +69,7 @@ void Analytics::Post(utility::string_t queryString) {
 
 uri_builder Analytics::GetBaseURL()
 {
+	if (clientId.length() != 36) LoadSettings();
 	auto url = uri_builder(U("collect"));
 	url.append_query(U("v"), U("1"));
 	url.append_query(U("tid"), U("UA-81892961-5"));
@@ -96,7 +92,7 @@ void Analytics::AppendEvent(uri_builder* url, const utility::string_t ec, const 
 
 void Analytics::StartSession(Ptr<Application> app)
 {
-	Analytics::LoadSettings();
+	LoadSettings();
 	auto url = GetBaseURL();
 	url.append_query(U("sc"), U("start"));
 	AppendEvent(&url, U("Environment"), U("Opened"));
@@ -109,6 +105,7 @@ void Analytics::EndSession()
 	url.append_query(U("sc"), U("end"));
 	AppendEvent(&url, U("Environment"), U("Closed"));
 	Post(url.to_string());
+	LoadSettings();
 }
 
 void Analytics::LogPage(const utility::string_t page)
