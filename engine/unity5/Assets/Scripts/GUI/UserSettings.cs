@@ -106,15 +106,6 @@ public class UserSettings : MonoBehaviour
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
-
-        if (initX == float.MaxValue)
-        {
-            initX = 0;
-            initY = settingsPanel.GetComponent<RectTransform>().anchoredPosition.y;
-        } else
-        {
-            settingsPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(initX, initY);
-        }
     }
 
     public void OnEnable()
