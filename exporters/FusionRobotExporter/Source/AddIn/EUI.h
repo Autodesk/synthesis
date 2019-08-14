@@ -113,7 +113,7 @@ namespace SynthesisAddIn
 		Ptr<Application> app; ///< Active Fusion application.
 		Ptr<UserInterface> UI; ///< Active Fusion user interface.
 
-		Ptr<Workspace> workSpace; ///< Synthesis workspace.
+		Ptr<ToolbarTab> workSpace; ///< Synthesis workspace.
 		Ptr<ToolbarPanel> finishPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> driveTrainPanel; ///< Synthesis control finishPanel.
 		Ptr<ToolbarPanel> jointSetupPanel; ///< Synthesis control finishPanel.
