@@ -16,18 +16,20 @@ bool EUI::createWorkspace()
 	try
 	{
 		// Create workspace
-		workSpace = UI->workspaces()->itemById(WORKSPACE_SYNTHESIS);
-		if (!workSpace)
-		{
-			workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
-			workSpace->tooltip("Export robot models to the Synthesis simulator");
-
+		// workSpace = UI->workspaces()->itemById(WORKSPACE_SYNTHESIS);
+		// if (!workSpace)
+		// {
+			// workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
+			// workSpace->tooltip("Export robot models to the Synthesis simulator");
+		
 			addHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
 			addHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
+			workSpace = UI->allToolbarTabs()->itemById("ToolsTab");
+
 			createPanels();
 			createButtons();
-		}
+		// }
 
 		return true;
 	}
