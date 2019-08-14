@@ -27,6 +27,8 @@ namespace Assets.Scripts.GUI
             menuPanel = Auxiliary.FindObject(canvas, "MenuPanel");
 
             menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
+
+            OnRobotControlsButtonClicked();
         }
     
         /// <summary>
