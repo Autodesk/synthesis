@@ -22,7 +22,9 @@ bool EUI::createWorkspace()
 		// {
 			// workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
 			// workSpace->tooltip("Export robot models to the Synthesis simulator");
-		
+
+		addHandler<StartupCompletedHandler>(UI, startupCompletedHandler);
+
 			addHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
 			addHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
