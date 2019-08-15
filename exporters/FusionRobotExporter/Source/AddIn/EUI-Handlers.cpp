@@ -29,6 +29,26 @@ bool EUI::clearHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI, Workspa
 	return true;
 }
 
+// Fusion 360 startup finished
+template<>
+bool EUI::addHandler<StartupCompletedHandler>(Ptr<UserInterface> UI, StartupCompletedHandler * startupCompletedHandler)
+{
+	startupCompletedHandler = new StartupCompletedHandler(this);
+
+	Ptr<ApplicationEvent> startupEvent = app->startupCompleted();
+	if (!startupEvent)
+		return false;
+
+	return startupEvent->add(startupCompletedHandler);
+
+	//if (startupCompletedHandler == nullptr)
+	//	startupCompletedHandler = new StartupCompletedHandler(this);
+
+	//Ptr<ApplicationEvent> startupEvent = app->startupCompleted();
+	//if (startupEvent)
+	//	return startupEvent->add(startupCompletedHandler);
+}
+
 // Workspace Deactivated Handler
 template<>
 bool EUI::addHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI, WorkspaceDeactivatedHandler* workspaceDeactivatedHandler)

@@ -146,6 +146,8 @@ namespace SynthesisAddIn
 		// Pointers to each handlers are kept for removal and deletion
 		// when the exporter add-in is deactivated.
 
+		StartupCompletedHandler * startupCompletedHandler = nullptr;
+
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
 

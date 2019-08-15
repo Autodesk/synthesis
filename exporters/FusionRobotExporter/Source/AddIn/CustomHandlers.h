@@ -10,6 +10,17 @@ namespace SynthesisAddIn
 {
 	class EUI;
 
+	// General Events
+	/// Notified when Fusion 360 is finished loading
+	class StartupCompletedHandler : public ApplicationEventHandler
+	{
+	public:
+		StartupCompletedHandler(EUI * eui) : eui(eui) {}
+		void notify(const Ptr<ApplicationEventArgs>& eventArgs) override;
+	private:
+		EUI * eui;
+	};
+
 	// Workspace Events
 	/// Notified when the Synthesis workspace is selected by the user.
 	class WorkspaceActivatedHandler : public WorkspaceEventHandler
