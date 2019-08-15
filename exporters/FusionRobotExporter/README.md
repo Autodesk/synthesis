@@ -4,8 +4,9 @@
 FusionRobotExporter is the Autodesk Fusion 360 add-in for exporting robot assemblies into Synthesis.
 
 ## Building From Source (Windows)
+
 #### Prerequisites:
-* git
+* Git
 * vcpkg (https://github.com/microsoft/vcpkg)
 * cpprestsdk (https://github.com/microsoft/cpprestsdk)
 * Autodesk Fusion 360
@@ -14,19 +15,19 @@ FusionRobotExporter is the Autodesk Fusion 360 add-in for exporting robot assemb
 #### Setup:
 1) Clone the repository by running `git clone --recursive https://github.com/Autodesk/synthesis`
 2) Launch Visual Studio as an Administrator
-3) Open FusionRobotExporter.sln in Visual Studio
-   - File -> Open -> Project/Solution
+3) Open `FusionRobotExporter.sln` in Visual Studio
+   - In Visual Studio, navigate to `File -> Open -> Project/Solution`
    - Select `...\synthesis\exporters\FusionRobotExporter\FusionRobotExporter.sln`
 4) Change Debug command in project settings to the Fusion 360 executable
-   - `Debug > FusionRobotExporter Properties... > Configuration Properties > Debugging > Command`
+   - `Debug -> FusionRobotExporter Properties... -> Configuration Properties -> Debugging -> Command`
    - Change the value to your Fusion360 executable `C:\Users\<your_username>\AppData\Local\Autodesk\webdeploy\production\<varies>\Fusion360.exe`
-5) Start debugging the solution by navigating to `Debug > Start Debugging`
+5) Start debugging the solution by navigating to `Debug -> Start Debugging`
 6) In Fusion 360, navigate to the `Tools` tab in the `Design` environment, open the `Add-Ins` manager, select the `Add-Ins` tab, and click the `+` icon next to `My Add-Ins`
 7) Navigate to the cloned repository and open the folder under `...\synthesis\exporters\FusionRobotExporter\Debug`
 8) Close Fusion 360 and start debugging again in Visual Studio
 
-## Documentation
-*  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Fusion-Exporter)
+## Development Documentation
+*  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Fusion-Robot-Exporter)
 
 ## File Structure
 ```
