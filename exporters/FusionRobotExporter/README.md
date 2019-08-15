@@ -3,13 +3,15 @@
 ## Overview
 FusionRobotExporter is the Autodesk Fusion 360 add-in for exporting robot assemblies into Synthesis.
 
-## Building From Source
-Prerequisites:
-* Git
+## Building From Source (Windows)
+#### Prerequisites:
+* git
+* vcpkg (https://github.com/microsoft/vcpkg)
+* cpprestsdk (https://github.com/microsoft/cpprestsdk)
 * Autodesk Fusion 360
 * Microsoft Visual Studio 2019
 
-Setup:
+#### Setup:
 1) Clone the repository by running `git clone --recursive https://github.com/Autodesk/synthesis`
 2) Launch Visual Studio as an Administrator
 3) Open FusionRobotExporter.sln in Visual Studio
@@ -26,7 +28,7 @@ Setup:
 ## Documentation
 *  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Fusion-Exporter)
 
-### File Structure
+## File Structure
 ```
 FusionRobotExporter
 |
