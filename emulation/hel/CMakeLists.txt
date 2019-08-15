@@ -72,7 +72,6 @@ if(NOT X86)
   SET(CMAKE_C_COMPILER arm-frc2019-linux-gnueabi-gcc)
   SET(CMAKE_CXX_COMPILER arm-frc2019-linux-gnueabi-g++)
 
-
   ExternalProject_ADD(grpc
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
@@ -80,7 +79,6 @@ if(NOT X86)
     CONFIGURE_COMMAND ""
     BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
-
 
   LINK_DIRECTORIES(
     ${CMAKE_BINARY_DIR}/lib
@@ -248,8 +246,9 @@ if(NOT NO_TESTING AND DEBUG)
     MESSAGE(FATAL_ERROR "Please specify WPILib Version with WPILIB tag")
   ENDIF()
 
-  if(NOT NO_ROBOT OR NOT x86)
-    ADD_EXECUTABLE(FRCUserProgram tests/test_projects/robot_teleop.cpp)
+  # Test C++ Project
+  if(NOT NO_ROBOT OR NOT X86)
+    ADD_EXECUTABLE(FRCUserProgram ${CMAKE_SOURCE_DIR}/tests/test_projects/robot_teleop.cpp)
     ADD_DEPENDENCIES(FRCUserProgram wpilibc ni-libraries)
     # ADD_DEPENDENCIES(ctre)
     TARGET_INCLUDE_DIRECTORIES(FRCUserProgram SYSTEM PRIVATE
@@ -270,75 +269,74 @@ if(NOT NO_TESTING AND DEBUG)
     # Java Test Project
     FIND_PACKAGE(Java REQUIRED)
     INCLUDE(UseJava)
-    FILE(GLOB_RECURSE JAVA_SOURCES tests/test_projects/java/*.java)
+    FILE(GLOB_RECURSE JAVA_SOURCES ${CMAKE_SOURCE_DIR}/tests/test_projects/java/*.java)
     ADD_JAR(JavaFRCUserProgram ${JAVA_SOURCES} INCLUDE_JARS "${WPILIB_DIR}/wpilibj/build/libs/wpilibj.jar" OUTPUT_DIR "${USER_CODE_DIR}")
     ADD_DEPENDENCIES(JavaFRCUserProgram wpilibj ni-libraries)
   else()
     MESSAGE(WARNING "Robot code generation not supported on x86_64. Skipping test robot code generation.")
   endif()
 
-  if(NOT NO_TESTING)
-    if(NOT X86)
-      EXTERNALPROJECT_ADD(GoogleTest
-        PREFIX lib/google_test
-        DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-        GIT_REPOSITORY https://www.github.com/google/googletest
-        CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
-    else()
-      MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
-      EXTERNALPROJECT_ADD(GoogleTest
-        PREFIX lib/google_test
-        DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
-        GIT_REPOSITORY https://www.github.com/google/googletest
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
-    endif()
-    MESSAGE("Disovering test files:")
-
-    FILE(GLOB test_list ${CMAKE_SOURCE_DIR}/tests/*.cpp)
-    FOREACH(file ${test_list})
-      STRING(REPLACE ".cpp" "" test_name_unclean ${file})
-      GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
-
-      MESSAGE("Test \"${test_name}\" found. Generating build target.")
-
-      ADD_EXECUTABLE(${test_name} ${file} tests/main_stub.cpp)
-      ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilibc)
-
-      TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
-      TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
-
-      if(NOT X86)
-        # ADD_DEPENDENCIES(${test_name} ctre)
-        TARGET_LINK_LIBRARIES(${test_name} wpi) # libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
-        # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
-        #   "${CTRE_DIR}/cpp/include/"
-        #   "${CTRE_DIR}/libraries/driver/include")
-      else()
-        TARGET_LINK_LIBRARIES(${test_name} wpi-x86)
-      endif()
-
-      TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
-        "${WPILIB_DIR}/cscore/src/main/native/include"
-        "${WPILIB_DIR}/ntcore/src/main/native/include"
-        "${WPILIB_DIR}/wpiutil/src/main/native/include"
-        "${WPILIB_DIR}/cameraserver/src/main/native/include"
-        "${WPILIB_DIR}/wpilibc/src/main/native/include"
-        "${WPILIB_DIR}/hal/src/main/native/include"
-		"${GRPC_DIR}/include"
-		"${GRPC_DIR}/third_party/protobuf/src"
-		"${CMAKE_BINARY_DIR}/lib/gen"
-		"${NILIB_DIR}/src/include"
-        # "${CTRE_DIR}/cpp/include/"
-        # "${CTRE_DIR}/libraries/driver/include"
-        "${CMAKE_SOURCE_DIR}/include"
-        "${CMAKE_BINARY_DIR}/include"
-        "${CMAKE_BINARY_DIR}/lib/include")
-
-      SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
-    ENDFOREACH(file test_list)
+  # Tests
+  if(NOT X86)
+    EXTERNALPROJECT_ADD(GoogleTest
+      PREFIX lib/google_test
+      DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+      GIT_REPOSITORY https://www.github.com/google/googletest
+      CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   else()
-    MESSAGE(STATUS "Skipped generation of unit tests.")
+    MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
+    EXTERNALPROJECT_ADD(GoogleTest
+      PREFIX lib/google_test
+      DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
+      GIT_REPOSITORY https://www.github.com/google/googletest
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   endif()
+  MESSAGE("Disovering test files:")
+
+  FILE(GLOB test_list ${CMAKE_SOURCE_DIR}/tests/*.cpp)
+  FOREACH(file ${test_list})
+    STRING(REPLACE ".cpp" "" test_name_unclean ${file})
+    GET_FILENAME_COMPONENT(test_name ${test_name_unclean} NAME)
+
+    MESSAGE("Test \"${test_name}\" found. Generating build target.")
+
+    ADD_EXECUTABLE(${test_name} ${file} ${CMAKE_SOURCE_DIR}/tests/main_stub.cpp)
+    ADD_DEPENDENCIES(${test_name} hel GoogleTest wpilibc)
+
+    TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
+    TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
+
+    if(NOT X86)
+      # ADD_DEPENDENCIES(${test_name} ctre)
+      TARGET_LINK_LIBRARIES(${test_name} wpi) # libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
+      # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
+      #   "${CTRE_DIR}/cpp/include/"
+      #   "${CTRE_DIR}/libraries/driver/include")
+    else()
+      TARGET_LINK_LIBRARIES(${test_name} wpi-x86)
+    endif()
+
+    TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
+      "${WPILIB_DIR}/cscore/src/main/native/include"
+      "${WPILIB_DIR}/ntcore/src/main/native/include"
+      "${WPILIB_DIR}/wpiutil/src/main/native/include"
+      "${WPILIB_DIR}/cameraserver/src/main/native/include"
+      "${WPILIB_DIR}/wpilibc/src/main/native/include"
+      "${WPILIB_DIR}/hal/src/main/native/include"
+	  "${GRPC_DIR}/include"
+	  "${GRPC_DIR}/third_party/protobuf/src"
+	  "${CMAKE_BINARY_DIR}/lib/gen"
+	  "${NILIB_DIR}/src/include"
+      # "${CTRE_DIR}/cpp/include/"
+      # "${CTRE_DIR}/libraries/driver/include"
+      "${CMAKE_SOURCE_DIR}/include"
+      "${CMAKE_BINARY_DIR}/include"
+      "${CMAKE_BINARY_DIR}/lib/include")
+
+    SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
+  ENDFOREACH(file test_list)
+else()
+  MESSAGE(STATUS "Skipped generation of unit tests.")
 endif()
 
 if(BENCH AND DEBUG)
