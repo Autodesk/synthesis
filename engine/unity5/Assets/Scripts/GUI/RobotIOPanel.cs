@@ -513,21 +513,6 @@ namespace Synthesis.GUI
                 {
                     mainPanel.SetActive(!mainPanel.activeSelf);
                 }
-                if (SimUI.getSimUI().getTabStateMachine().CurrentState is SettingsState)
-                {
-                    if (mainPanel.activeSelf)
-                    {
-                        mainPanel.SetActive(false);
-                    }
-                    settingsTabActive = true;
-                } else if (settingsTabActive)
-                {
-                    if (!mainPanel.activeSelf)
-                    {
-                        mainPanel.SetActive(true);
-                    }
-                    settingsTabActive = false;
-                }
             }
             if (mainPanel.activeSelf) // Update rest of UI
             {
