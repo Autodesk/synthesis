@@ -17,4 +17,5 @@ The Autodesk Inventor add-in for exporting robot assemblies into Synthesis.
 The Autodesk Fusion 360 add-in for exporting robot assemblies into Synthesis.
 
 ## field_exporter
-A standalone application which hooks into Autodesk Inventor to export fields to Synthesis. Currently, this is only used internally.
+A standalone application which hooks into Autodesk Inventor to export fields into Synthesis.
+Currently, this is only used internally by the Synthesis team.
