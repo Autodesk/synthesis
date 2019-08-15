@@ -249,6 +249,7 @@ namespace Synthesis
             VMConnected = false;
             frcUserProgramPresent = false;
             isTryingToRunRobotCode = false;
+            isRunningRobotCode = false;
             isRunningRobotCodeRunner = false;
 
             if (IsVMRunning())
