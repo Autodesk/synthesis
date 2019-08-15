@@ -1,4 +1,4 @@
-# Exporters File Structure
+# Synthesis Exporters
 
 ## Aardvark-Libraries
 This repository consists of several libraries containing shared functionality of the robot and field exporters and the simulator itself.
@@ -7,16 +7,14 @@ This repository consists of several libraries containing shared functionality of
 * SimulatorAPI is a C# API used for importing adn exporting BXDF, BXDJ, and BXDA files.
 * VHACD is a convex hull decomposition library.
 
-## BxDFieldExpoter
-This is the old Inventor addin that was used to exporter fields to Synthesis, this has since been depracated
+## [Deprecated] BxDFieldExpoter
+The Autodesk Inventor addin for exporting fields to Synthesis.
 
 ## InventorRobotExporter
-This is the main Inventor exporter that is bundled with Synthesis. It is broken into a few subprojects:
-* InventorRobotExporter is the Inventor addin
-* RobotExporterTests is the project with unit tests for the exporter addin
+The Autodesk Inventor add-in for exporting robot assemblies into Synthesis.
 
 ## FusionRobotExporter
-This is the Fusion 360 Robot Exporter
+The Autodesk Fusion 360 add-in for exporting robot assemblies into Synthesis.
 
 ## field_exporter
-This is the current field exporter, currently it is only used internally for the Synthesis team to export new fields
+A standalone application which hooks into Autodesk Inventor to export fields to Synthesis. Currently, this is only used internally.
