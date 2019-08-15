@@ -12,7 +12,7 @@ FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/user-code)
 SET(hel_VERSION_MAJOR 1)
 SET(hel_VERSION_MINOR 0)
 
-SET(SCRIPTS_DIR "${SCRIPTS_DIR}")
+SET(SCRIPTS_DIR "${CMAKE_SOURCE_DIR}/scripts")
 SET(USER_CODE_DIR "${CMAKE_BINARY_DIR}/user-code")
 SET(NILIB_DIR "${CMAKE_BINARY_DIR}/lib/ni-libraries/src/ni-libraries")
 SET(WPILIB_DIR "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
@@ -307,7 +307,7 @@ if(NOT NO_TESTING AND DEBUG)
       TARGET_LINK_LIBRARIES(${test_name} libgtest.a libgtest_main.a pthread libgrpc++.a libprotobuf.a libgpr.a libgrpc.a hel)
       TARGET_COMPILE_OPTIONS(${test_name} PUBLIC -pthread)
 
-      if(ARCH MATCHES "^[Aa][Rr][Mm]")
+      if(NOT X86)
         # ADD_DEPENDENCIES(${test_name} ctre)
         TARGET_LINK_LIBRARIES(${test_name} wpi) # libCTRE_Phoenix.a libCTRE_PhoenixCCI.a)
         # TARGET_INCLUDE_DIRECTORIES(${test_name} SYSTEM PRIVATE
@@ -330,10 +330,11 @@ if(NOT NO_TESTING AND DEBUG)
 		"${NILIB_DIR}/src/include"
         # "${CTRE_DIR}/cpp/include/"
         # "${CTRE_DIR}/libraries/driver/include"
+        "${CMAKE_SOURCE_DIR}/include"
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_BINARY_DIR}/lib/include")
 
-      SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests")
+      SET_TARGET_PROPERTIES(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
     ENDFOREACH(file test_list)
   else()
     MESSAGE(STATUS "Skipped generation of unit tests.")
@@ -384,7 +385,7 @@ if(BENCH AND DEBUG)
       "${CMAKE_BINARY_DIR}/include"
       "${CMAKE_BINARY_DIR}/lib/include")
 
-    SET_TARGET_PROPERTIES(${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/benchmarks")
+    SET_TARGET_PROPERTIES(${benchmark_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks")
   ENDFOREACH(file in test_list)
 endif()
 
