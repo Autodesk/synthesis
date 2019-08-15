@@ -37,7 +37,6 @@ namespace Assets.Scripts.GUI
 
             useEmulationButtonText = Auxiliary.FindObject(canvas, "UseEmulationButton").GetComponentInChildren<Text>();
             useEmulationButtonImage = Auxiliary.FindObject(canvas, "UseEmulationImage").GetComponentInChildren<Image>();
-            useEmulationButtonImage.color = Color.green;
 
             try
             {
@@ -175,7 +174,6 @@ namespace Assets.Scripts.GUI
                 "Emulation IO Panel",
                 AnalyticsLedger.getMilliseconds().ToString());
 
-            // TODO
             RobotIOPanel.Instance.Toggle();
         }
 
@@ -183,13 +181,23 @@ namespace Assets.Scripts.GUI
         {
             if (EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.VMInstalled)) && !EmulatorManager.IsVMRunning() && !EmulatorManager.IsVMConnected())
             {
-
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
                     AnalyticsLedger.EventAction.Clicked,
                     "Emulation Start",
                     AnalyticsLedger.getMilliseconds().ToString());
-                if (!EmulatorManager.StartEmulator())
+
+                if (EmulatorManager.StartEmulator()) // If successful
+                {
+                    EmulationDriverStation.Instance.SetActive(true);
+                }
+                else
+                {
                     UserMessageManager.Dispatch("Emulator failed to start.", EmulationWarnings.WARNING_DURATION);
+                }
+            }
+            else if (EmulatorManager.IsVMRunning())
+            {
+                EmulationDriverStation.Instance.SetKillEmulatorDialogActive(true);
             }
         }
 
