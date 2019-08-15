@@ -47,6 +47,8 @@ namespace SynthesisAddIn
 		void enableEditorButtons();
 		void closeAllPalettes();
 
+		void showFirstLaunchNotification();
+
 		void openDriveTypePalette();
 		void closeDriveTypePalette();
 

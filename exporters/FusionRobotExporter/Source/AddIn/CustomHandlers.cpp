@@ -22,6 +22,9 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 			eui->openGuidePalette();
 		else
 			eui->closeGuidePalette();
+
+		if (Analytics::firstLaunchNotification)
+			eui->showFirstLaunchNotification();
 	}
 }
 

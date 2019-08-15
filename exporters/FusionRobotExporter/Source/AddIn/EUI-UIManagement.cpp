@@ -130,6 +130,18 @@ void EUI::enableEditorButtons()
 	finishButton->controlDefinition()->isEnabled(true); ///< Export robot button.
 }
 
+// First Launch Notification
+
+void EUI::showFirstLaunchNotification()
+{
+	DialogResults res = UI->messageBox("The Synthesis robot exporter add-in has been installed. To access the exporter, select the \"Tools\" tab under the \"Design\" workspace.", "Synthesis Add-In", MessageBoxButtonTypes::OKButtonType, InformationIconType);
+	if (res == DialogOK)
+	{
+		Analytics::firstLaunchNotification = false;
+		Analytics::SaveSettings();
+	}
+}
+
 // Drivetrain Weight Palette
 
 bool EUI::createDriveWeightPalette() {
