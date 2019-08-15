@@ -154,6 +154,7 @@ namespace Synthesis.GUI
                         VMConnectionStatusImage.sprite = EmulatorConnection;
                         VMConnectionStatusMessage.text = "Starting";
                     }
+                    RobotDisabled();
                 }
                 yield return new WaitForSeconds(1.0f); // s
             }
