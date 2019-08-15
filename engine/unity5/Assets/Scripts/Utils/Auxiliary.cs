@@ -158,7 +158,7 @@ namespace Synthesis.Utils
                     return t.gameObject;
                 }
             }
-            return new GameObject("COULDNOTFIND" + name);
+            return null;
         }
 
         public static GameObject FindObject(string name)
@@ -171,7 +171,7 @@ namespace Synthesis.Utils
                     return t.gameObject;
                 }
             }
-            return new GameObject("COULDNOTFIND" + name);
+            return null;
         }
 
         /// <summary>

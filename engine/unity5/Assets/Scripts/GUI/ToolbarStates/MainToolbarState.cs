@@ -34,6 +34,7 @@ namespace Synthesis.GUI
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SimUI simUI;
+        MenuUI menuUI;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -45,7 +46,6 @@ namespace Synthesis.GUI
         GameObject stopwatchWindow;
         GameObject statsWindow;
         GameObject rulerWindow;
-        GameObject inputManagerPanel;
         GameObject checkSavePanel;
         GameObject toolbar;
         GameObject tabs;
@@ -75,13 +75,13 @@ namespace Synthesis.GUI
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
 
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
 
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
+            menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
             robotCameraGUI = StateMachine.SceneGlobal.GetComponent<RobotCameraGUI>();
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
@@ -319,7 +319,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnControlsButtonClicked()
         {
-            simUI.ShowControlPanel();
+            menuUI.SwitchRobotControls();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
@@ -379,7 +379,6 @@ namespace Synthesis.GUI
             changeRobotPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
             pointImpulsePanel.SetActive(false);
 
             simUI.CancelOrientation();

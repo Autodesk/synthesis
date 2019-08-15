@@ -213,7 +213,6 @@ namespace Synthesis.GUI
             rulerStartPoint.SetActive(false);
             rulerEndPoint.SetActive(false);
             Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(true);
-            Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
         }
         #endregion
         #region Stopwatch Functions

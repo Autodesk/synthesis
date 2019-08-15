@@ -58,7 +58,6 @@ namespace Synthesis.GUI
         GameObject addPanel;
         GameObject driverStationPanel;
 
-        GameObject inputManagerPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
 
@@ -69,7 +68,6 @@ namespace Synthesis.GUI
         GameObject exitPanel;
         GameObject loadingPanel;
 
-        GameObject orientWindow;
         GameObject resetDropdown;
 
         GameObject tabs;
@@ -95,9 +93,9 @@ namespace Synthesis.GUI
 
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
-        public delegate void EntryChanged(int a);
+        //public delegate void EntryChanged(int a);
 
-        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
+        //public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
 
         private void Start()
         {
@@ -162,20 +160,18 @@ namespace Synthesis.GUI
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
-            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
+            spawnpointPanel = Auxiliary.FindObject("ResetStateToolbar");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+            //checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -194,7 +190,7 @@ namespace Synthesis.GUI
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
-            CheckControlPanel();
+            //CheckControlPanel();
 
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -268,6 +264,12 @@ namespace Synthesis.GUI
         /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
         /// specific states. 
         /// </summary>
+        public void onMenuTab()
+        {
+            currentTab = "MenuTab";
+            tabStateMachine.PushState(new MenuToolbarState(), true);
+        }
+        
         public void OnMainTab()
         {
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
@@ -356,30 +358,19 @@ namespace Synthesis.GUI
             tabStateMachine.ChangeState(new EmulationToolbarState());
         }
 
-        public void OnSettingsTab()
-        {
-            if (!settingsPanel.activeSelf)
-            {
-                tabStateMachine.PushState(new SettingsState());
-                lastTab = currentTab;
-                currentTab = "SettingsTab";
-            } else
-            {
-                tabStateMachine.PopState();
-                currentTab = lastTab;
-            }
-
-            /*if (settingsPanel.activeSelf)
-            {
-                settingsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                //settingsPanel.SetActive(true);
-                tabStateMachine.ChangeState(new OptionsTabState());
-            }*/
-        }
+        //public void OnSettingsTab()
+        //{
+        //    if (!settingsPanel.activeSelf)
+        //    {
+        //        tabStateMachine.PushState(new SettingsState());
+        //        lastTab = currentTab;
+        //        currentTab = "SettingsTab";
+        //    } else
+        //    {
+        //        tabStateMachine.PopState();
+        //        currentTab = lastTab;
+        //    }
+        //}
 
         public void ShowError(string msg)
         {
@@ -780,92 +771,92 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the control panel ON/OFF based on its current state.
         /// </summary>
-        public void ShowControlPanel()
-        {
-            if (!inputManagerPanel.activeSelf)
-            {
-                DynamicCamera.ControlEnabled = false;
-                InputControl.freeze = true;
-                EndOtherProcesses();
-                inputManagerPanel.SetActive(true);
-                inputPanelOn = true;
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-            }
-            else
-            {
-                CheckUnsavedControls(() =>
-                {
-                    DynamicCamera.ControlEnabled = true;
-                    InputControl.freeze = false;
-                    inputManagerPanel.SetActive(false);
-                    inputPanelOn = false;
-                    ToggleHotKeys(false);
-                });
-            }
-        }
+        //public void ShowControlPanel()
+        //{
+        //    if (!inputManagerPanel.activeSelf)
+        //    {
+        //        DynamicCamera.ControlEnabled = false;
+        //        InputControl.freeze = true;
+        //        EndOtherProcesses();
+        //        inputManagerPanel.SetActive(true);
+        //        inputPanelOn = true;
+        //        GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+        //    }
+        //    else
+        //    {
+        //        CheckUnsavedControls(() =>
+        //        {
+        //            DynamicCamera.ControlEnabled = true;
+        //            InputControl.freeze = false;
+        //            inputManagerPanel.SetActive(false);
+        //            inputPanelOn = false;
+        //            ToggleHotKeys(false);
+        //        });
+        //    }
+        //}
 
-        public void CheckUnsavedControls(Action callback)
-        {
-            ProcessControlsCallback = callback;
-            if (!Controls.HasBeenSaved())
-            {
-                checkSavePanel.SetActive(true);
-            } else
-            {
-                if(ProcessControlsCallback != null)
-                    ProcessControlsCallback.Invoke();
-            }
-        }
+        //public void CheckUnsavedControls(Action callback)
+        //{
+        //    ProcessControlsCallback = callback;
+        //    if (!Controls.HasBeenSaved())
+        //    {
+        //        checkSavePanel.SetActive(true);
+        //    } else
+        //    {
+        //        if(ProcessControlsCallback != null)
+        //            ProcessControlsCallback.Invoke();
+        //    }
+        //}
 
-        public void SaveAndClose()
-        {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            ShowControlPanel();
-        }
+        //public void SaveAndClose()
+        //{
+        //    GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
+        //    ShowControlPanel();
+        //}
 
         /// <summary>
         /// Checks the last state of the control panel. Defaults to OFF
         /// unless the user leaves it on.
         /// </summary>
-        public void CheckControlPanel()
-        {
-            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
-            {
-                inputManagerPanel.SetActive(false);
-            }
-            else
-            {
-                inputManagerPanel.SetActive(true);
-                PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            }
-        }
+        //public void CheckControlPanel()
+        //{
+        //    if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
+        //    {
+        //        inputManagerPanel.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        inputManagerPanel.SetActive(true);
+        //        PlayerPrefs.SetInt("isInputManagerPanel", 0);
+        //    }
+        //}
 
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
+        //public void CheckForSavedControls(string option)
+        //{
+        //    checkSavePanel.SetActive(false);
 
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    break;
-                default:
-                case "cancel":
-                    return;
-            }
-            if (ProcessControlsCallback != null)
-                ProcessControlsCallback.Invoke();
-        }
+        //    switch (option)
+        //    {
+        //        case "yes":
+        //            Controls.Save();
+        //            break;
+        //        case "no":
+        //            Controls.Load();
+        //            break;
+        //        default:
+        //        case "cancel":
+        //            return;
+        //    }
+        //    if (ProcessControlsCallback != null)
+        //        ProcessControlsCallback.Invoke();
+        //}
 
         /// <summary>
         /// Open tutorial link
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
                 AnalyticsLedger.EventAction.TutorialRequest,
                 "Help - Tutorials",
@@ -901,30 +892,30 @@ namespace Synthesis.GUI
             }
         }
 
-        /// <summary>
-        /// Toggle the hot key tool tips on/off based on the boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleHotKeys(bool show)
-        {
-            hotKeyPanel.SetActive(show);
-            if (show)
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
-            }
-            else
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
-            }
-        }
+        ///// <summary>
+        ///// Toggle the hot key tool tips on/off based on the boolean passed in
+        ///// </summary>
+        ///// <param name="show"></param>
+        //public void ToggleHotKeys(bool show)
+        //{
+        //    hotKeyPanel.SetActive(show);
+        //    if (show)
+        //    {
+        //        hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
+        //    }
+        //    else
+        //    {
+        //        hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
+        //    }
+        //}
 
-        /// <summary>
-        ///Toggle the hot key tool tips on/off based on its current state
-        /// </summary>
-        public void ToggleHotKeys()
-        {
-            ToggleHotKeys(!hotKeyPanel.activeSelf);
-        }
+        ///// <summary>
+        /////Toggle the hot key tool tips on/off based on its current state
+        ///// </summary>
+        //public void ToggleHotKeys()
+        //{
+        //    ToggleHotKeys(!hotKeyPanel.activeSelf);
+        //}
         #endregion
         #region reset functions
         /// <summary>
@@ -934,13 +925,11 @@ namespace Synthesis.GUI
         {
             if (State.ActiveRobot.IsResetting)
             {
-                spawnpointPanel.SetActive(true);
-                orientWindow.SetActive(true);
+                resetUI.SetActive(true);
             }
             else
             {
-                spawnpointPanel.SetActive(false);
-                orientWindow.SetActive(false);
+                resetUI.SetActive(false);
             }
         }
 
@@ -1034,8 +1023,7 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
-            ToggleHotKeys(false);
+            //ToggleHotKeys(false);
 
             CancelOrientation();
 
@@ -1058,11 +1046,32 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
-        /// <summary>
-        /// Links the specific toolbars to their specified states
-        /// </summary>
-        private void LinkToolbars()
+        public void LaunchReplay()
         {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
+
+            if (entry != null)
+            {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Viewing,
+                    AnalyticsLedger.TimingLabel.ReplayMode);
+
+                loadingPanel.SetActive(true);
+                PlayerPrefs.SetString("simSelectedReplay", entry);
+                PlayerPrefs.Save();
+                SceneManager.LoadScene("Scene");
+            }
+
+            replayList.SetActive(false);
+        }
+
+    /// <summary>
+    /// Links the specific toolbars to their specified states
+    /// </summary>
+    private void LinkToolbars()
+        {
+            LinkToolbar<MenuToolbarState>("MenuPanel");
             LinkToolbar<MainToolbarState>("MainToolbar");
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
@@ -1084,17 +1093,17 @@ namespace Synthesis.GUI
                 tabStateMachine.Link<T>(tab, strict);
         }
 
-        public void ResolutionSelectionChanged(int a) {
-            OnResolutionSelection(a);
-        }
+        //public void ResolutionSelectionChanged(int a) {
+        //    OnResolutionSelection(a);
+        //}
 
-        public void ScreenmodeSelectionChanged(int a) {
-            OnScreenmodeSelection(a);
-        }
+        //public void ScreenmodeSelectionChanged(int a) {
+        //    OnScreenmodeSelection(a);
+        //}
 
-        public void QualitySelectionChanged(int a) {
-            OnQualitySelection(a);
-        }
+        //public void QualitySelectionChanged(int a) {
+        //    OnQualitySelection(a);
+        //}
 
         public static bool IsMaMInstalled() {
             return Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar
