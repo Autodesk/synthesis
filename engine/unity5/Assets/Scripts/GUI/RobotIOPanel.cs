@@ -704,10 +704,10 @@ namespace Synthesis.GUI
                 robotIOGroups[i] = new RobotIOGroup((RobotIOGroup.Type)i, displayPanel);
             }
 
-            for (int i = 0; i < RoboRIOConstants.NUM_PWM_HDRS + RoboRIOConstants.NUM_PWM_MXP; i++)
+            for (int i = 0; i < EmulatedRoboRIO.Constants.NUM_PWM_HDRS + EmulatedRoboRIO.Constants.NUM_PWM_MXP; i++)
             {
                 int j = i; // Create copy of iterator
-                string name = (j < RoboRIOConstants.NUM_PWM_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_PWM_HDRS).ToString();
+                string name = (j < EmulatedRoboRIO.Constants.NUM_PWM_HDRS) ? j.ToString() : "MXP " + (j - EmulatedRoboRIO.Constants.NUM_PWM_HDRS).ToString();
                 robotIOGroups[(int)RobotIOGroup.Type.PWM].robotIOFields.Add(
                     new RobotIOField(
                         name,
@@ -716,20 +716,20 @@ namespace Synthesis.GUI
                         {
                             try
                             {
-                                if (j < RoboRIOConstants.NUM_PWM_HDRS)
+                                if (j < EmulatedRoboRIO.Constants.NUM_PWM_HDRS)
                                 {
-                                    robotIOField.inputField.text = OutputManager.Instance.PwmHeaders[j].ToString();
+                                    robotIOField.inputField.text = EmulatedRoboRIO.RobotOutputs.PwmHeaders[j].ToString();
                                 }
                                 else
                                 {
-                                    int digital_index = j - (int)RoboRIOConstants.NUM_PWM_HDRS;
+                                    int digital_index = j - (int)EmulatedRoboRIO.Constants.NUM_PWM_HDRS;
                                     if (digital_index >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
                                     {
                                         digital_index += 4;
                                     }
-                                    if (OutputManager.Instance.MxpData[digital_index].Config == EmulationService.MXPData.Types.Config.Pwm)
+                                    if (EmulatedRoboRIO.RobotOutputs.MxpData[digital_index].Config == EmulationService.MXPData.Types.Config.Pwm)
                                     {
-                                        robotIOField.inputField.text = OutputManager.Instance.MxpData[digital_index].Value.ToString();
+                                        robotIOField.inputField.text = EmulatedRoboRIO.RobotOutputs.MxpData[digital_index].Value.ToString();
                                         robotIOField.SetEnable(true);
                                     }
                                     else
@@ -742,7 +742,7 @@ namespace Synthesis.GUI
                             catch (Exception)
                             {
                                 robotIOField.inputField.text = "0";
-                                if (j >= RoboRIOConstants.NUM_PWM_HDRS)
+                                if (j >= EmulatedRoboRIO.Constants.NUM_PWM_HDRS)
                                 {
                                     robotIOField.SetEnable(false);
                                 }
@@ -753,7 +753,7 @@ namespace Synthesis.GUI
                 );
             }
 
-            for (int i = 0; i < RoboRIOConstants.NUM_CAN_ADDRESSES; i++)
+            for (int i = 0; i < EmulatedRoboRIO.Constants.NUM_CAN_ADDRESSES; i++)
             {
                 int j = i; // Create copy of iterator
                 robotIOGroups[(int)RobotIOGroup.Type.CAN].robotIOFields.Add(
@@ -764,7 +764,7 @@ namespace Synthesis.GUI
                         {
                             try
                             {
-                                var can = OutputManager.Instance.CanMotorControllers.First(e => e.Id == j); // Throws on failure
+                                var can = EmulatedRoboRIO.RobotOutputs.CanMotorControllers.First(e => e.Id == j); // Throws on failure
                                 robotIOField.gameObject.SetActive(true);
                                 robotIOField.label.text = can.Id.ToString();
                                 robotIOField.inputField.text = can.PercentOutput.ToString();
@@ -790,14 +790,14 @@ namespace Synthesis.GUI
                         robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(
                             Instance.robotIOFieldPrefab.gameObject.GetComponent<RectTransform>().sizeDelta.x * 1.5f, robotIOField.label.gameObject.GetComponent<RectTransform>().sizeDelta.y);
                         robotIOField.inputField.gameObject.SetActive(false);
-                        robotIOField.gameObject.SetActive(OutputManager.Instance.CanMotorControllers.Count == 0);
+                        robotIOField.gameObject.SetActive(EmulatedRoboRIO.RobotOutputs.CanMotorControllers.Count == 0);
                     }
                 )
             );
-            for (int i = 0; i < RoboRIOConstants.NUM_DIGITAL_HDRS + RoboRIOConstants.NUM_DIGITAL_MXP; i++)
+            for (int i = 0; i < EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS + EmulatedRoboRIO.Constants.NUM_DIGITAL_MXP; i++)
             {
                 int j = i; // Create copy of iterator
-                string name = (j < RoboRIOConstants.NUM_DIGITAL_HDRS) ? j.ToString() : "MXP " + (j - RoboRIOConstants.NUM_DIGITAL_HDRS).ToString();
+                string name = (j < EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS) ? j.ToString() : "MXP " + (j - EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS).ToString();
                 robotIOGroups[(int)RobotIOGroup.Type.DIO].robotIOFields.Add(
                     new RobotIOField(
                         name,
@@ -806,17 +806,17 @@ namespace Synthesis.GUI
                         {
                             try
                             {
-                                if (j < RoboRIOConstants.NUM_DIGITAL_HDRS)
+                                if (j < EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS)
                                 {
                                     string mode = "";
-                                    InputManager.Instance.DigitalHeaders[j].Config = (OutputManager.Instance.DigitalHeaders.Count > j) ? OutputManager.Instance.DigitalHeaders[j].Config : EmulationService.DIOData.Types.Config.Di; // Sync
-                                    if (InputManager.Instance.DigitalHeaders[j].Config == EmulationService.DIOData.Types.Config.Di)
+                                    EmulatedRoboRIO.RobotInputs.DigitalHeaders[j].Config = (EmulatedRoboRIO.RobotOutputs.DigitalHeaders.Count > j) ? EmulatedRoboRIO.RobotOutputs.DigitalHeaders[j].Config : EmulationService.DIOData.Types.Config.Di; // Sync
+                                    if (EmulatedRoboRIO.RobotInputs.DigitalHeaders[j].Config == EmulationService.DIOData.Types.Config.Di)
                                     {
                                         try
                                         {
                                             mode = "(DI)";
                                             robotIOField.inputField.interactable = true;
-                                            InputManager.Instance.DigitalHeaders[j].Value = int.Parse(robotIOField.inputField.text) != 0;
+                                            EmulatedRoboRIO.RobotInputs.DigitalHeaders[j].Value = int.Parse(robotIOField.inputField.text) != 0;
                                         }
                                         catch (Exception)
                                         {
@@ -830,23 +830,23 @@ namespace Synthesis.GUI
                                     {
                                         mode = "(DO)";
                                         robotIOField.inputField.interactable = false;
-                                        robotIOField.inputField.text = OutputManager.Instance.DigitalHeaders[j].Value ? "1" : "0";
+                                        robotIOField.inputField.text = EmulatedRoboRIO.RobotOutputs.DigitalHeaders[j].Value ? "1" : "0";
                                     }
                                     robotIOField.label.text = j.ToString() + " " + mode;
                                 }
                                 else
                                 {
-                                    int mxp_index = j - (int)RoboRIOConstants.NUM_DIGITAL_HDRS;
+                                    int mxp_index = j - (int)EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS;
                                     string mode = "";
-                                    InputManager.Instance.MxpData[mxp_index].Config = (OutputManager.Instance.MxpData.Count > mxp_index) ? OutputManager.Instance.MxpData[mxp_index].Config : EmulationService.MXPData.Types.Config.Di; // Sync
-                                    if (InputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Di)
+                                    EmulatedRoboRIO.RobotInputs.MxpData[mxp_index].Config = (EmulatedRoboRIO.RobotOutputs.MxpData.Count > mxp_index) ? EmulatedRoboRIO.RobotOutputs.MxpData[mxp_index].Config : EmulationService.MXPData.Types.Config.Di; // Sync
+                                    if (EmulatedRoboRIO.RobotInputs.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Di)
                                     {
                                         try
                                         {
                                             mode = "(DI)";
                                             robotIOField.SetEnable(true);
                                             robotIOField.inputField.interactable = true;
-                                            InputManager.Instance.MxpData[mxp_index].Value = (int.Parse(robotIOField.inputField.text) != 0) ? 1 : 0;
+                                            EmulatedRoboRIO.RobotInputs.MxpData[mxp_index].Value = (int.Parse(robotIOField.inputField.text) != 0) ? 1 : 0;
                                         }
                                         catch (Exception)
                                         {
@@ -859,11 +859,11 @@ namespace Synthesis.GUI
                                     else
                                     {
                                         robotIOField.inputField.interactable = false;
-                                        if (OutputManager.Instance.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Do)
+                                        if (EmulatedRoboRIO.RobotOutputs.MxpData[mxp_index].Config == EmulationService.MXPData.Types.Config.Do)
                                         {
                                             robotIOField.SetEnable(true);
                                             mode = "(DO)";
-                                            robotIOField.inputField.text = ((int)OutputManager.Instance.MxpData[mxp_index].Value).ToString();
+                                            robotIOField.inputField.text = ((int)EmulatedRoboRIO.RobotOutputs.MxpData[mxp_index].Value).ToString();
                                         }
                                         else
                                         {
@@ -878,7 +878,7 @@ namespace Synthesis.GUI
                             {
                                 robotIOField.inputField.interactable = false;
                                 robotIOField.inputField.text = "0";
-                                if (j >= RoboRIOConstants.NUM_DIGITAL_HDRS)
+                                if (j >= EmulatedRoboRIO.Constants.NUM_DIGITAL_HDRS)
                                 {
                                     robotIOField.SetEnable(false);
                                 }
@@ -887,21 +887,21 @@ namespace Synthesis.GUI
                     )
                 );
             }
-            for (int i = 0; i < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP + RoboRIOConstants.NUM_AO_MXP; i++)
+            for (int i = 0; i < EmulatedRoboRIO.Constants.NUM_AI_HDRS + EmulatedRoboRIO.Constants.NUM_AI_MXP + EmulatedRoboRIO.Constants.NUM_AO_MXP; i++)
             {
                 int j = i; // Create copy of iterator
                 string name = "";
-                if (j < RoboRIOConstants.NUM_AI_HDRS)
+                if (j < EmulatedRoboRIO.Constants.NUM_AI_HDRS)
                 {
                     name = "AI " + j.ToString();
                 }
-                else if(j < RoboRIOConstants.NUM_AI_HDRS+ RoboRIOConstants.NUM_AI_MXP)
+                else if(j < EmulatedRoboRIO.Constants.NUM_AI_HDRS+ EmulatedRoboRIO.Constants.NUM_AI_MXP)
                 {
-                    name = "MXP AI " + (j - RoboRIOConstants.NUM_AI_HDRS).ToString();
+                    name = "MXP AI " + (j - EmulatedRoboRIO.Constants.NUM_AI_HDRS).ToString();
                 }
                 else
                 {
-                    name = "MXP AO " + (j - RoboRIOConstants.NUM_AI_HDRS - RoboRIOConstants.NUM_AI_MXP).ToString();
+                    name = "MXP AO " + (j - EmulatedRoboRIO.Constants.NUM_AI_HDRS - EmulatedRoboRIO.Constants.NUM_AI_MXP).ToString();
                 }
                 robotIOGroups[(int)RobotIOGroup.Type.AIO].robotIOFields.Add(
                     new RobotIOField(
@@ -909,11 +909,11 @@ namespace Synthesis.GUI
                         robotIOGroups[(int)RobotIOGroup.Type.AIO].GetPanel(),
                         (RobotIOField robotIOField) =>
                         {
-                            if (j < RoboRIOConstants.NUM_AI_HDRS + RoboRIOConstants.NUM_AI_MXP) // Analog Input
+                            if (j < EmulatedRoboRIO.Constants.NUM_AI_HDRS + EmulatedRoboRIO.Constants.NUM_AI_MXP) // Analog Input
                             {
                                 try
                                 {
-                                    InputManager.Instance.AnalogInputs[j] = float.Parse(robotIOField.inputField.text);
+                                    EmulatedRoboRIO.RobotInputs.AnalogInputs[j] = float.Parse(robotIOField.inputField.text);
                                 }
                                 catch (Exception)
                                 {
@@ -928,8 +928,8 @@ namespace Synthesis.GUI
                             {
                                 try
                                 {
-                                    int ao_index = (int)(j - RoboRIOConstants.NUM_AI_HDRS - RoboRIOConstants.NUM_AI_MXP);
-                                    robotIOField.inputField.text = OutputManager.Instance.AnalogOutputs[ao_index].ToString();
+                                    int ao_index = (int)(j - EmulatedRoboRIO.Constants.NUM_AI_HDRS - EmulatedRoboRIO.Constants.NUM_AI_MXP);
+                                    robotIOField.inputField.text = EmulatedRoboRIO.RobotOutputs.AnalogOutputs[ao_index].ToString();
                                 }
                                 catch (Exception)
                                 {
@@ -941,7 +941,7 @@ namespace Synthesis.GUI
                     )
                 );
             }
-            for (int i = 0; i < RoboRIOConstants.NUM_RELAYS; i++)
+            for (int i = 0; i < EmulatedRoboRIO.Constants.NUM_RELAYS; i++)
             {
                 int j = i; // Create copy of iterator
                 robotIOGroups[(int)RobotIOGroup.Type.MISC].robotIOFields.Add(
@@ -953,7 +953,7 @@ namespace Synthesis.GUI
                             try
                             {
                                 robotIOField.inputField.characterValidation = InputField.CharacterValidation.Alphanumeric;
-                                switch (OutputManager.Instance.Relays[j])
+                                switch (EmulatedRoboRIO.RobotOutputs.Relays[j])
                                 {
                                     case EmulationService.RobotOutputs.Types.RelayState.Off:
                                         robotIOField.inputField.text = "Off";
@@ -986,12 +986,12 @@ namespace Synthesis.GUI
                     robotIOGroups[(int)RobotIOGroup.Type.MISC].GetPanel(),
                     async (RobotIOButton robotIOButton) =>
                     {
-                        InputManager.Instance.UserButton = true;
+                        EmulatedRoboRIO.RobotInputs.UserButton = true;
                         await Task.Delay(100);
                         robotIOButton.button.interactable = false; // Toggling interactable deselects the button without deslecting any other buttons
                         await Task.Delay(100); // Delay again to ensure its transmitted
                         robotIOButton.button.interactable = true;
-                        InputManager.Instance.UserButton = false;
+                        EmulatedRoboRIO.RobotInputs.UserButton = false;
                     },
                     (RobotIOButton robotIOButton) =>
                     {

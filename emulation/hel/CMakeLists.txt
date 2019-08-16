@@ -19,11 +19,9 @@ SET(WPILIB_DIR "${CMAKE_BINARY_DIR}/lib/wpilib/src/wpilib")
 SET(GRPC_DIR "${CMAKE_BINARY_DIR}/lib/grpc/src/grpc")
 SET(PROTOBUF_SOURCE_DIR "${CMAKE_SOURCE_DIR}/../api/v1/proto")
 SET(GRPC_GEN_DIR "${CMAKE_BINARY_DIR}/lib/gen")
-
-SET(GRPC "v1.21.4")
 # SET(CTRE_DIR "${CMAKE_BINARY_DIR}/lib/ctre/src/ctre")
 
-SET(VM_BUILD_COMMAND "./run_vm.sh")
+SET(VM_BUILD_COMMAND "${CMAKE_SOURCE_DIR}/run_vm.sh")
 
 OPTION(NO_TESTING "Disable unit tests" OFF)
 OPTION(NO_ROBOT "Disable test robot code" ON)
@@ -32,16 +30,40 @@ OPTION(X86 "Build for x86" OFF)
 OPTION(BUILD_DOC "Enable building of documentation" OFF)
 
 SET(DEFAULT_BUILD_TYPE "Release")
+SET(DEFAULT_GRPC_VERSION "v1.21.4")
+SET(DEFAULT_WPILIB_VERSION "v2019.4.1")
+SET(DEFAULT_NILIB_VERSION "v2019-12")
 
-IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  MESSAGE(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified")
-  SET(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE
-    STRING "Choose the type of build." FORCE)
+IF(NOT CMAKE_CONFIGURATION_TYPES)
   SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 ENDIF()
+IF(NOT CMAKE_BUILD_TYPE)
+  MESSAGE(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified")
+  SET(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE
+    STRING "Choose the type of build." FORCE)
+ENDIF()
 
 STRING(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
+
+IF(NOT WPILIB_VERSION)
+  MESSAGE(STATUS "Setting build type to '${DEFAULT_WPILIB_VERSION}' as none was specified")
+  SET(WPILIB_VERSION "${DEFAULT_WPILIB_VERSION}" CACHE
+    STRING "Enter WPILib version." FORCE)
+ENDIF()
+
+IF(NOT NILIB_VERSION)
+  MESSAGE(STATUS "Setting build type to '${DEFAULT_NILIB_VERSION}' as none was specified")
+  SET(NILIB_VERSION "${DEFAULT_NILIB_VERSION}" CACHE
+    STRING "Enter NI library version." FORCE)
+ENDIF()
+
+IF(NOT GRPC_VERSION)
+  MESSAGE(STATUS "Setting build type to '${DEFAULT_GRPC_VERSION}' as none was specified")
+  SET(GRPC_VERSION "${DEFAULT_GRPC_VERSION}" CACHE
+    STRING "Enter gRPC version." FORCE)
+ENDIF()
+
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -std=c++17 -DHEL_ENABLE_WARNINGS -fPIC")
 IF(${HEL_DEFAULT_ENABLED_STATUS} MATCHES "(true|false)")
@@ -75,7 +97,7 @@ if(NOT X86)
   ExternalProject_ADD(grpc
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
-    GIT_TAG ${GRPC}
+    GIT_TAG ${GRPC_VERSION}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
@@ -102,7 +124,7 @@ else()
   ExternalProject_ADD(grpc
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
-    GIT_TAG ${GRPC}
+    GIT_TAG ${GRPC_VERSION}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" "${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
@@ -135,7 +157,7 @@ ADD_CUSTOM_TARGET(build_vm
 EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
-  GIT_TAG ${NILIB}
+  GIT_TAG ${NILIB_VERSION}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
@@ -143,7 +165,7 @@ EXTERNALPROJECT_ADD(ni-libraries
 EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
-  GIT_TAG ${WPILIB}
+  GIT_TAG ${WPILIB_VERSION}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
@@ -167,7 +189,7 @@ ADD_DEPENDENCIES(wpilibj wpilib)
 #   GIT_REPOSITORY https://github.com/CrossTheRoadElec/Phoenix-frc-lib
 #   GIT_TAG v2018.19.0
 #   CONFIGURE_COMMAND cd ${CTRE_DIR} && chmod +x ./gradlew
-#   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external-configs/ctre.patch
+#   PATCH_COMMAND cd ${CMAKE_BINARY_DIR}/lib/ctre/src/ctre/ && patch -p1 < ${CMAKE_BINARY_DIR}/external_configs/ctre.patch
 #   BUILD_COMMAND ${SCRIPTS_DIR}/check_if_built.sh CRTE ${CTRE_DIR} ${CTRE_DIR}/arm/cpp/build/libs/cTRE_Phoenix/static/libCTRE_Phoenix.a "./gradlew arm:cpp:CTRE_PhoenixStaticLibrary"
 #   INSTALL_COMMAND "")
 # ADD_DEPENDENCIES(ctre wpilib)
@@ -242,10 +264,6 @@ TARGET_INCLUDE_DIRECTORIES(hel SYSTEM PRIVATE
 )
 
 if(NOT NO_TESTING AND DEBUG)
-  IF(NOT DEFINED WPILIB)
-    MESSAGE(FATAL_ERROR "Please specify WPILib Version with WPILIB tag")
-  ENDIF()
-
   # Test C++ Project
   if(NOT NO_ROBOT OR NOT X86)
     ADD_EXECUTABLE(FRCUserProgram ${CMAKE_SOURCE_DIR}/tests/test_projects/robot_teleop.cpp)
@@ -282,7 +300,7 @@ if(NOT NO_TESTING AND DEBUG)
       PREFIX lib/google_test
       DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
       GIT_REPOSITORY https://www.github.com/google/googletest
-      CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external-configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
+      CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external_configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   else()
     MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
     EXTERNALPROJECT_ADD(GoogleTest
