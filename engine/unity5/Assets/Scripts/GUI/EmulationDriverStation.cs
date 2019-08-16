@@ -178,13 +178,13 @@ namespace Synthesis.GUI
 
         private async void RunPracticeMode()
         {
-            InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
+            EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
             await Task.Delay(AUTONOMOUS_LENGTH);
-            if (!InputManager.Instance.RobotMode.Enabled)
+            if (!EmulatedRoboRIO.RobotInputs.RobotMode.Enabled)
             {
                 return;
             }
-            InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
+            EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Synthesis.GUI
         /// <param name="theState"></param>
         public void RobotState(string theState)
         {
-            EmulationService.RobotInputs.Types.RobotMode.Types.Mode last_mode = InputManager.Instance.RobotMode.Mode;
+            EmulationService.RobotInputs.Types.RobotMode.Types.Mode last_mode = EmulatedRoboRIO.RobotInputs.RobotMode.Mode;
 
             Auxiliary.FindObject(canvas, "TeleOp").GetComponentInChildren<Image>().sprite = DefaultColor;
             Auxiliary.FindObject(canvas, "Auto").GetComponentInChildren<Image>().sprite = DefaultColor;
@@ -205,26 +205,26 @@ namespace Synthesis.GUI
             switch (theState)
             {
                 case "auto":
-                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
+                    EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
                     Auxiliary.FindObject(canvas, "Auto").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
                 case "practice":
-                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
+                    EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Autonomous;
                     Auxiliary.FindObject(canvas, "Practice").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
                 case "test":
-                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
+                    EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Test;
                     Auxiliary.FindObject(canvas, "Test").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
                 case "teleop":
                 default:
-                    InputManager.Instance.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
+                    EmulatedRoboRIO.RobotInputs.RobotMode.Mode = EmulationService.RobotInputs.Types.RobotMode.Types.Mode.Teleop;
                     Auxiliary.FindObject(canvas, "TeleOp").GetComponentInChildren<Image>().sprite = HighlightColor;
                     break;
             }
-            if(InputManager.Instance.RobotMode.Mode != last_mode || lastRunPracticeMode != runPracticeMode)
+            if(EmulatedRoboRIO.RobotInputs.RobotMode.Mode != last_mode || lastRunPracticeMode != runPracticeMode)
                 RobotDisabled();
-            else if (runPracticeMode && InputManager.Instance.RobotMode.Enabled)
+            else if (runPracticeMode && EmulatedRoboRIO.RobotInputs.RobotMode.Enabled)
                 Task.Run(RunPracticeMode);
         }
 
@@ -232,11 +232,11 @@ namespace Synthesis.GUI
         {
             if(EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UseEmulation)) && EmulationWarnings.CheckRequirement((EmulationWarnings.Requirement.UserProgramConnected)))
             {
-                if (!InputManager.Instance.RobotMode.Enabled && runPracticeMode)
+                if (!EmulatedRoboRIO.RobotInputs.RobotMode.Enabled && runPracticeMode)
                 {
                     Task.Run(RunPracticeMode);
                 }
-                InputManager.Instance.RobotMode.Enabled = true;
+                EmulatedRoboRIO.RobotInputs.RobotMode.Enabled = true;
                 enableRobotImage.sprite = EnableColor;
                 disableRobotImage.sprite = DefaultColor;
             }
@@ -244,7 +244,7 @@ namespace Synthesis.GUI
 
         public void RobotDisabled()
         {
-            InputManager.Instance.RobotMode.Enabled = false;
+            EmulatedRoboRIO.RobotInputs.RobotMode.Enabled = false;
             enableRobotImage.sprite = DefaultColor;
             disableRobotImage.sprite = DisableColor;
         }
@@ -258,30 +258,30 @@ namespace Synthesis.GUI
             switch (teamStation)
             {
                 case 1:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red2;
                     break;
                 case 2:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red3;
                     break;
                 case 3:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue1;
                     break;
                 case 4:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue2;
                     break;
                 case 5:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Blue3;
                     break;
                 case 0:
                 default:
-                    InputManager.Instance.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
+                    EmulatedRoboRIO.RobotInputs.MatchInfo.AllianceStationId = EmulationService.RobotInputs.Types.MatchInfo.Types.AllianceStationID.Red1;
                     break;
             }
         }
 
         public void FinishGameSpecificMessage()
         {
-            InputManager.Instance.MatchInfo.GameSpecificMessage = gameSpecificMessage.text;
+            EmulatedRoboRIO.RobotInputs.MatchInfo.GameSpecificMessage = gameSpecificMessage.text;
         }
 
         public string GetGameSpecificMessage()

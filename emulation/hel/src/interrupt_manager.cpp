@@ -15,7 +15,13 @@ namespace nFPGA{
         hel::warnUnsupportedFeature("Function call tInterruptManager::registerHandler");
         _handler = handler;
         _userParam = param;
-        std::thread([&]{ while(true){_handler(_interruptMask, _userParam); usleep(10000); ; }}).detach();
+        // Continually call the handler
+		std::thread([&]{ // FIXME
+			while(true){
+				_handler(_interruptMask, _userParam);
+				usleep(10000); 
+			}
+		}).detach();
     }
 
     uint32_t tInterruptManager::watch(int32_t /*timeoutInMs*/, bool /*ignorePrevious*/, tRioStatusCode* /*status*/){

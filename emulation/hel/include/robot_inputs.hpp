@@ -17,6 +17,7 @@
 #include "robot_mode.hpp"
 
 namespace hel {
+
 /**
  * \brief Container for all the data received from the Synthesis engine
  * Contains functions to interpret the data and populate the RoboRIO object held
@@ -98,7 +99,20 @@ struct RobotInputs {
 
 	std::string toString() const;
 
+	/**
+	 * \brief Update these robot input values from the gRPC messages
+	 *
+	 * Only sync core inputs
+	 */
+
 	void sync(const EmulationService::RobotInputs&);
+	
+	/**
+	 * \brief Update these robot input values from the gRPC messages
+	 *
+	 * Sync all inputs
+	 */
+
 
     void syncDeep(const EmulationService::RobotInputs&);
 
