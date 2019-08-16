@@ -4,6 +4,14 @@
         <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
+        <style>
+            .sticky-container {
+                position: sticky;
+                bottom: 0;
+                padding: 10px;
+                background-color: rgb(242, 242, 242);
+            }
+        </style>
     </head>
     <body>
         <script src="js/sensors.js"></script>
@@ -69,7 +77,9 @@
             <button id='new-sensor-button' type='button' onclick='newSensor()'>New Sensor</button>
         </fieldset>
 
-        <button id='save-button' type='button' onclick='sendInfoToFusion()'>OK</button>
+        <div class="sticky-container">
+            <button id='save-button' type='button' onclick='sendInfoToFusion()' style="position: sticky; bottom: 0px;">Save</button>
+        </div>
 
         <script>
             var sensorTemplate = document.getElementById('sensor-config-template').cloneNode(true);
