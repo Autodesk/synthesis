@@ -74,6 +74,11 @@
 xcopy /E /I /Y /S "$(SolutionDir)Resources" "$(SolutionDir)$(Configuration)\Resources"
 xcopy /Y "$(SolutionDir)$(ProjectName).manifest" "$(SolutionDir)$(Configuration)"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>rmdir /s /q "$(SolutionDir)$(Configuration)\palette"
+rmdir /s /q "$(SolutionDir)$(Configuration)\Resources"
+del /q "$(SolutionDir)$(Configuration)\$(ProjectName).manifest"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
