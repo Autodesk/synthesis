@@ -22,6 +22,7 @@ utility::string_t removeSpaces(utility::string_t in)
 
 std::string Analytics::clientId;
 bool Analytics::enabled = true;
+bool Analytics::firstLaunchNotification = true;
 bool Analytics::guideEnabled = true;
 
 void Analytics::LoadSettings()
@@ -57,6 +58,11 @@ void Analytics::LoadSettings()
 	else
 		guideEnabled = true;
 
+	if (jsonObj.contains("FirstLaunchNotificationEnabled") && jsonObj["FirstLaunchNotificationEnabled"].is_boolean()) // TODO: Also move this to settings manager class
+		firstLaunchNotification = jsonObj["FirstLaunchNotificationEnabled"].get<bool>();
+	else
+		firstLaunchNotification = true;
+
 	SaveSettings();
 }
 
@@ -72,6 +78,7 @@ void Analytics::SaveSettings()
 	baseJson["AnalyticsID"] = clientId;
 	baseJson["AnalyticsEnabled"] = enabled;
 	baseJson["GuideEnabled"] = guideEnabled;
+	baseJson["FirstLaunchNotificationEnabled"] = firstLaunchNotification;
 	std::ofstream writeStream(filenameBXDJ);
 	std::string jsonStr = baseJson.dump(1);
 	writeStream << jsonStr << std::endl;

@@ -10,6 +10,14 @@
 
  using namespace SynthesisAddIn;
 
+/// General Events
+// Once Fusion 360 is done loading
+void DocumentOpenedHandler::notify(const Ptr<DocumentEventArgs>& eventArgs)
+{
+	if (Analytics::firstLaunchNotification)
+		eui->showFirstLaunchNotification();
+}
+
 /// Workspace Events
 // Activate Workspace Event
 void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
@@ -121,7 +129,7 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 	}
 	else if (eventArgs->action() == "settings_analytics")
 	{
-		Analytics::SetEnabled(eventArgs->data() == "true" ? true : false);
+		Analytics::SetEnabled(eventArgs->data() == "true");
 	}
 	else if (eventArgs->action() == "close")
 	{

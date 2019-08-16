@@ -29,6 +29,19 @@ bool EUI::clearHandler<WorkspaceActivatedHandler>(Ptr<UserInterface> UI, Workspa
 	return true;
 }
 
+// Fusion 360 startup finished
+template<>
+bool EUI::addHandler<DocumentOpenedHandler>(Ptr<UserInterface> UI, DocumentOpenedHandler * documentOpenedHandler)
+{
+	documentOpenedHandler = new DocumentOpenedHandler(this);
+
+	Ptr<DocumentEvent> documentEvent = app->documentOpened();
+	if (!documentEvent)
+		return false;
+
+	return documentEvent->add(documentOpenedHandler);
+}
+
 // Workspace Deactivated Handler
 template<>
 bool EUI::addHandler<WorkspaceDeactivatedHandler>(Ptr<UserInterface> UI, WorkspaceDeactivatedHandler* workspaceDeactivatedHandler)

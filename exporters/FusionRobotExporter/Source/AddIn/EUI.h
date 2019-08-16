@@ -47,6 +47,8 @@ namespace SynthesisAddIn
 		void enableEditorButtons();
 		void closeAllPalettes();
 
+		void showFirstLaunchNotification();
+
 		void openDriveTypePalette();
 		void closeDriveTypePalette();
 
@@ -143,6 +145,8 @@ namespace SynthesisAddIn
 		// These handlers are managed in EUI-Handers.cpp.
 		// Pointers to each handlers are kept for removal and deletion
 		// when the exporter add-in is deactivated.
+
+		DocumentOpenedHandler * documentOpenedHandler = nullptr;
 
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;

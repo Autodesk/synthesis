@@ -22,7 +22,9 @@ bool EUI::createWorkspace()
 		// {
 			// workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
 			// workSpace->tooltip("Export robot models to the Synthesis simulator");
-		
+
+			addHandler<DocumentOpenedHandler>(UI, documentOpenedHandler);
+
 			addHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
 			addHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
@@ -128,6 +130,18 @@ void EUI::enableEditorButtons()
 	// robotExportGuideButton->controlDefinition()->isEnabled(true); ///< Export robot button.
 	settingsButton->controlDefinition()->isEnabled(true);
 	finishButton->controlDefinition()->isEnabled(true); ///< Export robot button.
+}
+
+// First Launch Notification
+
+void EUI::showFirstLaunchNotification()
+{
+	DialogResults res = UI->messageBox("The Synthesis robot exporter add-in has been installed. To access the exporter, select the \"Tools\" tab under the \"Design\" workspace.", "Synthesis Add-In", MessageBoxButtonTypes::OKButtonType, InformationIconType);
+	if (res == DialogOK)
+	{
+		Analytics::firstLaunchNotification = false;
+		Analytics::SaveSettings();
+	}
 }
 
 // Drivetrain Weight Palette
