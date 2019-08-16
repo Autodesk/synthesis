@@ -1,0 +1,1 @@
+GROUP ( AS_NEEDED ( libcscore.so libntcore.so libwpiutil.so libwpiHal.so libwpilibc.so ) )

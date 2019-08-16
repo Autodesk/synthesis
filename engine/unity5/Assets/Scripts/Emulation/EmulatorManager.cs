@@ -232,6 +232,8 @@ namespace Synthesis
                 Debug.Log(e.ToString());
                 exception = true;
             }
+
+            StartUpdatingStatus();
             return !exception && IsVMRunning();
         }
 
@@ -247,6 +249,7 @@ namespace Synthesis
             VMConnected = false;
             frcUserProgramPresent = false;
             isTryingToRunRobotCode = false;
+            isRunningRobotCode = false;
             isRunningRobotCodeRunner = false;
 
             if (IsVMRunning())

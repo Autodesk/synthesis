@@ -2,19 +2,21 @@
 
 # Download the emulator VM
 
-FILE_URL="https://www.dropbox.com/s/knbc6r2wmh78vow/vm-package.zip?dl=0"
+FILE_URL="https://www.dropbox.com/s/vpycb8e90wh4uqx/vm-package.zip"
 
 if [ ! -f vm-package.zip ] ; then
-	printf "Begun downloading VM image\n"
-	wget -O vm-package.zip $FILE_URL
-	printf "Image successfully downloaded.\nPlease wait while the image is extracted.\n"
+	printf "Begun downloading VM images\n"
+	wget -q --show-progress -O vm-package.zip $FILE_URL 
+	printf "Images successfully downloaded.\n"
 fi
 mkdir vm-package -p;
 
-if [ ! -d ./vm-package ] || [ ! -f vm-package/zImage ] || [ ! -f vm-package/rootfs.ext4 ] || [ ! -f vm-package/zynq-zed.dtb ]; then
+if [ ! -d ./vm-package ] || [ ! -f vm-package/kernel-native ] || [ ! -f vm-package/rootfs-native.ext4 ] || [ ! -f vm-package/zynq-zed.dtb ] || [ ! -f vm-package/kernel-java ] || [ ! -f vm-package/rootfs-java.ext4 ] || [ ! -f vm-package/grpc-bridge ]; then
+	printf "Please wait while the images are extracted.\n"
 
 	unzip vm-package.zip;
 
-	printf "Successfully downloaded and extracted the image.\n"
+	printf "Successfully extracted the images.\n"
 fi
 
+printf "VM images ready.\n"
