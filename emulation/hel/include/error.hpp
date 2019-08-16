@@ -206,11 +206,35 @@ namespace hel{
         InputConfigurationException(std::string)noexcept;
     };
 
+	/**
+	 * \brief Generate a standardized Synthesis exception message
+	 * \param message The message body
+	 * \param new_line Whether to append a new line character
+	 * \return The generated message
+	 */
+
     std::string makeExceptionMessage(const std::string&, bool new_line = true);
+	
+	/**
+	 * \brief Generate a standardized Synthesis warning message
+	 * \param message The message body
+	 * \param new_line Whether to append a new line character
+	 * \return The generated message
+	 */
 
     std::string makeWarningMessage(const std::string&, bool new_line = true);
+	
+	/**
+	 * \brief Print a Synthesis warning
+	 * \param message The message to print to stderr, formatted by makeWarningMessage
+	 */
 
     void warn(const std::string&);
+	
+	/**
+	 * \brief Print a Synthesis warning for unsupported features
+	 * \param message The message to print to stderr, formatted by makeWarningMessage
+	 */
 
     void warnUnsupportedFeature(const std::string&);
 }
