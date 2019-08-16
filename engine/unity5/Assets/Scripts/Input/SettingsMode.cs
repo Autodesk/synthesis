@@ -17,7 +17,6 @@ namespace Synthesis.Input
     {
         //Toggle Switches
         public Dropdown profileDropdown;
-        public GameObject unitConversionSwitch;
 
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
@@ -33,7 +32,6 @@ namespace Synthesis.Input
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
 
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
             //Can change the default measurement HERE and also change the default value in the slider game object in main menu
             PlayerPrefs.SetString("Measure", "Metric");
 
@@ -47,10 +45,6 @@ namespace Synthesis.Input
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
             profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
-
-            //Measurement slider
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
         }
 
         /// <summary>

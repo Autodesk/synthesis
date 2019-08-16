@@ -29,6 +29,8 @@ public class UserSettings : MonoBehaviour
     private int selectedQuality = 0;
     private string selectedResolution = "0x0";
 
+    public GameObject unitConversionSwitch;
+
     public void Start()
     {
         canvas = Auxiliary.FindGameObject("Canvas");
@@ -106,6 +108,11 @@ public class UserSettings : MonoBehaviour
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
+
+        // UNITS
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+        unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
     }
 
     public void OnEnable()
