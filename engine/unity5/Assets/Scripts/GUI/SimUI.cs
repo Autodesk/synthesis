@@ -102,7 +102,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             instance = this;
-            hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
+            hoverHighlight = Auxiliary.FindGameObject("MenuTab").GetComponent<Button>().spriteState.highlightedSprite;
 
             UpdateJoystickStates(false);
         }
