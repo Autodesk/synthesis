@@ -104,7 +104,8 @@ button
 .modal { /* Background */
     display: none;
     position: fixed;
-    z-index: 99999;
+    z-index: 1;
+    padding-top: 50%;
     left: 0;
     top: 0;
     width: 100%;
