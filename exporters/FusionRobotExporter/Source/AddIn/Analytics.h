@@ -42,6 +42,7 @@ namespace SynthesisAddIn {
 		}
 	public:
 		static bool guideEnabled;
+		static bool firstLaunchNotification;
 		static void SaveSettings();
 		static void StartSession(adsk::core::Ptr<adsk::core::Application> app);
 		static void EndSession();
