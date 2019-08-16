@@ -721,11 +721,11 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 300, 134+25);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 250, 134+25);
 		if (!settingsPalette)
 			return false;
 
-		settingsPalette->setMaximumSize(300, 134+25);
+		settingsPalette->setMaximumSize(250, 134+25);
 
 		// Dock the palette to the right side of Fusion window.
 		settingsPalette->dockingState(PaletteDockStateRight);
