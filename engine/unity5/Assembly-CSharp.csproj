@@ -208,14 +208,10 @@
     <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
     <Compile Include="Assets\Scripts\DriverPractice\TrajectoryEditor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\Emulation\EmulatedRoboRIO.cs" />
     <Compile Include="Assets\Scripts\Emulation\EmulationWarnings.cs" />
     <Compile Include="Assets\Scripts\Emulation\EmulatorManager.cs" />
     <Compile Include="Assets\Scripts\Emulation\EmulatorNetworkConnection.cs" />
-    <Compile Include="Assets\Scripts\Emulation\GrpcMessage.cs" />
-    <Compile Include="Assets\Scripts\Emulation\GrpcTask.cs" />
-    <Compile Include="Assets\Scripts\Emulation\ReceiverTask.cs" />
-    <Compile Include="Assets\Scripts\Emulation\SenderTask.cs" />
-    <Compile Include="Assets\Scripts\Emulation\Singletons.cs" />
     <Compile Include="Assets\Scripts\Emulation\UserProgram.cs" />
     <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
@@ -355,11 +351,6 @@
     <Compile Include="Assets\Scripts\States\SimTabState.cs" />
     <Compile Include="Assets\Scripts\States\SyncState.cs" />
     <Compile Include="Assets\Scripts\Threading\Channel.cs" />
-    <Compile Include="Assets\Scripts\Threading\IMessage.cs" />
-    <Compile Include="Assets\Scripts\Threading\ManagedTask.cs" />
-    <Compile Include="Assets\Scripts\Threading\ManagedTaskBase.cs" />
-    <Compile Include="Assets\Scripts\Threading\ManagedTaskRunner.cs" />
-    <Compile Include="Assets\Scripts\Threading\StandardMessage.cs" />
     <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
     <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
     <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />

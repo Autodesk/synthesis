@@ -44,10 +44,8 @@ extern "C" {
 
         instance.second.unlock();
 
-        // FIXME: |
-        //        ▼
         // Call the occur function repeatably in the background to signal HAL that the Driver Station has new data for it; this way it won't block and will actually receive HEL DS data
-        ds_spoofer = std::thread(
+        ds_spoofer = std::thread( // FIXME
 			[occurFunction, refnum](){
 				while(true){
 					occurFunction(refnum);

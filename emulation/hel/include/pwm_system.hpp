@@ -41,6 +41,10 @@ namespace hel{
 
         struct PWM{
 
+			/**
+			 * \brief If the zero latch is latched, the PWM generator is guaranteed to output 0
+			 */
+
             bool zero_latch;
 
             /**
@@ -101,14 +105,38 @@ namespace hel{
          */
 
         void setConfig(nFPGA::nRoboRIO_FPGANamespace::tPWM::tConfig)noexcept;
+        
+		/**
+         * \brief Get the PWM header zero latch value.
+         * \param index The PWM header index
+         * \return The PWM zero latch value
+         */
 
         bool getHdrZeroLatch(uint8_t)const;
 
+		/**
+         * \brief Set the PWM header zero latch value.
+         * \param index The PWM header index
+         * \param zero_latch The PWM zero latch value
+         */
+
         void setHdrZeroLatch(uint8_t, bool);
+
+		/**
+         * \brief Get the PWM MXP zero latch value.
+         * \param index The PWM MXP index
+         * \return The PWM zero latch value
+         */
 
         bool getMXPZeroLatch(uint8_t)const;
 
-        void setMXPZeroLatch(uint8_t, uint32_t);
+		/**
+         * \brief Set the PWM MXP zero latch value.
+         * \param index The PWM MXP index
+         * \param index The zero latch value
+         */
+
+        void setMXPZeroLatch(uint8_t, bool);
 
         /**
          * \brief Get current pwm scale for a header based PWM.
