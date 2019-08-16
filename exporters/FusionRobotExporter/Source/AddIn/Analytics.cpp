@@ -22,12 +22,18 @@ utility::string_t removeSpaces(utility::string_t in)
 
 std::string Analytics::clientId;
 bool Analytics::enabled = true;
+bool Analytics::guideEnabled = true;
 
 void Analytics::LoadSettings()
 {
 	std::string jsonId = "";
 	try {
-		std::ifstream t("SynthesisAddInSettings.json"); // TODO: settings manager class
+#ifdef _WIN32
+		static const std::string appdata = getenv("APPDATA");
+#else
+		???
+#endif
+		std::ifstream t(appdata+"/Autodesk/Synthesis/FusionRobotExporterSettings.json"); // TODO: settings manager class
 		std::string jsonStr((std::istreambuf_iterator<char>(t)),
 			std::istreambuf_iterator<char>());
 		jsonId = jsonStr;
@@ -46,15 +52,26 @@ void Analytics::LoadSettings()
 	else
 		enabled = true;
 
+	if (jsonObj.contains("GuideEnabled") && jsonObj["GuideEnabled"].is_boolean()) // TODO: Move this to settings manager class
+		guideEnabled = jsonObj["GuideEnabled"].get<bool>();
+	else
+		guideEnabled = true;
+
 	SaveSettings();
 }
 
 void Analytics::SaveSettings()
 {
-	std::string filenameBXDJ = "SynthesisAddInSettings.json"; // TODO: Settings manager class
+#ifdef _WIN32
+	static const std::string appdata = getenv("APPDATA");
+#else
+	? ? ?
+#endif
+	std::string filenameBXDJ = appdata+"/Autodesk/Synthesis/FusionRobotExporterSettings.json"; // TODO: Settings manager class
 	nlohmann::json baseJson;
 	baseJson["AnalyticsID"] = clientId;
 	baseJson["AnalyticsEnabled"] = enabled;
+	baseJson["GuideEnabled"] = guideEnabled;
 	std::ofstream writeStream(filenameBXDJ);
 	std::string jsonStr = baseJson.dump(1);
 	writeStream << jsonStr << std::endl;

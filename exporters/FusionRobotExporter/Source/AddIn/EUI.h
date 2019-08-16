@@ -66,7 +66,7 @@ namespace SynthesisAddIn
 		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
 		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
 
-		void openSettingsPalette(bool guideEnabled);
+		void openSettingsPalette();
 		void closeSettingsPalette(std::string guideEnabled);
 
 		// void toggleKeyPalette();
@@ -105,7 +105,6 @@ namespace SynthesisAddIn
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
 		// bool dofViewEnabled = false;
-		bool guideEnabled = false;
 
 		Ptr<Application> getApp() { return app; }
 
