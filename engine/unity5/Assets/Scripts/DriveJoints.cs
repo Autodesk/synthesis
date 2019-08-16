@@ -243,7 +243,7 @@ public class DriveJoints
     /// </summary>
     private static void UpdateEmulationJoysticks()
     {
-        var instance = Synthesis.InputManager.Instance;
+        var instance = Synthesis.EmulatedRoboRIO.RobotInputs;
         foreach (JoystickSerializer js in joystickSerializers)
         {
             js.SerializeInputs();
@@ -275,11 +275,11 @@ public class DriveJoints
     /// <param name="pwm"></param>
     private static void UpdateEmulationMotorControllers()
     {
-        for (int i = 0; i < Synthesis.OutputManager.Instance.PwmHeaders.Count(); i++)
-            pwm_motor_controllers[i] = (float)Synthesis.OutputManager.Instance.PwmHeaders[i];
+        for (int i = 0; i < Synthesis.EmulatedRoboRIO.RobotOutputs.PwmHeaders.Count(); i++)
+            pwm_motor_controllers[i] = (float)Synthesis.EmulatedRoboRIO.RobotOutputs.PwmHeaders[i];
 
         can_motor_controllers.Clear();
-        foreach (var CAN in Synthesis.OutputManager.Instance.CanMotorControllers)
+        foreach (var CAN in Synthesis.EmulatedRoboRIO.RobotOutputs.CanMotorControllers)
             can_motor_controllers.Add(CAN.Id, CAN.PercentOutput);
     }
 
@@ -317,8 +317,8 @@ public class DriveJoints
 
                 a.previousPosition = currentPos;
 
-                if (Synthesis.InputManager.Instance.EncoderManagers[iter] == null)
-                    Synthesis.InputManager.Instance.EncoderManagers[iter] = new EmulationService.RobotInputs.Types.EncoderManager();
+                if (Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter] == null)
+                    Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter] = new EmulationService.RobotInputs.Types.EncoderManager();
 
                 EmulationService.RobotInputs.Types.EncoderManager.Types.PortType ConvertPortType(SensorConnectionType type)
                 {
@@ -329,11 +329,11 @@ public class DriveJoints
                     throw new Exception();
                 }
 
-                Synthesis.InputManager.Instance.EncoderManagers[iter].AChannel = (uint)a.RobotSensor.portA;
-                Synthesis.InputManager.Instance.EncoderManagers[iter].AType = ConvertPortType(a.RobotSensor.conTypePortA); ;
-                Synthesis.InputManager.Instance.EncoderManagers[iter].BChannel = (uint)a.RobotSensor.portB;
-                Synthesis.InputManager.Instance.EncoderManagers[iter].BType = ConvertPortType(a.RobotSensor.conTypePortB);;
-                Synthesis.InputManager.Instance.EncoderManagers[iter].Ticks = (int)a.encoderTickCount;
+                Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter].AChannel = (uint)a.RobotSensor.portA;
+                Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter].AType = ConvertPortType(a.RobotSensor.conTypePortA); ;
+                Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter].BChannel = (uint)a.RobotSensor.portB;
+                Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter].BType = ConvertPortType(a.RobotSensor.conTypePortB);;
+                Synthesis.EmulatedRoboRIO.RobotInputs.EncoderManagers[iter].Ticks = (int)a.encoderTickCount;
                 
                 iter++;
             }

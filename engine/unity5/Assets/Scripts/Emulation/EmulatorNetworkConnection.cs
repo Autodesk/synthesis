@@ -83,10 +83,10 @@ namespace Synthesis
                             {
                                 Api = API_VERSION,
                                 TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
-                                InputData = InputManager.Instance,
+                                InputData = EmulatedRoboRIO.RobotInputs,
                             });
                             senderConnected = true;
-                            // Debug.Log("Sending " + InputManager.Instance);
+                            // Debug.Log("Sending " + EmulatedRoboRIO.RobotInputs);
                             await Task.Delay(LOOP_DELAY); // ms
                         }
                     }
@@ -121,8 +121,8 @@ namespace Synthesis
                         while (await call.ResponseStream.MoveNext())
                         {
                             receiverConnected = true;
-                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
-                            // Debug.Log("Received " + OutputManager.Instance);
+                            EmulatedRoboRIO.RobotOutputs = call.ResponseStream.Current.OutputData;
+                            // Debug.Log("Received " + EmulatedRoboRIO.RobotOutputs);
                         }
                     }
                 }

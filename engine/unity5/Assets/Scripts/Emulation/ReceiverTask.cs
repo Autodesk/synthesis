@@ -40,7 +40,7 @@ namespace Synthesis
                 {
                     await call.ResponseStream.MoveNext();
 
-                    OutputManager.Instance = call.ResponseStream.Current.OutputData;
+                    EmulatedRoboRIO.RobotOutputs = call.ResponseStream.Current.OutputData;
                 }
                 catch (Exception e)
                 {

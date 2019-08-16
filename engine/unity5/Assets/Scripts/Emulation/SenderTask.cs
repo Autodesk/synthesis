@@ -39,13 +39,13 @@ namespace Synthesis
                 }
                 try
                 {
-                    var a = InputManager.Instance;
+                    var a = EmulatedRoboRIO.RobotInputs;
                     //Debug.Log(a.Joysticks[0].ToString());
 
                     await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
                     {
                         Api = "v1",
-                        InputData = InputManager.Instance,
+                        InputData = EmulatedRoboRIO.RobotInputs,
                     });
                     System.Threading.Thread.Sleep(30);
                 }
