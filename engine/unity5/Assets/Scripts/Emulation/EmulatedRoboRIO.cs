@@ -2,8 +2,14 @@
 
 namespace Synthesis
 {
+    /// <summary>
+    /// States of the emulated RoboRIO
+    /// </summary>
     public static class EmulatedRoboRIO
     {
+        /// <summary>
+        /// Constants related to the RoboRIO
+        /// </summary>
         public static class Constants
         {
             // PWM/DIO
@@ -31,6 +37,9 @@ namespace Synthesis
 
         static EmulatedRoboRIO() { }
 
+        /// <summary>
+        /// Robot output state singleton
+        /// </summary>
         public static RobotOutputs RobotOutputs { get { return OutputInternal.instance; } set { OutputInternal.instance = value; } }
 
         private class OutputInternal
@@ -39,6 +48,9 @@ namespace Synthesis
             internal static RobotOutputs instance = new RobotOutputs();
         }
 
+        /// <summary>
+        /// Robot input state singleton
+        /// </summary>
         public static RobotInputs RobotInputs { get { return InputInternal.instance; } set { InputInternal.instance = value; } }
 
         private class InputInternal

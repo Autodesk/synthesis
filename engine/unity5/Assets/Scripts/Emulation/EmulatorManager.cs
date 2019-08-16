@@ -13,6 +13,9 @@ namespace Synthesis
         // Directory Info
         private static readonly string EMULATION_DIR = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Emulator";
 
+        /// <summary>
+        /// The running OS, used to make emulator process management cross-platform
+        /// </summary>
         private enum OS
         {
             Windows,
@@ -80,11 +83,19 @@ namespace Synthesis
 
         private static bool updatingStatus = false;
 
+        /// <summary>
+        /// Handles the SSH connection into the active virtual machine
+        /// 
+        /// This allows us to reuse the connection, which makes running commands faster
+        /// </summary>
         private static class ClientManager
         {
+            /// <summary>
+            /// Connect to the active VM if not connected
+            /// </summary>
             public static void Connect()
             {
-                if (emulatorType != programType && Instance != null)
+                if (emulatorType != programType && Instance != null) // Reset connection if the active VM switched
                 {
                     Close();
                 }
@@ -106,6 +117,9 @@ namespace Synthesis
                 }
             }
 
+            /// <summary>
+            /// Clean up connection
+            /// </summary>
             public static void Close()
             {
                 if (Instance != null)
@@ -124,6 +138,10 @@ namespace Synthesis
             private static UserProgram.Type emulatorType = UserProgram.Type.JAVA;
         }
 
+        /// <summary>
+        /// Check if all necessary emulation files exist
+        /// </summary>
+        /// <returns>True if all files exist</returns>
         public static bool IsVMInstalled()
         {
             return Directory.Exists(EMULATION_DIR) &&
@@ -138,6 +156,10 @@ namespace Synthesis
                 File.Exists(QEMU_X86);
         }
 
+        /// <summary>
+        /// Check if all emulation sub-processes are running
+        /// </summary>
+        /// <returns>True if if all processes are running</returns>
         public static bool IsVMRunning()
         {
             if (qemuNativeProcess != null && qemuNativeProcess.HasExited)
@@ -150,36 +172,64 @@ namespace Synthesis
             return qemuNativeProcess != null && qemuJavaProcess != null && grpcBridgeProcess != null;
         }
 
+        /// <summary>
+        /// Check if connected to the active VM
+        /// </summary>
+        /// <returns>True if connected</returns>
         public static bool IsVMConnected()
         {
             return VMConnected;
         }
 
+        /// <summary>
+        /// Check if a user program exists in the active VM
+        /// </summary>
+        /// <returns>True if it exists</returns>
         public static bool IsFRCUserProgramPresent()
         {
             return frcUserProgramPresent;
         }
 
+        /// <summary>
+        /// Check if we're running or trying to run a user program
+        /// </summary>
+        /// <returns>True if it's trying to be run</returns>
         public static bool IsTryingToRunRobotCode()
         {
             return isTryingToRunRobotCode || isRunningRobotCode;
         }
 
+        /// <summary>
+        /// Check if the user program runner is running
+        /// </summary>
+        /// <returns>True if it's running</returns>
         public static bool IsRunningRobotCodeRunner()
         {
             return isRunningRobotCodeRunner;
         }
 
+        /// <summary>
+        /// Check if the user program itself is running
+        /// </summary>
+        /// <returns>True if it's running</returns>
         public static bool IsRunningRobotCode()
         {
             return isRunningRobotCode;
         }
 
+        /// <summary>
+        /// Check if it's in the middle of restarting the user program
+        /// </summary>
+        /// <returns>True if it's restarting</returns>
         public static bool IsRobotCodeRestarting()
         {
             return isRobotCodeRestarting;
         }
 
+        /// <summary>
+        /// Boot all emulation sub-processes
+        /// </summary>
+        /// <returns>True if successful</returns>
         public static bool StartEmulator()
         {
             if (IsVMRunning())
@@ -237,6 +287,9 @@ namespace Synthesis
             return !exception && IsVMRunning();
         }
 
+        /// <summary>
+        /// Kill all emulation tasks and sub-processes
+        /// </summary>
         public static void KillEmulator()
         {
             if (VMConnected)
@@ -263,9 +316,11 @@ namespace Synthesis
             }
         }
 
+        /// <summary>
+        /// Gracefully kill all emulation tasks and sub-processes
+        /// </summary>
         public static async void GracefulExit()
         {
-            // outputCommander.Send(new StandardMessage.ExitMessage());
             if (IsVMConnected())
             {
                 if (IsRunningRobotCodeRunner())
@@ -279,6 +334,9 @@ namespace Synthesis
             }
         }
 
+        /// <summary>
+        /// Continually update all VM status fields
+        /// </summary>
         private static void StatusUpdater()
         {
             var lastProgramType = programType;
@@ -350,6 +408,9 @@ namespace Synthesis
             }
         }
 
+        /// <summary>
+        /// Start background task to update all VM statuses
+        /// </summary>
         public static void StartUpdatingStatus()
         {
             if (!updatingStatus)
@@ -359,11 +420,20 @@ namespace Synthesis
             }
         }
 
+        /// <summary>
+        /// Stop background status-updater task
+        /// </summary>
         public static void StopUpdatingStatus()
         {
             updatingStatus = false;
         }
 
+        /// <summary>
+        /// Send a user program to the active VM
+        /// </summary>
+        /// <param name="userProgram">The user program to upload</param>
+        /// <param name="autorun">True to run the user program automatically</param>
+        /// <returns>True if successful</returns>
         public static Task<bool> SCPFileSender(UserProgram userProgram, bool autorun = true)
         {
             return Task.Run(async () =>
@@ -412,7 +482,11 @@ namespace Synthesis
             });
         }
 
-        public static Task StopRobotCode()
+        /// <summary>
+        /// Stop running the user program in the active VM
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public static Task<bool> StopRobotCode()
         {
             return Task.Run(() =>
             {
@@ -429,11 +503,17 @@ namespace Synthesis
                 catch (Exception e)
                 {
                     Debug.Log(e.ToString());
+                    return false;
                 }
+                return true;
             });
         }
 
-        public static Task RestartRobotCode()
+        /// <summary>
+        /// Restart the running user program in the active VM
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public static Task<bool> RestartRobotCode()
         {
             return Task.Run(() =>
             {
@@ -459,17 +539,28 @@ namespace Synthesis
                 catch (Exception e)
                 {
                     Debug.Log(e.ToString());
+                    isRobotCodeRestarting = false;
+                    return false;
                 }
                 isRobotCodeRestarting = false;
+                return true;
             });
         }
 
+        /// <summary>
+        /// Check if the robot output stream is alive and not completed
+        /// </summary>
+        /// <returns>True if good</returns>
         public static bool IsRobotOutputStreamGood()
         {
             return outputStreamCommand != null && !outputStreamCommandResult.IsCompleted;
         }
 
-        public static Task CloseRobotOutputStream()
+        /// <summary>
+        /// Close the robot output stream
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public static Task<bool> CloseRobotOutputStream()
         {
             return Task.Run(() =>
             {
@@ -484,11 +575,17 @@ namespace Synthesis
                     catch (Exception e)
                     {
                         Debug.Log(e.ToString());
+                        return false;
                     }
                 }
+                return true;
             });
         }
 
+        /// <summary>
+        /// Open the robot output stream
+        /// </summary>
+        /// <returns>A stream reader to read from the robot output stream</returns>
         public static StreamReader CreateRobotOutputStream()
         {
             if (outputStreamCommand == null) {
@@ -502,12 +599,17 @@ namespace Synthesis
                 {
                     Debug.Log(e.ToString());
                     outputStreamCommand = null;
+                    return null;
                 }
             }
             return new StreamReader(outputStreamCommand.OutputStream);
         }
 
-        public static Task FetchLogFile()
+        /// <summary>
+        /// Download the robot output log from the active VM
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public static Task<bool> FetchLogFile()
         {
             return Task.Run(() =>
             {
@@ -515,6 +617,7 @@ namespace Synthesis
                 if (folder == null)
                 {
                     Debug.Log("No folder selected for log file destination");
+                    return true;
                 }
                 else
                 {
@@ -532,8 +635,10 @@ namespace Synthesis
                     catch (Exception)
                     {
                         UserMessageManager.Dispatch("Failed to download log file", EmulationWarnings.WARNING_DURATION);
+                        return false;
                     }
                 }
+                return true;
             });
         }
     }
