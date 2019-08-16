@@ -180,6 +180,7 @@ namespace SynthesisAddIn
 		// ReceiveFormDataHandler* keyCloseFormDataEventHandler = nullptr;
 		ReceiveFormDataHandler* settingsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+		int HEADER_HEIGHT = 25;
 
 		template<typename E, typename T>
 		bool addHandler(Ptr<T> el, E* a);
