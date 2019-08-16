@@ -80,6 +80,9 @@ rmdir /s /q "$(SolutionDir)$(Configuration)\Resources"
 del /q "$(SolutionDir)$(Configuration)\$(ProjectName).manifest"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
+  <PropertyGroup>
+    <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
