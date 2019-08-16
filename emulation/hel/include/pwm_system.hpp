@@ -136,7 +136,7 @@ namespace hel{
          * \param index The zero latch value
          */
 
-        void setMXPZeroLatch(uint8_t, uint32_t);
+        void setMXPZeroLatch(uint8_t, bool);
 
         /**
          * \brief Get current pwm scale for a header based PWM.
