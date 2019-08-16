@@ -18,7 +18,10 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 	{
 		Analytics::StartSession(eui->getApp());
 		eui->prepareAllPalettes();
-		eui->openGuidePalette();
+		if (Analytics::guideEnabled)
+			eui->openGuidePalette();
+		else
+			eui->closeGuidePalette();
 	}
 }
 
@@ -78,7 +81,7 @@ void ShowPaletteCommandExecuteHandler::notify(const Ptr<CommandEventArgs>& event
 	//	eui->toggleKeyPalette();
 	/*} */ else if (id == SynthesisAddIn::BTN_SETTINGS)
 	{
-		eui->openSettingsPalette(eui->guideEnabled);
+		eui->openSettingsPalette();
 	}
 	else if (id == SynthesisAddIn::BTN_EXPORT)
 		eui->openFinishPalette();
@@ -108,10 +111,6 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		eui->closeSensorsPalette(eventArgs->data());
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
-	else if (eventArgs->action() == "settings_analytics")
-	{
-		Analytics::SetEnabled(eventArgs->data() == "true" ? true : false);
-	}
 	else if (eventArgs->action() == "open_link")
 	{
 		std::wstring stemp = s2ws(eventArgs->data());
@@ -119,6 +118,10 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 		ShellExecute(0, 0, result, 0, 0, SW_SHOWNORMAL);
 		//system("open http://google.com"); opens link on Linux/macOS/Unix
 
+	}
+	else if (eventArgs->action() == "settings_analytics")
+	{
+		Analytics::SetEnabled(eventArgs->data() == "true" ? true : false);
 	}
 	else if (eventArgs->action() == "close")
 	{
@@ -167,8 +170,10 @@ void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& 
 		eui->closeDriveWeightPalette();
 	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
-	else if (id == SynthesisAddIn::PALETTE_GUIDE)
+	else if (id == SynthesisAddIn::PALETTE_GUIDE) {
 		eui->closeGuidePalette();
+		Analytics::SaveSettings();
+	}
 	else if (id == SynthesisAddIn::PALETTE_SETTINGS)
 		eui->closeSettingsPalette("");
 	else if (id == SynthesisAddIn::PALETTE_FINISH)
