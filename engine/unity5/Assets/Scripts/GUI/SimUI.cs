@@ -47,7 +47,6 @@ namespace Synthesis.GUI
 
         GameObject freeroamCameraWindow;
         GameObject overviewCameraWindow;
-        GameObject spawnpointPanel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -69,7 +68,7 @@ namespace Synthesis.GUI
         GameObject exitPanel;
         GameObject loadingPanel;
 
-        GameObject orientWindow;
+        GameObject resetRobotUI;
         GameObject resetDropdown;
 
         GameObject tabs;
@@ -104,7 +103,7 @@ namespace Synthesis.GUI
         private void Start()
         {
             instance = this;
-            hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
+            //hoverHighlight = Auxiliary.FindGameObject("MenuTab").GetComponent<Button>().spriteState.highlightedSprite;
 
             UpdateJoystickStates(false);
         }
@@ -192,7 +191,6 @@ namespace Synthesis.GUI
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
-            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
@@ -205,7 +203,7 @@ namespace Synthesis.GUI
             hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
             hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
-            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
+            resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -223,8 +221,6 @@ namespace Synthesis.GUI
             settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
-
-            CheckControlPanel();
 
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -298,6 +294,12 @@ namespace Synthesis.GUI
         /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
         /// specific states. 
         /// </summary>
+        public void onMenuTab()
+        {
+            currentTab = "MenuTab";
+            tabStateMachine.PushState(new MenuToolbarState(), true);
+        }
+
         public void OnMainTab()
         {
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
@@ -384,31 +386,6 @@ namespace Synthesis.GUI
             
             currentTab = "EmulationTab";
             tabStateMachine.ChangeState(new EmulationToolbarState());
-        }
-
-        public void OnSettingsTab()
-        {
-            if (!settingsPanel.activeSelf)
-            {
-                tabStateMachine.PushState(new SettingsState());
-                lastTab = currentTab;
-                currentTab = "SettingsTab";
-            } else
-            {
-                tabStateMachine.PopState();
-                currentTab = lastTab;
-            }
-
-            /*if (settingsPanel.activeSelf)
-            {
-                settingsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                //settingsPanel.SetActive(true);
-                tabStateMachine.ChangeState(new OptionsTabState());
-            }*/
         }
 
         public void ShowError(string msg)
@@ -895,7 +872,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OpenTutorialLink()
         {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
                 AnalyticsLedger.EventAction.TutorialRequest,
                 "Help - Tutorials",
@@ -962,15 +939,14 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateSpawnpointWindow()
         {
+            // TODO: Replace with resetUI (see PR #450)
             if (State.ActiveRobot.IsResetting)
             {
-                spawnpointPanel.SetActive(true);
-                orientWindow.SetActive(true);
+                resetRobotUI.SetActive(true);
             }
             else
             {
-                spawnpointPanel.SetActive(false);
-                orientWindow.SetActive(false);
+                resetRobotUI.SetActive(false);
             }
         }
 
@@ -1088,11 +1064,32 @@ namespace Synthesis.GUI
             State.EnterReplayState();
         }
 
+        public void LaunchReplay()
+        {
+            GameObject replayList = GameObject.Find("SimLoadReplayList");
+            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
+
+            if (entry != null)
+            {
+                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
+                    AnalyticsLedger.TimingVarible.Viewing,
+                    AnalyticsLedger.TimingLabel.ReplayMode);
+
+                loadingPanel.SetActive(true);
+                PlayerPrefs.SetString("simSelectedReplay", entry);
+                PlayerPrefs.Save();
+                SceneManager.LoadScene("Scene");
+            }
+
+            replayList.SetActive(false);
+        }
+
         /// <summary>
         /// Links the specific toolbars to their specified states
         /// </summary>
         private void LinkToolbars()
         {
+            LinkToolbar<MenuToolbarState>("MenuPanel");
             LinkToolbar<MainToolbarState>("MainToolbar");
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");

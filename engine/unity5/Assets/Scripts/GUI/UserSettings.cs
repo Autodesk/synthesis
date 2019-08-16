@@ -1,15 +1,19 @@
 ﻿using Synthesis.FSM;
 using Synthesis.GUI;
 using Synthesis.Utils;
-using System.Collections;
+using Synthesis.States;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsState : State {
-
+public class UserSettings : MonoBehaviour
+{
     private GameObject canvas;
-    private GameObject me;
+
+    private GameObject settingsPanel;
+
+    private Button loadReplayButton;
+    private GameObject loadReplayPanel;
 
     private static float initX = float.MaxValue, initY = float.MaxValue;
 
@@ -25,43 +29,51 @@ public class SettingsState : State {
     private int selectedQuality = 0;
     private string selectedResolution = "0x0";
 
-    public override void Start()
+    public GameObject unitConversionSwitch;
+
+    public void Start()
     {
         canvas = Auxiliary.FindGameObject("Canvas");
-        me = Auxiliary.FindObject(canvas, "SettingsPanel");
-        me.SetActive(true);
-        resolutionT = Auxiliary.FindObject(me, "ResLabel").GetComponent<Text>();
-        screenT = Auxiliary.FindObject(me, "ScreenLabel").GetComponent<Text>();
-        qualityT = Auxiliary.FindObject(me, "QualLabel").GetComponent<Text>();
-        analyticsT = Auxiliary.FindObject(me, "AnalyticsModeText").GetComponent<Text>();
 
-        resDD = Auxiliary.FindObject(me, "ResolutionButton").GetComponent<Dropdown>();
-        scrDD = Auxiliary.FindObject(me, "ScreenModeButton").GetComponent<Dropdown>();
-        qualDD = Auxiliary.FindObject(me, "QualitySettings").GetComponent<Dropdown>();
+        settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
+        settingsPanel.SetActive(true);
+        resolutionT = Auxiliary.FindObject(settingsPanel, "ResLabel").GetComponent<Text>();
+        screenT = Auxiliary.FindObject(settingsPanel, "ScreenLabel").GetComponent<Text>();
+        qualityT = Auxiliary.FindObject(settingsPanel, "QualLabel").GetComponent<Text>();
+        analyticsT = Auxiliary.FindObject(settingsPanel, "AnalyticsModeText").GetComponent<Text>();
+
+        resDD = Auxiliary.FindObject(settingsPanel, "ResolutionButton").GetComponent<Dropdown>();
+        scrDD = Auxiliary.FindObject(settingsPanel, "ScreenModeButton").GetComponent<Dropdown>();
+        qualDD = Auxiliary.FindObject(settingsPanel, "QualitySettings").GetComponent<Dropdown>();
         List<Dropdown.OptionData> resOps = new List<Dropdown.OptionData>();
 
-        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
-        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
-        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
+        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
+        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
+        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
 
         // RESOLUTIONS
         resolutions = new List<string>();
 
-        foreach (Resolution a in Screen.resolutions) {
+        foreach (Resolution a in Screen.resolutions)
+        {
             bool g = false;
-            if (resolutions.Count > 0) {
+            if (resolutions.Count > 0)
+            {
                 resolutions.ForEach((x) => {
-                    if (x.Equals(a.width + "x" + a.height)) {
+                    if (x.Equals(a.width + "x" + a.height))
+                    {
                         g = true;
                     }
                 });
             }
-            if (!g) {
+            if (!g)
+            {
                 resolutions.Add(a.width + "x" + a.height);
             }
         }
 
-        foreach (string a in resolutions) {
+        foreach (string a in resolutions)
+        {
             resOps.Add(new Dropdown.OptionData(a));
         }
 
@@ -87,8 +99,10 @@ public class SettingsState : State {
         collect = PlayerPrefs.GetInt("gatherData", 1);
 
         int resID = 0;
-        for (int i = 0; i < resDD.options.Count; i++) {
-            if (resDD.options[i].text.Equals(selectedResolution)) {
+        for (int i = 0; i < resDD.options.Count; i++)
+        {
+            if (resDD.options[i].text.Equals(selectedResolution))
+            {
                 resID = i;
                 break;
             }
@@ -102,24 +116,26 @@ public class SettingsState : State {
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
 
-        if (initX == float.MaxValue)
-        {
-            initX = 0;
-            initY = me.GetComponent<RectTransform>().anchoredPosition.y;
-        } else
-        {
-            me.GetComponent<RectTransform>().anchoredPosition = new Vector2(initX, initY);
-        }
+        // UNITS
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+        unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
     }
 
-    public override void LateUpdate() {
+    public void OnEnable()
+    {
+        this.Start();
+    }
+
+    public void LateUpdate()
+    {
         resolutionT.text = selectedResolution;
         screenT.text = scrDD.options[selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
         analyticsT.text = collect == 1 ? "Yes" : "No";
     }
 
-    public void OnToggleAnalyticsClicked()
+    public void ToggleAnalytics()
     {
         collect = collect == 1 ? 0 : 1;
         analyticsT.text = collect == 1 ? "Yes" : "No";
@@ -143,7 +159,25 @@ public class SettingsState : State {
         qualityT.text = QualitySettings.names[qualityIndex];
     }*/
 
-    public void OnApplySettingsClicked()
+    /// <summary>
+    /// Pushes the load replay state.
+    /// </summary>
+    //private void PushLoadReplayState()
+    //{
+    //    settingsPanel.SetActive(false);
+    //    StateMachine.ChangeState(new LoadReplayState());
+    //    Debug.Log("pushed");
+    //}
+
+    /// <summary>
+    /// Pops the current<see cref="State"/> when the back button is pressed.
+    /// </summary>
+    //public void OnCancelButtonClicked()
+    //{
+    //    StateMachine.PopState();
+    //}
+
+    public void ApplySettings()
     {
         PlayerPrefs.SetString("resolution", selectedResolution);
         PlayerPrefs.SetInt("fullscreen", selectedScreenMode);
@@ -155,41 +189,45 @@ public class SettingsState : State {
         QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
-        OnCloseSettingsPanelClicked();
+        UserMessageManager.Dispatch("Settings applied", 10);
+
+        //OnCloseSettingsPanelClicked();
     }
 
-    public void OnScrSelChanged(int a) {
+    public void OnScrSelChanged(int a)
+    {
 
         selectedScreenMode = a;
 
-        SimUI.getSimUI().OnScreenmodeSelection += OnScrSelChanged;
+        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
     }
 
-    public void OnResSelChanged(int b) {
+    public void OnResSelChanged(int b)
+    {
         string entry = resDD.options[b].text;
         selectedResolution = entry;
 
-        SimUI.getSimUI().OnResolutionSelection += OnResSelChanged;
+        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
     }
 
-    public void OnQuaSelChanged(int b) {
+    public void OnQuaSelChanged(int b)
+    {
         string entry = qualDD.options[b].text;
         int a;
         selectedQuality = (a = (new List<string>(QualitySettings.names)).IndexOf(entry)) == -1 ? 0 : a;
 
         Debug.Log("Is your card... " + selectedQuality);
 
-        SimUI.getSimUI().OnQualitySelection += OnQuaSelChanged;
+        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
     }
 
     public void OnCloseSettingsPanelClicked()
     {
-        SimUI.getSimUI().OnSettingsTab();
+        MenuUI.instance.SwitchSettings();
     }
 
-    public override void End()
+    public void End()
     {
-        me.SetActive(false);
+        settingsPanel.SetActive(false);
     }
-
 }

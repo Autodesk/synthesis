@@ -34,6 +34,7 @@ namespace Synthesis.GUI
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SimUI simUI;
+        MenuUI menuUI;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -82,6 +83,7 @@ namespace Synthesis.GUI
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
+            menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
             robotCameraGUI = StateMachine.SceneGlobal.GetComponent<RobotCameraGUI>();
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
@@ -319,7 +321,7 @@ namespace Synthesis.GUI
         /// </summary>
         public void OnControlsButtonClicked()
         {
-            simUI.ShowControlPanel();
+            menuUI.SwitchRobotControls();
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
                 AnalyticsLedger.EventAction.Clicked,
