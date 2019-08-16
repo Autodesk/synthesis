@@ -155,11 +155,11 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 178+25);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 178+HEADER_HEIGHT);
 		if (!driveWeightPalette)
 			return false;
 
-		driveWeightPalette->setMaximumSize(300, 178+25);
+		driveWeightPalette->setMaximumSize(300, 178+HEADER_HEIGHT);
 
 		driveWeightPalette->dockingState(PaletteDockingStates::PaletteDockStateRight);
 
@@ -431,11 +431,11 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, false, 300, 192+25);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, false, 300, 192+HEADER_HEIGHT);
 		if (!finishPalette)
 			return false;
 
-		finishPalette->setMaximumSize(300, 192+25);
+		finishPalette->setMaximumSize(300, 192+HEADER_HEIGHT);
 
 		finishPalette->dockingState(PaletteDockStateRight);
 
@@ -590,11 +590,11 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 259+25);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 259+HEADER_HEIGHT);
 		if (!driveTypePalette)
 			return false;
 
-		driveTypePalette->setMaximumSize(350, 259+25);
+		driveTypePalette->setMaximumSize(350, 259+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		driveTypePalette->dockingState(PaletteDockStateRight);
@@ -721,11 +721,11 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 250, 134+25);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 250, 134+HEADER_HEIGHT);
 		if (!settingsPalette)
 			return false;
 
-		settingsPalette->setMaximumSize(250, 134+25);
+		settingsPalette->setMaximumSize(250, 134+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		settingsPalette->dockingState(PaletteDockStateRight);
