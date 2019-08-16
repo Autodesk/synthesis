@@ -12,11 +12,11 @@ namespace SynthesisAddIn
 
 	// General Events
 	/// Notified when Fusion 360 is finished loading
-	class StartupCompletedHandler : public ApplicationEventHandler
+	class DocumentOpenedHandler : public DocumentEventHandler
 	{
 	public:
-		StartupCompletedHandler(EUI * eui) : eui(eui) {}
-		void notify(const Ptr<ApplicationEventArgs>& eventArgs) override;
+		DocumentOpenedHandler(EUI * eui) : eui(eui) {}
+		void notify(const Ptr<DocumentEventArgs>& eventArgs) override;
 	private:
 		EUI * eui;
 	};

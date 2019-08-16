@@ -12,10 +12,10 @@
 
 /// General Events
 // Once Fusion 360 is done loading
-void StartupCompletedHandler::notify(const Ptr<ApplicationEventArgs>& eventArgs)
+void DocumentOpenedHandler::notify(const Ptr<DocumentEventArgs>& eventArgs)
 {
-	/*if (Analytics::firstLaunchNotification)*/
-		eui->showFirstLaunchNotification();	
+	if (Analytics::firstLaunchNotification)
+		eui->showFirstLaunchNotification();
 }
 
 /// Workspace Events
