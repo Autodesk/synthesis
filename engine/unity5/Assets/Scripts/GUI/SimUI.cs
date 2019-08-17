@@ -196,12 +196,8 @@ namespace Synthesis.GUI
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
             unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-
-            hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
-            hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
 
             resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
