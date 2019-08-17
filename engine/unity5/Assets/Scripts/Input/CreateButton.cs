@@ -36,7 +36,7 @@ namespace Synthesis.Input
         {
             namesTransform = transform.Find("Names");
             keysTransform = transform.Find("Keys");
-            controlLabelSwitch = Auxiliary.FindObject("ControlLabelSwitch");
+            controlLabelSwitch = Auxiliary.FindObject(Auxiliary.FindObject("Canvas"), "ControlLabelSwitch");
         }
 
         // Use this for initialization
@@ -60,13 +60,6 @@ namespace Synthesis.Input
                         button.Select();
                 }
             }
-        }
-
-        private ReadOnlyCollection<KeyMapping> CreateKeyMappingList()
-        {
-            var merged = Controls.Players[SettingsMode.activePlayerIndex].GetActiveList();
-            merged.AddRange(Controls.Global.GetList()); // TODO: move to separate global controls configuration tab of menu
-            return merged.AsReadOnly();
         }
 
         public void AddButtonRow(string label, KeyMapping key, ref float contentHeight, ref float maxNameWidth)

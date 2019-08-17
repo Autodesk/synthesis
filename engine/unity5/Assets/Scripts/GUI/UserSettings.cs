@@ -196,18 +196,13 @@ public class UserSettings : MonoBehaviour
 
     public void OnScrSelChanged(int a)
     {
-
         selectedScreenMode = a;
-
-        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
     }
 
     public void OnResSelChanged(int b)
     {
         string entry = resDD.options[b].text;
         selectedResolution = entry;
-
-        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
     }
 
     public void OnQuaSelChanged(int b)
@@ -217,8 +212,6 @@ public class UserSettings : MonoBehaviour
         selectedQuality = (a = (new List<string>(QualitySettings.names)).IndexOf(entry)) == -1 ? 0 : a;
 
         Debug.Log("Is your card... " + selectedQuality);
-
-        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
     }
 
     public void OnCloseSettingsPanelClicked()

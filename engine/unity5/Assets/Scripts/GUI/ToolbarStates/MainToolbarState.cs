@@ -76,7 +76,6 @@ namespace Synthesis.GUI
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
 
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
 
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal

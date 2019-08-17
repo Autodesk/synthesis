@@ -15,6 +15,8 @@ namespace Synthesis.GUI
     {
         GameObject canvas;
 
+        GameObject menuPanelPanes;
+
         GameObject robotControlPanel;
         GameObject globalControlPanel;
         GameObject settingsPanel;
@@ -41,17 +43,18 @@ namespace Synthesis.GUI
         // View Replays
         // Help
 
-        public void Start()
+        public void Awake()
         {
             instance = this;
 
             canvas = GameObject.Find("Canvas");
+            menuPanelPanes = Auxiliary.FindObject(canvas, "MenuPanelPanes");
 
-            robotControlPanel = Auxiliary.FindObject(canvas, "RobotControlPanel");
-            globalControlPanel = Auxiliary.FindObject(canvas, "GlobalControlPanel");
-            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
-            viewReplaysPanel = Auxiliary.FindObject(canvas, "LoadReplayPanel");
-            helpPanel = Auxiliary.FindObject(canvas, "HelpPanel");
+            robotControlPanel = Auxiliary.FindObject(menuPanelPanes, "RobotControlPanel");
+            globalControlPanel = Auxiliary.FindObject(menuPanelPanes, "GlobalControlPanel");
+            settingsPanel = Auxiliary.FindObject(menuPanelPanes, "SettingsPanel");
+            viewReplaysPanel = Auxiliary.FindObject(menuPanelPanes, "LoadReplayPanel");
+            helpPanel = Auxiliary.FindObject(menuPanelPanes, "HelpPanel");
 
             //controls
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
@@ -62,8 +65,8 @@ namespace Synthesis.GUI
 
         public void Update()
         {
-            DynamicCamera.ControlEnabled = !settingsPanel.activeSelf;
-            InputControl.freeze = settingsPanel.activeSelf;
+            DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf || !globalControlPanel.activeSelf;
+            InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
         }
 
         public void LateUpdate()
@@ -98,7 +101,7 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 robotControlPanel.SetActive(true);
                 inputPanelOn = true;
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                Auxiliary.FindObject(Auxiliary.FindObject(Auxiliary.FindObject(robotControlPanel, "SettingsMode"), "ScrollRect"), "Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
@@ -118,10 +121,9 @@ namespace Synthesis.GUI
             {
                 checkSavePanel.SetActive(true);
             }
-            else
+            else if (ProcessControlsCallback != null)
             {
-                if (ProcessControlsCallback != null)
-                    ProcessControlsCallback.Invoke();
+                ProcessControlsCallback.Invoke();
             }
         }
 
@@ -147,7 +149,7 @@ namespace Synthesis.GUI
 
         public void SaveAndClose()
         {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
+            Auxiliary.FindObject(settingsPanel, "SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
             SwitchRobotControls();
         }
 
@@ -161,7 +163,7 @@ namespace Synthesis.GUI
             {
                 //EndOtherProcesses();
                 globalControlPanel.SetActive(true);
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
+                Auxiliary.FindObject(globalControlPanel, "Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
