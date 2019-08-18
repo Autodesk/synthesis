@@ -15,7 +15,7 @@ namespace Synthesis.GUI
     {
         GameObject canvas;
 
-        GameObject menuPanelPanes;
+        GameObject menuPanelInner;
 
         GameObject robotControlPanel;
         GameObject globalControlPanel;
@@ -33,6 +33,8 @@ namespace Synthesis.GUI
         public static bool inputPanelOn = false;
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
+        private Rect lastSetPixelRect;
+
         public delegate void EntryChanged(int a);
 
         public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
@@ -43,20 +45,21 @@ namespace Synthesis.GUI
         // View Replays
         // Help
 
-        public void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             instance = this;
 
             canvas = GameObject.Find("Canvas");
-            menuPanelPanes = Auxiliary.FindObject(canvas, "MenuPanelPanes");
+            menuPanelInner = Auxiliary.FindObject(Auxiliary.FindObject(canvas, "MenuPanel"), "Panel");
 
-            robotControlPanel = Auxiliary.FindObject(menuPanelPanes, "RobotControlPanel");
-            globalControlPanel = Auxiliary.FindObject(menuPanelPanes, "GlobalControlPanel");
-            settingsPanel = Auxiliary.FindObject(menuPanelPanes, "SettingsPanel");
-            viewReplaysPanel = Auxiliary.FindObject(menuPanelPanes, "LoadReplayPanel");
-            helpPanel = Auxiliary.FindObject(menuPanelPanes, "HelpPanel");
+            robotControlPanel = Auxiliary.FindObject(menuPanelInner, "RobotControlPanel");
+            globalControlPanel = Auxiliary.FindObject(menuPanelInner, "GlobalControlPanel");
+            settingsPanel = Auxiliary.FindObject(menuPanelInner, "SettingsPanel");
+            viewReplaysPanel = Auxiliary.FindObject(menuPanelInner, "LoadReplayPanel");
+            helpPanel = Auxiliary.FindObject(menuPanelInner, "HelpPanel");
 
-            //controls
             checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
 
             settings = settingsPanel.GetComponent<UserSettings>();
@@ -67,6 +70,8 @@ namespace Synthesis.GUI
         {
             DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf || !globalControlPanel.activeSelf;
             InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
+
+            Resize();
         }
 
         public void LateUpdate()
@@ -268,6 +273,14 @@ namespace Synthesis.GUI
             settingsPanel.SetActive(false);
             viewReplaysPanel.SetActive(false);
             helpPanel.SetActive(false);
+        }
+
+        private void Resize(bool forceUpdate = false)
+        {
+            if (!lastSetPixelRect.Equals(UnityEngine.Camera.main.pixelRect) || forceUpdate)
+            {
+
+            }
         }
     }
 }

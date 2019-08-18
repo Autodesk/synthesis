@@ -57,7 +57,6 @@ namespace Synthesis.GUI
         GameObject addPanel;
         GameObject driverStationPanel;
 
-        GameObject inputManagerPanel;
         GameObject checkSavePanel;
         GameObject unitConversionSwitch;
 
@@ -779,89 +778,7 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region control panel and analytics functions
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state.
-        /// </summary>
-        public void ShowControlPanel()
-        {
-            if (!inputManagerPanel.activeSelf)
-            {
-                DynamicCamera.ControlEnabled = false;
-                InputControl.freeze = true;
-                EndOtherProcesses();
-                inputManagerPanel.SetActive(true);
-                inputPanelOn = true;
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-            }
-            else
-            {
-                CheckUnsavedControls(() =>
-                {
-                    DynamicCamera.ControlEnabled = true;
-                    InputControl.freeze = false;
-                    inputManagerPanel.SetActive(false);
-                    inputPanelOn = false;
-                    ToggleHotKeys(false);
-                });
-            }
-        }
-
-        public void CheckUnsavedControls(Action callback)
-        {
-            ProcessControlsCallback = callback;
-            if (!Controls.HasBeenSaved())
-            {
-                checkSavePanel.SetActive(true);
-            } else
-            {
-                if(ProcessControlsCallback != null)
-                    ProcessControlsCallback.Invoke();
-            }
-        }
-
-        public void SaveAndClose()
-        {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            ShowControlPanel();
-        }
-
-        /// <summary>
-        /// Checks the last state of the control panel. Defaults to OFF
-        /// unless the user leaves it on.
-        /// </summary>
-        public void CheckControlPanel()
-        {
-            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
-            {
-                inputManagerPanel.SetActive(false);
-            }
-            else
-            {
-                inputManagerPanel.SetActive(true);
-                PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            }
-        }
-
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
-
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    break;
-                default:
-                case "cancel":
-                    return;
-            }
-            if (ProcessControlsCallback != null)
-                ProcessControlsCallback.Invoke();
-        }
+        #region Misc
 
         /// <summary>
         /// Open tutorial link
@@ -1036,7 +953,6 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
             ToggleHotKeys(false);
 
             CancelOrientation();
