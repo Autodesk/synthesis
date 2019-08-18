@@ -44,7 +44,7 @@ public class UserSettings : MonoBehaviour
 
         resDD = Auxiliary.FindObject(settingsPanel, "ResolutionButton").GetComponent<Dropdown>();
         scrDD = Auxiliary.FindObject(settingsPanel, "ScreenModeButton").GetComponent<Dropdown>();
-        qualDD = Auxiliary.FindObject(settingsPanel, "QualitySettings").GetComponent<Dropdown>();
+        qualDD = Auxiliary.FindObject(settingsPanel, "QualityButton").GetComponent<Dropdown>();
         List<Dropdown.OptionData> resOps = new List<Dropdown.OptionData>();
 
         MenuUI.instance.OnResolutionSelection += OnResSelChanged;
