@@ -3,6 +3,10 @@
 
 #include <emulator_service.grpc.pb.h>
 
+/**
+ * \brief Supervisor for gRPC robot input receiver
+ */
+
 class RobotInputService final
 	: public EmulationService::EmulationWriter::Service {
    public:

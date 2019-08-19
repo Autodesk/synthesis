@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace Synthesis
 {
+    /// <summary>
+    /// Manages metadata associated with a user program file
+    /// </summary>
     public class UserProgram
     {
+        /// <summary>
+        /// The type of user program
+        /// </summary>
         public enum Type
         {
             JAVA,
@@ -22,6 +23,10 @@ namespace Synthesis
         public string TargetFileName { get; private set; }
         public Type ProgramType { get; private set; }
 
+        /// <summary>
+        /// Instantiate a new user program
+        /// </summary>
+        /// <param name="name">The name including the file path of the user program</param>
         public UserProgram(string name)
         {
             FullFileName = name;

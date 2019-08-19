@@ -34,7 +34,20 @@ namespace hel{
         BoundsCheckedArray<bool,NUM_SOLENOIDS> solenoids;
 
     public:
+
+		/**
+		 * \brief Parse a CAN message and update the PDM state
+		 * \param api_id The API ID
+		 * \param data The CAN data bytes
+		 */
+
         void parseCANPacket(const int32_t&, const std::vector<uint8_t>&);
+
+		/**
+		 * \brief Generate a CAN message given an API ID
+		 * \param api_id The API ID to use
+		 * \return The generated data bytes as determined by the API ID
+		 */
 
         std::vector<uint8_t> generateCANPacket(const int32_t&)const;
 
