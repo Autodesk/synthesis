@@ -25,13 +25,13 @@ function setDriveTrain(selected) {
 }
 
 function highlightDriveTrain() {
-    document.getElementById("highlight-"+driveType).style.visibility = "visible";
+    document.getElementById("drivetrain-" + driveType).style.boxShadow = "0 3000px rgba(245, 156, 66, 0.4) inset";
 }
 
 function unhighlightAll() {
-    Array.from(document.getElementsByClassName("highlight")).forEach(element => {
-        element.style.visibility = "hidden";
-    });
+    document.getElementById("drivetrain-1").style.boxShadow = "none";
+    document.getElementById("drivetrain-2").style.boxShadow = "none";
+    document.getElementById("drivetrain-3").style.boxShadow = "none";
 }
 
 function sendInfoToFusion() {
