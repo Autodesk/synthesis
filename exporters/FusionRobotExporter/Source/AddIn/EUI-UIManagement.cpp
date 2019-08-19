@@ -721,7 +721,7 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 105+HEADER_HEIGHT);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 95+HEADER_HEIGHT);
 		if (!settingsPalette)
 			return false;
 
