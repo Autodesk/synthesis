@@ -8,8 +8,8 @@
     </head>
     <body>
         <p>Enter the weight of the drive base of the robot, not including the weight of jointed subsystems:</p>
-        <p>Weight: <input id="weight-value" type="number" min="0" max="9999" value="100"></p>
-        <p>Units:
+        <p>Weight<input id="weight-value" type="number" min="0" max="9999" value="100"></p>
+        <p>Units
             <select id="weight-unit" onchange="
             let weightInput = document.getElementById('weight-value');
             weightInput.value *= this.value === 'kg' ? 1/0.453592 : 0.453592;
