@@ -155,7 +155,7 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 178+25);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 140+25);
 		if (!driveWeightPalette)
 			return false;
 
@@ -431,7 +431,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, false, 300, 192+25);
+		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, false, 340, 130+25);
 		if (!finishPalette)
 			return false;
 
@@ -590,7 +590,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 259+25);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 210+25);
 		if (!driveTypePalette)
 			return false;
 
@@ -721,7 +721,7 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 300, 134+25);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 300, 105+25);
 		if (!settingsPalette)
 			return false;
 
