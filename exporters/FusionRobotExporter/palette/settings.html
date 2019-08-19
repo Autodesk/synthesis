@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/settings.js"></script>
     </head>
     <body>
-        <p style="margin: 0;">Show Export Guide: <input id="guideCheckbox" type="checkbox" checked></p>
-        <p style="margin: 0;">Send Analytics: <input id="analyticsCheckbox" type="checkbox" checked></p>
-        <button type="button" style="margin-top: 1em;" onclick="sendInfoToFusion()">OK</button>
-        <button type="button" style="margin-bottom: 0" onclick="cancel()">Cancel</button>
+        <p>Show Export Guide: <input id="guideCheckbox" type="checkbox" checked></p>
+        <p>Send Analytics: <input id="analyticsCheckbox" type="checkbox" checked></p>
+        <hr>
+        <button type="button" onclick="cancel()">Cancel</button>
+        <button type="button" onclick="sendInfoToFusion()">OK</button>
     </body>
 </html>
