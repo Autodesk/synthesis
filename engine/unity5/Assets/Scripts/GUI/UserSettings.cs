@@ -218,8 +218,6 @@ public class UserSettings : MonoBehaviour
         string entry = qualDD.options[b].text;
         int a;
         selectedQuality = (a = (new List<string>(QualitySettings.names)).IndexOf(entry)) == -1 ? 0 : a;
-
-        Debug.Log("Is your card... " + selectedQuality);
     }
 
     public void OnCloseSettingsPanelClicked()
