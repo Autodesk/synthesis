@@ -155,7 +155,7 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 140+25);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Synthesis Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 140+25);
 		if (!driveWeightPalette)
 			return false;
 
@@ -223,7 +223,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Synthesis Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -309,7 +309,7 @@ bool EUI::createGuidePalette()
 	if (!guidePalette)
 	{
 		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "palette/guide.html", false, true, true, 470, 200);
+		guidePalette = palettes->add(PALETTE_GUIDE, "Synthesis Robot Export Guide", "palette/guide.html", false, true, true, 470, 200);
 
 		if (!guidePalette)
 			return false;
@@ -431,7 +431,7 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, false, 340, 130+25);
+		finishPalette = palettes->add(PALETTE_FINISH, "Finish Synthesis Exporter", "palette/export.html", false, false, false, 340, 130+25);
 		if (!finishPalette)
 			return false;
 
@@ -520,7 +520,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, false, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Synthesis Advanced Joint Settings", "palette/sensors.html", false, false, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
@@ -590,7 +590,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 230+25);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Synthesis Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 230 + 25);
 		if (!driveTypePalette)
 			return false;
 
@@ -661,7 +661,7 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(PALETTE_PROGRESS, "Loading", "palette/progress.html", false, false, false, 150, 150);
+		progressPalette = palettes->add(PALETTE_PROGRESS, "Exporting Synthesis Robot", "palette/progress.html", false, false, false, 150, 150);
 		if (!progressPalette)
 			return false;
 
@@ -721,7 +721,7 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, false, 300, 105+25);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 300, 105+25);
 		if (!settingsPalette)
 			return false;
 
