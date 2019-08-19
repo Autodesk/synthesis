@@ -2,25 +2,46 @@
 
 body {
     font-family: sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     background-color: #F2F2F2;
+    display: block;
+}
+
+p {
+    margin: 10px 0px 0px 5px;
 }
 
 button {
+    color: #666666;
     float: right;
     width: 60px;
     margin: 5px;
+    border: 1px solid #A4A4A4;
+    background-color: #E9E9E9;
 }
 
-select, input {
+input[type=image] {
+    border: 1px solid gray;
+}
+
+input[type=checkbox], input[type=text], input[type=number], select {
+    position: absolute;
+    left: 150px;
+}
+
+button:hover {
+    background-image: linear-gradient(to top, #3F6EA0, #5D8FC2);
+    color: white;
+}
+
+select, input[type=number] {
     border: 1px solid #D3D3D3;
-    width: 120px;
+    padding-right: 120px;
     padding: 2px;
 }
 
 select:hover {
     background-color: #D9D9D9;
-    
 }
 
 select:focus {
@@ -37,6 +58,19 @@ select option:hover {
 }
 
 hr {
-    width: 100%;
-    border: 0.7px solid #C5C5C5;
+    position: relative;
+    left: -15px;
+    margin: 20px -20px 3px 0px;
+    border: 0.5px solid #C5C5C5;
+}
+
+/* Tables */
+
+table {
+    width: 90%;
+    text-align: center;
+}
+
+table td {
+    text-align: center;
 }
