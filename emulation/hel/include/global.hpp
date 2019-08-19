@@ -5,6 +5,10 @@
 
 namespace hel{
 
+	/**
+	 * \brief The localhost port to use for gRPC communication
+	 */
+
     extern int gRPCPort;
 
     /**
