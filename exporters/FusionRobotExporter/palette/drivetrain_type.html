@@ -1,64 +1,27 @@
 <!DOCTYPE html>
 <html style="width: 350px;">
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <script src="js/drivetrain_type.js"></script>
     </head>
-    <!-- NOTE: input & select focus styling was overriden as it was hard to tell which drive train was selected -->
-    <style>
-        
-        input.highlight {
-            position: absolute;
-            top: 55px;
-            opacity: 0.5;
-        }
-        
-        input#highlight-1 {
-            left: 5.5%;
-        }
-        input#highlight-2 {
-            left: 35.3%;
-        }
-        input#highlight-3 {
-            right: 5.5%;
-        }
-        
-        div.left-text {
-            position: absolute;
-            top: 160px;
-            left: 13%;
-        }
-        div.middle-text {
-            position: absolute;
-            top: 160px;
-            left: 45%;
-        }
-        div.right-text {
-            position: absolute;
-            top: 160px;
-            right: 15%;
-        }
-    </style>
     <body onload="highlightDriveTrain()">
-        <p align="center">Select Drivetrain Layout:</p>
-        <div name="images" style="text-align: center">
-            <input id="tank-image" type="image" src="resources/TankDriveIcon.png" width="100" height="100" onclick='setDriveTrain(1)' />
-            <input id="h-drive-image" type="image" src="resources/HDriveIcon.png" width="100" height="100" onclick='setDriveTrain(2)' />
-            <input id="other-image" type="image" src="resources/OtherDriveIcon.png" width="100" height="100" onclick='setDriveTrain(3)' />
-        </div>
-        <div name="labels" style="pointer-events: none" >
-            <div class="left-text">Basic</div>
-            <div class="middle-text">H-Drive</div>
-            <div class="right-text">Other</div>
-        </div>
-        <div name="hightlights">
-            <input id="highlight-1" class="highlight" style="visibility: hidden" type="image" src="resources/overlay.png" width="100" height="100" />
-            <input id="highlight-2" class="highlight" style="visibility: hidden" type="image" src="resources/overlay.png" width="100" height="100" />
-            <input id="highlight-3" class="highlight" style="visibility: hidden" type="image" src="resources/overlay.png" width="100" height="100" />
-        </div>
-        <button id="save" class="save" type="button" style="margin-top: 30px;" onclick="this.innerHTML = 'Saving...';setTimeout(sendInfoToFusion, 500)">OK</button>
-        <button type="button" style="margin-bottom: 0" onclick="cancel()">Cancel</button>
-    </body>    
+        <p class="instructions">Select Drivetrain Type:</p>
+        <table>
+            <tr name="images">
+                <td><input id="drivetrain-1" type="image" src="resources/TankDriveIcon.png" width="100" height="100" onclick='setDriveTrain(1)'/></td>
+                <td><input id="drivetrain-2" type="image" src="resources/HDriveIcon.png" width="100" height="100" onclick='setDriveTrain(2)'/></td>
+                <td><input id="drivetrain-3" type="image" src="resources/OtherDriveIcon.png" width="100" height="100" onclick='setDriveTrain(3)'/></td>
+            </tr>
+            <tr name="labels">
+                <td>Tank Drive</td>
+                <td>H-Drive</td>
+                <td>Other</td>
+            </tr>
+        </table>
+        <hr>
+        <button type="button" onclick="cancel()">Cancel</button>
+        <button id="save" type="button" onclick="this.innerHTML = 'Saving...';setTimeout(sendInfoToFusion, 500)">OK</button>
+    </body>
 </html>
