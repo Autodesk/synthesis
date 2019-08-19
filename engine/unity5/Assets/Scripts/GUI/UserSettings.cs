@@ -25,7 +25,7 @@ public class UserSettings : MonoBehaviour
     private List<string> resolutions;
     private List<string> screens;
 
-    private int selectedScreenMode = 0;
+    private FullScreenMode selectedScreenMode = FullScreenMode.FullScreenWindow;
     private int selectedQuality = 0;
     private string selectedResolution = "0x0";
 
@@ -80,9 +80,12 @@ public class UserSettings : MonoBehaviour
         resDD.options = resOps;
 
         // SCREENMODES
-        screens = new List<string>();
-        screens.Add("Windowed");
-        screens.Add("Fullscreen");
+        screens = new List<string> { // Order matters
+            "Fullscreen",
+            "Windowed Borderless",
+            "Maximized Window",
+            "Windowed"
+        };
 
         List<Dropdown.OptionData> scrOps = new List<Dropdown.OptionData>();
         screens.ForEach((x) => scrOps.Add(new Dropdown.OptionData(x)));
@@ -93,7 +96,11 @@ public class UserSettings : MonoBehaviour
         (new List<string>(QualitySettings.names)).ForEach((x) => qualOps.Add(new Dropdown.OptionData(x)));
         qualDD.options = qualOps;
 
-        selectedScreenMode = Screen.fullScreen ? 1 : 0;
+        Screen.fullScreen = true;
+        Debug.Log(Screen.fullScreenMode.ToString());
+        if ((int)Screen.fullScreenMode != -1) {
+            selectedScreenMode = Screen.fullScreenMode;
+        }
         selectedResolution = PlayerPrefs.GetString("resolution", Screen.currentResolution.width + "x" + Screen.currentResolution.height);
         selectedQuality = QualitySettings.GetQualityLevel();
         collect = PlayerPrefs.GetInt("gatherData", 1);
@@ -108,7 +115,7 @@ public class UserSettings : MonoBehaviour
             }
         }
         resDD.SetValueWithoutNotify(resID);
-        scrDD.SetValueWithoutNotify(selectedScreenMode);
+        scrDD.SetValueWithoutNotify((int)selectedScreenMode);
         qualDD.SetValueWithoutNotify(selectedQuality);
 
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
@@ -130,7 +137,8 @@ public class UserSettings : MonoBehaviour
     public void LateUpdate()
     {
         resolutionT.text = selectedResolution;
-        screenT.text = scrDD.options[selectedScreenMode].text;
+        Debug.Log((int)selectedScreenMode + " " + scrDD.options.Count);
+        screenT.text = scrDD.options[(int)selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
         analyticsT.text = collect == 1 ? "Yes" : "No";
     }
@@ -180,12 +188,12 @@ public class UserSettings : MonoBehaviour
     public void ApplySettings()
     {
         PlayerPrefs.SetString("resolution", selectedResolution);
-        PlayerPrefs.SetInt("fullscreen", selectedScreenMode);
+        PlayerPrefs.SetInt("fullscreen", (int)selectedScreenMode);
         PlayerPrefs.SetInt("qualityLevel", selectedQuality);
         PlayerPrefs.SetInt("gatherData", collect);
         string[] split = selectedResolution.Split('x');
         int xRes = int.Parse(split[0]), yRes = int.Parse(split[1]);
-        Screen.SetResolution(xRes, yRes, PlayerPrefs.GetInt("fullscreen") != 0);
+        Screen.SetResolution(xRes, yRes, selectedScreenMode);
         QualitySettings.SetQualityLevel(selectedQuality);
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
@@ -196,7 +204,7 @@ public class UserSettings : MonoBehaviour
 
     public void OnScrSelChanged(int a)
     {
-        selectedScreenMode = a;
+        selectedScreenMode = (FullScreenMode)a;
     }
 
     public void OnResSelChanged(int b)
