@@ -5,8 +5,8 @@ window.fusionJavaScriptHandler = {handle: function(action, data) {
         var parsedConfig = JSON.parse(data);
         if (action === "joints") {
             document.getElementById('save').innerHTML = "OK";
-            if (parsedConfig.drivetrainType !== undefined)
-                driveType = parsedConfig.drivetrainType;
+            if (parsedConfig.driveTrainType !== undefined)
+                driveType = parsedConfig.driveTrainType;
             unhighlightAll();
             highlightDriveTrain();
         }
@@ -35,7 +35,7 @@ function unhighlightAll() {
 }
 
 function sendInfoToFusion() {
-    adsk.fusionSendData("drivetrain_type", JSON.stringify({"drivetrainType": driveType}));
+    adsk.fusionSendData("drivetrain_type", JSON.stringify({"driveTrainType": driveType}));
 }
 
 function cancel() {
