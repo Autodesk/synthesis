@@ -77,3 +77,34 @@ table {
 table td {
     text-align: center;
 }
+
+/* Field set */
+/*TODO: Find a better place for these*/
+
+.field-label
+{
+    float: left;
+}
+
+.field-input
+{
+    overflow: hidden;
+    display: block;
+    padding-left: 0.5rem;
+    padding-right: 2px;
+    margin-bottom: 1rem;
+}
+
+.field-select
+{
+    overflow: hidden;
+    display: block;
+    padding-left: 0.5rem;
+    padding-right: 0;
+    margin-bottom: 1rem;
+}
+
+.field-input *, .field-select *
+{
+    width: 100%;
+}
