@@ -67,8 +67,11 @@ namespace Synthesis.Input
 
         public class Axes
         {
+            [JsonProperty]
             public Axis cameraForward;
+            [JsonProperty]
             public Axis cameraLateral;
+            [JsonProperty]
             public Axis cameraVertical;
 
             public Axes()
@@ -97,10 +100,11 @@ namespace Synthesis.Input
             Reset();
         }
 
-        private static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
+        public static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ObjectCreationHandling = ObjectCreationHandling.Replace
         };
 
         public new string ToString()
@@ -110,9 +114,7 @@ namespace Synthesis.Input
 
         public void FromString(string input)
         {
-            Debug.Log("Before " + buttons.cameraToggle.primaryInput.ToString());
             JsonConvert.PopulateObject(input, this, JSON_SETTINGS);
-            Debug.Log("After " + buttons.cameraToggle.primaryInput.ToString());
         }
 
         public List<KeyMapping> GetList()
