@@ -771,21 +771,6 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        /// <summary>
-        /// Toggle for analytics
-        /// </summary>
-        public void ToggleAnalytics(bool tAnalytics)
-        {
-            if (PlayerPrefs.GetInt("analytics") == 0)
-            {
-                PlayerPrefs.SetInt("analytics", 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt("analytics", 0);
-            }
-        }
-
         #endregion
         #region reset functions
         /// <summary>
@@ -900,34 +885,6 @@ namespace Synthesis.GUI
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();
             robotCameraGUI.EndProcesses();
-        }
-
-        /// <summary>
-        /// Enters replay mode
-        /// </summary>
-        public void EnterReplayMode()
-        {
-            State.EnterReplayState();
-        }
-
-        public void LaunchReplay()
-        {
-            GameObject replayList = GameObject.Find("SimLoadReplayList");
-            string entry = replayList.GetComponent<LoadReplayScrollable>().selectedEntry;
-
-            if (entry != null)
-            {
-                AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
-                    AnalyticsLedger.TimingVarible.Viewing,
-                    AnalyticsLedger.TimingLabel.ReplayMode);
-
-                loadingPanel.SetActive(true);
-                PlayerPrefs.SetString("simSelectedReplay", entry);
-                PlayerPrefs.Save();
-                SceneManager.LoadScene("Scene");
-            }
-
-            replayList.SetActive(false);
         }
 
         /// <summary>
