@@ -146,42 +146,6 @@ public class UserSettings : MonoBehaviour
         analyticsT.text = collect == 1 ? "Yes" : "No";
     }
 
-    /*public void OnScreenModeButtonClicked()
-    {
-        screenIndex = (screenIndex + 1) % screenModes.Length;
-        screenT.text = screenModes[screenIndex];
-    }
-
-    public void OnResolutionButtonClicked()
-    {
-        resolutionIndex = (resolutionIndex + 1) % resolutions.Length;
-        resolutionT.text = resolutions[resolutionIndex];
-    }
-
-    public void OnQualitySettingsClicked()
-    {
-        qualityIndex = (qualityIndex + 1) % QualitySettings.names.Length;
-        qualityT.text = QualitySettings.names[qualityIndex];
-    }*/
-
-    /// <summary>
-    /// Pushes the load replay state.
-    /// </summary>
-    //private void PushLoadReplayState()
-    //{
-    //    settingsPanel.SetActive(false);
-    //    StateMachine.ChangeState(new LoadReplayState());
-    //    Debug.Log("pushed");
-    //}
-
-    /// <summary>
-    /// Pops the current<see cref="State"/> when the back button is pressed.
-    /// </summary>
-    //public void OnCancelButtonClicked()
-    //{
-    //    StateMachine.PopState();
-    //}
-
     public void ApplySettings()
     {
         PlayerPrefs.SetString("resolution", selectedResolution);
