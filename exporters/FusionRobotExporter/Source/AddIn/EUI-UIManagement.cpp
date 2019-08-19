@@ -590,7 +590,7 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 210+25);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 230+25);
 		if (!driveTypePalette)
 			return false;
 
