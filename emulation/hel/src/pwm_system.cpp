@@ -27,7 +27,7 @@ namespace hel{
         return mxp[index].zero_latch;
     }
 
-    void PWMSystem::setMXPZeroLatch(uint8_t index, uint32_t value){
+    void PWMSystem::setMXPZeroLatch(uint8_t index, bool value){
         mxp[index].zero_latch = value;
     }
 

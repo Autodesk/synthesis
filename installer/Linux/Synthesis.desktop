@@ -1,6 +1,6 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Version=4.3.0
+Version=4.3.1
 Type=Application
 Icon[en_US]=synthesis
 Terminal=false

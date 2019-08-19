@@ -99,10 +99,14 @@ namespace Synthesis.GUI
 
         public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
 
+        private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
+
         private void Start()
         {
             instance = this;
             hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
+
+            UpdateJoystickStates(false);
         }
 
         public static SimUI getSimUI() { return instance; }
@@ -144,12 +148,38 @@ namespace Synthesis.GUI
                     else MainMenuExit("cancel");
                 }
             }
+            UpdateJoystickStates();
             HighlightTabs();
         }
 
         private void OnGUI()
         {
             UserMessageManager.Render();
+        }
+
+        /// <summary>
+        /// Track joystick connections and disconnections
+        /// </summary>
+        /// <param name="warn">Whether to dispatch warnings on change or not</param>
+        private void UpdateJoystickStates(bool warn = true)
+        {
+            var newJoystickNames = UnityEngine.Input.GetJoystickNames();
+            for (var i = 0; i < lastJoystickNmaes.Length; i++)
+            {
+                string newState = (i < newJoystickNames.Length && !string.IsNullOrEmpty(newJoystickNames[i])) ? newJoystickNames[i] : null;
+                if (warn && newState != lastJoystickNmaes[i])
+                {
+                    if (newState != null)
+                    {
+                        UserMessageManager.Dispatch("Connected - Joystick " + (i + 1) + " " + newState, 6);
+                    }
+                    else
+                    {
+                        UserMessageManager.Dispatch("Disconnected - Joystick " + (i + 1) + " " + lastJoystickNmaes[i], 6);
+                    }
+                }
+                lastJoystickNmaes[i] = newState;
+            }
         }
 
         /// <summary>

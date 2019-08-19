@@ -40,12 +40,12 @@ $ git clone https://www.github.com/CrossTheRoadElec/Phoenix-frc-lib
 
 ## Phase 2: Building Linux
 
-After the downloads complete, copy the configuration files from the ~/git/synthesis/emulation/hel/external-configs folder into
+After the downloads complete, copy the configuration files from the ~/git/synthesis/emulation/hel/external_configs folder into
 their respective folders
 
 ```shell
-$ cp ~/git/synthesis/emulation/hel/external-configs/.linux-config ~/git/linux-xlnx/.config
-$ cp ~/git/synthesis/emulation/hel/external-configs/.buildroot-config ~/git/buildroot/.config
+$ cp ~/git/synthesis/emulation/hel/external_configs/.linux-config ~/git/linux-xlnx/.config
+$ cp ~/git/synthesis/emulation/hel/external_configs/.buildroot-config ~/git/buildroot/.config
 ```
 
 After you have copied the files, move into the Linux directory. After you are in, run the following make commands (replace 8 in -j8
