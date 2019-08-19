@@ -82,7 +82,7 @@ public class UserSettings : MonoBehaviour
         // SCREENMODES
         screens = new List<string> { // Order matters
             "Fullscreen",
-            "Windowed Borderless",
+            "Borderless Windowed",
             "Maximized Window",
             "Windowed"
         };
@@ -96,7 +96,6 @@ public class UserSettings : MonoBehaviour
         (new List<string>(QualitySettings.names)).ForEach((x) => qualOps.Add(new Dropdown.OptionData(x)));
         qualDD.options = qualOps;
 
-        Screen.fullScreen = true;
         if ((int)Screen.fullScreenMode != -1) {
             selectedScreenMode = Screen.fullScreenMode;
         }
@@ -189,13 +188,16 @@ public class UserSettings : MonoBehaviour
         PlayerPrefs.SetInt("fullscreen", (int)selectedScreenMode);
         PlayerPrefs.SetInt("qualityLevel", selectedQuality);
         PlayerPrefs.SetInt("gatherData", collect);
+        PlayerPrefs.SetString("Measure", (unitConversionSwitch.GetComponent<Slider>().value == 0) ? "Metric" : "Imperial");
+
         string[] split = selectedResolution.Split('x');
         int xRes = int.Parse(split[0]), yRes = int.Parse(split[1]);
         Screen.SetResolution(xRes, yRes, selectedScreenMode);
         QualitySettings.SetQualityLevel(selectedQuality);
+        StateMachine.SceneGlobal.FindState<MainState>().IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric");
         AnalyticsManager.GlobalInstance.DumpData = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
-        UserMessageManager.Dispatch("Settings applied", 10);
+        UserMessageManager.Dispatch("Settings applied", 5);
 
         //OnCloseSettingsPanelClicked();
     }

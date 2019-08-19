@@ -760,18 +760,6 @@ namespace Synthesis.GUI
         #region Misc
 
         /// <summary>
-        /// Open tutorial link
-        /// </summary>
-        public void OpenTutorialLink()
-        {
-            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.TutorialRequest,
-                "Help - Tutorials",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        /// <summary>
         /// Toggle for analytics
         /// </summary>
         public void ToggleAnalytics(bool tAnalytics)

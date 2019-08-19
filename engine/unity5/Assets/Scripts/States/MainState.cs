@@ -225,7 +225,7 @@ namespace Synthesis.States
 
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
-            IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
+            IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric");
 
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);

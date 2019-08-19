@@ -13,30 +13,29 @@ namespace Synthesis.GUI
     /// </summary>
     public class MenuUI : LinkedMonoBehaviour<MainState>
     {
-        GameObject canvas;
-        GameObject menuPanelInner;
+        private GameObject canvas;
+        private GameObject menuPanelInner;
 
         // main panels
-        GameObject robotControlPanel;
-        GameObject globalControlPanel;
-        GameObject settingsPanel;
-        GameObject viewReplaysPanel;
-        GameObject helpPanel;
+        public GameObject robotControlPanel;
+        public GameObject globalControlPanel;
+        public GameObject settingsPanel;
+        public GameObject viewReplaysPanel;
+        public GameObject helpPanel;
 
         // additional panels within the main panels
-        GameObject checkSavePanel;
+        private GameObject checkSavePanel;
 
-        UserSettings settings;
-        LoadReplay loadReplay;
+        private UserSettings settings;
+        private LoadReplay loadReplay;
         public static MenuUI instance;
 
         // controls
-        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
+        private Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
         // Functions for screen and graphics OnClick changes
         public delegate void EntryChanged(int a);
         public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
-        private Rect lastSetPixelRect;
 
         protected override void Awake()
         {
@@ -50,8 +49,6 @@ namespace Synthesis.GUI
         {
             DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf || !globalControlPanel.activeSelf;
             InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
-
-            Resize();
         }
 
         public void LateUpdate()
@@ -243,6 +240,18 @@ namespace Synthesis.GUI
             helpPanel.SetActive(true);
         }
 
+        /// <summary>
+        /// Open tutorial link
+        /// </summary>
+        public void OpenTutorialLink()
+        {
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.TutorialRequest,
+                "Help - Tutorials",
+                AnalyticsLedger.getMilliseconds().ToString());
+        }
+
         #endregion
 
         /// <summary>
@@ -255,14 +264,6 @@ namespace Synthesis.GUI
             settingsPanel.SetActive(false);
             viewReplaysPanel.SetActive(false);
             helpPanel.SetActive(false);
-        }
-
-        private void Resize(bool forceUpdate = false)
-        {
-            if (!lastSetPixelRect.Equals(UnityEngine.Camera.main.pixelRect) || forceUpdate)
-            {
-
-            }
         }
     }
 }
