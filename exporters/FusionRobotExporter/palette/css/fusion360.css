@@ -5,10 +5,11 @@ body {
     font-size: 12px;
     background-color: #F2F2F2;
     display: block;
+    margin: 8px 13px 8px 13px;
 }
 
 p {
-    margin: 0 0 0 5px;
+    margin: 0;
     padding: 0 0 10px 0;
 }
 
