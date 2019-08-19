@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <script src="js/links.js"></script>
         <style>
+            input[type=checkbox], input[type=text], input[type=number], select {
+                position: relative;
+                left: 0px;
+            }
             #joint-config-template
             {
             }
@@ -52,7 +56,7 @@
             .control-panel-container {
                 position: sticky;
                 bottom: 0;
-                padding: 10px 0px 10px 0px;
+                padding: 0px 0px 30px 0px;
                 background-color: rgb(242, 242, 242);
             }
             .driver-div option {
@@ -83,7 +87,7 @@
 
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
-                <button id="advanced-button" class="edit-sensors-button" onclick="editSensors(this.parentNode)">Advanced...</button>
+                <button id="advanced-button" class="edit-sensors-button" onclick="editSensors(this.parentNode)" style="margin-top: -4px;">Advanced...</button>
                 <img class="joint-config-image">
                 <div class="driver-div">
                     <span class="field-label">Joint Type</span>
@@ -134,8 +138,8 @@
             </fieldset>
         </div>
         <div class="control-panel-container">
-            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
             <button type="button" onclick="cancel()">Cancel</button>
+            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         </div>
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
