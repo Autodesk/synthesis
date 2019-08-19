@@ -101,7 +101,7 @@ namespace Synthesis.States
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
             Screen.fullScreen = PlayerPrefs.GetInt("fullscreen", 1) == 1 ? true : false;
 
-            string CurrentVersion = "4.3.0";
+            string CurrentVersion = "4.3.1";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection())
