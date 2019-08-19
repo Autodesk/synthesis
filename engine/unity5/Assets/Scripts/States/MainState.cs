@@ -238,6 +238,11 @@ namespace Synthesis.States
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
             MediaManager.getInstance();
+
+            Controls.Load();
+            Controls.UpdateFieldControls();
+            if (!Controls.HasBeenSaved())
+                Controls.Save(true);
         }
 
         /// <summary>

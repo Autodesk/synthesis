@@ -46,8 +46,6 @@ namespace Synthesis.GUI
         GameObject stopwatchWindow;
         GameObject statsWindow;
         GameObject rulerWindow;
-        GameObject inputManagerPanel;
-        GameObject checkSavePanel;
         GameObject toolbar;
         GameObject tabs;
         GameObject pointImpulsePanel;
@@ -75,8 +73,6 @@ namespace Synthesis.GUI
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
-
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
 
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
@@ -380,7 +376,6 @@ namespace Synthesis.GUI
             changeRobotPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
             pointImpulsePanel.SetActive(false);
 
             simUI.CancelOrientation();

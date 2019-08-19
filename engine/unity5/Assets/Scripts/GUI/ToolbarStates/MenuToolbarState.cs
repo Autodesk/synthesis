@@ -36,7 +36,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnRobotControlsButtonClicked()
         {
-            menuUI.SwitchRobotControls();
+            MenuUI.instance.CheckUnsavedControls(() =>
+            {
+                menuUI.SwitchRobotControls();
+            });
         }
 
         /// <summary>
@@ -44,7 +47,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnGlobalControlsButtonClicked()
         {
-            menuUI.SwitchGlobalControls();
+            MenuUI.instance.CheckUnsavedControls(() =>
+            {
+                menuUI.SwitchGlobalControls();
+            });
         }
 
         /// <summary>
@@ -52,7 +58,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSettingsButtonClicked()
         {
-            menuUI.SwitchSettings();
+            MenuUI.instance.CheckUnsavedControls(() =>
+            {
+                menuUI.SwitchSettings();
+            });
         }
 
         /// <summary>
@@ -60,7 +69,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnViewReplaysButtonClicked()
         {
-            menuUI.SwitchViewReplays();
+            MenuUI.instance.CheckUnsavedControls(() =>
+            {
+                menuUI.SwitchViewReplays();
+            });
         }
 
         /// <summary>
@@ -68,7 +80,10 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnHelpButtonClicked()
         {
-            menuUI.SwitchHelp();
+            MenuUI.instance.CheckUnsavedControls(() =>
+            {
+                menuUI.SwitchHelp();
+            });
         }
 
         public override void End()

@@ -5,7 +5,7 @@ namespace Synthesis.Input
     public class Controls
     {
         public static Player[] Players;
-        public static GlobalProfile Global;
+        public static GlobalPlayer Global;
 
         /// <summary>
         /// Initializes the <see cref="Controls"/> class.
@@ -18,7 +18,7 @@ namespace Synthesis.Input
                 Players[i] = new Player(i);
             }
 
-            Global = new GlobalProfile();
+            Global = new GlobalPlayer();
 
             Load();
         }
@@ -27,14 +27,15 @@ namespace Synthesis.Input
         /// Saves all player controls.
         /// Source: https://github.com/Gris87/InputControl
         /// </summary>
-        public static void Save()
+        public static void Save(bool quiet = false)
         {
             for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
             {
                 Players[player_i].SaveActiveProfile();
             }
             Global.Save();
-            GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
+            if(!quiet)
+                GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
         }
 
         /// <summary>

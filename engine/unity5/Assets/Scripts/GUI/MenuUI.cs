@@ -14,56 +14,36 @@ namespace Synthesis.GUI
     public class MenuUI : LinkedMonoBehaviour<MainState>
     {
         GameObject canvas;
-
         GameObject menuPanelInner;
 
+        // main panels
         GameObject robotControlPanel;
         GameObject globalControlPanel;
         GameObject settingsPanel;
         GameObject viewReplaysPanel;
         GameObject helpPanel;
 
+        // additional panels within the main panels
         GameObject checkSavePanel;
 
         UserSettings settings;
         LoadReplay loadReplay;
-
         public static MenuUI instance;
 
-        public static bool inputPanelOn = false;
+        // controls
         Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
 
-        private Rect lastSetPixelRect;
-
+        // Functions for screen and graphics OnClick changes
         public delegate void EntryChanged(int a);
-
         public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
-
-        // Robot controls
-        // Global Controls
-        // Settings
-        // View Replays
-        // Help
+        private Rect lastSetPixelRect;
 
         protected override void Awake()
         {
             base.Awake();
 
             instance = this;
-
-            canvas = GameObject.Find("Canvas");
-            menuPanelInner = Auxiliary.FindObject(Auxiliary.FindObject(canvas, "MenuPanel"), "Panel");
-
-            robotControlPanel = Auxiliary.FindObject(menuPanelInner, "RobotControlPanel");
-            globalControlPanel = Auxiliary.FindObject(menuPanelInner, "GlobalControlPanel");
-            settingsPanel = Auxiliary.FindObject(menuPanelInner, "SettingsPanel");
-            viewReplaysPanel = Auxiliary.FindObject(menuPanelInner, "LoadReplayPanel");
-            helpPanel = Auxiliary.FindObject(menuPanelInner, "HelpPanel");
-
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-
-            settings = settingsPanel.GetComponent<UserSettings>();
-            loadReplay = viewReplaysPanel.GetComponent<LoadReplay>();
+            FindElements();
         }
 
         public void Update()
@@ -93,6 +73,18 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
+            menuPanelInner = Auxiliary.FindObject(Auxiliary.FindObject(canvas, "MenuPanel"), "Panel");
+
+            robotControlPanel = Auxiliary.FindObject(menuPanelInner, "RobotControlPanel");
+            globalControlPanel = Auxiliary.FindObject(menuPanelInner, "GlobalControlPanel");
+            settingsPanel = Auxiliary.FindObject(menuPanelInner, "SettingsPanel");
+            viewReplaysPanel = Auxiliary.FindObject(menuPanelInner, "LoadReplayPanel");
+            helpPanel = Auxiliary.FindObject(menuPanelInner, "HelpPanel");
+
+            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
+
+            settings = settingsPanel.GetComponent<UserSettings>();
+            loadReplay = viewReplaysPanel.GetComponent<LoadReplay>();
         }
 
         #region robot controls
@@ -103,9 +95,8 @@ namespace Synthesis.GUI
 
             if (!robotControlPanel.activeSelf)
             {
-                EndOtherProcesses();
+                Controls.Load();
                 robotControlPanel.SetActive(true);
-                inputPanelOn = true;
                 Auxiliary.FindObject(Auxiliary.FindObject(Auxiliary.FindObject(robotControlPanel, "SettingsMode"), "ScrollRect"), "Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
@@ -113,8 +104,6 @@ namespace Synthesis.GUI
                 CheckUnsavedControls(() =>
                 {
                     robotControlPanel.SetActive(false);
-                    inputPanelOn = false;
-                    //ToggleHotKeys(false);
                 });
             }
         }
@@ -152,12 +141,6 @@ namespace Synthesis.GUI
                 ProcessControlsCallback.Invoke();
         }
 
-        public void SaveAndClose()
-        {
-            Auxiliary.FindObject(settingsPanel, "SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            SwitchRobotControls();
-        }
-
         #endregion
         #region global controls
 
@@ -166,16 +149,15 @@ namespace Synthesis.GUI
             EndOtherProcesses();
             if (!globalControlPanel.activeSelf)
             {
-                //EndOtherProcesses();
+                Controls.Load();
                 globalControlPanel.SetActive(true);
-                Auxiliary.FindObject(globalControlPanel, "Content").GetComponent<CreateButton>().CreateButtons();
+                Auxiliary.FindObject(Auxiliary.FindObject(globalControlPanel, "ScrollRect"), "Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
                 CheckUnsavedControls(() =>
                 {
                     globalControlPanel.SetActive(false);
-                    //ToggleHotKeys(false);
                 });
             }
         }

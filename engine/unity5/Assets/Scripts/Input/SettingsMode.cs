@@ -80,8 +80,10 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            Controls.Players[activePlayerIndex].ResetActiveProfile();
-            Controls.Global.Reset();
+            if(GameObject.Find("Content").GetComponent<CreateButton>().globalControls)
+                Controls.Global.Reset();
+            else
+                Controls.Players[activePlayerIndex].ResetActiveProfile();
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
@@ -97,8 +99,6 @@ namespace Synthesis.Input
                     activeProfileMode = (Profile.Mode)value;
 
                     Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
-                    Controls.Players[activePlayerIndex].LoadActiveProfile();
-                    Controls.Global.Load();
 
                     GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
                 });
@@ -149,11 +149,6 @@ namespace Synthesis.Input
                 profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
                 profileDropdown.RefreshShownValue();
             }
-        }
-
-        public void UpdateButtons()
-        {
-            GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
     }
 }
