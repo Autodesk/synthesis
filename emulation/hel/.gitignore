@@ -23,22 +23,23 @@
 lib/*
 bin/*
 user-code/*
+build/*
 
 # CMake related stuff
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-CMakeFiles/*
-CMakeDoxyfile.in
-CMakeDoxygenDefaults.cmake
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/CMakeFiles/*
+**/CMakeDoxyfile.in
+**/CMakeDoxygenDefaults.cmake
+
+# Exceptions to gitignore
+!build/lib/libwpi.so
+!build/lib/libwpi-x86.so
 
 # Doxygen
 docs/html
 docs/latex
-
-# Specific files to include
-!lib/libwpi.so
-!lib/libwpi-x86.so
 
 # Editor files
 GTAGS

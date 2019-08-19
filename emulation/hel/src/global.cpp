@@ -14,10 +14,14 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 
 namespace hel {
-	int gRPCPort = 50051;
-constexpr const float TIME_CONSTANT =
-	1.13;  // This is the offset from local time to real world time
-Global::Global() noexcept { fpga_start_time = getCurrentTime(); }
+
+int gRPCPort = 50051;
+
+// constexpr const float TIME_CONSTANT = 1.13;  // This is the offset from local time to real world time
+
+Global::Global()noexcept { 
+	fpga_start_time = getCurrentTime();
+}
 
 Global::Global(const Global& source) noexcept {
 #define COPY(NAME) NAME = source.NAME
@@ -27,7 +31,7 @@ Global::Global(const Global& source) noexcept {
 
 uint64_t Global::getCurrentTime() noexcept {
 	return std::chrono::duration_cast<std::chrono::microseconds>(
-			   std::chrono::high_resolution_clock::now().time_since_epoch()).count();  // TODO system time runs fast, using a scalar for now
+			   std::chrono::high_resolution_clock::now().time_since_epoch()).count();  // FIXME system time runs fast
 }
 
 uint64_t Global::getFPGAStartTime() const noexcept { return fpga_start_time; }

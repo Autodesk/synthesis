@@ -1,7 +1,7 @@
 #!/bin/bash
 #sed -i -e 's/\r$//' LinuxInstaller.sh
 
-VERSION="4.3.0"
+VERSION="4.3.1"
 source ./ProgressBar.sh
 sudo echo "Installing Autodesk Synthesis $VERSION For Linux"
 

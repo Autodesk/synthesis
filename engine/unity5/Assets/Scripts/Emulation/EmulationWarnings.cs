@@ -3,6 +3,9 @@ using System;
 
 namespace Synthesis
 {
+    /// <summary>
+    /// Manager for emulation warnings
+    /// </summary>
     public class EmulationWarnings
     {
         public const float WARNING_DURATION = 3; // s
@@ -19,6 +22,11 @@ namespace Synthesis
             UserProgramConnected,
         }
 
+        /// <summary>
+        /// Check to see if the given requirement is met, dispatch a warning if not
+        /// </summary>
+        /// <param name="requirement">The requirement to check</param>
+        /// <returns>True if the requirement the requirements it depends on are met</returns>
         public static bool CheckRequirement(Requirement requirement)
         {
             switch(requirement)

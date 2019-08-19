@@ -97,6 +97,11 @@ namespace hel{
         return integer;
     }
 
+	/**
+	 * \brief A maybe type monad, which may optionally contain a value
+	 * \tparam T The type it can optionally contain
+	 */
+
     template<typename T>
     struct Maybe {
     private:

@@ -6,9 +6,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 4.3.0 Setup"
+Caption "Synthesis 4.3.1 Setup"
 
-OutFile "SynthesisWin4.3.0.exe"
+OutFile "SynthesisWin4.3.1.exe"
 
 InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 
@@ -148,7 +148,7 @@ Section "Synthesis (required)" Synthesis
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.3.0" ;UPDATE ON RELEASE
+                 "DisplayVersion" "4.3.1" ;UPDATE ON RELEASE
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -176,11 +176,11 @@ SectionEnd
 Section "Inventor Exporter Plugin" iExporter
 
   ; Set extraction path to Inventor plugin directory
-  SetOutPath $INSTDIR
-  File /r "Exporter"
+  SetOutPath $INSTDIR\Exporter
+  File /r "InventorExporter\*"
   
   SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "Exporter\Autodesk.InventorRobotExporter.Inventor.addin"
+  File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
 
 SectionEnd
 
@@ -230,7 +230,7 @@ SectionEnd
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator (Installs Docker Toolbox)"
+  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)

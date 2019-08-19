@@ -3,8 +3,8 @@
 This project folder is the simulation engine component. Made in Unity 2018 using Bullet Physics libraries, this is the executable that loads exported robots and fields and provides a real time physics environment for them to interact with each other.
 
 ## Requirements:
-* Unity 2018.2.2 (Required)
-* Visual Studio 2017 (Recommended)
+* Unity 2019.1.9f1 (Required)
+* Visual Studio 2019 (Recommended)
 
 ## Setup Instructions
 
