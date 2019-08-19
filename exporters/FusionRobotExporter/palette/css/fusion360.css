@@ -8,7 +8,8 @@ body {
 }
 
 p {
-    margin: 10px 0px 0px 5px;
+    margin: 0 0 0 5px;
+    padding: 0 0 10px 0;
 }
 
 button {
@@ -60,7 +61,7 @@ select option:hover {
 hr {
     position: relative;
     left: -15px;
-    margin: 20px -20px 3px 0px;
+    margin: 10px -20px 3px 0px;
     border: 0.5px solid #C5C5C5;
 }
 
@@ -69,6 +70,7 @@ hr {
 table {
     width: 90%;
     text-align: center;
+    margin: auto; /*center table horizontally*/
 }
 
 table td {
