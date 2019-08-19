@@ -57,13 +57,6 @@ namespace Synthesis.GUI
         GameObject addPanel;
         GameObject driverStationPanel;
 
-        GameObject checkSavePanel;
-        GameObject unitConversionSwitch;
-
-        GameObject hotKeyButton;
-        GameObject hotKeyPanel;
-        GameObject settingsPanel;
-
         GameObject exitPanel;
         GameObject loadingPanel;
 
@@ -76,12 +69,9 @@ namespace Synthesis.GUI
         private bool freeroamWindowClosed = false;
         private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
-        public static bool inputPanelOn = false;
-        public static bool changeAnalytics = true;
 
         private StateMachine tabStateMachine;
         string currentTab;
-        string lastTab = "MainMenuTab"; // Is only used for specific buttons such as settings
 
         public static string updater;
 
@@ -91,18 +81,11 @@ namespace Synthesis.GUI
 
         private static SimUI instance = null;
 
-        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
-
-        public delegate void EntryChanged(int a);
-
-        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
-
         private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
 
         private void Start()
         {
             instance = this;
-            //hoverHighlight = Auxiliary.FindGameObject("MenuTab").GetComponent<Button>().spriteState.highlightedSprite;
 
             UpdateJoystickStates(false);
         }
@@ -195,8 +178,6 @@ namespace Synthesis.GUI
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-            unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
             resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -213,7 +194,6 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
-            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
@@ -530,7 +510,6 @@ namespace Synthesis.GUI
 
                 //FieldDataHandler.Load();
                 //DPMDataHandler.Load();
-                //Controls.Init();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
 
@@ -807,44 +786,6 @@ namespace Synthesis.GUI
             }
         }
 
-        /// <summary>
-        /// Toggles between meter and feet measurements
-        /// </summary>
-        public void ToggleUnitConversion()
-        {
-            if (canvas != null)
-            {
-                unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-                State.IsMetric = (int)unitConversionSwitch.GetComponent<Slider>().value == 0;
-                PlayerPrefs.SetString("Measure", State.IsMetric ? "Metric" : "Imperial");
-                // UnityEngine.Debug.Log("Metric: " + State.IsMetric);
-            }
-        }
-
-        /// <summary>
-        /// Toggle the hot key tool tips on/off based on the boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleHotKeys(bool show)
-        {
-            hotKeyPanel.SetActive(show);
-            if (show)
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
-            }
-            else
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
-            }
-        }
-
-        /// <summary>
-        ///Toggle the hot key tool tips on/off based on its current state
-        /// </summary>
-        public void ToggleHotKeys()
-        {
-            ToggleHotKeys(!hotKeyPanel.activeSelf);
-        }
         #endregion
         #region reset functions
         /// <summary>
@@ -933,7 +874,6 @@ namespace Synthesis.GUI
             }
 
             // log any timing events and log that the button was clicked
-            
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
                 AnalyticsLedger.EventAction.Exit,
                 "Exit",
@@ -953,14 +893,8 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            ToggleHotKeys(false);
 
             CancelOrientation();
-
-            if (settingsPanel.activeSelf)
-            {
-                tabStateMachine.PopState();
-            }
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
@@ -1021,18 +955,6 @@ namespace Synthesis.GUI
 
             if (tab != null)
                 tabStateMachine.Link<T>(tab, strict);
-        }
-
-        public void ResolutionSelectionChanged(int a) {
-            OnResolutionSelection(a);
-        }
-
-        public void ScreenmodeSelectionChanged(int a) {
-            OnScreenmodeSelection(a);
-        }
-
-        public void QualitySelectionChanged(int a) {
-            OnQualitySelection(a);
         }
 
         public static bool IsMaMInstalled() {

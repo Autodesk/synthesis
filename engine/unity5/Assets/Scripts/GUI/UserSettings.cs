@@ -97,7 +97,6 @@ public class UserSettings : MonoBehaviour
         qualDD.options = qualOps;
 
         Screen.fullScreen = true;
-        Debug.Log(Screen.fullScreenMode.ToString());
         if ((int)Screen.fullScreenMode != -1) {
             selectedScreenMode = Screen.fullScreenMode;
         }
@@ -137,7 +136,6 @@ public class UserSettings : MonoBehaviour
     public void LateUpdate()
     {
         resolutionT.text = selectedResolution;
-        Debug.Log((int)selectedScreenMode + " " + scrDD.options.Count);
         screenT.text = scrDD.options[(int)selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
         analyticsT.text = collect == 1 ? "Yes" : "No";

@@ -97,63 +97,27 @@ namespace Synthesis.Input
             Reset();
         }
 
-        public Buttons GetButtons()
-        {
-            return buttons;
-        }
-
-        public Axes GetAxes()
-        {
-            return axes;
-        }
-
         private static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
 
-        private new string ToString()
+        public new string ToString()
         {
             return JsonConvert.SerializeObject(this, JSON_SETTINGS);
         }
 
-        private void FromString(string input)
+        public void FromString(string input)
         {
+            Debug.Log("Before " + buttons.cameraToggle.primaryInput.ToString());
             JsonConvert.PopulateObject(input, this, JSON_SETTINGS);
+            Debug.Log("After " + buttons.cameraToggle.primaryInput.ToString());
         }
 
         public List<KeyMapping> GetList()
         {
             return buttons.ToList();
-        }
-
-        private string MakePrefPrefix()
-        {
-            return "Controls.Global";
-        }
-
-        public void Save()
-        {
-            PlayerPrefs.SetString(MakePrefPrefix(), ToString());
-            PlayerPrefs.Save();
-        }
-
-        public bool HasBeenSaved()
-        {
-            return PlayerPrefs.GetString(MakePrefPrefix()) == ToString();
-        }
-
-        public void Load()
-        {
-            string input = PlayerPrefs.GetString(MakePrefPrefix());
-            if (input != "")
-                FromString(input);
-            else
-                Reset();
-
-            if (!HasBeenSaved())
-                Save();
         }
 
         public void Reset()
