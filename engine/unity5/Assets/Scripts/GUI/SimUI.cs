@@ -757,21 +757,6 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region Misc
-
-        /// <summary>
-        /// Open tutorial link
-        /// </summary>
-        public void OpenTutorialLink()
-        {
-            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.TutorialRequest,
-                "Help - Tutorials",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        #endregion
         #region reset functions
         /// <summary>
         /// Pop reset instructions when main is in reset spawnpoint mode, enable orient robot at the same time

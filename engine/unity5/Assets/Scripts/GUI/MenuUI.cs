@@ -235,12 +235,24 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region help
+        #region help and tutorials
 
         public void SwitchHelp()
         {
             EndOtherProcesses();
             helpPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Open tutorial link
+        /// </summary>
+        public void OpenTutorialLink()
+        {
+            Application.OpenURL("http://synthesis.autodesk.com/tutorials.html");
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
+                AnalyticsLedger.EventAction.TutorialRequest,
+                "Help - Tutorials",
+                AnalyticsLedger.getMilliseconds().ToString());
         }
 
         #endregion
