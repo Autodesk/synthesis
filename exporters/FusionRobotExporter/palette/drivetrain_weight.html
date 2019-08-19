@@ -7,6 +7,7 @@
         <script src="js/drivetrain_weight.js"></script>
     </head>
     <body>
+    <div class="fusion-content">
         <p>Enter the weight of the drive base of the robot, not including the weight of jointed subsystems:</p>
         <p>Weight<input id="weight-value" type="number" min="0" max="9999" value="100"></p>
         <p>Units
@@ -18,8 +19,10 @@
                 <option value="kg">Metric (kgs)</option>
             </select>
         </p>
-        <hr>
+    </div>
+    <div class="fusion-footer">
         <button id="cancel" style="margin-bottom: 0" type="button" onclick="cancel()">Cancel</button>
         <button id='save-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
+    </div>
     </body>
 </html>
