@@ -14,21 +14,63 @@ namespace Assets.Scripts.GUI
     /// </summary>
     public class MenuToolbarState : State
     {
-        GameObject canvas;
+        public enum TabState
+        {
+            RobotControls,
+            GlobalControls,
+            Settings,
+            ViewReplays,
+            Help
+        }
 
-        GameObject menuPanel;
+        GameObject canvas;
+        GameObject sideBar;
 
         private MenuUI menuUI;
+        private TabState tabState;
 
-        public override void Start()
+        private Image robotControlsButtonImage;
+        private Image globalControlsButtonImage;
+        private Image settingsButtonImage;
+        private Image viewReplaysButtonImage;
+        private Image helpButtonImage;
+
+        private Sprite selectedButtonImage;
+        private Sprite unselectedButtonImage;
+
+        public override void Awake()
         {
             canvas = GameObject.Find("Canvas");
-
-            menuPanel = Auxiliary.FindObject(canvas, "MenuPanel");
+            sideBar = Auxiliary.FindObject(Auxiliary.FindObject(canvas, "MenuPanel"), "SideBar");
 
             menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
 
+            robotControlsButtonImage = Auxiliary.FindObject(sideBar, "RobotControlsButton").GetComponent<Image>();
+            globalControlsButtonImage = Auxiliary.FindObject(sideBar, "GlobalControlsButton").GetComponent<Image>();
+            settingsButtonImage = Auxiliary.FindObject(sideBar, "SettingsButton").GetComponent<Image>();
+            viewReplaysButtonImage = Auxiliary.FindObject(sideBar, "ViewReplaysButton").GetComponent<Image>();
+            helpButtonImage = Auxiliary.FindObject(sideBar, "HelpButton").GetComponent<Image>();
+
+            selectedButtonImage = Resources.Load<Sprite>("Images/New Textures/greenButton");
+            unselectedButtonImage = Resources.Load<Sprite>("Images/New Textures/TopbarHighlight");
+        }
+
+        public override void Start()
+        {
+            base.Start();
+
             OnRobotControlsButtonClicked();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            robotControlsButtonImage.sprite = (tabState == TabState.RobotControls) ? selectedButtonImage : unselectedButtonImage;
+            globalControlsButtonImage.sprite = (tabState == TabState.GlobalControls) ? selectedButtonImage : unselectedButtonImage;
+            settingsButtonImage.sprite = (tabState == TabState.Settings) ? selectedButtonImage : unselectedButtonImage;
+            viewReplaysButtonImage.sprite = (tabState == TabState.ViewReplays) ? selectedButtonImage : unselectedButtonImage;
+            helpButtonImage.sprite = (tabState == TabState.Help) ? selectedButtonImage : unselectedButtonImage; 
         }
 
         /// <summary>
@@ -38,6 +80,7 @@ namespace Assets.Scripts.GUI
         {
             MenuUI.instance.CheckUnsavedControls(() =>
             {
+                tabState = TabState.RobotControls;
                 menuUI.SwitchRobotControls();
             });
         }
@@ -49,6 +92,7 @@ namespace Assets.Scripts.GUI
         {
             MenuUI.instance.CheckUnsavedControls(() =>
             {
+                tabState = TabState.GlobalControls;
                 menuUI.SwitchGlobalControls();
             });
         }
@@ -60,6 +104,7 @@ namespace Assets.Scripts.GUI
         {
             MenuUI.instance.CheckUnsavedControls(() =>
             {
+                tabState = TabState.Settings;
                 menuUI.SwitchSettings();
             });
         }
@@ -71,6 +116,7 @@ namespace Assets.Scripts.GUI
         {
             MenuUI.instance.CheckUnsavedControls(() =>
             {
+                tabState = TabState.ViewReplays;
                 menuUI.SwitchViewReplays();
             });
         }
@@ -82,6 +128,7 @@ namespace Assets.Scripts.GUI
         {
             MenuUI.instance.CheckUnsavedControls(() =>
             {
+                tabState = TabState.Help;
                 menuUI.SwitchHelp();
             });
         }
@@ -89,6 +136,11 @@ namespace Assets.Scripts.GUI
         public override void End()
         {
             menuUI.EndOtherProcesses();
+            if (!Synthesis.Input.Controls.HasBeenSaved())
+            {
+                Synthesis.Input.Controls.Load();
+                UserMessageManager.Dispatch("Control changed discarded", 4);
+            }
         }
     }
 }
