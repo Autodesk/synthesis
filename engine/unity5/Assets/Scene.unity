@@ -64134,7 +64134,7 @@ GameObject:
   - component: {fileID: 1203389130}
   - component: {fileID: 1203389129}
   m_Layer: 5
-  m_Name: AmountOfYeet
+  m_Name: ImpulseInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65745,9 +65745,9 @@ RectTransform:
   - {fileID: 115152585}
   - {fileID: 1089693956}
   - {fileID: 750682245}
+  - {fileID: 1252273339}
   - {fileID: 757085299}
   - {fileID: 303103693}
-  - {fileID: 1252273339}
   - {fileID: 173942606}
   - {fileID: 1795330073}
   m_Father: {fileID: 1039971749}
@@ -66620,7 +66620,7 @@ RectTransform:
   - {fileID: 2092006973}
   - {fileID: 1119884003}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 39
+  m_RootOrder: 37
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -94276,7 +94276,7 @@ PrefabInstance:
     - target: {fileID: 8477938513719087052, guid: 9c50c3e88577abd46a156b33a5206575,
         type: 3}
       propertyPath: m_RootOrder
-      value: 42
+      value: 41
       objectReference: {fileID: 0}
     - target: {fileID: 8477938513719087052, guid: 9c50c3e88577abd46a156b33a5206575,
         type: 3}

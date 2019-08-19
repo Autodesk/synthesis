@@ -341,7 +341,7 @@ namespace Synthesis.GUI
             Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
 
             float impulse;
-            float.TryParse(GameObject.Find("AmountOfYeet").GetComponent<InputField>().text, out impulse);
+            float.TryParse(GameObject.Find("ImpulseInputField").GetComponent<InputField>().text, out impulse);
 
             Vector3 a = ray.origin + (ray.direction * 1000);
 
