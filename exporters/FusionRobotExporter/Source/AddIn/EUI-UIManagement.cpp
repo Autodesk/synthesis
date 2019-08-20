@@ -91,7 +91,7 @@ void EUI::closeAllPalettes()
 	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
-	closeGuidePalette();
+	closeGuidePalette(false);
 	closeSettingsPalette("");
 	cancelExportRobot();
 }
@@ -349,11 +349,12 @@ void EUI::openGuidePalette()
 	Analytics::guideEnabled = true;
 }
 
-void EUI::closeGuidePalette()
+void EUI::closeGuidePalette(bool manualClose)
 {
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
 	guidePalette->isVisible(false);
-	Analytics::guideEnabled = false;
+
+	if (manualClose) Analytics::guideEnabled = false;
 
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
@@ -785,7 +786,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 		openGuidePalette();
 	} else if (guideEnabled == "false")
 	{
-		closeGuidePalette();
+		closeGuidePalette(true);
 	}
 	Analytics::SaveSettings();
 }
