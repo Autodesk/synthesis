@@ -706,11 +706,7 @@ namespace Synthesis.GUI
                                 }
                                 else
                                 {
-                                    int digital_index = j - (int)EmulatedRoboRIO.Constants.NUM_PWM_HDRS;
-                                    if (digital_index >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
-                                    {
-                                        digital_index += 4;
-                                    }
+                                    int digital_index = EmulatedRoboRIO.MXPPWMToDigitalIndex(j - (int)EmulatedRoboRIO.Constants.NUM_PWM_HDRS);
                                     if (EmulatedRoboRIO.RobotOutputs.MxpData[digital_index].Config == EmulationService.MXPData.Types.Config.Pwm)
                                     {
                                         robotIOField.inputField.text = EmulatedRoboRIO.RobotOutputs.MxpData[digital_index].Value.ToString();
