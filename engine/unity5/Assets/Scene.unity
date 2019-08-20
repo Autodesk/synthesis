@@ -109071,7 +109071,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231145}
-        m_MethodName: onMenuTab
+        m_MethodName: OnMenuTab
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
