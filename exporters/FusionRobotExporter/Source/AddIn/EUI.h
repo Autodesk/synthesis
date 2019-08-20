@@ -66,7 +66,7 @@ namespace SynthesisAddIn
 		void closeSensorsPalette(std::string sensorsToSave = "");
 
 		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
-		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
+		void closeGuidePalette(bool manualClose); ///< Loads and opens the robot export guide palette.
 
 		void openSettingsPalette();
 		void closeSettingsPalette(std::string guideEnabled);
