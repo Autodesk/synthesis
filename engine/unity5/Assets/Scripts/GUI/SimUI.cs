@@ -47,7 +47,6 @@ namespace Synthesis.GUI
 
         GameObject freeroamCameraWindow;
         GameObject overviewCameraWindow;
-        GameObject spawnpointPanel;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -58,18 +57,10 @@ namespace Synthesis.GUI
         GameObject addPanel;
         GameObject driverStationPanel;
 
-        GameObject inputManagerPanel;
-        GameObject checkSavePanel;
-        GameObject unitConversionSwitch;
-
-        GameObject hotKeyButton;
-        GameObject hotKeyPanel;
-        GameObject settingsPanel;
-
         GameObject exitPanel;
         GameObject loadingPanel;
 
-        GameObject orientWindow;
+        GameObject resetRobotUI;
         GameObject resetDropdown;
 
         GameObject tabs;
@@ -78,12 +69,9 @@ namespace Synthesis.GUI
         private bool freeroamWindowClosed = false;
         private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
-        public static bool inputPanelOn = false;
-        public static bool changeAnalytics = true;
 
         private StateMachine tabStateMachine;
         string currentTab;
-        string lastTab = "MainMenuTab"; // Is only used for specific buttons such as settings
 
         public static string updater;
 
@@ -93,18 +81,11 @@ namespace Synthesis.GUI
 
         private static SimUI instance = null;
 
-        Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
-
-        public delegate void EntryChanged(int a);
-
-        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
-
         private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
 
         private void Start()
         {
             instance = this;
-            hoverHighlight = Auxiliary.FindGameObject("MainMenuButton").GetComponent<Button>().spriteState.highlightedSprite;
 
             UpdateJoystickStates(false);
         }
@@ -192,20 +173,13 @@ namespace Synthesis.GUI
 
             freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
-            spawnpointPanel = Auxiliary.FindObject(canvas, "SpawnpointPanel");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
             changeRobotPanel = Auxiliary.FindObject(canvas, "ChangeRobotPanel");
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-            unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
 
-            hotKeyPanel = Auxiliary.FindObject(canvas, "HotKeyPanel");
-            hotKeyButton = Auxiliary.FindObject(canvas, "DisplayHotKeyButton");
-
-            orientWindow = Auxiliary.FindObject(resetUI, "OrientWindow");
+            resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -220,11 +194,8 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
-            settingsPanel = Auxiliary.FindObject(canvas, "SettingsPanel");
             emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
-
-            CheckControlPanel();
 
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
@@ -259,6 +230,11 @@ namespace Synthesis.GUI
         {
             switch (currentTab)
             {
+                case "MenuTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MenuTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
                 case "HomeTab":
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
                         AnalyticsLedger.TimingVarible.Customizing,
@@ -298,6 +274,22 @@ namespace Synthesis.GUI
         /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
         /// specific states. 
         /// </summary>
+        public void OnMenuTab()
+        {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MenuTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
+            currentTab = "MenuTab";
+            tabStateMachine.PushState(new MenuToolbarState(), true);
+        }
+
         public void OnMainTab()
         {
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
@@ -384,31 +376,6 @@ namespace Synthesis.GUI
             
             currentTab = "EmulationTab";
             tabStateMachine.ChangeState(new EmulationToolbarState());
-        }
-
-        public void OnSettingsTab()
-        {
-            if (!settingsPanel.activeSelf)
-            {
-                tabStateMachine.PushState(new SettingsState());
-                lastTab = currentTab;
-                currentTab = "SettingsTab";
-            } else
-            {
-                tabStateMachine.PopState();
-                currentTab = lastTab;
-            }
-
-            /*if (settingsPanel.activeSelf)
-            {
-                settingsPanel.SetActive(false);
-            }
-            else
-            {
-                EndOtherProcesses();
-                //settingsPanel.SetActive(true);
-                tabStateMachine.ChangeState(new OptionsTabState());
-            }*/
         }
 
         public void ShowError(string msg)
@@ -558,7 +525,6 @@ namespace Synthesis.GUI
 
                 //FieldDataHandler.Load();
                 //DPMDataHandler.Load();
-                //Controls.Init();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
 
@@ -806,171 +772,20 @@ namespace Synthesis.GUI
         }
 
         #endregion
-        #region control panel and analytics functions
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state.
-        /// </summary>
-        public void ShowControlPanel()
-        {
-            if (!inputManagerPanel.activeSelf)
-            {
-                DynamicCamera.ControlEnabled = false;
-                InputControl.freeze = true;
-                EndOtherProcesses();
-                inputManagerPanel.SetActive(true);
-                inputPanelOn = true;
-                GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
-            }
-            else
-            {
-                CheckUnsavedControls(() =>
-                {
-                    DynamicCamera.ControlEnabled = true;
-                    InputControl.freeze = false;
-                    inputManagerPanel.SetActive(false);
-                    inputPanelOn = false;
-                    ToggleHotKeys(false);
-                });
-            }
-        }
-
-        public void CheckUnsavedControls(Action callback)
-        {
-            ProcessControlsCallback = callback;
-            if (!Controls.HasBeenSaved())
-            {
-                checkSavePanel.SetActive(true);
-            } else
-            {
-                if(ProcessControlsCallback != null)
-                    ProcessControlsCallback.Invoke();
-            }
-        }
-
-        public void SaveAndClose()
-        {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnSaveClick();
-            ShowControlPanel();
-        }
-
-        /// <summary>
-        /// Checks the last state of the control panel. Defaults to OFF
-        /// unless the user leaves it on.
-        /// </summary>
-        public void CheckControlPanel()
-        {
-            if (PlayerPrefs.GetInt("isInputManagerPanel", 1) == 0)
-            {
-                inputManagerPanel.SetActive(false);
-            }
-            else
-            {
-                inputManagerPanel.SetActive(true);
-                PlayerPrefs.SetInt("isInputManagerPanel", 0);
-            }
-        }
-
-        public void CheckForSavedControls(string option)
-        {
-            checkSavePanel.SetActive(false);
-
-            switch (option)
-            {
-                case "yes":
-                    Controls.Save();
-                    break;
-                case "no":
-                    Controls.Load();
-                    break;
-                default:
-                case "cancel":
-                    return;
-            }
-            if (ProcessControlsCallback != null)
-                ProcessControlsCallback.Invoke();
-        }
-
-        /// <summary>
-        /// Open tutorial link
-        /// </summary>
-        public void OpenTutorialLink()
-        {
-            Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.Help,
-                AnalyticsLedger.EventAction.TutorialRequest,
-                "Help - Tutorials",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
-        /// <summary>
-        /// Toggle for analytics
-        /// </summary>
-        public void ToggleAnalytics(bool tAnalytics)
-        {
-            if (PlayerPrefs.GetInt("analytics") == 0)
-            {
-                PlayerPrefs.SetInt("analytics", 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt("analytics", 0);
-            }
-        }
-
-        /// <summary>
-        /// Toggles between meter and feet measurements
-        /// </summary>
-        public void ToggleUnitConversion()
-        {
-            if (canvas != null)
-            {
-                unitConversionSwitch = Auxiliary.FindObject(canvas, "UnitConversionSwitch");
-                State.IsMetric = (int)unitConversionSwitch.GetComponent<Slider>().value == 0;
-                PlayerPrefs.SetString("Measure", State.IsMetric ? "Metric" : "Imperial");
-                // UnityEngine.Debug.Log("Metric: " + State.IsMetric);
-            }
-        }
-
-        /// <summary>
-        /// Toggle the hot key tool tips on/off based on the boolean passed in
-        /// </summary>
-        /// <param name="show"></param>
-        public void ToggleHotKeys(bool show)
-        {
-            hotKeyPanel.SetActive(show);
-            if (show)
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Hide Hot Keys";
-            }
-            else
-            {
-                hotKeyButton.GetComponentInChildren<Text>().text = "Display Hot Keys";
-            }
-        }
-
-        /// <summary>
-        ///Toggle the hot key tool tips on/off based on its current state
-        /// </summary>
-        public void ToggleHotKeys()
-        {
-            ToggleHotKeys(!hotKeyPanel.activeSelf);
-        }
-        #endregion
         #region reset functions
         /// <summary>
         /// Pop reset instructions when main is in reset spawnpoint mode, enable orient robot at the same time
         /// </summary>
         private void UpdateSpawnpointWindow()
         {
+            // TODO: Replace with resetUI (see PR #450)
             if (State.ActiveRobot.IsResetting)
             {
-                spawnpointPanel.SetActive(true);
-                orientWindow.SetActive(true);
+                resetRobotUI.SetActive(true);
             }
             else
             {
-                spawnpointPanel.SetActive(false);
-                orientWindow.SetActive(false);
+                resetRobotUI.SetActive(false);
             }
         }
 
@@ -1044,7 +859,6 @@ namespace Synthesis.GUI
             }
 
             // log any timing events and log that the button was clicked
-            
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ExitTab,
                 AnalyticsLedger.EventAction.Exit,
                 "Exit",
@@ -1064,15 +878,8 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
-            ToggleHotKeys(false);
 
             CancelOrientation();
-
-            if (settingsPanel.activeSelf)
-            {
-                tabStateMachine.PopState();
-            }
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
@@ -1081,18 +888,11 @@ namespace Synthesis.GUI
         }
 
         /// <summary>
-        /// Enters replay mode
-        /// </summary>
-        public void EnterReplayMode()
-        {
-            State.EnterReplayState();
-        }
-
-        /// <summary>
         /// Links the specific toolbars to their specified states
         /// </summary>
         private void LinkToolbars()
         {
+            LinkToolbar<MenuToolbarState>("MenuPanel");
             LinkToolbar<MainToolbarState>("MainToolbar");
             LinkToolbar<DPMToolbarState>("DPMToolbar");
             LinkToolbar<ScoringToolbarState>("ScoringToolbar");
@@ -1112,18 +912,6 @@ namespace Synthesis.GUI
 
             if (tab != null)
                 tabStateMachine.Link<T>(tab, strict);
-        }
-
-        public void ResolutionSelectionChanged(int a) {
-            OnResolutionSelection(a);
-        }
-
-        public void ScreenmodeSelectionChanged(int a) {
-            OnScreenmodeSelection(a);
-        }
-
-        public void QualitySelectionChanged(int a) {
-            OnQualitySelection(a);
         }
 
         public static bool IsMaMInstalled() {

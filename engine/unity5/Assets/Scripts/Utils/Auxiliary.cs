@@ -158,7 +158,7 @@ namespace Synthesis.Utils
                     return t.gameObject;
                 }
             }
-            return new GameObject("COULDNOTFIND" + name);
+            throw new Exception("Game object not found. Parent: " + parent.name.ToString() + " Name: " + name);
         }
 
         public static GameObject FindObject(string name)
@@ -166,12 +166,12 @@ namespace Synthesis.Utils
             GameObject[] trs = GameObject.FindObjectsOfType<GameObject>();
             foreach (GameObject t in trs)
             {
-                if (t.name.Contains(name))
+                if (t.name == name)
                 {
                     return t.gameObject;
                 }
             }
-            return new GameObject("COULDNOTFIND" + name);
+            throw new Exception("Game object not found (Is it disabled?). Name: " + name);
         }
 
         /// <summary>

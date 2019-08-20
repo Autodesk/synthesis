@@ -36,12 +36,13 @@ public class AnalyticsLedger
             //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
             // Toolbar tabs
-            ExitTab = "Exit Tab",
+            MenuTab = "Menu Tab",
             HomeTab = "Home Tab",
             DPMTab = "Gamepiece Tab",
             ScoringTab = "Scoring Tab",
             SensorTab = "Sensor Tab",
             EmulationTab = "Emulation Tab",
+            ExitTab = "Exit Tab",
 
             // Global categories
             AddRobot = "Add Robot",
@@ -103,6 +104,7 @@ public class AnalyticsLedger
             Multiplater = "Multiplayer",
 
             MainSimulator = "In Simulator",
+            MenuTab = "Menu Tab",
             HomeTab = "Home Tab",
             DPMTab = "Gamepiece Tab",
             ScoringTab = "Scoring Tab",

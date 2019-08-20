@@ -447,7 +447,6 @@ namespace Synthesis.GUI
         private GameObject mainPanel;
         private bool lastActive = false;
         private bool shouldBeActive = false;
-        private bool settingsTabActive = false;
 
         // Robot IO view
         private GameObject displayPanel;
@@ -512,21 +511,6 @@ namespace Synthesis.GUI
                 if (InputControl.GetButtonDown(new KeyMapping("Hide Menu", KeyCode.H, Input.Enums.KeyModifier.Ctrl), true)) // TODO make global control
                 {
                     mainPanel.SetActive(!mainPanel.activeSelf);
-                }
-                if (SimUI.getSimUI().getTabStateMachine().CurrentState is SettingsState)
-                {
-                    if (mainPanel.activeSelf)
-                    {
-                        mainPanel.SetActive(false);
-                    }
-                    settingsTabActive = true;
-                } else if (settingsTabActive)
-                {
-                    if (!mainPanel.activeSelf)
-                    {
-                        mainPanel.SetActive(true);
-                    }
-                    settingsTabActive = false;
                 }
             }
             if (mainPanel.activeSelf) // Update rest of UI

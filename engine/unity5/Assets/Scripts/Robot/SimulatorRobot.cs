@@ -259,8 +259,8 @@ namespace Synthesis.Robot
             //GetDriverPractice().DestroyAllGamepieces();
 
             InputControl.freeze = true;
-            if (canvas == null) canvas = GameObject.Find("Main Camera").transform.GetChild(0).gameObject;
-            if (resetCanvas == null) resetCanvas = GameObject.Find("Main Camera").transform.GetChild(1).gameObject;
+            if (canvas == null) canvas = GameObject.Find("Canvas");
+            if (resetCanvas == null) resetCanvas = Auxiliary.FindObject(UnityEngine.Camera.main.gameObject, "ResetRobotSpawnpointUI");
             canvas.GetComponent<Canvas>().enabled = false;
             resetCanvas.SetActive(true);
 
