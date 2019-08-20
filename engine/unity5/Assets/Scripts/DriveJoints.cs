@@ -13,6 +13,7 @@ using Synthesis.Utils;
 public class DriveJoints
 {
     public const int PWM_HDR_COUNT = 10;
+    public const int PWM_MXP_COUNT = 10;
 
     private const float SpeedArrowPwm = 0.5f;
     private const float WheelMaxSpeed = 300f;
@@ -40,7 +41,7 @@ public class DriveJoints
     static DriveJoints()
     {
         listOfSubNodes = new List<RigidNode_Base>();
-        pwm_motor_controllers = new float[PWM_HDR_COUNT];
+        pwm_motor_controllers = new float[PWM_HDR_COUNT + PWM_MXP_COUNT];
         can_motor_controllers = new Dictionary<int, float>();
 
         joystickSerializers = new JoystickSerializer[3];
@@ -133,8 +134,10 @@ public class DriveJoints
             else // Disable outputs
             {
                 can_motor_controllers.Clear();
-                for (int i = 0; i < PWM_HDR_COUNT; i++)
+                for (int i = 0; i < pwm_motor_controllers.Length; i++)
+                {
                     pwm_motor_controllers[i] = 0;
+                }
             }
         }
         else // Use regular controls
@@ -150,7 +153,7 @@ public class DriveJoints
         int motor_controller_address = cDriver.port1 - 1;
         if (cDriver.isCan)
             return can_motor_controllers.ContainsKey(motor_controller_address) ? can_motor_controllers[motor_controller_address] : 0f;
-        return (motor_controller_address < PWM_HDR_COUNT) ? pwm_motor_controllers[motor_controller_address] : 0f;
+        return pwm_motor_controllers[motor_controller_address];
     }
 
     /// <summary>
@@ -163,7 +166,13 @@ public class DriveJoints
     {
         can_motor_controllers.Clear(); // Engine controls do not currently support CAN
         for (int i = 0; i < PWM_HDR_COUNT; i++)
+        {
             pwm_motor_controllers[i] = InputControl.GetAxis(Controls.Players[controlIndex].GetAxes().pwmAxes[i], true) * SpeedArrowPwm;
+        }
+        for (int i = 0; i < PWM_MXP_COUNT; i++)
+        {
+            pwm_motor_controllers[i + PWM_HDR_COUNT] = 0;
+        }
     }
 
     /// <summary>
@@ -276,11 +285,22 @@ public class DriveJoints
     private static void UpdateEmulationMotorControllers()
     {
         for (int i = 0; i < Synthesis.EmulatedRoboRIO.RobotOutputs.PwmHeaders.Count(); i++)
+        {
             pwm_motor_controllers[i] = (float)Synthesis.EmulatedRoboRIO.RobotOutputs.PwmHeaders[i];
+        }
+        for (int i = 0; i < Synthesis.EmulatedRoboRIO.RobotOutputs.MxpData.Count(); i++)
+        {
+            if (Synthesis.EmulatedRoboRIO.RobotOutputs.MxpData[i].Config == EmulationService.MXPData.Types.Config.Pwm)
+            {
+                pwm_motor_controllers[PWM_HDR_COUNT + Synthesis.EmulatedRoboRIO.MXPDigitalToPWMIndex(i)] = (float)Synthesis.EmulatedRoboRIO.RobotOutputs.MxpData[i].Value;
+            }
+        }
 
         can_motor_controllers.Clear();
         foreach (var CAN in Synthesis.EmulatedRoboRIO.RobotOutputs.CanMotorControllers)
+        {
             can_motor_controllers.Add(CAN.Id, CAN.PercentOutput);
+        }
     }
 
     /// <summary>
