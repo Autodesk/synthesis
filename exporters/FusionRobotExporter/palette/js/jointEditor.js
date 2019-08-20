@@ -1,16 +1,5 @@
 var noJoints = false;
 let openFieldsetSensors = null;
-var interactionAllowed = true;
-
-document.addEventListener("click", freezeClicking, true);
-
-function freezeClicking(e) {
-    if (!interactionAllowed) {
-        e.stopPropagation();
-        e.preventDefault();
-        document.getElementById("advanced-modal").style.display = "block";
-    }
-}
 
 // Prompts the Fusion add-in for joint data
 // Highlight a joint in Fusion
@@ -29,9 +18,6 @@ function editSensors(fieldset)
     const sensors = JSON.parse(fieldset.dataset.sensors);
     sensors.isDrivetrain = jointTypeComboBox.value === "drivetrain";
     adsk.fusionSendData('edit_sensors', JSON.stringify(sensors));
-    
-    // interaction in main joint editor disabled while advanced form is opened
-    interactionAllowed = false;
 }
 
 // Handles the receiving of data from Fusion
@@ -54,8 +40,6 @@ window.fusionJavaScriptHandler =
                     console.log(data);
                     if (openFieldsetSensors != null)
                         openFieldsetSensors.dataset.sensors = data;
-                    interactionAllowed = true;
-                    document.getElementById("advanced-modal").style.display = "none";
                 }
                 else if (action === 'debugger')
                 {
@@ -298,16 +282,6 @@ function saveValues()
     console.log(configData);
     return configData;
 }
-
-//document.getElementsByClassName("close")[0].onclick = function() {
-//    document.getElementById("advanced-modal").style.display = "none";
-//}
-//
-//window.onclick = function(event) {
-//  if (event.target == document.getElementById("advanced-modal")) {
-//    document.getElementById("advanced-modal").style.display = "none";
-//  }
-//}
 
 // Sends the data to the Fusion add-in
 function sendInfoToFusion()
