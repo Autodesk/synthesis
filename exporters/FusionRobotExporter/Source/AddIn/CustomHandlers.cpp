@@ -113,10 +113,14 @@ void ReceiveFormDataHandler::notify(const Ptr<HTMLEventArgs>& eventArgs)
 {
 	if (eventArgs->action() == "highlight")
 		eui->highlightAndFocusSingleJoint(eventArgs->data(), false, 1);
-	else if (eventArgs->action() == "edit_sensors")
+	else if (eventArgs->action() == "edit_sensors") {
+		eui->closeJointEditorPalette();
 		eui->openSensorsPalette(eventArgs->data());
-	else if (eventArgs->action() == "save_sensors")
+	} 
+	else if (eventArgs->action() == "save_sensors") {
 		eui->closeSensorsPalette(eventArgs->data());
+		eui->openJointEditorPalette();
+	}
 	else if (eventArgs->action() == "settings_guide")
 		eui->closeSettingsPalette(eventArgs->data());
 	else if (eventArgs->action() == "open_link")
