@@ -51,6 +51,7 @@ public class UserSettings : MonoBehaviour
         MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
         MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
 
+        #region screen resolutions
         // RESOLUTIONS
         resolutions = new List<string>();
 
@@ -78,7 +79,8 @@ public class UserSettings : MonoBehaviour
         }
 
         resDD.options = resOps;
-
+        #endregion
+        #region screenmodes
         // SCREENMODES
         screens = new List<string> { // Order matters
             "Fullscreen",
@@ -90,7 +92,8 @@ public class UserSettings : MonoBehaviour
         List<Dropdown.OptionData> scrOps = new List<Dropdown.OptionData>();
         screens.ForEach((x) => scrOps.Add(new Dropdown.OptionData(x)));
         scrDD.options = scrOps;
-
+        #endregion
+        #region screen qualities
         // QUALITIES
         List<Dropdown.OptionData> qualOps = new List<Dropdown.OptionData>();
         (new List<string>(QualitySettings.names)).ForEach((x) => qualOps.Add(new Dropdown.OptionData(x)));
@@ -120,11 +123,13 @@ public class UserSettings : MonoBehaviour
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
         analyticsT.text = collect == 1 ? "Yes" : "No";
-
+        #endregion
+        #region units
         // UNITS
         unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
         unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
+        #endregion
     }
 
     public void OnEnable()
