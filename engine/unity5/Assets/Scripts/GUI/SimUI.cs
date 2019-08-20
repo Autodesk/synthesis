@@ -230,6 +230,11 @@ namespace Synthesis.GUI
         {
             switch (currentTab)
             {
+                case "MenuTab":
+                    AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MenuTab,
+                        AnalyticsLedger.TimingVarible.Customizing,
+                        AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+                    break;
                 case "HomeTab":
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.HomeTab,
                         AnalyticsLedger.TimingVarible.Customizing,
@@ -269,8 +274,18 @@ namespace Synthesis.GUI
         /// each tab will activate a new toolbar state in where all of the toolbar functions will be managed by their
         /// specific states. 
         /// </summary>
-        public void onMenuTab()
+        public void OnMenuTab()
         {
+            AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MenuTab,
+                AnalyticsLedger.TimingVarible.Customizing,
+                AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Tab",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+            AnalyticsManager.GlobalInstance.StartTime(AnalyticsLedger.TimingLabel.HomeTab,
+                AnalyticsLedger.TimingVarible.Customizing); // start timer for current tab
+
             currentTab = "MenuTab";
             tabStateMachine.PushState(new MenuToolbarState(), true);
         }
