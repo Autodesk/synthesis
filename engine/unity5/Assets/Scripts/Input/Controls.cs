@@ -34,7 +34,7 @@ namespace Synthesis.Input
                 Players[player_i].SaveActiveProfile();
             }
             Global.Save();
-            if(!quiet)
+            if (!quiet)
                 GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
         }
 

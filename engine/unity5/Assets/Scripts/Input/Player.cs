@@ -71,6 +71,9 @@ namespace Synthesis.Input
             {
                 ResetActiveProfile();
             }
+
+            if (!HasBeenSaved())
+                SaveActiveProfile();
         }
 
         public Profile.Buttons GetButtons()

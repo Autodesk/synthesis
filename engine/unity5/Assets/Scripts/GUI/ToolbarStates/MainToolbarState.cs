@@ -311,19 +311,6 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state
-        /// </summary>
-        public void OnControlsButtonClicked()
-        {
-            menuUI.SwitchRobotControls();
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Control Panel",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
         public void OnPointImpulseButtonClicked() {
             if (pointImpulsePanel.activeSelf) {
                 pointImpulsePanel.SetActive(false);
