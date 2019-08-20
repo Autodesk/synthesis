@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <script src="js/links.js"></script>
         <style>
+            input[type=checkbox], input[type=text], input[type=number], select {
+                position: relative;
+                left: 0px;
+            }
             #joint-config-template
             {
             }
@@ -52,11 +56,15 @@
             .control-panel-container {
                 position: sticky;
                 bottom: 0;
-                padding: 10px 0px 10px 0px;
+                padding: 0px 0px 30px 0px;
                 background-color: rgb(242, 242, 242);
             }
             .driver-div option {
                 background: white;
+            }
+            fieldset
+            {
+                margin: 0 0 1rem 0;
             }
         </style>
     </head>
@@ -79,10 +87,10 @@
 
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
-                <button id="advanced-button" class="edit-sensors-button" onclick="editSensors(this.parentNode)">Advanced...</button>
+                <button id="advanced-button" class="edit-sensors-button" onclick="editSensors(this.parentNode)" style="margin-top: -4px;">Advanced...</button>
                 <img class="joint-config-image">
                 <div class="driver-div">
-                    <span class="field-label">Joint Type: </span>
+                    <span class="field-label">Joint Type</span>
                     <span class="field-select">
                         <select class="joint-type" onchange="doLayout(this)">
                             <option value="none" style="background: rgb(255, 220, 160)">(Select an Option)</option>
@@ -91,7 +99,7 @@
                         </select>
                     </span>
                     <div class="drivetrain-options">
-                        <span class="field-label">Side: </span>
+                        <span class="field-label">Side</span>
                         <span class="field-select">
                         <select class="dt-side" onchange="doLayout(this)">
                             <option value="0">Right</option>
@@ -99,7 +107,7 @@
                             <option value="2">H-Drive Center</option>
                         </select>
                         </span>
-                        <span class="field-label">Wheel Type: </span>
+                        <span class="field-label">Wheel Type</span>
                         <span class="field-select" style="margin-bottom: 0px;">
                         <select class="wheel-type" onchange="doLayout(this)">
                             <option value="1">Normal</option>
@@ -109,11 +117,11 @@
                         </span>
                     </div>
                     <div class="mechanism-options">
-                        <span class="field-label">Weight (lbs):</span>
+                        <span class="field-label">Weight (lbs)</span>
                         <span class="field-select" style="padding-right: 2px">
                             <input class="weight" type="number" min="0" max="9999">
                         </span>
-                        <span class="field-label">Driver Type: </span>
+                        <span class="field-label">Driver Type</span>
                         <span class="field-select" style="margin-bottom: 0px;">
                         <select class="driver-type" onchange="doLayout(this)">
                             <option value="1" class="angular-driver">Motor</option>
@@ -130,8 +138,8 @@
             </fieldset>
         </div>
         <div class="control-panel-container">
-            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
             <button type="button" onclick="cancel()">Cancel</button>
+            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         </div>
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);
