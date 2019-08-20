@@ -99,7 +99,7 @@ namespace Synthesis.States
         public override void Awake()
         {
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
-            Screen.fullScreen = PlayerPrefs.GetInt("fullscreen", 1) == 1 ? true : false;
+            Screen.fullScreenMode = (FullScreenMode)PlayerPrefs.GetInt("fullscreen", 1);
 
             string CurrentVersion = "4.3.1";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
@@ -209,6 +209,7 @@ namespace Synthesis.States
             else
             {
                 awaitingReplay = true;
+                PlayerPrefs.SetString("simSelectedReplay", "");
                 LoadReplay(selectedReplay);
             }
 
@@ -224,7 +225,7 @@ namespace Synthesis.States
 
             robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
 
-            IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric") ? true : false;
+            IsMetric = PlayerPrefs.GetString("Measure").Equals("Metric");
 
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(0).gameObject);
             StateMachine.Link<MainState>(GameObject.Find("Main Camera").transform.GetChild(1).gameObject, false);
@@ -237,6 +238,10 @@ namespace Synthesis.States
             StateMachine.Link<DefineSensorAttachmentState>(Auxiliary.FindGameObject("DefineSensorAttachmentUI"));
 
             MediaManager.getInstance();
+
+            Controls.Load();
+            Controls.UpdateFieldControls();
+            Controls.Save(true);
         }
 
         /// <summary>
@@ -596,10 +601,15 @@ namespace Synthesis.States
 
             ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-            if (!LoadField(fieldDirectory))
+            bool hasField = !string.IsNullOrEmpty(fieldDirectory);
+
+            if (hasField)
             {
-                AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
-                return;
+                if (!LoadField(fieldDirectory))
+                {
+                    AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
+                    return;
+                }
             }
 
             foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
@@ -619,28 +629,31 @@ namespace Synthesis.States
                 }
             }
 
-            Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
-
-            int i = 0;
-
-            foreach (Tracker t in fieldTrackers)
+            if (hasField)
             {
-                t.States = fieldStates[i];
-                i++;
-            }
+                Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
 
-            foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
-            {
-                GameObject referenceObject = GameObject.Find(k.Key);
+                int i = 0;
 
-                if (referenceObject == null)
-                    continue;
-
-                foreach (FixedQueue<StateDescriptor> f in k.Value)
+                foreach (Tracker t in fieldTrackers)
                 {
-                    GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
-                    currentPiece.name = k.Key + "(Clone)";
-                    currentPiece.GetComponent<Tracker>().States = f;
+                    t.States = fieldStates[i];
+                    i++;
+                }
+
+                foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
+                {
+                    GameObject referenceObject = GameObject.Find(k.Key);
+
+                    if (referenceObject == null)
+                        continue;
+
+                    foreach (FixedQueue<StateDescriptor> f in k.Value)
+                    {
+                        GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
+                        currentPiece.name = k.Key + "(Clone)";
+                        currentPiece.GetComponent<Tracker>().States = f;
+                    }
                 }
             }
 
