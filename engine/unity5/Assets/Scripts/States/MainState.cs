@@ -241,8 +241,7 @@ namespace Synthesis.States
 
             Controls.Load();
             Controls.UpdateFieldControls();
-            if (!Controls.HasBeenSaved())
-                Controls.Save(true);
+            Controls.Save(true);
         }
 
         /// <summary>
