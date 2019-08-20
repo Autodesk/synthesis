@@ -4,6 +4,16 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <script src="js/links.js"></script>
         <style>
+
+            html,
+            body {
+                height: 100%;
+            }
+            
+            body {
+                display: flex;
+                flex-direction: column;
+            }
             body {
                 font-family: Arial, sans-serif;
                 font-size: 16px;
@@ -78,6 +88,11 @@
         </style>
     </head>
     <body>
+        <div style="
+    border:  1px solid #cccccc;
+    border-top-width: 0;
+    overflow: auto;
+    flex: 1;">
         <img class="logo" src="https://i.imgur.com/Vh27lE4.png">
         <p class="instructions">The Synthesis Robot Exporter prepares your robot CAD model for simulation use in Synthesis. Before you get started, be sure to verify the setup of your CAD model.</p>
         <hr>
@@ -115,5 +130,6 @@
             </tr>
         </table>
         <hr style="margin-top: 0px;">
+        </div>
     </body>
 </html>
