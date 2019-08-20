@@ -48,11 +48,18 @@ table td {
 
 /*Controls*/
 
+.fusion-content input, .fusion-content select, .fusion-content button
+{
+    transition: border 0.25s, background 0.25s;
+    border: 1px solid rgb(185, 185, 185);
+}
+
 p {
     margin: 0;
     padding: 0 0 10px 0;
 }
 
+/*Footer buttons*/
 .fusion-footer button {
     color: #666666;
     float: right;
@@ -66,6 +73,26 @@ p {
     background-image: linear-gradient(to top, #3F6EA0, #5D8FC2);
     color: white;
 }
+
+/*Content buttons*/
+
+.fusion-content button
+{
+    background: rgb(233, 233, 233);
+    text-align: center;
+}
+
+.fusion-content button:hover
+{
+    background: rgb(225, 225, 225);
+}
+
+.fusion-content button:active
+{
+    background: rgb(210, 210, 210);
+}
+
+/*Misc controls*/
 
 input[type=image] {
     border: 1px solid gray;
