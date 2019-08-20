@@ -99,6 +99,7 @@ namespace Synthesis.Input
                     activeProfileMode = (Profile.Mode)value;
 
                     Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
+                    Controls.Players[activePlayerIndex].LoadActiveProfile();
 
                     GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
                 });
