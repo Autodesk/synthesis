@@ -91,7 +91,7 @@ void EUI::closeAllPalettes()
 	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
-	closeGuidePalette();
+	closeGuidePalette(false);
 	closeSettingsPalette("");
 	cancelExportRobot();
 }
@@ -349,11 +349,12 @@ void EUI::openGuidePalette()
 	Analytics::guideEnabled = true;
 }
 
-void EUI::closeGuidePalette()
+void EUI::closeGuidePalette(bool manualClose)
 {
 	robotExportGuideButton->controlDefinition()->isEnabled(true);
 	guidePalette->isVisible(false);
-	Analytics::guideEnabled = false;
+
+	if (manualClose) Analytics::guideEnabled = false;
 
 	static std::thread* uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
@@ -721,11 +722,11 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 95+HEADER_HEIGHT);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 102+HEADER_HEIGHT);
 		if (!settingsPalette)
 			return false;
 
-		settingsPalette->setMaximumSize(250, 134+HEADER_HEIGHT);
+		settingsPalette->setMaximumSize(250, 102+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		settingsPalette->dockingState(PaletteDockStateRight);
@@ -785,7 +786,7 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 		openGuidePalette();
 	} else if (guideEnabled == "false")
 	{
-		closeGuidePalette();
+		closeGuidePalette(true);
 	}
 	Analytics::SaveSettings();
 }

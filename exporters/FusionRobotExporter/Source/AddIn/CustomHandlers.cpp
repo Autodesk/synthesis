@@ -29,7 +29,7 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 		if (Analytics::guideEnabled)
 			eui->openGuidePalette();
 		else
-			eui->closeGuidePalette();
+			eui->closeGuidePalette(true);
 	}
 }
 
@@ -179,7 +179,7 @@ void ClosePaletteEventHandler::notify(const Ptr<UserInterfaceGeneralEventArgs>& 
 	else if (id == SynthesisAddIn::PALETTE_JOINT_EDITOR)
 		eui->closeJointEditorPalette();
 	else if (id == SynthesisAddIn::PALETTE_GUIDE) {
-		eui->closeGuidePalette();
+		eui->closeGuidePalette(true);
 		Analytics::SaveSettings();
 	}
 	else if (id == SynthesisAddIn::PALETTE_SETTINGS)
