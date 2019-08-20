@@ -30,7 +30,7 @@ body {
 }
 
 .fusion-footer {
-    padding: 1px 8px;
+    padding: 0 6px;
     overflow: hidden;
 }
 
@@ -57,7 +57,7 @@ p {
     color: #666666;
     float: right;
     width: 60px;
-    margin: 5px;
+    margin: 8px 5px;
     border: 1px solid #A4A4A4;
     background-color: #E9E9E9;
 }

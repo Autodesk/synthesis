@@ -721,11 +721,11 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 95+HEADER_HEIGHT);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 102+HEADER_HEIGHT);
 		if (!settingsPalette)
 			return false;
 
-		settingsPalette->setMaximumSize(250, 134+HEADER_HEIGHT);
+		settingsPalette->setMaximumSize(250, 102+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		settingsPalette->dockingState(PaletteDockStateRight);
