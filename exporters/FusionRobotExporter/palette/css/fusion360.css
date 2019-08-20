@@ -53,7 +53,7 @@ p {
     padding: 0 0 10px 0;
 }
 
-button {
+.fusion-footer button {
     color: #666666;
     float: right;
     width: 60px;
@@ -62,7 +62,7 @@ button {
     background-color: #E9E9E9;
 }
 
-button:hover {
+.fusion-footer button:hover {
     background-image: linear-gradient(to top, #3F6EA0, #5D8FC2);
     color: white;
 }
