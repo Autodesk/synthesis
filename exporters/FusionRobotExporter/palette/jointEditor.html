@@ -10,18 +10,6 @@
                 position: relative;
                 left: 0px;
             }
-            #joint-config-template
-            {
-            }
-            #basic-info
-            {
-                padding-left: 0rem;
-                padding-right: 0rem;
-            }
-            #basic-info
-            {
-                padding-right: 0rem;
-            }
             .joint-config
             {
                 position: relative;
@@ -33,15 +21,6 @@
                 right: 2.5rem;
                 width: auto;
             }
-            .wheel-side
-            {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-                margin-top: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
-            
             .joint-config-image {
                 float: left;
                 height: 90px;
@@ -53,18 +32,15 @@
             .drivetrain-options, .mechanism-options {
                 display: none;
             }
-            .control-panel-container {
-                position: sticky;
-                bottom: 0;
-                padding: 0px 0px 30px 0px;
-                background-color: rgb(242, 242, 242);
-            }
             .driver-div option {
                 background: white;
             }
             fieldset
             {
-                margin: 0 0 1rem 0;
+                margin: 6px 0 12px 0;
+            }
+            .fusion-content {
+                overflow: auto;
             }
         </style>
     </head>
@@ -82,7 +58,7 @@
             </div>
         </div>
         
-        <div id="export-settings">
+        <div class="fusion-content" id="export-settings">
             <p id="nodata" style="display: block;">There were no joints found on your robot. To create a new joint, change to the "Design" workspace in the top left corner, and click "Joint" under "Assemble". You can also view our YouTube tutorial on how to add joints <a href="#" onclick="openLink('https://youtu.be/_YCP-cWn1Gc')">here.</a></p>
 
             <fieldset id="joint-config-template" class="joint-config">
@@ -137,7 +113,7 @@
                 </div>
             </fieldset>
         </div>
-        <div class="control-panel-container">
+        <div class="fusion-footer control-panel-container">
             <button type="button" onclick="cancel()">Cancel</button>
             <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         </div>
