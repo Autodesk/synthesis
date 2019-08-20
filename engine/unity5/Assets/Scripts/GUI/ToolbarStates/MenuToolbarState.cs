@@ -78,6 +78,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnRobotControlsButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Robot Controls",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
             MenuUI.instance.CheckUnsavedControls(() =>
             {
                 tabState = TabState.RobotControls;
@@ -90,6 +95,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnGlobalControlsButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Global Controls",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
             MenuUI.instance.CheckUnsavedControls(() =>
             {
                 tabState = TabState.GlobalControls;
@@ -102,6 +112,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnSettingsButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Graphics Settings",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
             MenuUI.instance.CheckUnsavedControls(() =>
             {
                 tabState = TabState.Settings;
@@ -114,6 +129,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnViewReplaysButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Load Replays",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
             MenuUI.instance.CheckUnsavedControls(() =>
             {
                 tabState = TabState.ViewReplays;
@@ -126,6 +146,11 @@ namespace Assets.Scripts.GUI
         /// </summary>
         public void OnHelpButtonClicked()
         {
+            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.MenuTab,
+                AnalyticsLedger.EventAction.Clicked,
+                "Help - Tutorials",
+                AnalyticsLedger.getMilliseconds().ToString()); // log the button was clicked
+
             MenuUI.instance.CheckUnsavedControls(() =>
             {
                 tabState = TabState.Help;
