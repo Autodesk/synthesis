@@ -5,15 +5,20 @@
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <script src="js/drivetrain_type.js"></script>
+        <style>
+            .dt-type-option {
+                background: white;
+            }
+        </style>
     </head>
     <body onload="highlightDriveTrain()">
         <div class="fusion-content">
             <p class="instructions">Select the layout of the robot's drivetrain:</p>
             <table>
                 <tr name="images">
-                    <td><input id="drivetrain-1" type="image" src="resources/TankDriveIcon.png" width="100" height="100" onclick='setDriveTrain(1)'/></td>
-                    <td><input id="drivetrain-2" type="image" src="resources/HDriveIcon.png" width="100" height="100" onclick='setDriveTrain(2)'/></td>
-                    <td><input id="drivetrain-3" type="image" src="resources/OtherDriveIcon.png" width="100" height="100" onclick='setDriveTrain(3)'/></td>
+                    <td><input class="dt-type-option" id="drivetrain-1" type="image" src="resources/TankDriveIcon.png" width="100" height="100" onclick='setDriveTrain(1)'/></td>
+                    <td><input class="dt-type-option" id="drivetrain-2" type="image" src="resources/HDriveIcon.png" width="100" height="100" onclick='setDriveTrain(2)'/></td>
+                    <td><input class="dt-type-option" id="drivetrain-3" type="image" src="resources/OtherDriveIcon.png" width="100" height="100" onclick='setDriveTrain(3)'/></td>
                 </tr>
                 <tr name="labels">
                     <td>Basic</td>
