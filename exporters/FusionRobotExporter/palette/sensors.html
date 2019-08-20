@@ -5,15 +5,53 @@
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <style>
-            input[type=checkbox], input[type=text], input[type=number], select {
+            .fusion-content input[type=checkbox], .fusion-content input[type=text], .fusion-content input[type=number], .fusion-content select {
                 position: relative;
                 left: 0px;
             }
-            .sticky-container {
-                position: sticky;
-                bottom: 0;
-                padding: 0px 0px 30px 0px;
-                background-color: rgb(242, 242, 242);
+
+            .fusion-content fieldset
+            {
+                margin: 6px 0 12px 0;
+                padding: 6px 12px 0 12px;
+            }
+
+            .fusion-content input, .fusion-content select, .fusion-content button
+            {
+                transition: border 0.25s, background 0.25s;
+                border: 1px solid rgb(185, 185, 185);
+            }
+
+            .fusion-content input:focus, .fusion-content select:focus, .fusion-content button:focus
+            {
+                outline: none;
+                border: 1px solid rgb(255, 186, 86);
+            }
+
+            .fusion-content button
+            {
+                background: rgb(233, 233, 233);
+                margin-bottom: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .fusion-content button:hover
+            {
+                background: rgb(225, 225, 225);
+            }
+
+            .fusion-content button:active
+            {
+                background: rgb(210, 210, 210);
+            }
+            
+            .fusion-content input, .fusion-content select {
+                padding: 0;
+            }
+
+            .fusion-content {
+                overflow: auto;
             }
         </style>
     </head>
@@ -80,7 +118,7 @@
                     </fieldset>
                 </div>
                 
-                <button id='new-sensor-button' type='button' style="width: 90px;" onclick='newSensor()'>New Sensor</button>
+                <button id='new-sensor-button' type='button' onclick='newSensor()'>New Sensor</button>
             </fieldset>
         </div>
 
