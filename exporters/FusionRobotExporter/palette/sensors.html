@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
         <style>
+            input[type=checkbox], input[type=text], input[type=number], select {
+                position: relative;
+                left: 0px;
+            }
             .sticky-container {
                 position: sticky;
                 bottom: 0;
-                padding: 10px 0px 10px 0px;
+                padding: 0px 0px 30px 0px;
                 background-color: rgb(242, 242, 242);
             }
         </style>
@@ -35,7 +39,7 @@
             <legend class="sensor-fieldset-legend">Sensor Setup</legend>
             <div id="sensor-settings">
                 <fieldset id="sensor-config-template" class="sensor-config">
-                    <span class="field-label">Sensor: </span>
+                    <span class="field-label">Sensor</span>
                     <span class="field-select"><select class="sensor-type" onchange="updateFieldOptions(this.parentNode.parentNode)">
                         <option value="1">Encoder</option>
                     </select></span>
@@ -67,14 +71,14 @@
                         <option value="8">8</option>
                     </select></span>
                     
-                    <span class="field-label"><span class="conversion-factor-label">Conversion Factor</span>: </span>
+                    <span class="field-label"><span class="conversion-factor-label">Conversion Factor</span></span>
                     <span class="field-input"><input class="conversion-factor" type="number" value="1.0"></span>
     
                     <button class="delete-sensor-button" type="button" onclick="deleteSensor(this.parentNode)">Delete</button>
                 </fieldset>
             </div>
             
-            <button id='new-sensor-button' type='button' onclick='newSensor()'>New Sensor</button>
+            <button id='new-sensor-button' type='button' style="width: 90px;" onclick='newSensor()'>New Sensor</button>
         </fieldset>
 
         <div class="sticky-container">

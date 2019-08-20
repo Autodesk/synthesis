@@ -197,6 +197,7 @@ del /q "$(SolutionDir)$(Configuration)\$(ProjectName).manifest"</Command>
     <None Include="palette\sensors.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="palette\css\fusion360.css" />
     <Content Include="palette\dofkey.html" />
     <Content Include="palette\guide.html" />
     <Content Include="palette\js\drivetrain_type.js" />
