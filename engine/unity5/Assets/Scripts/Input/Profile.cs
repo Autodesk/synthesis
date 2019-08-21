@@ -100,6 +100,7 @@ namespace Synthesis.Input
         public class Axes
         {
             //PWM Axes
+            [JsonProperty]
             public Axis[] pwmAxes;
 
             public Axes()
@@ -128,10 +129,11 @@ namespace Synthesis.Input
             axes = new Axes();
         }
 
-        private static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
+        public static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ObjectCreationHandling = ObjectCreationHandling.Replace
         };
 
         public new string ToString()
