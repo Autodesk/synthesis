@@ -136,5 +136,23 @@ namespace Synthesis
                 };
             }
         }
+
+        public static int MXPDigitalToPWMIndex(int mxp)
+        {
+            if (mxp >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
+            {
+                return mxp - 4;
+            }
+            return mxp;
+        }
+
+        public static int MXPPWMToDigitalIndex(int pwm)
+        {
+            if (pwm >= 4) // First 4 MXP PWM outputs have the right index, but the ones after are offset by 4
+            {
+                return pwm + 4;
+            }
+            return pwm;
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace Synthesis.GUI
         Toolkit toolkit;
         LocalMultiplayer multiplayer;
         SimUI simUI;
+        MenuUI menuUI;
 
         GameObject changeRobotPanel;
         GameObject robotListPanel;
@@ -45,8 +46,6 @@ namespace Synthesis.GUI
         GameObject stopwatchWindow;
         GameObject statsWindow;
         GameObject rulerWindow;
-        GameObject inputManagerPanel;
-        GameObject checkSavePanel;
         GameObject toolbar;
         GameObject tabs;
         GameObject pointImpulsePanel;
@@ -75,13 +74,11 @@ namespace Synthesis.GUI
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
             rulerWindow = Auxiliary.FindObject(canvas, "RulerPanel");
 
-            inputManagerPanel = Auxiliary.FindObject(canvas, "InputManagerPanel");
-            checkSavePanel = Auxiliary.FindObject(canvas, "CheckSavePanel");
-
             // To access instatiate classes within a state, use the StateMachine.SceneGlobal
             toolkit = StateMachine.SceneGlobal.GetComponent<Toolkit>();
             multiplayer = StateMachine.SceneGlobal.GetComponent<LocalMultiplayer>();
             simUI = StateMachine.SceneGlobal.GetComponent<SimUI>();
+            menuUI = StateMachine.SceneGlobal.GetComponent<MenuUI>();
             robotCameraGUI = StateMachine.SceneGlobal.GetComponent<RobotCameraGUI>();
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
@@ -314,19 +311,6 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
         }
 
-        /// <summary>
-        /// Toggle the control panel ON/OFF based on its current state
-        /// </summary>
-        public void OnControlsButtonClicked()
-        {
-            simUI.ShowControlPanel();
-
-            AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
-                AnalyticsLedger.EventAction.Clicked,
-                "Control Panel",
-                AnalyticsLedger.getMilliseconds().ToString());
-        }
-
         public void OnPointImpulseButtonClicked() {
             if (pointImpulsePanel.activeSelf) {
                 pointImpulsePanel.SetActive(false);
@@ -344,7 +328,7 @@ namespace Synthesis.GUI
             Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
 
             float impulse;
-            float.TryParse(GameObject.Find("AmountOfYeet").GetComponent<InputField>().text, out impulse);
+            float.TryParse(GameObject.Find("ImpulseInputField").GetComponent<InputField>().text, out impulse);
 
             Vector3 a = ray.origin + (ray.direction * 1000);
 
@@ -379,7 +363,6 @@ namespace Synthesis.GUI
             changeRobotPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-            inputManagerPanel.SetActive(false);
             pointImpulsePanel.SetActive(false);
 
             simUI.CancelOrientation();

@@ -67,8 +67,11 @@ namespace Synthesis.Input
 
         public class Axes
         {
+            [JsonProperty]
             public Axis cameraForward;
+            [JsonProperty]
             public Axis cameraLateral;
+            [JsonProperty]
             public Axis cameraVertical;
 
             public Axes()
@@ -97,28 +100,19 @@ namespace Synthesis.Input
             Reset();
         }
 
-        public Buttons GetButtons()
-        {
-            return buttons;
-        }
-
-        public Axes GetAxes()
-        {
-            return axes;
-        }
-
-        private static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
+        public static JsonSerializerSettings JSON_SETTINGS = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.All,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ObjectCreationHandling = ObjectCreationHandling.Replace
         };
 
-        private new string ToString()
+        public new string ToString()
         {
             return JsonConvert.SerializeObject(this, JSON_SETTINGS);
         }
 
-        private void FromString(string input)
+        public void FromString(string input)
         {
             JsonConvert.PopulateObject(input, this, JSON_SETTINGS);
         }
@@ -126,34 +120,6 @@ namespace Synthesis.Input
         public List<KeyMapping> GetList()
         {
             return buttons.ToList();
-        }
-
-        private string MakePrefPrefix()
-        {
-            return "Controls.Global";
-        }
-
-        public void Save()
-        {
-            PlayerPrefs.SetString(MakePrefPrefix(), ToString());
-            PlayerPrefs.Save();
-        }
-
-        public bool HasBeenSaved()
-        {
-            return PlayerPrefs.GetString(MakePrefPrefix()) == ToString();
-        }
-
-        public void Load()
-        {
-            string input = PlayerPrefs.GetString(MakePrefPrefix());
-            if (input != "")
-                FromString(input);
-            else
-                Reset();
-
-            if (!HasBeenSaved())
-                Save();
         }
 
         public void Reset()
