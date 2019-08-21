@@ -574,6 +574,7 @@ void EUI::openSensorsPalette(std::string sensors)
 
 void EUI::closeSensorsPalette(std::string sensorsToSave)
 {
+	enableEditorButtons();
 	sensorsPalette->isVisible(false);
 
 	if (sensorsToSave.length() > 0)
