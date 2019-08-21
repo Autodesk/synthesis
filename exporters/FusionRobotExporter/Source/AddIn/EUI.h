@@ -107,6 +107,7 @@ namespace SynthesisAddIn
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
 		// bool dofViewEnabled = false;
+		bool imagesGenerated = false;
 
 		Ptr<Application> getApp() { return app; }
 
