@@ -29,7 +29,6 @@ public class AnalyticsManager : MonoBehaviour {
     public void Awake()
     {
         GUID = (UInt16)UnityEngine.Random.Range(UInt16.MinValue, UInt16.MaxValue);
-        Debug.Log("'" + GUID.ToString() + "'");
 
         mutex = new Mutex();
         GlobalInstance = this;
@@ -199,7 +198,6 @@ public class AnalyticsManager : MonoBehaviour {
             while (loggedCopy.Count > 0)
             {
                 KeyValuePair<string, string> pair = loggedCopy.Dequeue();
-                //Debug.Log(pair.Key + " " + pair.Value);
                 if (pair.Key != null)
                 {
                     if (pair.Key.Equals("NEW"))
@@ -237,8 +235,6 @@ public class AnalyticsManager : MonoBehaviour {
                     result = _client.UploadString(URL_COLLECT, "POST", data);
                 }
             }
-
-            Debug.Log(result);
         });
     }
 
