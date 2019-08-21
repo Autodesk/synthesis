@@ -43,7 +43,7 @@ synthesis
 |   ├── hel - Hardware Emulation Layer
 |   └── bridge - Emulation Bridge
 |
-└── installer - Synthesis installer
+└── installer
     ├── Linux - Synthesis Linux installer
     ├── OSX - Synthesis MacOS installer
     └── Windows - Synthesis Windows installer
