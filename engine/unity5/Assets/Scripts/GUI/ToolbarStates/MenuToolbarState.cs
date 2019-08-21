@@ -164,7 +164,7 @@ namespace Assets.Scripts.GUI
             if (!Synthesis.Input.Controls.HasBeenSaved())
             {
                 Synthesis.Input.Controls.Load();
-                UserMessageManager.Dispatch("Control changed discarded", 4);
+                UserMessageManager.Dispatch("Control changes discarded", 4);
             }
         }
     }
