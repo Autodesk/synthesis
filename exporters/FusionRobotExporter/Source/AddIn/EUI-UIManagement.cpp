@@ -269,15 +269,18 @@ void EUI::openJointEditorPalette()
 
 	config.tempIconDir = std::experimental::filesystem::temp_directory_path().string() + "Synthesis\\FusionIconCache\\"; // Get OS temp dir for icons and save to JSON object
 
-	int index = 0;
-	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
+	if (!imagesGenerated)
 	{
-		EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
-		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 90, 90); // TODO: Is this cross-platform?
-		index++;
-	};
+		int index = 0;
+		for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
+		{
+			EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
+			app->activeViewport()->saveAsImageFile(config.tempIconDir + std::to_string(index) + ".png", 90, 90); // TODO: Is this cross-platform?
+			index++;
+		};
 
-	EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
+		imagesGenerated = true;
+	}
 
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
@@ -286,6 +289,8 @@ void EUI::openJointEditorPalette()
 		jointEditorPalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
 	Analytics::LogPage(U("Joint Editor"));
+
+	UI->activeSelections()->clear();
 }
 
 
