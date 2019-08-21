@@ -22,7 +22,9 @@ bool EUI::createWorkspace()
 		// {
 			// workSpace = UI->workspaces()->add("DesignProductType", WORKSPACE_SYNTHESIS, "Synthesis", "Resources/FinishIcons");
 			// workSpace->tooltip("Export robot models to the Synthesis simulator");
-		
+
+			addHandler<DocumentOpenedHandler>(UI, documentOpenedHandler);
+
 			addHandler<WorkspaceActivatedHandler>(UI, workspaceActivatedHandler);
 			addHandler<WorkspaceDeactivatedHandler>(UI, workspaceDeactivatedHandler);
 
@@ -89,7 +91,7 @@ void EUI::closeAllPalettes()
 	closeDriveWeightPalette();
 	closeJointEditorPalette();
 	closeSensorsPalette();
-	closeGuidePalette();
+	closeGuidePalette(false);
 	closeSettingsPalette("");
 	cancelExportRobot();
 }
@@ -130,6 +132,18 @@ void EUI::enableEditorButtons()
 	finishButton->controlDefinition()->isEnabled(true); ///< Export robot button.
 }
 
+// First Launch Notification
+
+void EUI::showFirstLaunchNotification()
+{
+	DialogResults res = UI->messageBox("The Synthesis robot exporter add-in has been installed. To access the exporter, select the \"Tools\" tab under the \"Design\" workspace.", "Synthesis Add-In", MessageBoxButtonTypes::OKButtonType, InformationIconType);
+	if (res == DialogOK)
+	{
+		Analytics::firstLaunchNotification = false;
+		Analytics::SaveSettings();
+	}
+}
+
 // Drivetrain Weight Palette
 
 bool EUI::createDriveWeightPalette() {
@@ -141,9 +155,11 @@ bool EUI::createDriveWeightPalette() {
 	driveWeightPalette = palettes->itemById(PALETTE_DT_WEIGHT);
 	if (!driveWeightPalette)
 	{
-		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 150);
+		driveWeightPalette = palettes->add(PALETTE_DT_WEIGHT, "Synthesis Drivetrain Weight", "palette/drivetrain_weight.html", false, false, true, 300, 140+HEADER_HEIGHT);
 		if (!driveWeightPalette)
 			return false;
+
+		driveWeightPalette->setMaximumSize(300, 178+HEADER_HEIGHT);
 
 		driveWeightPalette->dockingState(PaletteDockingStates::PaletteDockStateRight);
 
@@ -207,7 +223,7 @@ bool EUI::createJointEditorPalette()
 	jointEditorPalette = palettes->itemById(PALETTE_JOINT_EDITOR);
 	if (!jointEditorPalette)
 	{
-		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
+		jointEditorPalette = palettes->add(PALETTE_JOINT_EDITOR, "Synthesis Joint Editor", "palette/jointEditor.html", false, false, true, 450, 200);
 		if (!jointEditorPalette)
 			return false;
 
@@ -253,15 +269,18 @@ void EUI::openJointEditorPalette()
 
 	config.tempIconDir = std::experimental::filesystem::temp_directory_path().string() + "Synthesis\\FusionIconCache\\"; // Get OS temp dir for icons and save to JSON object
 
-	int index = 0;
-	for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
+	if (!imagesGenerated)
 	{
-		EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
-		app->activeViewport()->saveAsImageFile(config.tempIconDir+std::to_string(index)+".png", 90, 90); // TODO: Is this cross-platform?
-		index++;
-	};
+		int index = 0;
+		for (std::pair<const std::basic_string<char>, BXDJ::ConfigData::JointConfig> joint : config.getJoints()) // For each joint, focus on the joint, take a pic, save to temp dir
+		{
+			EUI::highlightAndFocusSingleJoint(joint.first, false, 0.6);
+			app->activeViewport()->saveAsImageFile(config.tempIconDir + std::to_string(index) + ".png", 90, 90); // TODO: Is this cross-platform?
+			index++;
+		};
 
-	EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
+		imagesGenerated = true;
+	}
 
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
@@ -270,6 +289,8 @@ void EUI::openJointEditorPalette()
 		jointEditorPalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
 	Analytics::LogPage(U("Joint Editor"));
+
+	UI->activeSelections()->clear();
 }
 
 
@@ -293,7 +314,7 @@ bool EUI::createGuidePalette()
 	if (!guidePalette)
 	{
 		// Create palette
-		guidePalette = palettes->add(PALETTE_GUIDE, "Robot Export Guide", "palette/guide.html", false, true, true, 470, 200);
+		guidePalette = palettes->add(PALETTE_GUIDE, "Synthesis Robot Export Guide", "palette/guide.html", false, true, true, 470, 200);
 
 		if (!guidePalette)
 			return false;
@@ -328,33 +349,26 @@ void EUI::deleteGuidePalette()
 
 void EUI::openGuidePalette()
 {
-	if (!guideEnabled) {
-		robotExportGuideButton->controlDefinition()->isEnabled(false);
-		guidePalette->isVisible(true);
-		guideEnabled = true;
-	}
+	robotExportGuideButton->controlDefinition()->isEnabled(false);
+	guidePalette->isVisible(true);
+	Analytics::guideEnabled = true;
 }
 
-void EUI::closeGuidePalette()
+void EUI::closeGuidePalette(bool manualClose)
 {
-	if (guideEnabled)
+	robotExportGuideButton->controlDefinition()->isEnabled(true);
+	guidePalette->isVisible(false);
+
+	if (manualClose) Analytics::guideEnabled = false;
+
+	static std::thread* uiThread = nullptr;
+	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
+
+	uiThread = new std::thread([this]()
 	{
-
-		robotExportGuideButton->controlDefinition()->isEnabled(true);
-		guidePalette->isVisible(false);
-		guideEnabled = false;
-
-		static std::thread* uiThread = nullptr;
-		if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
-
-		uiThread = new std::thread([this]()
-		{
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-		});
-
-		//settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
-	}
+		settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
+		settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
+	});
 }
 
 // Key Palette
@@ -423,9 +437,11 @@ bool EUI::createFinishPalette()
 	if (!finishPalette)
 	{
 
-		finishPalette = palettes->add(PALETTE_FINISH, "Robot Exporter Form", "palette/export.html", false, false, true, 300, 200);
+		finishPalette = palettes->add(PALETTE_FINISH, "Finish Synthesis Exporter", "palette/export.html", false, false, false, 340, 130+HEADER_HEIGHT);
 		if (!finishPalette)
 			return false;
+
+		finishPalette->setMaximumSize(300, 192+HEADER_HEIGHT);
 
 		finishPalette->dockingState(PaletteDockStateRight);
 
@@ -510,7 +526,7 @@ bool EUI::createSensorsPalette()
 	if (!sensorsPalette)
 	{
 		// Create palette
-		sensorsPalette = palettes->add(PALETTE_SENSORS, "Advanced", "palette/sensors.html", false, false, true, 300, 200);
+		sensorsPalette = palettes->add(PALETTE_SENSORS, "Synthesis Advanced Joint Settings", "palette/sensors.html", false, false, true, 300, 200);
 		if (!sensorsPalette)
 			return false;
 
@@ -543,6 +559,7 @@ void EUI::deleteSensorsPalette()
 
 void EUI::openSensorsPalette(std::string sensors)
 {
+	disableEditorButtons();
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
@@ -557,6 +574,7 @@ void EUI::openSensorsPalette(std::string sensors)
 
 void EUI::closeSensorsPalette(std::string sensorsToSave)
 {
+	enableEditorButtons();
 	sensorsPalette->isVisible(false);
 
 	if (sensorsToSave.length() > 0)
@@ -580,9 +598,11 @@ bool EUI::createDriveTypePalette() {
 	if (!driveTypePalette)
 	{
 		// Create palette
-		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 200);
+		driveTypePalette = palettes->add(PALETTE_DT_TYPE, "Synthesis Drivetrain Layout", "palette/drivetrain_type.html", false, false, false, 350, 210 + HEADER_HEIGHT);
 		if (!driveTypePalette)
 			return false;
+
+		driveTypePalette->setMaximumSize(350, 259+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		driveTypePalette->dockingState(PaletteDockStateRight);
@@ -649,7 +669,7 @@ bool EUI::createProgressPalette()
 	if (!progressPalette)
 	{
 		// Create palette
-		progressPalette = palettes->add(PALETTE_PROGRESS, "Loading", "palette/progress.html", false, false, false, 150, 150);
+		progressPalette = palettes->add(PALETTE_PROGRESS, "Exporting Synthesis Robot", "palette/progress.html", false, false, false, 150, 150);
 		if (!progressPalette)
 			return false;
 
@@ -709,9 +729,11 @@ bool EUI::createSettingsPalette() {
 	if (!settingsPalette)
 	{
 		// Create palette
-		settingsPalette = palettes->add(PALETTE_SETTINGS, "Add-In Settings", "palette/settings.html", false, false, true, 350, 200);
+		settingsPalette = palettes->add(PALETTE_SETTINGS, "Synthesis Add-In Settings", "palette/settings.html", false, false, false, 250, 102+HEADER_HEIGHT);
 		if (!settingsPalette)
 			return false;
+
+		settingsPalette->setMaximumSize(250, 102+HEADER_HEIGHT);
 
 		// Dock the palette to the right side of Fusion window.
 		settingsPalette->dockingState(PaletteDockStateRight);
@@ -741,7 +763,7 @@ void EUI::deleteSettingsPalette() {
 	settingsPalette = nullptr;
 }
 
-void EUI::openSettingsPalette(bool nan)
+void EUI::openSettingsPalette()
 {
 	closeEditorPalettes();
 	disableEditorButtons();
@@ -750,10 +772,10 @@ void EUI::openSettingsPalette(bool nan)
 
 	uiThread = new std::thread([this]()
 		{
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
 			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 			settingsPalette->isVisible(true);
-			settingsPalette->sendInfoToHTML("settings_guide", guideEnabled ? "true" : "false");
+			settingsPalette->sendInfoToHTML("settings_guide", Analytics::guideEnabled ? "true" : "false");
 			settingsPalette->sendInfoToHTML("settings_analytics", Analytics::IsEnabled() ? "true" : "false");
 		});
 
@@ -765,14 +787,15 @@ void EUI::closeSettingsPalette(std::string guideEnabled) {
 	enableEditorButtons();
 	settingsPalette->isVisible(false);
 
-	if ((guideEnabled == "true" || guideEnabled == "false") && ((guideEnabled == "true") != this->guideEnabled)) Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
+	if ((guideEnabled == "true" || guideEnabled == "false") && ((guideEnabled == "true") != Analytics::guideEnabled)) Analytics::LogEvent(U("Settings"), U("Guide Toggle"), guideEnabled == "true" ? U("Enabled") : U("Disabled"));
 	if (guideEnabled == "true") // TODO: This is lazy, use JSON
 	{
 		openGuidePalette();
 	} else if (guideEnabled == "false")
 	{
-		closeGuidePalette();
+		closeGuidePalette(true);
 	}
+	Analytics::SaveSettings();
 }
 
 // BUTTONS AND PANELS

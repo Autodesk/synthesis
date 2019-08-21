@@ -1,42 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
-
-        <style>
-            #basic-info
-            {
-                padding-left: 1rem;
-                padding-right: 1.5rem;
-                padding-bottom: 1rem;
-            }
-
-        </style>
+        <script src="js/export.js"></script>
     </head>
     <body>
-        <script src="js/export.js"></script>
-        <div id="export-settings">
-            <div id="basic-info">
-                <span class="field-label">Robot Name: </span>
-                <span class="field-input"><input type="text" id="name" value="unnamed" onchange="validateForm()"></span>
-                <span class="field-label">Collision Mesh Quality: </span>
-                <span class="field-input" >
-                    <select id="convex">
-                        <option value=0>Rough (Bounding Box)</option>
-                        <option value=1>Basic (VHACD Low)</option>
-                        <option value=2>Medium (VHACD Mid)</option>
-                        <option value=3>High (VHACD High)</option>
-                    </select>
-                </span>
-                <span class="field-label">Open Synthesis After Export: </span>
-                <span class="field-input">
-                    <input id="open-synthesis" style="width: auto" type="checkbox" checked><br>
-                </span>
-            </div>
+        <div class="fusion-content">
+            <p>Robot Name<input id="name" type="text" value="unnamed"></p>
+            <p>Collision Mesh Quality
+                <select id="convex">
+                    <option value=0>Rough (Bounding Box)</option>
+                    <option value=1>Basic (VHACD Low)</option>
+                    <option value=2>Medium (VHACD Mid)</option>
+                    <option value=3>High (VHACD High)</option>
+                </select>
+            </p>
+            <p>Open Synthesis<input id="open-synthesis" type="checkbox" checked></p>
         </div>
-        <button id='finished-button' type='button' onclick='this.innerHTML = "Saving...";setTimeout(exportRobot, 100)'>Export Robot</button>
-        <button type="button" onclick="cancel()">Cancel</button>
+        <div class="fusion-footer">
+            <button type="button" onclick="cancel()">Cancel</button>
+            <button id="finished-button" type="button" style="width: 100px;" onclick='this.innerHTML = "Saving...";setTimeout(exportRobot, 100)'>Export Robot</button>
+        </div>
     </body>
 </html>

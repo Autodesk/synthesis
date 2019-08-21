@@ -181,7 +181,7 @@ function doLayout(fieldset)
     const mechanismDiv = getElByClass(fieldset, 'mechanism-options');
     const advancedButton = getElByClass(fieldset, 'edit-sensors-button');
 
-    jointTypeDiv.style.background = jointType === 'none' ? 'rgb(255, 153, 0)' : 'white';
+    jointTypeDiv.style.background = jointType === 'none' ? 'rgb(255, 220, 160)' : 'white';
 
     if (jointType === "none") {
         setVisible(drivetrainDiv, false);

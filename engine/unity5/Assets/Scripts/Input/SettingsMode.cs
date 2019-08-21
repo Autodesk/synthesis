@@ -17,7 +17,6 @@ namespace Synthesis.Input
     {
         //Toggle Switches
         public Dropdown profileDropdown;
-        public GameObject unitConversionSwitch;
 
         public Sprite DefaultButtonImage;
         public Sprite ActiveButtonImage;
@@ -33,7 +32,6 @@ namespace Synthesis.Input
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
 
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
             //Can change the default measurement HERE and also change the default value in the slider game object in main menu
             PlayerPrefs.SetString("Measure", "Metric");
 
@@ -47,10 +45,6 @@ namespace Synthesis.Input
         {
             profileDropdown = Auxiliary.FindObject("ProfileDropdown").GetComponentInChildren<Dropdown>();
             profileDropdown.value = (int)Controls.Players[activePlayerIndex].GetActiveProfileMode();
-
-            //Measurement slider
-            unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-            unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
         }
 
         /// <summary>
@@ -86,8 +80,10 @@ namespace Synthesis.Input
         /// </summary>
         public void OnReset()
         {
-            Controls.Players[activePlayerIndex].ResetActiveProfile();
-            Controls.Global.Reset();
+            if(GameObject.Find("Content").GetComponent<CreateButton>().globalControls)
+                Controls.Global.Reset();
+            else
+                Controls.Players[activePlayerIndex].ResetActiveProfile();
             GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
         }
 
@@ -98,13 +94,12 @@ namespace Synthesis.Input
         {
             if (activeProfileMode != (Profile.Mode)value)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                GameObject.Find("Simulator").GetComponent<MenuUI>().CheckUnsavedControls(() =>
                 {
                     activeProfileMode = (Profile.Mode)value;
 
                     Controls.Players[activePlayerIndex].SetActiveProfileMode(activeProfileMode);
                     Controls.Players[activePlayerIndex].LoadActiveProfile();
-                    Controls.Global.Load();
 
                     GameObject.Find("Content").GetComponent<CreateButton>().CreateButtons();
                 });
@@ -121,7 +116,7 @@ namespace Synthesis.Input
         {
             if (index != activePlayerIndex)
             {
-                GameObject.Find("Simulator").GetComponent<SimUI>().CheckUnsavedControls(() =>
+                GameObject.Find("Simulator").GetComponent<MenuUI>().CheckUnsavedControls(() =>
                 {
                     activePlayerIndex = index;
                     UpdateProfileSelection();

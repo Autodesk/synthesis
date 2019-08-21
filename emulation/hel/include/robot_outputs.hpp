@@ -15,6 +15,7 @@
 #include "robot_output_service.hpp"
 
 namespace hel {
+
 /**
  * \brief Container for all the data to send to the Synthesis engine
  * Contains functions to interpret RoboRIO data and prepare it for transmission
@@ -73,6 +74,10 @@ struct RobotOutputs {
 
     std::map<uint32_t, std::shared_ptr<CANMotorControllerBase>> can_motor_controllers;
 
+	/**
+	 * \brief The cached robot outputs state for transmission
+	 */
+
 	EmulationService::RobotOutputs output;
 
    public:
@@ -111,7 +116,20 @@ struct RobotOutputs {
 
 	std::string toString() const;
 
+	/**
+	 * \brief Update the gRPC robot outputs state for transmission
+	 *
+	 * Only update core outputs
+	 */
+	
 	EmulationService::RobotOutputs syncShallow();
+	
+	/**
+	 * \brief Update the gRPC robot outputs state for transmission
+	 *
+	 * Update all outputs
+	 */
+	
 	EmulationService::RobotOutputs syncDeep();
 
 	/**

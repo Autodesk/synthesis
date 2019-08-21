@@ -42,6 +42,10 @@ namespace hel{
 
         static constexpr uint16_t MAX_PULSE_LENGTH = 1600;
 
+		/**
+		 * \brief Configuration options for the digital headers
+		 */
+
 		enum class HeaderConfig{
 			DI,
 			DO
@@ -95,6 +99,10 @@ namespace hel{
          */
 
         BoundsCheckedArray<uint8_t, NUM_DIGITAL_PWM_OUTPUTS> pwm;
+        
+		/**
+         * \brief Configurations for the digital MXP ports
+         */
 
         BoundsCheckedArray<MXPData::Config, NUM_DIGITAL_MXP_CHANNELS> mxp_configurations;
 
@@ -220,7 +228,17 @@ namespace hel{
 
         void setInputs(nFPGA::nRoboRIO_FPGANamespace::tDIO::tDI)noexcept;
 
+        /**
+         * \brief Fetch the digital MXP port configuration
+         * \param index The index of the digital MXP port
+         */
+		
 		MXPData::Config getMXPConfig(const unsigned)const;
+        
+		/**
+         * \brief Update the digital MXP port configuration
+         * \param index The index of the digital MXP port
+         */
 
 		void setMXPConfig(const unsigned);
 
@@ -288,6 +306,12 @@ namespace hel{
      */
 
     std::string asString(DigitalSystem::DIOConfigurationException::Config);
+    
+	/**
+     * \brief Format the digital system header configuration as a string
+     * \param config The configuration to convert
+     * \return The configuration in string form
+     */
 
 	std::string asString(DigitalSystem::HeaderConfig);
 }
