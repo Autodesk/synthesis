@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Synthesis
 {
+    /// <summary>
+    /// Manager class for the gRPC connection to HEL running in the user program
+    /// 
+    /// It's lifetime is connected to a game object
+    /// </summary>
     public class EmulatorNetworkConnection : MonoBehaviour
     {
         public static EmulatorNetworkConnection Instance { get; private set; }
@@ -23,38 +28,14 @@ namespace Synthesis
 
         private bool isConnectionOpen = false;
 
-        /*
-        private int? TIMEOUT = null;
-        private uint? RETRIES = 5;
-
-        private Channel<IMessage> inputCommander, inputListener;
-        private Channel<IMessage> outputCommander, outputListener;
-
-        private SenderTask sender;
-        private ReceiverTask receiver;
-
-        private System.Threading.Thread senderThread, receiverThread;
-        */
-
         public void Awake()
         {
             Instance = this;
-
-            /*
-            (inputCommander, inputListener) = Channel<IMessage>.CreateOneshot<IMessage>();
-            (outputCommander, outputListener) = Channel<IMessage>.CreateOneshot<IMessage>();
-
-            sender = new SenderTask(inputCommander, inputListener, Ip, Port, TIMEOUT, RETRIES);
-            senderThread = ManagedTaskRunner.Create(sender);
-
-            receiver = new ReceiverTask(outputCommander, outputListener, Ip, Port, TIMEOUT, RETRIES);
-            receiverThread = ManagedTaskRunner.Create(receiver);
-            
-            senderThread.Start();
-            receiverThread.Start();
-            */
         }
 
+        /// <summary>
+        /// Attempt to open the connection to HEL
+        /// </summary>
         public void OpenConnection()
         {
             isConnectionOpen = true;
@@ -68,6 +49,9 @@ namespace Synthesis
             }
         }
 
+        /// <summary>
+        /// Send robot input data to HEL
+        /// </summary>
         private async void SendData()
         {
             var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
@@ -83,10 +67,10 @@ namespace Synthesis
                             {
                                 Api = API_VERSION,
                                 TargetPlatform = EmulatorManager.programType == UserProgram.Type.JAVA ? TargetPlatform.Java : TargetPlatform.Native,
-                                InputData = InputManager.Instance,
+                                InputData = EmulatedRoboRIO.RobotInputs,
                             });
                             senderConnected = true;
-                            // Debug.Log("Sending " + InputManager.Instance);
+                            // Debug.Log("Sending " + EmulatedRoboRIO.RobotInputs);
                             await Task.Delay(LOOP_DELAY); // ms
                         }
                     }
@@ -105,7 +89,10 @@ namespace Synthesis
             isConnectionOpen = false;
         }
 
-        private async Task ReceiveData()
+        /// <summary>
+        /// Receive robot output data from HEL
+        /// </summary>
+        private async void ReceiveData()
         {
             var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
@@ -121,8 +108,8 @@ namespace Synthesis
                         while (await call.ResponseStream.MoveNext())
                         {
                             receiverConnected = true;
-                            OutputManager.Instance = call.ResponseStream.Current.OutputData;
-                            // Debug.Log("Received " + OutputManager.Instance);
+                            EmulatedRoboRIO.RobotOutputs = call.ResponseStream.Current.OutputData;
+                            // Debug.Log("Received " + EmulatedRoboRIO.RobotOutputs);
                         }
                     }
                 }
@@ -136,6 +123,10 @@ namespace Synthesis
             isConnectionOpen = false;
         }
 
+        /// <summary>
+        /// Check if the current connection attempt is still running
+        /// </summary>
+        /// <returns>True if they're running</returns>
         public bool IsConnectionOpen()
         {
             return isConnectionOpen;
@@ -143,27 +134,16 @@ namespace Synthesis
 
         public void OnApplicationQuit()
         {
-            // inputCommander.Send(new StandardMessage.ExitMessage());
-            // outputCommander.Send(new StandardMessage.ExitMessage());
             EmulatorManager.KillEmulator();
         }
 
+        /// <summary>
+        /// Check if both the sender and reciever connections are good
+        /// </summary>
+        /// <returns>True if they're both connected</returns>
         public bool IsConnected()
         {
             return senderConnected && receiverConnected;
-            //return sender.IsConnected() && receiver.IsConnected();
         }
-
-        /*
-        public void SendOutputMessage(IMessage message)
-        {
-            outputCommander.Send(message);
-        }
-
-        public void SendInputMessage(IMessage message)
-        {
-            inputCommander.Send(message);
-        }
-        */
     }
 }

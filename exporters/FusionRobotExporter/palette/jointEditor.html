@@ -1,21 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="css/synthesisExporter.css" rel="stylesheet" type="text/css">
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
         <script src="js/fusionInterface.js"></script>
         <script src="js/utility.js"></script>
+        <script src="js/links.js"></script>
         <style>
-            #joint-config-template
-            {
-            }
-            #basic-info
-            {
-                padding-left: 0rem;
-                padding-right: 0rem;
-            }
-            #basic-info
-            {
-                padding-right: 0rem;
+            input[type=checkbox], input[type=text], input[type=number], select {
+                position: relative;
+                left: 0px;
             }
             .joint-config
             {
@@ -28,15 +21,6 @@
                 right: 2.5rem;
                 width: auto;
             }
-            .wheel-side
-            {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-                margin-top: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
-            
             .joint-config-image {
                 float: left;
                 height: 90px;
@@ -48,37 +32,42 @@
             .drivetrain-options, .mechanism-options {
                 display: none;
             }
-            .control-panel-container {
-                position: sticky;
-                bottom: 0;
-                padding: 10px;
-                background-color: rgb(242, 242, 242);
-            }
             .driver-div option {
                 background: white;
+            }
+            fieldset
+            {
+                margin: 6px 0 12px 0;
+            }
+            .fusion-content {
+                overflow: auto;
+            }
+
+            .fusion-content input, .fusion-content select {
+                padding: 0;
             }
         </style>
     </head>
     <body>
         <script src="js/jointEditor.js"></script>
-        <div id="export-settings">
-            <p id="nodata" style="display: block;">There were no joints found on your robot. To create a new joint, change to the "Model" workspace in the top left corner, and click "Joint" under "Assemble". You can also view our YouTube tutorial on how to add joints here: https://youtu.be/_YCP-cWn1Gc</p>
+        <div class="fusion-content" id="export-settings">
+            <p id="nodata" style="font-size: 15px;">There were no joints found on your robot. To create a new joint, change to the "Design" workspace in the top left corner, and click "Joint" under "Assemble". You can also view our YouTube tutorial on how to add joints <a href="#" onclick="openLink('https://youtu.be/_YCP-cWn1Gc')">here.</a></p>
 
             <fieldset id="joint-config-template" class="joint-config">
                 <legend class="joint-config-legend">Joint</legend>
-                <button class="edit-sensors-button" onclick="editSensors(this.parentNode)">Advanced...</button>
+                <button id="advanced-button" class="edit-sensors-button" onclick="editSensors(this.parentNode)" style="margin-top: -4px;">Advanced...</button>
                 <img class="joint-config-image">
                 <div class="driver-div">
-                    <span class="field-label">Joint Type: </span>
+                    <span class="field-label">Joint Type</span>
                     <span class="field-select">
                         <select class="joint-type" onchange="doLayout(this)">
-                            <option value="none" style="background: rgb(255, 153, 0)">(Select an Option)</option>
+                            <option value="none" style="background: rgb(255, 220, 160)">(Select an Option)</option>
                             <option value="drivetrain">Drivetrain Wheel</option>
                             <option value="mechanism">Mechanism Joint</option>
                         </select>
                     </span>
                     <div class="drivetrain-options">
-                        <span class="field-label">Side: </span>
+                        <span class="field-label">Side</span>
                         <span class="field-select">
                         <select class="dt-side" onchange="doLayout(this)">
                             <option value="0">Right</option>
@@ -86,7 +75,7 @@
                             <option value="2">H-Drive Center</option>
                         </select>
                         </span>
-                        <span class="field-label">Wheel Type: </span>
+                        <span class="field-label">Wheel Type</span>
                         <span class="field-select" style="margin-bottom: 0px;">
                         <select class="wheel-type" onchange="doLayout(this)">
                             <option value="1">Normal</option>
@@ -96,11 +85,11 @@
                         </span>
                     </div>
                     <div class="mechanism-options">
-                        <span class="field-label">Weight (lbs):</span>
+                        <span class="field-label">Weight (lbs)</span>
                         <span class="field-select" style="padding-right: 2px">
                             <input class="weight" type="number" min="0" max="9999">
                         </span>
-                        <span class="field-label">Driver Type: </span>
+                        <span class="field-label">Driver Type</span>
                         <span class="field-select" style="margin-bottom: 0px;">
                         <select class="driver-type" onchange="doLayout(this)">
                             <option value="1" class="angular-driver">Motor</option>
@@ -116,9 +105,9 @@
                 </div>
             </fieldset>
         </div>
-        <div class="control-panel-container">
-            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
+        <div class="fusion-footer control-panel-container">
             <button type="button" onclick="cancel()">Cancel</button>
+            <button id="save-button" type="button" style="margin-bottom: 5px;" onclick='this.innerHTML = "Saving...";setTimeout(sendInfoToFusion, 100)'>OK</button>
         </div>
         <script>
             var jointTemplate = document.getElementById('joint-config-template').cloneNode(true);

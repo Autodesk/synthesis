@@ -10,6 +10,7 @@ public class AnalyticsManager : MonoBehaviour {
 
     public static AnalyticsManager GlobalInstance { get; set; }
 
+    public UInt16 GUID { get; private set; }
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
     public const string URL_BATCH = "https://www.google-analytics.com/batch";
     public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
@@ -27,6 +28,8 @@ public class AnalyticsManager : MonoBehaviour {
 
     public void Awake()
     {
+        GUID = (UInt16)UnityEngine.Random.Range(UInt16.MinValue, UInt16.MaxValue);
+
         mutex = new Mutex();
         GlobalInstance = this;
         LastDump = Time.time;
@@ -106,7 +109,7 @@ public class AnalyticsManager : MonoBehaviour {
     {
         loggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
         loggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
-        loggedData.Enqueue(new KeyValuePair<string, string>("cid", "555"));
+        loggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID.ToString()));
     }
 
     private Task LogEvent(string Catagory, string Action, string Label, string Value)
@@ -195,7 +198,6 @@ public class AnalyticsManager : MonoBehaviour {
             while (loggedCopy.Count > 0)
             {
                 KeyValuePair<string, string> pair = loggedCopy.Dequeue();
-                //Debug.Log(pair.Key + " " + pair.Value);
                 if (pair.Key != null)
                 {
                     if (pair.Key.Equals("NEW"))
@@ -233,8 +235,6 @@ public class AnalyticsManager : MonoBehaviour {
                     result = _client.UploadString(URL_COLLECT, "POST", data);
                 }
             }
-
-            Debug.Log(result);
         });
     }
 

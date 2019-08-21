@@ -186,7 +186,6 @@ namespace Synthesis.GUI
             LinkTab<SelectionState>("SelectionPanel");
             LinkTab<DefaultSimulatorState>("DefaultSimulator");
             LinkTab<MixAndMatchState>("MixAndMatchMode");
-            LinkTab<LoadReplayState>("SimLoadReplay");
             LinkTab<LoadRobotState>("SimLoadRobot");
             LinkTab<LoadFieldState>("SimLoadField");
         }

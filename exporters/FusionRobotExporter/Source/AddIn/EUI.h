@@ -47,6 +47,8 @@ namespace SynthesisAddIn
 		void enableEditorButtons();
 		void closeAllPalettes();
 
+		void showFirstLaunchNotification();
+
 		void openDriveTypePalette();
 		void closeDriveTypePalette();
 
@@ -64,9 +66,9 @@ namespace SynthesisAddIn
 		void closeSensorsPalette(std::string sensorsToSave = "");
 
 		void openGuidePalette(); ///< Loads and opens the robot exporter guide palette.
-		void closeGuidePalette(); ///< Loads and opens the robot export guide palette.
+		void closeGuidePalette(bool manualClose); ///< Loads and opens the robot export guide palette.
 
-		void openSettingsPalette(bool guideEnabled);
+		void openSettingsPalette();
 		void closeSettingsPalette(std::string guideEnabled);
 
 		// void toggleKeyPalette();
@@ -105,7 +107,7 @@ namespace SynthesisAddIn
 		void focusWholeModel(bool transition, double zoom, Ptr<Camera> ogCam);
 
 		// bool dofViewEnabled = false;
-		bool guideEnabled = false;
+		bool imagesGenerated = false;
 
 		Ptr<Application> getApp() { return app; }
 
@@ -145,6 +147,8 @@ namespace SynthesisAddIn
 		// Pointers to each handlers are kept for removal and deletion
 		// when the exporter add-in is deactivated.
 
+		DocumentOpenedHandler * documentOpenedHandler = nullptr;
+
 		WorkspaceActivatedHandler * workspaceActivatedHandler = nullptr;
 		WorkspaceDeactivatedHandler * workspaceDeactivatedHandler = nullptr;
 
@@ -177,6 +181,7 @@ namespace SynthesisAddIn
 		// ReceiveFormDataHandler* keyCloseFormDataEventHandler = nullptr;
 		ReceiveFormDataHandler* settingsReceiveFormDataHandler = nullptr;
 		ReceiveFormDataHandler* finishPaletteReceiveFormDataHandler = nullptr;
+		int HEADER_HEIGHT = 25;
 
 		template<typename E, typename T>
 		bool addHandler(Ptr<T> el, E* a);

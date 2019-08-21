@@ -13,7 +13,6 @@ namespace SynthesisAddIn {
 		static bool enabled;
 		static std::string clientId;
 		static void LoadSettings();
-		static void SaveSettings();
 		static void Post(utility::string_t queryString);
 		static web::uri_builder GetBaseURL();
 		static void AppendEvent(web::uri_builder* url, utility::string_t ec, utility::string_t ea, utility::string_t el);
@@ -42,6 +41,9 @@ namespace SynthesisAddIn {
 			return generate_hex(4) + "-" + generate_hex(2) + "-" + generate_hex(2) + "-" + generate_hex(2) + "-" + generate_hex(6);
 		}
 	public:
+		static bool guideEnabled;
+		static bool firstLaunchNotification;
+		static void SaveSettings();
 		static void StartSession(adsk::core::Ptr<adsk::core::Application> app);
 		static void EndSession();
 		static void LogPage(utility::string_t page);

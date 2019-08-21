@@ -1,12 +1,4 @@
-/*
-WEIGHT PACKET:
-{
-    value: number,
-    unit: 0?1 (0 = METRIC, 1 = IMPERAIL)
-}
-
-*/
-// Handles the receiving of data from Fusion
+// weight unit: 0 = METRIC, 1 = IMPERIAL
 window.fusionJavaScriptHandler =
     {
         handle: function (action, data)
@@ -38,11 +30,10 @@ window.fusionJavaScriptHandler =
         }
     };
 
-// Populates the form with sensors
 function applyConfigData(dt_weight)
 {
-    let dtWeight = document.getElementById("dt-weight-value");
-    let weightUnit = document.getElementById("dt-weight-unit");
+    let dtWeight = document.getElementById("weight-value");
+    let weightUnit = document.getElementById("weight-unit");
     dtWeight.value = 0;
     if (dt_weight.weight !== undefined) {
         dtWeight.value = dt_weight.weight;
@@ -57,9 +48,9 @@ function applyConfigData(dt_weight)
 function readConfigData()
 {
     let data = {"weight": {}};
-    data.weight = parseFloat(document.getElementById("dt-weight-value").value);
+    data.weight = parseFloat(document.getElementById("weight-value").value);
 
-    if (document.getElementById("dt-weight-unit").value === "kgs") {
+    if (document.getElementById("weight-unit").value === "kgs") {
         data.weight /= 0.453592;
     }
     return data;

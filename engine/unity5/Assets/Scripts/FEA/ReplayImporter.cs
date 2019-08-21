@@ -33,7 +33,7 @@ namespace Synthesis.FEA
             contacts = new List<List<KeyValuePair<ContactDescriptor, int>>>();
 
             using (XmlReader reader = XmlReader.Create(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + fileName + ".replay"))
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Autodesk\Synthesis\Replays\" + fileName)) 
             {
                 foreach (string name in AllElements(reader))
                 {

@@ -137,7 +137,6 @@ namespace Synthesis.GUI
             usingRuler = true;
             rulerStartPoint.SetActive(true);
             Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(false);
-            Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(true);
         }
 
         /// <summary>
@@ -180,7 +179,7 @@ namespace Synthesis.GUI
                     rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 }
                 //Display different values based on the measure system it's currently using
-                else if (State.IsMetric)
+                else if (!State.IsMetric)
                 {
                     rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f) / 100 + "ft";
                     rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f) / 100 + "ft";
@@ -213,7 +212,6 @@ namespace Synthesis.GUI
             rulerStartPoint.SetActive(false);
             rulerEndPoint.SetActive(false);
             Auxiliary.FindObject(canvas, "RulerPanelExtension").SetActive(true);
-            Auxiliary.FindObject(canvas, "RulerTooltipText").SetActive(false);
         }
         #endregion
         #region Stopwatch Functions
