@@ -28,21 +28,23 @@ When contributing to this repository, please first discuss the change you wish t
 When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
 
 ## Directory Structure
-
-In order to achieve maximum user satisfaction we can insert all of the code into a single repository and
-then follow up with constant commits while using
-the issue tracker and tags for the major build
-versions, the entire team would transfer to this
-version of git in order to best benefit the
-community. We plan to include all of the current
-repositories into a single repository by making
-sub directories and more specific READMEs to
-direct the users on how to make pull requests
-and fork properly. This would also be configured
-with recursive build files for easy access to the
-built executables. 
-
-Below are some examples I
-made on how to achieve this properly:
-
-![Directory Structure](https://cloud.githubusercontent.com/assets/6741771/16959078/360a5042-4d98-11e6-904b-bf5f636f2430.png)
+```
+synthesis
+|
+├── engine
+|   └── Unity 5 - Unity project for the main Synthesis application
+|
+├── exporters
+|   ├── InventorRobotExporter - Robot exporter add-in for Inventor
+|   ├── FusionRobotExporter - Robot exporter add-in for Fusion 360
+|   └── BxDFieldExporter - Field exporter add-in for Inventor
+|
+├── emulation
+|   ├── hel - Hardware Emulation Layer
+|   └── bridge - Emulation Bridge
+|
+└── installer - Synthesis installer
+    ├── Linux - Synthesis Linux installer
+    ├── OSX - Synthesis MacOS installer
+    └── Windows - Synthesis Windows installer
+```
