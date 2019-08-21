@@ -559,6 +559,7 @@ void EUI::deleteSensorsPalette()
 
 void EUI::openSensorsPalette(std::string sensors)
 {
+	disableEditorButtons();
 	static std::thread * uiThread = nullptr;
 	if (uiThread != nullptr) { uiThread->join(); delete uiThread; }
 
