@@ -28,7 +28,12 @@ public class AnalyticsManager : MonoBehaviour {
 
     public void Awake()
     {
-        GUID = (UInt16)UnityEngine.Random.Range(UInt16.MinValue, UInt16.MaxValue);
+        //GUID = (ushort)PlayerPrefs.GetInt("AnalyticsGUID");
+        //if (GUID == 0)
+        //{
+            GUID = (UInt16)UnityEngine.Random.Range(UInt16.MinValue, UInt16.MaxValue);
+            //PlayerPrefs.SetInt("AnalyticsGUID", GUID);
+        //}
 
         mutex = new Mutex();
         GlobalInstance = this;
@@ -217,30 +222,33 @@ public class AnalyticsManager : MonoBehaviour {
 
             }
 
-            if (client == null)
+            if (!Application.isEditor)
             {
-                client = new WebClient();
-            }
-
-            string result;
-
-            try
-            {
-                using (var _client = new WebClient())
+                if (client == null)
                 {
-                    if (batchSend)
+                    client = new WebClient();
+                }
+
+                string result;
+
+                try
+                {
+                    using (var _client = new WebClient())
                     {
-                        result = _client.UploadString(URL_BATCH, "POST", data);
-                    }
-                    else
-                    {
-                        result = _client.UploadString(URL_COLLECT, "POST", data);
+                        if (batchSend)
+                        {
+                            result = _client.UploadString(URL_BATCH, "POST", data);
+                        }
+                        else
+                        {
+                            result = _client.UploadString(URL_COLLECT, "POST", data);
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.ToString());
+                catch (Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
             }
         });
     }
