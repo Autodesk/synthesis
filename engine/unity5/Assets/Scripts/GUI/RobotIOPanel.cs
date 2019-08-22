@@ -312,6 +312,7 @@ namespace Synthesis.GUI
             private static RectTransform scrollContent = null;
             private static ScrollRect scrollRect = null;
 
+            private static bool printStreamOpen = false;
             private static StreamReader remoteReader = null;
             private static string newPrintBuffer = "";
             private static Queue<string> newPrintQueue = new Queue<string>();
@@ -328,9 +329,9 @@ namespace Synthesis.GUI
             /// </summary>
             public static void Update()
             {
-                if (EmulatorManager.IsTryingToRunRobotCode() && remoteReader == null) // Start stream if needed
+                if (EmulatorManager.IsTryingToRunRobotCode() && !EmulatorManager.IsRobotCodeRestarting() && !printStreamOpen) // Start stream if needed
                 {
-                    Task.Run(OpenPrintStream);
+                    Task.Factory.StartNew(OpenPrintStream, TaskCreationOptions.LongRunning);
                 }
                 while (newPrintQueue.Count > 0)
                 {
@@ -394,11 +395,12 @@ namespace Synthesis.GUI
             /// </summary>
             private static void OpenPrintStream()
             {
+                printStreamOpen = true;
                 if (remoteReader == null)
                 {
                     remoteReader = EmulatorManager.CreateRobotOutputStream();
                 }
-                while (EmulatorManager.IsTryingToRunRobotCode() && EmulatorManager.IsRobotOutputStreamGood() && Instance)
+                while (remoteReader != null && EmulatorManager.IsTryingToRunRobotCode() && !EmulatorManager.IsRobotCodeRestarting() && EmulatorManager.IsRobotOutputStreamGood() && Instance && RobotIOPanel.Instance.enablePrints)
                 {
                     try
                     {
@@ -424,12 +426,16 @@ namespace Synthesis.GUI
                         break;
                     }
                 }
-                remoteReader.Dispose();
-                remoteReader = null;
-                if (EmulatorManager.IsRobotOutputStreamGood())
+                if (remoteReader != null)
                 {
-                    EmulatorManager.CloseRobotOutputStream();
+                    remoteReader.Dispose();
+                    remoteReader = null;
+                    if (EmulatorManager.IsRobotOutputStreamGood())
+                    {
+                        EmulatorManager.CloseRobotOutputStream();
+                    }
                 }
+                printStreamOpen = false;
             }
 
             public static void Clear()
@@ -475,7 +481,6 @@ namespace Synthesis.GUI
         public Sprite UnselectedButtonImage;
         private bool autoScroll = true;
         public bool enablePrints = true;
-
 
         public void Awake()
         {
@@ -535,7 +540,7 @@ namespace Synthesis.GUI
             {
                 DynamicCamera.ControlEnabled = true;
             }
-            if (enablePrints && EmulatorManager.IsTryingToRunRobotCode()) // Update robot prints
+            if (enablePrints && EmulatorManager.IsTryingToRunRobotCode() && !EmulatorManager.IsRobotCodeRestarting()) // Update robot prints
             {
                 RobotPrintManager.Update();
             }

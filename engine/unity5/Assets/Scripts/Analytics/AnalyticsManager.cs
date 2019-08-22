@@ -224,16 +224,23 @@ public class AnalyticsManager : MonoBehaviour {
 
             string result;
 
-            using (var _client = new WebClient())
+            try
             {
-                if (batchSend)
+                using (var _client = new WebClient())
                 {
-                    result = _client.UploadString(URL_BATCH, "POST", data);
+                    if (batchSend)
+                    {
+                        result = _client.UploadString(URL_BATCH, "POST", data);
+                    }
+                    else
+                    {
+                        result = _client.UploadString(URL_COLLECT, "POST", data);
+                    }
                 }
-                else
-                {
-                    result = _client.UploadString(URL_COLLECT, "POST", data);
-                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.ToString());
             }
         });
     }

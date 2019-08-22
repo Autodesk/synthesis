@@ -38,14 +38,15 @@ namespace Synthesis
         /// </summary>
         public void OpenConnection()
         {
-            isConnectionOpen = true;
-            if (!senderConnected)
+            if(senderConnected != receiverConnected)
             {
-                Task.Run(SendData);
+                isConnectionOpen = false; // Kill both threads so we can restart them
             }
-            if (!receiverConnected)
+            if (!senderConnected && !receiverConnected)
             {
-                Task.Run(ReceiveData);
+                isConnectionOpen = true;
+                Task.Factory.StartNew(SendData, TaskCreationOptions.LongRunning);
+                Task.Factory.StartNew(ReceiveData, TaskCreationOptions.LongRunning);
             }
         }
 
@@ -56,13 +57,14 @@ namespace Synthesis
         {
             var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationWriter.EmulationWriterClient(conn);
-            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance && isConnectionOpen) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
                     using (var call = client.RobotInputs())
                     {
-                        while(EmulatorManager.IsTryingToRunRobotCode() && Instance){
+                        while(EmulatorManager.IsTryingToRunRobotCode() && Instance && isConnectionOpen)
+                        {
                             await call.RequestStream.WriteAsync(new UpdateRobotInputsRequest
                             {
                                 Api = API_VERSION,
@@ -96,7 +98,7 @@ namespace Synthesis
         {
             var conn = new Grpc.Core.Channel(EmulatorManager.DEFAULT_HOST + ":" + ((EmulatorManager.programType == UserProgram.Type.JAVA) ? DEFAULT_JAVA_PORT : DEFAULT_NATIVE_PORT), Grpc.Core.ChannelCredentials.Insecure);
             var client = new EmulationReader.EmulationReaderClient(conn);
-            while (EmulatorManager.IsTryingToRunRobotCode() && Instance) // Run while robot code is running or until the object stops existing
+            while (EmulatorManager.IsTryingToRunRobotCode() && Instance && isConnectionOpen) // Run while robot code is running or until the object stops existing
             {
                 try
                 {
