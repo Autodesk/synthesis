@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace Synthesis
 {
@@ -13,7 +15,8 @@ namespace Synthesis
         public enum Type
         {
             JAVA,
-            CPP
+            CPP,
+            INVALID
         }
 
         const string JAR_EXTENSION = ".jar";
@@ -23,6 +26,8 @@ namespace Synthesis
         public string TargetFileName { get; private set; }
         public Type ProgramType { get; private set; }
 
+        public long Size { get; private set; } // Bytes
+
         /// <summary>
         /// Instantiate a new user program
         /// </summary>
@@ -31,18 +36,51 @@ namespace Synthesis
         {
             FullFileName = name;
 
-            string fileName = FullFileName.Substring(FullFileName.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+            // string fileName = FullFileName.Substring(FullFileName.LastIndexOf(Path.DirectorySeparatorChar) + 1);
 
-            if (fileName.Length >= JAR_EXTENSION.Length && fileName.EndsWith(JAR_EXTENSION))
+            Size = (new FileInfo(FullFileName)).Length;
+
+            try
             {
-                TargetFileName = DEFAULT_TARGET + JAR_EXTENSION;
-                ProgramType = Type.JAVA;
+                // Test if the file is a zip file with a manifest entry (i.e. it's a jar file)
+                using (ZipFile archive = new ZipFile(new FileStream(FullFileName, FileMode.Open, FileAccess.Read)))
+                {
+                    if (archive.GetEntry("META-INF/MANIFEST.MF") != null)
+                    {
+                        TargetFileName = DEFAULT_TARGET + JAR_EXTENSION;
+                        ProgramType = Type.JAVA;
+                        return;
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
-                TargetFileName = DEFAULT_TARGET;
-                ProgramType = Type.CPP;
+                // Not Java
             }
+            try
+            {
+                // Parse the file header to determine that it's both ELF (begins with "\x7F ELF") and ARM (machine type byte = 0x28)
+                byte[] buffer = new byte[20];
+                using (FileStream fs = new FileStream(FullFileName, FileMode.Open, FileAccess.Read))
+                {
+                    fs.Read(buffer, 0, buffer.Length);
+                    fs.Close();
+                }
+                var data = System.Text.Encoding.UTF8.GetString(buffer);
+
+                if (data.Substring(0, 4) == ("\x7f" + "ELF") && buffer[18] == 0x28)
+                {
+                    TargetFileName = DEFAULT_TARGET;
+                    ProgramType = Type.CPP;
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                // Not C++
+            }
+
+            ProgramType = Type.INVALID;
         }
     }
 }
