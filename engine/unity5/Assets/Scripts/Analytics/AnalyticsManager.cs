@@ -10,7 +10,7 @@ public class AnalyticsManager : MonoBehaviour {
 
     public static AnalyticsManager GlobalInstance { get; set; }
 
-    public UInt16 GUID { get; private set; }
+    public string Guid { get; private set; }
     public const string URL_COLLECT = "https://www.google-analytics.com/collect";
     public const string URL_BATCH = "https://www.google-analytics.com/batch";
     public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
@@ -28,7 +28,12 @@ public class AnalyticsManager : MonoBehaviour {
 
     public void Awake()
     {
-        GUID = (UInt16)UnityEngine.Random.Range(UInt16.MinValue, UInt16.MaxValue);
+        Guid = PlayerPrefs.GetString("AnalyticsGUID");
+        if (Guid == "")
+        {
+            Guid = (Application.isEditor ? "editor-" : "") + System.Guid.NewGuid().ToString();
+            PlayerPrefs.SetString("AnalyticsGUID", Guid);
+        }
 
         mutex = new Mutex();
         GlobalInstance = this;
@@ -109,7 +114,7 @@ public class AnalyticsManager : MonoBehaviour {
     {
         loggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
         loggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
-        loggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID.ToString()));
+        loggedData.Enqueue(new KeyValuePair<string, string>("cid", Guid));
     }
 
     private Task LogEvent(string Catagory, string Action, string Label, string Value)
@@ -217,23 +222,31 @@ public class AnalyticsManager : MonoBehaviour {
 
             }
 
-            if (client == null)
+            
+                if (client == null)
+                {
+                    client = new WebClient();
+                }
+
+                string result;
+
+            try
             {
-                client = new WebClient();
+                using (var _client = new WebClient())
+                {
+                    if (batchSend)
+                    {
+                        result = _client.UploadString(URL_BATCH, "POST", data);
+                    }
+                    else
+                    {
+                        result = _client.UploadString(URL_COLLECT, "POST", data);
+                    }
+                }
             }
-
-            string result;
-
-            using (var _client = new WebClient())
+            catch (Exception e)
             {
-                if (batchSend)
-                {
-                    result = _client.UploadString(URL_BATCH, "POST", data);
-                }
-                else
-                {
-                    result = _client.UploadString(URL_COLLECT, "POST", data);
-                }
+                Debug.Log(e.ToString());
             }
         });
     }

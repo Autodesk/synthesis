@@ -44,6 +44,9 @@ namespace Synthesis
         private static readonly string QEMU_ARM = os == OS.Windows ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-arm.exe") : "qemu-system-arm";
         private static readonly string QEMU_X86 = os == OS.Windows ? (QEMU_DIR + Path.DirectorySeparatorChar + "qemu-system-x86_64.exe") : "qemu-system-x86_64";
 
+        public const long MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB // Note: the RoboRIO has 512 MB of nonvolatile memory
+        public const long WARNING_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+
         // SSH Info
         public const string DEFAULT_HOST = "127.0.0.1";
         private const int DEFAULT_SSH_PORT_CPP = 10022;
@@ -52,14 +55,17 @@ namespace Synthesis
         private const string USER = "lvuser";
         private const string PASSWORD = "";
 
+        private const double SSH_COMMAND_TIMEOUT = 30; // seconds
+
         // Commands
         private const string REMOTE_LOG_NAME = "/home/lvuser/logs/log.log";
 
-        private const string STOP_COMMAND = "sudo killall frc_program_runner.sh FRCUserProgram java &> /dev/null;";
+        private const string STOP_COMMAND = "sudo killall frc_program_runner.sh FRCUserProgram java &> /dev/null";
         private const string START_COMMAND = "nohup /home/lvuser/frc_program_runner.sh </dev/null &> /dev/null &";
         private const string CHECK_EXISTS_COMMAND = "[ -f /home/lvuser/FRCUserProgram ] || [ -f /home/lvuser/FRCUserProgram.jar ]";
         private const string CHECK_RUNNER_RUNNING_COMMAND = "pidof frc_program_runner.sh &> /dev/null";
         private const string CHECK_RUNNING_COMMAND = "pidof FRCUserProgram java &> /dev/null";
+        private const string CHECK_LOG_EXISTS_COMMAND = "[ -f " + REMOTE_LOG_NAME  + " ]";
         private const string RECEIVE_PRINTS_COMMAND = "tail -F " + REMOTE_LOG_NAME;
 
         private static SshCommand outputStreamCommand = null;
@@ -81,6 +87,8 @@ namespace Synthesis
         private static bool isRunningRobotCode = false;
         private static bool isRobotCodeRestarting = false;
 
+        private static bool openingOutputStream = false;
+        private static bool closingOutputStream = false;
         private static bool updatingStatus = false;
 
         /// <summary>
@@ -348,9 +356,16 @@ namespace Synthesis
                     lastProgramType = programType;
                     if(client != null)
                     {
-                        client.Disconnect();
-                        client.Dispose();
-                        client = null;
+                        try
+                        {
+                            client.Disconnect();
+                            client.Dispose();
+                            client = null;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.Log(e.ToString());
+                        }
                     }
                 }
                 try
@@ -384,6 +399,7 @@ namespace Synthesis
                         }
                         else
                         {
+                            isTryingToRunRobotCode = false;
                             isRunningRobotCodeRunner = false;
                             isRunningRobotCode = false;
                             Thread.Sleep(1000); // ms
@@ -392,6 +408,7 @@ namespace Synthesis
                     else
                     {
                         frcUserProgramPresent = false;
+                        isTryingToRunRobotCode = false;
                         isRunningRobotCodeRunner = false;
                         isRunningRobotCode = false;
                         Thread.Sleep(3000); // ms
@@ -400,6 +417,7 @@ namespace Synthesis
                 }
                 catch
                 {
+                    isTryingToRunRobotCode = false;
                     frcUserProgramPresent = false;
                     isRunningRobotCodeRunner = false;
                     isRunningRobotCode = false;
@@ -416,7 +434,7 @@ namespace Synthesis
             if (!updatingStatus)
             {
                 updatingStatus = true;
-                Task.Run(StatusUpdater);
+                Task.Factory.StartNew(StatusUpdater, TaskCreationOptions.LongRunning);
             }
         }
 
@@ -445,26 +463,32 @@ namespace Synthesis
                     {
                         await StopRobotCode();
                     }
-                    if (IsRobotOutputStreamGood())
-                    {
-                        await CloseRobotOutputStream();
-                    }
+                    isTryingToRunRobotCode = false;
 
                     programType = userProgram.ProgramType;
                     ClientManager.Connect();
-                    ClientManager.Instance.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar");
+                    ClientManager.Instance.RunCommand("rm -rf FRCUserProgram FRCUserProgram.jar").CommandTimeout = TimeSpan.FromSeconds(SSH_COMMAND_TIMEOUT);
                     frcUserProgramPresent = false;
                     using (ScpClient scpClient = new ScpClient(DEFAULT_HOST, programType == UserProgram.Type.JAVA ? DEFAULT_SSH_PORT_JAVA : DEFAULT_SSH_PORT_CPP, USER, PASSWORD))
                     {
-                        scpClient.Connect();
-                        using (Stream localFile = File.OpenRead(userProgram.FullFileName))
+                        try
                         {
-                            scpClient.Upload(localFile, "/home/lvuser/" + userProgram.TargetFileName);
-                            frcUserProgramPresent = true;
+                            scpClient.Connect();
+                            using (Stream localFile = File.OpenRead(userProgram.FullFileName))
+                            {
+                                scpClient.ConnectionInfo.Timeout = TimeSpan.FromSeconds((double)userProgram.Size / (1024 * 1024) * 10); // File size in MB * 5 seconds
+                                scpClient.Upload(localFile, "/home/lvuser/" + userProgram.TargetFileName);
+                                frcUserProgramPresent = true;
+                            }
+                            scpClient.Disconnect();
                         }
-                        scpClient.Disconnect();
+                        catch (Exception)
+                        {
+                            scpClient.Disconnect();
+                            throw;
+                        }
                     }
-                    if (UseEmulation && autorun)
+                    if (autorun)
                     {
                         await RestartRobotCode();
                     }
@@ -476,6 +500,7 @@ namespace Synthesis
                 catch (Exception e)
                 {
                     Debug.Log(e.ToString());
+                    isRobotCodeRestarting = false;
                     return false;
                 }
                 return true;
@@ -495,7 +520,7 @@ namespace Synthesis
                     if (isRunningRobotCodeRunner || isRunningRobotCode)
                     {
                         ClientManager.Connect();
-                        ClientManager.Instance.RunCommand(STOP_COMMAND);
+                        ClientManager.Instance.RunCommand(STOP_COMMAND).CommandTimeout = TimeSpan.FromSeconds(SSH_COMMAND_TIMEOUT); ;
                     }
                     isTryingToRunRobotCode = false;
                     isRunningRobotCodeRunner = false;
@@ -526,11 +551,12 @@ namespace Synthesis
                     {
                         isTryingToRunRobotCode = false; // To reset the gRPC connection
                         isRunningRobotCodeRunner = false;
-                        ClientManager.Instance.RunCommand(STOP_COMMAND + "&&" + START_COMMAND);
+                        isRunningRobotCode = false;
+                        ClientManager.Instance.RunCommand(STOP_COMMAND + "; " + START_COMMAND).CommandTimeout = TimeSpan.FromSeconds(SSH_COMMAND_TIMEOUT);
                     }
                     else
                     {
-                        ClientManager.Instance.RunCommand(START_COMMAND);
+                        ClientManager.Instance.RunCommand(START_COMMAND).CommandTimeout = TimeSpan.FromSeconds(SSH_COMMAND_TIMEOUT);
                     }
                     isTryingToRunRobotCode = true;
                     isRunningRobotCodeRunner = true;
@@ -553,7 +579,7 @@ namespace Synthesis
         /// <returns>True if good</returns>
         public static bool IsRobotOutputStreamGood()
         {
-            return outputStreamCommand != null && !outputStreamCommandResult.IsCompleted;
+            return outputStreamCommand != null && outputStreamCommandResult != null && !outputStreamCommandResult.IsCompleted;
         }
 
         /// <summary>
@@ -564,17 +590,20 @@ namespace Synthesis
         {
             return Task.Run(() =>
             {
-                if (outputStreamCommand != null)
+                if (outputStreamCommand != null && !openingOutputStream && !closingOutputStream)
                 {
                     try
                     {
+                        closingOutputStream = true;
                         outputStreamCommand.CancelAsync();
                         outputStreamCommand.Dispose();
                         outputStreamCommand = null;
+                        closingOutputStream = false;
                     }
                     catch (Exception e)
                     {
                         Debug.Log(e.ToString());
+                        closingOutputStream = false;
                         return false;
                     }
                 }
@@ -588,17 +617,28 @@ namespace Synthesis
         /// <returns>A stream reader to read from the robot output stream</returns>
         public static StreamReader CreateRobotOutputStream()
         {
-            if (outputStreamCommand == null) {
+            if (outputStreamCommand == null && !openingOutputStream && !closingOutputStream) {
                 try
                 {
+                    openingOutputStream = true;
                     ClientManager.Connect();
-                    outputStreamCommand = ClientManager.Instance.CreateCommand(RECEIVE_PRINTS_COMMAND);
-                    outputStreamCommandResult = outputStreamCommand.BeginExecute();
+                    if (ClientManager.Instance.RunCommand(CHECK_LOG_EXISTS_COMMAND).ExitStatus == 0)
+                    {
+                        outputStreamCommand = ClientManager.Instance.CreateCommand(RECEIVE_PRINTS_COMMAND);
+                        outputStreamCommand.CommandTimeout = TimeSpan.FromSeconds(SSH_COMMAND_TIMEOUT);
+                        outputStreamCommandResult = outputStreamCommand.BeginExecute();
+                        openingOutputStream = false;
+                    }
+                    else
+                    {
+                        throw new Exception("Remote user program log file not found");
+                    }
                 }
                 catch (Exception e)
                 {
                     Debug.Log(e.ToString());
                     outputStreamCommand = null;
+                    openingOutputStream = false;
                     return null;
                 }
             }
@@ -613,10 +653,15 @@ namespace Synthesis
         {
             return Task.Run(() =>
             {
+                if (ClientManager.Instance.RunCommand(CHECK_LOG_EXISTS_COMMAND).ExitStatus != 0)
+                {
+                    UserMessageManager.Dispatch("No user program log file found to download", EmulationWarnings.WARNING_DURATION);
+                    return false;
+                }
+
                 string folder = SFB.StandaloneFileBrowser.OpenFolderPanel("Log file destination", "C:\\", false);
                 if (folder == null)
                 {
-                    Debug.Log("No folder selected for log file destination");
                     return true;
                 }
                 else
@@ -634,7 +679,7 @@ namespace Synthesis
                     }
                     catch (Exception)
                     {
-                        UserMessageManager.Dispatch("Failed to download log file", EmulationWarnings.WARNING_DURATION);
+                        UserMessageManager.Dispatch("Failed to download user program log file", EmulationWarnings.WARNING_DURATION);
                         return false;
                     }
                 }
