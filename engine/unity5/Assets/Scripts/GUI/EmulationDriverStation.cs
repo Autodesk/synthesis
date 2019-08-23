@@ -168,11 +168,15 @@ namespace Synthesis.GUI
             }
         }
 
-        public void RestartRobotCode()
+        public async void RestartRobotCode()
         {
             if (EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.UserProgramPresent) && EmulationWarnings.CheckRequirement(EmulationWarnings.Requirement.UserProgramNotRestarting))
             {
-                EmulatorManager.RestartRobotCode();
+                bool success = await EmulatorManager.RestartRobotCode();
+                if (!success)
+                {
+                    UserMessageManager.Dispatch("Failed to restart user program", EmulationWarnings.WARNING_DURATION);
+                }
             }
         }
 

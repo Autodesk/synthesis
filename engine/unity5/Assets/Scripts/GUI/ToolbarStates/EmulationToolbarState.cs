@@ -18,7 +18,7 @@ namespace Assets.Scripts.GUI
     {
         public static bool exiting = false;
 
-        bool loaded = false, success = false;
+        bool uploadFinished = false, uploadSuccess = false;
         float lastAdditionalDot = 0;
         int dotCount = 0;
 
@@ -53,16 +53,20 @@ namespace Assets.Scripts.GUI
             if (loadingPanel.activeSelf)
             {
                 Text t = loadingPanel.transform.Find("Text").GetComponent<Text>();
-
-                if (loaded)
+                if (!EmulatorManager.IsVMConnected())
                 {
-                    if (!success)
+                    uploadFinished = true;
+                    uploadSuccess = false;
+                }
+                if (uploadFinished)
+                {
+                    if (!uploadSuccess)
                     {
                         UserMessageManager.Dispatch("Failed to upload new user program", EmulationWarnings.WARNING_DURATION);
                     }
                     t.text = "Loading...";
                     loadingPanel.SetActive(false);
-                    loaded = false;
+                    uploadFinished = false;
                 }
                 else
                 {
@@ -136,16 +140,31 @@ namespace Assets.Scripts.GUI
             else
             {
                 UserProgram userProgram = new UserProgram(selectedFiles[0]);
-                PlayerPrefs.SetString("UserProgramType", userProgram.ProgramType.ToString());
+                if (userProgram.ProgramType == UserProgram.Type.INVALID)
+                {
+                    UserMessageManager.Dispatch("Invalid user program type", EmulationWarnings.WARNING_DURATION);
+                }
+                else if (userProgram.Size > EmulatorManager.MAX_FILE_SIZE)
+                {
+                    UserMessageManager.Dispatch(Math.Round((double)userProgram.Size / (1024 * 1024), 2) + " MB user program is too large (capacity is " + Math.Round((double)EmulatorManager.MAX_FILE_SIZE / (1024 * 1024), 2) + " MB)", EmulationWarnings.WARNING_DURATION);
+                }
+                else
+                {
+                    if (userProgram.Size > EmulatorManager.WARNING_FILE_SIZE)
+                    {
+                        UserMessageManager.Dispatch("Uploading large, " + Math.Round((double)userProgram.Size / (1024 * 1024), 2) + " MB user program. Upload may take a while.", EmulationWarnings.WARNING_DURATION);
+                    }
+                    PlayerPrefs.SetString("UserProgramType", userProgram.ProgramType.ToString());
 
-                AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
-                    AnalyticsLedger.EventAction.CodeType,
-                    userProgram.ProgramType.ToString(),
-                    AnalyticsLedger.getMilliseconds().ToString());
+                    AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.EmulationTab,
+                        AnalyticsLedger.EventAction.CodeType,
+                        userProgram.ProgramType.ToString(),
+                        AnalyticsLedger.getMilliseconds().ToString());
 
-                loadingPanel.SetActive(true);
-                success = await EmulatorManager.SCPFileSender(userProgram);
-                loaded = true;
+                    loadingPanel.SetActive(true);
+                    uploadSuccess = await EmulatorManager.SCPFileSender(userProgram);
+                    uploadFinished = true;
+                }
             }
         }
 
