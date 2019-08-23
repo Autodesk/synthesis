@@ -277,7 +277,7 @@ void EUI::openJointEditorPalette()
 		index++;
 	};
 
-	EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
+	// EUI::resetHighlightAndFocusWholeModel(true, 1.5, ogCam); // clear highlight and move camera to look at whole robot
 
 	uiThread = new std::thread([this](std::string configJSON) // Actually open the palette and send the joint data
 	{
@@ -286,6 +286,8 @@ void EUI::openJointEditorPalette()
 		jointEditorPalette->sendInfoToHTML("joints", configJSON);
 	}, config.toJSONString());
 	Analytics::LogPage(U("Joint Editor"));
+
+	UI->activeSelections()->clear();
 }
 
 
