@@ -1,0 +1,16 @@
+---
+name: Not sure if it's a bug
+about: For when you have a problem but there is no clear single bug
+title: ''
+labels: ''
+assignees: matthew17754
+
+---
+
+**Description**
+What's going on?
+
+**Screenshots**
+If applicable drag them in here
+
+Thank you for submitting this, it will automatically assign one of our developers to help you out.
