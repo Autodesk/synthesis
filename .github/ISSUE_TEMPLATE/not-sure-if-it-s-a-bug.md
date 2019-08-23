@@ -2,7 +2,7 @@
 name: Not sure if it's a bug
 about: For when you have a problem but there is no clear single bug
 title: ''
-labels: ''
+labels: question
 assignees: matthew17754
 
 ---
