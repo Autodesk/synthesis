@@ -21,6 +21,10 @@ InventorRobotExporter is the Autodesk Inventor add-in for exporting robot assemb
 ## Development Documentation
 *  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Inventor-Robot-Exporter)
 
-## Solution Sub-Projects
-- InventorRobotExporter - The Inventor add-in
-- RobotExporterTests - Unit tests for the Inventor add-in
+## File Structure
+```
+InventorRobotExporter
+|
+├── InventorRobotExporter - The Inventor add-in Visual Studio project
+└── RobotExporterTests - Visual Studio project containing unit tests for the Inventor add-in
+```
