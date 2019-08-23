@@ -14,7 +14,7 @@ namespace Synthesis.Utils
         /// <summary>
         /// The version number of this build.
         /// </summary>
-        public const string VersionNumber = "4.3.2.1";
+        public const string VersionNumber = "4.3.1.1";
 
         private static bool errorDefined;
 
