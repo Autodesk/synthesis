@@ -14,6 +14,7 @@ namespace Synthesis.GUI
     public class MenuUI : LinkedMonoBehaviour<MainState>
     {
         private GameObject canvas;
+        private GameObject menuPanel;
         private GameObject menuPanelInner;
 
         // main panels
@@ -29,6 +30,8 @@ namespace Synthesis.GUI
         private UserSettings settings;
         private LoadReplay loadReplay;
         public static MenuUI instance;
+
+        private bool lastActive = false;
 
         // controls
         private Action ProcessControlsCallback; // Function called after user saves or discards changes to controls
@@ -47,8 +50,17 @@ namespace Synthesis.GUI
 
         public void Update()
         {
-            DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf || !globalControlPanel.activeSelf;
-            InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
+            if (menuPanel.activeSelf)
+            {
+                DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf && !globalControlPanel.activeSelf;
+                InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
+            }
+            if(lastActive && !menuPanel.activeSelf)
+            {
+                DynamicCamera.ControlEnabled = true;
+                InputControl.freeze = false;
+            }
+            lastActive = menuPanel.activeSelf;
         }
 
         public void LateUpdate()
@@ -70,7 +82,8 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
-            menuPanelInner = Auxiliary.FindObject(Auxiliary.FindObject(canvas, "MenuPanel"), "Panel");
+            menuPanel = Auxiliary.FindObject(canvas, "MenuPanel");
+            menuPanelInner = Auxiliary.FindObject(menuPanel, "Panel");
 
             robotControlPanel = Auxiliary.FindObject(menuPanelInner, "RobotControlPanel");
             globalControlPanel = Auxiliary.FindObject(menuPanelInner, "GlobalControlPanel");
