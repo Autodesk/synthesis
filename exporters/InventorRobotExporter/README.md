@@ -1,4 +1,4 @@
-# InventorRobotExporter (Visual Studio Solution)
+# InventorRobotExporter
 
 ## Overview
 InventorRobotExporter is the Autodesk Inventor add-in for exporting robot assemblies into Synthesis.
