@@ -243,21 +243,3 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
 
 When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
-
-## Directory Structure
-
-In order to achieve maximum user satisfaction we can insert all of the code into a single repository and
-then follow up with constant commits while using
-the issue tracker and tags for the major build
-versions, the entire team would transfer to this
-version of git in order to best benefit the
-community. We plan to include all of the current
-repositories into a single repository by making
-sub directories and more specific READMEs to
-direct the users on how to make pull requests
-and fork properly. This would also be configured
-with recursive build files for easy access to the
-built executables. 
-
-Below are some examples I
-made on how to achieve this properly:
