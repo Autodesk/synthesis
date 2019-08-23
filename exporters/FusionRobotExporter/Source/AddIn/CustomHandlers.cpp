@@ -30,8 +30,6 @@ void WorkspaceActivatedHandler::notify(const Ptr<WorkspaceEventArgs>& eventArgs)
 			eui->openGuidePalette();
 		else
 			eui->closeGuidePalette(true);
-
-		eui->imagesGenerated = false;
 	}
 }
 
