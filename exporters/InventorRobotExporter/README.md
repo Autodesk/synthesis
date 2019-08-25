@@ -1,20 +1,30 @@
 # InventorRobotExporter
 
-## Road Map
-* Convert XML to JSON
+## Overview
+InventorRobotExporter is the Autodesk Inventor add-in for exporting robot assemblies into Synthesis.
 
-## Requirements
+## Building From Source (Windows)
+
+#### Prerequisites:
 * Git
 * Microsoft Visual Studio 2019
 * Autodesk Inventor 2020
 
-## How to Build
+#### Setup:
 1) Clone the repository by running `git clone --recursive https://github.com/Autodesk/synthesis`
-2) Import the InventorRobotExporter Solution in Visual Studio
-   - File -> Open -> Project/Solution
+2) Import the `InventorRobotExporter.sln` Solution in Visual Studio
+   - `File -> Open -> Project/Solution`
    - Select `... \synthesis\exporters\InventorRobotExporter\InventorRobotExporter.sln`
 3) Select "Any CPU" next to the "Start" button
-4) Build -> Build Solution
+4) `Build -> Build Solution`
 
-## Current Issues
-* TBD
+## Development Documentation
+*  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Inventor-Robot-Exporter)
+
+## File Structure
+```
+InventorRobotExporter
+|
+├── InventorRobotExporter - The Inventor add-in Visual Studio project
+└── RobotExporterTests - Visual Studio project containing unit tests for the Inventor add-in
+```
