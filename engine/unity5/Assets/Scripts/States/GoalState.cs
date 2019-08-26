@@ -92,7 +92,7 @@ namespace Synthesis.States
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
-                    UserMessageManager.Dispatch("New goal location has been set!", 3f);
+                    UserMessageManager.Dispatch("New goal location has been set", 3f);
 
 
                     if (color.Equals("Red"))

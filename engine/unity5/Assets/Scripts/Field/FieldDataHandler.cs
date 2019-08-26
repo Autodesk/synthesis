@@ -31,6 +31,29 @@ namespace Synthesis.Field
             //save function
             field.Save(PlayerPrefs.GetString("simSelectedField") + Path.DirectorySeparatorChar + "field_data.xml");
         }
+
+        private static XElement convertGoals(List<List<GameObject>> goals, string goalsName, int gamepieceIndex)
+        {
+            if (goals.Count() <= 0)
+            {
+                throw new System.ArgumentOutOfRangeException();
+            }
+            return new XElement(goalsName + gamepieceIndex.ToString(), from g in goals[gamepieceIndex]
+                                                                       select new XElement("Goal", new XAttribute("Color", g.GetComponent<Goal>().color),
+                                                                               new XElement("Position",
+                                                                                   new XAttribute("x", g.GetComponent<Goal>().position.x),
+                                                                                   new XAttribute("y", g.GetComponent<Goal>().position.y),
+                                                                                   new XAttribute("z", g.GetComponent<Goal>().position.z)),
+                                                                               new XElement("Scale",
+                                                                               new XAttribute("x", g.GetComponent<Goal>().scale.x),
+                                                                               new XAttribute("y", g.GetComponent<Goal>().scale.y),
+                                                                               new XAttribute("z", g.GetComponent<Goal>().scale.z)),
+                                                                               new XElement("Points", g.GetComponent<Goal>().pointValue),
+                                                                               new XElement("KeepScored", g.GetComponent<Goal>().KeepScored),
+                                                                               new XElement("Description", g.GetComponent<Goal>().description),
+                                                                               new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
+        }
+
         /// <summary>
         /// Get Goal Data as an XElement - Split into Red and Blue Goals
         /// </summary>
@@ -43,37 +66,11 @@ namespace Synthesis.Field
             {
                 if (redGoals.Count() > 0)
                 {
-                    XElement rGoals = new XElement("RedGoals" + i.ToString(), from g in redGoals[i]
-                                                                              select new XElement("Goal", new XAttribute("Color", g.GetComponent<Goal>().color),
-                                                                                     new XElement("Position",
-                                                                                          new XAttribute("x", g.GetComponent<Goal>().position.x),
-                                                                                          new XAttribute("y", g.GetComponent<Goal>().position.y),
-                                                                                          new XAttribute("z", g.GetComponent<Goal>().position.z)),
-                                                                                     new XElement("Scale",
-                                                                                        new XAttribute("x", g.GetComponent<Goal>().scale.x),
-                                                                                        new XAttribute("y", g.GetComponent<Goal>().scale.y),
-                                                                                        new XAttribute("z", g.GetComponent<Goal>().scale.z)),
-                                                                                     new XElement("Points", g.GetComponent<Goal>().pointValue),
-                                                                                     new XElement("Description", g.GetComponent<Goal>().description),
-                                                                                     new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
-                    xRedGoals.Add(rGoals);
+                    xRedGoals.Add(convertGoals(redGoals, "RedGoals", i));
                 }
                 if (blueGoals.Count() > 0)
                 {
-                    XElement bGoals = new XElement("BlueGoals" + i.ToString(), from g in blueGoals[i]
-                                                                               select new XElement("Goal", new XAttribute("Color", g.GetComponent<Goal>().color),
-                                                                                      new XElement("Position",
-                                                                                          new XAttribute("x", g.GetComponent<Goal>().position.x),
-                                                                                          new XAttribute("y", g.GetComponent<Goal>().position.y),
-                                                                                          new XAttribute("z", g.GetComponent<Goal>().position.z)),
-                                                                                      new XElement("Scale",
-                                                                                        new XAttribute("x", g.GetComponent<Goal>().scale.x),
-                                                                                        new XAttribute("y", g.GetComponent<Goal>().scale.y),
-                                                                                        new XAttribute("z", g.GetComponent<Goal>().scale.z)),
-                                                                                      new XElement("Points", g.GetComponent<Goal>().pointValue),
-                                                                                      new XElement("Description", g.GetComponent<Goal>().description),
-                                                                                      new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
-                    xBlueGoals.Add(bGoals);
+                    xBlueGoals.Add(convertGoals(blueGoals, "BlueGoals", i));
                 }
             }
 
@@ -116,8 +113,8 @@ namespace Synthesis.Field
             {
                 file = XDocument.Load(fieldPath + Path.DirectorySeparatorChar + "field_data.xml");
                 gamepieces = getGamepieces();
-                redGoals = getRedGoals();
-                blueGoals = getBlueGoals();
+                redGoals = getGoals("RedGoals");
+                blueGoals = getGoals("BlueGoals");
                 robotSpawn = getRobotSpawn();
                 gamepieceIndex = 0;
             }
@@ -138,12 +135,12 @@ namespace Synthesis.Field
             return pieces;
         }
         /// <summary>
-        /// Gets red goals as list of list of Goal objects from field_data.xml
+        /// Gets goals as list of list of Goal objects from field_data.xml, picking color from argument
         /// </summary>
-        private static List<List<GameObject>> getRedGoals()
+        private static List<List<GameObject>> getGoals(string goalsName)
         {
             List<List<GameObject>> goals = new List<List<GameObject>>();
-            foreach (XElement z in file.Root.Element("Goals").Element("RedGoals").Elements())
+            foreach (XElement z in file.Root.Element("Goals").Element(goalsName).Elements())
             {
                 List<GameObject> temp = new List<GameObject>();
                 foreach (XElement e in z.Elements())
@@ -155,40 +152,7 @@ namespace Synthesis.Field
                     Goal goal = g.AddComponent<Goal>();
                     collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
                     goal.pointValue = int.Parse(e.Element("Points").Value);
-                    goal.position = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value));
-                    rigid.SetPosition(goal.position);
-                    goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
-                    collider.LocalScaling = goal.scale;
-                    goal.gamepieceKeyword = e.Element("Keyword").Value;
-                    goal.description = e.Element("Description").Value;
-                    goal.color = e.Attribute("Color").Value;
-                    temp.Add(g);
-                }
-                goals.Add(temp);
-            }
-            //increases depth of list to number of gamepieces for future goal writing
-            while (goals.Count != gamepieces.Count)
-                goals.Add(new List<GameObject>());
-            return goals;
-        }
-        /// <summary>
-        /// Gets blue goals as list of list of Goal objects from field_data.xml
-        /// </summary>
-        private static List<List<GameObject>> getBlueGoals()
-        {
-            List<List<GameObject>> goals = new List<List<GameObject>>();
-            foreach (XElement z in file.Root.Element("Goals").Element("BlueGoals").Elements())
-            {
-                List<GameObject> temp = new List<GameObject>();
-                foreach (XElement e in z.Elements())
-                {
-                    GameObject g = new GameObject("Gamepiece" + goals.Count().ToString() + "Goal" + temp.Count().ToString());
-                    BBoxShape collider = g.AddComponent<BBoxShape>();
-                    BRigidBody rigid = g.AddComponent<BRigidBody>();
-                    rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
-                    Goal goal = g.AddComponent<Goal>();
-                    collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
-                    goal.pointValue = int.Parse(e.Element("Points").Value);
+                    goal.SetKeepScored(bool.Parse(e.Element("KeepScored").Value));
                     goal.position = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value));
                     rigid.SetPosition(goal.position);
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));

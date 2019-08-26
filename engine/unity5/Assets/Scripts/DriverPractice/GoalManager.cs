@@ -25,6 +25,8 @@ namespace Synthesis.DriverPractice
 
         GameObject scoreboard;
 
+        private GameObject goalParent; // Used for sorting within the scene
+
         Transform goalDisplay;
         
         private List<GameObject> goalElements;
@@ -41,6 +43,14 @@ namespace Synthesis.DriverPractice
 
         string color = "Red";
         int gamepieceIndex = 0;
+
+        public void Awake()
+        {
+            if(goalParent == null)
+            {
+                goalParent = new GameObject("Goals");
+            }
+        }
 
         private void Update()
         {
@@ -114,7 +124,7 @@ namespace Synthesis.DriverPractice
         /// <param name="points">Point value of the goals.</param>
         public void InitializeDisplay()
         {
-            GameObject[] g = color.Equals("Red") ? redGoals[gamepieceIndex].ToArray() : blueGoals[gamepieceIndex].ToArray();
+            GameObject[] goals = color.Equals("Red") ? redGoals[gamepieceIndex].ToArray() : blueGoals[gamepieceIndex].ToArray();
             if (goalDisplay != null)
             {
                 if (goalElements == null)
@@ -126,25 +136,34 @@ namespace Synthesis.DriverPractice
                     goalElements.RemoveAt(0);
                 }
 
-                for (int i = 0; i < g.Length; i++)
+                for (int i = 0; i < goals.Length; i++)
                 {
                     int id = i;
+
+                    var goal = goals[i].GetComponent<Goal>();
 
                     GameObject newGoalElement = Instantiate(goalElementPrefab);
                     newGoalElement.transform.parent = goalDisplay;
                     newGoalElement.name = "Goal" + i.ToString();
                     #region Goal buttons
                     InputField descText = Auxiliary.FindObject(newGoalElement, "DescriptionText").GetComponent<InputField>();
-                    descText.text = g[i].GetComponent<Goal>().description;
+                    descText.text = goal.description;
                     descText.onValueChanged.AddListener(delegate { SetGoalDescription(id, descText.text); });
 
                     descText.onEndEdit.AddListener(delegate { InputControl.freeze = false; });
 
                     InputField pointValue = Auxiliary.FindObject(newGoalElement, "PointValue").GetComponent<InputField>();
-                    pointValue.text = g[i].GetComponent<Goal>().pointValue.ToString();
-                    pointValue.onValueChanged.AddListener(delegate { int value = int.TryParse(pointValue.text, out value) ? int.Parse(pointValue.text) : 0; pointValue.text = value.ToString(); SetGoalPoints(id, value); });
-
+                    pointValue.text = goal.pointValue.ToString();
+                    pointValue.onValueChanged.AddListener(delegate {
+                        int value = int.TryParse(pointValue.text, out value) ? int.Parse(pointValue.text) : 0;
+                        pointValue.text = value.ToString();
+                        SetGoalPoints(id, value);
+                    });
                     pointValue.onEndEdit.AddListener(delegate { InputControl.freeze = false; });
+
+                    Toggle keepScoredToggle = Auxiliary.FindObject(newGoalElement, "KeepScoredToggle").GetComponent<Toggle>();
+                    keepScoredToggle.isOn = goal.KeepScored;
+                    keepScoredToggle.onValueChanged.AddListener((value) => { SetGoalKeepScored(id, value); });
 
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
                     moveButton.onClick.AddListener(delegate { MoveGoal(id); });
@@ -158,7 +177,7 @@ namespace Synthesis.DriverPractice
                     goalElements.Add(newGoalElement);
                 }
             }
-            else Debug.Log("Could not initialize goal display, display not found!");
+            else Debug.Log("Could not initialize goal display, display not found");
         }
         /// <summary>
         /// Create gamepiece tabs based off of number of gamepieces
@@ -226,6 +245,16 @@ namespace Synthesis.DriverPractice
                 blueGoals[gamepieceIndex][id].GetComponent<Goal>().pointValue = points;
             WriteGoals();
         }
+
+        void SetGoalKeepScored(int id, bool value)
+        {
+            if (color.Equals("Red"))
+                redGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            else
+                blueGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            WriteGoals();
+        }
+
         void DeleteGoal(int id)
         {
             if (color.Equals("Red"))
@@ -249,7 +278,20 @@ namespace Synthesis.DriverPractice
         void GetGoals()
         {
             redGoals = FieldDataHandler.redGoals;
+            foreach(var i in redGoals){
+                foreach (var j in i)
+                {
+                    j.transform.SetParent(goalParent.transform);
+                }
+            }
             blueGoals = FieldDataHandler.blueGoals;
+            foreach (var i in blueGoals)
+            {
+                foreach (var j in i)
+                {
+                    j.transform.SetParent(goalParent.transform);
+                }
+            }
         }
         /// <summary>
         /// Change state to move goal state
@@ -270,12 +312,13 @@ namespace Synthesis.DriverPractice
         public void NewGoal()
         {
             int goalIndex = color.Equals("Red") ? redGoals[gamepieceIndex].Count() : blueGoals[gamepieceIndex].Count();
-            GameObject gameobject = new GameObject("Gamepiece" + gamepieceIndex.ToString() + "Goal" + goalIndex.ToString());
+            GameObject goalObject = new GameObject("Gamepiece" + gamepieceIndex.ToString() + "Goal" + goalIndex.ToString());
+            goalObject.transform.SetParent(goalParent.transform);
             //physics stuff
-            BBoxShape collider = gameobject.AddComponent<BBoxShape>();
-            BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
+            BBoxShape collider = goalObject.AddComponent<BBoxShape>();
+            BRigidBody rigid = goalObject.AddComponent<BRigidBody>();
             rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
-            Goal goal = gameobject.AddComponent<Goal>();
+            Goal goal = goalObject.AddComponent<Goal>();
             collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f);
             rigid.SetPosition(new UnityEngine.Vector3(0, 4, 0));
             //goal stuff
@@ -285,9 +328,9 @@ namespace Synthesis.DriverPractice
             goal.description = "New Goal";
             goal.color = color;
             if (color.Equals("Red"))
-                redGoals[gamepieceIndex].Add(gameobject);
+                redGoals[gamepieceIndex].Add(goalObject);
             else
-                blueGoals[gamepieceIndex].Add(gameobject);
+                blueGoals[gamepieceIndex].Add(goalObject);
             InitializeDisplay();
             WriteGoals();
         }
