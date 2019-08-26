@@ -119,7 +119,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (InputControl.GetKeyDown(KeyCode.Escape))
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {
@@ -431,6 +431,7 @@ namespace Synthesis.GUI
             {
                 panel.SetActive(false);
                 changeRobotPanel.SetActive(false);
+                InputControl.EnableSimControls();
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedRobot", directory);
                 PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
@@ -484,13 +485,14 @@ namespace Synthesis.GUI
             if (changeRobotPanel.activeSelf)
             {
                 changeRobotPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
+                InputControl.EnableSimControls();
             }
             else
             {
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
+                InputControl.DisableSimControls();
                 Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
             }
@@ -509,6 +511,7 @@ namespace Synthesis.GUI
             {
                 panel.SetActive(false);
                 changeFieldPanel.SetActive(false);
+                InputControl.EnableSimControls();
                 loadingPanel.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedField", directory);
@@ -545,6 +548,7 @@ namespace Synthesis.GUI
             MainState.timesLoaded = 0;
             
             changeFieldPanel.SetActive(false);
+            InputControl.EnableSimControls();
             loadingPanel.SetActive(true);
             FieldDataHandler.Load("");
 
@@ -566,12 +570,13 @@ namespace Synthesis.GUI
             if (changeFieldPanel.activeSelf)
             {
                 changeFieldPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
+                InputControl.EnableSimControls();
             }
             else
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
+                InputControl.DisableSimControls();
                 Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
                     + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
             }

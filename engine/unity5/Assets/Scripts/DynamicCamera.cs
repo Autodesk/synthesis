@@ -273,28 +273,21 @@ public class DynamicCamera : MonoBehaviour
             {
                 if (InputControl.GetMouseButton(0))
                 {
-                    if (GameObject.Find("ChangeRobotPanel") || GameObject.Find("ChangeFieldPanel"))
-                    {
-                        ControlEnabled = false;
-                    }
-                    else
-                    {
-                        float deltaX = InputControl.GetAxis("Mouse Y") * InputControl.MouseSensitivity * rotationSpeed;
-                        float deltaY =- InputControl.GetAxis("Mouse X") * InputControl.MouseSensitivity * rotationSpeed;
+                    float deltaX = InputControl.GetAxis("Mouse Y") * InputControl.MouseSensitivity * rotationSpeed;
+                    float deltaY = -InputControl.GetAxis("Mouse X") * InputControl.MouseSensitivity * rotationSpeed;
 
-                        const float MAX = 89; // deg
-                        // Negative deltaX is up
-                        if (deltaX < 0 && (rotationVector.x > -MAX) || (deltaX > 0 && rotationVector.x < MAX))
-                        {
-                            rotationVector.x += deltaX;
-                            if (rotationVector.x < -MAX)
-                                rotationVector.x = -MAX;
-                            else if (rotationVector.x > MAX)
-                                rotationVector.x = MAX;
-                        }
-                        rotationVector.y += deltaY;
-                        ControlEnabled = true;
+                    const float MAX = 89; // deg
+                                          // Negative deltaX is up
+                    if (deltaX < 0 && (rotationVector.x > -MAX) || (deltaX > 0 && rotationVector.x < MAX))
+                    {
+                        rotationVector.x += deltaX;
+                        if (rotationVector.x < -MAX)
+                            rotationVector.x = -MAX;
+                        else if (rotationVector.x > MAX)
+                            rotationVector.x = MAX;
                     }
+                    rotationVector.y += deltaY;
+                    ControlEnabled = true;
                 }
 
                 positionVector = Vector3.zero;
