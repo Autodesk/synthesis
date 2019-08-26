@@ -202,10 +202,10 @@ namespace Synthesis.GUI
                 "View - Camera Dropdown",
                 AnalyticsLedger.getMilliseconds().ToString());
 
+            DynamicCamera.ControlEnabled = true;
             switch (mode) {
                 case 0:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
@@ -214,7 +214,6 @@ namespace Synthesis.GUI
                     break;
                 case 1:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
@@ -223,7 +222,6 @@ namespace Synthesis.GUI
                     break;
                 case 2:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
@@ -232,7 +230,6 @@ namespace Synthesis.GUI
                     break;
                 case 3:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
@@ -252,7 +249,7 @@ namespace Synthesis.GUI
             }
             else {
                 EndOtherProcesses();
-                changeFieldPanel.SetActive(true);
+                SimUI.getSimUI().ToggleChangeFieldPanel();
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
                     AnalyticsLedger.EventAction.Changed,
@@ -295,7 +292,8 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the stopwatch window on/off according to its current state
         /// </summary>
-        public void OnStopwatchClicked() {
+        public void OnStopwatchClicked()
+        {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,

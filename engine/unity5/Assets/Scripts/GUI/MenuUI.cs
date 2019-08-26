@@ -52,13 +52,11 @@ namespace Synthesis.GUI
         {
             if (menuPanel.activeSelf)
             {
-                DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf && !globalControlPanel.activeSelf;
-                InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
+                InputControl.DisableSimControls();
             }
             if(lastActive && !menuPanel.activeSelf)
             {
-                DynamicCamera.ControlEnabled = true;
-                InputControl.freeze = false;
+                InputControl.EnableSimControls();
             }
             lastActive = menuPanel.activeSelf;
         }

@@ -158,6 +158,18 @@ namespace Synthesis.Input
 
         #region Synthesis
 
+        public static void DisableSimControls()
+        {
+            freeze = true;
+            DynamicCamera.ControlEnabled = false;
+        }
+
+        public static void EnableSimControls()
+        {
+            freeze = false;
+            DynamicCamera.ControlEnabled = true;
+        }
+
         #region Synthesis Setup Keys
 
         /// <summary>
