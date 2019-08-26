@@ -568,6 +568,20 @@ public class DynamicCamera : MonoBehaviour
     }
 
     /// <summary>
+    /// Convert a CameraState to an int from Dropdown value comparison
+    /// </summary>
+    /// <param name="cameraState"></param>
+    /// <returns>A unique integral value depending on the type of state</returns>
+    public static int StateToInt(CameraState cameraState)
+    {
+        if (cameraState.GetType().Equals(typeof(DriverStationState))) return 0;
+        else if (cameraState.GetType().Equals(typeof(OrbitState))) return 1;
+        else if (cameraState.GetType().Equals(typeof(FreeroamState))) return 2;
+        else if (cameraState.GetType().Equals(typeof(OverviewState))) return 3;
+        throw new Exception("Unhandled CameraState");
+    }
+
+    /// <summary>
     /// Switches the camera mode.
     /// </summary>
     /// <param name="state">State</param>
