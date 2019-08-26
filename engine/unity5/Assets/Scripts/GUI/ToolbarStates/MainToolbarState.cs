@@ -53,6 +53,9 @@ namespace Synthesis.GUI
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
 
+        private Dropdown cameraViewDropdown;
+        private DynamicCamera dynamicCamera;
+
         public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -83,6 +86,9 @@ namespace Synthesis.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
+
+            cameraViewDropdown = Auxiliary.FindObject(canvas, "CameraDropdown").GetComponent<Dropdown>();
+            dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
         }
 
         public override void Update() {
@@ -93,6 +99,12 @@ namespace Synthesis.GUI
                     }
                 }
             }
+            if (DynamicCamera.StateToInt(dynamicCamera.ActiveState) != cameraViewDropdown.value)
+            {
+                cameraViewDropdown.value = DynamicCamera.StateToInt(dynamicCamera.ActiveState);
+                cameraViewDropdown.RefreshShownValue();
+            }
+
         }
 
         /// <summary>
@@ -191,7 +203,7 @@ namespace Synthesis.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
 
             switch (mode) {
-                case 1:
+                case 0:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
                     DynamicCamera.ControlEnabled = true;
 
@@ -200,7 +212,7 @@ namespace Synthesis.GUI
                         "View - Driver Station",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 2:
+                case 1:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
                     DynamicCamera.ControlEnabled = true;
 
@@ -209,7 +221,7 @@ namespace Synthesis.GUI
                         "View - Orbit",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 3:
+                case 2:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
                     DynamicCamera.ControlEnabled = true;
 
@@ -218,7 +230,7 @@ namespace Synthesis.GUI
                         "View - Freeroam",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 4:
+                case 3:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
                     DynamicCamera.ControlEnabled = true;
 

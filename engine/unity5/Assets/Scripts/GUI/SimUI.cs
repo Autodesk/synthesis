@@ -626,32 +626,6 @@ namespace Synthesis.GUI
 
         #endregion
         #region camera button functions
-        /// <summary>
-        /// Toggles between different dynamic camera states
-        /// </summary>
-        /// <param name="mode"></param>
-        public void SwitchCameraView(int mode)
-        {
-            switch (mode)
-            {
-                case 1:
-                    camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 2:
-                    camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 3:
-                    camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 4:
-                    camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-            }
-        }
 
         /// <summary>
         /// Change camera tool tips
