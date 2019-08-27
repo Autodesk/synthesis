@@ -19,6 +19,16 @@ public class SimStart : MonoBehaviour
     {
         StateMachine stateMachine = GetComponent<StateMachine>();
 
+        if (string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")))
+        {
+            PlayerPrefs.SetString("FieldDirectory", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields");
+        }
+
+        if (string.IsNullOrEmpty(PlayerPrefs.GetString("RobotDirectory")))
+        {
+            PlayerPrefs.SetString("RobotDirectory", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots");
+        }
+
         DetermineSelected();
 
         if (stateMachine == null)

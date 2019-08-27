@@ -83,7 +83,7 @@ namespace Synthesis.GUI
 
         private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
 
-        private void Start()
+        private void Awake()
         {
             instance = this;
 
@@ -576,8 +576,7 @@ namespace Synthesis.GUI
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
                 InputControl.DisableSimControls();
-                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
+                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory");
             }
         }
 
@@ -715,7 +714,7 @@ namespace Synthesis.GUI
         private void UpdateSpawnpointWindow()
         {
             // TODO: Replace with resetUI (see PR #450)
-            if (State.ActiveRobot.IsResetting)
+            if (State != null && State.ActiveRobot != null && State.ActiveRobot.IsResetting)
             {
                 resetRobotUI.SetActive(true);
             }

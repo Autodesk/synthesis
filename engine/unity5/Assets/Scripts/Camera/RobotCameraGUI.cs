@@ -63,7 +63,14 @@ namespace Synthesis.Camera
         private void Start()
         {
             FindGUIElements();
-            dynamicCamera = State.DynamicCameraObject.GetComponent<DynamicCamera>();
+            try
+            {
+                dynamicCamera = State.DynamicCameraObject.GetComponent<DynamicCamera>();
+            }
+            catch (System.Exception)
+            {
+                dynamicCamera = null;
+            }
         }
 
         private void Update()
