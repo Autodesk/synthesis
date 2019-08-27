@@ -375,8 +375,6 @@ namespace Synthesis.GUI
             addPanel.SetActive(false);
             pointImpulsePanel.SetActive(false);
 
-            simUI.CancelOrientation();
-            
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();

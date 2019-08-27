@@ -367,7 +367,6 @@ namespace Synthesis.States
                 if (singleMesh.bounds.min.y < lowPoint)
                 {
                     lowPoint = singleMesh.bounds.min.y;
-                    Debug.Log("LowPoint: " + lowPoint);
                 }
             }
 
@@ -402,7 +401,7 @@ namespace Synthesis.States
                 Controls.Save();
 
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
-            Debug.Log(loadResult);
+            // Debug.Log("Field load result: " + loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
         }
@@ -839,22 +838,6 @@ namespace Synthesis.States
         public void ResetRobotOrientation()
         {
             ActiveRobot.ResetRobotOrientation();
-        }
-
-        /// <summary>
-        /// Saves the active robot's current orientation to be used whenever robot is reset
-        /// </summary>
-        public void SaveRobotOrientation()
-        {
-            ActiveRobot.SaveRobotOrientation();
-        }
-
-        /// <summary>
-        /// Cancels the active robot's unsaved orientation changes
-        /// </summary>
-        public void CancelRobotOrientation()
-        {
-            ActiveRobot.CancelRobotOrientation();
         }
         #endregion
 

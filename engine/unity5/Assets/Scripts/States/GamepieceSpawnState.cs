@@ -71,6 +71,15 @@ namespace Synthesis.States
             Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
+
+            SimUI.getSimUI().OpenNavigationTooltip();
+        }
+
+        public override void End()
+        {
+            base.End();
+
+            SimUI.getSimUI().CloseNavigationTooltip();
         }
 
         // Update is called once per frame

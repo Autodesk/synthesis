@@ -300,6 +300,8 @@ namespace Synthesis.Robot
             {
                 UserMessageManager.Dispatch("Please don't reset robot during configuration!", 5f);
             }
+
+            SimUI.getSimUI().OpenNavigationTooltip();
         }
 
         /// <summary>
@@ -379,6 +381,8 @@ namespace Synthesis.Robot
             InputControl.freeze = false;
             canvas.GetComponent<Canvas>().enabled = true;
             resetCanvas.SetActive(false);
+
+            SimUI.getSimUI().CloseNavigationTooltip();
         }
 
         /// <summary>
@@ -459,27 +463,6 @@ namespace Synthesis.Robot
             robotStartOrientation = BulletSharp.Math.Matrix.Identity;
             BeginReset();
             EndReset();
-        }
-
-        /// <summary>
-        /// Saves the robot's current orientation to be used whenever robot is reset
-        /// </summary>
-        public void SaveRobotOrientation()
-        {
-            robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-            robotStartOrientation.ToUnity();
-        }
-
-        /// <summary>
-        /// Cancel current orientation & spawnpoint changes
-        /// </summary>
-        public void CancelRobotOrientation()
-        {
-            if (IsResetting)
-            {
-                BeginReset();
-                EndReset();
-            }
         }
 
         /// <summary>

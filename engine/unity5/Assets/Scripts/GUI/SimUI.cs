@@ -45,7 +45,7 @@ namespace Synthesis.GUI
         GameObject canvas;
         GameObject resetUI;
 
-        GameObject freeroamCameraWindow;
+        GameObject navigationTooltip;
         GameObject overviewCameraWindow;
 
         GameObject changeRobotPanel;
@@ -66,7 +66,7 @@ namespace Synthesis.GUI
         GameObject tabs;
         GameObject emulationTab;
 
-        private bool freeroamWindowClosed = false;
+        private bool navigationTooltipClosed = false;
         private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
 
@@ -171,7 +171,7 @@ namespace Synthesis.GUI
             canvas = GameObject.Find("Canvas");
             resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
-            freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
+            navigationTooltip = Auxiliary.FindObject("NavigationTooltipContainer");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
@@ -209,7 +209,6 @@ namespace Synthesis.GUI
         {
             if (State != null)
             {
-                UpdateFreeroamWindow();
                 UpdateOverviewWindow();
             }
             UpdateSpawnpointWindow();
@@ -647,22 +646,20 @@ namespace Synthesis.GUI
                 camera.GetComponent<Text>().text = "Overview";
         }
 
-        /// <summary>
-        /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
-        /// </summary>
-        private void UpdateFreeroamWindow()
+        public void OpenNavigationTooltip(bool force = false)
         {
-            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
-            {
-                if (!freeroamWindowClosed)
-                {
-                    freeroamCameraWindow.SetActive(true);
-                }
+            navigationTooltip.SetActive(!navigationTooltipClosed || force);
+        }
 
-            }
-            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        /// <summary>
+        /// Close freeroam camera tool tip
+        /// </summary>
+        public void CloseNavigationTooltip(bool keepClosed = false)
+        {
+            navigationTooltip.SetActive(false);
+            if (keepClosed)
             {
-                freeroamCameraWindow.SetActive(false);
+                navigationTooltipClosed = true;
             }
         }
 
@@ -680,15 +677,6 @@ namespace Synthesis.GUI
             {
                 overviewCameraWindow.SetActive(false);
             }
-        }
-
-        /// <summary>
-        /// Close freeroam camera tool tip
-        /// </summary>
-        public void CloseFreeroamWindow()
-        {
-            freeroamCameraWindow.SetActive(false);
-            freeroamWindowClosed = true;
         }
 
         /// <summary>
@@ -718,37 +706,6 @@ namespace Synthesis.GUI
         }
         #endregion
         #region orient button functions
-        public void OrientLeft()
-        {
-            State.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientRight()
-        {
-            State.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientForward()
-        {
-            State.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-        }
-        public void OrientBackward()
-        {
-            State.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-        }
-
-        public void DefaultOrientation()
-        {
-            State.ResetRobotOrientation();
-        }
-
-        public void SaveOrientation()
-        {
-            State.SaveRobotOrientation();
-        }
-
-        public void CancelOrientation()
-        {
-            State.CancelRobotOrientation();
-        }
 
         #endregion
         #region reset functions
@@ -857,8 +814,6 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-
-            CancelOrientation();
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
