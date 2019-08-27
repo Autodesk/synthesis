@@ -49,6 +49,12 @@ namespace Synthesis.States
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
         }
+        public override void End()
+        {
+            base.End();
+
+            SimUI.getSimUI().CloseNavigationTooltip();
+        }
 
         // Update is called once per frame
         public override void Update()

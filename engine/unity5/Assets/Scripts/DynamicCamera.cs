@@ -71,14 +71,22 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class DriverStationState : CameraState
     {
-        Quaternion startRotation;
-        Quaternion lookingRotation;
-        Quaternion currentRotation;
+        Vector3 lookingRotation;
         //The default starting position of the camera
-        static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
+        const float STARTING_X = 0f;
+        const float STARTING_Y = 1.5f;
+        const float STARTING_Z = 9.5f;
+        const float MAX_MAGNITUDE_X = 5f;
+        const float MIN_MAGNITUDE_Y = 1f;
+        const float MAX_MAGNITUDE_Y = 2f;
+        const float MIN_MAGNITUDE_Z = 9f;
+        const float MAX_MAGNITUDE_Z = 12f;
+        static Vector3 position1Vector = new Vector3(STARTING_X, STARTING_Y, -STARTING_Z);
         //The opposite default starting position of the camera
-        static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
+        static Vector3 position2Vector = new Vector3(STARTING_X, STARTING_Y, STARTING_Z);
         Vector3 currentPosition;
+        const float rotationSpeed = 10f;
+        const float MAX_ROTATION = 89; // deg
 
         float transformSpeed;
 
@@ -97,24 +105,85 @@ public class DynamicCamera : MonoBehaviour
             else currentPosition = position1Vector;
             Mono.transform.position = currentPosition;
 
-            startRotation = Quaternion.LookRotation(Vector3.zero - Mono.transform.position);
-            currentRotation = startRotation;
+            Mono.transform.LookAt(RobotProvider.Robot.transform.GetChild(0).transform);
+            lookingRotation = Mono.transform.eulerAngles;
             transformSpeed = 2.5f;
         }
 
         public override void Update()
         {
-            lookingRotation = Quaternion.LookRotation(RobotProvider.Robot.transform.position - Mono.transform.position);
-            currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
-
             if (ControlEnabled && RobotProvider.RobotActive)
             {
-                var delta = InputControl.GetAxis(Controls.Global.GetAxes().cameraLateral) * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
-                currentPosition += opposite ? -delta : delta;
+                //var delta = InputControl.GetAxis(Controls.Global.GetAxes().cameraLateral) * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+                //currentPosition += opposite ? -delta : delta;
+
+                if (InputControl.GetMouseButton(0))
+                {
+                    float deltaX = InputControl.GetAxis("Mouse Y") * InputControl.MouseSensitivity * rotationSpeed;
+                    float deltaY = -InputControl.GetAxis("Mouse X") * InputControl.MouseSensitivity * rotationSpeed;
+
+                    if (deltaX < 0 && (lookingRotation.x > -MAX_ROTATION) || (deltaX > 0 && lookingRotation.x < MAX_ROTATION)) // Negative deltaX is up
+                    {
+                        lookingRotation.x += deltaX;
+                    }
+                    lookingRotation.y += deltaY;
+                }
+
+                lookingRotation.y += InputControl.GetAxis(Controls.Global.GetAxes().cameraRotation);
+                lookingRotation.x -= InputControl.GetAxis(Controls.Global.GetAxes().cameraTilt);
+
+                if (lookingRotation.x < -MAX_ROTATION)
+                {
+                    lookingRotation.x = -MAX_ROTATION;
+                }
+                else if (lookingRotation.x > MAX_ROTATION)
+                {
+                    lookingRotation.x = MAX_ROTATION;
+                }
+
+                var positionVector = Vector3.zero;
+                var camera = StateMachine.SceneGlobal.FindState<MainState>().GetCamera();
+
+                var forward_raw = camera.transform.forward;
+                forward_raw.y = 0; // Take forward direction without vertical component
+                var forward = InputControl.GetAxis(Controls.Global.GetAxes().cameraForward) * forward_raw.normalized * transformSpeed * Time.deltaTime;
+                var right_raw = camera.transform.right;
+                right_raw.y = 0; // Take lateral direction without vertical component
+                var right = InputControl.GetAxis(Controls.Global.GetAxes().cameraLateral) * right_raw.normalized * transformSpeed * Time.deltaTime;
+                right.y = 0; // Take lateral direction without vertical component
+                var up = InputControl.GetAxis(Controls.Global.GetAxes().cameraVertical) * Vector3.up * transformSpeed * Time.deltaTime;
+
+                //Move camera position using global controls
+                positionVector += forward;
+                positionVector += right;
+                positionVector += up;
+
+                Mono.transform.position += positionVector;
             }
 
-            Mono.transform.rotation = currentRotation;
-            Mono.transform.position = currentPosition;
+            Mono.transform.eulerAngles = lookingRotation;
+            //Mono.transform.position = currentPosition;
+
+            if (Math.Abs(Mono.transform.position.x) > MAX_MAGNITUDE_X)
+            {
+                Mono.transform.position = new Vector3(Mono.transform.position.x < 0 ? -MAX_MAGNITUDE_X : MAX_MAGNITUDE_X, Mono.transform.position.y, Mono.transform.position.z);
+            }
+            if (Math.Abs(Mono.transform.position.z) < MIN_MAGNITUDE_Z)
+            {
+                Mono.transform.position = new Vector3(Mono.transform.position.x, Mono.transform.position.y, Mono.transform.position.z < 0 ? -MIN_MAGNITUDE_Z : MIN_MAGNITUDE_Z);
+            }
+            else if (Math.Abs(Mono.transform.position.z) > MAX_MAGNITUDE_Z)
+            {
+                Mono.transform.position = new Vector3(Mono.transform.position.x, Mono.transform.position.y, Mono.transform.position.z < 0 ? -MAX_MAGNITUDE_Z : MAX_MAGNITUDE_Z);
+            }
+            if (Math.Abs(Mono.transform.position.y) < MIN_MAGNITUDE_Y)
+            {
+                Mono.transform.position = new Vector3(Mono.transform.position.x, Mono.transform.position.y < 0 ? -MIN_MAGNITUDE_Y : MIN_MAGNITUDE_Y, Mono.transform.position.z);
+            }
+            else if (Math.Abs(Mono.transform.position.y) > MAX_MAGNITUDE_Y)
+            {
+                Mono.transform.position = new Vector3(Mono.transform.position.x, Mono.transform.position.y < 0 ? -MAX_MAGNITUDE_Y : MAX_MAGNITUDE_Y, Mono.transform.position.z);
+            }
         }
 
 
@@ -266,6 +335,8 @@ public class DynamicCamera : MonoBehaviour
             lagPosVector = positionVector;
             rotationVector = StateMachine.SceneGlobal.FindState<MainState>().GetCamera().transform.eulerAngles;
             lagRotVector = rotationVector;
+
+            Synthesis.GUI.SimUI.getSimUI().OpenNavigationTooltip();
         }
 
         public override void Update()
@@ -328,6 +399,7 @@ public class DynamicCamera : MonoBehaviour
         public override void End()
         {
             Mono.GetComponent<Camera>().fieldOfView = 60.0f;
+            Synthesis.GUI.SimUI.getSimUI().CloseNavigationTooltip();
         }
 
     }

@@ -163,7 +163,7 @@ namespace Synthesis.Utils
 
         public static GameObject FindObject(string name)
         {
-            GameObject[] trs = GameObject.FindObjectsOfType<GameObject>();
+            GameObject[] trs = Resources.FindObjectsOfTypeAll<GameObject>();
             foreach (GameObject t in trs)
             {
                 if (t.name == name)
