@@ -24,7 +24,7 @@ public class UserSettings : MonoBehaviour
     private bool collectAnalytics;
 
     private static Color ENABLED_COLOR = new Color(247 / 255f, 162 / 255f, 24 / 255f, 1f);
-    private static Color DISABLED_COLOR = new Color(60 / 255f, 69 / 255f, 83 / 255f, 1f);
+    private static Color DISABLED_COLOR = Color.white;// new Color(60 / 255f, 69 / 255f, 83 / 255f, 1f);
     private Slider analyticsSlider; // Used to display state only
     private Image analyticsSliderHandle;
 
@@ -126,7 +126,7 @@ public class UserSettings : MonoBehaviour
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
-        analyticsSlider.value = collectAnalytics ? 0 : 1;
+        analyticsSlider.value = collectAnalytics ? 1 : 0;
         analyticsSliderHandle.color = collectAnalytics ? ENABLED_COLOR : DISABLED_COLOR;
         #endregion
         #region units
@@ -146,7 +146,7 @@ public class UserSettings : MonoBehaviour
         resolutionT.text = selectedResolution;
         screenT.text = scrDD.options[(int)selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
-        analyticsSlider.value = collectAnalytics ? 0 : 1;
+        analyticsSlider.value = collectAnalytics ? 1 : 0;
         analyticsSliderHandle.color = collectAnalytics ? ENABLED_COLOR : DISABLED_COLOR;
     }
 
