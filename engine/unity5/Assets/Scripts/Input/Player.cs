@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Synthesis.GUI;
+using System;
 
 //=========================================================================================
 //                                      Player Class
@@ -64,7 +66,15 @@ namespace Synthesis.Input
             string input = PlayerPrefs.GetString(MakePrefPrefix());
             if (input != "")
             {
-                profiles[(int)activeProfileMode].FromString(input);
+                try
+                {
+                    profiles[(int)activeProfileMode].FromString(input);
+                }
+                catch (Exception)
+                {
+                    UserMessageManager.Dispatch("Error loading controls. Resetting to defaults.", 5);
+                    profiles[(int)activeProfileMode].Reset(index, activeProfileMode);
+                }
                 profiles[(int)activeProfileMode].UpdateFieldControls(index);
             }
             else
