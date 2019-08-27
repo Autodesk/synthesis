@@ -70,6 +70,7 @@ namespace Synthesis.GUI
             stopwatchWindow = Auxiliary.FindObject(canvas, "StopwatchPanel");
             stopwatchText = Auxiliary.FindObject(canvas, "StopwatchText").GetComponent<Text>();
             stopwatchStartButtonText = Auxiliary.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
+            ResetStopwatch();
 
             //Stats Objects
             statsWindow = Auxiliary.FindObject(canvas, "StatsPanel");
@@ -247,7 +248,6 @@ namespace Synthesis.GUI
         {
             if (!stopwatchOn)
             {
-                stopwatchTime = 0f;
                 stopwatchStartButtonText.text = "Stop";
                 stopwatchOn = true;
             }
@@ -262,7 +262,7 @@ namespace Synthesis.GUI
         public void ResetStopwatch()
         {
             stopwatchTime = 0f;
-            stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
+            stopwatchText.text = System.TimeSpan.FromSeconds(stopwatchTime).ToString("hh\\:mm\\:ss\\.ff");
         }
 
         private void UpdateStopwatch()
@@ -270,7 +270,7 @@ namespace Synthesis.GUI
             if (stopwatchOn)
             {
                 stopwatchTime += Time.deltaTime;
-                stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
+                stopwatchText.text = System.TimeSpan.FromSeconds(stopwatchTime).ToString("hh\\:mm\\:ss\\.ff");
             }
         }
 
