@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Synthesis.GUI;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 //=========================================================================================
@@ -45,7 +47,15 @@ namespace Synthesis.Input
             string input = PlayerPrefs.GetString(MakePrefPrefix());
             if (input != "")
             {
-                profile.FromString(input);
+                try
+                {
+                    profile.FromString(input);
+                }
+                catch (Exception)
+                {
+                    UserMessageManager.Dispatch("Error loading controls. Resetting to defaults.", 5);
+                    Reset();
+                }
             }
             else
             {

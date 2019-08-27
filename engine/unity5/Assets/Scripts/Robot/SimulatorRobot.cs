@@ -307,27 +307,24 @@ namespace Synthesis.Robot
         /// </summary>
         void Resetting()
         {
-            if (UnityEngine.Input.GetMouseButton(1))
+            if (!UnityEngine.Input.GetMouseButton(0))
             {
                 //Transform rotation along the horizontal plane
                 Vector3 rotation = new Vector3(0f,
-                    UnityEngine.Input.GetKey(KeyCode.D) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
-                    0f) * Time.deltaTime;
+                InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
+                InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
-            }
-            else
-            {
+
                 //Transform position
                 Vector3 transposition = new Vector3(
-                    UnityEngine.Input.GetKey(KeyCode.W) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
-                    0f,
-                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f) * Time.deltaTime;
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
 
                 if (!transposition.Equals(Vector3.zero))
                     TranslateRobot(transposition);
             }
-
             //Update robotStartPosition when hit enter
             if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
             {

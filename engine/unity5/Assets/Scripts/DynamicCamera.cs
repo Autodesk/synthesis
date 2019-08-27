@@ -254,6 +254,7 @@ public class DynamicCamera : MonoBehaviour
         const float rotationSpeed = 10f;
         const float transformSpeed = 5f;
         const float zoomSpeed = 400f;
+        const float MAX_ROTATION = 89; // deg
 
         public FreeroamState(MonoBehaviour mono)
             : base(mono) { }
@@ -276,18 +277,23 @@ public class DynamicCamera : MonoBehaviour
                     float deltaX = InputControl.GetAxis("Mouse Y") * InputControl.MouseSensitivity * rotationSpeed;
                     float deltaY = -InputControl.GetAxis("Mouse X") * InputControl.MouseSensitivity * rotationSpeed;
 
-                    const float MAX = 89; // deg
-                                          // Negative deltaX is up
-                    if (deltaX < 0 && (rotationVector.x > -MAX) || (deltaX > 0 && rotationVector.x < MAX))
+                    if (deltaX < 0 && (rotationVector.x > -MAX_ROTATION) || (deltaX > 0 && rotationVector.x < MAX_ROTATION)) // Negative deltaX is up
                     {
                         rotationVector.x += deltaX;
-                        if (rotationVector.x < -MAX)
-                            rotationVector.x = -MAX;
-                        else if (rotationVector.x > MAX)
-                            rotationVector.x = MAX;
                     }
                     rotationVector.y += deltaY;
-                    ControlEnabled = true;
+                }
+
+                rotationVector.y += InputControl.GetAxis(Controls.Global.GetAxes().cameraRotation);
+                rotationVector.x -= InputControl.GetAxis(Controls.Global.GetAxes().cameraTilt);
+
+                if (rotationVector.x < -MAX_ROTATION)
+                {
+                    rotationVector.x = -MAX_ROTATION;
+                }
+                else if (rotationVector.x > MAX_ROTATION)
+                {
+                    rotationVector.x = MAX_ROTATION;
                 }
 
                 positionVector = Vector3.zero;
@@ -311,6 +317,10 @@ public class DynamicCamera : MonoBehaviour
 
                 Mono.transform.position += positionVector;
                 Mono.transform.position += InputControl.GetAxis("Mouse ScrollWheel") * camera.transform.forward.normalized * zoomSpeed* Time.deltaTime; // zoom along camera
+                if (Mono.transform.position.y < 0.5f)
+                {
+                    Mono.transform.position = new Vector3(Mono.transform.position.x, 0.5f, Mono.transform.position.z);
+                }
                 Mono.transform.eulerAngles = lagRotVector;
             }
         }

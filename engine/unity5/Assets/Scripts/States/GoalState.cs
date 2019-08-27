@@ -3,6 +3,7 @@ using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FSM;
 using Synthesis.GUI;
+using Synthesis.Input;
 using Synthesis.Utils;
 using System.Collections;
 using System.Collections.Generic;
@@ -85,10 +86,16 @@ namespace Synthesis.States
             {
                 if (move)
                 {
-                    if (UnityEngine.Input.GetKey(KeyCode.A)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.D)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.W)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.S)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                    if (!UnityEngine.Input.GetMouseButton(0))
+                    {
+                        const float RESET_SPEED = 0.05f;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.forward * RESET_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.back * RESET_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.right * RESET_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.left * RESET_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.up * RESET_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.down * RESET_SPEED;
+                    }
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {

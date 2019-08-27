@@ -5,6 +5,7 @@ using Synthesis.FEA;
 using Synthesis.Field;
 using Synthesis.FSM;
 using Synthesis.GUI;
+using Synthesis.Input;
 using Synthesis.Utils;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,10 +78,15 @@ namespace Synthesis.States
         {
             if (spawnIndicator != null)
             {
-                if (UnityEngine.Input.GetKey(KeyCode.A)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.D)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.W)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                if (UnityEngine.Input.GetKey(KeyCode.S)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (!UnityEngine.Input.GetMouseButton(0)) {
+                    const float RESET_SPEED = 0.05f;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * RESET_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.back * RESET_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.right * RESET_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.left * RESET_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.up * RESET_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true)) spawnIndicator.transform.position += UnityEngine.Vector3.down * RESET_SPEED;
+                }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
