@@ -19,7 +19,7 @@ namespace Synthesis.GUI.Scrollables
 
         protected bool toScale = true;
 
-        protected List<string> items;
+        protected List<string> items = new List<string>();
         protected string errorMessage;
 
         protected Vector3 position;
@@ -55,6 +55,7 @@ namespace Synthesis.GUI.Scrollables
         // Update is called once per frame
         protected virtual void OnGUI()
         {
+            canvas = FindObjectOfType<Canvas>().gameObject;
             //Uses canvas scale and current rectangle transform data to create a new rectangle that the panel will occupy
             float scale = canvas.GetComponent<Canvas>().scaleFactor;
 

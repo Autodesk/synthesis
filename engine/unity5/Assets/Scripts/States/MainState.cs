@@ -42,8 +42,6 @@ namespace Synthesis.States
 
         public string robotDirectory;
 
-        public static int timesLoaded = 0;
-
         private const int SolverIterations = 100;
 
         private BPhysicsWorld physicsWorld;
@@ -124,7 +122,7 @@ namespace Synthesis.States
                 }
             }
 
-            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory");
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
             //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
@@ -166,21 +164,15 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                if (timesLoaded > 0)
+                if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
                 {
-                    if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-                    {
-                        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                        return;
-                    }
-                    else
-                    {
-                        MovePlane();
-                    }
+                    //AppModel.ErrorToMenu("FIELD_SELECT|FIRST");
+                    AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                    return;
                 }
                 else
                 {
-                    timesLoaded++;
+                    MovePlane();
                 }
 
                 bool result = false;
@@ -381,6 +373,10 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         bool LoadField(string directory)
         {
+            if (string.IsNullOrEmpty(directory))
+            {
+                UserMessageManager.Dispatch("Field not found", 7);
+            }
             fieldPath = directory;
 
             fieldObject = new GameObject("Field");
@@ -390,17 +386,22 @@ namespace Synthesis.States
                 return new UnityFieldDefinition(guid, name);
             };
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf"))
+            bool isEmptyGrid = directory == "" || new DirectoryInfo(directory).Name == UnityFieldDefinition.EmptyGridName;
+
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf") && !isEmptyGrid)
                 return false;
 
-            FieldDataHandler.Load(fieldPath);
-            timesLoaded++;
+            FieldDataHandler.LoadFieldMetaData(fieldPath);
 
             Controls.Load();
             Controls.UpdateFieldControls();
             if (!Controls.HasBeenSaved())
-                Controls.Save();
+                Controls.Save(true);
 
+            if (isEmptyGrid)
+            {
+                return true;
+            }
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
             // Debug.Log("Field load result: " + loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);

@@ -498,8 +498,7 @@ namespace Synthesis.GUI
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
                 InputControl.DisableSimControls();
-                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory");
             }
         }
 
@@ -531,7 +530,7 @@ namespace Synthesis.GUI
                     panel.GetComponent<ChangeFieldScrollable>().selectedEntry.ToString(),
                     AnalyticsLedger.getMilliseconds().ToString());
 
-                //FieldDataHandler.Load();
+                //FieldDataHandler.LoadFieldMetaData(directory);
                 //DPMDataHandler.Load();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
@@ -550,12 +549,14 @@ namespace Synthesis.GUI
         /// </summary>
         public void LoadEmptyGrid()
         {
-            MainState.timesLoaded = 0;
-            
             changeFieldPanel.SetActive(false);
             InputControl.EnableSimControls();
             loadingPanel.SetActive(true);
-            FieldDataHandler.Load("");
+
+            PlayerPrefs.SetString("simSelectedField", PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName);
+            PlayerPrefs.SetString("simSelectedFieldName", UnityFieldDefinition.EmptyGridName);
+            PlayerPrefs.Save();
+            FieldDataHandler.LoadFieldMetaData(PlayerPrefs.GetString("simSelectedField"));
 
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                 AnalyticsLedger.TimingVarible.Playing,
@@ -752,7 +753,6 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
-                    MainState.timesLoaded--;
 
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                         AnalyticsLedger.TimingVarible.Playing,

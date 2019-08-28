@@ -25,7 +25,7 @@ namespace Synthesis.GUI.Scrollables
 
         void OnEnable()
         {
-            directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
+            directory = PlayerPrefs.GetString("FieldDirectory");
             items = new List<string>();
             items.Clear();
         }
@@ -35,12 +35,19 @@ namespace Synthesis.GUI.Scrollables
         {
             if (directory != null && items.Count == 0)
             {
-                string[] folders = System.IO.Directory.GetDirectories(directory);
-                foreach (string field in folders)
+                if (Directory.Exists(directory))
                 {
-                    if (File.Exists(field + Path.DirectorySeparatorChar + "definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
+                    string[] folders = Directory.GetDirectories(directory);
+                    foreach (string field in folders)
+                    {
+                        if (File.Exists(field + Path.DirectorySeparatorChar + "definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
+                    }
+                    if (items.Count > 0) selectedEntry = items[0];
                 }
-                if (items.Count > 0) selectedEntry = items[0];
+            }
+            if (directory == null || !Directory.Exists(directory) || items.Count == 0)
+            {
+                GUILayout.Label(errorMessage, listStyle);
             }
 
             position = GetComponent<RectTransform>().position;

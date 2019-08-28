@@ -53,8 +53,8 @@ namespace Synthesis.Input
                 }
                 catch (Exception)
                 {
-                    UserMessageManager.Dispatch("Error loading controls. Resetting to defaults.", 5);
                     Reset();
+                    throw;
                 }
             }
             else

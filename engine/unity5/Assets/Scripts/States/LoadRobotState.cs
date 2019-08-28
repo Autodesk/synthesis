@@ -30,9 +30,8 @@ namespace Synthesis.States
         /// </summary>
         public override void Start()
         {
-            MainState.timesLoaded--;
             Auxiliary.FindGameObject("SimLoadRobot").SetActive(true);
-            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory");
             robotList = GameObject.Find("SimLoadRobotList").GetComponent<SelectScrollable>();
 
             robotList.ThumbTexture = Resources.Load("Images/New Textures/Synthesis_an_Autodesk_Technology_2019_lockup_OL_stacked_no_year") as Texture2D;
@@ -44,7 +43,7 @@ namespace Synthesis.States
         /// </summary>
         public override void Resume()
         {
-            robotList.Refresh(PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots")));
+            robotList.Refresh(PlayerPrefs.GetString("RobotDirectory"));
         }
 
         /// <summary>
@@ -65,13 +64,11 @@ namespace Synthesis.States
         {
             GameObject robotList = GameObject.Find("SimLoadRobotList");
             string entry = (robotList.GetComponent<SelectScrollable>().selectedEntry);
-            UserMessageManager.Dispatch(robotDirectory, 20);
             if (entry != null)
             {
                 string simSelectedRobotName = robotList.GetComponent<SelectScrollable>().selectedEntry;
 
-                robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+                robotDirectory = PlayerPrefs.GetString("RobotDirectory");
 
                 PlayerPrefs.SetString("simSelectedRobot", robotDirectory + Path.DirectorySeparatorChar + simSelectedRobotName + Path.DirectorySeparatorChar);
                 PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);

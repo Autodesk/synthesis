@@ -22,14 +22,13 @@ namespace Synthesis.States
         /// Initializes a new <see cref="BrowseFileState"/> instance.
         /// </summary>
         /// <param name="prefsKey"></param>
-        /// <param name="directory"></param>
-        protected BrowseFileState(string prefsKey, string directory)
+        protected BrowseFileState(string prefsKey)
         {
             this.prefsKey = prefsKey;
+            this.directory = PlayerPrefs.GetString(prefsKey);
             if (!Directory.Exists(directory)) {
-                Directory.CreateDirectory(directory);
+                this.directory = "";
             }
-            this.directory = directory;
         }
 
         /// <summary>
@@ -60,19 +59,18 @@ namespace Synthesis.States
                 // Standalone plugin adaptions from: https://github.com/gkngkc/UnityStandaloneFileBrowser
                 filePath = SFB.StandaloneFileBrowser.OpenFolderPanel(prefsKey, directory, false);
 
-                //check for empty string(if native file browser is closed without selection) and default to Fields directory
-                if (string.IsNullOrEmpty(filePath))
+                if (!string.IsNullOrEmpty(filePath))
                 {
-                    filePath = PlayerPrefs.GetString(prefsKey, directory);
-                }
-
-                if (filePath.Length != 0)
-                {
-                    fileBrowser = new GUI.SynthesisFileBrowser("Choose Directory", filePath, true);
+                    fileBrowser = new SynthesisFileBrowser("Choose Directory", filePath, true);
                     filePath = fileBrowser.directoryLocation;
                     fileBrowser.OnComplete += OnBrowserComplete;
                     fileBrowser.CompleteDirectorySelection();
                     pathLabel.text = filePath;
+                }
+                else
+                {
+                    UserMessageManager.Dispatch("Selection canceled", 5);
+                    StateMachine.PopState();
                 }
             }
         }
@@ -84,18 +82,10 @@ namespace Synthesis.States
         public void OnBrowserComplete(object obj)
         {
             string fileLocation = (string)obj;
-            DirectoryInfo directory = new DirectoryInfo(fileLocation);
-
-            if (directory != null && directory.Exists)
-            {
-                PlayerPrefs.SetString(prefsKey, directory.FullName);
-                PlayerPrefs.Save();
-                StateMachine.PopState();
-            }
-            else
-            {
-                UserMessageManager.Dispatch("Invalid selection!", 10f);
-            }
+            DirectoryInfo dir = new DirectoryInfo(fileLocation);
+            PlayerPrefs.SetString(prefsKey, dir.Exists ? dir.FullName : "");
+            PlayerPrefs.Save();
+            StateMachine.PopState();
         }
     }
 }
