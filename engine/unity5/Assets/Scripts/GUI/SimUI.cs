@@ -43,7 +43,6 @@ namespace Synthesis.GUI
         GoalManager gm;
 
         GameObject canvas;
-        GameObject resetUI;
 
         GameObject navigationTooltip;
         GameObject overviewCameraWindow;
@@ -83,8 +82,9 @@ namespace Synthesis.GUI
 
         private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
 
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             instance = this;
 
             UpdateJoystickStates(false);
@@ -169,7 +169,7 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
-            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
+            resetRobotUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
             navigationTooltip = Auxiliary.FindObject("NavigationTooltipContainer");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
@@ -179,7 +179,6 @@ namespace Synthesis.GUI
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
 
-            resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -219,12 +218,19 @@ namespace Synthesis.GUI
             GameObject.Find("UpdatePrompt").SetActive(false);
         }
 
-        public void UpdateYes() {
-            Process.Start("http://synthesis.autodesk.com");
+        public void UpdateYes()
+        {
             Process.Start(updater);
-            Application.Quit();
+            if (Application.isEditor)
+            {
+                GameObject.Find("UpdatePrompt").SetActive(false);
+            }
+            else
+            {
+                Application.Quit();
+            }
         }
-        
+
         private void LogTabTiming()
         {
             switch (currentTab)
@@ -713,15 +719,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateSpawnpointWindow()
         {
-            // TODO: Replace with resetUI (see PR #450)
-            if (State != null && State.ActiveRobot != null && State.ActiveRobot.IsResetting)
-            {
-                resetRobotUI.SetActive(true);
-            }
-            else
-            {
-                resetRobotUI.SetActive(false);
-            }
+            resetRobotUI.SetActive(State.ActiveRobot.IsResetting);
         }
 
         /// <summary>
