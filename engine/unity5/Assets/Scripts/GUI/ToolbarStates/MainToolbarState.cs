@@ -56,6 +56,8 @@ namespace Synthesis.GUI
         private Dropdown cameraViewDropdown;
         private DynamicCamera dynamicCamera;
 
+        private bool lastImpulseInputFocused;
+
         public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -92,12 +94,19 @@ namespace Synthesis.GUI
         }
 
         public override void Update() {
+            bool newFocued = false;
             if (pointImpulsePanel.activeSelf) {
+                newFocued = GameObject.Find("ImpulseInputField").GetComponent<InputField>().isFocused;
                 if (UnityEngine.Input.GetKey(KeyCode.LeftControl)) {
                     if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0)) {
                         ApplyForce();
                     }
                 }
+            }
+            if (lastImpulseInputFocused != newFocued)
+            {
+                InputControl.freeze = newFocued;
+                lastImpulseInputFocused = newFocued;
             }
             if (DynamicCamera.StateToInt(dynamicCamera.ActiveState) != cameraViewDropdown.value)
             {
