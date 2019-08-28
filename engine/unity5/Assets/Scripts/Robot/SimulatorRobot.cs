@@ -177,7 +177,6 @@ namespace Synthesis.Robot
             else if (InputControl.GetButtonDown(Controls.Global.GetButtons().resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
-                MainState.timesLoaded--;
                 SceneManager.LoadScene("Scene");
 
                 AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,

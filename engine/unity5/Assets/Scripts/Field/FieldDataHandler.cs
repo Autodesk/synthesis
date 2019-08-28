@@ -24,12 +24,21 @@ namespace Synthesis.Field
         /// </summary>
         public static void WriteField()
         {
+            string targetFile = PlayerPrefs.GetString("simSelectedField") + Path.DirectorySeparatorChar + "field_data.xml";
+
+            CreateDefaultGridFiles(Path.GetDirectoryName(targetFile));
+
+            if (!File.Exists(targetFile))
+            {
+                GUI.UserMessageManager.Dispatch("Changes are session-only - field meta file not found", 7);
+                return;
+            }
             //wrap all data
             XElement field = new XElement("FieldData", null); //parent
             field.Add(GoalData());
             field.Add(GeneralData());
             //save function
-            field.Save(PlayerPrefs.GetString("simSelectedField") + Path.DirectorySeparatorChar + "field_data.xml");
+            field.Save(targetFile);
         }
 
         private static XElement convertGoals(List<List<GameObject>> goals, string goalsName, int gamepieceIndex)
@@ -101,17 +110,55 @@ namespace Synthesis.Field
             gen.Add(robotSpawnPoint);
             return gen;
         }
+
+        /// <summary>
+        /// Automatically create default grid files if necessary
+        /// </summary>
+        /// <param name="fieldPath"></param>
+        /// <returns></returns>
+        private static bool CreateDefaultGridFiles(string fieldPath)
+        {
+            string targetFile = fieldPath + Path.DirectorySeparatorChar + "field_data.xml";
+            if (!File.Exists(targetFile))
+            {
+                if (!string.IsNullOrEmpty(fieldPath) && new DirectoryInfo(fieldPath).Name == UnityFieldDefinition.EmptyGridName)
+                {
+                    gamepieces = new List<Gamepiece>();
+                    if (!Directory.Exists(fieldPath))
+                    {
+                        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")))
+                        {
+                            if (fieldPath == PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName &&
+                                fieldPath == PlayerPrefs.GetString("simSelectedField"))
+                            {
+                                Directory.CreateDirectory(fieldPath);
+                                File.Create(targetFile).Dispose();
+                                WriteField();
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return true;
+            }
+            return false;
+        }
+
         #endregion
         #region getData
         /// <summary>
         /// Assigns global variables values from field_data.xml
         /// </summary>
         /// <param name="fieldPath">location to field folder passed upon field load</param>
-        public static void Load(string fieldPath)
+        public static void LoadFieldMetaData(string fieldPath)
         {
-            if (File.Exists(fieldPath + Path.DirectorySeparatorChar + "field_data.xml"))
+            string targetFile = fieldPath + Path.DirectorySeparatorChar + "field_data.xml";
+            if (File.Exists(targetFile))
             {
-                file = XDocument.Load(fieldPath + Path.DirectorySeparatorChar + "field_data.xml");
+                file = XDocument.Load(targetFile);
                 gamepieces = getGamepieces();
                 redGoals = getGoals("RedGoals");
                 blueGoals = getGoals("BlueGoals");
@@ -120,8 +167,18 @@ namespace Synthesis.Field
             }
             else
             {
-                gamepieces = new List<Gamepiece>();
-                WriteField(); //creates dummy file - allows robot spawn point functionality (No gamepieces)
+                if (!string.IsNullOrEmpty(fieldPath) && new DirectoryInfo(fieldPath).Name == UnityFieldDefinition.EmptyGridName)
+                {
+                    gamepieces = new List<Gamepiece>();
+                    if (!CreateDefaultGridFiles(fieldPath))
+                    {
+                        GUI.UserMessageManager.Dispatch("Features limited - field meta file not found", 7);
+                    }
+                }
+                else
+                {
+                    GUI.UserMessageManager.Dispatch("Failed to load field meta data", 7);
+                }
             }
         }
         /// <summary>

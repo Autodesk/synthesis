@@ -69,13 +69,13 @@ namespace Synthesis.Input
                 try
                 {
                     profiles[(int)activeProfileMode].FromString(input);
+                    profiles[(int)activeProfileMode].UpdateFieldControls(index);
                 }
                 catch (Exception)
                 {
-                    UserMessageManager.Dispatch("Error loading controls. Resetting to defaults.", 5);
                     profiles[(int)activeProfileMode].Reset(index, activeProfileMode);
+                    throw;
                 }
-                profiles[(int)activeProfileMode].UpdateFieldControls(index);
             }
             else
             {

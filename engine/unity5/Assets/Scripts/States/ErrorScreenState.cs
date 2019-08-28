@@ -15,12 +15,28 @@ namespace Synthesis.States
         public override void Start()
         {
             string error = AppModel.ErrorMessage;
-            if (error.Split('|')[0].Equals("ROBOT_SELECT")) {
+            if(error == null)
+            {
+                throw new System.Exception("Missing error message - don't start error scene directly");
+            }
+            if (error.Split('|')[0].Equals("ROBOT_SELECT"))
+            {
                 AppModel.ClearError();
                 StateMachine.ChangeState(new LoadRobotState());
                 if (error.Split('|')[1].Equals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
                 else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
-            } else {
+            }
+            /*
+            else if (error.Split('|')[0].Equals("FIELD_SELECT"))
+            {
+                AppModel.ClearError();
+                StateMachine.ChangeState(new LoadFieldState());
+                if (error.Split('|')[1].Equals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
+                else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
+            }
+            */
+            else
+            {
                 Auxiliary.FindGameObject("ErrorScreen").SetActive(true);
                 Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
                 AppModel.ClearError();

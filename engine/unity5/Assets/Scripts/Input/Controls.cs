@@ -35,7 +35,7 @@ namespace Synthesis.Input
             }
             Global.Save();
             if (!quiet)
-                GUI.UserMessageManager.Dispatch("Player preferences saved.", 5);
+                GUI.UserMessageManager.Dispatch("Player controls saved.", 5);
         }
 
         /// <summary>
@@ -61,11 +61,30 @@ namespace Synthesis.Input
         /// </summary>
         public static void Load()
         {
+            bool failure = false;
             for (int player_i = 0; player_i < Player.PLAYER_COUNT; player_i++)
             {
-                Players[player_i].LoadActiveProfile();
+                try
+                {
+                    Players[player_i].LoadActiveProfile();
+                }
+                catch (System.Exception)
+                {
+                    failure = true;
+                }
             }
-            Global.Load();
+            try
+            {
+                Global.Load();
+            }
+            catch (System.Exception)
+            {
+                failure = true;
+            }
+            if (failure)
+            {
+                GUI.UserMessageManager.Dispatch("Error loading controls. Resetting to defaults.", 5);
+            }
         }
 
         public static void UpdateFieldControls()
