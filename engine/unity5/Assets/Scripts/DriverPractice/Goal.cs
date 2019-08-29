@@ -20,6 +20,7 @@ namespace Synthesis.DriverPractice
         public string description; //goal name - only for the user
         public int pointValue; //nominal point value
         public Vector3 position; //vector location of the object in world space
+        public Vector3 rotation;
         public Vector3 scale; //vector that denotes the factor that the object stretches in width, height and length
         public bool KeepScored { get; private set; } = true;
 
