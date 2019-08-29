@@ -453,6 +453,7 @@ namespace Synthesis.GUI
         private GameObject mainPanel;
         private bool lastActive = false;
         private bool shouldBeActive = false;
+        private bool lastAnyFieldfocused = false;
 
         // Robot IO view
         private GameObject displayPanel;
@@ -520,12 +521,16 @@ namespace Synthesis.GUI
             }
             if (mainPanel.activeSelf) // Update rest of UI
             {
-                bool focused = false;
+                bool anyFieldfocused = false;
                 foreach (var group in robotIOGroups)
                 {
-                    focused = focused || group.Update();
+                    anyFieldfocused = anyFieldfocused || group.Update();
                 }
-                InputControl.freeze = focused; // Prevent user inputting values from triggering controls
+                if (anyFieldfocused != lastAnyFieldfocused)
+                {
+                    InputControl.freeze = anyFieldfocused; // Prevent users inputting values from triggering controls
+                    lastAnyFieldfocused = anyFieldfocused;
+                }
 
                 if (miniCamera == null)
                 {

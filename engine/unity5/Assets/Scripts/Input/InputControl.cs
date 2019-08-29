@@ -158,6 +158,18 @@ namespace Synthesis.Input
 
         #region Synthesis
 
+        public static void DisableSimControls()
+        {
+            freeze = true;
+            DynamicCamera.ControlEnabled = false;
+        }
+
+        public static void EnableSimControls()
+        {
+            freeze = false;
+            DynamicCamera.ControlEnabled = true;
+        }
+
         #region Synthesis Setup Keys
 
         /// <summary>
@@ -1902,9 +1914,9 @@ namespace Synthesis.Input
         /// <returns>Value of the virtual axis.</returns>
         /// <param name="axisName">Axis name.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static float GetAxis(string axisName, bool exactKeyModifiers = false)
+        public static float GetAxis(string axisName, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return 0;
+            if (freeze && !overrideFreeze) return 0;
             float previousValue;
 
             if (!mSmoothAxesValues.TryGetValue(axisName, out previousValue))
@@ -1933,9 +1945,9 @@ namespace Synthesis.Input
         /// <returns>Value of the virtual axis.</returns>
         /// <param name="axis">Axis instance.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static float GetAxis(Axis axis, bool exactKeyModifiers = false)
+        public static float GetAxis(Axis axis, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return 0;
+            if (freeze && !overrideFreeze) return 0;
             float previousValue;
 
             if (!mSmoothAxesValues.TryGetValue(axis.Name, out previousValue))
@@ -1964,9 +1976,9 @@ namespace Synthesis.Input
         /// <returns>Value of the virtual axis.</returns>
         /// <param name="axisName">Axis name.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static float GetAxisRaw(string axisName, bool exactKeyModifiers = false)
+        public static float GetAxisRaw(string axisName, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return 0;
+            if (freeze && !overrideFreeze) return 0;
             float sensitivity = 1f;
 
             #region Standard axes
@@ -2015,9 +2027,9 @@ namespace Synthesis.Input
         /// <returns>Value of the virtual axis.</returns>
         /// <param name="axis">Axis instance.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static float GetAxisRaw(Axis axis, bool exactKeyModifiers = false)
+        public static float GetAxisRaw(Axis axis, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return 0;
+            if (freeze && !overrideFreeze) return 0;
             float sensitivity = 1f;
 
             #region Standard axes
@@ -2048,9 +2060,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if button is held down, <c>false</c> otherwise.</returns>
         /// <param name="buttonName">Button name.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButton(string buttonName, bool exactKeyModifiers = false)
+        public static bool GetButton(string buttonName, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             KeyMapping outKey = null;
 
             if (!mKeysMap.TryGetValue(buttonName, out outKey))
@@ -2068,9 +2080,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if button is held down, <c>false</c> otherwise.</returns>
         /// <param name="button">KeyMapping instance.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButton(KeyMapping button, bool exactKeyModifiers = false)
+        public static bool GetButton(KeyMapping button, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return button.isPressed(exactKeyModifiers, mInputDevice);
         }
 
@@ -2080,9 +2092,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if user pressed down the button during the frame, <c>false</c> otherwise.</returns>
         /// <param name="buttonName">Button name.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButtonDown(string buttonName, bool exactKeyModifiers = false)
+        public static bool GetButtonDown(string buttonName, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
 
             KeyMapping outKey = null;
 
@@ -2101,9 +2113,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if user pressed down the button during the frame, <c>false</c> otherwise.</returns>
         /// <param name="button">KeyMapping instance.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButtonDown(KeyMapping button, bool exactKeyModifiers = false)
+        public static bool GetButtonDown(KeyMapping button, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return button.isPressedDown(exactKeyModifiers, mInputDevice);
         }
 
@@ -2113,9 +2125,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if user releases the button during the frame, <c>false</c> otherwise.</returns>
         /// <param name="buttonName">Button name.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButtonUp(string buttonName, bool exactKeyModifiers = false)
+        public static bool GetButtonUp(string buttonName, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             KeyMapping outKey = null;
 
             if (!mKeysMap.TryGetValue(buttonName, out outKey))
@@ -2133,9 +2145,9 @@ namespace Synthesis.Input
         /// <returns><c>true</c>, if user releases the button during the frame, <c>false</c> otherwise.</returns>
         //// <param name="button">KeyMapping instance.</param>
         /// <param name="exactKeyModifiers">If set to <c>true</c> check that only specified key modifiers are active, otherwise check that at least specified key modifiers are active.</param>
-        public static bool GetButtonUp(KeyMapping button, bool exactKeyModifiers = false)
+        public static bool GetButtonUp(KeyMapping button, bool exactKeyModifiers = false, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return button.isPressedUp(exactKeyModifiers, mInputDevice);
         }
 
@@ -2162,9 +2174,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if key is held down, <c>false</c> otherwise.</returns>
         /// <param name="name">Name of key.</param>
-        public static bool GetKey(string name)
+        public static bool GetKey(string name, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKey(name);
         }
 
@@ -2173,9 +2185,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if key is held down, <c>false</c> otherwise.</returns>
         /// <param name="key">Code of key.</param>
-        public static bool GetKey(KeyCode key)
+        public static bool GetKey(KeyCode key, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKey(key);
         }
 
@@ -2184,9 +2196,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user starts pressing down the key, <c>false</c> otherwise.</returns>
         /// <param name="name">Name of key.</param>
-        public static bool GetKeyDown(string name)
+        public static bool GetKeyDown(string name, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKeyDown(name);
         }
 
@@ -2195,9 +2207,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user starts pressing down the key, <c>false</c> otherwise.</returns>
         /// <param name="name">Code of key.</param>
-        public static bool GetKeyDown(KeyCode key)
+        public static bool GetKeyDown(KeyCode key, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKeyDown(key);
         }
 
@@ -2206,9 +2218,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user releases the key, <c>false</c> otherwise.</returns>
         /// <param name="name">Name of key.</param>
-        public static bool GetKeyUp(string name)
+        public static bool GetKeyUp(string name, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKeyUp(name);
         }
 
@@ -2217,9 +2229,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user releases the key, <c>false</c> otherwise.</returns>
         /// <param name="name">Code of key.</param>
-        public static bool GetKeyUp(KeyCode key)
+        public static bool GetKeyUp(KeyCode key, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             return UnityEngine.Input.GetKeyUp(key);
         }
 
@@ -2228,9 +2240,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if mouse button is held down, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButton(int button)
+        public static bool GetMouseButton(int button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button >= 0 && button < (int)MouseButton.None)
             {
                 return GetMouseButton((MouseButton)button);
@@ -2244,9 +2256,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if mouse button is held down, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButton(MouseButton button)
+        public static bool GetMouseButton(MouseButton button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button != MouseButton.None)
             {
                 return UnityEngine.Input.GetKey((KeyCode)((int)KeyCode.Mouse0 + (int)button));
@@ -2260,9 +2272,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user pressed mouse button, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButtonDown(int button)
+        public static bool GetMouseButtonDown(int button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button >= 0 && button < (int)MouseButton.None)
             {
                 return GetMouseButtonDown((MouseButton)button);
@@ -2276,9 +2288,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user pressed mouse button, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButtonDown(MouseButton button)
+        public static bool GetMouseButtonDown(MouseButton button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button != MouseButton.None)
             {
                 return UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Mouse0 + (int)button));
@@ -2292,9 +2304,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user releases mouse button, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButtonUp(int button)
+        public static bool GetMouseButtonUp(int button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button >= 0 && button < (int)MouseButton.None)
             {
                 return GetMouseButtonUp((MouseButton)button);
@@ -2308,9 +2320,9 @@ namespace Synthesis.Input
         /// </summary>
         /// <returns><c>true</c>, if user releases mouse button, <c>false</c> otherwise.</returns>
         /// <param name="button">Mouse button.</param>
-        public static bool GetMouseButtonUp(MouseButton button)
+        public static bool GetMouseButtonUp(MouseButton button, bool overrideFreeze = false)
         {
-            if (freeze) return false;
+            if (freeze && !overrideFreeze) return false;
             if (button != MouseButton.None)
             {
                 return UnityEngine.Input.GetKeyUp((KeyCode)((int)KeyCode.Mouse0 + (int)button));

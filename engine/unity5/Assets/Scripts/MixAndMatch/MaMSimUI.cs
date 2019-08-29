@@ -8,6 +8,7 @@ using System.IO;
 using Synthesis.GUI;
 using Synthesis.States;
 using Synthesis.Utils;
+using Synthesis.Input;
 
 namespace Synthesis.MixAndMatch
 {
@@ -48,11 +49,13 @@ namespace Synthesis.MixAndMatch
             if (mixAndMatchPanel.activeSelf)
             {
                 mixAndMatchPanel.SetActive(false);
+                InputControl.EnableSimControls();
             }
             else
             {
                 simUI.EndOtherProcesses();
                 mixAndMatchPanel.SetActive(true);
+                InputControl.DisableSimControls();
             }
         }
 

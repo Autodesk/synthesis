@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Synthesis.GUI;
+using System;
 
 //=========================================================================================
 //                                      Player Class
@@ -64,8 +66,16 @@ namespace Synthesis.Input
             string input = PlayerPrefs.GetString(MakePrefPrefix());
             if (input != "")
             {
-                profiles[(int)activeProfileMode].FromString(input);
-                profiles[(int)activeProfileMode].UpdateFieldControls(index);
+                try
+                {
+                    profiles[(int)activeProfileMode].FromString(input);
+                    profiles[(int)activeProfileMode].UpdateFieldControls(index);
+                }
+                catch (Exception)
+                {
+                    profiles[(int)activeProfileMode].Reset(index, activeProfileMode);
+                    throw;
+                }
             }
             else
             {

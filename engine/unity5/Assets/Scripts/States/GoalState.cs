@@ -3,6 +3,7 @@ using Synthesis.Configuration;
 using Synthesis.DriverPractice;
 using Synthesis.FSM;
 using Synthesis.GUI;
+using Synthesis.Input;
 using Synthesis.Utils;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,6 +50,7 @@ namespace Synthesis.States
 
             GameObject goal = color.Equals("Red") ? gm.redGoals[gamepieceIndex][goalIndex] : gm.blueGoals[gamepieceIndex][goalIndex];
             goalIndicator.transform.position = goal.GetComponent<Goal>().position;
+            goalIndicator.transform.eulerAngles = goal.GetComponent<Goal>().rotation;
             goalIndicator.transform.localScale = goal.GetComponent<Goal>().scale;
 
             settingGamepieceGoalVertical = false;
@@ -76,6 +78,18 @@ namespace Synthesis.States
             Button returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
+
+            if (move)
+            {
+                SimUI.getSimUI().OpenNavigationTooltip();
+            }
+        }
+
+        public override void End()
+        {
+            base.End();
+
+            SimUI.getSimUI().CloseNavigationTooltip();
         }
 
         // Update is called once per frame
@@ -85,14 +99,28 @@ namespace Synthesis.States
             {
                 if (move)
                 {
-                    if (UnityEngine.Input.GetKey(KeyCode.A)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.D)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.W)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                    if (UnityEngine.Input.GetKey(KeyCode.S)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                    if (!UnityEngine.Input.GetMouseButton(0))
+                    {
+                        const float RESET_TRANSLATE_SPEED = 0.05f;
+                        const float RESET_ROTATE_SPEED = 0.5f;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.forward * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.back * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.right * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.left * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.up * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.down * RESET_TRANSLATE_SPEED;
+
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.up * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.down * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.back * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.forward * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollLeft, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.left * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollRight, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.right * RESET_ROTATE_SPEED;
+                    }
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
-                    UserMessageManager.Dispatch("New goal location has been set!", 3f);
+                    UserMessageManager.Dispatch("New goal location has been set", 3f);
 
 
                     if (color.Equals("Red"))
@@ -100,6 +128,7 @@ namespace Synthesis.States
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<BRigidBody>().SetPosition(goalIndicator.transform.position);
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<BBoxShape>().LocalScaling = goalIndicator.transform.localScale;
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position = goalIndicator.transform.position;
+                        gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().rotation = goalIndicator.transform.eulerAngles;
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale = goalIndicator.transform.localScale;
                     }
                     else
@@ -107,6 +136,7 @@ namespace Synthesis.States
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<BRigidBody>().SetPosition(goalIndicator.transform.position);
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<BBoxShape>().LocalScaling = goalIndicator.transform.localScale;
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position = goalIndicator.transform.position;
+                        gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().rotation = goalIndicator.transform.eulerAngles;
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale = goalIndicator.transform.localScale;
                     }
 
@@ -132,6 +162,7 @@ namespace Synthesis.States
         {
             if (move) goalIndicator.transform.position = new Vector3(0f, 4f, 0f);
             else goalIndicator.transform.localScale = Vector3.one;
+            goalIndicator.transform.eulerAngles = Vector3.zero;
         }
     }
 }

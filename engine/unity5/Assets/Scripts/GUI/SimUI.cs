@@ -43,9 +43,8 @@ namespace Synthesis.GUI
         GoalManager gm;
 
         GameObject canvas;
-        GameObject resetUI;
 
-        GameObject freeroamCameraWindow;
+        GameObject navigationTooltip;
         GameObject overviewCameraWindow;
 
         GameObject changeRobotPanel;
@@ -64,9 +63,10 @@ namespace Synthesis.GUI
         GameObject resetDropdown;
 
         GameObject tabs;
-        GameObject emulationTab;
+        GameObject gamepieceTab;
+        GameObject scoringTab;
 
-        private bool freeroamWindowClosed = false;
+        private bool navigationTooltipClosed = false;
         private bool overviewWindowClosed = false;
         private bool oppositeSide = false;
 
@@ -76,6 +76,7 @@ namespace Synthesis.GUI
         public static string updater;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
+        public Sprite disabledButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
         private Sprite hoverHighlight;
 
@@ -83,8 +84,9 @@ namespace Synthesis.GUI
 
         private string[] lastJoystickNmaes = new string[Player.PLAYER_COUNT];
 
-        private void Start()
+        private new void Awake()
         {
+            base.Awake();
             instance = this;
 
             UpdateJoystickStates(false);
@@ -119,7 +121,7 @@ namespace Synthesis.GUI
             {
                 UpdateWindows();
 
-                if (InputControl.GetKeyDown(KeyCode.Escape))
+                if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
                 {
                     if (!exitPanel.activeSelf)
                     {
@@ -169,9 +171,9 @@ namespace Synthesis.GUI
         private void FindElements()
         {
             canvas = GameObject.Find("Canvas");
-            resetUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
+            resetRobotUI = Auxiliary.FindGameObject("ResetRobotSpawnpointUI");
 
-            freeroamCameraWindow = Auxiliary.FindObject(canvas, "FreeroamPanel");
+            navigationTooltip = Auxiliary.FindObject("NavigationTooltipContainer");
             overviewCameraWindow = Auxiliary.FindObject(canvas, "OverviewPanel");
             //multiplayerPanel = Auxiliary.FindObject(canvas, "MultiplayerPanel");
             driverStationPanel = Auxiliary.FindObject(canvas, "DriverStationPanel");
@@ -179,7 +181,6 @@ namespace Synthesis.GUI
             robotListPanel = Auxiliary.FindObject(changeRobotPanel, "RobotListPanel");
             changeFieldPanel = Auxiliary.FindObject(canvas, "ChangeFieldPanel");
 
-            resetRobotUI = Auxiliary.FindObject(resetUI, "ResetRobotSpawnpointUI");
             resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
             exitPanel = Auxiliary.FindObject(canvas, "ExitPanel");
@@ -194,7 +195,8 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
-            emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
+            gamepieceTab = Auxiliary.FindObject(tabs, "DriverPracticeTab");
+            scoringTab = Auxiliary.FindObject(tabs, "ScoringTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
             LinkToolbars();
@@ -209,7 +211,6 @@ namespace Synthesis.GUI
         {
             if (State != null)
             {
-                UpdateFreeroamWindow();
                 UpdateOverviewWindow();
             }
             UpdateSpawnpointWindow();
@@ -220,12 +221,19 @@ namespace Synthesis.GUI
             GameObject.Find("UpdatePrompt").SetActive(false);
         }
 
-        public void UpdateYes() {
-            Process.Start("http://synthesis.autodesk.com");
+        public void UpdateYes()
+        {
             Process.Start(updater);
-            Application.Quit();
+            if (Application.isEditor)
+            {
+                GameObject.Find("UpdatePrompt").SetActive(false);
+            }
+            else
+            {
+                Application.Quit();
+            }
         }
-        
+
         private void LogTabTiming()
         {
             switch (currentTab)
@@ -399,6 +407,8 @@ namespace Synthesis.GUI
         /// </summary>
         private void HighlightTabs()
         {
+            gamepieceTab.GetComponent<Button>().interactable = FieldDataHandler.gamepieces.Count > 0;
+            scoringTab.GetComponent<Button>().interactable = FieldDataHandler.gamepieces.Count > 0;
             foreach (Transform t in tabs.transform)
             {
                 if (t.gameObject.name.Equals(currentTab))
@@ -413,7 +423,19 @@ namespace Synthesis.GUI
                 }
                 else {
                     try {
-                        t.gameObject.GetComponent<Image>().sprite = normalButton;
+                        if (t.GetComponent<Button>().interactable)
+                        {
+                            t.gameObject.GetComponent<Image>().sprite = normalButton;
+                            t.gameObject.GetComponentInChildren<Text>().color = Color.white;
+                        }
+                        else
+                        {
+                            t.gameObject.GetComponent<Image>().sprite = disabledButton;
+                            t.gameObject.GetComponentInChildren<Text>().color = Color.grey;
+
+                        }
+
+
                         SpriteState s = new SpriteState();
                         s.highlightedSprite = hoverHighlight;
                         t.gameObject.GetComponent<Button>().spriteState = s;
@@ -431,6 +453,7 @@ namespace Synthesis.GUI
             {
                 panel.SetActive(false);
                 changeRobotPanel.SetActive(false);
+                InputControl.EnableSimControls();
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedRobot", directory);
                 PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
@@ -484,15 +507,15 @@ namespace Synthesis.GUI
             if (changeRobotPanel.activeSelf)
             {
                 changeRobotPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
+                InputControl.EnableSimControls();
             }
             else
             {
                 EndOtherProcesses();
                 changeRobotPanel.SetActive(true);
                 robotListPanel.SetActive(true);
-                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+                InputControl.DisableSimControls();
+                Auxiliary.FindObject(changeRobotPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("RobotDirectory");
             }
         }
 
@@ -509,6 +532,7 @@ namespace Synthesis.GUI
             {
                 panel.SetActive(false);
                 changeFieldPanel.SetActive(false);
+                InputControl.EnableSimControls();
                 loadingPanel.SetActive(true);
                 PlayerPrefs.SetString("simSelectedReplay", string.Empty);
                 PlayerPrefs.SetString("simSelectedField", directory);
@@ -523,7 +547,7 @@ namespace Synthesis.GUI
                     panel.GetComponent<ChangeFieldScrollable>().selectedEntry.ToString(),
                     AnalyticsLedger.getMilliseconds().ToString());
 
-                //FieldDataHandler.Load();
+                //FieldDataHandler.LoadFieldMetaData(directory);
                 //DPMDataHandler.Load();
                 //Controls.Load();
                 SceneManager.LoadScene("Scene");
@@ -542,11 +566,14 @@ namespace Synthesis.GUI
         /// </summary>
         public void LoadEmptyGrid()
         {
-            MainState.timesLoaded = 0;
-            
             changeFieldPanel.SetActive(false);
+            InputControl.EnableSimControls();
             loadingPanel.SetActive(true);
-            FieldDataHandler.Load("");
+
+            PlayerPrefs.SetString("simSelectedField", PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName);
+            PlayerPrefs.SetString("simSelectedFieldName", UnityFieldDefinition.EmptyGridName);
+            PlayerPrefs.Save();
+            FieldDataHandler.LoadFieldMetaData(PlayerPrefs.GetString("simSelectedField"));
 
             AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                 AnalyticsLedger.TimingVarible.Playing,
@@ -566,14 +593,14 @@ namespace Synthesis.GUI
             if (changeFieldPanel.activeSelf)
             {
                 changeFieldPanel.SetActive(false);
-                DynamicCamera.ControlEnabled = true;
+                InputControl.EnableSimControls();
             }
             else
             {
                 EndOtherProcesses();
                 changeFieldPanel.SetActive(true);
-                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields"));
+                InputControl.DisableSimControls();
+                Auxiliary.FindObject(changeFieldPanel, "PathLabel").GetComponent<Text>().text = PlayerPrefs.GetString("FieldDirectory");
             }
         }
 
@@ -626,32 +653,6 @@ namespace Synthesis.GUI
 
         #endregion
         #region camera button functions
-        /// <summary>
-        /// Toggles between different dynamic camera states
-        /// </summary>
-        /// <param name="mode"></param>
-        public void SwitchCameraView(int mode)
-        {
-            switch (mode)
-            {
-                case 1:
-                    camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 2:
-                    camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 3:
-                    camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-                case 4:
-                    camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.ControlEnabled = true;
-                    break;
-            }
-        }
 
         /// <summary>
         /// Change camera tool tips
@@ -668,22 +669,20 @@ namespace Synthesis.GUI
                 camera.GetComponent<Text>().text = "Overview";
         }
 
-        /// <summary>
-        /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
-        /// </summary>
-        private void UpdateFreeroamWindow()
+        public void OpenNavigationTooltip(bool force = false)
         {
-            if (camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
-            {
-                if (!freeroamWindowClosed)
-                {
-                    freeroamCameraWindow.SetActive(true);
-                }
+            navigationTooltip.SetActive(!navigationTooltipClosed || force);
+        }
 
-            }
-            else if (!camera.ActiveState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        /// <summary>
+        /// Close freeroam camera tool tip
+        /// </summary>
+        public void CloseNavigationTooltip(bool keepClosed = false)
+        {
+            navigationTooltip.SetActive(false);
+            if (keepClosed)
             {
-                freeroamCameraWindow.SetActive(false);
+                navigationTooltipClosed = true;
             }
         }
 
@@ -701,15 +700,6 @@ namespace Synthesis.GUI
             {
                 overviewCameraWindow.SetActive(false);
             }
-        }
-
-        /// <summary>
-        /// Close freeroam camera tool tip
-        /// </summary>
-        public void CloseFreeroamWindow()
-        {
-            freeroamCameraWindow.SetActive(false);
-            freeroamWindowClosed = true;
         }
 
         /// <summary>
@@ -739,37 +729,6 @@ namespace Synthesis.GUI
         }
         #endregion
         #region orient button functions
-        public void OrientLeft()
-        {
-            State.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientRight()
-        {
-            State.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-        }
-        public void OrientForward()
-        {
-            State.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-        }
-        public void OrientBackward()
-        {
-            State.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-        }
-
-        public void DefaultOrientation()
-        {
-            State.ResetRobotOrientation();
-        }
-
-        public void SaveOrientation()
-        {
-            State.SaveRobotOrientation();
-        }
-
-        public void CancelOrientation()
-        {
-            State.CancelRobotOrientation();
-        }
 
         #endregion
         #region reset functions
@@ -778,15 +737,7 @@ namespace Synthesis.GUI
         /// </summary>
         private void UpdateSpawnpointWindow()
         {
-            // TODO: Replace with resetUI (see PR #450)
-            if (State.ActiveRobot.IsResetting)
-            {
-                resetRobotUI.SetActive(true);
-            }
-            else
-            {
-                resetRobotUI.SetActive(false);
-            }
+            resetRobotUI.SetActive(State.ActiveRobot.IsResetting);
         }
 
         /// <summary>
@@ -819,7 +770,6 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(GameObject.Find("Reset Robot Dropdown"), "Dropdown List").SetActive(false);
                     Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
-                    MainState.timesLoaded--;
 
                     AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
                         AnalyticsLedger.TimingVarible.Playing,
@@ -878,8 +828,6 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
-
-            CancelOrientation();
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();

@@ -38,7 +38,6 @@ namespace Synthesis.GUI
 
         // Functions for screen and graphics OnClick changes
         public delegate void EntryChanged(int a);
-        public event EntryChanged OnResolutionSelection, OnScreenmodeSelection, OnQualitySelection;
 
         protected override void Awake()
         {
@@ -52,13 +51,11 @@ namespace Synthesis.GUI
         {
             if (menuPanel.activeSelf)
             {
-                DynamicCamera.ControlEnabled = !robotControlPanel.activeSelf && !globalControlPanel.activeSelf;
-                InputControl.freeze = robotControlPanel.activeSelf || globalControlPanel.activeSelf;
+                InputControl.DisableSimControls();
             }
             if(lastActive && !menuPanel.activeSelf)
             {
-                DynamicCamera.ControlEnabled = true;
-                InputControl.freeze = false;
+                InputControl.EnableSimControls();
             }
             lastActive = menuPanel.activeSelf;
         }
@@ -192,18 +189,17 @@ namespace Synthesis.GUI
 
         public void ResolutionSelectionChanged(int a)
         {
-            OnResolutionSelection(a);
-            Debug.Log("a" + a);
+            settings.OnResSelChanged(a);
         }
 
         public void ScreenmodeSelectionChanged(int a)
         {
-            OnScreenmodeSelection(a);
+            settings.OnScrSelChanged(a);
         }
 
         public void QualitySelectionChanged(int a)
         {
-            OnQualitySelection(a);
+            settings.OnQuaSelChanged(a);
         }
 
         public void SettingsToggleAnalytics()

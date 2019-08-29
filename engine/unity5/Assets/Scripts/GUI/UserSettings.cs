@@ -5,6 +5,7 @@ using Synthesis.States;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class UserSettings : MonoBehaviour
 {
@@ -19,8 +20,13 @@ public class UserSettings : MonoBehaviour
 
     private Dropdown resDD, scrDD, qualDD;
 
-    private Text resolutionT, screenT, qualityT, analyticsT;
-    private int collect = 1;
+    private Text resolutionT, screenT, qualityT;
+    private bool collectAnalytics;
+
+    private static Color ENABLED_COLOR = new Color(247 / 255f, 162 / 255f, 24 / 255f, 1f);
+    private static Color DISABLED_COLOR = Color.white;// new Color(60 / 255f, 69 / 255f, 83 / 255f, 1f);
+    private Slider analyticsSlider; // Used to display state only
+    private Image analyticsSliderHandle;
 
     private List<string> resolutions;
     private List<string> screens;
@@ -40,16 +46,14 @@ public class UserSettings : MonoBehaviour
         resolutionT = Auxiliary.FindObject(settingsPanel, "ResLabel").GetComponent<Text>();
         screenT = Auxiliary.FindObject(settingsPanel, "ScreenLabel").GetComponent<Text>();
         qualityT = Auxiliary.FindObject(settingsPanel, "QualLabel").GetComponent<Text>();
-        analyticsT = Auxiliary.FindObject(settingsPanel, "AnalyticsModeText").GetComponent<Text>();
 
         resDD = Auxiliary.FindObject(settingsPanel, "ResolutionButton").GetComponent<Dropdown>();
         scrDD = Auxiliary.FindObject(settingsPanel, "ScreenModeButton").GetComponent<Dropdown>();
         qualDD = Auxiliary.FindObject(settingsPanel, "QualityButton").GetComponent<Dropdown>();
         List<Dropdown.OptionData> resOps = new List<Dropdown.OptionData>();
 
-        MenuUI.instance.OnResolutionSelection += OnResSelChanged;
-        MenuUI.instance.OnScreenmodeSelection += OnScrSelChanged;
-        MenuUI.instance.OnQualitySelection += OnQuaSelChanged;
+        analyticsSlider = Auxiliary.FindObject(settingsPanel, "AnalyticsSlider").GetComponent<Slider>();
+        analyticsSliderHandle = Auxiliary.FindObject(settingsPanel, "AnalyticsSliderHandle").GetComponent<Image>();
 
         #region screen resolutions
         // RESOLUTIONS
@@ -104,7 +108,7 @@ public class UserSettings : MonoBehaviour
         }
         selectedResolution = PlayerPrefs.GetString("resolution", Screen.currentResolution.width + "x" + Screen.currentResolution.height);
         selectedQuality = QualitySettings.GetQualityLevel();
-        collect = PlayerPrefs.GetInt("gatherData", 1);
+        collectAnalytics = PlayerPrefs.GetInt("gatherData", 1) == 1;
 
         int resID = 0;
         for (int i = 0; i < resDD.options.Count; i++)
@@ -122,12 +126,12 @@ public class UserSettings : MonoBehaviour
         resolutionT.text = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
         screenT.text = screens[PlayerPrefs.GetInt("fullscreen", 0)];
         qualityT.text = QualitySettings.names[PlayerPrefs.GetInt("qualityLevel", QualitySettings.GetQualityLevel())];
-        analyticsT.text = collect == 1 ? "Yes" : "No";
+        analyticsSlider.value = collectAnalytics ? 1 : 0;
+        analyticsSliderHandle.color = collectAnalytics ? ENABLED_COLOR : DISABLED_COLOR;
         #endregion
         #region units
         // UNITS
-        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
-        unitConversionSwitch = Auxiliary.FindObject("UnitConversionSwitch");
+        unitConversionSwitch = Auxiliary.FindObject(settingsPanel, "UnitConversionSwitch");
         unitConversionSwitch.GetComponent<Slider>().value = PlayerPrefs.GetString("Measure").Equals("Metric") ? 0 : 1;
         #endregion
     }
@@ -142,13 +146,13 @@ public class UserSettings : MonoBehaviour
         resolutionT.text = selectedResolution;
         screenT.text = scrDD.options[(int)selectedScreenMode].text;
         qualityT.text = QualitySettings.names[selectedQuality];
-        analyticsT.text = collect == 1 ? "Yes" : "No";
+        analyticsSlider.value = collectAnalytics ? 1 : 0;
+        analyticsSliderHandle.color = collectAnalytics ? ENABLED_COLOR : DISABLED_COLOR;
     }
 
     public void ToggleAnalytics()
     {
-        collect = collect == 1 ? 0 : 1;
-        analyticsT.text = collect == 1 ? "Yes" : "No";
+        collectAnalytics = !collectAnalytics;
     }
 
     public void ApplySettings()
@@ -156,7 +160,7 @@ public class UserSettings : MonoBehaviour
         PlayerPrefs.SetString("resolution", selectedResolution);
         PlayerPrefs.SetInt("fullscreen", (int)selectedScreenMode);
         PlayerPrefs.SetInt("qualityLevel", selectedQuality);
-        PlayerPrefs.SetInt("gatherData", collect);
+        PlayerPrefs.SetInt("gatherData", collectAnalytics ? 1 : 0);
         PlayerPrefs.SetString("Measure", (unitConversionSwitch.GetComponent<Slider>().value == 0) ? "Metric" : "Imperial");
 
         string[] split = selectedResolution.Split('x');
@@ -178,15 +182,12 @@ public class UserSettings : MonoBehaviour
 
     public void OnResSelChanged(int b)
     {
-        string entry = resDD.options[b].text;
-        selectedResolution = entry;
+        selectedResolution = resDD.options[b].text;
     }
 
     public void OnQuaSelChanged(int b)
     {
-        string entry = qualDD.options[b].text;
-        int a;
-        selectedQuality = (a = (new List<string>(QualitySettings.names)).IndexOf(entry)) == -1 ? 0 : a;
+        selectedQuality = Math.Max(Array.IndexOf(QualitySettings.names, qualDD.options[b].text), 0);
     }
 
     public void OnCloseSettingsPanelClicked()

@@ -26,7 +26,7 @@ namespace Synthesis.GUI.Scrollables
 
         void OnEnable()
         {
-            directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            directory = PlayerPrefs.GetString("RobotDirectory");
             items = new List<string>();
             items.Clear();
 
@@ -35,9 +35,9 @@ namespace Synthesis.GUI.Scrollables
         // Update is called once per frame
         protected override void OnGUI()
         {
-            if (directory != null && items.Count == 0)
+            if (directory != null && Directory.Exists(directory) && items.Count == 0)
             {
-                string[] folders = System.IO.Directory.GetDirectories(directory);
+                string[] folders = Directory.GetDirectories(directory);
                 string[] extensions = { ".json", ".bxdj" };
                 foreach (string robot in folders)
                 {
@@ -47,6 +47,10 @@ namespace Synthesis.GUI.Scrollables
                     }
                 }
                 if (items.Count > 0) selectedEntry = items[0];
+            }
+            if (directory == null || !Directory.Exists(directory) || items.Count == 0)
+            {
+                GUILayout.Label(errorMessage, listStyle);
             }
 
             position = GetComponent<RectTransform>().position;

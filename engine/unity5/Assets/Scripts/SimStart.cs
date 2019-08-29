@@ -19,6 +19,34 @@ public class SimStart : MonoBehaviour
     {
         StateMachine stateMachine = GetComponent<StateMachine>();
 
+        if (string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")))
+        {
+            PlayerPrefs.SetString("FieldDirectory", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Fields");
+            if (!Directory.Exists(PlayerPrefs.GetString("FieldDirectory")))
+            {
+                PlayerPrefs.SetString("FieldDirectory", "");
+            }
+        }
+
+        if (string.IsNullOrEmpty(PlayerPrefs.GetString("RobotDirectory")))
+        {
+            PlayerPrefs.SetString("RobotDirectory", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots");
+            if (!Directory.Exists(PlayerPrefs.GetString("RobotDirectory")))
+            {
+                PlayerPrefs.SetString("RobotDirectory", "");
+            }
+        }
+
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")) && Directory.Exists(PlayerPrefs.GetString("FieldDirectory")) &&
+            (string.IsNullOrEmpty(PlayerPrefs.GetString("simSelectedField")) || string.IsNullOrEmpty(PlayerPrefs.GetString("simSelectedFieldName")))
+        )
+        {
+            PlayerPrefs.SetString("simSelectedField", PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + Synthesis.Field.UnityFieldDefinition.EmptyGridName);
+            PlayerPrefs.SetString("simSelectedFieldName", Synthesis.Field.UnityFieldDefinition.EmptyGridName);
+        }
+
+        PlayerPrefs.Save();
+
         DetermineSelected();
 
         if (stateMachine == null)
