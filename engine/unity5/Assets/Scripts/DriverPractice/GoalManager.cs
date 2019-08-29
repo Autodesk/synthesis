@@ -323,6 +323,7 @@ namespace Synthesis.DriverPractice
             rigid.SetPosition(new UnityEngine.Vector3(0, 4, 0));
             //goal stuff
             goal.position = new UnityEngine.Vector3(0, 4, 0);
+            goal.rotation = Vector3.zero;
             goal.scale = Vector3.one;
             goal.gamepieceKeyword = FieldDataHandler.gamepieces[gamepieceIndex].name;
             goal.description = "New Goal";

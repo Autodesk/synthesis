@@ -50,6 +50,7 @@ namespace Synthesis.States
 
             GameObject goal = color.Equals("Red") ? gm.redGoals[gamepieceIndex][goalIndex] : gm.blueGoals[gamepieceIndex][goalIndex];
             goalIndicator.transform.position = goal.GetComponent<Goal>().position;
+            goalIndicator.transform.eulerAngles = goal.GetComponent<Goal>().rotation;
             goalIndicator.transform.localScale = goal.GetComponent<Goal>().scale;
 
             settingGamepieceGoalVertical = false;
@@ -127,6 +128,7 @@ namespace Synthesis.States
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<BRigidBody>().SetPosition(goalIndicator.transform.position);
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<BBoxShape>().LocalScaling = goalIndicator.transform.localScale;
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position = goalIndicator.transform.position;
+                        gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().rotation = goalIndicator.transform.eulerAngles;
                         gm.redGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale = goalIndicator.transform.localScale;
                     }
                     else
@@ -134,6 +136,7 @@ namespace Synthesis.States
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<BRigidBody>().SetPosition(goalIndicator.transform.position);
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<BBoxShape>().LocalScaling = goalIndicator.transform.localScale;
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().position = goalIndicator.transform.position;
+                        gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().rotation = goalIndicator.transform.eulerAngles;
                         gm.blueGoals[gamepieceIndex][goalIndex].GetComponent<Goal>().scale = goalIndicator.transform.localScale;
                     }
 

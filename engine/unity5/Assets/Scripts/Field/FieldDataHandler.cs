@@ -53,7 +53,10 @@ namespace Synthesis.Field
                                                                                new XElement("Position",
                                                                                    new XAttribute("x", g.GetComponent<Goal>().position.x),
                                                                                    new XAttribute("y", g.GetComponent<Goal>().position.y),
-                                                                                   new XAttribute("z", g.GetComponent<Goal>().position.z)),
+                                                                                   new XAttribute("z", g.GetComponent<Goal>().position.z),
+                                                                                   new XAttribute("i", g.GetComponent<Goal>().rotation.x),
+                                                                                   new XAttribute("j", g.GetComponent<Goal>().rotation.y),
+                                                                                   new XAttribute("k", g.GetComponent<Goal>().rotation.z)),
                                                                                new XElement("Scale",
                                                                                new XAttribute("x", g.GetComponent<Goal>().scale.x),
                                                                                new XAttribute("y", g.GetComponent<Goal>().scale.y),
@@ -232,6 +235,15 @@ namespace Synthesis.Field
                     goal.SetKeepScored(bool.Parse(e.Element("KeepScored").Value));
                     goal.position = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("x").Value), float.Parse(e.Element("Position").Attribute("y").Value), float.Parse(e.Element("Position").Attribute("z").Value));
                     rigid.SetPosition(goal.position);
+                    try
+                    {
+                        goal.rotation = new UnityEngine.Vector3(float.Parse(e.Element("Position").Attribute("i").Value), float.Parse(e.Element("Position").Attribute("j").Value), float.Parse(e.Element("Position").Attribute("k").Value));
+                    }
+                    catch (System.Exception)
+                    {
+                        goal.rotation = Vector3.zero;
+                    }
+                    rigid.SetRotation(Quaternion.Euler(goal.rotation));
                     goal.scale = new UnityEngine.Vector3(float.Parse(e.Element("Scale").Attribute("x").Value), float.Parse(e.Element("Scale").Attribute("y").Value), float.Parse(e.Element("Scale").Attribute("z").Value));
                     collider.LocalScaling = goal.scale;
                     goal.gamepieceKeyword = e.Element("Keyword").Value;
