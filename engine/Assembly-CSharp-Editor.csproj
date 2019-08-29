@@ -11,10 +11,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{C9C8936B-8B4D-D4C2-E7D3-42BE2463CE13}</ProjectGuid>
+    <ProjectGuid>{EEBDF522-CFBB-F525-3FC3-E2E0A79633E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_2019_2_1;UNITY_2019_2;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_INCLUDE_TESTS;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;UNITY_PRO_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;CT_FB;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_2019_2_1;UNITY_2019_2;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_EVENT_QUEUE;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_AR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;CT_FB;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -49,8 +49,8 @@
   <PropertyGroup>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
-    <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
+    <UnityProjectType>Editor:5</UnityProjectType>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2019.2.1f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -62,392 +62,97 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\BackButton.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\SceneMenu.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\ScenesList.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BasicDemo\BasicDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\BenchmarkDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BenchmarkDemo\Taru.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\Box2DDemo\Box2DDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspConverter.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BspDemo\BspLoader.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletExampleRunner.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletMultiBodyLinkColliderProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRigidBodyProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletRopeProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\BulletSoftBodyProxy.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CcdPhysicsDemo\CcdPhysicsDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspConverter.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\BspLoader.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CharacterDemo\CharacterDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\CollisionInterfaceDemo\CollisionInterfaceDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveConvexCastDemo\ConcaveConvexCastDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConcaveRaycastDemo\ConcaveRaycastDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConstraintDemo\ConstraintDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecomposition.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\ConvexDecompositionDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\ConvexDecompositionDemo\Wavefront.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework\Demo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DemoFramework2UnityInterface.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\DistanceDemo\DistanceDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\FeatherStoneDemo\FeatherStoneDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\BunnyMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\GImpactTestDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\GImpactTestDemo\TorusMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MeshFactory2.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\MotorDemo\MotorDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\PendulumDemo\PendulumDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\Ragdoll.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RagdollDemo\RagdollDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\RollingFrictionDemo\RollingFrictionDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SerializeDemo\SerializeDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\Bunny.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\BunnyMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\SoftDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\SoftDemo\TorusMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\CustomVehicle.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\VehicleDemo.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\CharacterController\MoveCharacterController.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\CollisionCallbacks\CustomCollisionCallbackScript.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\Racast\TestRaycast.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\BallThrowTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\OfflineBallSimulation.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\BunnyRainTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ExtendedFlycam.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RBRainTest.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RopeSticksArray.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ShootBox.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\TestTeleportJump.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scenes\Triggers\ExampleTriggerCallback.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\AddForcesAndTorques.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\MoveKinematicObject.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\SetAngularAndLinearVelocity.cs" />
-    <Compile Include="Assets\BulletUnity\Examples\Scripts\SimpleOfflineSimulation.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCamera.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCharacterController.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacks.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacksDefault.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BCollisionObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BGameObjectMotionState.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BGhostObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPairCachingGhostObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorld.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BPhysicsWorldLateHelper.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BRigidBody.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BSExtensionMethods2.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BTerrainCollisionObject.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\BUtility.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBoxShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BBvhTriangleMeshShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCapsuleShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCollisionShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCompoundShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConeShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexHullShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BConvexTriangleMeshShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BCylinderShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BHeightfieldTerrainShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BMultiSphereShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\CollisionShapes\BSphereShape.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\B6DOFConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BBallSocketConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BConeTwistConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BFixedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BHingedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BSliderConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Constraints\BTypedConstraint.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Debug\BDebug.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\DebugDrawUnity.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Extensions\EnumsExtension.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BBox.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCapsule.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCone.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexHull.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BConvexTriMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BCylinder.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BPrimitive.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\BSphere.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\Primitives\EnumerationExtensions.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\PPMeshFactory.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\ProceduralPrimitives.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBody.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyPartOnSkinnedMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
-    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
-    <Compile Include="Assets\Scripts\Analytics\AnalyticsChecker.cs" />
-    <Compile Include="Assets\Scripts\Analytics\AnalyticsLedger.cs" />
-    <Compile Include="Assets\Scripts\Analytics\AnalyticsManager.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BBallSocketConstraintEx.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BFixedConstraintEx.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BMultiShape.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BPhysicsTickListener.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BPhysicsWorldLateHelperEx.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRaycastRobot.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
-    <Compile Include="Assets\Scripts\Camera\RobotCamera.cs" />
-    <Compile Include="Assets\Scripts\Camera\RobotCameraGUI.cs" />
-    <Compile Include="Assets\Scripts\Camera\RobotCameraManager.cs" />
-    <Compile Include="Assets\Scripts\Configuration\ArrowType.cs" />
-    <Compile Include="Assets\Scripts\Configuration\MoveArrows.cs" />
-    <Compile Include="Assets\Scripts\Configuration\SelectableArrow.cs" />
-    <Compile Include="Assets\Scripts\DriveJoints.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\DPMDataHandler.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\DriverPractice.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeRobot.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\Goal.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\GoalManager.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\Interactor.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice\TrajectoryEditor.cs" />
-    <Compile Include="Assets\Scripts\DynamicCamera.cs" />
-    <Compile Include="Assets\Scripts\Emulation\EmulatedRoboRIO.cs" />
-    <Compile Include="Assets\Scripts\Emulation\EmulationWarnings.cs" />
-    <Compile Include="Assets\Scripts\Emulation\EmulatorManager.cs" />
-    <Compile Include="Assets\Scripts\Emulation\EmulatorNetworkConnection.cs" />
-    <Compile Include="Assets\Scripts\Emulation\UserProgram.cs" />
-    <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
-    <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
-    <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
-    <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
-    <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
-    <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
-    <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
-    <Compile Include="Assets\Scripts\Field\FieldDataHandler.cs" />
-    <Compile Include="Assets\Scripts\Field\Gamepiece.cs" />
-    <Compile Include="Assets\Scripts\Field\UnityFieldDefinition.cs" />
-    <Compile Include="Assets\Scripts\FSM\LinkedMonoBehaviour.cs" />
-    <Compile Include="Assets\Scripts\FSM\ObjectStateLinker.cs" />
-    <Compile Include="Assets\Scripts\FSM\State.cs" />
-    <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
-    <Compile Include="Assets\Scripts\GodMode.cs" />
-    <Compile Include="Assets\Scripts\GUI\EmulationDriverStation.cs" />
-    <Compile Include="Assets\Scripts\GUI\ErrorMenu.cs" />
-    <Compile Include="Assets\Scripts\GUI\FileBrowserArchive.cs" />
-    <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\LoadReplay.cs" />
-    <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
-    <Compile Include="Assets\Scripts\GUI\MenuUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\NetworkMultiplayerUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
-    <Compile Include="Assets\Scripts\GUI\Popup.cs" />
-    <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\RobotIOPanel.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\LoadReplayScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
-    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\SynthesisFileBrowser.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\DPMToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\EmulationToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\MainToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\MenuToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\ScoringToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\ToolbarStates\SensorToolbarState.cs" />
-    <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
-    <Compile Include="Assets\Scripts\GUI\UICallbackManager.cs" />
-    <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
-    <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\GUI\UserSettings.cs" />
-    <Compile Include="Assets\Scripts\GUI\Wizard.cs" />
-    <Compile Include="Assets\Scripts\Input\Axis.cs" />
-    <Compile Include="Assets\Scripts\Input\Controls.cs" />
-    <Compile Include="Assets\Scripts\Input\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\InputDevice.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\Joystick.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\JoystickAxis.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\JoystickButton.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\KeyModifier.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\MouseAxis.cs" />
-    <Compile Include="Assets\Scripts\Input\Enums\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\Input\GlobalPlayer.cs" />
-    <Compile Include="Assets\Scripts\Input\GlobalProfile.cs" />
-    <Compile Include="Assets\Scripts\Input\InputControl.cs" />
-    <Compile Include="Assets\Scripts\Input\Inputs\CustomInput.cs" />
-    <Compile Include="Assets\Scripts\Input\Inputs\JoystickInput.cs" />
-    <Compile Include="Assets\Scripts\Input\Inputs\KeyboardInput.cs" />
-    <Compile Include="Assets\Scripts\Input\Inputs\MouseInput.cs" />
-    <Compile Include="Assets\Scripts\Input\JoystickSerializer.cs" />
-    <Compile Include="Assets\Scripts\Input\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\Input\Player.cs" />
-    <Compile Include="Assets\Scripts\Input\Profile.cs" />
-    <Compile Include="Assets\Scripts\Input\SettingsMode.cs" />
-    <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
-    <Compile Include="Assets\Scripts\Media\GIF.cs" />
-    <Compile Include="Assets\Scripts\Media\GIFPlayer.cs" />
-    <Compile Include="Assets\Scripts\Media\MediaManager.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
-    <Compile Include="Assets\Scripts\MixAndMatch\RobotTypeManager.cs" />
-    <Compile Include="Assets\Scripts\MultiplayerStart.cs" />
-    <Compile Include="Assets\Scripts\Network\IPCrypt.cs" />
-    <Compile Include="Assets\Scripts\Network\MatchManager.cs" />
-    <Compile Include="Assets\Scripts\Network\MultiplayerNetwork.cs" />
-    <Compile Include="Assets\Scripts\Network\NetworkElement.cs" />
-    <Compile Include="Assets\Scripts\Network\PlayerEntry.cs" />
-    <Compile Include="Assets\Scripts\Network\PlayerIdentity.cs" />
-    <Compile Include="Assets\Scripts\Network\PlayerList.cs" />
-    <Compile Include="Assets\Scripts\Network\TcpFileTransfer.cs" />
-    <Compile Include="Assets\Scripts\RN\RNCommon.cs" />
-    <Compile Include="Assets\Scripts\RN\RNJoint.cs" />
-    <Compile Include="Assets\Scripts\RN\RNMesh.cs" />
-    <Compile Include="Assets\Scripts\RN\RNWheel.cs" />
-    <Compile Include="Assets\Scripts\Robot\IRobotProvider.cs" />
-    <Compile Include="Assets\Scripts\Robot\MaMRobot.cs" />
-    <Compile Include="Assets\Scripts\Robot\NetworkMesh.cs" />
-    <Compile Include="Assets\Scripts\Robot\NetworkRobot.cs" />
-    <Compile Include="Assets\Scripts\Robot\NetworkRobotClient.cs" />
-    <Compile Include="Assets\Scripts\Robot\NetworkRobotServer.cs" />
-    <Compile Include="Assets\Scripts\Robot\RobotBase.cs" />
-    <Compile Include="Assets\Scripts\Robot\SimulatorRobot.cs" />
-    <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
-    <Compile Include="Assets\Scripts\Sensors\Encoder.cs" />
-    <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
-    <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
-    <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
-    <Compile Include="Assets\Scripts\SimStart.cs" />
-    <Compile Include="Assets\Scripts\States\AnalyzingResourcesState.cs" />
-    <Compile Include="Assets\Scripts\States\BrowseFieldState.cs" />
-    <Compile Include="Assets\Scripts\States\BrowseFileState.cs" />
-    <Compile Include="Assets\Scripts\States\BrowseRobotState.cs" />
-    <Compile Include="Assets\Scripts\States\DefaultSimulatorState.cs" />
-    <Compile Include="Assets\Scripts\States\DefineNodeState.cs" />
-    <Compile Include="Assets\Scripts\States\DefineSensorAttachmentState.cs" />
-    <Compile Include="Assets\Scripts\States\DisclaimerState.cs" />
-    <Compile Include="Assets\Scripts\States\DistributingResourcesState.cs" />
-    <Compile Include="Assets\Scripts\States\EnterInfoState.cs" />
-    <Compile Include="Assets\Scripts\States\EnterTagState.cs" />
-    <Compile Include="Assets\Scripts\States\ErrorScreenState.cs" />
-    <Compile Include="Assets\Scripts\States\FetchingMetadataState.cs" />
-    <Compile Include="Assets\Scripts\States\GamepieceSpawnState.cs" />
-    <Compile Include="Assets\Scripts\States\GatheringResourcesState.cs" />
-    <Compile Include="Assets\Scripts\States\GeneratingSceneState.cs" />
-    <Compile Include="Assets\Scripts\States\GoalState.cs" />
-    <Compile Include="Assets\Scripts\States\HomeTabState.cs" />
-    <Compile Include="Assets\Scripts\States\HostJoinState.cs" />
-    <Compile Include="Assets\Scripts\States\LoadFieldState.cs" />
-    <Compile Include="Assets\Scripts\States\LoadRobotState.cs" />
-    <Compile Include="Assets\Scripts\States\LobbyState.cs" />
-    <Compile Include="Assets\Scripts\States\MainState.cs" />
-    <Compile Include="Assets\Scripts\States\MixAndMatchState.cs" />
-    <Compile Include="Assets\Scripts\States\MultiplayerState.cs" />
-    <Compile Include="Assets\Scripts\States\OptionsTabState.cs" />
-    <Compile Include="Assets\Scripts\States\ReplayState.cs" />
-    <Compile Include="Assets\Scripts\States\SaveReplayState.cs" />
-    <Compile Include="Assets\Scripts\States\SelectionState.cs" />
-    <Compile Include="Assets\Scripts\States\SensorSpawnState.cs" />
-    <Compile Include="Assets\Scripts\States\SimTabState.cs" />
-    <Compile Include="Assets\Scripts\States\SyncState.cs" />
-    <Compile Include="Assets\Scripts\Threading\Channel.cs" />
-    <Compile Include="Assets\Scripts\Utils\AppModel.cs" />
-    <Compile Include="Assets\Scripts\Utils\Auxiliary.cs" />
-    <Compile Include="Assets\Scripts\Utils\BulletExtensions.cs" />
-    <Compile Include="Assets\Scripts\Utils\BXDExtensions.cs" />
-    <Compile Include="Assets\Scripts\Utils\Either.cs" />
-    <Compile Include="Assets\Scripts\Utils\GeometryUtilEx.cs" />
-    <Compile Include="Assets\Scripts\Utils\Optional.cs" />
-    <Compile Include="Assets\Scripts\VersionManager.cs" />
-    <Compile Include="Assets\Scripts\Wireframe.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowser.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserEditor.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserLinux.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
-    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
-    <None Include="Assets\Packages\Grpc.Core.1.22.0\lib\net45\Grpc.Core.xml" />
-    <None Include="Assets\Resources\Materials\Arrow Shader.shader" />
-    <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
-    <None Include="Assets\Packages\Google.Protobuf.3.9.0\lib\net45\Google.Protobuf.xml" />
-    <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
-    <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
-    <None Include="Assets\Packages\Grpc.Auth.1.22.0\lib\net45\Grpc.Auth.xml" />
-    <None Include="Assets\Packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.xml" />
-    <None Include="Assets\Packages\Google.Apis.1.21.0\License.txt" />
-    <None Include="Assets\Packages\System.Interactive.Async.3.2.0\lib\net46\System.Interactive.Async.xml" />
-    <None Include="Assets\Packages\Google.Apis.1.21.0\lib\net45\Google.Apis.xml" />
-    <None Include="Assets\Packages\Google.Apis.Core.1.21.0\License.txt" />
-    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\lib\net45\Google.Apis.Auth.PlatformServices.xml" />
-    <None Include="Assets\BulletUnity\license.txt" />
-    <None Include="Assets\Packages\Grpc.Reflection.1.22.0\lib\net45\Grpc.Reflection.xml" />
-    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\License.txt" />
-    <None Include="Assets\Packages\Grpc.Core.Api.1.22.0\lib\net45\Grpc.Core.Api.xml" />
-    <None Include="Assets\Packages\Google.Apis.Core.1.21.0\lib\net45\Google.Apis.Core.xml" />
-    <None Include="Assets\Scripts\Input\Readme.txt" />
-    <None Include="Assets\Packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.xml" />
-    <None Include="Assets\Packages\Google.Apis.Auth.1.21.0\lib\net45\Google.Apis.Auth.xml" />
-    <None Include="Assets\Packages\Google.Apis.1.21.0\lib\net45\Google.Apis.PlatformServices.xml" />
-    <Reference Include="com.unity.multiplayer-hlapi.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Editor.dll</HintPath>
+    <Compile Include="Assets\BulletUnity\Examples\SceneMenu\Editor\UpdateScenesListMenu.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\B6DOFConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BBallSocketConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BConeTwistConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BFixedConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BHingedConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BSliderConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Constraints\Editor\BTypedConstraintEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BBoxShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BBvhTriangleMeshShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BCapsuleShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BCollisionObjectEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BCompoundShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BConeShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BConvexHullShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BConvexTriangleMeshShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BCylinderShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BGhostObjectEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BMultiSphereShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BPairCachingGhostObjectEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BPhysicsWorldEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BPrimitiveComponentOrderSorter.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BRigidBodyEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BSoftBodyComponentOrderSorter.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BSoftBodyEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\BSphereShapeEditor.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorHelpers.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\EditorInterface.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\Editor\PrimitiveEditor.cs" />
+    <Reference Include="UnityEditor.TestRunner">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="com.unity.multiplayer-weaver.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-weaver.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.XR.LegacyInputHelpers">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.SpatialTracking">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SpatialTracking">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.DataPrivacy">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.XR.LegacyInputHelpers">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
+    <Reference Include="UnityEngine.TestRunner">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-hlapi.Editor">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.CollabProxy.Editor">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-weaver.Editor">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/com.unity.multiplayer-weaver.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XR.LegacyInputHelpers">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Tilemap.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.SpatialTracking">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEditor.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.DataPrivacy">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.XR.LegacyInputHelpers">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -626,68 +331,101 @@
     <Reference Include="UnityEngine.XRModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.VR">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/UnityExtensions/Unity/UnityVR/Editor/UnityEditor.VR.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
     <Reference Include="EmulationCommunication">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/EmulationCommunication.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/EmulationCommunication.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetZip">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/NuGet/Editor/DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGetForUnity">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/NuGet/Editor/NuGetForUnity.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.PlatformServices.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Apis.1.21.0/lib/net45/Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth.PlatformServices">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.PlatformServices.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Apis.Auth.1.21.0/lib/net45/Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Core">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Apis.Core.1.21.0/lib/net45/Google.Apis.Core.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Apis.Core.1.21.0/lib/net45/Google.Apis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Google.Protobuf.3.9.0/lib/net45/Google.Protobuf.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Google.Protobuf.3.9.0/lib/net45/Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Auth">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Grpc.Auth.1.22.0/lib/net45/Grpc.Auth.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Grpc.Auth.1.22.0/lib/net45/Grpc.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Grpc.Core.1.22.0/lib/net45/Grpc.Core.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Grpc.Core.1.22.0/lib/net45/Grpc.Core.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Core.Api">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Grpc.Core.Api.1.22.0/lib/net45/Grpc.Core.Api.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Grpc.Core.Api.1.22.0/lib/net45/Grpc.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Grpc.Reflection">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Grpc.Reflection.1.22.0/lib/net45/Grpc.Reflection.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Grpc.Reflection.1.22.0/lib/net45/Grpc.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/Newtonsoft.Json.12.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/Newtonsoft.Json.12.0.2/lib/net45/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/SharpZipLib.1.2.0/lib/net45/ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/SSH.NET.2016.1.0/lib/net40/Renci.SshNet.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/SSH.NET.2016.0.0/lib/net40/Renci.SshNet.dll</HintPath>
     </Reference>
     <Reference Include="System.Interactive.Async">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Packages/System.Interactive.Async.3.2.0/lib/net46/System.Interactive.Async.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Packages/System.Interactive.Async.3.2.0/lib/net46/System.Interactive.Async.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/Scripts/SimulatorAPI.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/Scripts/SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="CTCommon">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/StandaloneFileBrowser/CTCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommonEditor">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/StandaloneFileBrowser/Common/Editor/CTCommonEditor.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/StandaloneFileBrowser/Plugins/Windows/Ookii.Dialogs.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Assets/StandaloneFileBrowser/Plugins/Windows/System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Advertisements">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Editor">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.Tracker">
-      <HintPath>C:/Users/t_corbk/Documents/GitHub/synthesis/engine/unity5/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Purchasing">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.purchasing@2.0.6/Editor/UnityEditor.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>C:/cygwin64/home/t_trafl/synthesis/engine/Library/PackageCache/com.unity.ext.nunit@1.0.0/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.1f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -1046,8 +784,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{7C14F5DB-B04B-B8EC-364F-14F17512EDE5}</Project>
+      <Project>{1D60A0D7-D57B-793F-0284-F030571C68CB}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{9E75A8B5-6403-5633-928D-1A35A0A8A237}</Project>
+      <Name>Assembly-CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
