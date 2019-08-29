@@ -28,6 +28,7 @@ namespace Assets.Scripts.GUI
         GameObject tabs;
 
         Dropdown gamepieceDropdown;
+        GameObject gamepieceDropdownArrow;
         Text gamepieceDropdownLabel;
 
         GameObject trajectoryPanel;
@@ -46,6 +47,7 @@ namespace Assets.Scripts.GUI
             tabs = Auxiliary.FindObject(canvas, "Tabs");
 
             gamepieceDropdown = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdown").GetComponent<Dropdown>();
+            gamepieceDropdownArrow = Auxiliary.FindObject(gamepieceDropdown.gameObject, "Arrow");
             gamepieceDropdown.onValueChanged.AddListener(OnGamepieceDropdownValueChanged);
             gamepieceDropdownLabel = Auxiliary.FindObject(gamepieceDropdown.gameObject, "Label").GetComponent<Text>();
             for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
@@ -54,14 +56,19 @@ namespace Assets.Scripts.GUI
             }
             if (FieldDataHandler.gamepieces.Count == 0)
             {
-                gamepieceDropdownLabel.text = "No gamepieces";
+                gamepieceDropdown.options.Clear();
+                gamepieceDropdown.options.Add(new Dropdown.OptionData("No Gamepieces"));
+                gamepieceDropdown.value = 0;
+                gamepieceDropdown.RefreshShownValue();
                 gamepieceDropdown.interactable = false;
+                gamepieceDropdownArrow.SetActive(false);
             }
             else
             {
                 gamepieceDropdown.RefreshShownValue();
                 gamepieceDropdown.value = 0;
                 gamepieceDropdown.interactable = true;
+                gamepieceDropdownArrow.SetActive(true);
             }
 
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
