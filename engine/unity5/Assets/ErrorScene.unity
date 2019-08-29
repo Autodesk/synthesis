@@ -439,7 +439,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Back to Sim
+  m_Text: Return to Synthesis
 --- !u!222 &141949383
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4131,7 +4131,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -303}
-  m_SizeDelta: {x: 226.6, y: 85}
+  m_SizeDelta: {x: 315.7, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2053175462
 MonoBehaviour:

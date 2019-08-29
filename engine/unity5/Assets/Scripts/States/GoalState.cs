@@ -78,7 +78,10 @@ namespace Synthesis.States
             returnButton.onClick.RemoveAllListeners();
             returnButton.onClick.AddListener(ReturnToMainState);
 
-            SimUI.getSimUI().OpenNavigationTooltip();
+            if (move)
+            {
+                SimUI.getSimUI().OpenNavigationTooltip();
+            }
         }
 
         public override void End()
