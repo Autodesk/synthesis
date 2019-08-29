@@ -53,6 +53,11 @@ namespace Synthesis.GUI
         public bool dpmWindowOn = false; //if the driver practice mode window is active
         public static bool inputPanelOn = false;
 
+        private Dropdown cameraViewDropdown;
+        private DynamicCamera dynamicCamera;
+
+        private bool lastImpulseInputFocused;
+
         public override void Start() {
             canvas = GameObject.Find("Canvas");
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
@@ -83,16 +88,32 @@ namespace Synthesis.GUI
             sensorManagerGUI = StateMachine.SceneGlobal.GetComponent<SensorManagerGUI>();
 
             State = StateMachine.SceneGlobal.CurrentState as MainState;
+
+            cameraViewDropdown = Auxiliary.FindObject(canvas, "CameraDropdown").GetComponent<Dropdown>();
+            dynamicCamera = UnityEngine.Camera.main.transform.GetComponent<DynamicCamera>();
         }
 
         public override void Update() {
+            bool newFocued = false;
             if (pointImpulsePanel.activeSelf) {
+                newFocued = GameObject.Find("ImpulseInputField").GetComponent<InputField>().isFocused;
                 if (UnityEngine.Input.GetKey(KeyCode.LeftControl)) {
                     if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0)) {
                         ApplyForce();
                     }
                 }
             }
+            if (lastImpulseInputFocused != newFocued)
+            {
+                InputControl.freeze = newFocued;
+                lastImpulseInputFocused = newFocued;
+            }
+            if (DynamicCamera.StateToInt(dynamicCamera.ActiveState) != cameraViewDropdown.value)
+            {
+                cameraViewDropdown.value = DynamicCamera.StateToInt(dynamicCamera.ActiveState);
+                cameraViewDropdown.RefreshShownValue();
+            }
+
         }
 
         /// <summary>
@@ -153,7 +174,6 @@ namespace Synthesis.GUI
                 case 3:
                     Auxiliary.FindObject(canvas, "ResetRobotDropdown").SetActive(false);
                     Auxiliary.FindObject(canvas, "LoadingPanel").SetActive(true);
-                    MainState.timesLoaded--;
                     SceneManager.LoadScene("Scene");
                     resetDropdown.GetComponent<Dropdown>().value = 0;
 
@@ -190,37 +210,34 @@ namespace Synthesis.GUI
                 "View - Camera Dropdown",
                 AnalyticsLedger.getMilliseconds().ToString());
 
+            DynamicCamera.ControlEnabled = true;
             switch (mode) {
-                case 1:
+                case 0:
                     camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
                         "View - Driver Station",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 2:
+                case 1:
                     camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
                         "View - Orbit",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 3:
+                case 2:
                     camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
                         "View - Freeroam",
                         AnalyticsLedger.getMilliseconds().ToString());
                     break;
-                case 4:
+                case 3:
                     camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
-                    DynamicCamera.ControlEnabled = true;
 
                     AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.CameraView,
                         AnalyticsLedger.EventAction.Changed,
@@ -240,7 +257,7 @@ namespace Synthesis.GUI
             }
             else {
                 EndOtherProcesses();
-                changeFieldPanel.SetActive(true);
+                SimUI.getSimUI().ToggleChangeFieldPanel();
 
                 AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.ChangeField,
                     AnalyticsLedger.EventAction.Changed,
@@ -283,7 +300,8 @@ namespace Synthesis.GUI
         /// <summary>
         /// Toggle the stopwatch window on/off according to its current state
         /// </summary>
-        public void OnStopwatchClicked() {
+        public void OnStopwatchClicked()
+        {
             toolkit.ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
 
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.HomeTab,
@@ -365,8 +383,6 @@ namespace Synthesis.GUI
             addPanel.SetActive(false);
             pointImpulsePanel.SetActive(false);
 
-            simUI.CancelOrientation();
-            
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
             sensorManagerGUI.EndProcesses();

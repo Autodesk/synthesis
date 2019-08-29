@@ -177,7 +177,6 @@ namespace Synthesis.Robot
             else if (InputControl.GetButtonDown(Controls.Global.GetButtons().resetField))
             {
                 Auxiliary.FindObject(GameObject.Find("Canvas"), "LoadingPanel").SetActive(true);
-                MainState.timesLoaded--;
                 SceneManager.LoadScene("Scene");
 
                 AnalyticsManager.GlobalInstance.LogTimingAsync(AnalyticsLedger.TimingCatagory.MainSimulator,
@@ -300,6 +299,8 @@ namespace Synthesis.Robot
             {
                 UserMessageManager.Dispatch("Please don't reset robot during configuration!", 5f);
             }
+
+            SimUI.getSimUI().OpenNavigationTooltip();
         }
 
         /// <summary>
@@ -307,33 +308,32 @@ namespace Synthesis.Robot
         /// </summary>
         void Resetting()
         {
-            if (UnityEngine.Input.GetMouseButton(1))
+            if (!UnityEngine.Input.GetMouseButton(0))
             {
                 //Transform rotation along the horizontal plane
-                Vector3 rotation = new Vector3(0f,
-                    UnityEngine.Input.GetKey(KeyCode.D) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.A) ? -ResetVelocity : 0f,
-                    0f) * Time.deltaTime;
+                Vector3 rotation = new Vector3(
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRollLeft, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRollRight, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
-            }
-            else
-            {
+
                 //Transform position
                 Vector3 transposition = new Vector3(
-                    UnityEngine.Input.GetKey(KeyCode.W) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.S) ? -ResetVelocity : 0f,
-                    0f,
-                    UnityEngine.Input.GetKey(KeyCode.A) ? ResetVelocity : UnityEngine.Input.GetKey(KeyCode.D) ? -ResetVelocity : 0f) * Time.deltaTime;
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
 
                 if (!transposition.Equals(Vector3.zero))
                     TranslateRobot(transposition);
             }
-
             //Update robotStartPosition when hit enter
             if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
             {
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 FieldDataHandler.robotSpawn = robotStartPosition;
+                FieldDataHandler.robotSpawnOrientation = robotStartOrientation;
                 FieldDataHandler.WriteField();
 
                 EndReset();
@@ -382,6 +382,8 @@ namespace Synthesis.Robot
             InputControl.freeze = false;
             canvas.GetComponent<Canvas>().enabled = true;
             resetCanvas.SetActive(false);
+
+            SimUI.getSimUI().CloseNavigationTooltip();
         }
 
         /// <summary>
@@ -462,27 +464,6 @@ namespace Synthesis.Robot
             robotStartOrientation = BulletSharp.Math.Matrix.Identity;
             BeginReset();
             EndReset();
-        }
-
-        /// <summary>
-        /// Saves the robot's current orientation to be used whenever robot is reset
-        /// </summary>
-        public void SaveRobotOrientation()
-        {
-            robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-            robotStartOrientation.ToUnity();
-        }
-
-        /// <summary>
-        /// Cancel current orientation & spawnpoint changes
-        /// </summary>
-        public void CancelRobotOrientation()
-        {
-            if (IsResetting)
-            {
-                BeginReset();
-                EndReset();
-            }
         }
 
         /// <summary>

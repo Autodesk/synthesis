@@ -16,25 +16,36 @@ namespace Synthesis.GUI.Scrollables
 
         public bool trigger = false;
 
+        protected override void Start()
+        {
+            base.Start();
+            listStyle.fontSize = 14;
+            highlightStyle.fontSize = 14;
+            toScale = false;
+            errorMessage = ErrorMessage;
+        }
+
         /// <summary>
         /// Refreshes the scrollable with the directory provided.
         /// </summary>
         /// <param name="directory"></param>
         public void Refresh(string directory)
         {
-            string[] folders = Directory.GetDirectories(directory);
-
             items.Clear();
-
-            foreach (string robot in folders)
-                foreach (string extension in TargetExtensions)
-                    if (File.Exists(robot + Path.DirectorySeparatorChar + TargetFilename + extension))
-                        items.Add(new DirectoryInfo(robot).Name);
-
+            if (Directory.Exists(directory))
+            {
+                foreach (string item in Directory.GetDirectories(directory))
+                    foreach (string extension in TargetExtensions)
+                        if (File.Exists(item + Path.DirectorySeparatorChar + TargetFilename + extension))
+                            items.Add(new DirectoryInfo(item).Name);
+            }
             if (items.Count > 0)
                 selectedEntry = items[0];
+            else
+                selectedEntry = null;
 
-            if (!trigger) {
+            if (!trigger)
+            {
                 position = UnityEngine.Camera.main.WorldToScreenPoint(transform.position);
                 trigger = true;
             }
@@ -46,8 +57,6 @@ namespace Synthesis.GUI.Scrollables
         /// </summary>
         void OnEnable()
         {
-            errorMessage = ErrorMessage;
-
             items = new List<string>();
             items.Clear();
         }

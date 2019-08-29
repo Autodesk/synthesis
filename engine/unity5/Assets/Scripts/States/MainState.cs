@@ -36,11 +36,11 @@ namespace Synthesis.States
     /// </summary>
     public class MainState : State, IRobotProvider
     {
+        const string CurrentVersion = "4.3.1.1";
+
         private string[] SampleRobotGUIDs = { "ee85355c-6daf-4588-ba47-cdf3f9143922", "fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d", "d7f2959a-f9eb-4581-a4bb-898550193bda", "d1859211-db0f-4b75-866c-2d0e81b6732b", "52eb1ada-b051-461a-9cc4-1b5b74764ce5", "decdc6a1-5f76-4dea-add7-4c358f4a9921", "6b5d4484-db3c-425b-98b8-546c06d8d8bf", "c3bb1b94-dad8-4a8c-aa67-9c09eb9379c1", "ef4e3e2b-8cfb-437d-b63d-8bebc05fa3ba", "7d31cb8a-01e8-4eeb-9086-2955a993a374", "1478855a-60bd-42cb-8841-eece4fa0fbeb", "0b43729a-d8d3-4df2-bcbb-684343933c23", "9f19586c-a26f-4b28-9fb9-e06731178166", "f1225b7a-180e-456b-88d1-7315b0086001" };
 
         public string robotDirectory;
-
-        public static int timesLoaded = 0;
 
         private const int SolverIterations = 100;
 
@@ -101,7 +101,6 @@ namespace Synthesis.States
             QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("qualityLevel"));
             Screen.fullScreenMode = (FullScreenMode)PlayerPrefs.GetInt("fullscreen", 1);
 
-            string CurrentVersion = "4.3.1.1";
             GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection())
@@ -123,7 +122,7 @@ namespace Synthesis.States
                 }
             }
 
-            robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots"));
+            robotDirectory = PlayerPrefs.GetString("RobotDirectory");
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
             GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
             //BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
@@ -165,21 +164,15 @@ namespace Synthesis.States
             {
                 Tracking = true;
 
-                if (timesLoaded > 0)
+                if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
                 {
-                    if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
-                    {
-                        AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
-                        return;
-                    }
-                    else
-                    {
-                        MovePlane();
-                    }
+                    //AppModel.ErrorToMenu("FIELD_SELECT|FIRST");
+                    AppModel.ErrorToMenu("FIELD_SELECT|Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                    return;
                 }
                 else
                 {
-                    timesLoaded++;
+                    MovePlane();
                 }
 
                 bool result = false;
@@ -251,7 +244,7 @@ namespace Synthesis.States
         {
             if (ActiveRobot == null)
             {
-                AppModel.ErrorToMenu("Robot instance not valid.");
+                AppModel.ErrorToMenu("ROBOT_SELECT|Robot instance not valid.");
                 return;
             }
 
@@ -297,7 +290,7 @@ namespace Synthesis.States
             //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
             if (ActiveRobot == null)
             {
-                AppModel.ErrorToMenu("Robot instance not valid.");
+                AppModel.ErrorToMenu("ROBOT_SELECT|Robot instance not valid.");
                 return;
             }
         }
@@ -367,7 +360,6 @@ namespace Synthesis.States
                 if (singleMesh.bounds.min.y < lowPoint)
                 {
                     lowPoint = singleMesh.bounds.min.y;
-                    Debug.Log("LowPoint: " + lowPoint);
                 }
             }
 
@@ -381,6 +373,10 @@ namespace Synthesis.States
         /// <returns>whether the process was successful</returns>
         bool LoadField(string directory)
         {
+            if (string.IsNullOrEmpty(directory))
+            {
+                UserMessageManager.Dispatch("Field not found", 7);
+            }
             fieldPath = directory;
 
             fieldObject = new GameObject("Field");
@@ -390,19 +386,24 @@ namespace Synthesis.States
                 return new UnityFieldDefinition(guid, name);
             };
 
-            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf"))
+            bool isEmptyGrid = directory == "" || new DirectoryInfo(directory).Name == UnityFieldDefinition.EmptyGridName;
+
+            if (!File.Exists(directory + Path.DirectorySeparatorChar + "definition.bxdf") && !isEmptyGrid)
                 return false;
 
-            FieldDataHandler.Load(fieldPath);
-            timesLoaded++;
+            FieldDataHandler.LoadFieldMetaData(fieldPath);
 
             Controls.Load();
             Controls.UpdateFieldControls();
             if (!Controls.HasBeenSaved())
-                Controls.Save();
+                Controls.Save(true);
 
+            if (isEmptyGrid)
+            {
+                return true;
+            }
             fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + Path.DirectorySeparatorChar + "definition.bxdf", out string loadResult);
-            Debug.Log(loadResult);
+            // Debug.Log("Field load result: " + loadResult);
             fieldDefinition.CreateTransform(fieldObject.transform);
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
         }
@@ -607,7 +608,7 @@ namespace Synthesis.States
             {
                 if (!LoadField(fieldDirectory))
                 {
-                    AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
+                    AppModel.ErrorToMenu("FIELD_SELECT|Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
                     return;
                 }
             }
@@ -616,7 +617,7 @@ namespace Synthesis.States
             {
                 if (!LoadRobot(rs.Key, false))
                 {
-                    AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
                     return;
                 }
 
@@ -839,22 +840,6 @@ namespace Synthesis.States
         public void ResetRobotOrientation()
         {
             ActiveRobot.ResetRobotOrientation();
-        }
-
-        /// <summary>
-        /// Saves the active robot's current orientation to be used whenever robot is reset
-        /// </summary>
-        public void SaveRobotOrientation()
-        {
-            ActiveRobot.SaveRobotOrientation();
-        }
-
-        /// <summary>
-        /// Cancels the active robot's unsaved orientation changes
-        /// </summary>
-        public void CancelRobotOrientation()
-        {
-            ActiveRobot.CancelRobotOrientation();
         }
         #endregion
 

@@ -13,6 +13,8 @@ namespace Synthesis.Field
 {
     public class UnityFieldDefinition : FieldDefinition
     {
+        public const string EmptyGridName = "Empty Grid";
+
         public GameObject unityObject;
         private const float CollisionMargin = 0.01f;
         private const float FrictionScale = 0.02f;

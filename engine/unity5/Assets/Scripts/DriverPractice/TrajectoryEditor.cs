@@ -22,8 +22,7 @@ namespace Synthesis.DriverPractice
         
         GameObject canvas;
         GameObject dpmToolbar;
-        GameObject gamepieceDropdownButton;
-        GameObject gamepieceDropdownLabel;
+        Dropdown gamepieceDropdown;
 
         GameObject moveArrows;
 
@@ -79,8 +78,7 @@ namespace Synthesis.DriverPractice
             canvas = Auxiliary.FindGameObject("Canvas");
 
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
-            gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
-            gamepieceDropdownLabel = Auxiliary.FindObject(gamepieceDropdownButton, "GamepieceName");
+            gamepieceDropdown = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdown").GetComponent<Dropdown>();
             #region Trajectory Editor init
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
             xOffsetEntry = Auxiliary.FindObject(trajectoryPanel, "XOffsetEntry");
@@ -103,8 +101,7 @@ namespace Synthesis.DriverPractice
         /// </summary>
         private void SetGamepieceIndex()
         {
-            for (int i = 0; i < FieldDataHandler.gamepieces.Count(); i++)
-                if (gamepieceDropdownLabel.GetComponent<Text>().text.Equals(FieldDataHandler.gamepieces[i].name)) gamepieceIndex = i;
+            gamepieceIndex = gamepieceDropdown.GetComponent<Dropdown>().value;
         }
         public void OpenEditor()
         {

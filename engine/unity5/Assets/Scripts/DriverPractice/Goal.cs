@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Xml.Serialization;
 using Synthesis.Utils;
 using Synthesis.BUExtensions;
+using System.Collections.Generic;
 
 namespace Synthesis.DriverPractice
 {
@@ -19,9 +20,13 @@ namespace Synthesis.DriverPractice
         public string description; //goal name - only for the user
         public int pointValue; //nominal point value
         public Vector3 position; //vector location of the object in world space
+        public Vector3 rotation;
         public Vector3 scale; //vector that denotes the factor that the object stretches in width, height and length
+        public bool KeepScored { get; private set; } = true;
 
-        Text score;
+        private List<GameObject> currentlyScoredObjects = new List<GameObject>();
+
+        private Text score;
 
         /// <summary>
         /// Method is called whenever interactor collides with another object.
@@ -31,17 +36,47 @@ namespace Synthesis.DriverPractice
         /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
         public override void BOnCollisionEnter(CollisionObject other, PersistentManifoldList manifoldList)
         {
+            base.BOnCollisionEnter(other, manifoldList);
             if (other.UserObject.ToString().Contains(gamepieceKeyword)) //.Contains() handles both gamepieces and their clones
             {
                 GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
 
                 if (gamepieceObject.GetComponent<BFixedConstraintEx>() == null) //make sure gamepiece isn't held by robot
                 {
-                    gamepieceObject.SetActive(false); // Destroying the gamepiece leads to issues if the gamepiece was the original.
-                    UpdateScore(); //change red or blue score
+                    if (!currentlyScoredObjects.Exists(i => i == gamepieceObject)) { // Only score if it isn't currently score
+                        gamepieceObject.SetActive(KeepScored); // Destroying the gamepiece leads to issues if the gamepiece was the original.
+
+                        currentlyScoredObjects.Add(gamepieceObject); // Track it
+                        UpdateScore(); //change red or blue score
+                    }
                 }
             }
         }
+
+        public override void BOnCollisionExit(CollisionObject other)
+        {
+            base.BOnCollisionExit(other);
+            if (other.UserObject.ToString().Contains(gamepieceKeyword)){
+                GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
+                if (gamepieceObject.activeSelf)
+                {
+                    currentlyScoredObjects.Remove(currentlyScoredObjects.Find(i => i == gamepieceObject)); // Remove objects that leave the scoring zone
+                }
+            }
+        }
+
+        public void SetKeepScored(bool value)
+        {
+            if(KeepScored != value)
+            {
+                KeepScored = value;
+                foreach (var i in currentlyScoredObjects)
+                {
+                    i.SetActive(value);
+                }
+            }
+        }
+
         /// <summary>
         /// Increment score by point value
         /// </summary>

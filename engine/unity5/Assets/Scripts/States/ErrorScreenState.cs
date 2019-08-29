@@ -15,14 +15,42 @@ namespace Synthesis.States
         public override void Start()
         {
             string error = AppModel.ErrorMessage;
-            if (error.Split('|')[0].Equals("ROBOT_SELECT")) {
+            if (error == null)
+            {
+                throw new System.Exception("Missing error message - don't start error scene directly");
+            }
+            string error_type = error.Contains("|") ? error.Split('|')[0] : "";
+            string error_mesage = error.Contains("|") ? error.Split('|')[1] : error;
+
+            if (error_type.Equals("ROBOT_SELECT"))
+            {
                 AppModel.ClearError();
                 StateMachine.ChangeState(new LoadRobotState());
-                if (error.Split('|')[1].Equals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
-                else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error.Split('|')[1];
-            } else {
+                if (error_mesage.Equals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
+                else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error_mesage;
+                PlayerPrefs.SetString("simSelectedRobot", "");
+                PlayerPrefs.SetString("simSelectedRobotName", "");
+            }
+            /*
+            else if (error_type.Equals("FIELD_SELECT"))
+            {
+                AppModel.ClearError();
+                StateMachine.ChangeState(new LoadFieldState());
+                if (error_mesageEquals("FIRST")) Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = "";
+                else Auxiliary.FindGameObject("ErrorNote").GetComponent<Text>().text = error_mesage;
+                PlayerPrefs.SetString("simSelectedField", "");
+                PlayerPrefs.SetString("simSelectedFieldName", "");
+            }
+            */
+            else
+            {
+                if (error_type.Equals("FIELD_SELECT"))
+                {
+                    PlayerPrefs.SetString("simSelectedField", "");
+                    PlayerPrefs.SetString("simSelectedFieldName", "");
+                }
                 Auxiliary.FindGameObject("ErrorScreen").SetActive(true);
-                Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = AppModel.ErrorMessage;
+                Auxiliary.FindGameObject("ErrorText").GetComponent<Text>().text = error_mesage;
                 AppModel.ClearError();
             }
         }

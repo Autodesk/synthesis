@@ -41,7 +41,7 @@ namespace Synthesis.DriverPractice
                 if (other.UserObject.ToString().Contains(gamepiece[i]) && ((BRigidBody)other.UserObject).gameObject.GetComponent<BFixedConstraintEx>() == null) //make sure gamepiece isn't already held - NO STEAL
                 {
                     collisionDetector[i] = true;
-                    collisionObject.Insert(i, ((BRigidBody)other.UserObject).gameObject); //insert at index coherent with index of gamepiece in FieldDataHandler.gamepieces
+                    collisionObject.Insert(i, ((BRigidBody)other.UserObject).gameObject); //insert at index consistent with index of gamepiece in FieldDataHandler.gamepieces
                 }
         }
        
@@ -67,7 +67,7 @@ namespace Synthesis.DriverPractice
             this.gamepiece.Insert(id, gamepiece);
             while (collisionDetector.Count < id) collisionDetector.Add(false); //increase depth
             collisionDetector.Insert(id, false);
-            while (collisionObject.Count <= id) collisionObject.Add(new GameObject()); //increase depth
+            while (collisionObject.Count <= id) collisionObject.Add(null); //increase depth
         }
 
         public bool GetDetected(int id)

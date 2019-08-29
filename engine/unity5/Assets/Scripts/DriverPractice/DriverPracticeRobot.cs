@@ -44,16 +44,19 @@ namespace Synthesis.DriverPractice
         }
         private void ProcessControls()
         {
-            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().pickup.Count; i++) //for each gamepiece
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 && //existence check
-                     InputControl.GetButton(Controls.Players[controlIndex].GetButtons().pickup[i])) Intake(i);
-            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().release.Count; i++)
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
-                    if (InputControl.GetButton(Controls.Players[controlIndex].GetButtons().release[i])) Release(i);
-                    else HoldGamepiece(i); //when not releasing hold
-            for (int i = 0; i < Controls.Players[controlIndex].GetButtons().spawnPieces.Count; i++)
-                if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
-                    InputControl.GetButtonDown(Controls.Players[controlIndex].GetButtons().spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+            if (FieldDataHandler.gamepieces.Count > 0)
+            {
+                for (int i = 0; i < Controls.Players[controlIndex].GetButtons().pickup.Count; i++) //for each gamepiece
+                    if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 && //existence check
+                         InputControl.GetButton(Controls.Players[controlIndex].GetButtons().pickup[i])) Intake(i);
+                for (int i = 0; i < Controls.Players[controlIndex].GetButtons().release.Count; i++)
+                    if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0)
+                        if (InputControl.GetButton(Controls.Players[controlIndex].GetButtons().release[i])) Release(i);
+                        else HoldGamepiece(i); //when not releasing hold
+                for (int i = 0; i < Controls.Players[controlIndex].GetButtons().spawnPieces.Count; i++)
+                    if (DPMDataHandler.dpmodes.Where(d => d.gamepiece.Equals(FieldDataHandler.gamepieces[i].name)).ToArray().Count() > 0 &&
+                        InputControl.GetButtonDown(Controls.Players[controlIndex].GetButtons().spawnPieces[i])) Spawn(FieldDataHandler.gamepieces[i]);
+            }
             if (InputControl.GetButtonDown(Controls.Players[controlIndex].GetButtons().trajectory)) drawing = !drawing; //trajectory drawing toggle
         }
         #region DriverPractice Creation Stuff
@@ -204,6 +207,7 @@ namespace Synthesis.DriverPractice
         private void Spawn(Gamepiece g)
         {
             GameObject gamepieceClone = Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity); //game object creation
+            gamepieceClone.transform.eulerAngles = g.spawnorientation;
             gamepieceClone.name = g.name + "(Clone)"; //add clone identifier to gamepiece name
             //physics
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
