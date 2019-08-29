@@ -25,7 +25,7 @@ namespace Synthesis.DriverPractice
 
         GameObject scoreboard;
 
-        private GameObject goalParent; // Used for sorting within the scene
+        public static GameObject GoalParent { get; private set; } // Used for sorting within the scene
 
         Transform goalDisplay;
         
@@ -46,9 +46,9 @@ namespace Synthesis.DriverPractice
 
         public void Awake()
         {
-            if(goalParent == null)
+            if(GoalParent == null)
             {
-                goalParent = new GameObject("Goals");
+                GoalParent = new GameObject("Goals");
             }
         }
 
@@ -278,20 +278,7 @@ namespace Synthesis.DriverPractice
         void GetGoals()
         {
             redGoals = FieldDataHandler.redGoals;
-            foreach(var i in redGoals){
-                foreach (var j in i)
-                {
-                    j.transform.SetParent(goalParent.transform);
-                }
-            }
             blueGoals = FieldDataHandler.blueGoals;
-            foreach (var i in blueGoals)
-            {
-                foreach (var j in i)
-                {
-                    j.transform.SetParent(goalParent.transform);
-                }
-            }
         }
         /// <summary>
         /// Change state to move goal state
@@ -313,7 +300,7 @@ namespace Synthesis.DriverPractice
         {
             int goalIndex = color.Equals("Red") ? redGoals[gamepieceIndex].Count() : blueGoals[gamepieceIndex].Count();
             GameObject goalObject = new GameObject("Gamepiece" + gamepieceIndex.ToString() + "Goal" + goalIndex.ToString());
-            goalObject.transform.SetParent(goalParent.transform);
+            goalObject.transform.SetParent(GoalParent.transform);
             //physics stuff
             BBoxShape collider = goalObject.AddComponent<BBoxShape>();
             BRigidBody rigid = goalObject.AddComponent<BRigidBody>();

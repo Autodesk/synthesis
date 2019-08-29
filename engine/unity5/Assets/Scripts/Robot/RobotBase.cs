@@ -372,7 +372,7 @@ namespace Synthesis.Robot
             BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
             if (rigidBody == null)
-                AppModel.ErrorToMenu("Could not generate robot physics data.");
+                AppModel.ErrorToMenu("ROBOT_SELECT|Could not generate robot physics data.");
             else if (!rigidBody.GetCollisionObject().IsActive)
                 rigidBody.GetCollisionObject().Activate();
         }
