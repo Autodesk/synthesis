@@ -100,13 +100,19 @@ namespace Synthesis.States
                 {
                     if (!UnityEngine.Input.GetMouseButton(0))
                     {
-                        const float RESET_SPEED = 0.05f;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.forward * RESET_SPEED;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.back * RESET_SPEED;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.right * RESET_SPEED;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.left * RESET_SPEED;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.up * RESET_SPEED;
-                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.down * RESET_SPEED;
+                        const float RESET_TRANSLATE_SPEED = 0.05f;
+                        const float RESET_ROTATE_SPEED = 0.5f;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraLeft, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.forward * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRight, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.back * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraForward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.right * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraBackward, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.left * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraUp, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.up * RESET_TRANSLATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraDown, overrideFreeze: true)) goalIndicator.transform.position += UnityEngine.Vector3.down * RESET_TRANSLATE_SPEED;
+
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.up * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.down * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.back * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.forward * RESET_ROTATE_SPEED;
                     }
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
@@ -151,6 +157,7 @@ namespace Synthesis.States
         {
             if (move) goalIndicator.transform.position = new Vector3(0f, 4f, 0f);
             else goalIndicator.transform.localScale = Vector3.one;
+            goalIndicator.transform.eulerAngles = Vector3.zero;
         }
     }
 }
