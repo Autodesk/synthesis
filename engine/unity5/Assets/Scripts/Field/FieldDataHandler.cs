@@ -16,6 +16,7 @@ namespace Synthesis.Field
         public static List<List<GameObject>> redGoals = new List<List<GameObject>>(); //List of available red goals
         public static List<List<GameObject>> blueGoals = new List<List<GameObject>>(); //List of available blue goals
         public static Vector3 robotSpawn = new Vector3(0f, 3f, 0f); //robot spawn defaults to 0,3,0 if nothing defined
+        public static BulletSharp.Math.Matrix robotSpawnOrientation = BulletSharp.Math.Matrix.Identity;
         public static int gamepieceIndex = 0;
         #endregion
         #region fileWriting
@@ -99,11 +100,32 @@ namespace Synthesis.Field
                                                                                           new XAttribute("holdinglimit", g.holdingLimit),
                                                                                           new XAttribute("x", g.spawnpoint.x),
                                                                                           new XAttribute("y", g.spawnpoint.y),
-                                                                                          new XAttribute("z", g.spawnpoint.z)));
+                                                                                          new XAttribute("z", g.spawnpoint.z),
+                                                                                          new XAttribute("i", g.spawnorientation.x),
+                                                                                          new XAttribute("j", g.spawnorientation.y),
+                                                                                          new XAttribute("k", g.spawnorientation.z)
+                                                                                          ));
             XElement robotSpawnPoint = new XElement("RobotSpawnPoint",
                                             new XAttribute("x", robotSpawn.x),
                                             new XAttribute("y", robotSpawn.y),
-                                            new XAttribute("z", robotSpawn.z));
+                                            new XAttribute("z", robotSpawn.z),
+                                            new XAttribute("M11", robotSpawnOrientation.M11),
+                                            new XAttribute("M12", robotSpawnOrientation.M12),
+                                            new XAttribute("M13", robotSpawnOrientation.M13),
+                                            new XAttribute("M14", robotSpawnOrientation.M14),
+                                            new XAttribute("M21", robotSpawnOrientation.M21),
+                                            new XAttribute("M22", robotSpawnOrientation.M22),
+                                            new XAttribute("M23", robotSpawnOrientation.M23),
+                                            new XAttribute("M24", robotSpawnOrientation.M24),
+                                            new XAttribute("M31", robotSpawnOrientation.M31),
+                                            new XAttribute("M32", robotSpawnOrientation.M32),
+                                            new XAttribute("M33", robotSpawnOrientation.M33),
+                                            new XAttribute("M34", robotSpawnOrientation.M34),
+                                            new XAttribute("M41", robotSpawnOrientation.M41),
+                                            new XAttribute("M42", robotSpawnOrientation.M42),
+                                            new XAttribute("M43", robotSpawnOrientation.M43),
+                                            new XAttribute("M44", robotSpawnOrientation.M44)
+                                            );
             //wrap general data
             XElement gen = new XElement("General", null); //parent
             gen.Add(pieces);
@@ -160,6 +182,7 @@ namespace Synthesis.Field
                 redGoals = getGoals("RedGoals");
                 blueGoals = getGoals("BlueGoals");
                 robotSpawn = getRobotSpawn();
+                robotSpawnOrientation = getRobotSpawnRotation();
                 gamepieceIndex = 0;
             }
             else
@@ -229,6 +252,38 @@ namespace Synthesis.Field
         private static Vector3 getRobotSpawn()
         {
             return new Vector3(float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("x").Value), float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("y").Value), float.Parse(file.Root.Element("General").Element("RobotSpawnPoint").Attribute("z").Value)); ;
+        }
+
+        private static BulletSharp.Math.Matrix getRobotSpawnRotation()
+        {
+            try
+            {
+                var spawn = file.Root.Element("General").Element("RobotSpawnPoint");
+                //return new BulletSharp.Math.Matrix(float.Parse(spawn.Attribute("i").Value), float.Parse(spawn.Attribute("j").Value), float.Parse(spawn.Attribute("k").Value));
+                return new BulletSharp.Math.Matrix
+                {
+                    M11 = float.Parse(spawn.Attribute("M11").Value),
+                    M12 = float.Parse(spawn.Attribute("M12").Value),
+                    M13 = float.Parse(spawn.Attribute("M12").Value),
+                    M14 = float.Parse(spawn.Attribute("M13").Value),
+                    M21 = float.Parse(spawn.Attribute("M21").Value),
+                    M22 = float.Parse(spawn.Attribute("M22").Value),
+                    M23 = float.Parse(spawn.Attribute("M23").Value),
+                    M24 = float.Parse(spawn.Attribute("M24").Value),
+                    M31 = float.Parse(spawn.Attribute("M31").Value),
+                    M32 = float.Parse(spawn.Attribute("M32").Value),
+                    M33 = float.Parse(spawn.Attribute("M33").Value),
+                    M34 = float.Parse(spawn.Attribute("M34").Value),
+                    M41 = float.Parse(spawn.Attribute("M41").Value),
+                    M42 = float.Parse(spawn.Attribute("M42").Value),
+                    M43 = float.Parse(spawn.Attribute("M43").Value),
+                    M44 = float.Parse(spawn.Attribute("M44").Value),
+                };
+            }
+            catch (System.Exception)
+            {
+                return BulletSharp.Math.Matrix.Identity;
+            }
         }
         #endregion
     }

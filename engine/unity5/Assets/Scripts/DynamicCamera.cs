@@ -131,6 +131,7 @@ public class DynamicCamera : MonoBehaviour
 
                 lookingRotation.y += InputControl.GetAxis(Controls.Global.GetAxes().cameraRotation);
                 lookingRotation.x -= InputControl.GetAxis(Controls.Global.GetAxes().cameraTilt);
+                //lookingRotation.z += InputControl.GetAxis(Controls.Global.GetAxes().cameraRoll);
 
                 if (lookingRotation.x < -MAX_ROTATION)
                 {
@@ -357,6 +358,7 @@ public class DynamicCamera : MonoBehaviour
 
                 rotationVector.y += InputControl.GetAxis(Controls.Global.GetAxes().cameraRotation);
                 rotationVector.x -= InputControl.GetAxis(Controls.Global.GetAxes().cameraTilt);
+                rotationVector.z += InputControl.GetAxis(Controls.Global.GetAxes().cameraRoll);
 
                 if (rotationVector.x < -MAX_ROTATION)
                 {
