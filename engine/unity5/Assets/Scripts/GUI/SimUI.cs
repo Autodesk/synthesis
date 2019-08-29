@@ -63,7 +63,8 @@ namespace Synthesis.GUI
         GameObject resetDropdown;
 
         GameObject tabs;
-        GameObject emulationTab;
+        GameObject gamepieceTab;
+        GameObject scoringTab;
 
         private bool navigationTooltipClosed = false;
         private bool overviewWindowClosed = false;
@@ -75,6 +76,7 @@ namespace Synthesis.GUI
         public static string updater;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
+        public Sprite disabledButton; // these sprites are attached to the SimUI script
         public Sprite highlightButton; // in the Scene simulator
         private Sprite hoverHighlight;
 
@@ -193,7 +195,8 @@ namespace Synthesis.GUI
 
             // tab and toolbar system components
             tabs = Auxiliary.FindGameObject("Tabs");
-            emulationTab = Auxiliary.FindObject(tabs, "EmulationTab");
+            gamepieceTab = Auxiliary.FindObject(tabs, "DriverPracticeTab");
+            scoringTab = Auxiliary.FindObject(tabs, "ScoringTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
             LinkToolbars();
@@ -404,6 +407,8 @@ namespace Synthesis.GUI
         /// </summary>
         private void HighlightTabs()
         {
+            gamepieceTab.GetComponent<Button>().interactable = FieldDataHandler.gamepieces.Count > 0;
+            scoringTab.GetComponent<Button>().interactable = FieldDataHandler.gamepieces.Count > 0;
             foreach (Transform t in tabs.transform)
             {
                 if (t.gameObject.name.Equals(currentTab))
@@ -418,7 +423,19 @@ namespace Synthesis.GUI
                 }
                 else {
                     try {
-                        t.gameObject.GetComponent<Image>().sprite = normalButton;
+                        if (t.GetComponent<Button>().interactable)
+                        {
+                            t.gameObject.GetComponent<Image>().sprite = normalButton;
+                            t.gameObject.GetComponentInChildren<Text>().color = Color.white;
+                        }
+                        else
+                        {
+                            t.gameObject.GetComponent<Image>().sprite = disabledButton;
+                            t.gameObject.GetComponentInChildren<Text>().color = Color.grey;
+
+                        }
+
+
                         SpriteState s = new SpriteState();
                         s.highlightedSprite = hoverHighlight;
                         t.gameObject.GetComponent<Button>().spriteState = s;
