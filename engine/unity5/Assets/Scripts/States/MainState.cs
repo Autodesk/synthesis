@@ -167,7 +167,7 @@ namespace Synthesis.States
                 if (!LoadField(PlayerPrefs.GetString("simSelectedField")))
                 {
                     //AppModel.ErrorToMenu("FIELD_SELECT|FIRST");
-                    AppModel.ErrorToMenu("Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
+                    AppModel.ErrorToMenu("FIELD_SELECT|Could not load field: " + PlayerPrefs.GetString("simSelectedField") + "\nHas it been moved or deleted?)");
                     return;
                 }
                 else
