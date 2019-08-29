@@ -27,15 +27,8 @@ namespace Assets.Scripts.GUI
         GameObject dpmToolbar;
         GameObject tabs;
 
-        GameObject gamepieceDropdownButton;
-        GameObject gamepieceDropdownArrow;
-        GameObject gamepieceDropdownLabel;
-        GameObject gamepieceDropdownExtension;
-        List<GameObject> gamepieceDropdownElements;
-        GameObject gamepieceDropdownPrefab;
-        Transform dropdownLocation;
-        bool dropdown = false;
-        bool buffer = false;
+        Dropdown gamepieceDropdown;
+        Text gamepieceDropdownLabel;
 
         GameObject trajectoryPanel;
 
@@ -52,107 +45,45 @@ namespace Assets.Scripts.GUI
             dpmToolbar = Auxiliary.FindObject(canvas, "DPMToolbar");
             tabs = Auxiliary.FindObject(canvas, "Tabs");
 
-            gamepieceDropdownButton = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdownButton");
-            gamepieceDropdownArrow = Auxiliary.FindObject(gamepieceDropdownButton, "Arrow");
-            gamepieceDropdownLabel = Auxiliary.FindObject(gamepieceDropdownButton, "GamepieceName");
-            gamepieceDropdownExtension = Auxiliary.FindObject(gamepieceDropdownButton, "Scroll View");
-            gamepieceDropdownExtension.SetActive(false);
-            gamepieceDropdownPrefab = Resources.Load("Prefabs/GamepieceDropdownElement") as GameObject;
-            dropdownLocation = Auxiliary.FindObject(gamepieceDropdownButton, "DropdownLocation").transform;
+            gamepieceDropdown = Auxiliary.FindObject(dpmToolbar, "GamepieceDropdown").GetComponent<Dropdown>();
+            gamepieceDropdown.onValueChanged.AddListener(OnGamepieceDropdownValueChanged);
+            gamepieceDropdownLabel = Auxiliary.FindObject(gamepieceDropdown.gameObject, "Label").GetComponent<Text>();
+            for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
+            {
+                gamepieceDropdown.options.Add(new Dropdown.OptionData(FieldDataHandler.gamepieces[i].name));
+            }
+            if (FieldDataHandler.gamepieces.Count == 0)
+            {
+                gamepieceDropdownLabel.text = "No gamepieces";
+                gamepieceDropdown.interactable = false;
+            }
+            else
+            {
+                gamepieceDropdown.RefreshShownValue();
+                gamepieceDropdown.value = 0;
+                gamepieceDropdown.interactable = true;
+            }
 
             trajectoryPanel = Auxiliary.FindObject(canvas, "TrajectoryPanel");
 
             gamepieceIndex = FieldDataHandler.gamepieceIndex;
-
-            InitGamepieceDropdown();
         }
+
         public override void Update()
         {
             if (dpmRobot == null) dpmRobot = mainState.ActiveRobot.GetDriverPractice();
             if (mainState.ActiveRobot.GetDriverPractice() != dpmRobot) dpmRobot = mainState.ActiveRobot.GetDriverPractice(); //updates active robot to current active robot
-            if (dropdown && buffer) //buffer on gamepiece tab prefabs
-                if (Input.GetMouseButtonUp(0))
-                {
-                    dropdown = false;
-                    buffer = false;
-                    HideGamepieceDropdown();
-                }
-            if (!buffer && dropdown && Input.GetMouseButtonDown(0))
-                buffer = true;
         }
-        /// <summary>
-        /// Initializes the gamepiece label
-        /// </summary>
-        private void InitGamepieceDropdown()
+
+        public void OnGamepieceDropdownValueChanged(int value)
         {
-            SetGamepieceDropdownName();
-            if (FieldDataHandler.gamepieces.Count() <= 1)
-            {
-                gamepieceDropdownArrow.SetActive(false);
-                gamepieceDropdownButton.GetComponent<Image>().enabled = false;
-            }
-            else gamepieceDropdownArrow.SetActive(true);
-        }
-        /// <summary>
-        /// Sets the gamepiece button label to the name of the current gamepiece
-        /// </summary>
-        private void SetGamepieceDropdownName()
-        {
-            gamepieceDropdownLabel.GetComponent<Text>().text = FieldDataHandler.gamepieces.Count() > 0 ? FieldDataHandler.gamepieces[gamepieceIndex].name : "No Gamepieces";
-        }
-        /// <summary>
-        /// Creates fake dropdown with button prefabs
-        /// </summary>
-        public void OnGamepieceDropdownButtonClicked()
-        {
-            HideGamepieceDropdown();
-            if (FieldDataHandler.gamepieces.Count > 1)
-            {
-                dropdown = true;
-                for (int i = 0; i < FieldDataHandler.gamepieces.Count; i++)
-                {
-                    int id = i;
-
-                    if (id != gamepieceIndex)
-                    {
-                        //create dropdown buttons
-                        GameObject gamepieceDropdownElement = GameObject.Instantiate(gamepieceDropdownPrefab);
-                        gamepieceDropdownElement.name = "Gamepiece " + id.ToString() + ": " + FieldDataHandler.gamepieces[id].name;
-                        gamepieceDropdownElement.transform.parent = dropdownLocation;
-                        Auxiliary.FindObject(gamepieceDropdownElement, "Name").GetComponent<Text>().text = FieldDataHandler.gamepieces[id].name;
-
-                        //change current gamepiece
-                        Button change = Auxiliary.FindObject(gamepieceDropdownElement, "Change").GetComponent<Button>();
-                        change.onClick.AddListener(delegate { gamepieceIndex = id; SetGamepieceDropdownName(); HideGamepieceDropdown(); dropdown = false; buffer = false; });
-
-                        gamepieceDropdownElements.Add(gamepieceDropdownElement);
-                    }
-                }
-                //show panel
-                gamepieceDropdownExtension.SetActive(true);
-            }
-
+            gamepieceIndex = value;
             AnalyticsManager.GlobalInstance.LogEventAsync(AnalyticsLedger.EventCatagory.DPMTab,
                 AnalyticsLedger.EventAction.Changed,
                 "Dropdown - Gamepiece",
                 AnalyticsLedger.getMilliseconds().ToString());
         }
-        /// <summary>
-        /// Destroys current dropdown and hides it
-        /// </summary>
-        private void HideGamepieceDropdown()
-        {
-            if (gamepieceDropdownElements == null)
-                gamepieceDropdownElements = new List<GameObject>(); //avoid null reference 
-            //destroy current dropdown buttons
-            while (gamepieceDropdownElements.Count > 0)
-            {
-                GameObject.Destroy(gamepieceDropdownElements[0]);
-                gamepieceDropdownElements.RemoveAt(0);
-            }
-            //hide panels
-            gamepieceDropdownExtension.SetActive(false);
-        }
+
         /// <summary>
         /// Change to intake state
         /// </summary>
