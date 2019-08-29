@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="unity5.Plugins.csproj">
+﻿<Properties StartupItem="engine.Plugins.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs">
     <Files>
