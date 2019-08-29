@@ -124,18 +124,15 @@ namespace Synthesis.Field
                 if (!string.IsNullOrEmpty(fieldPath) && new DirectoryInfo(fieldPath).Name == UnityFieldDefinition.EmptyGridName)
                 {
                     gamepieces = new List<Gamepiece>();
-                    if (!Directory.Exists(fieldPath))
+                    if (fieldPath == PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName &&
+                        fieldPath == PlayerPrefs.GetString("simSelectedField"))
                     {
-                        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")))
+                        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FieldDirectory")) && Directory.Exists(PlayerPrefs.GetString("FieldDirectory")))
                         {
-                            if (fieldPath == PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName &&
-                                fieldPath == PlayerPrefs.GetString("simSelectedField"))
-                            {
-                                Directory.CreateDirectory(fieldPath);
-                                File.Create(targetFile).Dispose();
-                                WriteField();
-                                return true;
-                            }
+                            Directory.CreateDirectory(fieldPath);
+                            File.Create(targetFile).Dispose();
+                            WriteField();
+                            return true;
                         }
                     }
                 }

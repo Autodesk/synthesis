@@ -10,6 +10,7 @@ namespace Synthesis.Field
         public string name;
         public int holdingLimit;
         public Vector3 spawnpoint;
+        public Vector3 spawnorientation; // TODO add to xml
         /// <summary>
         /// Constructor to set gamepiece values by converting xml element 
         /// </summary>
