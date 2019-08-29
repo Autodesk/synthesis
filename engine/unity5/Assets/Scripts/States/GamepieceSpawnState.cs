@@ -102,12 +102,15 @@ namespace Synthesis.States
                     if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true)) spawnIndicator.transform.eulerAngles += UnityEngine.Vector3.down * RESET_ROTATE_SPEED;
                     if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true)) spawnIndicator.transform.eulerAngles += UnityEngine.Vector3.back * RESET_ROTATE_SPEED;
                     if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true)) spawnIndicator.transform.eulerAngles += UnityEngine.Vector3.forward * RESET_ROTATE_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollLeft, overrideFreeze: true)) spawnIndicator.transform.eulerAngles += UnityEngine.Vector3.left * RESET_ROTATE_SPEED;
+                    if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollRight, overrideFreeze: true)) spawnIndicator.transform.eulerAngles += UnityEngine.Vector3.right * RESET_ROTATE_SPEED;
 
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
                     FieldDataHandler.gamepieces[gamepieceIndex].spawnpoint = spawnIndicator.transform.position;
+                    FieldDataHandler.gamepieces[gamepieceIndex].spawnorientation = spawnIndicator.transform.eulerAngles;
                     FieldDataHandler.WriteField();
                     ReturnToMainState();
                 }

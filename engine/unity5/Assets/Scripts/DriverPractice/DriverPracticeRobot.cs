@@ -207,6 +207,7 @@ namespace Synthesis.DriverPractice
         private void Spawn(Gamepiece g)
         {
             GameObject gamepieceClone = Instantiate(GameObject.Find(g.name).GetComponentInParent<BRigidBody>().gameObject, g.spawnpoint, UnityEngine.Quaternion.identity); //game object creation
+            gamepieceClone.transform.eulerAngles = g.spawnorientation;
             gamepieceClone.name = g.name + "(Clone)"; //add clone identifier to gamepiece name
             //physics
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;

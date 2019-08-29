@@ -113,6 +113,8 @@ namespace Synthesis.States
                         if (InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.down * RESET_ROTATE_SPEED;
                         if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.back * RESET_ROTATE_SPEED;
                         if (InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.forward * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollLeft, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.left * RESET_ROTATE_SPEED;
+                        if (InputControl.GetButton(Controls.Global.GetButtons().cameraRollRight, overrideFreeze: true)) goalIndicator.transform.eulerAngles += UnityEngine.Vector3.right * RESET_ROTATE_SPEED;
                     }
                 }
                 if (UnityEngine.Input.GetKeyDown(KeyCode.Return))

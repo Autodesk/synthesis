@@ -37,7 +37,11 @@ namespace Synthesis.Input
             public KeyMapping cameraTiltUp;
             [JsonProperty]
             public KeyMapping cameraTiltDown;
-
+            [JsonProperty]
+            public KeyMapping cameraRollLeft;
+            [JsonProperty]
+            public KeyMapping cameraRollRight;
+            // TODO add camera yaw
             //Other controls
             [JsonProperty]
             public KeyMapping resetField;
@@ -67,6 +71,8 @@ namespace Synthesis.Input
                 list.Add(cameraRotateRight);
                 list.Add(cameraTiltUp);
                 list.Add(cameraTiltDown);
+                list.Add(cameraRollLeft);
+                list.Add(cameraRollRight);
 
                 list.Add(resetField);
                 list.Add(cameraToggle);
@@ -88,6 +94,8 @@ namespace Synthesis.Input
             public Axis cameraRotation;
             [JsonProperty]
             public Axis cameraTilt;
+            [JsonProperty]
+            public Axis cameraRoll;
 
             public Axes()
             {
@@ -159,12 +167,15 @@ namespace Synthesis.Input
             buttons.cameraRotateRight = new KeyMapping("Camera Rotate Right", KeyCode.E);
             buttons.cameraTiltUp = new KeyMapping("Camera Tilt Up", KeyCode.X);
             buttons.cameraTiltDown = new KeyMapping("Camera Tilt Down", KeyCode.Z);
+            buttons.cameraRollLeft = new KeyMapping("Camera Roll Left", KeyCode.LeftBracket);
+            buttons.cameraRollRight = new KeyMapping("Camera Roll Right", KeyCode.RightBracket);
 
             axes.cameraForward= new Axis("Camera Forward Axis", buttons.cameraBackward, buttons.cameraForward);
             axes.cameraLateral = new Axis("Camera Lateral Axis", buttons.cameraLeft, buttons.cameraRight);
             axes.cameraVertical = new Axis("Camera Vertical Axis", buttons.cameraDown, buttons.cameraUp);
             axes.cameraRotation = new Axis("Camera Rotation Axis", buttons.cameraRotateLeft, buttons.cameraRotateRight);
             axes.cameraTilt = new Axis("Camera Tilt Axis", buttons.cameraTiltDown, buttons.cameraTiltUp);
+            axes.cameraRoll = new Axis("Camera Roll Axis", buttons.cameraRollLeft, buttons.cameraRollRight);
 
             buttons.resetField = new KeyMapping("Reset Field", KeyCode.F);
             buttons.replayMode = new KeyMapping("Replay Mode", KeyCode.Tab);

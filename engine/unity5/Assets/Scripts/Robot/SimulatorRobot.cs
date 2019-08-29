@@ -311,9 +311,10 @@ namespace Synthesis.Robot
             if (!UnityEngine.Input.GetMouseButton(0))
             {
                 //Transform rotation along the horizontal plane
-                Vector3 rotation = new Vector3(0f,
-                InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
-                InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
+                Vector3 rotation = new Vector3(
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRollLeft, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRollRight, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraRotateRight, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraRotateLeft, overrideFreeze: true) ? -ResetVelocity : 0f,
+                    InputControl.GetButton(Controls.Global.GetButtons().cameraTiltDown, overrideFreeze: true) ? ResetVelocity : InputControl.GetButton(Controls.Global.GetButtons().cameraTiltUp, overrideFreeze: true) ? -ResetVelocity : 0f) * Time.deltaTime;
                 if (!rotation.Equals(Vector3.zero))
                     RotateRobot(rotation);
 
@@ -332,6 +333,7 @@ namespace Synthesis.Robot
                 robotStartOrientation = ((RigidNode)RootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                 robotStartPosition = transform.GetChild(0).transform.localPosition - nodeToRobotOffset;
                 FieldDataHandler.robotSpawn = robotStartPosition;
+                FieldDataHandler.robotSpawnOrientation = robotStartOrientation;
                 FieldDataHandler.WriteField();
 
                 EndReset();

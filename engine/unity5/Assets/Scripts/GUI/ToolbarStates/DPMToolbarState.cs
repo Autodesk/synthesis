@@ -138,12 +138,12 @@ namespace Assets.Scripts.GUI
                 AnalyticsLedger.getMilliseconds().ToString());
 
             Gamepiece g = FieldDataHandler.gamepieces[gamepieceIndex];
-            GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, UnityEngine.Quaternion.identity); //clone gamepiece - exact clone will keep joints
+            GameObject gamepieceClone = GameObject.Instantiate(Auxiliary.FindGameObject(g.name), g.spawnpoint, Quaternion.Euler(g.spawnorientation)); //clone gamepiece - exact clone will keep joints
             gamepieceClone.SetActive(true); //show in case all gamepieces are hidden
             if (gamepieceClone.GetComponent<BFixedConstraintEx>() != null) GameObject.Destroy(gamepieceClone.GetComponent<BFixedConstraintEx>()); //remove joints from clone
             gamepieceClone.name = g.name + "(Clone)"; //add clone tag to allow clear later
             gamepieceClone.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
-            gamepieceClone.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+            gamepieceClone.GetComponent<BRigidBody>().velocity = Vector3.zero;
         }
         /// <summary>
         /// Clear gamepiece clones
