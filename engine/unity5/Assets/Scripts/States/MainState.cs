@@ -244,7 +244,7 @@ namespace Synthesis.States
         {
             if (ActiveRobot == null)
             {
-                AppModel.ErrorToMenu("Robot instance not valid.");
+                AppModel.ErrorToMenu("ROBOT_SELECT|Robot instance not valid.");
                 return;
             }
 
@@ -290,7 +290,7 @@ namespace Synthesis.States
             //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
             if (ActiveRobot == null)
             {
-                AppModel.ErrorToMenu("Robot instance not valid.");
+                AppModel.ErrorToMenu("ROBOT_SELECT|Robot instance not valid.");
                 return;
             }
         }
@@ -608,7 +608,7 @@ namespace Synthesis.States
             {
                 if (!LoadField(fieldDirectory))
                 {
-                    AppModel.ErrorToMenu("Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
+                    AppModel.ErrorToMenu("FIELD_SELECT|Could not load field: " + fieldDirectory + "\nHas it been moved or deleted?");
                     return;
                 }
             }
@@ -617,7 +617,7 @@ namespace Synthesis.States
             {
                 if (!LoadRobot(rs.Key, false))
                 {
-                    AppModel.ErrorToMenu("Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
+                    AppModel.ErrorToMenu("ROBOT_SELECT|Could not load robot: " + rs.Key + "\nHas it been moved or deleted?");
                     return;
                 }
 

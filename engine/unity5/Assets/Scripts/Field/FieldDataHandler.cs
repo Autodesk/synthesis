@@ -149,6 +149,8 @@ namespace Synthesis.Field
                 if (!string.IsNullOrEmpty(fieldPath) && new DirectoryInfo(fieldPath).Name == UnityFieldDefinition.EmptyGridName)
                 {
                     gamepieces = new List<Gamepiece>();
+                    redGoals = new List<List<GameObject>>();
+                    blueGoals = new List<List<GameObject>>();
                     if (fieldPath == PlayerPrefs.GetString("FieldDirectory") + Path.DirectorySeparatorChar + UnityFieldDefinition.EmptyGridName &&
                         fieldPath == PlayerPrefs.GetString("simSelectedField"))
                     {
@@ -226,6 +228,7 @@ namespace Synthesis.Field
                 foreach (XElement e in z.Elements())
                 {
                     GameObject g = new GameObject("Gamepiece" + goals.Count().ToString() + "Goal" + temp.Count().ToString());
+                    g.transform.SetParent(GoalManager.GoalParent.transform);
                     BBoxShape collider = g.AddComponent<BBoxShape>();
                     BRigidBody rigid = g.AddComponent<BRigidBody>();
                     rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
