@@ -10,7 +10,7 @@ In order to compile the NSIS configuration properly, you must compile all of the
 
 ### NSIS FAQ:
 
-Q: Will I need admin privlages to run the installer?
+Q: Will I need admin privileges to run the installer?
 
 A: Yup.
 
