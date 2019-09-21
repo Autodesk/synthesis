@@ -46,6 +46,13 @@ namespace Synthesis.DriverPractice
                     if (!currentlyScoredObjects.Exists(i => i == gamepieceObject)) { // Only score if it isn't currently score
                         gamepieceObject.SetActive(KeepScored); // Destroying the gamepiece leads to issues if the gamepiece was the original.
 
+                        //TODO: Find a way to get the point of collision between the goal and gamepiece and store it in closestPoint.
+                        Vector3 closestPoint = getClosestPoint(gameObject.GetComponent<MeshFilter>().mesh.vertices, gamepieceObject.GetComponent<MeshFilter>().mesh.vertices);
+                        
+                        BBallSocketConstraintEx constraint = gamepieceObject.AddComponent<BBallSocketConstraintEx>();
+                        constraint.PivotInA = gamepieceObject.transform.InverseTransformVector(closestPoint).ToBullet();
+                        constraint.constraintType = BTypedConstraint.ConstraintType.constrainToPointInSpace;
+
                         currentlyScoredObjects.Add(gamepieceObject); // Track it
                         UpdateScore(); //change red or blue score
                     }
@@ -75,6 +82,40 @@ namespace Synthesis.DriverPractice
                     i.SetActive(value);
                 }
             }
+        }
+
+        private float distance3D(Vector3 pointA, Vector3 pointB)
+        {
+            float a = Mathf.Pow(pointA.x - pointB.x, 3);
+            float b = Mathf.Pow(pointA.y - pointB.y, 3);
+            float c = Mathf.Pow(pointA.z - pointB.z, 3);
+            return Mathf.Pow(a + b + c, 1 / 3);
+        }
+
+        public Vector3 getClosestPoint(Vector3[] meshA, Vector3[] meshB)
+        {
+            Vector3 suspectA = meshA[0], suspectB = meshB[0];
+            float closestDist = distance3D(suspectA, suspectB);
+
+            float tempVar;
+            for (int a = 0; a < meshA.Length; a++)
+            {
+                for (int b = 1; b < meshB.Length; b++)
+                {
+                    tempVar = distance3D(meshA[a], meshB[b]);
+                    if (tempVar < closestDist)
+                    {
+                        closestDist = tempVar;
+                        suspectA = meshA[a];
+                        suspectB = meshB[b];
+                    }
+                }
+            }
+
+            float x = (suspectA.x + suspectB.x) / 2;
+            float y = (suspectA.y + suspectB.y) / 2;
+            float z = (suspectA.z + suspectB.z) / 2;
+            return new Vector3(x, y, z); // Returns midpoint between the 2 closest points it could find
         }
 
         /// <summary>
