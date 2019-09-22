@@ -47,12 +47,15 @@ namespace Synthesis.DriverPractice
                     if (!currentlyScoredObjects.Exists(i => i.goal == name)) { // Only score if it isn't currently score
                         gamepieceObject.SetActive(KeepScored); // Destroying the gamepiece leads to issues if the gamepiece was the original.
 
-                        ManifoldPoint mp = manifoldList.manifolds[0].GetContactPoint(0);
-                        BulletSharp.Math.Vector3 positionOfImpact = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f;
+                        if (Sticky)
+                        {
+                            ManifoldPoint mp = manifoldList.manifolds[0].GetContactPoint(0);
+                            BulletSharp.Math.Vector3 positionOfImpact = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f;
 
-                        if (Sticky) gamepieceObject.AddComponent<StickyGamepiece>().SetPoint(positionOfImpact.ToUnity());
+                            gamepieceObject.AddComponent<StickyGamepiece>().SetPoint(positionOfImpact.ToUnity());
+                        }
 
-                        // Debug.Log("Gamepiece Scored");
+                        Debug.Log("Gamepiece Scored");
 
                         if (!currentlyScoredObjects.Exists(i => i.obj == gamepieceObject)) UpdateScore(); //change red or blue score
                         currentlyScoredObjects.Add((gamepieceObject, name)); // Track it
