@@ -165,6 +165,10 @@ namespace Synthesis.DriverPractice
                     keepScoredToggle.isOn = goal.KeepScored;
                     keepScoredToggle.onValueChanged.AddListener((value) => { SetGoalKeepScored(id, value); });
 
+                    Toggle stickyToggle = Auxiliary.FindObject(newGoalElement, "Sticky").GetComponent<Toggle>();
+                    stickyToggle.isOn = goal.Sticky;
+                    stickyToggle.onValueChanged.AddListener(value => goal.Sticky = value);
+
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
                     moveButton.onClick.AddListener(delegate { MoveGoal(id); });
 
@@ -314,6 +318,7 @@ namespace Synthesis.DriverPractice
             goal.scale = Vector3.one;
             goal.gamepieceKeyword = FieldDataHandler.gamepieces[gamepieceIndex].name;
             goal.description = "New Goal";
+            goal.Sticky = false;
             goal.color = color;
             if (color.Equals("Red"))
                 redGoals[gamepieceIndex].Add(goalObject);

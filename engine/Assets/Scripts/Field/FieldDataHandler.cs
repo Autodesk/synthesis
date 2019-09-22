@@ -1,5 +1,6 @@
 ﻿using BulletUnity;
 using Synthesis.DriverPractice;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,7 @@ namespace Synthesis.Field
                                                                                new XAttribute("z", g.GetComponent<Goal>().scale.z)),
                                                                                new XElement("Points", g.GetComponent<Goal>().pointValue),
                                                                                new XElement("KeepScored", g.GetComponent<Goal>().KeepScored),
+                                                                               new XElement("Sticky", g.GetComponent<Goal>().Sticky),
                                                                                new XElement("Description", g.GetComponent<Goal>().description),
                                                                                new XElement("Keyword", g.GetComponent<Goal>().gamepieceKeyword)));
         }
@@ -252,6 +254,13 @@ namespace Synthesis.Field
                     goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
+                    try
+                    {
+                        goal.Sticky = bool.Parse(e.Attribute("Sticky").Value);
+                    } catch (Exception excep)
+                    {
+                        goal.Sticky = false;
+                    }
                     temp.Add(g);
                 }
                 goals.Add(temp);
