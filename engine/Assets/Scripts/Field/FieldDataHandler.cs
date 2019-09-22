@@ -254,13 +254,7 @@ namespace Synthesis.Field
                     goal.gamepieceKeyword = e.Element("Keyword").Value;
                     goal.description = e.Element("Description").Value;
                     goal.color = e.Attribute("Color").Value;
-                    try
-                    {
-                        goal.Sticky = bool.Parse(e.Attribute("Sticky").Value);
-                    } catch (Exception excep)
-                    {
-                        goal.Sticky = false;
-                    }
+                    try { goal.Sticky = bool.Parse(e.Element("Sticky").Value); } catch (Exception excep) { goal.Sticky = false; }
                     temp.Add(g);
                 }
                 goals.Add(temp);

@@ -107,6 +107,7 @@ namespace Synthesis.DriverPractice
         }
         public void CloseGoalManager()
         {
+            WriteGoals();
             goalWindow.SetActive(false);
         }
         /// <summary>
