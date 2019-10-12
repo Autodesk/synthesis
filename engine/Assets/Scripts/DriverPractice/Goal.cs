@@ -25,7 +25,7 @@ namespace Synthesis.DriverPractice
         public bool KeepScored { get; private set; } = true;
         public bool Sticky;
 
-        private static List<(GameObject obj, string goal)> currentlyScoredObjects = new List<(GameObject, string)>();
+        public static List<(GameObject obj, string goal)> currentlyScoredObjects = new List<(GameObject, string)>();
 
         private Text score;
 

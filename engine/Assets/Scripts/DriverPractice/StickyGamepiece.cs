@@ -23,4 +23,10 @@ public class StickyGamepiece : MonoBehaviour
         constraint.constraintType = BTypedConstraint.ConstraintType.constrainToPointInSpace;
         point = gameObject.transform.InverseTransformVector(g);
     }
+
+    public void Remove()
+    {
+        Destroy(constraint);
+        Destroy(this);
+    }
 }
