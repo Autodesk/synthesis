@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Synthesis.States;
+using Synthesis.DriverPractice;
 
 /// <summary>
 /// This script is used for controlling objects in a scene by dragging them around with the mouse.
@@ -38,6 +39,9 @@ public class GodMode : LinkedMonoBehaviour<MainState>
             if (callback.CollisionObject != null)
             {
                 BRigidBody rigidBody = callback.CollisionObject.UserObject as BRigidBody;
+
+                rigidBody.gameObject.GetComponents<StickyGamepiece>().ToList().ForEach(x => x.Remove());
+                Goal.currentlyScoredObjects.RemoveAll(x => x.obj.name == rigidBody.name);
 
                 if (rigidBody != null && rigidBody.mass > 0f)
                 {
