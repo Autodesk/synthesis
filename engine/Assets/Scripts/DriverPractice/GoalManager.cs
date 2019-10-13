@@ -168,7 +168,10 @@ namespace Synthesis.DriverPractice
 
                     Toggle stickyToggle = Auxiliary.FindObject(newGoalElement, "Sticky").GetComponent<Toggle>();
                     stickyToggle.isOn = goal.Sticky;
-                    stickyToggle.onValueChanged.AddListener(value => goal.Sticky = value);
+                    stickyToggle.onValueChanged.AddListener(value => {
+                        if (!goal.KeepScored) { goal.SetKeepScored(true); keepScoredToggle.isOn = true; }
+                        goal.Sticky = value;
+                    });
 
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
                     moveButton.onClick.AddListener(delegate { MoveGoal(id); });
@@ -253,10 +256,27 @@ namespace Synthesis.DriverPractice
 
         void SetGoalKeepScored(int id, bool value)
         {
+            Goal goal;
             if (color.Equals("Red"))
-                redGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            {
+                goal = redGoals[gamepieceIndex][id].GetComponent<Goal>();
+                if (!value && goal.Sticky)
+                {
+                    goal.Sticky = false;
+                    Auxiliary.FindObject(goalElements[id], "Sticky").GetComponent<Toggle>().isOn = false;
+                }
+                goal.SetKeepScored(value);
+            }
             else
-                blueGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            {
+                goal = blueGoals[gamepieceIndex][id].GetComponent<Goal>();
+                if (!value && goal.Sticky)
+                {
+                    goal.Sticky = false;
+                    Auxiliary.FindObject(goalElements[id], "Sticky").GetComponent<Toggle>().isOn = false;
+                }
+                goal.SetKeepScored(value);
+            }
             WriteGoals();
         }
 
