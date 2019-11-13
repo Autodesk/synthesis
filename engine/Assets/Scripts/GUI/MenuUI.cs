@@ -159,7 +159,6 @@ namespace Synthesis.GUI
                 Controls.Load();
                 globalControlPanel.SetActive(true);
                 Auxiliary.FindObject(Auxiliary.FindObject(globalControlPanel, "ScrollRect"), "Content").GetComponent<CreateButton>().CreateButtons();
-                //Auxiliary.FindObject(globalControlPanel, "Content").GetComponent<CreateButton>().CreateButtons();
             }
             else
             {
