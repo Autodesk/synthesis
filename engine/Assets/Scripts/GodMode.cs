@@ -18,6 +18,8 @@ public class GodMode : LinkedMonoBehaviour<MainState>
     ActivationState initialState;
     float initialDamping;
     float rayDistance;
+    (float compound, float lastChange) rayDistCompound = (0.1f, 0.0f);
+    float compoundTimeout = 0.45f;
 
     /// <summary>
     /// Updates constraint information for the active object, if applicable.
@@ -62,6 +64,19 @@ public class GodMode : LinkedMonoBehaviour<MainState>
         }
         else if (constraint != null)
         {
+            float newRayDistance = rayDistance + (Input.mouseScrollDelta.y * rayDistCompound.compound);
+            if (newRayDistance != rayDistance && (newRayDistance > 0.1 && newRayDistance < 100))
+            {
+                rayDistance = newRayDistance;
+                rayDistCompound.compound *= 1.05f;
+                rayDistCompound.lastChange = Time.realtimeSinceStartup;
+            } else
+            {
+                if (rayDistCompound.lastChange + compoundTimeout < Time.realtimeSinceStartup)
+                {
+                    rayDistCompound.compound = 0.1f;
+                }
+            }
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             constraint.PivotInB = ray.GetPoint(rayDistance).ToBullet();
         }
