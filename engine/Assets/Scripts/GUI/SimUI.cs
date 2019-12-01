@@ -66,6 +66,7 @@ namespace Synthesis.GUI
         GameObject tabs;
         GameObject gamepieceTab;
         GameObject scoringTab;
+        GameObject betaWarningPanel;
 
         private bool navigationTooltipClosed = false;
         private bool overviewWindowClosed = false;
@@ -75,6 +76,8 @@ namespace Synthesis.GUI
         string currentTab;
 
         public static string updater;
+
+        private bool hasWarnedSticky = false;
 
         public Sprite normalButton; // these sprites are attached to the SimUI script
         public Sprite disabledButton; // these sprites are attached to the SimUI script
@@ -201,6 +204,8 @@ namespace Synthesis.GUI
             scoringTab = Auxiliary.FindObject(tabs, "ScoringTab");
             tabStateMachine = tabs.GetComponent<StateMachine>();
 
+            betaWarningPanel = Auxiliary.FindObject(canvas, "BetaWarningPanel");
+
             LinkToolbars();
             tabStateMachine.ChangeState(new MainToolbarState());
             currentTab = "HomeTab";
@@ -276,6 +281,18 @@ namespace Synthesis.GUI
                         AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
                     break;
             }
+        }
+
+        public void DisplayBetaWarning()
+        {
+            if (!hasWarnedSticky)
+                betaWarningPanel.SetActive(true);
+        }
+
+        public void DisableWarningPanel()
+        {
+            hasWarnedSticky = true;
+            if (betaWarningPanel.activeSelf) betaWarningPanel.SetActive(false);
         }
 
         #region tab buttons
@@ -837,6 +854,8 @@ namespace Synthesis.GUI
             mixAndMatchPanel.SetActive(false);
             changePanel.SetActive(false);
             addPanel.SetActive(false);
+
+            betaWarningPanel.SetActive(false);
 
             toolkit.EndProcesses();
             multiplayer.EndProcesses();
