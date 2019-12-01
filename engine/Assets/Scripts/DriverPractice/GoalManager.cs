@@ -1,6 +1,7 @@
 ﻿using BulletUnity;
 using Synthesis.Field;
 using Synthesis.FSM;
+using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
@@ -171,6 +172,7 @@ namespace Synthesis.DriverPractice
                     stickyToggle.onValueChanged.AddListener(value => {
                         if (!goal.KeepScored) { goal.SetKeepScored(true); keepScoredToggle.isOn = true; }
                         goal.Sticky = value;
+                        if (goal.Sticky) SimUI.getSimUI().DisplayBetaWarning();
                     });
 
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
