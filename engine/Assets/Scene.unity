@@ -76182,7 +76182,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: This is a beta feature that may cause glitches and other adnormal behaviours
+  m_Text: This is a beta feature that is in testing and may cause glitches in the
+    simulator.
 --- !u!222 &1425890473
 CanvasRenderer:
   m_ObjectHideFlags: 0
