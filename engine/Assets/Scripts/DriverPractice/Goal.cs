@@ -23,8 +23,9 @@ namespace Synthesis.DriverPractice
         public Vector3 rotation;
         public Vector3 scale; //vector that denotes the factor that the object stretches in width, height and length
         public bool KeepScored { get; private set; } = true;
+        public bool Sticky;
 
-        private List<GameObject> currentlyScoredObjects = new List<GameObject>();
+        public static List<(GameObject obj, string goal)> currentlyScoredObjects = new List<(GameObject, string)>();
 
         private Text score;
 
@@ -43,11 +44,21 @@ namespace Synthesis.DriverPractice
 
                 if (gamepieceObject.GetComponent<BFixedConstraintEx>() == null) //make sure gamepiece isn't held by robot
                 {
-                    if (!currentlyScoredObjects.Exists(i => i == gamepieceObject)) { // Only score if it isn't currently score
+                    if (!currentlyScoredObjects.Exists(i => i.goal == name)) { // Only score if it isn't currently score
                         gamepieceObject.SetActive(KeepScored); // Destroying the gamepiece leads to issues if the gamepiece was the original.
 
-                        currentlyScoredObjects.Add(gamepieceObject); // Track it
-                        UpdateScore(); //change red or blue score
+                        if (Sticky)
+                        {
+                            ManifoldPoint mp = manifoldList.manifolds[0].GetContactPoint(0);
+                            BulletSharp.Math.Vector3 positionOfImpact = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f;
+
+                            gamepieceObject.AddComponent<StickyGamepiece>().SetPoint(positionOfImpact.ToUnity());
+                        }
+
+                        Debug.Log("Gamepiece Scored");
+
+                        if (!currentlyScoredObjects.Exists(i => i.obj == gamepieceObject)) UpdateScore(); //change red or blue score
+                        currentlyScoredObjects.Add((gamepieceObject, name)); // Track it
                     }
                 }
             }
@@ -60,7 +71,7 @@ namespace Synthesis.DriverPractice
                 GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
                 if (gamepieceObject.activeSelf)
                 {
-                    currentlyScoredObjects.Remove(currentlyScoredObjects.Find(i => i == gamepieceObject)); // Remove objects that leave the scoring zone
+                    if (!Sticky) currentlyScoredObjects.Remove(currentlyScoredObjects.Find(i => i.obj == gamepieceObject)); // Remove objects that leave the scoring zone
                 }
             }
         }
@@ -72,7 +83,7 @@ namespace Synthesis.DriverPractice
                 KeepScored = value;
                 foreach (var i in currentlyScoredObjects)
                 {
-                    i.SetActive(value);
+                    i.obj.SetActive(value);
                 }
             }
         }
