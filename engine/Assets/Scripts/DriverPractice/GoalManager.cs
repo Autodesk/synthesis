@@ -1,6 +1,7 @@
 ﻿using BulletUnity;
 using Synthesis.Field;
 using Synthesis.FSM;
+using Synthesis.GUI;
 using Synthesis.Input;
 using Synthesis.States;
 using Synthesis.Utils;
@@ -107,6 +108,7 @@ namespace Synthesis.DriverPractice
         }
         public void CloseGoalManager()
         {
+            WriteGoals();
             goalWindow.SetActive(false);
         }
         /// <summary>
@@ -164,6 +166,14 @@ namespace Synthesis.DriverPractice
                     Toggle keepScoredToggle = Auxiliary.FindObject(newGoalElement, "KeepScoredToggle").GetComponent<Toggle>();
                     keepScoredToggle.isOn = goal.KeepScored;
                     keepScoredToggle.onValueChanged.AddListener((value) => { SetGoalKeepScored(id, value); });
+
+                    Toggle stickyToggle = Auxiliary.FindObject(newGoalElement, "Sticky").GetComponent<Toggle>();
+                    stickyToggle.isOn = goal.Sticky;
+                    stickyToggle.onValueChanged.AddListener(value => {
+                        if (!goal.KeepScored) { goal.SetKeepScored(true); keepScoredToggle.isOn = true; }
+                        goal.Sticky = value;
+                        if (goal.Sticky) SimUI.getSimUI().DisplayBetaWarning();
+                    });
 
                     Button moveButton = Auxiliary.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
                     moveButton.onClick.AddListener(delegate { MoveGoal(id); });
@@ -248,10 +258,27 @@ namespace Synthesis.DriverPractice
 
         void SetGoalKeepScored(int id, bool value)
         {
+            Goal goal;
             if (color.Equals("Red"))
-                redGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            {
+                goal = redGoals[gamepieceIndex][id].GetComponent<Goal>();
+                if (!value && goal.Sticky)
+                {
+                    goal.Sticky = false;
+                    Auxiliary.FindObject(goalElements[id], "Sticky").GetComponent<Toggle>().isOn = false;
+                }
+                goal.SetKeepScored(value);
+            }
             else
-                blueGoals[gamepieceIndex][id].GetComponent<Goal>().SetKeepScored(value);
+            {
+                goal = blueGoals[gamepieceIndex][id].GetComponent<Goal>();
+                if (!value && goal.Sticky)
+                {
+                    goal.Sticky = false;
+                    Auxiliary.FindObject(goalElements[id], "Sticky").GetComponent<Toggle>().isOn = false;
+                }
+                goal.SetKeepScored(value);
+            }
             WriteGoals();
         }
 
@@ -314,6 +341,7 @@ namespace Synthesis.DriverPractice
             goal.scale = Vector3.one;
             goal.gamepieceKeyword = FieldDataHandler.gamepieces[gamepieceIndex].name;
             goal.description = "New Goal";
+            goal.Sticky = false;
             goal.color = color;
             if (color.Equals("Red"))
                 redGoals[gamepieceIndex].Add(goalObject);
