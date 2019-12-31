@@ -75,6 +75,11 @@ public partial class SurfaceExporter
             }
         }
 
+        if (bestIndex == -1)
+        {
+            bestIndex = 0;
+        }
+
         #region SHOULD_SEPARATE_FACES
         AssetProperties sharedValue = null;
         string sharedDisp = null;
