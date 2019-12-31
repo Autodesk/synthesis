@@ -16,7 +16,8 @@ InventorRobotExporter is the Autodesk Inventor add-in for exporting robot assemb
    - `File -> Open -> Project/Solution`
    - Select `... \synthesis\exporters\InventorRobotExporter\InventorRobotExporter.sln`
 3) Select "Any CPU" next to the "Start" button
-4) `Build -> Build Solution`
+4) Right-click on the InventorRobotExporter solution in the Solution Explorer and click `Restore NuGet Packages` and wait for restore to complete
+5) Build -> Build Solution
 
 ## Development Documentation
 *  [Wiki Page](https://github.com/Autodesk/synthesis/wiki/Inventor-Robot-Exporter)
