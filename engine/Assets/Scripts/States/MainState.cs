@@ -408,12 +408,14 @@ namespace Synthesis.States
             return fieldDefinition.CreateMesh(directory + Path.DirectorySeparatorChar + "mesh.bxda");
         }
 
+        public bool LoadRobot(string directory, bool isMixAndMatch) { return LoadRobot(directory, isMixAndMatch, -1); }
+
         /// <summary>
         /// Loads a new robot from a given directory
         /// </summary>
         /// <param name="directory">robot directory</param>
         /// <returns>whether the process was successful</returns>
-        public bool LoadRobot(string directory, bool isMixAndMatch)
+        public bool LoadRobot(string directory, bool isMixAndMatch, int replacementIndex)
         {
             bool b = true;
 
@@ -486,7 +488,8 @@ namespace Synthesis.States
                 }
 
                 robot.ControlIndex = SpawnedRobots.Count;
-                SpawnedRobots.Add(robot);
+                if (replacementIndex != -1) SpawnedRobots[replacementIndex] = robot;
+                else SpawnedRobots.Add(robot);
 
                 DPMDataHandler.Load(robotPath);
 
@@ -514,8 +517,25 @@ namespace Synthesis.States
             sensorManagerGUI.ShiftOutputPanels();
             sensorManagerGUI.EndProcesses();
 
-            RemoveRobot(SpawnedRobots.IndexOf(ActiveRobot));
-            //ActiveRobot = null;
+            int index = SpawnedRobots.IndexOf(ActiveRobot);
+
+            robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+            sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+            MaMRobot mamRobot = SpawnedRobots[index] as MaMRobot;
+
+            if (mamRobot != null && mamRobot.RobotHasManipulator)
+                UnityEngine.Object.Destroy(mamRobot.ManipulatorObject);
+
+            UnityEngine.Object.Destroy(SpawnedRobots[index].gameObject);
+            ActiveRobot = null;
+
+            int i = 0;
+            foreach (SimulatorRobot robot in SpawnedRobots)
+            {
+                robot.ControlIndex = i;
+                i++;
+            }
 
             if (LoadRobot(directory, isMixAndMatch))
             {
