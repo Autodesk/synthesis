@@ -36,7 +36,7 @@ namespace Synthesis.States
     /// </summary>
     public class MainState : State, IRobotProvider
     {
-        const string CurrentVersion = "4.3.1.1";
+        const string CurrentVersion = "4.3.3.0";
 
         private string[] SampleRobotGUIDs = { "ee85355c-6daf-4588-ba47-cdf3f9143922", "fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d", "d7f2959a-f9eb-4581-a4bb-898550193bda", "d1859211-db0f-4b75-866c-2d0e81b6732b", "52eb1ada-b051-461a-9cc4-1b5b74764ce5", "decdc6a1-5f76-4dea-add7-4c358f4a9921", "6b5d4484-db3c-425b-98b8-546c06d8d8bf", "c3bb1b94-dad8-4a8c-aa67-9c09eb9379c1", "ef4e3e2b-8cfb-437d-b63d-8bebc05fa3ba", "7d31cb8a-01e8-4eeb-9086-2955a993a374", "1478855a-60bd-42cb-8841-eece4fa0fbeb", "0b43729a-d8d3-4df2-bcbb-684343933c23", "9f19586c-a26f-4b28-9fb9-e06731178166", "f1225b7a-180e-456b-88d1-7315b0086001" };
 
