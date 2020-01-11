@@ -530,16 +530,17 @@ namespace Synthesis.States
             UnityEngine.Object.Destroy(SpawnedRobots[index].gameObject);
             ActiveRobot = null;
 
-            int i = 0;
-            foreach (SimulatorRobot robot in SpawnedRobots)
-            {
-                robot.ControlIndex = i;
-                i++;
-            }
-
-            if (LoadRobot(directory, isMixAndMatch))
+            if (LoadRobot(directory, isMixAndMatch, index))
             {
                 DynamicCamera.ControlEnabled = true;
+
+                int i = 0;
+                foreach (SimulatorRobot robot in SpawnedRobots)
+                {
+                    robot.ControlIndex = i;
+                    i++;
+                }
+
                 return true;
             }
 
