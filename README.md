@@ -10,6 +10,8 @@ Developed solely by FIRST students, Synthesis is built with a direct focus on th
 
 For more information on the product itself or the team, visit http://synthesis.autodesk.com/
 
+Documentation visit https://hices.github.io/
+
 ## Engine
 
 The engine code is based in Unity, more info on how to build and dependency listings can be found in the engine subdirectory that is comprised of the following files:
