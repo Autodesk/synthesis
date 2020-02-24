@@ -10,7 +10,7 @@ Developed solely by FIRST students, Synthesis is built with a direct focus on th
 
 For more information on the product itself or the team, visit http://synthesis.autodesk.com/
 
-Documentation visit https://hices.github.io/
+Documentation visit https://hices.github.io/synthesis/
 
 ## Engine
 
@@ -81,172 +81,11 @@ The engine code is based in Unity, more info on how to build and dependency list
 
 The exporters are split up in primarily 2 different ways, first is by the product they are exporting from and second is by the type of exporter, field or robot. You can find more info in the exporter directory.
 
-```
-.
-├── Aardvark-Libraries
-│   ├── CLEW
-│   ├── ConvexLibraryWrapper
-│   ├── MIConvexHull
-│   │   ├── ConvexHull
-│   │   ├── Properties
-│   │   └── Triangulation
-│   ├── SimulatorFileIO
-│   │   ├── IO
-│   │   │   ├── BXDA
-│   │   │   ├── BXDF
-│   │   │   └── BXDJ
-│   │   ├── Joints
-│   │   │   ├── Driver
-│   │   │   └── Sensors
-│   │   ├── Math
-│   │   ├── ModelTree
-│   │   ├── Properties
-│   │   └── Utilities
-│   └── VHACD
-│       ├── cl
-│       ├── inc
-│       ├── public
-│       └── src
-├── BxDFieldExporter
-│   ├── BxDFieldExporter
-│   │   ├── Components
-│   │   ├── Forms
-│   │   ├── Images
-│   │   ├── Properties
-│   │   └── Resources
-│   └── packages
-│       ├── Costura.Fody.1.6.2
-│       │   └── tools
-│       ├── Fody.2.0.0
-│       │   ├── Content
-│       │   └── Tools
-│       ├── Newtonsoft.Json.11.0.2
-│       │   └── lib
-│       │       ├── net20
-│       │       ├── net35
-│       │       ├── net40
-│       │       ├── net45
-│       │       ├── netstandard1.0
-│       │       ├── netstandard1.3
-│       │       ├── netstandard2.0
-│       │       ├── portable-net40+sl5+win8+wp8+wpa81
-│       │       └── portable-net45+win8+wp8+wpa81
-│       └── OpenTK.3.0.1
-│           ├── content
-│           └── lib
-│               └── net20
-├── FusionRobotExporter
-│   ├── Include
-│   │   └── rapidjson
-│   │       ├── error
-│   │       ├── internal
-│   │       └── msinttypes
-│   ├── Resources
-│   │   ├── DOFIcons
-│   │   ├── DriveIcons
-│   │   ├── FinishIcons
-│   │   ├── JointIcons
-│   │   ├── PrecheckIcons
-│   │   ├── SettingsIcons
-│   │   └── WeightIcons
-│   ├── Source
-│   │   ├── AddIn
-│   │   └── Data
-│   │       ├── BXDA
-│   │       └── BXDJ
-│   │           ├── Components
-│   │           └── Joints
-│   ├── VHACD
-│   │   ├── Include
-│   │   └── Lib
-│   └── palette
-│       ├── css
-│       ├── js
-│       └── resources
-├── InventorRobotExporter
-│   ├── InventorRobotExporter
-│   │   ├── Exporter
-│   │   ├── GUI
-│   │   │   ├── Editors
-│   │   │   │   ├── AdvancedJointEditor
-│   │   │   │   │   └── JointSubEditors
-│   │   │   │   └── JointEditor
-│   │   │   ├── Guide
-│   │   │   ├── JointView
-│   │   │   ├── Loading
-│   │   │   └── Messages
-│   │   ├── Managers
-│   │   ├── OGLViewer
-│   │   ├── Properties
-│   │   ├── Resources
-│   │   │   ├── Branding
-│   │   │   ├── DrivetrainTypeIcons
-│   │   │   ├── LoadingAnimations
-│   │   │   ├── RibbonIcons
-│   │   │   └── Shaders
-│   │   ├── RigidAnalyzer
-│   │   ├── SkeletalStructure
-│   │   └── Utilities
-│   │       ├── ImageConverters
-│   │       └── Synthesis
-│   └── RobotExporterTests
-└── field_exporter
-    ├── FieldExporter
-    │   ├── Components
-    │   ├── Exporter
-    │   ├── Forms
-    │   └── Properties
-    └── packages
-        ├── Newtonsoft.Json.12.0.2
-        │   └── lib
-        │       ├── net20
-        │       ├── net35
-        │       ├── net40
-        │       ├── net45
-        │       ├── netstandard1.0
-        │       ├── netstandard1.3
-        │       ├── netstandard2.0
-        │       ├── portable-net40+sl5+win8+wp8+wpa81
-        │       └── portable-net45+win8+wp8+wpa81
-        └── OpenTK.3.0.1
-            ├── content
-            └── lib
-                └── net20
-```
 
 ## Emulation
 
 Emulaton will require a significant amount of setup and resources to configure and build properly. More info can be found in the emulation directory. Here is the file structure:
 
-```
-.
-├── EmulationCommunication
-│   └── EmulationCommunication
-│       └── Properties
-├── api
-│   └── v1
-│       └── proto
-├── bridge
-│   ├── cmd
-│   ├── pkg
-│   │   ├── protocol
-│   │   │   └── grpc
-│   │   └── service
-│   │       └── v1
-│   └── scripts
-├── hel
-│   ├── build
-│   │   └── lib
-│   ├── docs
-│   ├── external_configs
-│   ├── include
-│   ├── scripts
-│   ├── src
-│   └── tests
-│       └── test_projects
-│           └── java
-└── wpi_cross
-```
 
 ## Getting Started
 
