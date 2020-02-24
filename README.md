@@ -16,67 +16,6 @@ Documentation visit https://hices.github.io/synthesis/
 
 The engine code is based in Unity, more info on how to build and dependency listings can be found in the engine subdirectory that is comprised of the following files:
 
-```
-.
-└── unity5
-    ├── Assets
-    │   ├── Materials
-    │   │   └── Materials
-    │   ├── Prefabs
-    │   ├── Resources
-    │   │   ├── Fonts
-    │   │   ├── Images
-    │   │   │   ├── Mix\ and\ Match
-    │   │   │   ├── New\ Icons
-    │   │   │   ├── New\ Textures
-    │   │   │   ├── Old\ Assets
-    │   │   │   │   └── Toolbar
-    │   │   │   └── ReplayMode
-    │   │   ├── Materials
-    │   │   └── Prefabs
-    │   ├── Scene
-    │   ├── Scripts
-    │   │   ├── Analytics
-    │   │   ├── BUExtensions
-    │   │   ├── Camera
-    │   │   ├── Configuration
-    │   │   ├── DriverPractice
-    │   │   ├── Emulation
-    │   │   ├── FEA
-    │   │   ├── FSM
-    │   │   ├── Field
-    │   │   ├── GUI
-    │   │   │   ├── Scrollables
-    │   │   │   └── ToolbarStates
-    │   │   ├── Input
-    │   │   │   ├── Enums
-    │   │   │   └── Inputs
-    │   │   ├── Media
-    │   │   ├── MixAndMatch
-    │   │   ├── Network
-    │   │   ├── RN
-    │   │   ├── Robot
-    │   │   ├── Sensors
-    │   │   ├── States
-    │   │   ├── Threading
-    │   │   └── Utils
-    │   ├── StandaloneFileBrowser
-    │   │   ├── Common
-    │   │   │   └── Editor
-    │   │   └── Plugins
-    │   │       ├── Linux
-    │   │       │   └── x86_64
-    │   │       ├── MacOS
-    │   │       │   └── StandaloneFileBrowser.bundle
-    │   │       │       └── Contents
-    │   │       │           └── MacOS
-    │   │       └── Windows
-    │   └── Textures
-    ├── Packages
-    ├── ProjectSettings
-    └── Synthesis_Data
-```
-
 ## Exporters 
 
 The exporters are split up in primarily 2 different ways, first is by the product they are exporting from and second is by the type of exporter, field or robot. You can find more info in the exporter directory.
