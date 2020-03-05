@@ -1,0 +1,27 @@
+:root {
+    --base-font-size: 14px;
+    --theme-color   : green;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb { 
+
+    -moz-transition: all .2s ease-in;
+    -o-transition: all .2s ease-in;
+    -webkit-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+
+    border-radius: 0px;
+    background-color: green;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color:darkgreen !important;
+}

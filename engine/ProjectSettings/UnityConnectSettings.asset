@@ -4,7 +4,7 @@
 UnityConnectSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_TestMode: 0
   m_EventOldUrl: https://api.uca.cloud.unity3d.com/v1/events
   m_EventUrl: https://cdp.cloud.unity3d.com/v1/events
@@ -19,19 +19,16 @@ UnityConnectSettings:
     m_Enabled: 0
     m_TestMode: 0
   UnityAnalyticsSettings:
-    m_Enabled: 1
-    m_TestMode: 1
+    m_Enabled: 0
+    m_TestMode: 0
     m_InitializeOnStartup: 1
   UnityAdsSettings:
     m_Enabled: 0
-    m_InitializeOnStartup: 0
+    m_InitializeOnStartup: 1
     m_TestMode: 0
     m_IosGameId: 
     m_AndroidGameId: 
-    m_GameIds:
-      AndroidPlayer: 
-      iPhonePlayer: 
-      tvOSPlayer: 
+    m_GameIds: {}
     m_GameId: 
   PerformanceReportingSettings:
     m_Enabled: 0
