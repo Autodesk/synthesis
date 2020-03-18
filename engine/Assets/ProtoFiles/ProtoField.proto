@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package Synthesis.Simulator;
+
+import "ProtoRobot.proto";
+
+message ProtoField {
+  string FieldName = 1;
+  repeated ProtoNode nodes = 2;
+}

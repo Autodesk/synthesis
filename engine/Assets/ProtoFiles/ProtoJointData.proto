@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package Synthesis.Simulator;
+
+import "ProtoRobot.proto"
+
+message ProtoJointData {
+  ProtoVector3 anchor
+}
