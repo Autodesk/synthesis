@@ -7,7 +7,6 @@ In order to acheive the proper package structure for proper extraction, you must
 
 Prior to compiling the package, you must first ensure that all scripts have the execute bit set properly using:   
 `$ chmod +x LinuxInstaller.sh`    
-`$ chmod +x SynthesisUninstaller.sh`
 
 Then, download [makeself](https://makeself.io) and compile the `.run` executable using:  
 `$ ./makeself.sh LinuxInstaller/ SynthesisLinux4.X.X.run "Synthesis For Linux 4.X.X" ./LinuxInstaller.sh`   
@@ -17,6 +16,13 @@ Then, download [makeself](https://makeself.io) and compile the `.run` executable
 Installing the package should be as simple as `$ ./SynthesisLinux*.run`.  
 
 An alternate method of execution using BA$H would be `$ sh SynthesisLinux*.run`.
+
+### Uninstalling The Package (FOR USERS): ###
+The uninstallation script can be found at `\home\.config\Autodesk\Synthesis\SynthesisUninstaller.sh`
+
+Uninstalling the package should be as simple as `$ ./SynthesisUninstaller.sh`.  
+
+An alternate method of execution using BA$H would be `$ sh SynthesisUninstaller.sh`.
 
 ### Troubleshooting: ###
 If you're having trouble executing the `.run` package, try ensuring that the execute bit is properly set by running  
