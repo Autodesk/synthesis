@@ -30,24 +30,27 @@ namespace Synthesis.Simulator {
             "GAMgAygLMh4uU3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b05vZGUSQQoJZHJp",
             "dmVUeXBlGAQgASgOMi4uU3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b1JvYm90",
             "LkRyaXZldHJhaW5UeXBlIjMKDkRyaXZldHJhaW5UeXBlEggKBFRhbmsQABIK",
-            "CgZTd2VydmUQARILCgdOb0RyaXZlEAIi8AEKCVByb3RvTm9kZRIRCglpc0R5",
-            "bmFtaWMYASABKAgSDgoGbm9kZUlEGAIgASgFEhIKCnBhcmVudE5vZGUYAyAB",
-            "KAUSDAoEbWFzcxgEIAEoAhI3CgxjZW50ZXJPZk1hc3MYBSABKAsyIS5TeW50",
-            "aGVzaXMuU2ltdWxhdG9yLlByb3RvVmVjdG9yMxIzCghwb3NpdGlvbhgGIAEo",
-            "CzIhLlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEjAKBmJvZGll",
-            "cxgHIAMoCzIgLlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9PYmplY3QisQEK",
-            "C1Byb3RvT2JqZWN0EjMKCHBvc2l0aW9uGAEgASgLMiEuU3ludGhlc2lzLlNp",
-            "bXVsYXRvci5Qcm90b1ZlY3RvcjMSMAoFdmVydHMYAiADKAsyIS5TeW50aGVz",
-            "aXMuU2ltdWxhdG9yLlByb3RvVmVjdG9yMxIMCgR0cmlzGAMgAygFEi0KAnV2",
-            "GAQgAygLMiEuU3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjIiLwoM",
-            "UHJvdG9WZWN0b3IzEgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgC",
-            "IiQKDFByb3RvVmVjdG9yMhIJCgF4GAEgASgCEgkKAXkYAiABKAJiBnByb3Rv",
-            "Mw=="));
+            "CgZTd2VydmUQARILCgdOb0RyaXZlEAIiTgoKUHJvdG9GaWVsZBIRCglGaWVs",
+            "ZE5hbWUYASABKAkSLQoFbm9kZXMYAiADKAsyHi5TeW50aGVzaXMuU2ltdWxh",
+            "dG9yLlByb3RvTm9kZSL+AQoJUHJvdG9Ob2RlEhEKCWlzRHluYW1pYxgBIAEo",
+            "CBIOCgZub2RlSUQYAiABKAUSEgoKcGFyZW50Tm9kZRgDIAEoBRIMCgRtYXNz",
+            "GAQgASgCEjcKDGNlbnRlck9mTWFzcxgFIAEoCzIhLlN5bnRoZXNpcy5TaW11",
+            "bGF0b3IuUHJvdG9WZWN0b3IzEjMKCHBvc2l0aW9uGAYgASgLMiEuU3ludGhl",
+            "c2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjMSMAoGYm9kaWVzGAcgAygLMiAu",
+            "U3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b09iamVjdBIMCgRuYW1lGAggASgJ",
+            "IrEBCgtQcm90b09iamVjdBIzCghwb3NpdGlvbhgBIAEoCzIhLlN5bnRoZXNp",
+            "cy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEjAKBXZlcnRzGAIgAygLMiEuU3lu",
+            "dGhlc2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjMSDAoEdHJpcxgDIAMoBRIt",
+            "CgJ1dhgEIAMoCzIhLlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3Iy",
+            "Ii8KDFByb3RvVmVjdG9yMxIJCgF4GAEgASgCEgkKAXkYAiABKAISCQoBehgD",
+            "IAEoAiIkCgxQcm90b1ZlY3RvcjISCQoBeBgBIAEoAhIJCgF5GAIgASgCYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoRobot), global::Synthesis.Simulator.ProtoRobot.Parser, new[]{ "RobotName", "Position", "Nodes", "DriveType" }, null, new[]{ typeof(global::Synthesis.Simulator.ProtoRobot.Types.DrivetrainType) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoNode), global::Synthesis.Simulator.ProtoNode.Parser, new[]{ "IsDynamic", "NodeID", "ParentNode", "Mass", "CenterOfMass", "Position", "Bodies" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoField), global::Synthesis.Simulator.ProtoField.Parser, new[]{ "FieldName", "Nodes" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoNode), global::Synthesis.Simulator.ProtoNode.Parser, new[]{ "IsDynamic", "NodeID", "ParentNode", "Mass", "CenterOfMass", "Position", "Bodies", "Name" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoObject), global::Synthesis.Simulator.ProtoObject.Parser, new[]{ "Position", "Verts", "Tris", "Uv" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoVector3), global::Synthesis.Simulator.ProtoVector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoVector2), global::Synthesis.Simulator.ProtoVector2.Parser, new[]{ "X", "Y" }, null, null, null, null)
@@ -281,6 +284,155 @@ namespace Synthesis.Simulator {
 
   }
 
+  public sealed partial class ProtoField : pb::IMessage<ProtoField> {
+    private static readonly pb::MessageParser<ProtoField> _parser = new pb::MessageParser<ProtoField>(() => new ProtoField());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ProtoField> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ProtoField() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ProtoField(ProtoField other) : this() {
+      fieldName_ = other.fieldName_;
+      nodes_ = other.nodes_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ProtoField Clone() {
+      return new ProtoField(this);
+    }
+
+    /// <summary>Field number for the "FieldName" field.</summary>
+    public const int FieldNameFieldNumber = 1;
+    private string fieldName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string FieldName {
+      get { return fieldName_; }
+      set {
+        fieldName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "nodes" field.</summary>
+    public const int NodesFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Synthesis.Simulator.ProtoNode> _repeated_nodes_codec
+        = pb::FieldCodec.ForMessage(18, global::Synthesis.Simulator.ProtoNode.Parser);
+    private readonly pbc::RepeatedField<global::Synthesis.Simulator.ProtoNode> nodes_ = new pbc::RepeatedField<global::Synthesis.Simulator.ProtoNode>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Synthesis.Simulator.ProtoNode> Nodes {
+      get { return nodes_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ProtoField);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ProtoField other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (FieldName != other.FieldName) return false;
+      if(!nodes_.Equals(other.nodes_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (FieldName.Length != 0) hash ^= FieldName.GetHashCode();
+      hash ^= nodes_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (FieldName.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(FieldName);
+      }
+      nodes_.WriteTo(output, _repeated_nodes_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (FieldName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(FieldName);
+      }
+      size += nodes_.CalculateSize(_repeated_nodes_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ProtoField other) {
+      if (other == null) {
+        return;
+      }
+      if (other.FieldName.Length != 0) {
+        FieldName = other.FieldName;
+      }
+      nodes_.Add(other.nodes_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            FieldName = input.ReadString();
+            break;
+          }
+          case 18: {
+            nodes_.AddEntriesFrom(input, _repeated_nodes_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class ProtoNode : pb::IMessage<ProtoNode> {
     private static readonly pb::MessageParser<ProtoNode> _parser = new pb::MessageParser<ProtoNode>(() => new ProtoNode());
     private pb::UnknownFieldSet _unknownFields;
@@ -289,7 +441,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -313,6 +465,7 @@ namespace Synthesis.Simulator {
       centerOfMass_ = other.centerOfMass_ != null ? other.centerOfMass_.Clone() : null;
       position_ = other.position_ != null ? other.position_.Clone() : null;
       bodies_ = other.bodies_.Clone();
+      name_ = other.name_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -397,6 +550,17 @@ namespace Synthesis.Simulator {
       get { return bodies_; }
     }
 
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 8;
+    private string name_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ProtoNode);
@@ -417,6 +581,7 @@ namespace Synthesis.Simulator {
       if (!object.Equals(CenterOfMass, other.CenterOfMass)) return false;
       if (!object.Equals(Position, other.Position)) return false;
       if(!bodies_.Equals(other.bodies_)) return false;
+      if (Name != other.Name) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -430,6 +595,7 @@ namespace Synthesis.Simulator {
       if (centerOfMass_ != null) hash ^= CenterOfMass.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       hash ^= bodies_.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -468,6 +634,10 @@ namespace Synthesis.Simulator {
         output.WriteMessage(Position);
       }
       bodies_.WriteTo(output, _repeated_bodies_codec);
+      if (Name.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(Name);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -495,6 +665,9 @@ namespace Synthesis.Simulator {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
       }
       size += bodies_.CalculateSize(_repeated_bodies_codec);
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -531,6 +704,9 @@ namespace Synthesis.Simulator {
         Position.MergeFrom(other.Position);
       }
       bodies_.Add(other.bodies_);
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -576,6 +752,10 @@ namespace Synthesis.Simulator {
             bodies_.AddEntriesFrom(input, _repeated_bodies_codec);
             break;
           }
+          case 66: {
+            Name = input.ReadString();
+            break;
+          }
         }
       }
     }
@@ -590,7 +770,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -786,7 +966,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -971,7 +1151,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

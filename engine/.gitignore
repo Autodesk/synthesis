@@ -1,0 +1,5 @@
+.vs/
+.vscode/
+SynthesisExporter/.vscode/
+Library/
+obj/

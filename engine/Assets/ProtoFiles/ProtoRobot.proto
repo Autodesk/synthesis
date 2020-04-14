@@ -14,6 +14,11 @@ message ProtoRobot {
   DrivetrainType driveType = 4;
 }
 
+message ProtoField {
+  string FieldName = 1;
+  repeated ProtoNode nodes = 2;
+}
+
 message ProtoNode {
   bool isDynamic = 1;
   int32 nodeID = 2;
@@ -22,6 +27,7 @@ message ProtoNode {
   ProtoVector3 centerOfMass = 5;
   ProtoVector3 position = 6;
   repeated ProtoObject bodies = 7;
+  string name = 8;
 }
 
 message ProtoObject {
