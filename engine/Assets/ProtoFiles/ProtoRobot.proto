@@ -28,6 +28,7 @@ message ProtoNode {
   ProtoVector3 position = 6;
   repeated ProtoObject bodies = 7;
   string name = 8;
+  repeated JointInfo joints = 9;
 }
 
 message ProtoObject {
@@ -35,6 +36,22 @@ message ProtoObject {
   repeated ProtoVector3 verts = 2;
   repeated int32 tris = 3;
   repeated ProtoVector2 uv = 4;
+}
+
+message JointInfo {
+  JointType type = 1;
+  ProtoVector3 direction = 2;
+  ProtoVector3 origin = 3;
+  float posLimit = 4;
+  float negLimit = 5;
+  int32 companionID = 6;
+}
+
+enum JointType {
+  NoJoint = 0;
+  Fixed = 1;
+  Hinge = 2;
+  Slide = 3;
 }
 
 message ProtoVector3 {

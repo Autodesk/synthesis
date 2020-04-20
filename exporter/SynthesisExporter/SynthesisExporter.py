@@ -1,5 +1,6 @@
 # Author: Autodesk
 # Description: Robot and Mechanical Exporter for Synthesis.
+# Note to self: Make the joint field repeated because occurrences will have multiple joints
 
 import adsk.core, adsk.fusion, adsk.cam, traceback
 import os, sys
@@ -66,7 +67,7 @@ class FieldData:
 
         # Load meta data
         node.name = occ.name###
-        node.isDynamic = False
+        node.isDynamic = True
         node.nodeID = id
         node.parentNode = -1
         node.mass += float(phys.mass)# No idea if this is correct. Will test once we start dynamic objects
@@ -78,7 +79,7 @@ class FieldData:
 
         bodies = occ.bRepBodies
         for body in bodies:
-            #if (phys.volume > 20):# Might add to filter out some small objects
+            # if (phys.volume > 20):# Might add to filter out some small objects
             self.GetProtoBody(node, body)
 
         adsk.doEvents()# Gives process back to fusion for an update. Prevents crashes
@@ -96,6 +97,9 @@ class FieldData:
                 for body in n.bodies:
                     node.bodies.append(body)
                 node.mass += n.mass
+
+        # Give the nodes a default. I think you can do this in the protobuf but I don't know how
+        # node.joint.type = JointType.NoJoint
 
         return node
 
@@ -127,10 +131,59 @@ class FieldData:
 
         self.__ui.messageBox('Identified all Nodes')
 
+        # Turns out a component and occurence share a ton of the same attributes
         self.field.nodes.append(self.GetNode(self.__rootComponent, 0))
+        self.field.nodes[0].joints.append(JointInfo(type = JointType.NoJoint))
         for occ in self.__predefinedNodes:
-            self.field.nodes.append(self.GetNode(occ, index))
+            n = self.GetNode(occ, index)
+            #n.joint.type = JointType.Fixed
+            #n.joint.companionID = 0
+            self.field.nodes.append(n)
             index = index + 1
+
+        # Loads joint info
+        loadedJoints = [('', '')]
+        for x in range(len(self.__predefinedNodes)):
+            if len(self.__predefinedNodes[x].joints) < 1:
+                protoJoint = JointInfo()
+                protoJoint.type = JointType.Fixed
+                protoJoint.companionID = 0
+                self.field.nodes[x + 1].joints.append(protoJoint)
+            else:
+                for joint in self.__predefinedNodes[x].joints:
+
+                    item = (joint.occurrenceOne.name, joint.occurrenceTwo.name)
+                    if item not in loadedJoints:
+                        loadedJoints.append(item)
+
+                        motion = joint.jointMotion
+
+                        protoJoint = JointInfo()
+
+                        jointGeometry = joint.geometryOrOriginOne
+                        origin = jointGeometry.origin
+                        self.__ui.messageBox('Xo:{}, Yo:{}, Zo:{}'.format(origin.x / 100, origin.z / 100, origin.y / 100))
+                        
+                        # Check for joint type
+                        if type(motion) is adsk.fusion.RevoluteJointMotion:
+                            protoJoint.type = JointType.Hinge
+                            directionVector = motion.rotationAxisVector
+                            protoJoint.direction.x = directionVector.x# ProtoVector3(x = , y = directionVector.z / 100, z = directionVector.y / 100)
+                            protoJoint.direction.y = directionVector.z
+                            protoJoint.direction.z = directionVector.y
+                            protoJoint.origin.x = origin.x / 100# ProtoVector3(x = origin.x / 100, y = origin.z / 100, z = origin.y / 100)
+                            protoJoint.origin.y = origin.z / 100
+                            protoJoint.origin.z = origin.y / 100
+                            if joint.occurrenceOne == self.__predefinedNodes[x]:
+                                protoJoint.companionID = self.__predefinedNodes.index(joint.occurrenceTwo) + 1
+                            else:
+                                protoJoint.companionID = self.__predefinedNodes.index(joint.occurrenceOne) + 1
+                            # self.__ui.messageBox('x:{}, y:{}, z:{}'.format(directionVector.x, directionVector.z, directionVector.y))
+                        else:
+                            protoJoint.type = JointType.Fixed
+                            protoJoint.companionID = 0
+
+                        self.field.nodes[x + 1].joints.append(protoJoint)
 
     def SaveField(self, path):
         file = open(path, 'wb')

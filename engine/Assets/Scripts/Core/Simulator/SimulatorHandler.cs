@@ -20,9 +20,40 @@ namespace Synthesis.Simulator
         {
             GameObject fieldObj = new GameObject(field.FieldName);
 
+            List<ProtoNode> nodeList = new List<ProtoNode>(field.Nodes);
+
+            List<GameObject> nodeObjects = new List<GameObject>();
             for (int i = 0; i < field.Nodes.Count; i++)
             {
-                LoadNode(field.Nodes[i], fieldObj.transform);
+                LoadNode(field.Nodes[i], out GameObject obj, parent = fieldObj.transform);
+                nodeObjects.Add(obj);
+            }
+
+            // Check for Joints
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                foreach (JointInfo jointInfo in nodeList[i].Joints)
+                {
+                    if (jointInfo.Type != JointType.NoJoint)
+                    {
+                        Rigidbody connectedBody = nodeObjects[nodeList.FindIndex(x => x.NodeID == jointInfo.CompanionID)].GetComponent<Rigidbody>();
+                        switch (jointInfo.Type)
+                        {
+                            case JointType.Fixed:
+                                nodeObjects[i].AddComponent<FixedJoint>().connectedBody = connectedBody;
+                                break;
+                            case JointType.Hinge:
+                                HingeJoint j = nodeObjects[i].AddComponent<HingeJoint>();
+                                j.connectedBody = connectedBody;
+                                // Vector3 anchor = 
+                                // Vector3 axis = 
+                                j.anchor = new Vector3(jointInfo.Origin.X, jointInfo.Origin.Y, jointInfo.Origin.Z);
+                                j.axis = new Vector3(jointInfo.Direction.X, jointInfo.Direction.Y, jointInfo.Direction.Z);
+                                j.enableCollision = true;
+                                break;
+                        }
+                    }
+                }
             }
 
             fieldObj.transform.position = spawnposition ?? Vector3.zero;
@@ -30,18 +61,29 @@ namespace Synthesis.Simulator
             if (parent != null) fieldObj.transform.parent = parent;
         }
 
-        public void LoadNode(ProtoNode node, Transform parent = null, Vector3? spawnposition = null, Quaternion? spawnRotation = null)
+        public void LoadNode(ProtoNode node, out GameObject result, Transform parent = null, Vector3? spawnposition = null, Quaternion? spawnRotation = null)
         {
             GameObject nodeObj = new GameObject(node.Name);
 
             for (int i = 0; i < node.Bodies.Count; i++)
             {
-                LoadBody(node.Bodies[i], nodeObj.transform);
+                LoadBody(node.Bodies[i], parent = nodeObj.transform);
+            }
+
+            // Physics
+            Rigidbody rb = nodeObj.AddComponent<Rigidbody>();
+            if (node.IsDynamic)
+            {
+                rb.mass = node.Mass;
+            } else
+            {
+                rb.constraints = RigidbodyConstraints.FreezeAll;
             }
 
             nodeObj.transform.position = spawnposition ?? Vector3.zero;
             nodeObj.transform.rotation = spawnRotation ?? Quaternion.Euler(Vector3.zero);
             if (parent != null) nodeObj.transform.parent = parent;
+            result = nodeObj;
         }
 
         public void LoadBody(ProtoObject obj, Transform parent = null, Vector3? spawnposition = null, Quaternion? spawnRotation = null)
@@ -75,6 +117,10 @@ namespace Synthesis.Simulator
             filter.mesh = m;
             MeshRenderer renderer = gameObj.AddComponent<MeshRenderer>();
             renderer.material = ObjectLedger.Instance.spawnMat;
+
+            // Collider
+            gameObj.AddComponent<MeshCollider>().convex = true;
+
             gameObj.transform.position = spawnposition ?? Vector3.zero;
             gameObj.transform.rotation = spawnRotation ?? Quaternion.Euler(Vector3.zero);
             if (parent != null) gameObj.transform.parent = parent;

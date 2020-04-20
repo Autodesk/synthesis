@@ -28,6 +28,6 @@ public class TestLoader : MonoBehaviour
     }
 
     public void LoadField() {
-        SimulatorHandler.Instance.LoadField(ProtobufUtil.GetFieldFromFile("..\\exporter\\SynthesisExporter\\Test_Field.syn"));
+        SimulatorHandler.Instance.LoadField(ProtobufUtil.GetFieldFromFile("..\\exporter\\SynthesisExporter\\output\\Test_Field.syn"));
     }
 }

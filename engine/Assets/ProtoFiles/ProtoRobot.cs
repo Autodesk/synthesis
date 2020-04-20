@@ -32,26 +32,34 @@ namespace Synthesis.Simulator {
             "LkRyaXZldHJhaW5UeXBlIjMKDkRyaXZldHJhaW5UeXBlEggKBFRhbmsQABIK",
             "CgZTd2VydmUQARILCgdOb0RyaXZlEAIiTgoKUHJvdG9GaWVsZBIRCglGaWVs",
             "ZE5hbWUYASABKAkSLQoFbm9kZXMYAiADKAsyHi5TeW50aGVzaXMuU2ltdWxh",
-            "dG9yLlByb3RvTm9kZSL+AQoJUHJvdG9Ob2RlEhEKCWlzRHluYW1pYxgBIAEo",
+            "dG9yLlByb3RvTm9kZSKuAgoJUHJvdG9Ob2RlEhEKCWlzRHluYW1pYxgBIAEo",
             "CBIOCgZub2RlSUQYAiABKAUSEgoKcGFyZW50Tm9kZRgDIAEoBRIMCgRtYXNz",
             "GAQgASgCEjcKDGNlbnRlck9mTWFzcxgFIAEoCzIhLlN5bnRoZXNpcy5TaW11",
             "bGF0b3IuUHJvdG9WZWN0b3IzEjMKCHBvc2l0aW9uGAYgASgLMiEuU3ludGhl",
             "c2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjMSMAoGYm9kaWVzGAcgAygLMiAu",
             "U3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b09iamVjdBIMCgRuYW1lGAggASgJ",
-            "IrEBCgtQcm90b09iamVjdBIzCghwb3NpdGlvbhgBIAEoCzIhLlN5bnRoZXNp",
-            "cy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEjAKBXZlcnRzGAIgAygLMiEuU3lu",
-            "dGhlc2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjMSDAoEdHJpcxgDIAMoBRIt",
-            "CgJ1dhgEIAMoCzIhLlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3Iy",
+            "Ei4KBmpvaW50cxgJIAMoCzIeLlN5bnRoZXNpcy5TaW11bGF0b3IuSm9pbnRJ",
+            "bmZvIrEBCgtQcm90b09iamVjdBIzCghwb3NpdGlvbhgBIAEoCzIhLlN5bnRo",
+            "ZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEjAKBXZlcnRzGAIgAygLMiEu",
+            "U3ludGhlc2lzLlNpbXVsYXRvci5Qcm90b1ZlY3RvcjMSDAoEdHJpcxgDIAMo",
+            "BRItCgJ1dhgEIAMoCzIhLlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0",
+            "b3IyItsBCglKb2ludEluZm8SLAoEdHlwZRgBIAEoDjIeLlN5bnRoZXNpcy5T",
+            "aW11bGF0b3IuSm9pbnRUeXBlEjQKCWRpcmVjdGlvbhgCIAEoCzIhLlN5bnRo",
+            "ZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEjEKBm9yaWdpbhgDIAEoCzIh",
+            "LlN5bnRoZXNpcy5TaW11bGF0b3IuUHJvdG9WZWN0b3IzEhAKCHBvc0xpbWl0",
+            "GAQgASgCEhAKCG5lZ0xpbWl0GAUgASgCEhMKC2NvbXBhbmlvbklEGAYgASgF",
             "Ii8KDFByb3RvVmVjdG9yMxIJCgF4GAEgASgCEgkKAXkYAiABKAISCQoBehgD",
-            "IAEoAiIkCgxQcm90b1ZlY3RvcjISCQoBeBgBIAEoAhIJCgF5GAIgASgCYgZw",
-            "cm90bzM="));
+            "IAEoAiIkCgxQcm90b1ZlY3RvcjISCQoBeBgBIAEoAhIJCgF5GAIgASgCKjkK",
+            "CUpvaW50VHlwZRILCgdOb0pvaW50EAASCQoFRml4ZWQQARIJCgVIaW5nZRAC",
+            "EgkKBVNsaWRlEANiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Synthesis.Simulator.JointType), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoRobot), global::Synthesis.Simulator.ProtoRobot.Parser, new[]{ "RobotName", "Position", "Nodes", "DriveType" }, null, new[]{ typeof(global::Synthesis.Simulator.ProtoRobot.Types.DrivetrainType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoField), global::Synthesis.Simulator.ProtoField.Parser, new[]{ "FieldName", "Nodes" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoNode), global::Synthesis.Simulator.ProtoNode.Parser, new[]{ "IsDynamic", "NodeID", "ParentNode", "Mass", "CenterOfMass", "Position", "Bodies", "Name" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoNode), global::Synthesis.Simulator.ProtoNode.Parser, new[]{ "IsDynamic", "NodeID", "ParentNode", "Mass", "CenterOfMass", "Position", "Bodies", "Name", "Joints" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoObject), global::Synthesis.Simulator.ProtoObject.Parser, new[]{ "Position", "Verts", "Tris", "Uv" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.JointInfo), global::Synthesis.Simulator.JointInfo.Parser, new[]{ "Type", "Direction", "Origin", "PosLimit", "NegLimit", "CompanionID" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoVector3), global::Synthesis.Simulator.ProtoVector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Simulator.ProtoVector2), global::Synthesis.Simulator.ProtoVector2.Parser, new[]{ "X", "Y" }, null, null, null, null)
           }));
@@ -59,6 +67,16 @@ namespace Synthesis.Simulator {
     #endregion
 
   }
+  #region Enums
+  public enum JointType {
+    [pbr::OriginalName("NoJoint")] NoJoint = 0,
+    [pbr::OriginalName("Fixed")] Fixed = 1,
+    [pbr::OriginalName("Hinge")] Hinge = 2,
+    [pbr::OriginalName("Slide")] Slide = 3,
+  }
+
+  #endregion
+
   #region Messages
   public sealed partial class ProtoRobot : pb::IMessage<ProtoRobot> {
     private static readonly pb::MessageParser<ProtoRobot> _parser = new pb::MessageParser<ProtoRobot>(() => new ProtoRobot());
@@ -466,6 +484,7 @@ namespace Synthesis.Simulator {
       position_ = other.position_ != null ? other.position_.Clone() : null;
       bodies_ = other.bodies_.Clone();
       name_ = other.name_;
+      joints_ = other.joints_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -561,6 +580,16 @@ namespace Synthesis.Simulator {
       }
     }
 
+    /// <summary>Field number for the "joints" field.</summary>
+    public const int JointsFieldNumber = 9;
+    private static readonly pb::FieldCodec<global::Synthesis.Simulator.JointInfo> _repeated_joints_codec
+        = pb::FieldCodec.ForMessage(74, global::Synthesis.Simulator.JointInfo.Parser);
+    private readonly pbc::RepeatedField<global::Synthesis.Simulator.JointInfo> joints_ = new pbc::RepeatedField<global::Synthesis.Simulator.JointInfo>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Synthesis.Simulator.JointInfo> Joints {
+      get { return joints_; }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ProtoNode);
@@ -582,6 +611,7 @@ namespace Synthesis.Simulator {
       if (!object.Equals(Position, other.Position)) return false;
       if(!bodies_.Equals(other.bodies_)) return false;
       if (Name != other.Name) return false;
+      if(!joints_.Equals(other.joints_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -596,6 +626,7 @@ namespace Synthesis.Simulator {
       if (position_ != null) hash ^= Position.GetHashCode();
       hash ^= bodies_.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
+      hash ^= joints_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -638,6 +669,7 @@ namespace Synthesis.Simulator {
         output.WriteRawTag(66);
         output.WriteString(Name);
       }
+      joints_.WriteTo(output, _repeated_joints_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -668,6 +700,7 @@ namespace Synthesis.Simulator {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
+      size += joints_.CalculateSize(_repeated_joints_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -707,6 +740,7 @@ namespace Synthesis.Simulator {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
+      joints_.Add(other.joints_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -754,6 +788,10 @@ namespace Synthesis.Simulator {
           }
           case 66: {
             Name = input.ReadString();
+            break;
+          }
+          case 74: {
+            joints_.AddEntriesFrom(input, _repeated_joints_codec);
             break;
           }
         }
@@ -958,6 +996,287 @@ namespace Synthesis.Simulator {
 
   }
 
+  public sealed partial class JointInfo : pb::IMessage<JointInfo> {
+    private static readonly pb::MessageParser<JointInfo> _parser = new pb::MessageParser<JointInfo>(() => new JointInfo());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<JointInfo> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public JointInfo() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public JointInfo(JointInfo other) : this() {
+      type_ = other.type_;
+      direction_ = other.direction_ != null ? other.direction_.Clone() : null;
+      origin_ = other.origin_ != null ? other.origin_.Clone() : null;
+      posLimit_ = other.posLimit_;
+      negLimit_ = other.negLimit_;
+      companionID_ = other.companionID_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public JointInfo Clone() {
+      return new JointInfo(this);
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 1;
+    private global::Synthesis.Simulator.JointType type_ = global::Synthesis.Simulator.JointType.NoJoint;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Synthesis.Simulator.JointType Type {
+      get { return type_; }
+      set {
+        type_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "direction" field.</summary>
+    public const int DirectionFieldNumber = 2;
+    private global::Synthesis.Simulator.ProtoVector3 direction_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Synthesis.Simulator.ProtoVector3 Direction {
+      get { return direction_; }
+      set {
+        direction_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "origin" field.</summary>
+    public const int OriginFieldNumber = 3;
+    private global::Synthesis.Simulator.ProtoVector3 origin_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Synthesis.Simulator.ProtoVector3 Origin {
+      get { return origin_; }
+      set {
+        origin_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "posLimit" field.</summary>
+    public const int PosLimitFieldNumber = 4;
+    private float posLimit_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float PosLimit {
+      get { return posLimit_; }
+      set {
+        posLimit_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "negLimit" field.</summary>
+    public const int NegLimitFieldNumber = 5;
+    private float negLimit_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float NegLimit {
+      get { return negLimit_; }
+      set {
+        negLimit_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "companionID" field.</summary>
+    public const int CompanionIDFieldNumber = 6;
+    private int companionID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CompanionID {
+      get { return companionID_; }
+      set {
+        companionID_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as JointInfo);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(JointInfo other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Type != other.Type) return false;
+      if (!object.Equals(Direction, other.Direction)) return false;
+      if (!object.Equals(Origin, other.Origin)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PosLimit, other.PosLimit)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(NegLimit, other.NegLimit)) return false;
+      if (CompanionID != other.CompanionID) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Type != global::Synthesis.Simulator.JointType.NoJoint) hash ^= Type.GetHashCode();
+      if (direction_ != null) hash ^= Direction.GetHashCode();
+      if (origin_ != null) hash ^= Origin.GetHashCode();
+      if (PosLimit != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PosLimit);
+      if (NegLimit != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(NegLimit);
+      if (CompanionID != 0) hash ^= CompanionID.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Type != global::Synthesis.Simulator.JointType.NoJoint) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Type);
+      }
+      if (direction_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Direction);
+      }
+      if (origin_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Origin);
+      }
+      if (PosLimit != 0F) {
+        output.WriteRawTag(37);
+        output.WriteFloat(PosLimit);
+      }
+      if (NegLimit != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(NegLimit);
+      }
+      if (CompanionID != 0) {
+        output.WriteRawTag(48);
+        output.WriteInt32(CompanionID);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Type != global::Synthesis.Simulator.JointType.NoJoint) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      }
+      if (direction_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Direction);
+      }
+      if (origin_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Origin);
+      }
+      if (PosLimit != 0F) {
+        size += 1 + 4;
+      }
+      if (NegLimit != 0F) {
+        size += 1 + 4;
+      }
+      if (CompanionID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CompanionID);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(JointInfo other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Type != global::Synthesis.Simulator.JointType.NoJoint) {
+        Type = other.Type;
+      }
+      if (other.direction_ != null) {
+        if (direction_ == null) {
+          Direction = new global::Synthesis.Simulator.ProtoVector3();
+        }
+        Direction.MergeFrom(other.Direction);
+      }
+      if (other.origin_ != null) {
+        if (origin_ == null) {
+          Origin = new global::Synthesis.Simulator.ProtoVector3();
+        }
+        Origin.MergeFrom(other.Origin);
+      }
+      if (other.PosLimit != 0F) {
+        PosLimit = other.PosLimit;
+      }
+      if (other.NegLimit != 0F) {
+        NegLimit = other.NegLimit;
+      }
+      if (other.CompanionID != 0) {
+        CompanionID = other.CompanionID;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            Type = (global::Synthesis.Simulator.JointType) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            if (direction_ == null) {
+              Direction = new global::Synthesis.Simulator.ProtoVector3();
+            }
+            input.ReadMessage(Direction);
+            break;
+          }
+          case 26: {
+            if (origin_ == null) {
+              Origin = new global::Synthesis.Simulator.ProtoVector3();
+            }
+            input.ReadMessage(Origin);
+            break;
+          }
+          case 37: {
+            PosLimit = input.ReadFloat();
+            break;
+          }
+          case 45: {
+            NegLimit = input.ReadFloat();
+            break;
+          }
+          case 48: {
+            CompanionID = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class ProtoVector3 : pb::IMessage<ProtoVector3> {
     private static readonly pb::MessageParser<ProtoVector3> _parser = new pb::MessageParser<ProtoVector3>(() => new ProtoVector3());
     private pb::UnknownFieldSet _unknownFields;
@@ -966,7 +1285,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1151,7 +1470,7 @@ namespace Synthesis.Simulator {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Synthesis.Simulator.ProtoRobotReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
