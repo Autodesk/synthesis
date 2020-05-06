@@ -1,0 +1,11 @@
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\bin\Debug\netstandard2.0\SynthesisAPI.deps.json
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\bin\Debug\netstandard2.0\SynthesisAPI.dll
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\bin\Debug\netstandard2.0\SynthesisAPI.pdb
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\bin\Debug\netstandard2.0\UnityEngine.dll
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\bin\Debug\netstandard2.0\UnityEngine.xml
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.csprojAssemblyReference.cache
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.AssemblyInfoInputs.cache
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.AssemblyInfo.cs
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.csproj.CopyComplete
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.dll
+F:\hunte\source\repos\synth-2020\engine\SynthesisAPI\obj\Debug\netstandard2.0\SynthesisAPI.pdb
