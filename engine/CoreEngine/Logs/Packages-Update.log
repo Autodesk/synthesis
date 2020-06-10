@@ -43,3 +43,21 @@ The following packages were added:
   com.unity.textmeshpro@2.0.1
   com.unity.timeline@1.2.10
   com.unity.ugui@1.0.0
+
+=== Thu May  7 00:28:21 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ide.vscode from version 1.1.4 to 1.2.0
+  com.unity.render-pipelines.universal from version 7.1.8 to 7.3.1
+  com.unity.test-framework from version 1.1.11 to 1.1.13
+
+=== Mon Jun  8 16:20:49 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.test-framework from version 1.1.13 to 1.1.14

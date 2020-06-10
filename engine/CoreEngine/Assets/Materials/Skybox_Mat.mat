@@ -108,9 +108,9 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.25882354, g: 0.5921569, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.6392157, g: 0.6901961, b: 0.7411765, a: 1}
     - _SkyTint: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Tint: {r: 0.27959237, g: 0.57225764, b: 0.9716981, a: 0.3764706}
+    - _Tint: {r: 0.25882354, g: 0.5921569, b: 1, a: 1}

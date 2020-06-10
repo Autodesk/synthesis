@@ -1,3 +1,0 @@
-namespace Synthesis.Core.Object {
-  
-}
