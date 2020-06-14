@@ -1,8 +1,8 @@
 ---
-name: Internal Development Log
+name: Internal Dev Sprint Card
 about: Cards for GitHub Projects
 title: ''
-labels: devlog
+labels: sprint
 assignees: ''
 
 ---
