@@ -28,9 +28,19 @@ namespace Synthesis.Simulator.Input
         public bool GetHeld()
         {
             int result = buttons.Length;
-            foreach (string buttonName in buttons.ToButtonNameArray())
+            int joyNum;
+            int buttonNum;
+            foreach ((int joystick, int button) button in buttons)
             {
-                if (UnityEngine.Input.GetKey(buttonName)) result -= 1;
+                joyNum = button.joystick;
+                buttonNum = button.button;
+                // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
+                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKey(button.ToButtonName())) result -= 1;
             }
             if (GetDown()) return false;
             return result == 0;
@@ -39,9 +49,19 @@ namespace Synthesis.Simulator.Input
         public bool GetDown()
         {
             int result = buttons.Length;
-            foreach (string buttonName in buttons.ToButtonNameArray())
+            int joyNum;
+            int buttonNum;
+            foreach ((int joystick, int button) button in buttons)
             {
-                if (UnityEngine.Input.GetKeyDown(buttonName)) result -= 1;
+                joyNum = button.joystick;
+                buttonNum = button.button;
+                // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
+                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKeyDown(button.ToButtonName())) result -= 1;
             }
             return result == 0;
         }
@@ -49,9 +69,19 @@ namespace Synthesis.Simulator.Input
         public bool GetUp()
         {
             int result = buttons.Length;
-            foreach (string buttonName in buttons.ToButtonNameArray())
+            int joyNum;
+            int buttonNum;
+            foreach ((int joystick, int button) button in buttons)
             {
-                if (UnityEngine.Input.GetKeyUp(buttonName)) result -= 1;
+                joyNum = button.joystick;
+                buttonNum = button.button;
+                // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
+                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKeyUp(button.ToButtonName())) result -= 1;
             }
             return result == 0;
         }
@@ -65,10 +95,15 @@ namespace Synthesis.Simulator.Input
         {
             List<(int joystick, int button)> buttonsActive = new List<(int joystick, int button)>();
             (int joystick, int button) button;
-            for (int j = 1; j < 11; j++)
+            for (int j = 1; j <= 11; j++)
             {
-                for (int b = 1; b < 20; b++)
+                for (int b = 0; b <= 19; b++)
                 {
+                    if (InputHandler.ControllerRegistry[j] == InputHandler.ControllerType.Ps4 && (b == 6 || b == 7))
+                    {
+                        continue;
+                    }
+
                     button = (j, b);
                     if (Array.Exists(buttonsToIgnore, x => x == button)) continue;
 
@@ -99,6 +134,17 @@ namespace Synthesis.Simulator.Input
                 }
                 return compare.Length == Length;
             } catch { return false; }
+        }
+
+        public override string ToString()
+        {
+            if (buttons.Length == 0) return "No Buttons"; // Shouldn't happen but ya never know
+            string a = buttons[0].ToButtonName();
+            for (int i = 1; i < buttons.Length; i++)
+            {
+                a += ", " + buttons[i].ToButtonName();
+            }
+            return a;
         }
 
         #endregion

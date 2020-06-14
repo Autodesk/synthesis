@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.Util;
 
+using UnityInput = UnityEngine.Input;
+
 namespace Synthesis.Simulator.Input
 {
     /**
@@ -14,10 +16,23 @@ namespace Synthesis.Simulator.Input
         public static SynList<IDigitalInput, EventHandler<KeyAction>> MappedDigital = new SynList<IDigitalInput, EventHandler<KeyAction>>();
         // Used for giving custom names to axes
         public static Dictionary<string, IAxisInput> MappedAxes = new Dictionary<string, IAxisInput>();
+        // Used to identify controller type because ps4 be wack
+        public static Dictionary<int, ControllerType> ControllerRegistry = new Dictionary<int, ControllerType>();
+        public static string[] LastControllerNames = new string[1];
 
         static InputHandler()
         {
-            UnityHandles.OnUpdate += Update;
+            UnityHandles.OnUpdate += Update; // Add the update function to the update event
+            UnityHandles.OnFixedUpdate += FixedUpdate;
+
+            for (int i = 1; i <= 11; i++)
+            {
+                ControllerRegistry.Add(i, ControllerType.Other); // Default all the controllers to other
+            }
+
+            // So we can start detecting changes in controllers;
+            LastControllerNames = UnityInput.GetJoystickNames();
+            EvaluateControllerTypes();
 
             // Assign general axes
             MappedAxes["MouseX"] = (DualAxis)"Mouse X";
@@ -40,6 +55,24 @@ namespace Synthesis.Simulator.Input
                 {
                     kvp.Value(kvp.Key, KeyAction.Up);
                 }
+            }
+        }
+
+        private static void FixedUpdate()
+        {
+            int res = LastControllerNames.Length;
+            string[] currentNames = UnityInput.GetJoystickNames();
+            if (res == currentNames.Length)
+            {
+                for (int i = 0; i < currentNames.Length; i++)
+                {
+                    if (currentNames[i].Equals(LastControllerNames[i])) res -= 1;
+                }
+            }
+            if (res != 0)
+            {
+                LastControllerNames = currentNames;
+                EvaluateControllerTypes();
             }
         }
 
@@ -92,10 +125,10 @@ namespace Synthesis.Simulator.Input
                 activeJoystickAxis = JoystickAxis.GetCurrentlyActiveJoystickAxis(axesToIgnore);
             }
 
-            if (activeUnityAxis != null) return activeUnityAxis;
-            else if (activeJoystickAxis != null) return activeJoystickAxis;
-            else if (activeKeyDigital.Length > 0) return activeKeyDigital;
-            else if (activeButtonDigital.Length > 0) return activeButtonDigital;
+            if (activeUnityAxis != null) { return activeUnityAxis; }
+            else if (activeJoystickAxis != null) { return activeJoystickAxis; }
+            else if (activeKeyDigital.Length > 0) { return activeKeyDigital; }
+            else if (activeButtonDigital.Length > 0) { return activeButtonDigital; }
             return null;
         }
 
@@ -129,6 +162,36 @@ namespace Synthesis.Simulator.Input
                 names[i] = buttons[i].ToButtonName();
             }
             return names;
+        }
+
+        #endregion
+
+        #region Controller configuration
+
+        public enum ControllerType
+        {
+            Ps4, Other
+        }
+
+        /// <summary>
+        /// Evaluates the type of all the controllers. There isn't an effective way
+        /// of isolating this process to just newly connected/disconnected controllers
+        /// so this will just be run when it we detect any change in controllers.
+        /// </summary>
+        public static void EvaluateControllerTypes()
+        {
+            for (int i = 1; i <= 11; i++)
+            {
+                if (UnityInput.GetAxis("Joystick " + i + " Axis 4") < -0.9
+                    && UnityInput.GetAxis("Joystick " + i + " Axis 5") < -0.9)
+                {
+                    ControllerRegistry[i] = ControllerType.Ps4;
+                    Debug.Log(i + " is Ps4");
+                } else
+                {
+                    ControllerRegistry[i] = ControllerType.Other;
+                }
+            }
         }
 
         #endregion

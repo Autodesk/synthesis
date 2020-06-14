@@ -28,21 +28,45 @@ namespace Synthesis.Simulator.Input
 
         public bool GetHeld() {
             int result = keys.Length;
-            foreach (KeyCode k in keys) if (UnityEngine.Input.GetKey(k)) result -= 1;
+            foreach (KeyCode k in keys)
+            {
+                if (k.ToString().ToLower().StartsWith("joystick"))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKey(k)) result -= 1;
+            }
             return result == 0;
         }
 
         public bool GetDown()
         {
             int result = keys.Length;
-            foreach (KeyCode k in keys) if (UnityEngine.Input.GetKeyDown(k)) result -= 1;
+            foreach (KeyCode k in keys)
+            {
+                if (k.ToString().ToLower().StartsWith("joystick"))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKeyDown(k)) result -= 1;
+            }
             return result == 0;
         }
 
         public bool GetUp()
         {
             int result = keys.Length;
-            foreach (KeyCode k in keys) if (UnityEngine.Input.GetKeyUp(k)) result -= 1;
+            foreach (KeyCode k in keys)
+            {
+                if (k.ToString().ToLower().StartsWith("joystick"))
+                {
+                    result -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKeyUp(k)) result -= 1;
+            }
             return result == 0;
         }
 
@@ -57,6 +81,11 @@ namespace Synthesis.Simulator.Input
             foreach (var val in Enum.GetValues(typeof(KeyCode)))
             {
                 if (Array.Exists(keysToIgnore, x => x == (KeyCode)val)) continue;
+
+                if (((KeyCode)val).ToString().ToLower().StartsWith("joystick"))
+                {
+                    continue;
+                }
 
                 if (UnityEngine.Input.GetKey((KeyCode)val)) detectedKeys.Add((KeyCode)val);
             }

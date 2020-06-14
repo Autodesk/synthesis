@@ -28,9 +28,16 @@ namespace Synthesis.Simulator.Input
 
         public float GetValue(bool positiveOnly = false)
         {
-            float val = UnityEngine.Input.GetAxis("Joystick " + JoystickID + " Axis " + AxisID);
-            if (!positiveOnly) return Positive ? Mathf.Clamp(val, 0, float.MaxValue) : Mathf.Clamp(val, float.MinValue, 0);
-            else return Mathf.Abs(Positive ? Mathf.Clamp(val, 0, float.MaxValue) : Mathf.Clamp(val, float.MinValue, 0));
+            float rawVal = UnityEngine.Input.GetAxis("Joystick " + JoystickID + " Axis " + AxisID);
+
+            // Checks to see if it needs special parsing
+            if (InputHandler.ControllerRegistry[JoystickID] == InputHandler.ControllerType.Ps4 && (AxisID == 5 || AxisID == 4))
+            {
+                return Positive ? (rawVal + 1) / 2 : 0; // Axis 4 & 5 on a ps4 controller shouldn't ever get their negatives assign, but just in case.
+            }
+
+            if (!positiveOnly) return Positive ? Mathf.Clamp(rawVal, 0, float.MaxValue) : Mathf.Clamp(rawVal, float.MinValue, 0);
+            else return Mathf.Abs(Positive ? Mathf.Clamp(rawVal, 0, float.MaxValue) : Mathf.Clamp(rawVal, float.MinValue, 0));
         }
 
         public override string ToString()
@@ -41,18 +48,30 @@ namespace Synthesis.Simulator.Input
         public static JoystickAxis GetCurrentlyActiveJoystickAxis(params string[] axesToIgnore)
         {
             float v = 0;
-            for (int joy = 1; joy < 11; joy++)
+            for (int joy = 1; joy <= 11; joy++)
             {
-                for (int ax = 1; ax < 20; ax++)
+                for (int ax = 1; ax <= 20; ax++)
                 {
                     if (Array.Exists(axesToIgnore, x => x.Equals("Joystick " + joy + " Axis " + ax))) continue;
+
                     v = UnityEngine.Input.GetAxis("Joystick " + joy + " Axis " + ax);
+
+                    bool h = false;
+
+                    // Account for Ps4 weirdness
+                    if (InputHandler.ControllerRegistry[joy] == InputHandler.ControllerType.Ps4 && (ax == 5 || ax == 4))
+                    {
+                        v = (v + 1) / 2;
+                        h = true;
+                    }
+
                     if (v > 0.5)
                     {
                         return (JoystickAxis)("Joystick " + joy + " Axis " + ax + " +");
                     }
                     else if (v < -0.5)
                     {
+                        if (h) Debug.Log("That really shouldn't happen");
                         return (JoystickAxis)("Joystick " + joy + " Axis " + ax + " -");
                     }
                 }

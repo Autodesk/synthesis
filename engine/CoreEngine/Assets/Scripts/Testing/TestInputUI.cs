@@ -9,6 +9,7 @@ public class TestInputUI : MonoBehaviour
 {
     public Text buttonText;
     public Text readoutText;
+    public Text readout2Text;
 
     private bool read = false;
     private IAxisInput AssignableAxis;
@@ -54,6 +55,16 @@ public class TestInputUI : MonoBehaviour
 
     public void Update()
     {
+        /*
+        float a = Input.GetAxis("Joystick 2 Axis 4");
+        float b = Input.GetAxis("Joystick 2 Axis 5");
+
+        readoutText.text = "4: " + a;
+        readout2Text.text = "5: " + b;
+
+        return;
+        */
+        
         if (read)
         {
             IAxisInput detected = InputHandler.GetCurrentlyActiveAxisInput(keysToIgnore: KeysToIgnore, axesToIgnore: AxesToIgnore);
