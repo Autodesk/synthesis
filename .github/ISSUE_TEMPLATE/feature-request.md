@@ -1,9 +1,9 @@
 ---
-name: Feature request
+name: Feature Request
 about: Suggest an Improvement or Idea
 title: ''
 labels: enhancement
-assignees: HiceS
+assignees: matthew17754
 
 ---
 
