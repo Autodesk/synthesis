@@ -1,0 +1,11 @@
+{
+    "autodeskProduct": "Fusion360",
+    "type": "addin",
+    "id": "e37e5edf-83b5-4ae4-964d-866b79987640",
+    "author": "Synthesis Team",
+    "description": "Assembly exporter for Synthesis",
+    "version": "0.1.0",
+    "runOnStartup": false,
+    "supportedOS": "windows|mac",
+    "editEnabled": true
+}
