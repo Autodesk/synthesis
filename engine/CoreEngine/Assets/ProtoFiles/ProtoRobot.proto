@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package Synthesis.Simulator;
+
+message ProtoRobot {
+  string robotName = 1;
+  ProtoVector3 position = 2;
+  repeated ProtoNode nodes = 3;
+  enum DrivetrainType {
+    Tank = 0;
+    Swerve = 1;
+    NoDrive = 2;
+  }
+  DrivetrainType driveType = 4;
+}
+
+message ProtoField {
+  string FieldName = 1;
+  repeated ProtoNode nodes = 2;
+}
+
+message ProtoNode {
+  bool isDynamic = 1;
+  int32 nodeID = 2;
+  int32 parentNode = 3;
+  float mass = 4;
+  ProtoVector3 centerOfMass = 5;
+  ProtoVector3 position = 6;
+  repeated ProtoObject bodies = 7;
+  string name = 8;
+  repeated JointInfo joints = 9;
+}
+
+message ProtoObject {
+  ProtoVector3 position = 1;
+  repeated ProtoVector3 verts = 2;
+  repeated int32 tris = 3;
+  repeated ProtoVector2 uv = 4;
+}
+
+message JointInfo {
+  JointType type = 1;
+  ProtoVector3 direction = 2;
+  ProtoVector3 origin = 3;
+  float posLimit = 4;
+  float negLimit = 5;
+  int32 companionID = 6;
+}
+
+enum JointType {
+  NoJoint = 0;
+  Fixed = 1;
+  Hinge = 2;
+  Slide = 3;
+}
+
+message ProtoVector3 {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message ProtoVector2 {
+  float x = 1;
+  float y = 2;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="style">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ui">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="primary" />
+                            <xs:element name="secondary" />
+                            <xs:element name="primary_accent" />
+                            <xs:element name="secondary_accent" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="environment">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="grid_fill" />
+                            <xs:element name="skybox" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
