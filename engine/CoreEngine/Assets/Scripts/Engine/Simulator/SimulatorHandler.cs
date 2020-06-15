@@ -21,10 +21,16 @@ namespace Synthesis.Simulator
         /// </summary>
         private SimulatorHandler() {
             // Load default style
-            Style s;
-            if (Application.isEditor) s = new Style(@".\Styles\style.xml");
-            else s = new Style(IOHandler.FileStorage + Path.PathSeparator + IOHandler.StyleFolder + Path.PathSeparator + "style.xml");
-            StyleHandler.SelectStyle(s);
+            try
+            {
+                Style s;
+                if (Application.isEditor) s = new Style(@".\Styles\style.xml");
+                else s = new Style(IOHandler.FileStorage + Path.PathSeparator + IOHandler.StyleFolder + Path.PathSeparator + "style.xml");
+                StyleHandler.SelectStyle(s);
+            } catch (Exception e)
+            {
+                Debug.Log("Failed to load style");
+            }
         }
 
         #region Load Functions
