@@ -1,0 +1,19 @@
+.button {
+    margin-bottom: 11px;
+}
+
+.container {
+    padding-top: 33px;
+}
+
+.image {
+    background-color: rgb(192, 101, 101);
+}
+
+.image:hover {
+    background-color: rgb(54, 95, 202);
+}
+
+.screen {
+    background-image: resource('UI Builder/OptionsPanel/options_panel_background');
+}

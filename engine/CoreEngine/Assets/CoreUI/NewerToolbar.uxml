@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="align-items: flex-start; flex-grow: 1;">
+        <Style src="button-1.uss" />
+        <ui:VisualElement name="left" style="height: 100%; width: 50px; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgba(22, 22, 22, 255); justify-content: space-between;">
+            <ui:Button text="&lt;" name="collapse-button" class="button-1" style="width: auto; height: 50px; -unity-font-style: bold; -unity-font: url(&apos;/Assets/UIERuntime/USS/Roboto-Regular.ttf&apos;); font-size: 27px;" />
+            <ui:ListView focusable="True" style="height: 398px; width: auto;" />
+            <ui:Button text="X" name="exit-button" class="button-1" style="width: auto; background-color: rgba(0, 0, 0, 255); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; height: 50px; -unity-font-style: bold; -unity-font: url(&apos;/Assets/UIERuntime/USS/Roboto-Regular.ttf&apos;); font-size: 19px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

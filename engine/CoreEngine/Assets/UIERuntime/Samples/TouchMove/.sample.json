@@ -1,0 +1,5 @@
+{
+	"displayName":"Touch Move",
+	"description": "Move squares with your fingers. Supports multi-touch.",
+	"createSeparatePackage": false
+}

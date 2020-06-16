@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" class="screen" style="flex-grow: 1; -unity-slice-left: 97; -unity-slice-top: 90; -unity-slice-right: 69; -unity-slice-bottom: 50; flex-direction: row;">
+        <Style path="UI Builder/OptionsPanel/options_panel" />
+        <ui:VisualElement name="left" class="container" style="flex-grow: 1; padding-left: 30px; padding-right: 10px;">
+            <ui:Label text="Label" style="padding-bottom: 9px; font-size: 22px;" />
+            <ui:VisualElement name="image" class="image" style="height: 110px; width: 123px;" />
+            <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" text="filler text" />
+            <ui:Foldout text="Foldout" value="True">
+                <ui:Toggle label="Toggle" />
+                <uie:ColorField label="Color" value="RGBA(0.000, 1.000, 1.000, 1.000)" />
+            </ui:Foldout>
+        </ui:VisualElement>
+        <ui:VisualElement name="right" class="container" style="width: 94px; border-left-width: 3px;">
+            <ui:Button text="Option 1" name="opt1" class="button" />
+            <ui:Button text="Option 2" name="opt2" class="button" />
+            <ui:Button text="Done" name="done" class="button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
