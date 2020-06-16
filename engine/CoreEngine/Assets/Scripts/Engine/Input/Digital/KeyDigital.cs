@@ -42,6 +42,7 @@ namespace Synthesis.Simulator.Input
 
         public bool GetDown()
         {
+            bool getAtleastOneDown = false;
             int result = keys.Length;
             foreach (KeyCode k in keys)
             {
@@ -50,9 +51,16 @@ namespace Synthesis.Simulator.Input
                     result -= 1;
                     continue;
                 }
-                if (UnityEngine.Input.GetKeyDown(k)) result -= 1;
+                if (UnityEngine.Input.GetKey(k))
+                {
+                    result -= 1;
+                    if (UnityEngine.Input.GetKeyDown(k))
+                    {
+                        getAtleastOneDown = true;
+                    }
+                }
             }
-            return result == 0;
+            return result == 0 && getAtleastOneDown;
         }
 
         public bool GetUp()
