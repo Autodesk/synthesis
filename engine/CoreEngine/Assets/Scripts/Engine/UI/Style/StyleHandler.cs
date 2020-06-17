@@ -30,7 +30,7 @@ namespace Synthesis.UI.Style
             ConveyStyle();
 
             // Update environment
-            UnityHandles.Instance.PlaneMeshRenderer.material.color = selectedStyle.EnvColor.GridFill;
+            UnityHandler.Instance.PlaneMeshRenderer.material.color = selectedStyle.EnvColor.GridFill;
             
             // Debug.Log(RenderSettings.skybox. );
 
