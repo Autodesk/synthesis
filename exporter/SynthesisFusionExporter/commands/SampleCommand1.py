@@ -1,7 +1,7 @@
 
 import adsk.core
-import apper
 import adsk.fusion
+import apper
 from apper import AppObjects
 
 
@@ -12,7 +12,10 @@ class SampleCommand1(apper.Fusion360CommandBase):
 
         active_design = ao.design
         uuid = apper.Fusion360Utilities.get_a_uuid()
+        user = app.currentUser.displayName
+        
         print(uuid)
+        print(user)
         # print(active_design)
         
         if not active_design:
