@@ -36,7 +36,7 @@ try:
         'Sample Command 1',
         SampleCommand1,
         {
-            'cmd_description': 'Hello World!',
+            'cmd_description': 'Hello Synthesis!',
             'cmd_id': 'sample_cmd_1',
             'workspace': 'FusionSolidEnvironment',
             'toolbar_panel_id': 'Commands',
