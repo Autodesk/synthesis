@@ -5,7 +5,7 @@ using System.Net.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Api.Utilities
+namespace SynthesisAPI.Utilities
 {
     public static class ReflectHelper
     {

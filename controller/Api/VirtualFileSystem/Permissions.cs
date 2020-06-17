@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Api.VirtualFileSystem
+namespace SynthesisAPI.VirtualFileSystem
 {
     [Flags]
     public enum Permissions

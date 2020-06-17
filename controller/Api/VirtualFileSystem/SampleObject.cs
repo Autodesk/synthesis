@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Api.VirtualFileSystem
+namespace SynthesisAPI.VirtualFileSystem
 {
     public class SampleObject : Entry
     {
@@ -11,10 +11,6 @@ namespace Api.VirtualFileSystem
         }
 
         public new string Name { get; }
-
-        public override Guid Owner { get; }
-
-        public override Permissions Permissions { get; }
 
         public override void Delete()
         {

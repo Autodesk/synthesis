@@ -3,33 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 
-namespace Api.VirtualFileSystem
+namespace SynthesisAPI.VirtualFileSystem
 {
-    public class Directory : IResource
+    public class Directory : Resource
     {
 
         public Directory()
         {
             Owner = Guid.Empty;
             Permissions = Permissions.Private;
-            Entries = new Dictionary<string, IResource>();
+            Entries = new Dictionary<string, Resource>();
+            Depth = 0;
         }
 
-        public Directory(Guid owner, Permissions perm)
+        public Directory(Guid owner, Permissions perm, uint depth)
         {
             Owner = owner;
             Permissions = perm;
+            Depth = depth;
         }
 
-        public string Name { get; }
+        internal Dictionary<string, Resource> Entries;
 
-        public Guid Owner { get; }
+        public uint Depth { get; internal set; }
 
-        public Permissions Permissions { get; }
-
-        internal Dictionary<string, IResource> Entries;
-
-        public IResource Traverse(string[] subpaths)
+        public Resource Traverse(string[] subpaths)
         {
             if (subpaths.Length == 0 || subpaths[0] != Name)
             {
@@ -58,17 +56,17 @@ namespace Api.VirtualFileSystem
             return null;
         }
 
-        public IResource Traverse(string path)
+        public Resource Traverse(string path)
         {
             return Traverse(path.Split('/'));
         }
 
-        public IResource TryGetEntry(string key)
+        public Resource TryGetEntry(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
         }
 
-        public IResource GetEntry(string key)
+        public Resource GetEntry(string key)
         {
             if (!Entries.ContainsKey(key))
             {
@@ -77,20 +75,28 @@ namespace Api.VirtualFileSystem
             return Entries[key];
         }
 
-        public void AddEntry(string key, IResource value)
+        public Resource AddEntry(string key, Resource value)
         {
             Entries.Add(key, value);
+            return Entries[key];
         }
 
-        public void AddEntry<TResource>(string name) where TResource : IResource, new()
+        public Resource AddEntry<TResource>(string key) where TResource : Resource, new()
         {
-            Entries.Add(name, new TResource());
+            Entries.Add(key, new TResource());
+            return Entries[key];
         }
 
-        public IResource this[string name]
+        public Resource this[string name]
         {
             get => TryGetEntry(name);
             set => Entries[name] = value;
+        }
+
+        public void Init(string name, Guid owner, Permissions perm, uint depth)
+        {
+            Init(name, owner, perm);
+            Depth = depth;
         }
 
         public void Delete()

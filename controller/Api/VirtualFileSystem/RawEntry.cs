@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Api.VirtualFileSystem
+namespace SynthesisAPI.VirtualFileSystem
 {
     public class RawEntry : Entry, IDisposable
     {
@@ -26,10 +26,6 @@ namespace Api.VirtualFileSystem
         internal static readonly string BasePath;
 
         public string Path { get; private set; }
-
-        public override Guid Owner { get; }
-
-        public override Permissions Permissions { get; }
 
         public FilePermissions FilePerms { get; private set; }
 

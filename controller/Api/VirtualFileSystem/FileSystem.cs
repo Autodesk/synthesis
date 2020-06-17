@@ -1,26 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Api.VirtualFileSystem
+namespace SynthesisAPI.VirtualFileSystem
 {
     public static class FileSystem
     {
-        public static void AddResource<TResource>(string path, string name, Guid owner, Permissions perm) where TResource : IResource, new()
+        
+        public static void AddResource<TResource>(string path, string name, Guid owner, Permissions perm) where TResource : Resource, new()
         {
-            var dir = rootNode.Traverse(path);
-            if (dir == null)
-            {
-                // TODO
-                throw new Exception();
-            }
-            if (dir.GetType() != typeof(Directory))
+            Resource x = rootNode.Traverse(path);
+
+            if (x == null)
             {
                 // TODO
                 throw new Exception();
             }
 
-            ((Directory) dir).AddEntry(name, new TResource()); // TODO
+            if (x.GetType() != typeof(Directory))
+            {
+                // TODO
+                throw new Exception();
+            }
 
+            Directory dir = (Directory)x;
+
+            Resource entry = dir.AddEntry<TResource>(name);
+            
+            if (typeof(TResource) == typeof(Directory))
+            {
+                ((Directory)entry).Init(name, owner, perm, dir.Depth + 1);
+            }
+            else
+            {
+                entry.Init(name, owner, perm);
+            }
         }
 
         public static void Init()
