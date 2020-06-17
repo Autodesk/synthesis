@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="height: 100%; width: 100%;">
+        <Style src="USS/Toolbar.uss" />
+        <ui:VisualElement name="top">
+            <ui:VisualElement name="toolbar" style="height: 100px; width: 100%; background-color: rgb(204, 204, 204); border-left-color: rgb(204, 204, 204); border-right-color: rgb(204, 204, 204); border-top-color: rgb(204, 204, 204); border-bottom-color: rgb(204, 204, 204);">
+                <ui:Button name="add-object-button" tooltip="Add Object" class="toolbar-button" style="left: 5px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;);" />
+                <ui:Button name="change-environment-button" tooltip="Change Environment" class="toolbar-button" style="top: 5px; left: 40px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
+                <ui:Button name="modules-button" tooltip="Modules" class="toolbar-button" style="top: 5px; left: auto; right: 75px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                <ui:Button name="settings-button" tooltip="Settings" class="toolbar-button" style="top: 5px; left: auto; right: 40px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+                <ui:Button name="help-button" tooltip="Help" class="toolbar-button" style="top: 5px; left: auto; right: 5px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

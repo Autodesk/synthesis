@@ -1,0 +1,14 @@
+.toolbar-button {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    left: auto;
+    top: 5px;
+    right: auto;
+    bottom: auto;
+    border-left-color: rgb(204, 204, 204);
+    border-right-color: rgb(204, 204, 204);
+    border-top-color: rgb(204, 204, 204);
+    border-bottom-color: rgb(204, 204, 204);
+    background-color: rgb(204, 204, 204);
+}
