@@ -13,6 +13,7 @@ namespace Synthesis.Simulator.Input
     public class JoystickAxis : IAxisInput
     {
         public static explicit operator JoystickAxis(string info) => new JoystickAxis(info);
+        public static explicit operator JoystickAxis((int joy, int ax, bool pos) info) => new JoystickAxis(info.joy, info.ax, info.pos);
 
         public int JoystickID { get; private set; }
         public int AxisID { get; private set; }
@@ -24,6 +25,13 @@ namespace Synthesis.Simulator.Input
             JoystickID = int.Parse(split[1]);
             AxisID = int.Parse(split[3]);
             Positive = split[4].Equals("+") ? true : false;
+        }
+
+        public JoystickAxis(int joystickID, int axisID, bool pos)
+        {
+            JoystickID = joystickID;
+            AxisID = axisID;
+            Positive = pos;
         }
 
         public float GetValue(bool positiveOnly = false)
