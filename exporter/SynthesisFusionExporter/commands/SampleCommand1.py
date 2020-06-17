@@ -11,7 +11,9 @@ class SampleCommand1(apper.Fusion360CommandBase):
         app = adsk.core.Application.get()
 
         active_design = ao.design
-        print(active_design)
+        uuid = apper.Fusion360Utilities.get_a_uuid()
+        print(uuid)
+        # print(active_design)
         
         if not active_design:
             ui.messageBox('No active Fusion 360 design', 'No Design')
