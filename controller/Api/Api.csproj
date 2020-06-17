@@ -59,6 +59,7 @@
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="Utilities\ReflectHelper.cs" />
+    <Compile Include="Utilities\SafeStream.cs" />
     <Compile Include="VirtualFileSystem\Directory.cs" />
     <Compile Include="VirtualFileSystem\Entry.cs" />
     <Compile Include="VirtualFileSystem\Resource.cs" />

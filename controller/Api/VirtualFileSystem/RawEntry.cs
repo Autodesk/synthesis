@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
@@ -29,8 +30,6 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public FilePermissions FilePerms { get; private set; }
 
-        private ReaderWriterLock Rwlock { get; set; }
-
         public override void Delete()
         {
             // TODO
@@ -42,6 +41,9 @@ namespace SynthesisAPI.VirtualFileSystem
         }
 
         private byte[]? data;
+
+        private SafeStream Stream;
+
         private const int DefaultTimeout = 5000;
     }
 }
