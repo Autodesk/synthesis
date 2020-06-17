@@ -1,0 +1,173 @@
+syntax = "proto3";
+
+package synthesis.importbuf;
+
+message Document {
+    UserMeta userMeta = 1;
+    DocumentMeta documentMeta = 2;
+    Design design = 3;
+}
+
+message UserMeta {
+    string userName = 1;
+    string id = 2;
+    string displayName = 3;
+    string email = 4;
+}
+
+message DocumentMeta {
+    string fusionVersion = 1;
+    string name = 2;
+    string versionNumber = 3;
+    string description = 4;
+    string id = 5;
+}
+
+message Design {
+    Occurrence heirarchyRoot = 1;
+    repeated Component components = 2;
+    repeated Joint joints = 3;
+}
+
+message Occurrence {
+    bool isGrounded = 1;
+    Matrix3D transform = 2;
+
+    string componentUUID = 3;
+    repeated Occurrence childOccurrences = 4;
+}
+
+message Joint {
+    Header header = 1;
+    Vector3D direction = 2;
+    Vector3D origin = 3;
+    JointType type = 4;
+    bool isLocked = 5;
+    bool isFlipped = 6;
+
+    string occurrenceOneUUID = 7;
+    string occurrenceTwoUUID = 8;
+
+    enum JointType {
+        RigidJointType = 0;
+        RevoluteJointType = 1;
+        SliderJointType = 2;
+        CylindricalJointType = 3;
+        PinSlotJointType = 4;
+        PlanarJointType = 5;
+        BallJointType = 6;
+    }
+}
+
+message Component {
+    Header header = 1;
+    string partNumber = 2;
+
+    BoundingBox3D boundingBox = 3;
+    Material material = 4;
+    PhysicalProperties physicalProperties = 5;
+
+    repeated MeshBody meshBodies = 6;
+}
+
+message MeshBody {
+    Header header = 1;
+    Appearance appearance = 2;
+    Material material = 3;
+    PhysicalProperties physicalProperties = 4;
+    BoundingBox3D boundingBox3D = 5;
+
+    TriangleMesh triangleMesh = 6;
+}
+
+message TriangleMesh {
+    repeated Vector3D vertices = 1;
+    repeated Vector3D normals = 2;
+    repeated int32 indices = 3;
+    repeated Vector2D uvs = 4;
+}
+
+message PhysicalProperties {
+    double density = 1; // kg/(cm^3)
+    double mass = 2; // kg
+    double volume = 3; //cm^3
+    double area = 4; // cm^2
+    Vector3D centerOfMass = 5;
+}
+
+message Material {
+    string id = 1;
+    string name = 2;
+
+    Appearance appearance = 3;
+
+    MaterialProperties properties = 4;
+}
+
+message Appearance {
+    string id = 1;
+    string name = 2;
+    bool hasTexture = 3;
+
+    AppearanceProperties properties = 4;
+}
+
+message AppearanceProperties { // todo: support for textures/images, bump maps, etc.
+    Color albedo = 1;
+    int32 glossiness = 2;
+    HighlightsMode highlights = 3;
+    int32 reflectivityDirect = 4;
+    int32 reflectivityOblique = 5;
+    int32 transparency = 6;
+    int32 translucency = 7;
+    int32 refractiveIndex = 8;
+    Color selfIlluminationColor = 9;
+    int32 selfIlluminationLuminance = 10;
+    int32 selfIlluminationColorTemp = 11;
+
+    enum HighlightsMode {
+        METALLIC = 0;
+        NON_METALLIC = 1;
+    }
+}
+
+message MaterialProperties { // todo: support for other mechanical/thermal properties
+    int32 density = 1;
+    int32 yieldStrength = 2;
+    int32 tensileStrength = 3;
+}
+
+message Header {
+    string uuid = 1;
+    string name = 2;
+    string description = 3;
+    string revisionId = 4;
+}
+
+// RGBA 0-255
+message Color {
+    int32 R = 1;
+    int32 G = 2;
+    int32 B = 3;
+    int32 A = 4;
+}
+
+message BoundingBox3D {
+    Vector3D maxPoint = 1;
+    Vector3D minPoint = 2;
+}
+
+message Vector3D {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Vector2D {
+    double x = 1;
+    double y = 2;
+}
+
+message Matrix3D {
+    repeated double cells = 1; // 16 cells (no fixed length arrays in protobuf??)
+}
