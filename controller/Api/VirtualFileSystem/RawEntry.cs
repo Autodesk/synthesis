@@ -42,7 +42,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private byte[]? data;
 
-        private SafeStream Stream;
+        private SharedTextStream<MemoryStream> Stream;
 
         private const int DefaultTimeout = 5000;
     }

@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+#nullable enable
+
+namespace SynthesisAPI.Utilities
+{
+    public class SharedBinaryStream<TStream> where TStream : Stream
+    {
+        public SharedBinaryStream(TStream stream, int t)
+        {
+            Timeout = t;
+            RWLock = new ReaderWriterLockSlim();
+            Stream = stream;
+            Reader = new BinaryReader(Stream);
+            Writer = new BinaryWriter(Stream);
+        }
+
+        public SharedBinaryStream(TStream stream) : this(stream, DefaultTimeout) { }
+
+        private const int DefaultTimeout = 5000;
+
+        private ReaderWriterLockSlim RWLock { get; set; }
+
+        public int Timeout { get; set; } // ms
+
+        private TStream Stream { get; set; }
+
+        private BinaryReader Reader { get; set; }
+
+        private BinaryWriter Writer { get; set; }
+
+        public byte[] ReadBytes(int count)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadBytes(count);
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public byte[]? TryReadBytes(int count)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadBytes(count);
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void WriteBytes(byte[] buffer)
+        {
+            try
+            {
+                WriteBytes(buffer, 0, buffer.Length);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void WriteBytes(byte[] buffer, int index, int count)
+        {
+            if (RWLock.TryEnterWriteLock(Timeout))
+            {
+                try
+                {
+                    Writer.Write(buffer, index, count);
+                }
+                finally
+                {
+                    RWLock.ExitWriteLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public bool TryWriteBytes(byte[] buffer)
+        {
+            return TryWriteBytes(buffer, 0, buffer.Length);
+        }
+
+        public bool TryWriteBytes(byte[] buffer, int index, int count)
+        {
+            if (RWLock.TryEnterWriteLock(Timeout))
+            {
+                try
+                {
+                    Writer.Write(buffer, index, count);
+                }
+                finally
+                {
+                    RWLock.ExitWriteLock();
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+}

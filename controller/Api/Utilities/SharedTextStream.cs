@@ -8,56 +8,40 @@ using System.Threading.Tasks;
 
 namespace SynthesisAPI.Utilities
 {
-    // TODO rename to SharedMemoryStream?
-    public class SafeStream : Stream
+    public class SharedTextStream<TStream> where TStream : Stream
     {
-        public SafeStream(int t)
+        // TODO ref_count for dispose function?
+
+        public SharedTextStream(TStream stream, int t)
         {
             Timeout = t;
             RWLock = new ReaderWriterLockSlim();
-            Stream = new MemoryStream();
+            Stream = stream;
+            Reader = new StreamReader(Stream);
+            Writer = new StreamWriter(Stream);
         }
 
-        public SafeStream() : this(5000) { }
+        public SharedTextStream(TStream stream) : this(stream, DefaultTimeout) { }
+
+        private const int DefaultTimeout = 5000;
 
         private ReaderWriterLockSlim RWLock { get; set; }
 
         public int Timeout { get; set; } // ms
 
-        private MemoryStream Stream { get; set; }
+        private TStream Stream { get; set; }
 
-        public override bool CanRead => Stream.CanRead;
+        private StreamReader Reader { get; set; }
 
-        public override bool CanSeek => Stream.CanSeek;
+        private StreamWriter Writer { get; set; }
 
-        public override bool CanWrite => Stream.CanWrite;
-
-        public override long Length => Stream.Length;
-
-        public override long Position { get => Stream.Position; set => Stream.Position = value; }
-
-        public override void Flush()
-        {
-            Stream.Flush();
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return Stream.Seek(offset, origin);
-        }
-
-        public override void SetLength(long value)
-        {
-            Stream.SetLength(value);
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
+        public string ReadLine()
         {
             if (RWLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
-                    return Stream.Read(buffer, offset, count);
+                    return Reader.ReadLine();
                 }
                 finally
                 {
@@ -70,13 +54,13 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public int TryRead(byte[] buffer, int offset, int count)
+        public string TryReadLine()
         {
             if (RWLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
-                    return Stream.Read(buffer, offset, count);
+                    return Reader.ReadLine();
                 }
                 finally
                 {
@@ -85,17 +69,17 @@ namespace SynthesisAPI.Utilities
             }
             else
             {
-                 return 0;
+                return null;
             }
         }
 
-        public override void Write(byte[] buffer, int offset, int count)
+        public void WriteLine(string line)
         {
             if (RWLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
-                    Stream.Write(buffer, offset, count);
+                    Writer.WriteLine(line);
                 }
                 finally
                 {
@@ -108,13 +92,13 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public bool TryWrite(byte[] buffer, int offset, int count)
+        public bool TryWriteLine(string line)
         {
             if (RWLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
-                    Stream.Write(buffer, offset, count);
+                    Writer.WriteLine(line);
                 }
                 finally
                 {
