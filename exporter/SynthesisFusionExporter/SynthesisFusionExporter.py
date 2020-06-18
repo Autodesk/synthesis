@@ -27,6 +27,32 @@ try:
     from .commands.SampleWebRequestEvent import SampleWebRequestOpened
     from .commands.SampleCommandEvents import SampleCommandEvent
 
+    class cd:
+        def __init__(self, newPath):
+            self.newPath = os.path.expanduser(newPath)
+
+        def __enter__(self):
+            self.savedPath = os.getcwd()
+            os.chdir(self.newPath)
+
+        def __exit__(self, etype, value, traceback):
+            os.chdir(self.savedPath)
+
+    # Figure out a better way to install and import protobuf TODO: check for cross compatibility
+    try:
+        from .proto.synthesis_importbuf_pb2 import *
+    except:
+        try:
+            from pathlib import Path
+            p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
+            with cd(p):
+                os.system("python -m pip install protobuf") # Install protobuf with the fusion 
+            from .proto.synthesis_importbuf_pb2 import *
+        except:
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            if ui:
+                ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
 
 # Create our addin definition object
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)

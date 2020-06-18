@@ -15,7 +15,7 @@ Development Installation
 
 Requirements
 ^^^^^^^^^^^^
-- Python 3.7.7: https://www.python.org/downloads/release/python-377/
+- Python 3.7.6: https://www.python.org/downloads/release/python-376/
 - Visual Studio Code: https://code.visualstudio.com/
 - Visual Studio Code Python plugin
 - Fusion 360
