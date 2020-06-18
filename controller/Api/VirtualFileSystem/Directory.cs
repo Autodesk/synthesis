@@ -15,20 +15,34 @@ namespace SynthesisAPI.VirtualFileSystem
             Entries = new Dictionary<string, Resource>();
             Entries.Add("", this);
             Entries.Add(".", this);
+            Parent = null;
+            Entries.Add("..", Parent);
         }
 
         internal Dictionary<string, Resource> Entries;
-
-        // TODO add parent directory
         
         public Resource Traverse(string[] subpaths)
         {
-            if (subpaths.Length == 0 || subpaths[0] != Name)
+            if (subpaths.Length == 0)
             {
                 return null;
             }
 
+            string target = subpaths[0];
             subpaths = subpaths.Skip(1).ToArray();
+
+            if (target != Name)
+            {
+                if (target == ".." && Parent != null)
+                {
+                    if (subpaths.Length == 0)
+                    {
+                        return Parent;
+                    }
+                    return Parent.Traverse(subpaths);
+                }
+                return null;
+            }
 
             if(subpaths.Length == 0)
             {
@@ -76,6 +90,20 @@ namespace SynthesisAPI.VirtualFileSystem
                 throw new Exception();
             }
             Entries.Add(value.Name, value);
+
+            // Set this as the parent of the resource, and add the parent to its entries
+            // if the resource is a directory
+            value.Parent = this;
+            if (value.GetType() == typeof(Directory))
+            {
+                Directory dir = (Directory)value;
+                if (dir.Entries[".."] != null)
+                {
+                    throw new Exception();
+                }
+                dir.Entries[".."] = dir.Parent;
+            }
+
             return Entries[value.Name];
         }
 

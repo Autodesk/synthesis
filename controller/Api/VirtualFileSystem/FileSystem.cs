@@ -10,7 +10,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private static Directory GetDirectory(string path)
         {
-            Resource parent_dir = rootNode.Traverse(path);
+            Resource parent_dir = RootNode.Traverse(path);
 
             if (parent_dir == null)
             {
@@ -46,11 +46,21 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public static void Init()
         {
-            rootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-            rootNode.AddEntry(new Directory("world"));
-            rootNode.AddEntry(new Directory("modules"));
+            RootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
+            RootNode.AddEntry(new Directory("world"));
+            RootNode.AddEntry(new Directory("modules"));
         }
 
-        private static Directory rootNode;
+        public static Resource Traverse(string[] path)
+        {
+            return RootNode.Traverse(path);
+        }
+
+        public static Resource Traverse(string path)
+        {
+            return RootNode.Traverse(path);
+        }
+
+        public static Directory RootNode { get; private set; }
     }
 }

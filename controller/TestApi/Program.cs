@@ -13,8 +13,16 @@ namespace ApiTest
 
         public static void TestDirectory()
         {
-            Directory raw_entry = new Directory("directory", TestGuid, Permissions.PublicRead);
-            FileSystem.AddResource("/modules", raw_entry);
+            Directory dir = new Directory("directory", TestGuid, Permissions.PublicRead);
+            FileSystem.AddResource("/modules", dir);
+
+            Directory test_dir = (Directory)FileSystem.Traverse("/modules/directory");
+
+            Console.WriteLine(ReferenceEquals(test_dir, dir));
+
+            Directory root = (Directory)test_dir.Traverse("../..");
+
+            Console.WriteLine(ReferenceEquals(root, FileSystem.RootNode));
         }
 
         public static void TestRawEntry()
