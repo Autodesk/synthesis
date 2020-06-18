@@ -11,7 +11,8 @@
     <AssemblyName>Api</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>8</LangVersion>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetManager\AssetManager.cs" />
+    <Compile Include="AssetManager\IAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
     <Compile Include="InputManager\InputManager.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Utilities\SharedTextStream.cs" />
     <Compile Include="VirtualFileSystem\Directory.cs" />
     <Compile Include="VirtualFileSystem\Entry.cs" />
+    <Compile Include="VirtualFileSystem\IResource.cs" />
     <Compile Include="VirtualFileSystem\Resource.cs" />
     <Compile Include="VirtualFileSystem\Permissions.cs" />
     <Compile Include="VirtualFileSystem\RawEntry.cs" />

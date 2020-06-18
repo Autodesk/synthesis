@@ -12,16 +12,16 @@ namespace SynthesisAPI.VirtualFileSystem
         public Directory(string name, Guid owner, Permissions perm)
         {
             Init(name, owner, perm);
-            Entries = new Dictionary<string, Resource>();
+            Entries = new Dictionary<string, IResource>();
             Entries.Add("", this);
             Entries.Add(".", this);
-            Parent = null;
+            SetParent(null);
             Entries.Add("..", Parent);
         }
 
-        internal Dictionary<string, Resource> Entries;
+        internal Dictionary<string, IResource> Entries;
         
-        public Resource Traverse(string[] subpaths)
+        public IResource Traverse(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -64,17 +64,17 @@ namespace SynthesisAPI.VirtualFileSystem
             return null;
         }
 
-        public Resource Traverse(string path)
+        public IResource Traverse(string path)
         {
             return Traverse(path.Split('/')); // TODO should we trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
         }
 
-        public Resource TryGetEntry(string key)
+        public IResource TryGetEntry(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
         }
 
-        public Resource GetEntry(string key)
+        public IResource GetEntry(string key)
         {
             if (!Entries.ContainsKey(key))
             {
@@ -83,7 +83,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[key];
         }
 
-        public Resource AddEntry(Resource value)
+        public IResource AddEntry(IResource value)
         {
             if (Entries.ContainsKey(value.Name))
             {
@@ -107,7 +107,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[value.Name];
         }
 
-        public Resource this[string name]
+        public IResource this[string name]
         {
             get => TryGetEntry(name);
             set => Entries[name] = value;

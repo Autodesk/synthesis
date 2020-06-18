@@ -10,7 +10,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private static Directory GetDirectory(string path)
         {
-            Resource parent_dir = RootNode.Traverse(path);
+            IResource parent_dir = RootNode.Traverse(path);
 
             if (parent_dir == null)
             {
@@ -27,7 +27,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return (Directory)parent_dir;
         }
 
-        public static Resource AddResource(string path, Resource resource)
+        public static IResource AddResource(string path, IResource resource)
         {
             if (PathToDepth(path) >= MaxDirectoryDepth)
             {
@@ -51,12 +51,12 @@ namespace SynthesisAPI.VirtualFileSystem
             RootNode.AddEntry(new Directory("modules"));
         }
 
-        public static Resource Traverse(string[] path)
+        public static IResource Traverse(string[] path)
         {
             return RootNode.Traverse(path);
         }
 
-        public static Resource Traverse(string path)
+        public static IResource Traverse(string path)
         {
             return RootNode.Traverse(path);
         }
