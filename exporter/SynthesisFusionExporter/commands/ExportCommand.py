@@ -18,6 +18,6 @@ class ExportCommand(apper.Fusion360CommandBase):
         user = app.currentUser.displayName
 
         currentDesignData = 'Current design data of: ' + design.parentDocument.name + '\n' + 'GUID: ' + uuid + '\n' + 'User: ' + user + '\n'
-        ui.messageBox(currentDesignData)
+        ui.messageBox('Hello Synthesis')
 
         

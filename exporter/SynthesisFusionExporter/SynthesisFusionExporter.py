@@ -1,7 +1,7 @@
 
 import os
 import sys
-import adsk.core
+import adsk, adsk.core, adsk.fusion, traceback
 import traceback
 
 app_path = os.path.dirname(__file__)
@@ -133,7 +133,17 @@ def getComponents(occurrences, level, input):
         if occurence.childOccurrences:
             input = getComponents(occurence.childOccurrences, level + 1, input)
 
-    return input    
+    return input  
+
+def getDesignData(app):
+    design = app.activeDocument.design
+    uuid = apper.Fusion360Utilities.get_a_uuid()
+    user = app.currentUser.displayName
+
+    currentDesignData = 'Current design data of: ' + design.parentDocument.name + '\n' + 'GUID: ' + uuid + '\n' + 'User: ' + user + '\n'
+    # ui.messageBox(currentDesignData)
+        
+    return currentDesignData  
 
 
 def run(context):
@@ -150,11 +160,11 @@ def run(context):
 
         # get root
         root = design.rootComponent
-        joints = root.joints
 
         # traverse assembly recursively + print in message box
         resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
-        resultString = getComponents(root.occurrences.asList, 1, resultString)
+        resultString = getComponents(root.occurrences.asList, 1, resultString) + getDesignData(app)
+
         ui.messageBox(resultString)
     except:
         if ui:
