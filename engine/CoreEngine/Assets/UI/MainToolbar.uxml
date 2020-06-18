@@ -1,8 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="screen" style="flex-grow: 1;">
-        <Style src="button-1.uss" />
-        <ui:VisualElement name="top" style="align-items: flex-end; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgba(17, 17, 17, 255);">
-            <ui:Button text="EXIT" name="exit-button" class="button-1" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>
