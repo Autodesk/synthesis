@@ -24,7 +24,7 @@ message DocumentMeta {
 }
 
 message Design {
-    Occurrence heirarchyRoot = 1;
+    Occurrence hierarchyRoot = 1;
     repeated Component components = 2;
     repeated Joint joints = 3;
 }
