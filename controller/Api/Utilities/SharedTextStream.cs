@@ -12,16 +12,16 @@ namespace SynthesisAPI.Utilities
     {
         // TODO ref_count for dispose function?
 
-        public SharedTextStream(TStream stream, int t)
+        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck, int t)
         {
             Timeout = t;
-            RWLock = new ReaderWriterLockSlim();
+            RWLock = lck;
             Stream = stream;
             Reader = new StreamReader(Stream);
             Writer = new StreamWriter(Stream);
         }
 
-        public SharedTextStream(TStream stream) : this(stream, DefaultTimeout) { }
+        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
 
         private const int DefaultTimeout = 5000;
 
@@ -80,6 +80,7 @@ namespace SynthesisAPI.Utilities
                 try
                 {
                     Writer.WriteLine(line);
+                    Writer.Flush(); // TODO
                 }
                 finally
                 {
@@ -99,6 +100,7 @@ namespace SynthesisAPI.Utilities
                 try
                 {
                     Writer.WriteLine(line);
+                    Writer.Flush(); // TODO
                 }
                 finally
                 {

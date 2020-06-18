@@ -1,46 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
     public static class FileSystem
     {
-        
-        public static void AddResource<TResource>(string path, string name, Guid owner, Permissions perm) where TResource : Resource, new()
+        private static Directory GetDirectory(string path)
         {
-            Resource x = rootNode.Traverse(path);
+            Resource parent_dir = rootNode.Traverse(path);
 
-            if (x == null)
+            if (parent_dir == null)
             {
                 // TODO
                 throw new Exception();
             }
 
-            if (x.GetType() != typeof(Directory))
+            if (parent_dir.GetType() != typeof(Directory))
             {
                 // TODO
                 throw new Exception();
             }
 
-            Directory dir = (Directory)x;
+            return (Directory)parent_dir;
+        }
 
-            Resource entry = dir.AddEntry<TResource>(name);
-            
-            if (typeof(TResource) == typeof(Directory))
+        public static Resource AddResource(string path, Resource resource)
+        {
+            if (PathToDepth(path) >= 50) // TODO maximum directory depth
             {
-                ((Directory)entry).Init(name, owner, perm, dir.Depth + 1);
+                throw new Exception();
             }
-            else
-            {
-                entry.Init(name, owner, perm);
-            }
+
+            Directory parent_dir = GetDirectory(path);
+
+            return parent_dir.AddEntry(resource);
+        }
+
+        public static int PathToDepth(string path)
+        {
+            return path.Split('/').Length;
         }
 
         public static void Init()
         {
-            rootNode = new Directory();
-            rootNode.AddEntry<Directory>("world");
-            rootNode.AddEntry<Directory>("modules");
+            rootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
+            rootNode.AddEntry(new Directory("world"));
+            rootNode.AddEntry(new Directory("modules"));
         }
 
         private static Directory rootNode;

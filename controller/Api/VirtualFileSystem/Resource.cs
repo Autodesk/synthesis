@@ -10,7 +10,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public virtual Permissions Permissions { get; protected set;  }
 
-        public virtual void Init(string name, Guid owner, Permissions perm)
+        protected void Init(string name, Guid owner, Permissions perm)
         {
             Name = name;
             Owner = owner;

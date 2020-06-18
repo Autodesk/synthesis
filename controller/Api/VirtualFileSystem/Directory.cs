@@ -7,26 +7,20 @@ namespace SynthesisAPI.VirtualFileSystem
 {
     public class Directory : Resource
     {
+        public Directory(string name) : this(name, Guid.Empty, Permissions.Private) { }
 
-        public Directory()
+        public Directory(string name, Guid owner, Permissions perm)
         {
-            Owner = Guid.Empty;
-            Permissions = Permissions.Private;
+            Init(name, owner, perm);
             Entries = new Dictionary<string, Resource>();
-            Depth = 0;
-        }
-
-        public Directory(Guid owner, Permissions perm, uint depth)
-        {
-            Owner = owner;
-            Permissions = perm;
-            Depth = depth;
+            Entries.Add("", this);
+            Entries.Add(".", this);
         }
 
         internal Dictionary<string, Resource> Entries;
 
-        public uint Depth { get; internal set; }
-
+        // TODO add parent directory
+        
         public Resource Traverse(string[] subpaths)
         {
             if (subpaths.Length == 0 || subpaths[0] != Name)
@@ -34,18 +28,18 @@ namespace SynthesisAPI.VirtualFileSystem
                 return null;
             }
 
+            subpaths = subpaths.Skip(1).ToArray();
+
+            if(subpaths.Length == 0)
+            {
+                return this;
+            }
+
             var next = this[subpaths[0]];
 
             if (next == null)
             {
                 return null;
-            }
-
-            subpaths = subpaths.Skip(1).ToArray();
-            
-            if(subpaths.Length == 0)
-            {
-                return next;
             }
 
             if (next.GetType() == typeof(Directory))
@@ -58,7 +52,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public Resource Traverse(string path)
         {
-            return Traverse(path.Split('/'));
+            return Traverse(path.Split('/')); // TODO should we trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
         }
 
         public Resource TryGetEntry(string key)
@@ -75,16 +69,14 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[key];
         }
 
-        public Resource AddEntry(string key, Resource value)
+        public Resource AddEntry(Resource value)
         {
-            Entries.Add(key, value);
-            return Entries[key];
-        }
-
-        public Resource AddEntry<TResource>(string key) where TResource : Resource, new()
-        {
-            Entries.Add(key, new TResource());
-            return Entries[key];
+            if (Entries.ContainsKey(value.Name))
+            {
+                throw new Exception();
+            }
+            Entries.Add(value.Name, value);
+            return Entries[value.Name];
         }
 
         public Resource this[string name]
@@ -93,13 +85,7 @@ namespace SynthesisAPI.VirtualFileSystem
             set => Entries[name] = value;
         }
 
-        public void Init(string name, Guid owner, Permissions perm, uint depth)
-        {
-            Init(name, owner, perm);
-            Depth = depth;
-        }
-
-        public void Delete()
+        public override void Delete()
         {
             // TODO
         }

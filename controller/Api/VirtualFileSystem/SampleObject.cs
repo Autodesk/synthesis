@@ -4,13 +4,10 @@ namespace SynthesisAPI.VirtualFileSystem
 {
     public class SampleObject : Entry
     {
-        public SampleObject(Guid owner, Permissions perm)
+        public SampleObject(string name, Guid owner, Permissions perm)
         {
-            Owner = owner;
-            Permissions = perm;
+            Init(name, owner, perm);
         }
-
-        public new string Name { get; }
 
         public override void Delete()
         {

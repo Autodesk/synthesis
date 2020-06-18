@@ -12,16 +12,16 @@ namespace SynthesisAPI.Utilities
 {
     public class SharedBinaryStream<TStream> where TStream : Stream
     {
-        public SharedBinaryStream(TStream stream, int t)
+        public SharedBinaryStream(TStream stream, ReaderWriterLockSlim lck, int t)
         {
             Timeout = t;
-            RWLock = new ReaderWriterLockSlim();
+            RWLock = lck;
             Stream = stream;
             Reader = new BinaryReader(Stream);
             Writer = new BinaryWriter(Stream);
         }
 
-        public SharedBinaryStream(TStream stream) : this(stream, DefaultTimeout) { }
+        public SharedBinaryStream(TStream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
 
         private const int DefaultTimeout = 5000;
 
@@ -85,6 +85,18 @@ namespace SynthesisAPI.Utilities
             }
         }
 
+        public void WriteBytes(string line)
+        {
+            try
+            {
+                WriteBytes(Encoding.UTF32.GetBytes(line));
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public void WriteBytes(byte[] buffer, int index, int count)
         {
             if (RWLock.TryEnterWriteLock(Timeout))
@@ -92,6 +104,7 @@ namespace SynthesisAPI.Utilities
                 try
                 {
                     Writer.Write(buffer, index, count);
+                    Writer.Flush(); // TODO
                 }
                 finally
                 {
@@ -102,6 +115,11 @@ namespace SynthesisAPI.Utilities
             {
                 throw new Exception();
             }
+        }
+
+        public bool TryWriteBytes(string line)
+        {
+            return TryWriteBytes(Encoding.UTF32.GetBytes(line));
         }
 
         public bool TryWriteBytes(byte[] buffer)
@@ -116,6 +134,7 @@ namespace SynthesisAPI.Utilities
                 try
                 {
                     Writer.Write(buffer, index, count);
+                    Writer.Flush(); // TODO
                 }
                 finally
                 {

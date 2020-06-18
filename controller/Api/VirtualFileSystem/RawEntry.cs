@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
+#nullable enable
+
 namespace SynthesisAPI.VirtualFileSystem
 {
     public class RawEntry : Entry, IDisposable
@@ -18,17 +20,31 @@ namespace SynthesisAPI.VirtualFileSystem
             Write
         }
 
-        public RawEntry(Guid owner, Permissions perm)
+        public RawEntry(string name, Guid owner, Permissions perm, string file_path)
         {
-            Owner = owner;
-            Permissions = perm;
+            Init(name, owner, perm);
+
+            Path = file_path;
+            data = null;
         }
 
-        internal static readonly string BasePath;
+        private const string BasePath = "D:\\synthesis_projects\\synthesis\\";
 
         public string Path { get; private set; }
 
         public FilePermissions FilePerms { get; private set; }
+
+        public void Load()
+        {
+            data = File.ReadAllBytes(BasePath + Path);
+            RawStream = new MemoryStream(); // TODO create expandable memory stream
+            RawStream.Write(data, 0, data.Length);
+
+            Array.Resize(ref data, 10);
+
+            RWLock = new ReaderWriterLockSlim();
+            SharedStream = new SharedBinaryStream<MemoryStream>(RawStream, RWLock, DefaultTimeout);
+        }
 
         public override void Delete()
         {
@@ -42,7 +58,10 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private byte[]? data;
 
-        private SharedTextStream<MemoryStream> Stream;
+        private MemoryStream? RawStream;
+        public SharedBinaryStream<MemoryStream>? SharedStream { get; internal set; }
+
+        private ReaderWriterLockSlim? RWLock;
 
         private const int DefaultTimeout = 5000;
     }
