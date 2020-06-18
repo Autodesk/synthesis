@@ -25,6 +25,53 @@ namespace Synthesis.Simulator.Input
 
         #region Getting States
 
+        public IDigitalInput.DigitalState GetState()
+        {
+            int down = buttons.Length;
+            int up = buttons.Length;
+            int joyNum;
+            int buttonNum;
+            bool atLeastOneDown = false;
+            foreach ((int joystick, int button) button in buttons)
+            {
+                joyNum = button.joystick;
+                buttonNum = button.button;
+                // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
+                if (InputManager.ControllerRegistry[joyNum] == InputManager.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                {
+                    down -= 1;
+                    up -= 1;
+                    continue;
+                }
+
+                if (UnityEngine.Input.GetKey(button.ToButtonName()))
+                {
+                    down -= 1;
+                    if (UnityEngine.Input.GetKeyDown(button.ToButtonName()))
+                    {
+                        atLeastOneDown = true;
+                    }
+                } else if (UnityEngine.Input.GetKeyUp(button.ToButtonName()))
+                {
+                    up -= 1;
+                }
+            }
+            if (down == 0) {
+                if (atLeastOneDown)
+                    return IDigitalInput.DigitalState.Down;
+                else
+                    return IDigitalInput.DigitalState.Held;
+            }
+            else if (up == 0)
+            {
+                return IDigitalInput.DigitalState.Up;
+            } else
+            {
+                return IDigitalInput.DigitalState.None;
+            }
+        }
+
+        /*
         public bool GetHeld()
         {
             int result = buttons.Length;
@@ -35,7 +82,7 @@ namespace Synthesis.Simulator.Input
                 joyNum = button.joystick;
                 buttonNum = button.button;
                 // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
-                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                if (InputManager.ControllerRegistry[joyNum] == InputManager.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
                 {
                     result -= 1;
                     continue;
@@ -56,7 +103,7 @@ namespace Synthesis.Simulator.Input
                 joyNum = button.joystick;
                 buttonNum = button.button;
                 // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
-                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                if (InputManager.ControllerRegistry[joyNum] == InputManager.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
                 {
                     result -= 1;
                     continue;
@@ -76,7 +123,7 @@ namespace Synthesis.Simulator.Input
                 joyNum = button.joystick;
                 buttonNum = button.button;
                 // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
-                if (InputHandler.ControllerRegistry[joyNum] == InputHandler.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                if (InputManager.ControllerRegistry[joyNum] == InputManager.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
                 {
                     result -= 1;
                     continue;
@@ -85,10 +132,13 @@ namespace Synthesis.Simulator.Input
             }
             return result == 0;
         }
+        */
 
         public float GetValue(bool positiveOnly = false)
         {
-            return GetDown() || GetHeld() ? 1 : 0;
+            var state = GetState();
+            return state == IDigitalInput.DigitalState.Held ||
+                state == IDigitalInput.DigitalState.Down ? 1 : 0;
         }
 
         public static ButtonDigital GetCurrentlyActiveButtonDigital(params (int joystick, int button)[] buttonsToIgnore)
@@ -99,7 +149,7 @@ namespace Synthesis.Simulator.Input
             {
                 for (int b = 0; b <= 19; b++)
                 {
-                    if (InputHandler.ControllerRegistry[j] == InputHandler.ControllerType.Ps4 && (b == 6 || b == 7))
+                    if (InputManager.ControllerRegistry[j] == InputManager.ControllerType.Ps4 && (b == 6 || b == 7))
                     {
                         continue;
                     }

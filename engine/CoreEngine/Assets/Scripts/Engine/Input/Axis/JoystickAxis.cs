@@ -39,7 +39,7 @@ namespace Synthesis.Simulator.Input
             float rawVal = UnityEngine.Input.GetAxis("Joystick " + JoystickID + " Axis " + AxisID);
 
             // Checks to see if it needs special parsing
-            if (InputHandler.ControllerRegistry[JoystickID] == InputHandler.ControllerType.Ps4 && (AxisID == 5 || AxisID == 4))
+            if (InputManager.ControllerRegistry[JoystickID] == InputManager.ControllerType.Ps4 && (AxisID == 5 || AxisID == 4))
             {
                 return Positive ? (rawVal + 1) / 2 : 0; // Axis 4 & 5 on a ps4 controller shouldn't ever get their negatives assign, but just in case.
             }
@@ -67,7 +67,7 @@ namespace Synthesis.Simulator.Input
                     bool h = false;
 
                     // Account for Ps4 weirdness
-                    if (InputHandler.ControllerRegistry[joy] == InputHandler.ControllerType.Ps4 && (ax == 5 || ax == 4))
+                    if (InputManager.ControllerRegistry[joy] == InputManager.ControllerType.Ps4 && (ax == 5 || ax == 4))
                     {
                         v = (v + 1) / 2;
                         h = true;

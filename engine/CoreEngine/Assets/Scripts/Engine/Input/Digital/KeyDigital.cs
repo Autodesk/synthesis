@@ -26,6 +26,48 @@ namespace Synthesis.Simulator.Input
 
         #region Getting Key States
 
+        public IDigitalInput.DigitalState GetState()
+        {
+            bool getAtleastOneDown = false;
+            int up = keys.Length;
+            int down = keys.Length;
+            foreach (KeyCode k in keys)
+            {
+                // Skip over this input
+                if (k.ToString().ToLower().StartsWith("joystick"))
+                {
+                    up -= 1;
+                    down -= 1;
+                    continue;
+                }
+                if (UnityEngine.Input.GetKey(k))
+                {
+                    down -= 1;
+                    if (UnityEngine.Input.GetKeyDown(k))
+                    {
+                        getAtleastOneDown = true;
+                    }
+                } else if (UnityEngine.Input.GetKeyUp(k))
+                {
+                    up -= 1;
+                }
+            }
+            if (down == 0)
+            {
+                if (getAtleastOneDown)
+                    return IDigitalInput.DigitalState.Down;
+                else
+                    return IDigitalInput.DigitalState.Held;
+            } else if (up == 0)
+            {
+                return IDigitalInput.DigitalState.Up;
+            } else
+            {
+                return IDigitalInput.DigitalState.None;
+            }
+        }
+
+        /*
         public bool GetHeld() {
             int result = keys.Length;
             foreach (KeyCode k in keys)
@@ -77,10 +119,13 @@ namespace Synthesis.Simulator.Input
             }
             return result == 0;
         }
+        */
 
         public float GetValue(bool positiveOnly = false)
         {
-            return GetDown() || GetHeld() ? 1 : 0;
+            var state = GetState();
+            return state == IDigitalInput.DigitalState.Held ||
+                state == IDigitalInput.DigitalState.Down ? 1 : 0;
         }
 
         public static KeyDigital GetCurrentlyActiveKeyDigital(params KeyCode[] keysToIgnore)
@@ -138,10 +183,5 @@ namespace Synthesis.Simulator.Input
                 return compare.Length == Length;
             } catch { return false; }
         }
-    }
-
-    public enum KeyAction
-    {
-        Up, Down, Held
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Synthesis.Util;
-
 using UnityInput = UnityEngine.Input;
 
 namespace Synthesis.Simulator.Input
@@ -10,17 +9,18 @@ namespace Synthesis.Simulator.Input
     /**
      * Still very much a work in progress
      */
-    public static class InputHandler
+    public static class InputManager
     {
         // Map for binding DigitalInput to EventHandlers
-        public static SynList<IDigitalInput, EventHandler<KeyAction>> MappedDigital = new SynList<IDigitalInput, EventHandler<KeyAction>>();
+        public static SynList<IDigitalInput, string> MappedDigital = new SynList<IDigitalInput, string>();
         // Used for giving custom names to axes
         public static Dictionary<string, IAxisInput> MappedAxes = new Dictionary<string, IAxisInput>();
+
         // Used to identify controller type because ps4 be wack
         public static Dictionary<int, ControllerType> ControllerRegistry = new Dictionary<int, ControllerType>();
         public static string[] LastControllerNames = new string[1];
 
-        static InputHandler()
+        static InputManager()
         {
             UnityHandler.OnUpdate += Update; // Add the update function to the update event
             UnityHandler.OnFixedUpdate += FixedUpdate;
@@ -41,19 +41,13 @@ namespace Synthesis.Simulator.Input
 
         private static void Update()
         {
+            IDigitalInput.DigitalState inputState;
             foreach (var kvp in MappedDigital)
             {
-                if (kvp.Key.GetDown())
+                inputState = kvp.Key.GetState();
+                if (inputState != IDigitalInput.DigitalState.None)
                 {
-                    kvp.Value(kvp.Key, KeyAction.Down);
-                }
-                else if (kvp.Key.GetHeld())
-                {
-                    kvp.Value(kvp.Key, KeyAction.Held);
-                }
-                else if (kvp.Key.GetUp())
-                {
-                    kvp.Value(kvp.Key, KeyAction.Up);
+                    // Publish to event bus with value identifier and state
                 }
             }
         }
@@ -75,6 +69,8 @@ namespace Synthesis.Simulator.Input
                 EvaluateControllerTypes();
             }
         }
+
+        #region Getting active inputs
 
         public static IDigitalInput GetCurrentlyActiveDigitalInput((int joystick, int button)[] buttonsToIgnore = null, KeyCode[] keysToIgnore = null)
         {
@@ -131,6 +127,8 @@ namespace Synthesis.Simulator.Input
             else if (activeButtonDigital.Length > 0) { return activeButtonDigital; }
             return null;
         }
+
+        #endregion
 
         #region Conversions
 
