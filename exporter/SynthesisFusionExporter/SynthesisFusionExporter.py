@@ -150,14 +150,14 @@ except:
 # Set to True to display various useful messages when debugging your app
 debug = False
 
-def getComponents(occurrences, level, input):
+def traverse(occurrences, level, input):
     for i in range(0, occurrences.count):
         occurence = occurrences.item(i)
 
         input += 'Name: ' + occurence.name + '\n'
         
         if occurence.childOccurrences:
-            input = getComponents(occurence.childOccurrences, level + 1, input)
+            input = traverse(occurence.childOccurrences, level + 1, input)
 
     return input  
 

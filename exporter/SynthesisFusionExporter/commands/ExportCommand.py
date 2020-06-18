@@ -7,6 +7,12 @@ from ..proto.synthesis_importbuf_pb2 import *
 ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
 
 def fillComponents(ao, components):
+    components.header.uuid = apper.Fusion360Utilities.get_a_uuid()
+    components.partNumber = ao.design.parentDocument.name
+    components.boundingBox = ao.design.boundingBox
+    components.materialId = item_id(ao.design.material, ATTR_GROUP_NAME)
+    components.physicalProperties = ao.design.physicalProperties
+    components.meshBodies = ao.design.meshBodies
     pass #todo
 
 def fillJoints(ao, joints):
