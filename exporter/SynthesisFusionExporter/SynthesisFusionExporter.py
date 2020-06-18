@@ -13,6 +13,33 @@ try:
     import config
     import apper
 
+    class cd:
+        def __init__(self, newPath):
+            self.newPath = os.path.expanduser(newPath)
+
+        def __enter__(self):
+            self.savedPath = os.getcwd()
+            os.chdir(self.newPath)
+
+        def __exit__(self, etype, value, traceback):
+            os.chdir(self.savedPath)
+
+    # Figure out a better way to install and import protobuf TODO: check for cross compatibility
+    try:
+        from .proto.synthesis_importbuf_pb2 import *
+    except:
+        try:
+            from pathlib import Path
+            p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
+            with cd(p):
+                os.system("python -m pip install protobuf") # Install protobuf with the fusion
+            from .proto.synthesis_importbuf_pb2 import *
+        except:
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            if ui:
+                ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
+
     # Basic Fusion 360 Command Base samples
     from .commands.ExportCommand import ExportCommand
     from .commands.SampleCommand2 import SampleCommand2
@@ -27,13 +54,12 @@ try:
     from .commands.SampleWebRequestEvent import SampleWebRequestOpened
     from .commands.SampleCommandEvents import SampleCommandEvent
 
-
 # Create our addin definition object
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)
 
     # Creates a basic Hello World message box on execute
     my_addin.add_command(
-        'Export Command',
+        'Export Robot',
         ExportCommand,
         {
             'cmd_description': 'Export your robot to Synthesis.',
@@ -145,32 +171,10 @@ def getDesignData(app):
         
     return currentDesignData  
 
-
 def run(context):
-    ui = None
-    try:
-        app = adsk.core.Application.get()
-        ui  = app.userInterface
-        product = app.activeProduct
-
-        design = adsk.fusion.Design.cast(product)
-        if not design:
-            ui.messageBox('No active Fusion design', 'No Design')
-            return
-
-        # get root
-        root = design.rootComponent
-
-        # traverse assembly recursively + print in message box
-        resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
-        resultString = getComponents(root.occurrences.asList, 1, resultString) + getDesignData(app)
-
-        ui.messageBox(resultString)
-    except:
-        if ui:
-            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
-
     my_addin.run_app()
+
+    exportRobot() # export on startup for debugging purposes TODO delete me
 
 
 def stop(context):

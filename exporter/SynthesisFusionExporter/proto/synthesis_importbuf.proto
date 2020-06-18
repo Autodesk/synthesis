@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+package synthesis.importbuf;
+
+import "google/protobuf/any.proto";
+
+/*
+Overview:
+
+A Design stores a transform tree of occurrences, and an array of components. 
+A component stores an array of bodies (meshes). 
+The vertex coordinates of meshes stored in components are in the reference frame of their respective component (NOT relative to the root reference frame). 
+
+Each occurrence in the occurrence tree stores the UUID of a component in the component array. 
+
+All units are in centimeters, radians, kilograms unless otherwise specified.
+*/
+
+message Document {
+    UserMeta userMeta = 1;
+    DocumentMeta documentMeta = 2;
+    Design design = 3;
+
+    map<string, google.protobuf.Any> attributes = 4;
+}
+
+message UserMeta {
+    string userName = 1;
+    string id = 2; // ex. "3X7MQHUFS9BG"
+    string displayName = 3;
+    string email = 4;
+}
+
+message DocumentMeta {
+    string fusionVersion = 1;
+    string name = 2;
+    int32 versionNumber = 3;
+    string description = 4;
+    string id = 5; // ex. "urn:adsk.wipprod:dm.lineage:vUFmflIzT6-M91MZpDjFiQ"
+}
+
+message Design {
+    Occurrence hierarchyRoot = 1; // the root in fusion is technically a component, this is a dummy occurrence
+    repeated Component components = 2;
+    repeated Joint joints = 3;
+    repeated Material materials = 4;
+    repeated Appearance appearances = 5;
+}
+
+message Occurrence {
+    Header header = 1; // no revisionId or description, header is blank for root occurrence
+    bool isGrounded = 2; // always blank for root occurrence
+    Matrix3D transform = 3; // always blank for root occurrence
+
+    string componentUUID = 4;
+    repeated Occurrence childOccurrences = 5;
+    
+    map<string, google.protobuf.Any> attributes = 6;
+}
+
+message Joint {
+    Header header = 1; // no revisionId or description
+    Vector3D direction = 2;
+    Vector3D origin = 3;
+    JointType type = 4;
+    bool isLocked = 5;
+    bool isFlipped = 6;
+
+    string occurrenceOneUUID = 7;
+    string occurrenceTwoUUID = 8;
+
+    map<string, google.protobuf.Any> attributes = 9;
+
+    enum JointType {
+        RigidJointType = 0;
+        RevoluteJointType = 1;
+        SliderJointType = 2;
+        CylindricalJointType = 3;
+        PinSlotJointType = 4;
+        PlanarJointType = 5;
+        BallJointType = 6;
+    }
+}
+
+message Component {
+    Header header = 1;
+    string partNumber = 2;
+
+    BoundingBox3D boundingBox = 3;
+    string  materialId = 4;
+    PhysicalProperties physicalProperties = 5;
+
+    repeated MeshBody meshBodies = 6;
+
+    map<string, google.protobuf.Any> attributes = 7;
+}
+
+message MeshBody {
+    Header header = 1; // no description
+    string appearanceId = 2;
+    string materialId = 3;
+    PhysicalProperties physicalProperties = 4;
+    BoundingBox3D boundingBox3D = 5;
+
+    TriangleMesh triangleMesh = 6;
+
+    map<string, google.protobuf.Any> attributes = 7;
+}
+
+message TriangleMesh { // not using Vectors here to avoid overhead on large meshes
+    repeated double vertices = 1; // x y z x y z....
+    repeated double normals = 2; // x y z x y z....
+    repeated int32 indices = 3; 
+    repeated double uvs = 4; // u v u v....
+}
+
+message PhysicalProperties {
+    double density = 1; // kg/(cm^3)
+    double mass = 2; // kg
+    double volume = 3; //cm^3
+    double area = 4; // cm^2
+    Vector3D centerOfMass = 5;
+}
+
+message Material {
+    string id = 1; // unique id, ex. "MaterialInv_072"
+    string name = 2;
+
+    string appearanceId = 3;
+
+    MaterialProperties properties = 4;
+}
+
+message Appearance {
+    string id = 1; // unique id, ex. "PrismMaterial-079_physmat_aspects:Prism-121"
+    string name = 2;
+    bool hasTexture = 3;
+
+    AppearanceProperties properties = 4;
+}
+
+message AppearanceProperties { // todo: support for textures/images, bump maps, etc.
+    Color albedo = 1;
+    int32 glossiness = 2;
+    HighlightsMode highlights = 3;
+    int32 reflectivityDirect = 4;
+    int32 reflectivityOblique = 5;
+    int32 transparency = 6;
+    int32 translucency = 7;
+    int32 refractiveIndex = 8;
+    Color selfIlluminationColor = 9;
+    int32 selfIlluminationLuminance = 10;
+    int32 selfIlluminationColorTemp = 11;
+
+    enum HighlightsMode {
+        METALLIC = 0;
+        NON_METALLIC = 1;
+    }
+
+    map<string, google.protobuf.Any> attributes = 12;
+}
+
+message MaterialProperties { // todo: support for other mechanical/thermal properties
+    int32 density = 1;
+    int32 yieldStrength = 2;
+    int32 tensileStrength = 3;
+
+    map<string, google.protobuf.Any> attributes = 4;
+}
+
+message Header {
+    string uuid = 1; // generated with apper's item_id and persistant in fusion file
+    string name = 2;
+    string description = 3;
+    string revisionId = 4; // fusion generated id, changes 
+}
+
+// RGBA 0-255
+message Color {
+    int32 R = 1;
+    int32 G = 2;
+    int32 B = 3;
+    int32 A = 4;
+}
+
+message BoundingBox3D {
+    Vector3D maxPoint = 1;
+    Vector3D minPoint = 2;
+}
+
+message Vector3D {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Vector2D {
+    double x = 1;
+    double y = 2;
+}
+
+message Matrix3D {
+    repeated double cells = 1; // 16 cells (no fixed length arrays in protobuf??)
+}

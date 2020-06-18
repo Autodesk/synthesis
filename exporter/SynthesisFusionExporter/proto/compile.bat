@@ -1,0 +1,1 @@
+protoc --python_out=. .\synthesis_importbuf.proto

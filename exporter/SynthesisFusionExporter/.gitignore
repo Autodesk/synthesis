@@ -4,3 +4,4 @@ __pycache__/
 .DS_STORE
 .DS_Store
 venv
+*_pb2.py
