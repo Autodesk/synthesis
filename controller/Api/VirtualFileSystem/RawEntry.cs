@@ -28,7 +28,7 @@ namespace SynthesisAPI.VirtualFileSystem
             data = null;
         }
 
-        private const string BasePath = "D:\\synthesis_projects\\synthesis\\";
+        private const string BasePath = "D:\\synthesis_projects\\synthesis\\"; // TODO determine this automatically somehow
 
         public string Path { get; private set; }
 
