@@ -5,8 +5,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
 using System.Diagnostics;
-using UnityEngine.UI;
-using Assets.Scripts.Engine.Util;
 using Newtonsoft.Json;
 
 namespace Synthesis.Util
