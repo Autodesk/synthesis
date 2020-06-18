@@ -3,7 +3,7 @@
     height: 30px;
     position: absolute;
     left: auto;
-    top: 5px;
+    top: 0;
     right: auto;
     bottom: auto;
     border-left-color: rgb(204, 204, 204);
@@ -11,4 +11,32 @@
     border-top-color: rgb(204, 204, 204);
     border-bottom-color: rgb(204, 204, 204);
     background-color: rgb(204, 204, 204);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.toolbar-button:hover {
+    background-color: rgba(187, 187, 187, 255);
+}
+
+.toolbar-button:selected {
+    background-color: rgba(181, 253, 147, 255);
+    -unity-background-image-tint-color: rgba(0, 0, 0, 255);
+    border-left-width: 10px;
+    border-right-width: 10px;
+    border-top-width: 10px;
+    border-bottom-width: 10px;
+}
+
+.toolbar-button:active {
+    border-left-width: 10px;
+    border-right-width: 10px;
+    border-top-width: 10px;
+    border-bottom-width: 10px;
 }
