@@ -34,7 +34,7 @@ message UserMeta {
 message DocumentMeta {
     string fusionVersion = 1;
     string name = 2;
-    string versionNumber = 3;
+    int32 versionNumber = 3;
     string description = 4;
     string id = 5; // ex. "urn:adsk.wipprod:dm.lineage:vUFmflIzT6-M91MZpDjFiQ"
 }
@@ -48,7 +48,7 @@ message Design {
 }
 
 message Occurrence {
-    Header header = 1; // no revisionId or description
+    Header header = 1; // no revisionId or description, header is blank for root occurrence
     bool isGrounded = 2; // always false for root occurrence
     Matrix3D transform = 3; // always the identity matrix for root occurrence
 

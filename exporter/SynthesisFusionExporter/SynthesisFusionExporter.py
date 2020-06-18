@@ -13,20 +13,6 @@ try:
     import config
     import apper
 
-    # Basic Fusion 360 Command Base samples
-    from .commands.SampleCommand1 import SampleCommand1
-    from .commands.SampleCommand2 import SampleCommand2
-
-    # Palette Command Base samples
-    from .commands.SamplePaletteCommand import SamplePaletteSendCommand, SamplePaletteShowCommand
-
-    # Various Application event samples
-    from .commands.SampleCustomEvent import SampleCustomEvent1
-    from .commands.SampleDocumentEvents import SampleDocumentEvent1, SampleDocumentEvent2
-    from .commands.SampleWorkspaceEvents import SampleWorkspaceEvent1
-    from .commands.SampleWebRequestEvent import SampleWebRequestOpened
-    from .commands.SampleCommandEvents import SampleCommandEvent
-
     class cd:
         def __init__(self, newPath):
             self.newPath = os.path.expanduser(newPath)
@@ -46,7 +32,7 @@ try:
             from pathlib import Path
             p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
             with cd(p):
-                os.system("python -m pip install protobuf") # Install protobuf with the fusion 
+                os.system("python -m pip install protobuf") # Install protobuf with the fusion
             from .proto.synthesis_importbuf_pb2 import *
         except:
             app = adsk.core.Application.get()
@@ -54,13 +40,28 @@ try:
             if ui:
                 ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
 
+    # Basic Fusion 360 Command Base samples
+    from .commands.ExportCommand import *
+    # from .commands.ExportCommand import ExportCommand
+    from .commands.SampleCommand2 import SampleCommand2
+
+    # Palette Command Base samples
+    from .commands.SamplePaletteCommand import SamplePaletteSendCommand, SamplePaletteShowCommand
+
+    # Various Application event samples
+    from .commands.SampleCustomEvent import SampleCustomEvent1
+    from .commands.SampleDocumentEvents import SampleDocumentEvent1, SampleDocumentEvent2
+    from .commands.SampleWorkspaceEvents import SampleWorkspaceEvent1
+    from .commands.SampleWebRequestEvent import SampleWebRequestOpened
+    from .commands.SampleCommandEvents import SampleCommandEvent
+
 # Create our addin definition object
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)
 
     # Creates a basic Hello World message box on execute
     my_addin.add_command(
-        'Sample Command 1',
-        SampleCommand1,
+        'Export Robot',
+        ExportCommand,
         {
             'cmd_description': 'Hello Synthesis!',
             'cmd_id': 'sample_cmd_1',
@@ -150,42 +151,10 @@ except:
 # Set to True to display various useful messages when debugging your app
 debug = False
 
-def getComponents(occurrences, level, input):
-    for i in range(0, occurrences.count):
-        occurence = occurrences.item(i)
-
-        input += 'Name: ' + occurence.name + '\n'
-        
-        if occurence.childOccurrences:
-            input = getComponents(occurence.childOccurrences, level + 1, input)
-
-    return input
-
-
 def run(context):
-    ui = None
-    try:
-        app = adsk.core.Application.get()
-        ui  = app.userInterface
-        product = app.activeProduct
-
-        design = adsk.fusion.Design.cast(product)
-        if not design:
-            ui.messageBox('No active Fusion design', 'No Design')
-            return
-
-        # get root
-        rootComp = design.rootComponent
-
-        # traverse assembly recursively + print in message box
-        resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
-        resultString = getComponents(rootComp.occurrences.asList, 1, resultString)
-        ui.messageBox(resultString)
-    except:
-        if ui:
-            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
-
     my_addin.run_app()
+
+    exportRobot() #delete me
 
 
 def stop(context):
