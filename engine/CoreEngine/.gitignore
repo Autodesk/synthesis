@@ -5,6 +5,9 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 Assets/packages/plugins
+Assets/Samples
+Assets/UIERuntime/Samples
+Assets/UIERuntime/Documentation~/com.unity.ui.runtime.md
 test/*
 test
 
