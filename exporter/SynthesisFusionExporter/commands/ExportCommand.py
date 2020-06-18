@@ -6,6 +6,18 @@ from ..proto.synthesis_importbuf_pb2 import *
 
 ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
 
+def fillComponents(ao, components):
+    pass #todo
+
+def fillJoints(ao, joints):
+    pass #todo
+
+def fillMaterials(ao, materials):
+    pass #todo
+
+def fillAppearances(ao, appearances):
+    pass #todo
+
 def fillMatrix3D(transform, protoTransform):
     pass #todo
 
@@ -29,6 +41,10 @@ def fillFakeRootOccurrence(rootComponent, protoOccur):
         fillOccurrence(childOccur, protoOccur.childOccurrences.add())
 
 def fillDesign(ao, design):
+    fillComponents(ao, design.components)
+    fillJoints(ao, design.joints)
+    fillMaterials(ao, design.materials)
+    fillAppearances(ao, design.appearances)
     fillFakeRootOccurrence(ao.root_comp, design.hierarchyRoot)
 
 def fillUserMeta(ao, userMeta):
