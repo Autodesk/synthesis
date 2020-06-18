@@ -14,7 +14,7 @@ try:
     import apper
 
     # Basic Fusion 360 Command Base samples
-    from .commands.SampleCommand1 import SampleCommand1
+    from .commands.ExportCommand import ExportCommand
     from .commands.SampleCommand2 import SampleCommand2
 
     # Palette Command Base samples
@@ -33,10 +33,10 @@ try:
 
     # Creates a basic Hello World message box on execute
     my_addin.add_command(
-        'Sample Command 1',
-        SampleCommand1,
+        'Export Command',
+        ExportCommand,
         {
-            'cmd_description': 'Hello Synthesis!',
+            'cmd_description': 'Export your robot to Synthesis.',
             'cmd_id': 'sample_cmd_1',
             'workspace': 'FusionSolidEnvironment',
             'toolbar_panel_id': 'Commands',
@@ -133,7 +133,7 @@ def getComponents(occurrences, level, input):
         if occurence.childOccurrences:
             input = getComponents(occurence.childOccurrences, level + 1, input)
 
-    return input
+    return input    
 
 
 def run(context):
@@ -149,11 +149,12 @@ def run(context):
             return
 
         # get root
-        rootComp = design.rootComponent
+        root = design.rootComponent
+        joints = root.joints
 
         # traverse assembly recursively + print in message box
         resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
-        resultString = getComponents(rootComp.occurrences.asList, 1, resultString)
+        resultString = getComponents(root.occurrences.asList, 1, resultString)
         ui.messageBox(resultString)
     except:
         if ui:
