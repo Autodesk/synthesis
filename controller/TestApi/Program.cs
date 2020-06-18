@@ -9,35 +9,33 @@ namespace ApiTest
 {
     public class Program
     {
+        public static Guid TestGuid = Guid.Empty;
+
         public static void TestDirectory()
         {
-            Directory raw_entry = new Directory("directory", Guid.Empty, Permissions.PublicRead);
+            Directory raw_entry = new Directory("directory", TestGuid, Permissions.PublicRead);
             FileSystem.AddResource("/modules", raw_entry);
-
-            Console.WriteLine();
         }
 
         public static void TestRawEntry()
         {
-            string file_path = "/controller/TestApi/test.txt";
-            RawEntry raw_entry = new RawEntry("test.txt", Guid.Empty, Permissions.PublicRead, file_path);
-            ((RawEntry) FileSystem.AddResource("/modules", raw_entry)).Load();
+            RawEntry raw_entry = new RawEntry("test.txt", TestGuid, Permissions.PublicRead, "/controller/TestApi/test.txt");
+            FileSystem.AddResource("/modules", raw_entry);
+            raw_entry.Load();
 
-            string data = Encoding.UTF32.GetString(raw_entry.SharedStream.ReadBytes(30));
-            Console.WriteLine(data);
+            string str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
+            Console.WriteLine("\"" + str + "\"");
 
-            /*
             raw_entry.SharedStream.WriteBytes("Goodbye World!");
+            raw_entry.SharedStream.SetStreamPosition(0);
 
-            data = Encoding.UTF32.GetString(raw_entry.SharedStream.ReadBytes(30));
-            Console.WriteLine(data);
-            */
-            Console.WriteLine();
+            str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
+            Console.WriteLine(str);
         }
 
         public static void Main(string[] args)
         {
-            Console.WriteLine("Tests started");
+            Console.WriteLine("Tests started\n=============================================");
             FileSystem.Init();
 
             TestDirectory();

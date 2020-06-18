@@ -6,6 +6,8 @@ namespace SynthesisAPI.VirtualFileSystem
 {
     public static class FileSystem
     {
+        public const int MaxDirectoryDepth = 50; // TODO pick maximum directory depth
+
         private static Directory GetDirectory(string path)
         {
             Resource parent_dir = rootNode.Traverse(path);
@@ -27,7 +29,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public static Resource AddResource(string path, Resource resource)
         {
-            if (PathToDepth(path) >= 50) // TODO maximum directory depth
+            if (PathToDepth(path) >= MaxDirectoryDepth)
             {
                 throw new Exception();
             }

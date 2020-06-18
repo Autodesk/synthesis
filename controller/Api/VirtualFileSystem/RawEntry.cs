@@ -37,10 +37,9 @@ namespace SynthesisAPI.VirtualFileSystem
         public void Load()
         {
             data = File.ReadAllBytes(BasePath + Path);
-            RawStream = new MemoryStream(); // TODO create expandable memory stream
+            RawStream = new MemoryStream();                 // create expandable memory stream
             RawStream.Write(data, 0, data.Length);
-
-            Array.Resize(ref data, 10);
+            RawStream.Position = 0;
 
             RWLock = new ReaderWriterLockSlim();
             SharedStream = new SharedBinaryStream<MemoryStream>(RawStream, RWLock, DefaultTimeout);

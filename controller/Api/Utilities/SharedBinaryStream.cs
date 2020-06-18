@@ -35,13 +35,55 @@ namespace SynthesisAPI.Utilities
 
         private BinaryWriter Writer { get; set; }
 
+        public void SetStreamPosition(long pos)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.Position = pos;
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public bool TrySetStreamPosition(long pos)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.Position = pos;
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public byte[] ReadBytes(int count)
         {
             if (RWLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
-                    return Reader.ReadBytes(count);
+                    long pos = Stream.Position;
+                    byte[] read = Reader.ReadBytes(count);
+                    Stream.Position = pos + read.Length;
+                    return read;
                 }
                 finally
                 {
@@ -60,7 +102,10 @@ namespace SynthesisAPI.Utilities
             {
                 try
                 {
-                    return Reader.ReadBytes(count);
+                    long pos = Stream.Position;
+                    byte[] read = Reader.ReadBytes(count);
+                    Stream.Position = pos + read.Length;
+                    return read;
                 }
                 finally
                 {
@@ -89,7 +134,7 @@ namespace SynthesisAPI.Utilities
         {
             try
             {
-                WriteBytes(Encoding.UTF32.GetBytes(line));
+                WriteBytes(Encoding.UTF8.GetBytes(line));
             }
             catch
             {
@@ -119,7 +164,7 @@ namespace SynthesisAPI.Utilities
 
         public bool TryWriteBytes(string line)
         {
-            return TryWriteBytes(Encoding.UTF32.GetBytes(line));
+            return TryWriteBytes(Encoding.UTF8.GetBytes(line));
         }
 
         public bool TryWriteBytes(byte[] buffer)

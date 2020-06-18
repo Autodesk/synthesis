@@ -11,6 +11,7 @@ namespace SynthesisAPI.Utilities
     public class SharedTextStream<TStream> where TStream : Stream
     {
         // TODO ref_count for dispose function?
+        // TODO combine with SharedBinaryStream
 
         public SharedTextStream(TStream stream, ReaderWriterLockSlim lck, int t)
         {
