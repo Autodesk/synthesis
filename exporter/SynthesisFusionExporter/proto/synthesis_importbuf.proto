@@ -52,7 +52,7 @@ message Occurrence {
     bool isGrounded = 2; // always false for root occurrence
     Matrix3D transform = 3; // always the identity matrix for root occurrence
 
-    bytes componentUUID = 4;
+    string componentUUID = 4;
     repeated Occurrence childOccurrences = 5;
     
     map<string, google.protobuf.Any> attributes = 6;
@@ -66,8 +66,8 @@ message Joint {
     bool isLocked = 5;
     bool isFlipped = 6;
 
-    bytes occurrenceOneUUID = 7;
-    bytes occurrenceTwoUUID = 8;
+    string occurrenceOneUUID = 7;
+    string occurrenceTwoUUID = 8;
 
     map<string, google.protobuf.Any> attributes = 9;
 
@@ -169,7 +169,7 @@ message MaterialProperties { // todo: support for other mechanical/thermal prope
 }
 
 message Header {
-    bytes uuid = 1; // generated with apper's item_id and persistant in fusion file
+    string uuid = 1; // generated with apper's item_id and persistant in fusion file
     string name = 2;
     string description = 3;
     string revisionId = 4; // fusion generated id, changes 
