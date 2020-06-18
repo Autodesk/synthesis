@@ -1,11 +1,35 @@
 
 import adsk, adsk.core, adsk.fusion, traceback
 import apper
-from apper import AppObjects
+from apper import AppObjects, item_id
 from ..proto.synthesis_importbuf_pb2 import *
 
+ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
+
+def fillMatrix3D(transform, protoTransform):
+    pass #todo
+
+def fillOccurrence(occur, protoOccur):
+    protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
+    protoOccur.header.name = occur.name
+    protoOccur.isGrounded = occur.isGrounded
+    fillMatrix3D(occur.transform, protoOccur.transform)
+
+    protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
+    #todo fill componentBuf here?
+
+    for childOccur in occur.childOccurrences:
+        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+
+def fillFakeRootOccurrence(rootComponent, protoOccur):
+    protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
+    #todo fill componentBuf here?
+
+    for childOccur in rootComponent.occurrences:
+        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+
 def fillDesign(ao, design):
-    pass
+    fillFakeRootOccurrence(ao.root_comp, design.hierarchyRoot)
 
 def fillUserMeta(ao, userMeta):
     currentUser = ao.app.currentUser
@@ -44,55 +68,3 @@ class ExportCommand(apper.Fusion360CommandBase):
     
     def on_execute(self, command: adsk.core.Command, inputs: adsk.core.CommandInputs, args, input_values):
         exportRobot()
-
-
-
-        #
-        #
-        #
-        # app = adsk.core.Application.get()
-        # ui = app.userInterface
-        #
-        # title = 'Synthesis Exporter'
-        #
-        # design = app.activeDocument.design
-        # uuid = apper.Fusion360Utilities.get_a_uuid()
-        # user = app.currentUser.displayName
-        #
-        # currentDesignData = 'Current design data of: ' + design.parentDocument.name + '\n' + 'GUID: ' + uuid + '\n' + 'User: ' + user + '\n'
-        # ui.messageBox(currentDesignData)
-        #
-        # ui = None
-        # try:
-        #     app = adsk.core.Application.get()
-        #     ui = app.userInterface
-        #     product = app.activeProduct
-        #
-        #     design = adsk.fusion.Design.cast(product)
-        #     if not design:
-        #         ui.messageBox('No active Fusion design', 'No Design')
-        #         return
-        #
-        #     # get root
-        #     rootComp = design.rootComponent
-        #
-        #     # traverse assembly recursively + print in message box
-        #     resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
-        #     resultString = getComponents(rootComp.occurrences.asList, 1, resultString)
-        #     ui.messageBox(resultString)
-        # except:
-        #     if ui:
-        #         ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
-        #
-
-# def getComponents(occurrences, level, input):
-#     for i in range(0, occurrences.count):
-#         occurence = occurrences.item(i)
-
-#         input += 'Name: ' + occurence.name + '\n'
-
-#         if occurence.childOccurrences:
-#             input = getComponents(occurence.childOccurrences, level + 1, input)
-
-#     return input
-        

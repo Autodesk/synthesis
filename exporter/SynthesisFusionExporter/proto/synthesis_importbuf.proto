@@ -49,8 +49,8 @@ message Design {
 
 message Occurrence {
     Header header = 1; // no revisionId or description, header is blank for root occurrence
-    bool isGrounded = 2; // always false for root occurrence
-    Matrix3D transform = 3; // always the identity matrix for root occurrence
+    bool isGrounded = 2; // always blank for root occurrence
+    Matrix3D transform = 3; // always blank for root occurrence
 
     string componentUUID = 4;
     repeated Occurrence childOccurrences = 5;

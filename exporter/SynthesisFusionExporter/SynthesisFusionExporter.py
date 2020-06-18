@@ -154,7 +154,7 @@ debug = False
 def run(context):
     my_addin.run_app()
 
-    exportRobot() #delete me
+    exportRobot() # export on startup for debugging purposes TODO delete me
 
 
 def stop(context):
