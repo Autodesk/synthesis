@@ -124,8 +124,41 @@ except:
 # Set to True to display various useful messages when debugging your app
 debug = False
 
+def getComponents(occurrences, level, input):
+    for i in range(0, occurrences.count):
+        occurence = occurrences.item(i)
+
+        input += 'Name: ' + occurence.name + '\n'
+        
+        if occurence.childOccurrences:
+            input = getComponents(occurence.childOccurrences, level + 1, input)
+
+    return input
+
 
 def run(context):
+    ui = None
+    try:
+        app = adsk.core.Application.get()
+        ui  = app.userInterface
+        product = app.activeProduct
+
+        design = adsk.fusion.Design.cast(product)
+        if not design:
+            ui.messageBox('No active Fusion design', 'No Design')
+            return
+
+        # get root
+        rootComp = design.rootComponent
+
+        # traverse assembly recursively + print in message box
+        resultString = 'Assembly structure of ' + design.parentDocument.name + '\n'
+        resultString = getComponents(rootComp.occurrences.asList, 1, resultString)
+        ui.messageBox(resultString)
+    except:
+        if ui:
+            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
+
     my_addin.run_app()
 
 
