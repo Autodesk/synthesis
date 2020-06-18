@@ -25,18 +25,6 @@
     background-color: rgba(187, 187, 187, 255);
 }
 
-.toolbar-button:selected {
-    background-color: rgba(181, 253, 147, 255);
-    -unity-background-image-tint-color: rgba(0, 0, 0, 255);
-    border-left-width: 10px;
-    border-right-width: 10px;
-    border-top-width: 10px;
-    border-bottom-width: 10px;
-}
-
 .toolbar-button:active {
-    border-left-width: 10px;
-    border-right-width: 10px;
-    border-top-width: 10px;
-    border-bottom-width: 10px;
+    background-color: rgba(153, 153, 153, 255);
 }
