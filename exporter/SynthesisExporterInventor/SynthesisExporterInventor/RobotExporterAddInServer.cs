@@ -1,23 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using SynthesisExporterInventor.GUI.Editors;
-using SynthesisExporterInventor.GUI.Editors.AdvancedJointEditor;
-using SynthesisExporterInventor.GUI.Editors.JointEditor;
 using SynthesisExporterInventor.GUI.Guide;
 using SynthesisExporterInventor.Managers;
 using SynthesisExporterInventor.Properties;
 using SynthesisExporterInventor.Utilities;
-using SynthesisExporterInventor.Utilities.Synthesis;
 using Inventor;
 using SynthesisExporterInventor.GUI.JointView;
 using SynthesisExporterInventor.GUI.Loading;
-using SynthesisExporterInventor.GUI.Messages;
-using NUnit.Framework;
-using OpenTK.Input;
-using static SynthesisExporterInventor.RobotExporterAddInServer;
 using static SynthesisExporterInventor.Utilities.ImageConverters.PictureDispConverter;
 using Environment = Inventor.Environment;
 
@@ -34,7 +25,6 @@ namespace SynthesisExporterInventor
         public readonly AddInSettingsManager AddInSettingsManager = new AddInSettingsManager();
 
         // Robot/Document
-        public RobotDataManager RobotDataManager { get; private set; }
 
         public AssemblyDocument OpenAssemblyDocument => OpenDocument as AssemblyDocument; // We know this is an AssemblyDocument because of the condition in IsDocumentSupported()
 
@@ -61,15 +51,12 @@ namespace SynthesisExporterInventor
         private ButtonDefinition settingsButton;
 
         // Dockable window managers
-        private readonly AdvancedJointEditor advancedJointEditor = new AdvancedJointEditor();
         private readonly JointViewKey jointViewKey = new JointViewKey();
         private readonly GuideManager guideManager = new GuideManager();
 
         // Other managers
-        public readonly HighlightManager HighlightManager = new HighlightManager();
 
         // UI elements
-        private readonly JointEditorForm jointEditorForm = new JointEditorForm();
 
         protected override Environment CreateEnvironment()
         {
@@ -96,85 +83,6 @@ namespace SynthesisExporterInventor
 
         private void InitEnvironmentPanels(RibbonTab exporterTab, string clientId, ControlDefinitions controlDefs)
         {
-            // DRIVETRAIN PANEL
-            driveTrainPanel = exporterTab.RibbonPanels.Add("Drive Train Setup", "BxD:RobotExporter:DriveTrainPanel", clientId);
-
-            driveTrainTypeButton = controlDefs.AddButtonDefinition("Drive Train\nLayout",
-                "BxD:RobotExporter:SetDriveTrainType", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
-                "Select the drivetrain type (tank, H-drive, or mecanum).", ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)), ToIPictureDisp(new Bitmap(Resources.DrivetrainType32)));
-            driveTrainTypeButton.OnExecute += context =>
-            {
-                AnalyticsUtils.LogPage("Drivetrain Type Editor");
-                new DrivetrainLayoutForm(RobotDataManager).ShowDialog();
-            };
-            driveTrainPanel.CommandControls.AddButton(driveTrainTypeButton, true);
-
-            drivetrainWeightButton = controlDefs.AddButtonDefinition("Drive Train\nWeight",
-                "BxD:RobotExporter:SetDriveTrainWeight", CommandTypesEnum.kNonShapeEditCmdType, clientId, null,
-                "Assign the weight of the drivetrain.", ToIPictureDisp(new Bitmap(Resources.RobotWeight32)), ToIPictureDisp(new Bitmap(Resources.RobotWeight32)));
-            drivetrainWeightButton.OnExecute += context =>
-            {
-                AnalyticsUtils.LogPage("Drivetrain Weight Editor");
-                RobotDataManager.PromptRobotWeight();
-            };
-            driveTrainPanel.CommandControls.AddButton(drivetrainWeightButton, true);
-
-            // JOINT PANEL
-            jointPanel = exporterTab.RibbonPanels.Add("Joint Setup", "BxD:RobotExporter:JointPanel", clientId);
-
-            advancedEditJointButton = controlDefs.AddButtonDefinition("Advanced Editor", "BxD:RobotExporter:AdvancedEditJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Joint editor for advanced users.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
-            advancedEditJointButton.OnExecute += context =>
-            {
-                if (advancedJointEditor.Visible) return;
-                AnalyticsUtils.LogPage("Advanced Joint Editor");
-                advancedJointEditor.Visible = true;
-                jointEditorForm.Visible = false;
-            };
-            jointPanel.SlideoutControls.AddButton(advancedEditJointButton);
-
-            editJointButton = controlDefs.AddButtonDefinition("Edit Joints", "BxD:RobotExporter:EditJoint",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Edit existing joints.", ToIPictureDisp(new Bitmap(Resources.JointEditor32)), ToIPictureDisp(new Bitmap(Resources.JointEditor32)));
-            editJointButton.OnExecute += context =>
-            {
-                if (!jointEditorForm.HasJoints())
-                {
-                    var result = MessageBox.Show("No rotational or slider joints detected in the assembly! Add joints to your robot by using the \"Joint\" button under \"Assemble\" and restart the robot export environment to edit joints.\n\n" +
-                                    "Would you like to view a video tutorial on adding joints to your assembly?", "No Joints Found", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-                    if (result.Equals(DialogResult.Yes))
-                        System.Diagnostics.Process.Start("https://youtu.be/fY3Vdkh8L0Y");
-                    return;
-                }
-                
-                if (jointEditorForm.Visible)
-                {
-                    jointEditorForm.Activate();
-                }
-                else
-                {
-                    AnalyticsUtils.LogPage("Joint Editor");
-                    UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
-                    jointEditorForm.PreShow();
-                    jointEditorForm.Show();
-                    advancedJointEditor.Visible = false;
-                }
-            };
-            jointPanel.CommandControls.AddButton(editJointButton, true);
-
-            // PRECHECK PANEL
-            precheckPanel = exporterTab.RibbonPanels.Add("Export Precheck", "BxD:RobotExporter:ChecklistPanel", clientId);
-
-            dofButton = controlDefs.AddButtonDefinition("Toggle Joint\nViewer", "BxD:RobotExporter:JointViewer",
-                CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "View status of all joints.", ToIPictureDisp(new Bitmap(Resources.Guide32)), ToIPictureDisp(new Bitmap(Resources.Guide32)));
-            dofButton.OnExecute += context =>
-            {
-                jointViewKey.Visible = !jointViewKey.Visible;
-                HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
-                if (jointViewKey.Visible)
-                    AnalyticsUtils.LogPage("Joint View");
-            };
-            precheckPanel.CommandControls.AddButton(dofButton, true);
-
             // ADD-IN SETTINGS PANEL
             addInSettingsPanel = exporterTab.RibbonPanels.Add("Add-In", "BxD:RobotExporter:AddInSettings", clientId);
 
@@ -202,7 +110,6 @@ namespace SynthesisExporterInventor
             var loadingBar = new LoadingBar("Loading Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Preparing UI Managers...", 1, 10));
             loadingBar.Show();
-            HighlightManager.EnvironmentOpening(OpenAssemblyDocument);
 
             // Disable non-jointed components
             disabledAssemblyOccurrences = new List<ComponentOccurrence>();
@@ -210,25 +117,12 @@ namespace SynthesisExporterInventor
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 2, 10));
             // Load robot skeleton and prepare UI
-            RobotDataManager = new RobotDataManager();
-            if (!RobotDataManager.LoadRobotSkeleton(new Progress<ProgressUpdate>(loadingBar.SetProgress)))
-            {
-                loadingBar.Close();
-                Application.UserInterfaceManager.UserInteractionDisabled = false;
-                InventorUtils.ForceQuitExporter(OpenAssemblyDocument);
-                return;
-            }
-
-            if (RobotDataManager.wasForceQuit)
-                return;
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Joint Data...", 7, 10));
-            RobotDataManager.LoadRobotData(OpenAssemblyDocument);
 
             loadingBar.SetProgress(new ProgressUpdate("Initializing UI...", 8, 10));
             // Create dockable window UI
             var uiMan = Application.UserInterfaceManager;
-            advancedJointEditor.CreateDockableWindow(uiMan);
             jointViewKey.Init(uiMan);
             guideManager.Init(uiMan);
 
@@ -236,8 +130,6 @@ namespace SynthesisExporterInventor
 
             loadingBar.SetProgress(new ProgressUpdate("Loading Robot Skeleton...", 9, 10));
             // Load skeleton into joint editors
-            advancedJointEditor.LoadRobot(RobotDataManager);
-            jointEditorForm.LoadRobot(RobotDataManager);
             loadingBar.Close();
             Application.UserInterfaceManager.UserInteractionDisabled = false;
         }
@@ -248,40 +140,13 @@ namespace SynthesisExporterInventor
             var loadingBar = new LoadingBar("Closing Export Environment...");
             loadingBar.SetProgress(new ProgressUpdate("Saving Robot Data...", 3, 5));
             loadingBar.Show();
-            RobotDataManager.SaveRobotData(OpenAssemblyDocument);
             loadingBar.Close();
             Application.UserInterfaceManager.UserInteractionDisabled = false;
-
-            if (!RobotDataManager.wasForceQuit)
-            {
-                var exportResult = MessageBox.Show(new Form { TopMost = true },
-                    "The robot configuration has been saved to your assembly document.\nWould you like to export your robot to Synthesis?",
-                    "Robot Configuration Complete",
-                    MessageBoxButtons.YesNo);
-
-                if (exportResult == DialogResult.Yes)
-                {
-                    UnsupportedComponentsForm.CheckUnsupportedComponents(RobotDataManager.RobotBaseNode.ListAllNodes());
-                    if (ExportForm.PromptExportSettings(RobotDataManager))
-                    {
-                        if (RobotDataManager.ExportRobot())
-                        {
-                            AnalyticsUtils.LogEvent("Export", "Succeeded");
-                            if (Instance.AddInSettingsManager.OpenSynthesis) SynthesisUtils.OpenSynthesis(RobotDataManager.RobotName);
-                        }
-                        else
-                        {
-                            AnalyticsUtils.LogEvent("Export", "Cancelled");
-                        }
-                    }
-                }
-            }
 
             // Re-enable disabled components
             if (disabledAssemblyOccurrences != null) InventorUtils.EnableComponents(disabledAssemblyOccurrences);
             disabledAssemblyOccurrences = null;
 
-            advancedJointEditor.DestroyDockableWindow();
             guideManager.DestroyDockableWindow();
             jointViewKey.DestroyDockableWindow();
             AnalyticsUtils.EndSession();
@@ -290,7 +155,6 @@ namespace SynthesisExporterInventor
         protected override void OnEnvironmentHide()
         {
             // Hide dockable windows when switching to a different document 
-            advancedJointEditor.TemporaryHide();
             jointViewKey.TemporaryHide();
             guideManager.TemporaryHide();
         }
@@ -298,11 +162,9 @@ namespace SynthesisExporterInventor
         protected override void OnEnvironmentShow()
         {
             // Restore visible state of dockable windows
-            advancedJointEditor.Visible = advancedJointEditor.Visible;
             jointViewKey.Visible = jointViewKey.Visible;
             guideManager.Visible = guideManager.Visible;
             // And DOF highlight in case that gets cleared
-            HighlightManager.DisplayJointHighlight = jointViewKey.Visible;
         }
 
         protected override bool IsDocumentSupported(Document document)

@@ -31,24 +31,6 @@ namespace SynthesisExporterInventor.GUI.Editors
             OpenSynthesisBox.Checked = RobotExporterAddInServer.Instance.AddInSettingsManager.OpenSynthesis;
         }
         
-        /// <summary>
-        /// Prompts the user for the name of the robot, as well as other information.
-        /// </summary>
-        /// <returns>True if user pressed okay, false if they pressed cancel</returns>
-        public static bool PromptExportSettings(RobotDataManager robotDataManager)
-        { // TODO: Compact this down
-            if (Prompt(robotDataManager.RobotName, out var robotName, out var colors, out var openSynthesis) == DialogResult.OK)
-            {
-                robotDataManager.RobotName = robotName;
-
-                RobotExporterAddInServer.Instance.AddInSettingsManager.DefaultExportWithColors = colors;
-                RobotExporterAddInServer.Instance.AddInSettingsManager.SaveSettings();
-
-                return true;
-            }
-
-            return false;
-        }
 
         public static DialogResult Prompt(string initialRobotName, out string robotName, out bool colors, out bool openSynthesis)
         {

@@ -11,15 +11,5 @@ namespace SynthesisExporterInventor.Utilities
             var dz = b.MaxPoint.Z - b.MinPoint.Z;
             return dx * dy * dz;
         }
-
-        public static BXDVector3 ToBXDVector(dynamic p)
-        {
-            return new BXDVector3(p.X, p.Y, p.Z);
-        }
-
-        public static Vector ToInventorVector(BXDVector3 v)
-        {
-            return RobotExporterAddInServer.Instance.Application.TransientGeometry.CreateVector(v.x, v.y, v.z);
-        }
     }
 }

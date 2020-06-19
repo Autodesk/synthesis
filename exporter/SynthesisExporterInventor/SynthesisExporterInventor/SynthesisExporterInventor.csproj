@@ -143,55 +143,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exporter\AssetProperties.cs" />
-    <Compile Include="Exporter\ConvexHullCalculator.cs" />
-    <Compile Include="Exporter\MeshExporter.cs" />
-    <Compile Include="Exporter\SkeletonBuilder.cs" />
-    <Compile Include="Exporter\SurfaceExporter_Access.cs" />
-    <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
-    <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.Designer.cs">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.Designer.cs">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.Designer.cs">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.Designer.cs">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.designer.cs">
-      <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointEditorForm.Designer.cs">
-      <DependentUpon>JointEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointCardUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\JointEditor\JointCardUC.Designer.cs">
-      <DependentUpon>JointCardUC.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\JointView\JointViewKeyPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -199,19 +150,12 @@
       <DependentUpon>JointViewKeyPane.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\JointView\JointViewKeyManager.cs" />
-    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditor.cs" />
     <Compile Include="GUI\Guide\GuideManager.cs" />
     <Compile Include="GUI\Guide\GuidePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Guide\GuidePanel.Designer.cs">
       <DependentUpon>GuidePanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Loading\ExportingMeshesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Loading\ExportingMeshesForm.Designer.cs">
-      <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Loading\LoadingBar.cs">
       <SubType>Form</SubType>
@@ -231,21 +175,7 @@
     <Compile Include="GUI\Messages\ExportSuccessfulForm.Designer.cs">
       <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Messages\UnsupportedComponentsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Messages\UnsupportedComponentsForm.Designer.cs">
-      <DependentUpon>UnsupportedComponentsForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Managers\AddInSettingsManager.cs" />
-    <Compile Include="Managers\HighlightManager.cs" />
-    <Compile Include="Managers\RobotDataManager.cs" />
-    <Compile Include="OGLViewer\OGLDrawing.cs" />
-    <Compile Include="OGLViewer\OGL_RigidNode.cs" />
-    <Compile Include="OGLViewer\OpenTK_Math_Ext.cs" />
-    <Compile Include="OGLViewer\SelectManager.cs" />
-    <Compile Include="OGLViewer\ShaderLoader.cs" />
-    <Compile Include="OGLViewer\VBOMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -259,39 +189,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
-    <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
-    <Compile Include="RigidAnalyzer\CustomRigidResults.cs" />
-    <Compile Include="RigidAnalyzer\RigidBodyCleaner.cs" />
-    <Compile Include="RigidAnalyzer\RigidNode.cs" />
     <Compile Include="SingleEnvironmentAddInServer.cs" />
-    <Compile Include="SkeletalStructure\BallJoint.cs" />
-    <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
-    <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
-    <Compile Include="SkeletalStructure\LinearJoint.cs" />
-    <Compile Include="SkeletalStructure\MotionLimits.cs" />
-    <Compile Include="SkeletalStructure\PlanarJoint.cs" />
-    <Compile Include="SkeletalStructure\RotationalJoint.cs" />
-    <Compile Include="SkeletalStructure\SkeletalJoint.cs" />
     <Compile Include="RobotExporterAddInServer.cs" />
-    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.Designer.cs">
-      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\DrivetrainLayoutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\DrivetrainLayoutForm.Designer.cs">
-      <DependentUpon>DrivetrainLayoutForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Editors\DrivetrainWeightForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Editors\DrivetrainWeightForm.Designer.cs">
-      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Editors\ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -315,7 +214,6 @@
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\ProgressUpdate.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
-    <Compile Include="Utilities\ToStringUtils.cs" />
     <Compile Include="Utilities\Synthesis\SynthesisUtils.cs" />
     <Compile Include="Utilities\WinFormsUtils.cs" />
   </ItemGroup>
@@ -336,32 +234,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointDriverEditorForm.resx">
-      <DependentUpon>JointDriverEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointLimitEditorForm.resx">
-      <DependentUpon>JointLimitEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorEditorForm.resx">
-      <DependentUpon>JointSensorEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\JointSubEditors\JointSensorListForm.resx">
-      <DependentUpon>JointSensorListForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\AdvancedJointSettingsForm.resx">
-      <DependentUpon>AdvancedJointSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointEditorForm.resx">
-      <DependentUpon>JointEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\JointEditor\JointCardUC.resx">
-      <DependentUpon>JointCardUC.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
       <DependentUpon>GuidePanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Loading\ExportingMeshesForm.resx">
-      <DependentUpon>ExportingMeshesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Loading\LoadingBar.resx">
       <DependentUpon>LoadingBar.cs</DependentUpon>
@@ -372,22 +246,10 @@
     <EmbeddedResource Include="GUI\Messages\ExportSuccessfulForm.resx">
       <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Messages\UnsupportedComponentsForm.resx">
-      <DependentUpon>UnsupportedComponentsForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\AdvancedJointEditor\AdvancedJointEditorUserControl.resx">
-      <DependentUpon>AdvancedJointEditorUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\DrivetrainLayoutForm.resx">
-      <DependentUpon>DrivetrainLayoutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\DrivetrainWeightForm.resx">
-      <DependentUpon>DrivetrainWeightForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\ExporterSettingsForm.resx">
       <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
@@ -419,7 +281,9 @@
     <None Include="Resources\DrivetrainTypeIcons\HDriveIcon.png" />
     <None Include="Resources\DrivetrainTypeIcons\TankDriveIcon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Exporter" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>

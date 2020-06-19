@@ -18,120 +18,7 @@ namespace SynthesisExporterInventor.Utilities
         {
             return RobotExporterAddInServer.Instance.Application.TransientObjects.CreateColor(color.R, color.G, color.B);
         }
-
-        /// <summary>
-        /// Selects a list of nodes in Inventor.
-        /// </summary>
-        /// <param name="nodes">List of nodes to select.</param>
-        /// <param name="camera"></param>
-        /// <param name="zoom"></param>
-        public static void FocusAndHighlightNodes(List<RigidNode_Base> nodes, Camera camera, double zoom)
-        {
-            if (nodes == null)
-            {
-                RobotExporterAddInServer.Instance.HighlightManager.ClearAllHighlight();
-                camera.Fit();
-                camera.ApplyWithoutTransition();
-                return;
-            }
-
-            var occurrences = GetComponentOccurrencesFromNodes(nodes);
-            if (occurrences == null)
-            {
-                return;
-            }
-
-            RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
-            // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, zoom, ViewDirection.Y);
-            HighlightOccurrences(occurrences);
-        }
-
-        /// <summary>
-        /// Selects a list of nodes in Inventor.
-        /// </summary>
-        /// <param name="nodes">List of nodes to select.</param>
-        /// <param name="camera"></param>
-        /// <param name="zoom"></param>
-        public static void FocusAndHighlightNodes(List<RigidNode_Base> nodes, Camera camera)
-        {
-            if (nodes == null)
-            {
-                return;
-            }
-
-            var occurrences = GetComponentOccurrencesFromNodes(nodes);
-            if (occurrences == null)
-            {
-                return;
-            }
-
-            RobotExporterAddInServer.Instance.HighlightManager.ClearJointHighlight();
-            // Highlighting must occur after the camera is moved, as inventor clears highlight objects when the camera is moved
-            FocusCameraOnOccurrences(occurrences, 15, camera, ViewDirection.Y);
-            HighlightOccurrences(occurrences);
-        }
-
-        public static void HighlightOccurrences(List<ComponentOccurrence> occurrences)
-        {
-            RobotExporterAddInServer.Instance.HighlightManager.ClearAllHighlight();
-
-            foreach (var componentOccurrence in occurrences)
-            {
-                RobotExporterAddInServer.Instance.HighlightManager.HighlightJoint(componentOccurrence);
-            }
-        }
-
-        public static List<ComponentOccurrence> GetComponentOccurrencesFromNodes(List<RigidNode_Base> nodes)
-        {
-            if (nodes == null)
-            {
-                return null;
-            }
-
-            // Get all node ID's
-            List<string> nodeIDs = new List<string>();
-            ;
-            foreach (RigidNode_Base node in nodes)
-                nodeIDs.AddRange(node.GetModelID().Split(new String[] {"-_-"}, StringSplitOptions.RemoveEmptyEntries));
-
-            // Select all nodes
-            List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
-            foreach (string id in nodeIDs)
-            {
-                ComponentOccurrence occurrence = GetOccurrence(id);
-
-                if (occurrence != null)
-                {
-                    occurrences.Add(occurrence);
-                }
-            }
-
-            return occurrences;
-        }
-
-        /// <summary>
-        /// Public method used to select a node.
-        /// </summary>
-        /// <param name="node">Node to select.</param>
-        /// <param name="camera"></param>
-        /// <param name="zoom"></param>
-        public static void FocusAndHighlightNode(RigidNode_Base node, Camera camera, double zoom)
-        {
-            FocusAndHighlightNodes(new List<RigidNode_Base> {node}, camera, zoom);
-        }
-
-        /// <summary>
-        /// Public method used to select a node.
-        /// </summary>
-        /// <param name="node">Node to select.</param>
-        /// <param name="camera"></param>
-        /// <param name="zoom"></param>
-        public static void FocusAndHighlightNode(RigidNode_Base node, Camera camera)
-        {
-            FocusAndHighlightNodes(new List<RigidNode_Base> {node}, camera);
-        }
-
+        
         /// <summary>
         /// Gets the <see cref="ComponentOccurrence"/> of the specified name
         /// </summary>
@@ -303,22 +190,12 @@ namespace SynthesisExporterInventor.Utilities
             return resultBox;
         }
 
-        public static void CreateHighlightSet(List<RigidNode_Base> nodes, HighlightSet highlightSet)
-        {
-            highlightSet.Clear();
-            foreach (var componentOccurrence in GetComponentOccurrencesFromNodes(nodes))
-            {
-                highlightSet.AddItem(componentOccurrence);
-            }
-        }
-
         /// <summary>
         /// Causes the exporter to close.
         /// </summary>
         /// <param name="suppressClosingEvent">Whether or not the exporter closing handler should be suppressed from being called.</param>
         public static async void ForceQuitExporter(AssemblyDocument document)
         {
-            RobotExporterAddInServer.Instance.RobotDataManager.wasForceQuit = true;
             await Task.Delay(1); // Delay is needed so that environment is closed after it has finished opening
             document.EnvironmentManager.SetCurrentEnvironment(document.EnvironmentManager.EditObjectEnvironment);
         }
@@ -425,51 +302,6 @@ namespace SynthesisExporterInventor.Utilities
                 catch (Exception)
                 {
                 }
-            }
-        }
-
-        /// <summary>
-        /// Checks if a baseNode matches up with the assembly. Passed as a <see cref="ValidationAction"/> to
-        /// </summary>
-        /// <param name="baseNode"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private static bool ValidateAssembly(RigidNode_Base baseNode, out string message)
-        {
-            var validationCount = 0;
-            var failedCount = 0;
-            var nodes = baseNode.ListAllNodes();
-            foreach (var node in nodes)
-            {
-                var failedValidation = false;
-                foreach (var componentName in node.ModelFullID.Split(new string[] {"-_-"},
-                    StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (!CheckForOccurrence(componentName))
-                    {
-                        failedCount++;
-                        failedValidation = true;
-                    }
-                }
-
-                if (!failedValidation)
-                {
-                    validationCount++;
-                }
-            }
-
-            if (validationCount == nodes.Count)
-            {
-                message = String.Format("The assembly validated successfully. {0} / {1} nodes checked out.",
-                    validationCount, nodes.Count);
-                return true;
-            }
-            else
-            {
-                message = String.Format(
-                    "The assembly failed to validate. {0} / {1} nodes checked out. {2} parts/assemblies were not found.",
-                    validationCount, nodes.Count, failedCount);
-                return false;
             }
         }
 

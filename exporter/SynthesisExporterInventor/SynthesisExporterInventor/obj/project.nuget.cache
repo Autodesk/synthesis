@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+g2BAc2QIvLVuD2dQRx+b00xvKzQZ6BMLZWNQ5zXQQC1obcRnwIX+e/0VizLIcFSDXlpg/XmHRWCwgGft7z91A==",
+  "dgSpecHash": "ULWKP1kriZY6Qql1PWSKD8t0cJmE3ew/1yE/rPgHnjLvO9GZIY3PmRgq1WoW7u1Dfa0iQx4SWG/L0MoMiI0V0g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\InventorRobotExporter\\InventorRobotExporter.csproj",
+  "projectFilePath": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\SynthesisExporterInventor\\SynthesisExporterInventor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\wangl\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\wangl\\.nuget\\packages\\nunit\\3.12.0\\nunit.3.12.0.nupkg.sha512",
