@@ -1,0 +1,393 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.5.2": {
+      "Newtonsoft.Json/12.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NUnit/3.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "build": {
+          "build/NUnit.props": {}
+        }
+      },
+      "NUnit3TestAdapter/3.13.0": {
+        "type": "package",
+        "build": {
+          "build/net35/NUnit3TestAdapter.props": {}
+        }
+      },
+      "OpenTK/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/OpenTK.dll": {}
+        },
+        "runtime": {
+          "lib/net20/OpenTK.dll": {}
+        }
+      },
+      "OpenTK.GLControl/1.1.2349.61993": {
+        "type": "package",
+        "dependencies": {
+          "OpenTK": "1.1.2349.61993"
+        },
+        "compile": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        },
+        "runtime": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.2/win": {
+      "Newtonsoft.Json/12.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NUnit/3.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "build": {
+          "build/NUnit.props": {}
+        }
+      },
+      "NUnit3TestAdapter/3.13.0": {
+        "type": "package",
+        "build": {
+          "build/net35/NUnit3TestAdapter.props": {}
+        }
+      },
+      "OpenTK/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/OpenTK.dll": {}
+        },
+        "runtime": {
+          "lib/net20/OpenTK.dll": {}
+        }
+      },
+      "OpenTK.GLControl/1.1.2349.61993": {
+        "type": "package",
+        "dependencies": {
+          "OpenTK": "1.1.2349.61993"
+        },
+        "compile": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        },
+        "runtime": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.2/win-x64": {
+      "Newtonsoft.Json/12.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NUnit/3.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "build": {
+          "build/NUnit.props": {}
+        }
+      },
+      "NUnit3TestAdapter/3.13.0": {
+        "type": "package",
+        "build": {
+          "build/net35/NUnit3TestAdapter.props": {}
+        }
+      },
+      "OpenTK/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/OpenTK.dll": {}
+        },
+        "runtime": {
+          "lib/net20/OpenTK.dll": {}
+        }
+      },
+      "OpenTK.GLControl/1.1.2349.61993": {
+        "type": "package",
+        "dependencies": {
+          "OpenTK": "1.1.2349.61993"
+        },
+        "compile": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        },
+        "runtime": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.5.2/win-x86": {
+      "Newtonsoft.Json/12.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NUnit/3.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "runtime": {
+          "lib/net45/nunit.framework.dll": {}
+        },
+        "build": {
+          "build/NUnit.props": {}
+        }
+      },
+      "NUnit3TestAdapter/3.13.0": {
+        "type": "package",
+        "build": {
+          "build/net35/NUnit3TestAdapter.props": {}
+        }
+      },
+      "OpenTK/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net20/OpenTK.dll": {}
+        },
+        "runtime": {
+          "lib/net20/OpenTK.dll": {}
+        }
+      },
+      "OpenTK.GLControl/1.1.2349.61993": {
+        "type": "package",
+        "dependencies": {
+          "OpenTK": "1.1.2349.61993"
+        },
+        "compile": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        },
+        "runtime": {
+          "lib/NET40/OpenTK.GLControl.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Newtonsoft.Json/12.0.2": {
+      "sha512": "rTK0s2EKlfHsQsH6Yx2smvcTCeyoDNgCW7FEYyV01drPlh2T243PR2DiDXqtC5N4GDm4Ma/lkxfW5a/4793vbA==",
+      "type": "package",
+      "path": "newtonsoft.json/12.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.12.0.2.nupkg.sha512",
+        "newtonsoft.json.nuspec"
+      ]
+    },
+    "NUnit/3.12.0": {
+      "sha512": "3oJTrcUcT9wmweBUwgUf0f1XIYy6RZq2ziV+RM95HMKAJGsHPN2i3MKK1dAPvDPMRLz799Llj4eyu/STB9Q7OA==",
+      "type": "package",
+      "path": "nunit/3.12.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGES.md",
+        "LICENSE.txt",
+        "NOTICES.txt",
+        "build/NUnit.props",
+        "lib/net35/nunit.framework.dll",
+        "lib/net35/nunit.framework.pdb",
+        "lib/net35/nunit.framework.xml",
+        "lib/net40/nunit.framework.dll",
+        "lib/net40/nunit.framework.pdb",
+        "lib/net40/nunit.framework.xml",
+        "lib/net45/nunit.framework.dll",
+        "lib/net45/nunit.framework.pdb",
+        "lib/net45/nunit.framework.xml",
+        "lib/netstandard1.4/nunit.framework.dll",
+        "lib/netstandard1.4/nunit.framework.pdb",
+        "lib/netstandard1.4/nunit.framework.xml",
+        "lib/netstandard2.0/nunit.framework.dll",
+        "lib/netstandard2.0/nunit.framework.pdb",
+        "lib/netstandard2.0/nunit.framework.xml",
+        "nunit.3.12.0.nupkg.sha512",
+        "nunit.nuspec"
+      ]
+    },
+    "NUnit3TestAdapter/3.13.0": {
+      "sha512": "9OlA81APTyR/tNkapK2a2dlz4jFra7/Bm1eYT1P1lIq2cJv4OYtWD5uHj3XsO1dz3btiwbIFrWBtZNr/ebRhSw==",
+      "type": "package",
+      "path": "nunit3testadapter/3.13.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "build/net35/NUnit3.TestAdapter.dll",
+        "build/net35/NUnit3.TestAdapter.pdb",
+        "build/net35/NUnit3TestAdapter.props",
+        "build/net35/nunit.engine.api.dll",
+        "build/net35/nunit.engine.dll",
+        "build/netcoreapp1.0/NUnit3.TestAdapter.dll",
+        "build/netcoreapp1.0/NUnit3.TestAdapter.pdb",
+        "build/netcoreapp1.0/NUnit3TestAdapter.props",
+        "build/netcoreapp1.0/nunit.engine.netstandard.dll",
+        "nunit3testadapter.3.13.0.nupkg.sha512",
+        "nunit3testadapter.nuspec"
+      ]
+    },
+    "OpenTK/2.0.0": {
+      "sha512": "yMHX2Z6u6tLazDl0FknEWz3ebCyaHrG12E9TOU1N8xCNDQYO6cjT9iDuTuUNY2SlPGVoHuQKSDGvu5jv3Xg0Qw==",
+      "type": "package",
+      "path": "opentk/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/OpenTK.dll.config",
+        "lib/net20/OpenTK.dll",
+        "lib/net20/OpenTK.xml",
+        "opentk.2.0.0.nupkg.sha512",
+        "opentk.nuspec"
+      ]
+    },
+    "OpenTK.GLControl/1.1.2349.61993": {
+      "sha512": "f5Dwpb+LcUcpkNGdyy0NyY8iUNhJ61/iY2Po43Wp0I3dLxNkb4+zzW25JEdHJXhdRa8dYYSJnX52jE7+Fx/t/A==",
+      "type": "package",
+      "path": "opentk.glcontrol/1.1.2349.61993",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/NET40/OpenTK.GLControl.dll",
+        "lib/NET40/OpenTK.GLControl.xml",
+        "opentk.glcontrol.1.1.2349.61993.nupkg.sha512",
+        "opentk.glcontrol.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.5.2": [
+      "NUnit >= 3.12.0",
+      "NUnit3TestAdapter >= 3.13.0",
+      "Newtonsoft.Json >= 12.0.2",
+      "OpenTK >= 2.0.0",
+      "OpenTK.GLControl >= 1.1.2349.61993"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\wangl\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\SynthesisExporterInventor\\SynthesisExporterInventor.csproj",
+      "projectName": "SynthesisExporterInventor",
+      "projectPath": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\SynthesisExporterInventor\\SynthesisExporterInventor.csproj",
+      "packagesPath": "C:\\Users\\wangl\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\SynthesisExporterInventor\\obj\\",
+      "projectStyle": "PackageReference",
+      "skipContentFileWrite": true,
+      "configFilePaths": [
+        "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\NuGet.Config",
+        "C:\\Users\\wangl\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net452"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net452": {
+          "projectReferences": {}
+        }
+      }
+    },
+    "frameworks": {
+      "net452": {
+        "dependencies": {
+          "NUnit": {
+            "target": "Package",
+            "version": "[3.12.0, )"
+          },
+          "NUnit3TestAdapter": {
+            "target": "Package",
+            "version": "[3.13.0, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[12.0.2, )"
+          },
+          "OpenTK": {
+            "target": "Package",
+            "version": "[2.0.0, )"
+          },
+          "OpenTK.GLControl": {
+            "target": "Package",
+            "version": "[1.1.2349.61993, )"
+          }
+        }
+      }
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      },
+      "win-x64": {
+        "#import": []
+      },
+      "win-x86": {
+        "#import": []
+      }
+    }
+  }
+}

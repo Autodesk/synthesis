@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "+g2BAc2QIvLVuD2dQRx+b00xvKzQZ6BMLZWNQ5zXQQC1obcRnwIX+e/0VizLIcFSDXlpg/XmHRWCwgGft7z91A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\wangl\\Repos\\SynthesisExporterInventor\\synthesis\\exporter\\SynthesisExporterInventor\\InventorRobotExporter\\InventorRobotExporter.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\wangl\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
+    "C:\\Users\\wangl\\.nuget\\packages\\nunit\\3.12.0\\nunit.3.12.0.nupkg.sha512",
+    "C:\\Users\\wangl\\.nuget\\packages\\nunit3testadapter\\3.13.0\\nunit3testadapter.3.13.0.nupkg.sha512",
+    "C:\\Users\\wangl\\.nuget\\packages\\opentk\\2.0.0\\opentk.2.0.0.nupkg.sha512",
+    "C:\\Users\\wangl\\.nuget\\packages\\opentk.glcontrol\\1.1.2349.61993\\opentk.glcontrol.1.1.2349.61993.nupkg.sha512"
+  ],
+  "logs": []
+}
