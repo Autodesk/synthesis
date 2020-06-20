@@ -22,8 +22,8 @@ namespace Synthesis.Simulator.Input
 
         static InputHandler()
         {
-            UnityHandles.OnUpdate += Update; // Add the update function to the update event
-            UnityHandles.OnFixedUpdate += FixedUpdate;
+            UnityHandler.OnUpdate += Update; // Add the update function to the update event
+            UnityHandler.OnFixedUpdate += FixedUpdate;
 
             for (int i = 1; i <= 11; i++)
             {
