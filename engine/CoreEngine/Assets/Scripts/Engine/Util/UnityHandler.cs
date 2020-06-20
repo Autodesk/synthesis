@@ -26,7 +26,7 @@ namespace Synthesis.Util
             _ = SimulatorHandler.Instance;
             DontDestroyOnLoad(gameObject);
 
-            string CurrentVersion = "4.3.3";
+            string CurrentVersion = "5.0.0";
             //GameObject.Find("VersionNumber").GetComponent<Text>().text = "Version " + CurrentVersion;
 
             if (CheckConnection())
@@ -44,6 +44,7 @@ namespace Synthesis.Util
 
                 if (check < 0)
                 {
+                    UnityEngine.Debug.Log("Update Available");
                     //Auxiliary.FindGameObject("UpdatePrompt").SetActive(true);
                 }
             }
