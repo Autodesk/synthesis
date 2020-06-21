@@ -5,9 +5,9 @@ Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 4.3.1 (x86) Setup"
+Caption "Synthesis 5.0.0 (x86) Setup"
 
-OutFile "SynthesisWin(x86)4.3.1.exe"
+OutFile "SynthesisWin(x86)5.0.0.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -127,7 +127,7 @@ Section "Synthesis (required)"
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "4.3.1" ;UPDATE ON RELEASE
+                 "DisplayVersion" "5.0.0" ;UPDATE ON RELEASE
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
