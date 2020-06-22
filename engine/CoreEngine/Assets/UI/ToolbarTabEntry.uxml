@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="tab" style="flex-direction: row; height: 50px; width: auto;">
+        <ui:VisualElement name="icon-background" style="height: auto; width: 50px; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgba(99, 99, 99, 255);">
+            <ui:VisualElement name="icon" style="height: 100%; width: 100%; background-image: url(&apos;/Assets/Textures/question_mark-01.png&apos;); -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0);" />
+        </ui:VisualElement>
+        <ui:VisualElement name="title-background" focusable="false" style="height: auto; width: auto; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgba(99, 99, 99, 255);">
+            <ui:Label text="Label" name="title" style="height: 100%; margin-left: 10px; margin-right: 10px; -unity-text-align: middle-center; -unity-font-style: bold; -unity-font: url(&apos;/Assets/UIERuntime/USS/Roboto-Regular.ttf&apos;); font-size: 22px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
