@@ -51,6 +51,11 @@ namespace SynthesisAPI.VirtualFileSystem
 
             var next = this[subpaths[0]];
 
+            if (subpaths.Length == 1)
+            {
+                return next;
+            }
+
             if (next == null)
             {
                 return null;

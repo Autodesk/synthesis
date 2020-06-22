@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
-    public static class FileSystem
+    public static class FileSystem // TODO static or singleton pattern?
     {
         public const int MaxDirectoryDepth = 50; // TODO pick maximum directory depth
 

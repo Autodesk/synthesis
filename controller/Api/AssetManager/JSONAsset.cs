@@ -1,17 +1,17 @@
-﻿using SynthesisAPI.VirtualFileSystem;
+﻿using Newtonsoft.Json;
+using SynthesisAPI.VirtualFileSystem;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace SynthesisAPI.AssetManager
 {
-    public class XMLAsset : Asset
+    public class JSONAsset : Asset
     {
-        public XMLAsset(string name, Guid owner, Permissions perm)
+        public JSONAsset(string name, Guid owner, Permissions perm)
         {
             Init(name, owner, perm);
         }
@@ -20,20 +20,20 @@ namespace SynthesisAPI.AssetManager
         {
             return stream.Seek(offset, loc);
         }
-        
+
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
         {
             long? returnPosition = null;
             if (offset != long.MaxValue)
             {
-                if(retainPosition)
+                if (retainPosition)
                 {
                     returnPosition = stream.Position;
                 }
                 Seek(offset, loc);
             }
 
-            TObject obj = (TObject)new XmlSerializer(typeof(TObject)).Deserialize(reader);
+            TObject obj = JsonConvert.DeserializeObject<TObject>(reader.ReadToEnd());
 
             if (returnPosition != null)
             {
@@ -50,7 +50,7 @@ namespace SynthesisAPI.AssetManager
         {
             stream = new MemoryStream(data, false);
             reader = new StreamReader(stream);
-            
+
             return this;
         }
 

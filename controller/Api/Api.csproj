@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -43,8 +47,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetManager\Asset.cs" />
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="AssetManager\IAsset.cs" />
+    <Compile Include="AssetManager\JSONAsset.cs" />
+    <Compile Include="AssetManager\PlainTextAsset.cs" />
+    <Compile Include="AssetManager\XMLAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
     <Compile Include="InputManager\InputManager.cs" />
@@ -77,7 +85,9 @@
     <Compile Include="VirtualFileSystem\SampleObject.cs" />
     <Compile Include="VirtualFileSystem\FileSystem.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
