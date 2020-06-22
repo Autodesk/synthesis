@@ -150,27 +150,6 @@ except:
 # Set to True to display various useful messages when debugging your app
 debug = False
 
-def traverse(occurrences, level, input):
-    for i in range(0, occurrences.count):
-        occurence = occurrences.item(i)
-
-        input += 'Name: ' + occurence.name + '\n'
-        
-        if occurence.childOccurrences:
-            input = traverse(occurence.childOccurrences, level + 1, input)
-
-    return input  
-
-def getDesignData(app):
-    design = app.activeDocument.design
-    uuid = apper.Fusion360Utilities.get_a_uuid()
-    user = app.currentUser.displayName
-
-    currentDesignData = 'Current design data of: ' + design.parentDocument.name + '\n' + 'GUID: ' + uuid + '\n' + 'User: ' + user + '\n'
-    # ui.messageBox(currentDesignData)
-        
-    return currentDesignData  
-
 def run(context):
     my_addin.run_app()
 

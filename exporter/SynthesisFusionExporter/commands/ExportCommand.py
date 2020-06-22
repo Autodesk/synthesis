@@ -8,12 +8,23 @@ ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with 
 
 def fillComponents(ao, components):
     components.header.uuid = apper.Fusion360Utilities.get_a_uuid()
-    components.partNumber = ao.design.parentDocument.name
+    components.partNumber = ao.design.partNumber
     components.boundingBox = ao.design.boundingBox
     components.materialId = item_id(ao.design.material, ATTR_GROUP_NAME)
     components.physicalProperties = ao.design.physicalProperties
     components.meshBodies = ao.design.meshBodies
+
+    for childComponent in range(0, root.allComponents):
+        fillComponent(childComponent, components)
     pass #todo
+
+def fillComponent(ao, component):
+    # get root of design
+    root = ao.design.rootComponent
+        
+    occurence = root.allComponents.item(childComponent)
+    component = occurence.component
+    component.allComponents.add()
 
 def fillJoints(ao, joints):
     pass #todo
