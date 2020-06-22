@@ -22,9 +22,30 @@
 }
 
 .toolbar-button:hover {
-    background-color: rgba(187, 187, 187, 255);
+    background-color: rgb(187, 187, 187);
 }
 
 .toolbar-button:active {
-    background-color: rgba(153, 153, 153, 255);
+    background-color: rgb(153, 153, 153);
+}
+
+.tab-button {
+    height: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 0;
+    background-color: rgb(242, 242, 242);
 }

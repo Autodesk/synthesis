@@ -3,14 +3,19 @@
         <Style src="USS/Toolbar.uss" />
         <ui:VisualElement name="top" style="width: 100%;">
             <ui:VisualElement name="toolbar" style="height: 100px; width: 100%; background-color: rgb(242, 242, 242); border-left-color: rgb(204, 204, 204); border-right-color: rgb(204, 204, 204); border-top-color: rgb(204, 204, 204); border-bottom-color: rgb(204, 204, 204);">
-                <ui:VisualElement name="button-panel" style="height: 30px; background-color: rgba(204, 204, 204, 255);">
-                    <ui:Button name="help-button" tooltip="Help" class="toolbar-button" style="top: 0; left: auto; right: 0; background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
-                    <ui:Button name="settings-button" tooltip="Settings" class="toolbar-button" style="top: 0; left: auto; right: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+                <ui:VisualElement name="button-panel" style="height: 30px; background-color: rgb(204, 204, 204);">
+                    <ui:Button name="help-button" tooltip="Help" class="toolbar-button" style="right: 0; background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
+                    <ui:Button name="settings-button" tooltip="Settings" class="toolbar-button" style="right: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
                     <ui:Button name="add-object-button" tooltip="Add Object" class="toolbar-button" style="left: 0; background-image: url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;);" />
-                    <ui:Button name="change-environment-button" tooltip="Change Environment" class="toolbar-button" style="top: 0; left: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
-                    <ui:Button name="modules-button" tooltip="Modules" class="toolbar-button" style="top: 0; left: auto; right: 60px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                    <ui:Button name="change-environment-button" tooltip="Change Environment" class="toolbar-button" style="left: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
+                    <ui:Button name="modules-button" tooltip="Modules" class="toolbar-button" style="right: 60px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-panel" style="height: 30px; position: absolute; right: 90px; background-color: rgb(204, 204, 204); top: 0; left: 60px;">
+                    <ui:Button text="Test" name="Test" class="tab-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Button text="add tab w resize" name="test-button" />
+        <ui:Button text="remove tab w resize" name="DebugRemove" />
     </ui:VisualElement>
 </ui:UXML>
