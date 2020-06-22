@@ -164,15 +164,6 @@ Section "Synthesis (required)" Synthesis
 
 SectionEnd
 
-Section "MixAndMatch Files" MaM
-
-  ; Set extraction path for Mix&Match files
-  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
-
-  File /r "MixAndMatch\*"
-
-SectionEnd
-
 Section "Inventor Exporter Plugin" iExporter
 
   ; Set extraction path to Inventor plugin directory
@@ -226,7 +217,6 @@ SectionEnd
 ;Component Descriptions
 
   LangString DESC_Synthesis ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
-  LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
@@ -234,7 +224,6 @@ SectionEnd
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)

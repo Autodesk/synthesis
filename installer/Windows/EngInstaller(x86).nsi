@@ -143,15 +143,6 @@ Section "Synthesis (required)"
 
 SectionEnd
 
-Section "MixAndMatch Files"
-
-  ; Set extraction path for Mix&Match files
-  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
-
-  File /r "MixAndMatch\*"
-
-SectionEnd
-
 Section "Robot Files"
 
   ; Set extraction path for preloaded robot files
