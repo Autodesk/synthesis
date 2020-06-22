@@ -25,12 +25,12 @@ namespace TestApi
 
         public static void TestRawEntry()
         {
-            RawEntry raw_entry = new RawEntry("test.txt", Program.TestGuid, Permissions.PublicRead, "/controller/TestApi/files/test.txt");
+            RawEntry raw_entry = new RawEntry("test.txt", Program.TestGuid, Permissions.PublicRead, "files/test.txt");
             FileSystem.AddResource("/modules", raw_entry);
             raw_entry.Load();
 
             string str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
-            Console.WriteLine("\"" + str + "\"");
+            Console.WriteLine(str);
 
             raw_entry.SharedStream.WriteBytes("Goodbye World!");
             raw_entry.SharedStream.SetStreamPosition(0);

@@ -13,7 +13,7 @@ namespace TestApi
     {
         public static void TestPlainText()
         {
-            byte[] file_data = File.ReadAllBytes("D:\\synthesis_projects\\synthesis\\controller\\TestApi\\files\\test.txt");
+            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.txt");
             PlainTextAsset test_txt = AssetManager.Import<PlainTextAsset>("text/plain", "/modules", file_data, "test2.txt", Program.TestGuid, Permissions.PublicRead);
 
             PlainTextAsset test = AssetManager.GetAsset<PlainTextAsset>("/modules/test2.txt");
@@ -28,9 +28,9 @@ namespace TestApi
         public static void TestXML()
         {
             // var test_xml = new XMLAsset("test.xml", Program.TestGuid, Permissions.PublicRead, "/modules");
-            // test_xml.LoadAsset(File.ReadAllBytes("D:\\synthesis_projects\\synthesis\\controller\\TestApi\\files\\test.xml"));
+            // test_xml.LoadAsset(File.ReadAllBytes(FileSystem.BasePath + "files/test.xml"));
 
-            byte[] file_data = File.ReadAllBytes("D:\\synthesis_projects\\synthesis\\controller\\TestApi\\files\\test.xml");
+            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.xml");
             XMLAsset test_xml = AssetManager.Import<XMLAsset>("text/xml", "/modules", file_data, "test.xml", Program.TestGuid, Permissions.PublicRead);
 
             XMLAsset test = AssetManager.GetAsset<XMLAsset>("/modules/test.xml");
@@ -44,7 +44,7 @@ namespace TestApi
 
         public static void TestJSON()
         {
-            byte[] file_data = File.ReadAllBytes("D:\\synthesis_projects\\synthesis\\controller\\TestApi\\files\\test.json");
+            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.json");
             JSONAsset test_json = AssetManager.Import<JSONAsset>("text/json", "/modules", file_data, "test.json", Program.TestGuid, Permissions.PublicRead);
 
             JSONAsset test = AssetManager.GetAsset<JSONAsset>("/modules/test.json");

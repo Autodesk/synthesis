@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
-#nullable enable
+#nullable enable // TODO enable this for the whole project
 
 namespace SynthesisAPI.VirtualFileSystem
 {
@@ -28,15 +23,13 @@ namespace SynthesisAPI.VirtualFileSystem
             data = null;
         }
 
-        private const string BasePath = "D:\\synthesis_projects\\synthesis\\"; // TODO determine this automatically somehow
-
         public string Path { get; private set; }
 
         public FilePermissions FilePerms { get; private set; }
 
         public void Load()
         {
-            data = File.ReadAllBytes(BasePath + Path);
+            data = File.ReadAllBytes(FileSystem.BasePath + Path);
             RawStream = new MemoryStream();                 // create expandable memory stream
             RawStream.Write(data, 0, data.Length);
             RawStream.Position = 0;

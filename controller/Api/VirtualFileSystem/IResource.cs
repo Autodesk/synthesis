@@ -8,7 +8,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public Guid Owner { get; internal set; }
 
-        public Permissions Permissions { get; internal set;  }
+        public Permissions Permissions { get; internal set; }
 
         public Directory Parent { get; internal set; }
 
