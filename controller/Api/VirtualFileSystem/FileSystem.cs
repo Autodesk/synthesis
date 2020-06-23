@@ -55,6 +55,30 @@ namespace SynthesisAPI.VirtualFileSystem
             return parent_dir.AddEntry(resource);
         }
 
+        public static void RemoveResource(string path, string name, Guid guid)
+        {
+            if (PathToDepth(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception();
+            }
+
+            Directory parent_dir = GetDirectory(path);
+
+            parent_dir.RemoveEntry(name, guid);
+        }
+
+        public static bool ResourceExists(string path, string name)
+        {
+            if (PathToDepth(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception();
+            }
+
+            Directory parent_dir = GetDirectory(path);
+
+            return parent_dir.EntryExists(name);
+        }
+
         public static int PathToDepth(string path)
         {
             return path.Split('/').Length;

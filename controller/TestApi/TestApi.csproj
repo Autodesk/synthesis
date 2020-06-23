@@ -52,6 +52,7 @@
     <Compile Include="TestJSONObject.cs" />
     <Compile Include="TestVirtualFileSystem.cs" />
     <Compile Include="TestXMLObject.cs" />
+    <Compile Include="TestPreferenceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

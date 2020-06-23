@@ -122,6 +122,32 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[value.Name];
         }
 
+        public void RemoveEntry(string key) => RemoveEntry(key, Guid.Empty);
+
+        public void RemoveEntry(string key, Guid guid)
+        {
+            if (key.Equals("") || key.Equals(".") || key.Equals(".."))
+            {
+                throw new Exception();
+            }
+
+            if (Entries.ContainsKey(key))
+            {
+                if (Entries[key].Permissions == Permissions.PublicWrite || Entries[key].Owner == guid)
+                {
+                    Entries[key].Delete();
+                    Entries.Remove(key);
+                }
+                else
+                    throw new Exception(string.Format("\"{0}\" doesn't have permission to delete \"{1}\"", guid, key));
+            }
+        }
+
+        public bool EntryExists(string key)
+        {
+            return Entries.ContainsKey(key);
+        }
+
         public IResource this[string name]
         {
             get => TryGetEntry(name);
