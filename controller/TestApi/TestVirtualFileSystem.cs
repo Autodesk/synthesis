@@ -18,15 +18,17 @@ namespace TestApi
 
             Console.WriteLine(ReferenceEquals(test_dir, dir));
 
-            Directory root = (Directory)test_dir.Traverse("../..");
+            Directory parent = (Directory)FileSystem.Traverse("/modules");
 
-            Console.WriteLine(ReferenceEquals(root, FileSystem.RootNode));
+            Directory test_parent = (Directory)test_dir.Traverse("..");
+
+            Console.WriteLine(ReferenceEquals(parent, test_parent));
         }
 
         public static void TestRawEntry()
         {
             RawEntry raw_entry = new RawEntry("test.txt", Program.TestGuid, Permissions.PublicRead, "files/test.txt");
-            FileSystem.AddResource("/modules", raw_entry).Load();
+            FileSystem.AddResource("/modules/", raw_entry).Load();
 
             string str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
             Console.WriteLine(str);
@@ -38,10 +40,30 @@ namespace TestApi
             Console.WriteLine(str);
         }
 
+        public static void TestMaxDepth()
+        {
+            string path = "";
+            try
+            {
+                for (var i = 0; i < FileSystem.MaxDirectoryDepth; i++)
+                {
+                    Directory dir = new Directory("directory" + i, Program.TestGuid, Permissions.PublicRead);
+                    FileSystem.AddResource(path, dir);
+                    path += "/" + dir.Name;
+                }
+                Console.WriteLine("Failure");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Success");
+            }
+        }
+
         public static void Test()
         {
             TestDirectory();
             TestRawEntry();
+            TestMaxDepth();
         }
     }
 }

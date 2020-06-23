@@ -2,17 +2,19 @@
 using System.IO;
 using System.Reflection;
 
+#nullable enable
+
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
     /// A virtual file system that manages resources and assets as a tree
     /// </summary>
-    public static class FileSystem // TODO static or singleton pattern?
+    public static class FileSystem
     {
         /// <summary>
         /// Maximum number of nested directories allowed
         /// </summary>
-        public const int MaxDirectoryDepth = 50; // TODO pick maximum directory depth
+        public const int MaxDirectoryDepth = 30;
 
         /// <summary>
         /// Base path for files on disk
@@ -27,16 +29,16 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="path"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        public static TResource AddResource<TResource>(string path, TResource resource) where TResource : IResource
+        public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IResource
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
                 throw new Exception();
             }
 
-            Directory parent_dir = (Directory)Traverse(path);
+            Directory? parent_dir = Traverse<Directory>(path);
 
-            return parent_dir.AddEntry<TResource>(resource);
+            return parent_dir?.AddResource<TResource>(resource);
         }
 
         /// <summary>
@@ -45,16 +47,16 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="path"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        public static IResource AddResource(string path, IResource resource)
+        public static IResource? AddResource(string path, IResource resource)
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
                 throw new Exception();
             }
 
-            Directory parent_dir = (Directory)Traverse(path);
+            Directory? parent_dir = Traverse<Directory>(path);
 
-            return parent_dir.AddEntry(resource);
+            return parent_dir?.AddResource(resource);
         }
 
         public static void RemoveResource(string path, string name, Guid guid)
@@ -92,14 +94,24 @@ namespace SynthesisAPI.VirtualFileSystem
         }
 
         /// <summary>
-        /// Initialize the file system. This must be done before it can be used
+        /// Traverse the file system
         /// </summary>
-        public static void Init()
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static TResource? Traverse<TResource>(string path) where TResource : class, IResource
         {
-            RootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-            RootNode.AddEntry(new Directory("environment"));
-            RootNode.AddEntry(new Directory("modules"));
-            RootNode.AddEntry(new Directory("temp"));
+            return Instance.RootNode.Traverse<TResource>(path);
+        }
+
+
+        /// <summary>
+        /// Traverse the file system
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IResource? Traverse(string[] path)
+        {
+            return Instance.RootNode.Traverse(path);
         }
 
         /// <summary>
@@ -107,24 +119,29 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IResource Traverse(string[] path)
+        public static IResource? Traverse(string path)
         {
-            return RootNode.Traverse(path);
+            return Instance.RootNode.Traverse(path);
         }
 
-        /// <summary>
-        /// Traverse the file system
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static IResource Traverse(string path)
+        private class Inner
         {
-            return RootNode.Traverse(path);
+            public Inner()
+            {
+                RootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
+                RootNode.AddResource(new Directory("environment"));
+                RootNode.AddResource(new Directory("modules"));
+                RootNode.AddResource(new Directory("temp"));
+            }
+
+            /// <summary>
+            /// The root of the file system
+            /// </summary>
+            public Directory RootNode { get; private set; }
+
+            internal static readonly Inner instance = new Inner();
         }
 
-        /// <summary>
-        /// The root of the file system
-        /// </summary>
-        public static Directory RootNode { get; private set; }
+        private static Inner Instance { get { return Inner.instance; } }
     }
 }

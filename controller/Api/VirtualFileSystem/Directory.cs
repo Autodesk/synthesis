@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 
+#nullable enable
+
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
@@ -28,7 +30,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="subpaths"></param>
         /// <returns></returns>
-        public IResource Traverse(string[] subpaths)
+        public IResource? Traverse(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -81,23 +83,29 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public IResource Traverse(string path)
+        public IResource? Traverse(string path)
         {
-            return Traverse(path.Split('/')); // TODO should we trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
+            if (path.Length > 0 && path[path.Length - 1] == '/')
+            {
+                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
+                path = path.Remove(path.Length - 1, 1);
+            }
+            return Traverse(path.Split('/'));
         }
 
-        public IResource TryGetEntry(string key) // TODO make private?
+        public TResource? Traverse<TResource>(string path) where TResource : class, IResource
+        {
+            if (path[path.Length - 1] == '/')
+            {
+                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
+                path = path.Remove(path.Length - 1, 1);
+            }
+            return (TResource?)Traverse(path.Split('/'));
+        }
+
+        private IResource? TryGetEntry(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
-        }
-
-        public IResource GetEntry(string key) // TODO remove?
-        {
-            if (!Entries.ContainsKey(key))
-            {
-                throw new Exception();
-            }
-            return Entries[key];
         }
 
         /// <summary>
@@ -106,9 +114,9 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <typeparam name="TResource"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public TResource AddEntry<TResource>(TResource value) where TResource : IResource // TODO rename to AddResource?
+        public TResource AddResource<TResource>(TResource value) where TResource : IResource
         {
-            return (TResource)AddEntryImpl(value);
+            return (TResource)AddResourceImpl(value);
         }
 
         /// <summary>
@@ -116,12 +124,12 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private IResource AddEntry(IResource value)
+        private IResource AddResource(IResource value)
         {
-            return AddEntryImpl(value);
+            return AddResourceImpl(value);
         }
 
-        private IResource AddEntryImpl(IResource value)
+        private IResource AddResourceImpl(IResource value)
         {
             if (Entries.ContainsKey(value.Name))
             {
@@ -171,15 +179,12 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries.ContainsKey(key);
         }
 
-        public IResource this[string name]
+        public IResource? this[string name]
         {
             get => TryGetEntry(name);
             set => Entries[name] = value;
         }
 
-        public override void Delete()
-        {
-            // TODO
-        }
+        public override void Delete() { }
     }
 }

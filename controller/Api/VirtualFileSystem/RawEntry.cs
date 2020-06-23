@@ -65,14 +65,12 @@ namespace SynthesisAPI.VirtualFileSystem
             }
         }
 
-        public override void Delete()
-        {
-            // TODO
-        }
-
         public void Dispose()
         {
-            // TODO
+            if (RawStream != null)
+            {
+                RawStream.Dispose();
+            }
         }
 
         private MemoryStream? RawStream;

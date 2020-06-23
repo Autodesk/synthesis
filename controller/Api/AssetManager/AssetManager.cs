@@ -118,7 +118,7 @@ namespace SynthesisAPI.AssetManager
                     }
 
                     PlainTextAsset new_asset = new PlainTextAsset(args[0], args[1], args[2]);
-                    return (IAsset)new_asset.LoadAsset(path, data);
+                    return (IAsset)FileSystem.AddResource(path, new_asset.Load(data));
                 });
 
                 RegisterAssetType("text/xml", (string path, byte[] data, dynamic[] args) =>
@@ -129,7 +129,7 @@ namespace SynthesisAPI.AssetManager
                     }
 
                     XMLAsset new_asset = new XMLAsset(args[0], args[1], args[2]);
-                    return (IAsset)new_asset.LoadAsset(path, data);
+                    return (IAsset)FileSystem.AddResource(path, new_asset.Load(data));
                 });
 
                 RegisterAssetType("text/json", (string path, byte[] data, dynamic[] args) =>
@@ -140,7 +140,7 @@ namespace SynthesisAPI.AssetManager
                     }
 
                     JSONAsset new_asset = new JSONAsset(args[0], args[1], args[2]);
-                    return (IAsset)new_asset.LoadAsset(path, data);
+                    return (IAsset)FileSystem.AddResource(path, new_asset.Load(data));
                 });
             }
             

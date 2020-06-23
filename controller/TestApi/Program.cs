@@ -16,7 +16,6 @@ namespace TestApi
         {
             Console.WriteLine("Tests started\n=============================================");
 
-            FileSystem.Init();
             TestVirtualFileSystem.Test();
 
             TestAssetManager.Test();

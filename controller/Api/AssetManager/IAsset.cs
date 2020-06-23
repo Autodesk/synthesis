@@ -19,15 +19,4 @@ namespace SynthesisAPI.AssetManager
         /// <returns></returns>
         public IResource Load(byte[] data);
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public static class IAssetExtension // TODO should this really be an extension method?
-    {
-        public static IResource LoadAsset(this IAsset asset, string path, byte[] data)
-        {
-            return FileSystem.AddResource(path, asset.Load(data));
-        }
-    }
 }
