@@ -41,7 +41,7 @@ try:
                 ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
 
     # Basic Fusion 360 Command Base samples
-    from .commands.ExportCommand import ExportCommand
+    from .commands.ExportCommand import ExportCommand, exportRobot
     from .commands.SampleCommand2 import SampleCommand2
 
     # Palette Command Base samples
