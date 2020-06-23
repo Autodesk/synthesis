@@ -8,29 +8,23 @@ ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with 
 
 def fillComponents(ao, components):
     root = ao.design.rootComponent
-    # components.header.uuid = apper.Fusion360Utilities.get_a_uuid()
-    # components.partNumber = ao.design.partNumber
-    # components.boundingBox = ao.design.boundingBox
-    # components.materialId = item_id(ao.design.material, ATTR_GROUP_NAME)
-    # components.physicalProperties = ao.design.physicalProperties
-    # components.meshBodies = ao.design.meshBodies
 
     for childComponent in range(0, root.allOccurrences.count):
-        # occurence = root.allOccurrences.item(childComponent)
-        # components = occurence.component
+        # traverse through occurrences to get component
+        occurrence = root.allOccurrences.item(childComponent)
+        component = occurrence.component
+        material = component.material
+
+        # components.header.uuid = item_id(component, ATTR_GROUP_NAME)
         components = ao.design.allComponents
-        #components.partNumber = ao.design.partNumber
-        #print(components.partNumber)
-        # protoOccur.isGrounded = occur.isGrounded
-        # fillMatrix3D(occur.transform, protoOccur.transform)
-
-        # protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
-        #todo fill componentBuf here?
-
-    # for childOccur in occur.childOccurrences:
-    #     fillOccurrence(childOccur, protoOccur.childOccurrences.add())
-    #     occurence = root.allOccurrences.item(childComponent)
-    #     component = occurence.component
+        components.partNumber = component.partNumber
+        components.boundingBox = component.boundingBox
+        # components.materialId = component.materialId
+        #components.materialId = item_id(material.name, ATTR_GROUP_NAME)
+        components.physicalProperties = component.physicalProperties
+        components.meshbodies = component.meshBodies
+        
+        print(components)
 
 def fillJoints(ao, joints):
     pass #todo
