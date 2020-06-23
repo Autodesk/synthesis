@@ -16,26 +16,36 @@ def fillComponent(childComponent, component):
         component.header.description = childComponent.description
         component.header.revisionId = childComponent.revisionId
         component.partNumber = childComponent.partNumber
-        fillBoundingBox(component.boundingBox, childComponent.boundingBox)
+        fillBoundingBoxes(childComponent.boundingBox, component.boundingBox)
         component.materialId = childComponent.material.id
-        fillPhysicalProperties(component.physicalProperties, childComponent.physicalProperties)
-        # components.meshbodies = childComponent.meshBodies
+        fillPhysicalProperties(childComponent.physicalProperties, component.physicalProperties)
+        # fillMeshBodies(component.meshBodies, childComponent.meshBodies)
 
-def fillBoundingBox(boundingBoxInput, boundingBoxOutput):
-    fillVector3D(boundingBoxInput.maxPoint, boundingBoxOutput.maxPoint)
-    fillVector3D(boundingBoxInput.minPoint, boundingBoxOutput.minPoint)
+def fillBoundingBoxes(fusionBoundingBox, protoBoundingBox):
+    fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
+    fillVector3D(fusionBoundingBox.minPoint, protoBoundingBox.minPoint)
 
-def fillVector3D(input, output):
-    input.x = output.x
-    input.y = output.y
-    input.z = output.z
+def fillVector3D(fusionVector3D, protoVector3D):
+    protoVector3D.x = fusionVector3D.x
+    protoVector3D.y = fusionVector3D.y
+    protoVector3D.z = fusionVector3D.z
 
-def fillPhysicalProperties(physicalInput, physicalOutput):
-    physicalInput.density = physicalOutput.density
-    physicalInput.mass = physicalOutput.mass
-    physicalInput.volume = physicalOutput.volume
-    physicalInput.area = physicalOutput.area
-    fillVector3D(physicalInput.centerOfMass, physicalOutput.centerOfMass)
+def fillPhysicalProperties(fusionPhysical, protoPhysical):
+    protoPhysical.density = fusionPhysical.density
+    protoPhysical.mass = fusionPhysical.mass
+    protoPhysical.volume = fusionPhysical.volume
+    protoPhysical.area = fusionPhysical.area
+    fillVector3D(fusionPhysical.centerOfMass, protoPhysical.centerOfMass)
+
+def fillMeshBodies(fusionMesh, protoMesh):
+    # protoMesh.header.uuid = item_id(fusionMesh, ATTR_GROUP_NAME)
+    # protoMesh.header.name = fusionMesh.name
+    fusionMesh.appearanceId = protoMesh.appearance.id
+    protoMesh.materialId = fusionMesh.material.id
+    fillPhysicalProperties(protoMesh.physicalProperties, fusionMesh.physicalProperties)
+    fillBoundingBoxes(protoMesh.boundingBox, fusionMesh.boundingBox)
+    # triangle mesh
+
 
 def fillJoints(ao, joints):
     pass #todo
