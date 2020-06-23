@@ -3,6 +3,8 @@ import adsk, adsk.core, adsk.fusion, traceback
 import apper
 from apper import AppObjects, item_id
 from ..proto.synthesis_importbuf_pb2 import *
+from google.protobuf.json_format import MessageToDict, MessageToJson
+from ..utils.DebugHierarchy import printHierarchy
 
 ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
 
@@ -51,23 +53,32 @@ def fillMeshBodies(fusionMesh, protoMesh):
 
 def getJointedOccurrenceUUID(fusionJoint, occur):
     if occur is None: 
-        return item_id(fusionJoint, ATTR_GROUP_NAME)
+        return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME) # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
     return item_id(occur, ATTR_GROUP_NAME)
 
 def getJointOrigin(fusionJoint):
-    
-
+    geometryOrOrigin = fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo
+    if geometryOrOrigin.objectType == 'adsk::fusion::JointGeometry':
+        return geometryOrOrigin.origin
+    else: # adsk::fusion::JointOrigin 
+        origin = geometryOrOrigin.geometry.origin
+        return Point3D.create( #todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
+            origin.x + geometryOrOrigin.offsetX.value,
+            origin.y + geometryOrOrigin.offsetY.value,
+            origin.z + geometryOrOrigin.offsetZ.value)
 
 def fillJoint(fusionJoint, protoJoint):
-    protoJoint.header.uuid = item_id(occur, ATTR_GROUP_NAME)
+    protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
     protoJoint.header.name = fusionJoint.name
-    fillVector3D(fusionJoint, protoJoint.origin)
+    fillVector3D(getJointOrigin(fusionJoint), protoJoint.origin)
     protoJoint.isLocked = fusionJoint.isLocked 
     protoJoint.isSuppressed = fusionJoint.isSuppressed 
 
     # If occurrenceOne or occurrenceTwo is null, the joint is jointed to the root component
     protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceOne)
     protoJoint.occurrenceTwoUUID = getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceTwo)
+
+    #todo: fillJointMotion
 
 def isJointCorrupted(fusionJoint):
     if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
@@ -107,7 +118,7 @@ def fillAppearance(childAppearance, appearances):
     # add protobuf def: AppearanceProperties properties
 
 def fillMatrix3D(transform, protoTransform):
-    pass #todo
+    protoTransform.cells.extend(transform.asArray())
 
 def fillOccurrence(occur, protoOccur):
     protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
@@ -116,7 +127,6 @@ def fillOccurrence(occur, protoOccur):
     fillMatrix3D(occur.transform, protoOccur.transform)
 
     protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
-    #todo fill componentBuf here?
 
     for childOccur in occur.childOccurrences:
         fillOccurrence(childOccur, protoOccur.childOccurrences.add())
@@ -125,7 +135,6 @@ def fillFakeRootOccurrence(rootComponent, protoOccur):
     protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
     protoOccur.header.name = rootComponent.name
     protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
-    #todo fill componentBuf here?
 
     for childOccur in rootComponent.occurrences:
         fillOccurrence(childOccur, protoOccur.childOccurrences.add())
@@ -157,27 +166,6 @@ def fillDocument(ao, protoDocument):
     fillDocumentMeta(ao, protoDocument.documentMeta)
     fillDesign(ao, protoDocument.design)
 
-def printTabs(num):
-    for i in range(num):
-        print("    ", end ="")
-
-def printOccurrence(occur, depth):
-    printTabs(depth)
-    print("[O] "+occur.name)
-    printComponent(occur.component, depth)
-
-def printComponent(comp, depth):
-    printTabs(depth)
-    print("[C] "+comp.name)
-    if comp.joints.count > 0:
-        printTabs(depth)
-        print("Joints")
-        for joint in comp.joints:
-            printTabs(depth)
-            print("| "+joint.name)
-    for occur in comp.occurrences:
-        printOccurrence(occur, depth+1)
-
 def exportRobot():
     ao = AppObjects()
 
@@ -186,10 +174,10 @@ def exportRobot():
     #     return
 
     protoDocument = Document()
-    # fillDocument(ao, document)
-    print("-------------------------------")
-    printComponent(ao.root_comp, 0)
-    print("")
+    fillDocument(ao, protoDocument)
+    protoDocumentAsDict = MessageToDict(protoDocument)
+    # printHierarchy(ao.root_comp)
+    print() # put breakpoint here
 
 
 class ExportCommand(apper.Fusion360CommandBase):
