@@ -57,6 +57,14 @@ namespace SynthesisAPI.PreferenceManager
 
         #region IO
 
+        /// <summary>
+        /// Loads a JSON file that stores preference data
+        /// TODO: Attempt deserializing all of the data at once
+        /// TODO: Re-evalute the visibility of this function
+        /// </summary>
+        /// <param name="file">Filename of the JSON file containing the data</param>
+        /// <param name="overrideChanges">Load regardless of unsaved data</param>
+        /// <returns>Whether or not the load executed successfully</returns>
         public static bool Load(string file, bool overrideChanges = false)
         {
             if (!overrideChanges && modified)
@@ -90,6 +98,13 @@ namespace SynthesisAPI.PreferenceManager
             return true;
         }
 
+        /// <summary>
+        /// Saves a JSON file with preference data
+        /// TODO: Attempt serializing all of the data at once
+        /// TODO: Re-evalute the visibility of this function
+        /// </summary>
+        /// <param name="file">Filename to write JSON data to</param>
+        /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save(string file)
         {
             Dictionary<string, string> firstWaveSerialization = new Dictionary<string, string>();
