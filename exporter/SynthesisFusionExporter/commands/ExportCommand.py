@@ -15,22 +15,33 @@ def fillComponents(ao, components):
         component = occurrence.component
         material = component.material
 
-        # components.header.uuid = item_id(component, ATTR_GROUP_NAME)
         components = ao.design.allComponents
+        # components.header.uuid = item_id(components, ATTR_GROUP_NAME)
         components.partNumber = component.partNumber
         components.boundingBox = component.boundingBox
+        # TODO add back in once materials are configured
         # components.materialId = component.materialId
-        #components.materialId = item_id(material.name, ATTR_GROUP_NAME)
+        # components.materialId = item_id(material.name, ATTR_GROUP_NAME)
         components.physicalProperties = component.physicalProperties
         components.meshbodies = component.meshBodies
         
-        print(components)
+        print(components) # for debugging to stop here
 
 def fillJoints(ao, joints):
     pass #todo
 
 def fillMaterials(ao, materials):
-    pass #todo
+    root = ao.design.rootComponent
+
+    for childMaterial in ao.design.materials:
+        fillMaterial(childMaterial, materials.add())
+        # print(components) # for debugging to stop here
+        print(childMaterial)
+
+def fillMaterial(material, materials):
+    materials.id = material.id
+    materials.name = material.name
+    materials.appearanceId = material.appearance.id
 
 def fillAppearances(ao, appearances):
     pass #todo
