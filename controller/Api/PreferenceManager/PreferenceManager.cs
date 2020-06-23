@@ -1,14 +1,19 @@
 ﻿using Newtonsoft.Json;
-using SynthesisAPI.VirtualFileSystem;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.VirtualFileSystem;
 
 namespace SynthesisAPI.PreferenceManager
 {
     public static class PreferenceManager
     {
-        private static Dictionary<string, Dictionary<string, object>> preferences;
+        private static Dictionary<Guid, Dictionary<string, object>> preferences;
+
+        private static (string path, string file) VirtualFilePath = ("/modules", "preferences.json");
+        private static string ActualFilePath = FileSystem.BasePath + "files" + Path.DirectorySeparatorChar + "preferences.json";
+        private static Guid MyGuid = Guid.NewGuid();
 
         public static string BasePath {
             get => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + System.IO.Path.DirectorySeparatorChar
@@ -17,12 +22,12 @@ namespace SynthesisAPI.PreferenceManager
 
         static PreferenceManager()
         {
-            preferences = new Dictionary<string, Dictionary<string, object>>();
+            preferences = new Dictionary<Guid, Dictionary<string, object>>();
         }
 
         #region Accessing Preferences
 
-        public static void SetPreference<TValueType>(string owner, string key, TValueType value)
+        public static void SetPreference<TValueType>(Guid owner, string key, TValueType value)
         {
             if (!preferences.ContainsKey(owner)) 
                 preferences[owner] = new Dictionary<string, object>();
@@ -30,7 +35,26 @@ namespace SynthesisAPI.PreferenceManager
             modified = true;
         }
 
-        public static TValueType GetPreference<TValueType>(string owner, string key)
+        public static object GetPreference(Guid owner, string key)
+        {
+            if (preferences.ContainsKey(owner))
+            {
+                if (preferences[owner].ContainsKey(key))
+                {
+                    return preferences[owner][key];
+                }
+                else
+                {
+                    throw new ArgumentException(string.Format("There is no key of value \"{0}\" under owner \"{1}\"", key, owner));
+                }
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("There is no owner of value \"{0}\"", owner));
+            }
+        }
+
+        public static TValueType GetPreference<TValueType>(Guid owner, string key)
         {
             if (preferences.ContainsKey(owner))
             {
@@ -47,7 +71,7 @@ namespace SynthesisAPI.PreferenceManager
             }
         }
 
-        public static void ClearPreferences(string owner)
+        public static void ClearPreferences(Guid owner)
         {
             preferences[owner] = new Dictionary<string, object>();
             modified = true;
@@ -62,36 +86,32 @@ namespace SynthesisAPI.PreferenceManager
         /// TODO: Attempt deserializing all of the data at once
         /// TODO: Re-evalute the visibility of this function
         /// </summary>
-        /// <param name="file">Filename of the JSON file containing the data</param>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
-        public static bool Load(string file, bool overrideChanges = false)
+        public static bool Load(bool overrideChanges = false)
         {
             if (!overrideChanges && modified)
                 return false;
 
-            if (!File.Exists(BasePath + file))
-                return false;
-
-            string jsonData;
-            
+            JSONAsset asset;
             try
             {
-                FileStream fs = new FileStream(BasePath + file, FileMode.Open);
-                StreamReader sr = new StreamReader(fs);
-                jsonData = sr.ReadToEnd();
-                sr.Close();
-                fs.Close();
+                if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
+                {
+                    asset = AssetManager.AssetManager.GetAsset<JSONAsset>(VirtualFilePath.path + '/' + VirtualFilePath.file);
+                }
+                else if (File.Exists(ActualFilePath))
+                {
+                    byte[] data = File.ReadAllBytes(ActualFilePath);
+                    asset = AssetManager.AssetManager.Import<JSONAsset>("text/json", VirtualFilePath.path, data, VirtualFilePath.file, MyGuid, Permissions.Private);
+                }
+                else
+                {
+                    return false;
+                }
             } catch (Exception e) { return false; }
 
-            Dictionary<string, string> firstWaveDeserialization = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-
-            preferences.Clear();
-
-            foreach (var kvp in firstWaveDeserialization)
-            {
-                preferences.Add(kvp.Key, JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value));
-            }
+            preferences = asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
             
             SavedOrReset();
 
@@ -103,32 +123,21 @@ namespace SynthesisAPI.PreferenceManager
         /// TODO: Attempt serializing all of the data at once
         /// TODO: Re-evalute the visibility of this function
         /// </summary>
-        /// <param name="file">Filename to write JSON data to</param>
         /// <returns>Whether or not the save executed successfully</returns>
-        public static bool Save(string file)
+        public static bool Save()
         {
-            Dictionary<string, string> firstWaveSerialization = new Dictionary<string, string>();
-
-            foreach (var kvp in preferences)
-            {
-                string a = JsonConvert.SerializeObject(kvp.Value);
-                firstWaveSerialization.Add(kvp.Key, a);
-            }
-
             try
             {
-                FileStream fs = new FileStream(BasePath + file, FileMode.Create);
+                FileSystem.RemoveResource(VirtualFilePath.path, VirtualFilePath.file, MyGuid);
+                FileStream fs = new FileStream(ActualFilePath, FileMode.Create);
                 StreamWriter sw = new StreamWriter(fs);
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(sw, firstWaveSerialization);
+                serializer.Serialize(sw, preferences);
                 sw.Flush();
                 sw.Close();
                 fs.Close();
-            } catch (Exception e)
-            {
-                return false;
-            }
+            } catch (Exception e) { return false; }
 
             SavedOrReset();
 
