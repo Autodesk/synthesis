@@ -18,7 +18,7 @@ def fillComponent(childComponent, component):
         component.partNumber = childComponent.partNumber
         fillBoundingBox(component.boundingBox, childComponent.boundingBox)
         component.materialId = childComponent.material.id
-        # components.physicalProperties = childComponent.physicalProperties
+        fillPhysicalProperties(component.physicalProperties, childComponent.physicalProperties)
         # components.meshbodies = childComponent.meshBodies
 
 def fillBoundingBox(boundingBoxInput, boundingBoxOutput):
@@ -29,6 +29,13 @@ def fillVector3D(input, output):
     input.x = output.x
     input.y = output.y
     input.z = output.z
+
+def fillPhysicalProperties(physicalInput, physicalOutput):
+    physicalInput.density = physicalOutput.density
+    physicalInput.mass = physicalOutput.mass
+    physicalInput.volume = physicalOutput.volume
+    physicalInput.area = physicalOutput.area
+    fillVector3D(physicalInput.centerOfMass, physicalOutput.centerOfMass)
 
 def fillJoints(ao, joints):
     pass #todo
