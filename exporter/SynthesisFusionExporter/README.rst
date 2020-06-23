@@ -32,3 +32,8 @@ Installation
 - Click on SynthesisFusionExporter which will appear in the My Add-ins list
 - Click the "Edit" button to open the VSCode editor
 - To debug the Add-in, go back to Fusion and click on the dropdown next to the "Run" button, then click "Debug"
+
+Troubleshooting
+^^^^^^^^^^^^^^^
+- Restart Fusion 360
+- Make sure the protobuf python file has generated in the `proto` subdirectory
