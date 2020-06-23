@@ -16,10 +16,19 @@ def fillComponent(childComponent, component):
         component.header.description = childComponent.description
         component.header.revisionId = childComponent.revisionId
         component.partNumber = childComponent.partNumber
-        # components.boundingBox = childComponent.boundingBox
+        fillBoundingBox(component.boundingBox, childComponent.boundingBox)
         component.materialId = childComponent.material.id
         # components.physicalProperties = childComponent.physicalProperties
         # components.meshbodies = childComponent.meshBodies
+
+def fillBoundingBox(boundingBoxInput, boundingBoxOutput):
+    fillVector3D(boundingBoxInput.maxPoint, boundingBoxOutput.maxPoint)
+    fillVector3D(boundingBoxInput.minPoint, boundingBoxOutput.minPoint)
+
+def fillVector3D(input, output):
+    input.x = output.x
+    input.y = output.y
+    input.z = output.z
 
 def fillJoints(ao, joints):
     pass #todo
