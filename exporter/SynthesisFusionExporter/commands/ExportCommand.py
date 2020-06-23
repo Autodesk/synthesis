@@ -20,8 +20,9 @@ def fillComponent(childComponent, component):
         component.materialId = childComponent.material.id
         fillPhysicalProperties(childComponent.physicalProperties, component.physicalProperties)
         
-        for childMesh in childComponent.meshBodies:
-            fillMeshBodies(childMesh, component.meshBodies.add())
+        # ADD: fillMeshBodies ---> see method
+        # for childMesh in childComponent.meshBodies:
+        #     fillMeshBodies(childMesh, component.meshBodies.add())
 
 def fillBoundingBoxes(fusionBoundingBox, protoBoundingBox):
     fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
@@ -46,8 +47,7 @@ def fillMeshBodies(fusionMesh, protoMesh):
     protoMesh.materialId = fusionMesh.material.id
     fillPhysicalProperties(fusionMesh.physicalProperties, protoMesh.physicalProperties)
     fillBoundingBoxes(fusionMesh.boundingBox, protoMesh.boundingBox)
-    # triangle mesh
-
+    # ADD: triangleMesh
 
 def fillJoints(ao, joints):
     pass #todo
@@ -60,9 +60,13 @@ def fillMaterial(childMaterial, materials):
     materials.id = childMaterial.id
     materials.name = childMaterial.name
     materials.appearanceId = childMaterial.appearance.id
-    materials.properties.density
-    materials.properties
-    # add protobuf def: MaterialProperties properties
+    # add protobuf def: MaterialProperties properties 
+    # fillMaterialsProperties()
+
+def fillMaterialsProperties(fusionMaterials, protoMaterials):
+    protoMaterials.density = fusionMaterials.density
+    protoMaterials.yieldStrength = fusionMaterials.yieldStrength
+    protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 def fillAppearances(ao, appearances):
     for childAppearance in ao.design.appearances:
