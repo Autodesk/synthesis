@@ -7,32 +7,16 @@ from ..proto.synthesis_importbuf_pb2 import *
 ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
 
 def fillComponents(ao, components):
-    root = ao.design.rootComponent
-
-    for childComponent in range(0, root.allOccurrences.count):
-        # traverse through occurrences to get component
-        occurrence = root.allOccurrences.item(childComponent)
-        component = occurrence.component
-        components = ao.design.allComponents
-        material = component.material
-
-        components.partNumber = component.partNumber
-        components.boundingBox = component.boundingBox
-        components.materialId = component.material.id
-        components.physicalProperties = component.physicalProperties
-        components.meshbodies = component.meshBodies
-        # fillComponent(childComponent, component)
-
-        # ao.design ---> accesses design properties
-        # component.feature ---> accesses component properties
+    for component in ao.design.allComponents:
+        fillComponent(component, components.add())
 
 def fillComponent(childComponent, components):
         # components.header.uuid = item_id(components, ATTR_GROUP_NAME)
         components.partNumber = childComponent.partNumber
-        components.boundingBox = childComponent.boundingBox
+        # components.boundingBox = childComponent.boundingBox
         components.materialId = childComponent.material.id
-        components.physicalProperties = childComponent.physicalProperties
-        components.meshbodies = childComponent.meshBodies
+        # components.physicalProperties = childComponent.physicalProperties
+        # components.meshbodies = childComponent.meshBodies
 
 def fillJoints(ao, joints):
     pass #todo
@@ -45,6 +29,8 @@ def fillMaterial(childMaterial, materials):
     materials.id = childMaterial.id
     materials.name = childMaterial.name
     materials.appearanceId = childMaterial.appearance.id
+    materials.properties.density
+    materials.properties
     # add protobuf def: MaterialProperties properties
 
 def fillAppearances(ao, appearances):
