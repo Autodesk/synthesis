@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SynthesisAPI.AssetManager
 {
+    /// <summary>
+    /// Representation of a JSON asset
+    /// </summary>
     public class JSONAsset : Asset
     {
         public JSONAsset(string name, Guid owner, Permissions perm)
@@ -42,9 +45,7 @@ namespace SynthesisAPI.AssetManager
             return obj;
         }
 
-        public void Delete()
-        {
-        }
+        public void Delete() { }
 
         public override IResource Load(byte[] data)
         {

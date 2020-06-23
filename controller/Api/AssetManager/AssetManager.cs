@@ -7,34 +7,103 @@ using SynthesisAPI.VirtualFileSystem;
 
 namespace SynthesisAPI.AssetManager
 {
+    /// <summary>
+    /// API for managing asset types and importing and fetching loaded assets
+    /// </summary>
     public static class AssetManager
     {
+        /// <summary>
+        /// Asset-type-specific function delegate used to process asset data on import
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public delegate IAsset HandlerFunc(string path, byte[] data, params dynamic[] args);
 
+        /// <summary>
+        /// Register a handler for importing a new type of asset
+        /// </summary>
+        /// <param name="asset_type"></param>
+        /// <param name="handler"></param>
         public static void RegisterAssetType(string asset_type, HandlerFunc handler) =>
             Instance.RegisterAssetType(asset_type, handler);
 
+        /// <summary>
+        /// Register a handler for importing a new type of asset
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="subtype"></param>
+        /// <param name="handler"></param>
         public static void RegisterAssetType(string type, string subtype, HandlerFunc handler) =>
             Instance.RegisterAsset(type, subtype, handler);
 
+        /// <summary>
+        /// Fetch an Asset from the virtual file system
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static IAsset GetAsset(string path) =>
             Instance.GetAsset(path);
 
+        /// <summary>
+        /// Fetch an Asset from the virtual file system
+        /// </summary>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static TAsset GetAsset<TAsset>(string path) where TAsset : class, IAsset =>
             (TAsset) Instance.GetAsset(path);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system
+        /// </summary>
+        /// <param name="asset_type"></param>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static IAsset Import(string asset_type, string path, byte[] data, params dynamic[] args) =>
             Instance.Import(asset_type, path, data, args);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system
+        /// </summary>
+        /// <param name="asset_type"></param>
+        /// <param name="path"></param>
+        /// <param name="stream"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static IAsset Import(string asset_type, string path, Stream stream, params dynamic[] args) =>
             Instance.Import(asset_type, path, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()), args);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system
+        /// </summary>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <param name="asset_type"></param>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static TAsset Import<TAsset>(string asset_type, string path, byte[] data, params dynamic[] args) where TAsset : IAsset =>
             (TAsset)Instance.Import(asset_type, path, data, args);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system
+        /// </summary>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <param name="asset_type"></param>
+        /// <param name="path"></param>
+        /// <param name="stream"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static TAsset Import<TAsset>(string asset_type, string path, Stream stream, params dynamic[] args) where TAsset : IAsset =>
             (TAsset)Instance.Import(asset_type, path, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()), args);
 
+        /// <summary>
+        /// Implementation of the public API of the AssetManager
+        /// </summary>
         private class Inner
         {
             public Inner()
@@ -77,6 +146,13 @@ namespace SynthesisAPI.AssetManager
             
             public Dictionary<string, Dictionary<string, HandlerFunc>> AssetHandlers;
 
+            /// <summary>
+            /// Split a media type into type and subtype
+            /// 
+            /// Example: "text/plain" => "test" "plain"
+            /// </summary>
+            /// <param name="asset_type"></param>
+            /// <returns></returns>
             private string[] SplitAssetType(string asset_type)
             {
                 var types = asset_type.Split('/');

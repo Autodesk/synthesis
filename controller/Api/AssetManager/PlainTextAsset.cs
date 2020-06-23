@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SynthesisAPI.AssetManager
 {
+    /// <summary>
+    /// Representation of a plain text asset
+    /// </summary>
     public class PlainTextAsset : Asset
     {
         public PlainTextAsset(string name, Guid owner, Permissions perm)
@@ -26,9 +29,7 @@ namespace SynthesisAPI.AssetManager
             return new StreamReader(stream);
         }
 
-        public void Delete()
-        {
-        }
+        public void Delete() { }
 
         public override IResource Load(byte[] data)
         {

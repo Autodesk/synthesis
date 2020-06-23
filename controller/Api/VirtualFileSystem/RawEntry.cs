@@ -7,6 +7,9 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
+    /// <summary>
+    /// A readable and writable, disk-backed binary resource
+    /// </summary>
     public class RawEntry : Entry, IDisposable
     {
         public enum FilePermissions
@@ -26,6 +29,9 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public FilePermissions FilePerms { get; private set; }
 
+        /// <summary>
+        /// Load the raw data from the source file
+        /// </summary>
         public void Load()
         {
             byte[] data = File.ReadAllBytes(FileSystem.BasePath + Path);
@@ -37,6 +43,9 @@ namespace SynthesisAPI.VirtualFileSystem
             SharedStream = new SharedBinaryStream<MemoryStream>(RawStream, RWLock, DefaultTimeout);
         }
 
+        /// <summary>
+        /// Write the data cache back to the source file
+        /// </summary>
         public void WriteFile()
         {
             if (RWLock != null && RawStream != null && RWLock.TryEnterReadLock(DefaultTimeout))
@@ -71,6 +80,6 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private ReaderWriterLockSlim? RWLock;
 
-        private const int DefaultTimeout = 5000;
+        private const int DefaultTimeout = 5000; // ms
     }
 }

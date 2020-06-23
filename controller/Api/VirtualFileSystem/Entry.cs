@@ -2,7 +2,10 @@
 
 namespace SynthesisAPI.VirtualFileSystem
 {
-    public abstract class Entry : Resource
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class Entry : Resource // TODO is this class unnecessary? 
     {
     }
 }

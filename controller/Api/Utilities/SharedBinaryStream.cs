@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace SynthesisAPI.Utilities
 {
+    /// <summary>
+    /// A thread-dafe binary stream
+    /// </summary>
+    /// <typeparam name="TStream">The type of stream to use</typeparam>
     public class SharedBinaryStream<TStream> where TStream : Stream
     {
         public SharedBinaryStream(TStream stream, ReaderWriterLockSlim lck, int t)

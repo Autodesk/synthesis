@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace SynthesisAPI.Utilities
 {
+    /// <summary>
+    /// A thread-dafe text stream
+    /// </summary>
+    /// <typeparam name="TStream">The type of stream to use</typeparam>
     public class SharedTextStream<TStream> where TStream : Stream
     {
         // TODO ref_count for dispose function?

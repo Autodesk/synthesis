@@ -9,6 +9,9 @@ using System.Xml.Serialization;
 
 namespace SynthesisAPI.AssetManager
 {
+    /// <summary>
+    /// Representation of an XML asset
+    /// </summary>
     public class XMLAsset : Asset
     {
         public XMLAsset(string name, Guid owner, Permissions perm)
@@ -42,9 +45,7 @@ namespace SynthesisAPI.AssetManager
             return obj;
         }
 
-        public void Delete()
-        {
-        }
+        public void Delete() { }
 
         public override IResource Load(byte[] data)
         {
