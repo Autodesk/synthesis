@@ -83,8 +83,6 @@ namespace SynthesisAPI.PreferenceManager
 
         /// <summary>
         /// Loads a JSON file that stores preference data
-        /// TODO: Attempt deserializing all of the data at once
-        /// TODO: Re-evalute the visibility of this function
         /// </summary>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
@@ -120,8 +118,6 @@ namespace SynthesisAPI.PreferenceManager
 
         /// <summary>
         /// Saves a JSON file with preference data
-        /// TODO: Attempt serializing all of the data at once
-        /// TODO: Re-evalute the visibility of this function
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
