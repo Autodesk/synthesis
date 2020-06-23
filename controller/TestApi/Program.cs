@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.VirtualFileSystem;
+using TestApi;
 
-namespace ApiTest
+namespace TestApi
 {
     public class Program
     {
@@ -41,13 +43,37 @@ namespace ApiTest
             Console.WriteLine(str);
         }
 
+        public static void TestSavingPreferences()
+        {
+            PreferenceManager.SetPreference("test_api", "name", "Hunter Barclay");
+            PreferenceManager.SetPreference("test_api", "age", 17);
+            PreferenceManager.SetPreference("test_api", "some_float", 1.5837f);
+            PreferenceManager.Save("test-prefs-2.json");
+        }
+
+        public static void TestLoadingPreferences()
+        {
+            PreferenceManager.SetPreference("test_api", "name", "Gerald");
+            PreferenceManager.Load("test-prefs-2.json", overrideChanges: false);
+            string name = PreferenceManager.GetPreference<string>("test_api", "name");
+            int age = PreferenceManager.GetPreference<int>("test_api", "age");
+            float someFloat = PreferenceManager.GetPreference<float>("test_api", "some_float");
+
+            Console.WriteLine(string.Format("Name: {0}\nAge: {1}\nSome Float: {2}", name, age, someFloat));
+        }
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Tests started\n=============================================");
             FileSystem.Init();
 
-            TestDirectory();
-            TestRawEntry();
+            // VFS Tests don't work because they are configured for someones file directory machine
+            // TestDirectory();
+            // TestRawEntry();
+            TestSavingPreferences();
+            TestLoadingPreferences();
+
+            Console.ReadKey();
         }
     }
 }
