@@ -48,7 +48,14 @@ def fillMaterial(childMaterial, materials):
     # add protobuf def: MaterialProperties properties
 
 def fillAppearances(ao, appearances):
-    pass #todo
+    for childAppearance in ao.design.appearances:
+        fillAppearance(childAppearance, appearances.add())
+
+def fillAppearance(childAppearance, appearances):
+    appearances.id = childAppearance.id
+    appearances.name = childAppearance.name
+    appearances.hasTexture = childAppearance.hasTexture
+    # add protobuf def: AppearanceProperties properties
 
 def fillMatrix3D(transform, protoTransform):
     pass #todo
