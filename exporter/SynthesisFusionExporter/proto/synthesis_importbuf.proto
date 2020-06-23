@@ -259,11 +259,6 @@ message Vector3D {
     double z = 3;
 }
 
-message Vector2D {
-    double x = 1;
-    double y = 2;
-}
-
 message Matrix3D {
     repeated double cells = 1; // 16 cells (no fixed length arrays in protobuf??)
 }
