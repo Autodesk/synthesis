@@ -7,7 +7,47 @@ from ..proto.synthesis_importbuf_pb2 import *
 ATTR_GROUP_NAME = "SynthesisFusionExporter" # attribute group name for use with apper's item_id
 
 def fillComponents(ao, components):
-    pass #todo
+    for component in ao.design.allComponents:
+        fillComponent(component, components.add())
+
+def fillComponent(childComponent, component):
+        component.header.uuid = item_id(childComponent, ATTR_GROUP_NAME)
+        component.header.name = childComponent.name
+        component.header.description = childComponent.description
+        component.header.revisionId = childComponent.revisionId
+        component.partNumber = childComponent.partNumber
+        fillBoundingBoxes(childComponent.boundingBox, component.boundingBox)
+        component.materialId = childComponent.material.id
+        fillPhysicalProperties(childComponent.physicalProperties, component.physicalProperties)
+        
+        # ADD: fillMeshBodies ---> see method
+        # for childMesh in childComponent.meshBodies:
+        #     fillMeshBodies(childMesh, component.meshBodies.add())
+
+def fillBoundingBoxes(fusionBoundingBox, protoBoundingBox):
+    fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
+    fillVector3D(fusionBoundingBox.minPoint, protoBoundingBox.minPoint)
+
+def fillVector3D(fusionVector3D, protoVector3D):
+    protoVector3D.x = fusionVector3D.x
+    protoVector3D.y = fusionVector3D.y
+    protoVector3D.z = fusionVector3D.z
+
+def fillPhysicalProperties(fusionPhysical, protoPhysical):
+    protoPhysical.density = fusionPhysical.density
+    protoPhysical.mass = fusionPhysical.mass
+    protoPhysical.volume = fusionPhysical.volume
+    protoPhysical.area = fusionPhysical.area
+    fillVector3D(fusionPhysical.centerOfMass, protoPhysical.centerOfMass)
+
+def fillMeshBodies(fusionMesh, protoMesh):
+    protoMesh.header.uuid = item_id(fusionMesh, ATTR_GROUP_NAME)
+    protoMesh.header.name = fusionMesh.name
+    protoMesh.appearanceId = fusionMesh.appearance.id
+    protoMesh.materialId = fusionMesh.material.id
+    fillPhysicalProperties(fusionMesh.physicalProperties, protoMesh.physicalProperties)
+    fillBoundingBoxes(fusionMesh.boundingBox, protoMesh.boundingBox)
+    # ADD: triangleMesh
 
 def getJointedOccurrenceUUID(fusionJoint, occur):
     if occur is None: 
@@ -41,10 +81,30 @@ def fillJoints(ao, protoJoints):
         fillJoint(fusionJoint, protoJoints.add())
 
 def fillMaterials(ao, materials):
-    pass #todo
+    for childMaterial in ao.design.materials:
+        fillMaterial(childMaterial, materials.add())
+
+def fillMaterial(childMaterial, materials):
+    materials.id = childMaterial.id
+    materials.name = childMaterial.name
+    materials.appearanceId = childMaterial.appearance.id
+    # add protobuf def: MaterialProperties properties 
+    # fillMaterialsProperties()
+
+def fillMaterialsProperties(fusionMaterials, protoMaterials):
+    protoMaterials.density = fusionMaterials.density
+    protoMaterials.yieldStrength = fusionMaterials.yieldStrength
+    protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 def fillAppearances(ao, appearances):
-    pass #todo
+    for childAppearance in ao.design.appearances:
+        fillAppearance(childAppearance, appearances.add())
+
+def fillAppearance(childAppearance, appearances):
+    appearances.id = childAppearance.id
+    appearances.name = childAppearance.name
+    appearances.hasTexture = childAppearance.hasTexture
+    # add protobuf def: AppearanceProperties properties
 
 def fillMatrix3D(transform, protoTransform):
     pass #todo

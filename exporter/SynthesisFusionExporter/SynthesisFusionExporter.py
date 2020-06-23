@@ -1,7 +1,7 @@
 
 import os
 import sys
-import adsk.core
+import adsk, adsk.core, adsk.fusion, traceback
 import traceback
 
 app_path = os.path.dirname(__file__)
@@ -41,8 +41,7 @@ try:
                 ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
 
     # Basic Fusion 360 Command Base samples
-    from .commands.ExportCommand import *
-    # from .commands.ExportCommand import ExportCommand
+    from .commands.ExportCommand import ExportCommand
     from .commands.SampleCommand2 import SampleCommand2
 
     # Palette Command Base samples
@@ -63,7 +62,7 @@ try:
         'Export Robot',
         ExportCommand,
         {
-            'cmd_description': 'Hello Synthesis!',
+            'cmd_description': 'Export your robot to Synthesis.',
             'cmd_id': 'sample_cmd_1',
             'workspace': 'FusionSolidEnvironment',
             'toolbar_panel_id': 'Commands',
