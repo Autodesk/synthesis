@@ -88,7 +88,17 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[key];
         }
 
-        public IResource AddEntry(IResource value)
+        public TResource AddEntry<TResource>(TResource value) where TResource : IResource
+        {
+            return (TResource)AddEntryImpl(value);
+        }
+
+        private IResource AddEntry(IResource value)
+        {
+            return AddEntryImpl(value);
+        }
+
+        private IResource AddEntryImpl(IResource value)
         {
             if (Entries.ContainsKey(value.Name))
             {

@@ -82,7 +82,6 @@
     <Compile Include="VirtualFileSystem\Resource.cs" />
     <Compile Include="VirtualFileSystem\Permissions.cs" />
     <Compile Include="VirtualFileSystem\RawEntry.cs" />
-    <Compile Include="VirtualFileSystem\SampleObject.cs" />
     <Compile Include="VirtualFileSystem\FileSystem.cs" />
   </ItemGroup>
   <ItemGroup>

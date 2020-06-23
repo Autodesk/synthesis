@@ -30,6 +30,19 @@ namespace SynthesisAPI.VirtualFileSystem
             return (Directory)parent_dir;
         }
 
+        public static TResource AddResource<TResource>(string path, TResource resource) where TResource : IResource
+        {
+            if (PathToDepth(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception();
+            }
+
+            Directory parent_dir = GetDirectory(path);
+
+            return parent_dir.AddEntry<TResource>(resource);
+        }
+
+
         public static IResource AddResource(string path, IResource resource)
         {
             if (PathToDepth(path) >= MaxDirectoryDepth)

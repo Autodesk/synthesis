@@ -26,8 +26,7 @@ namespace TestApi
         public static void TestRawEntry()
         {
             RawEntry raw_entry = new RawEntry("test.txt", Program.TestGuid, Permissions.PublicRead, "files/test.txt");
-            FileSystem.AddResource("/modules", raw_entry);
-            raw_entry.Load();
+            FileSystem.AddResource("/modules", raw_entry).Load();
 
             string str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
             Console.WriteLine(str);
