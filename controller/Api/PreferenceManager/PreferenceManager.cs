@@ -23,6 +23,8 @@ namespace SynthesisAPI.PreferenceManager
         static PreferenceManager()
         {
             preferences = new Dictionary<Guid, Dictionary<string, object>>();
+
+            Load();
         }
 
         #region Accessing Preferences
@@ -91,25 +93,24 @@ namespace SynthesisAPI.PreferenceManager
             if (!overrideChanges && modified)
                 return false;
 
-            JSONAsset asset;
-            try
-            {
-                if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
-                {
-                    asset = AssetManager.AssetManager.GetAsset<JSONAsset>(VirtualFilePath.path + '/' + VirtualFilePath.file);
-                }
-                else if (File.Exists(ActualFilePath))
-                {
-                    byte[] data = File.ReadAllBytes(ActualFilePath);
-                    asset = AssetManager.AssetManager.Import<JSONAsset>("text/json", VirtualFilePath.path, data, VirtualFilePath.file, MyGuid, Permissions.Private);
-                }
-                else
-                {
-                    return false;
-                }
-            } catch (Exception e) { return false; }
+            JSONEntry entry;
 
-            preferences = asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
+            if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
+            {
+                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONEntry;
+            } else
+            {
+                entry = new JSONEntry(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
+                FileSystem.AddResource(VirtualFilePath.path, entry);
+            }
+
+            Dictionary<Guid, Dictionary<string, object>> temp = null;
+            if (!entry.Deserialize(MyGuid, out temp))
+            {
+                return false;
+            }
+
+            preferences = temp;
             
             SavedOrReset();
 
@@ -122,18 +123,22 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
         {
-            try
+            JSONEntry entry;
+
+            if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
             {
-                FileSystem.RemoveResource(VirtualFilePath.path, VirtualFilePath.file, MyGuid);
-                FileStream fs = new FileStream(ActualFilePath, FileMode.Create);
-                StreamWriter sw = new StreamWriter(fs);
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(sw, preferences);
-                sw.Flush();
-                sw.Close();
-                fs.Close();
-            } catch (Exception e) { return false; }
+                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONEntry;
+            }
+            else
+            {
+                entry = new JSONEntry(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
+                FileSystem.AddResource(VirtualFilePath.path, entry);
+            }
+
+            if (!entry.Serialize(preferences, MyGuid))
+            {
+                return false;
+            }
 
             SavedOrReset();
 

@@ -69,6 +69,7 @@
     <Compile Include="Modules\GlobalBehavior.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\Object.cs" />
+    <Compile Include="PreferenceManager\JSONEntry.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\ApiProvider.cs" />
