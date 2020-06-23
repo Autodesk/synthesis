@@ -35,5 +35,12 @@ Installation
 
 Troubleshooting
 ^^^^^^^^^^^^^^^
+Protobuf-related error:
+
 - Restart Fusion 360
 - Make sure the protobuf python file has generated in the `proto` subdirectory
+
+Visual studio debugger crashes with socket timeout:
+
+- Open task manager and close all python processes
+- If problem persists, uninstall Fusion 360 and reinstall
