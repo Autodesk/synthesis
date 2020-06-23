@@ -10,11 +10,14 @@ def fillComponents(ao, components):
     for component in ao.design.allComponents:
         fillComponent(component, components.add())
 
-def fillComponent(childComponent, components):
-        # components.header.uuid = item_id(components, ATTR_GROUP_NAME)
-        components.partNumber = childComponent.partNumber
+def fillComponent(childComponent, component):
+        component.header.uuid = item_id(childComponent, ATTR_GROUP_NAME)
+        component.header.name = childComponent.name
+        component.header.description = childComponent.description
+        component.header.revisionId = childComponent.revisionId
+        component.partNumber = childComponent.partNumber
         # components.boundingBox = childComponent.boundingBox
-        components.materialId = childComponent.material.id
+        component.materialId = childComponent.material.id
         # components.physicalProperties = childComponent.physicalProperties
         # components.meshbodies = childComponent.meshBodies
 
