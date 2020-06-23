@@ -69,7 +69,6 @@
     <Compile Include="Modules\GlobalBehavior.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\Object.cs" />
-    <Compile Include="PreferenceManager\JSONEntry.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\ApiProvider.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="VirtualFileSystem\Directory.cs" />
     <Compile Include="VirtualFileSystem\Entry.cs" />
     <Compile Include="VirtualFileSystem\IResource.cs" />
+    <Compile Include="VirtualFileSystem\JSONEntry.cs" />
     <Compile Include="VirtualFileSystem\Resource.cs" />
     <Compile Include="VirtualFileSystem\Permissions.cs" />
     <Compile Include="VirtualFileSystem\RawEntry.cs" />
