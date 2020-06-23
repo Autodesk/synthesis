@@ -19,7 +19,9 @@ def fillComponent(childComponent, component):
         fillBoundingBoxes(childComponent.boundingBox, component.boundingBox)
         component.materialId = childComponent.material.id
         fillPhysicalProperties(childComponent.physicalProperties, component.physicalProperties)
-        # fillMeshBodies(component.meshBodies, childComponent.meshBodies)
+        
+        for childMesh in childComponent.meshBodies:
+            fillMeshBodies(childMesh, component.meshBodies.add())
 
 def fillBoundingBoxes(fusionBoundingBox, protoBoundingBox):
     fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
@@ -38,12 +40,12 @@ def fillPhysicalProperties(fusionPhysical, protoPhysical):
     fillVector3D(fusionPhysical.centerOfMass, protoPhysical.centerOfMass)
 
 def fillMeshBodies(fusionMesh, protoMesh):
-    # protoMesh.header.uuid = item_id(fusionMesh, ATTR_GROUP_NAME)
-    # protoMesh.header.name = fusionMesh.name
-    fusionMesh.appearanceId = protoMesh.appearance.id
+    protoMesh.header.uuid = item_id(fusionMesh, ATTR_GROUP_NAME)
+    protoMesh.header.name = fusionMesh.name
+    protoMesh.appearanceId = fusionMesh.appearance.id
     protoMesh.materialId = fusionMesh.material.id
-    fillPhysicalProperties(protoMesh.physicalProperties, fusionMesh.physicalProperties)
-    fillBoundingBoxes(protoMesh.boundingBox, fusionMesh.boundingBox)
+    fillPhysicalProperties(fusionMesh.physicalProperties, protoMesh.physicalProperties)
+    fillBoundingBoxes(fusionMesh.boundingBox, protoMesh.boundingBox)
     # triangle mesh
 
 
