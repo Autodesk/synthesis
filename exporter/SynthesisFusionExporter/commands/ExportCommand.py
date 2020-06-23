@@ -13,35 +13,39 @@ def fillComponents(ao, components):
         # traverse through occurrences to get component
         occurrence = root.allOccurrences.item(childComponent)
         component = occurrence.component
+        components = ao.design.allComponents
         material = component.material
 
-        components = ao.design.allComponents
-        # components.header.uuid = item_id(components, ATTR_GROUP_NAME)
         components.partNumber = component.partNumber
         components.boundingBox = component.boundingBox
-        # TODO add back in once materials are configured
-        # components.materialId = component.materialId
-        # components.materialId = item_id(material.name, ATTR_GROUP_NAME)
+        components.materialId = component.material.id
         components.physicalProperties = component.physicalProperties
         components.meshbodies = component.meshBodies
-        
-        print(components) # for debugging to stop here
+        # fillComponent(childComponent, component)
+
+        # ao.design ---> accesses design properties
+        # component.feature ---> accesses component properties
+
+def fillComponent(childComponent, components):
+        # components.header.uuid = item_id(components, ATTR_GROUP_NAME)
+        components.partNumber = childComponent.partNumber
+        components.boundingBox = childComponent.boundingBox
+        components.materialId = childComponent.material.id
+        components.physicalProperties = childComponent.physicalProperties
+        components.meshbodies = childComponent.meshBodies
 
 def fillJoints(ao, joints):
     pass #todo
 
 def fillMaterials(ao, materials):
-    root = ao.design.rootComponent
-
     for childMaterial in ao.design.materials:
         fillMaterial(childMaterial, materials.add())
-        # print(components) # for debugging to stop here
-        print(childMaterial)
 
-def fillMaterial(material, materials):
-    materials.id = material.id
-    materials.name = material.name
-    materials.appearanceId = material.appearance.id
+def fillMaterial(childMaterial, materials):
+    materials.id = childMaterial.id
+    materials.name = childMaterial.name
+    materials.appearanceId = childMaterial.appearance.id
+    # add protobuf def: MaterialProperties properties
 
 def fillAppearances(ao, appearances):
     pass #todo
