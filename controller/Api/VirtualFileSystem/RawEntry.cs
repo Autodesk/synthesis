@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
-#nullable enable
+#nullable enable // TODO enable this for the whole project
 
 namespace SynthesisAPI.VirtualFileSystem
 {
@@ -25,10 +20,7 @@ namespace SynthesisAPI.VirtualFileSystem
             Init(name, owner, perm);
 
             Path = file_path;
-            data = null;
         }
-
-        private const string BasePath = "D:\\synthesis_projects\\synthesis\\"; // TODO determine this automatically somehow
 
         public string Path { get; private set; }
 
@@ -36,13 +28,32 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public void Load()
         {
-            data = File.ReadAllBytes(BasePath + Path);
+            byte[] data = File.ReadAllBytes(FileSystem.BasePath + Path);
             RawStream = new MemoryStream();                 // create expandable memory stream
             RawStream.Write(data, 0, data.Length);
             RawStream.Position = 0;
 
             RWLock = new ReaderWriterLockSlim();
             SharedStream = new SharedBinaryStream<MemoryStream>(RawStream, RWLock, DefaultTimeout);
+        }
+
+        public void WriteFile()
+        {
+            if (RWLock != null && RawStream != null && RWLock.TryEnterReadLock(DefaultTimeout))
+            {
+                try
+                {
+                    File.WriteAllBytes(FileSystem.BasePath + Path, RawStream.ToArray());
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
         }
 
         public override void Delete()
@@ -54,8 +65,6 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             // TODO
         }
-
-        private byte[]? data;
 
         private MemoryStream? RawStream;
         public SharedBinaryStream<MemoryStream>? SharedStream { get; internal set; }
