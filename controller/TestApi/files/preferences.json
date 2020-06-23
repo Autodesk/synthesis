@@ -2,6 +2,9 @@
   "00000000-0000-0000-0000-000000000000": {
     "name": "Nikola Tesla",
     "age": 163,
-    "some_float": 1.5837
+    "some_float": 1.5837,
+    "custom_type": {
+      "Name": "Edward Newton"
+    }
   }
 }

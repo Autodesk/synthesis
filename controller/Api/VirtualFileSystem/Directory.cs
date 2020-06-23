@@ -134,7 +134,10 @@ namespace SynthesisAPI.VirtualFileSystem
             if (Entries.ContainsKey(key))
             {
                 if (Entries[key].Permissions == Permissions.PublicWrite || Entries[key].Owner == guid)
+                {
+                    Entries[key].Delete();
                     Entries.Remove(key);
+                }
                 else
                     throw new Exception(string.Format("\"{0}\" doesn't have permission to delete \"{1}\"", guid, key));
             }

@@ -16,6 +16,13 @@ namespace TestApi
             ("some_float", 1.5837f)
         };
 
+        [JsonObject("CustomStruct")]
+        public struct CustomStruct
+        {
+            [JsonProperty("Name")]
+            public string Name { get; set; }
+        }
+
         public static void TestSavingPreferences()
         {
             foreach (var pref in TestPrefs)
@@ -41,11 +48,23 @@ namespace TestApi
             Console.WriteLine(string.Format("Name: {0}\nAge: {1}\nSome Float: {2}", name, age, someFloat));
         }
 
+        public static void TestCustomTypes()
+        {
+            PreferenceManager.SetPreference(Program.TestGuid, "custom_type", new CustomStruct() { Name = "Edward Newton" });
+            PreferenceManager.Save();
+            PreferenceManager.Load(overrideChanges: true);
+            object unCastableData = PreferenceManager.GetPreference(Program.TestGuid, "custom_type");
+            CustomStruct data = JsonConvert.DeserializeObject<CustomStruct>(JsonConvert.SerializeObject(unCastableData));
+
+            Console.WriteLine(string.Format("Name: {0}", data.Name));
+        }
+
         public static void Test()
         {
             TestSavingPreferences();
             TestLoadingPreferences();
             TestSavingPreferences();
+            TestCustomTypes();
         }
     }
 }

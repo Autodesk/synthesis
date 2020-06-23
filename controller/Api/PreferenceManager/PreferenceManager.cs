@@ -29,6 +29,13 @@ namespace SynthesisAPI.PreferenceManager
 
         #region Accessing Preferences
 
+        /// <summary>
+        /// Set a preference using an indentifier inside your unique dicitonary
+        /// </summary>
+        /// <typeparam name="TValueType">Type of preference. No constraints</typeparam>
+        /// <param name="owner">GUID of the owner</param>
+        /// <param name="key">Identifier for preference</param>
+        /// <param name="value">Preference value</param>
         public static void SetPreference<TValueType>(Guid owner, string key, TValueType value)
         {
             if (!preferences.ContainsKey(owner)) 
@@ -37,6 +44,13 @@ namespace SynthesisAPI.PreferenceManager
             modified = true;
         }
 
+        /// <summary>
+        /// This function will return a specific preference that has loaded in and/or
+        /// set using the <see cref="SetPreference{TValueType}(Guid, string, TValueType)"/> method
+        /// </summary>
+        /// <param name="owner">GUID of the owner</param>
+        /// <param name="key">Identifier for preference</param>
+        /// <returns>Preference</returns>
         public static object GetPreference(Guid owner, string key)
         {
             if (preferences.ContainsKey(owner))
@@ -56,13 +70,35 @@ namespace SynthesisAPI.PreferenceManager
             }
         }
 
-        public static TValueType GetPreference<TValueType>(Guid owner, string key)
+        /// <summary>
+        /// This function will return a specific preference that has loaded in and/or
+        /// set using the <see cref="SetPreference{TValueType}(Guid, string, TValueType)"/> method
+        /// </summary>
+        /// <typeparam name="TValueType">Return type. If useJsonReserialization is true this type must
+        /// have a <see cref="JsonObjectAttribute">JsonObjectAttribute</c></typeparam>
+        /// <param name="owner">GUID of the owner</param>
+        /// <param name="key">Identifier for preference</param>
+        /// <param name="useJsonReserialization">Set this to true if you are trying to retrieve an object of a custom type. Be sure
+        /// to label everything inside the type with the Attributes Newtonsoft provides</param>
+        /// <returns>Preference</returns>
+        public static TValueType GetPreference<TValueType>(Guid owner, string key, bool useJsonReserialization = false)
         {
             if (preferences.ContainsKey(owner))
             {
                 if (preferences[owner].ContainsKey(key))
                 {
-                    return (TValueType)Convert.ChangeType(preferences[owner][key], typeof(TValueType));
+                    if (useJsonReserialization)
+                    {
+                        if (!typeof(TValueType).IsDefined(typeof(JsonObjectAttribute), false))
+                            throw new ArgumentException(string.Format("Type \"{0}\" does not have the Newtonsoft.Json.JsonObjectAttribute",
+                                typeof(TValueType).FullName));
+
+                        return JsonConvert.DeserializeObject<TValueType>(JsonConvert.SerializeObject(preferences[owner][key]));
+                    }
+                    else
+                    {
+                        return (TValueType)Convert.ChangeType(preferences[owner][key], typeof(TValueType));
+                    }
                 } else
                 {
                     throw new ArgumentException(string.Format("There is no key of value \"{0}\" under owner \"{1}\"", key, owner));
@@ -73,6 +109,10 @@ namespace SynthesisAPI.PreferenceManager
             }
         }
 
+        /// <summary>
+        /// Clear your dictionary of preferences
+        /// </summary>
+        /// <param name="owner">Your guid</param>
         public static void ClearPreferences(Guid owner)
         {
             preferences[owner] = new Dictionary<string, object>();

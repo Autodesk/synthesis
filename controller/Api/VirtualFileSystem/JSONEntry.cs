@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SynthesisAPI.PreferenceManager
+namespace SynthesisAPI.VirtualFileSystem
 {
     public class JSONEntry : Entry
     {
