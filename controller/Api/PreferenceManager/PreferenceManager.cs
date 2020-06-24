@@ -9,7 +9,6 @@ namespace SynthesisAPI.PreferenceManager
 {
     public static class PreferenceManager
     {
-
         private static readonly (string Path, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
         #region Accessing Preferences
