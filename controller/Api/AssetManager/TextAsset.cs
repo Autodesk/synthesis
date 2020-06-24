@@ -22,14 +22,17 @@ namespace SynthesisAPI.AssetManager
             Overwrite
         }
 
-        public TextAsset(string name, Guid owner, Permissions perm, string source_path)
+        public TextAsset(string name, Guid owner, Permissions perm, string sourcePath)
         {
-            Init(name, owner, perm, source_path);
+            Init(name, owner, perm, sourcePath);
+
+            RwLock = new ReaderWriterLockSlim();
+            SharedStream = new SharedTextStream(new MemoryStream(), RwLock);
         }
 
         public void SaveToFile()
         {
-            long pos = SharedStream.Stream.Position;
+            var pos = SharedStream.Stream.Position;
             SharedStream.Seek(0);
             File.WriteAllText(SourcePath, SharedStream.ReadToEnd());
             SharedStream.Seek(pos);
@@ -40,13 +43,14 @@ namespace SynthesisAPI.AssetManager
             var stream = new MemoryStream();
             stream.Write(data, 0, data.Length);
             stream.Position = 0;
-            RWLock = new ReaderWriterLockSlim();
-            SharedStream = new SharedTextStream<MemoryStream>(stream, RWLock);
+            SharedStream = new SharedTextStream(stream, RwLock)!;
 
             return this;
         }
 
-        public SharedTextStream<MemoryStream> SharedStream { get; protected set; }
-        private ReaderWriterLockSlim RWLock;
+        public string? ReadToEnd() => SharedStream?.ReadToEnd();
+
+        protected SharedTextStream SharedStream { get; set; }
+        private ReaderWriterLockSlim RwLock;
     }
 }

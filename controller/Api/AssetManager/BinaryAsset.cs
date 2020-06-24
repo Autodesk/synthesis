@@ -11,9 +11,10 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class BinaryTextAsset : Asset
     {
-        public BinaryTextAsset(string name, Guid owner, Permissions perm, string source_path)
+        public BinaryTextAsset(string name, Guid owner, Permissions perm, string sourcePath)
         {
-            Init(name, owner, perm, source_path);
+            Init(name, owner, perm, sourcePath);
+            RwLock = new ReaderWriterLockSlim();
         }
 
         public void SaveToFile()
@@ -29,13 +30,12 @@ namespace SynthesisAPI.AssetManager
             var stream = new MemoryStream();
             stream.Write(data, 0, data.Length);
             stream.Position = 0;
-            RWLock = new ReaderWriterLockSlim();
-            SharedStream = new SharedBinaryStream<MemoryStream>(stream, RWLock);
+            SharedStream = new SharedBinaryStream(stream, RwLock);
 
             return this;
         }
 
-        public SharedBinaryStream<MemoryStream> SharedStream { get; protected set; }
-        private ReaderWriterLockSlim RWLock;
+        protected SharedBinaryStream SharedStream { get; set; }
+        private ReaderWriterLockSlim RwLock;
     }
 }

@@ -19,7 +19,11 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <summary>
         /// Base path for files on disk
         /// </summary>
-        public static string BasePath = System.IO.Directory.GetParent(System.IO.Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).ToString()).ToString() + Path.DirectorySeparatorChar;
+        public static readonly string BasePath =
+            System.IO.Directory
+                .GetParent(System.IO.Directory
+                    .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).ToString()).ToString() +
+            Path.DirectorySeparatorChar;
         // public static string BasePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar;
 
         /// <summary>
@@ -36,9 +40,9 @@ namespace SynthesisAPI.VirtualFileSystem
                 throw new Exception();
             }
 
-            Directory? parent_dir = Traverse<Directory>(path);
+            Directory? parentDir = Traverse<Directory>(path);
 
-            return parent_dir?.AddResource<TResource>(resource);
+            return parentDir?.AddResource<TResource>(resource);
         }
 
         /// <summary>
@@ -54,9 +58,9 @@ namespace SynthesisAPI.VirtualFileSystem
                 throw new Exception();
             }
 
-            Directory? parent_dir = Traverse<Directory>(path);
+            Directory? parentDir = Traverse<Directory>(path);
 
-            return parent_dir?.AddResource(resource);
+            return parentDir?.AddResource(resource);
         }
 
         public static void RemoveResource(string path, string name, Guid guid)

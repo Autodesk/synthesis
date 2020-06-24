@@ -1,9 +1,11 @@
 ﻿using SynthesisAPI.VirtualFileSystem;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Directory = SynthesisAPI.VirtualFileSystem.Directory;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -18,13 +20,14 @@ namespace SynthesisAPI.AssetManager
         /// <param name="name"></param>
         /// <param name="owner"></param>
         /// <param name="perm"></param>
-        internal void Init(string name, Guid owner, Permissions perm, string source_path)
+        /// <param name="sourcePath"></param>
+        internal void Init(string name, Guid owner, Permissions perm, string sourcePath)
         {
             _name = name;
             _owner = owner;
             _permissions = perm;
-            // Leave _parent as null
-            SourcePath = source_path;
+            _parent = null!;
+            SourcePath = sourcePath;
         }
 
         public string Name => ((IEntry)this).Name;

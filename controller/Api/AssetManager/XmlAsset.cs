@@ -12,10 +12,10 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Representation of an XML asset
     /// </summary>
-    public class XMLAsset : TextAsset
+    public class XmlAsset : TextAsset
     {
-        public XMLAsset(string name, Guid owner, Permissions perm, string source_path) :
-            base(name, owner, perm, source_path) { }
+        public XmlAsset(string name, Guid owner, Permissions perm, string sourcePath) :
+            base(name, owner, perm, sourcePath) { }
 
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
         {

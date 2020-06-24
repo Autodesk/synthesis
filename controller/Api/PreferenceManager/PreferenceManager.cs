@@ -9,27 +9,17 @@ namespace SynthesisAPI.PreferenceManager
 {
     public static class PreferenceManager
     {
-        private static Dictionary<Guid, Dictionary<string, object>> preferences = new Dictionary<Guid, Dictionary<string, object>>();
 
-        private static (string path, string file) VirtualFilePath = ("/modules", "preferences.json");
-        private static string ActualFilePath = "preferences.json";
-        private static Guid MyGuid = Guid.NewGuid();
-        private static JSONAsset entry;
+        private static readonly (string Path, string File) VirtualFilePath = ("/modules", "preferences.json");
 
-        public static string BasePath {
-            get => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + System.IO.Path.DirectorySeparatorChar
-                + "Autodesk" + System.IO.Path.DirectorySeparatorChar + "Synthesis" + System.IO.Path.DirectorySeparatorChar;
-        }
-
-        static PreferenceManager()
-        {
-            Load();
-        }
+        public static string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Path.DirectorySeparatorChar);
 
         #region Accessing Preferences
 
         /// <summary>
-        /// Set a preference using an indentifier inside your unique dicitonary
+        /// Set a preference using an identifier inside your unique dictionary
         /// </summary>
         /// <typeparam name="TValueType">Type of preference. No constraints</typeparam>
         /// <param name="owner">GUID of the owner</param>
@@ -37,10 +27,10 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="value">Preference value</param>
         public static void SetPreference<TValueType>(Guid owner, string key, TValueType value)
         {
-            if (!preferences.ContainsKey(owner))
-                preferences[owner] = new Dictionary<string, object>();
-            preferences[owner][key] = value;
-            modified = true;
+            if (!Instance.Preferences.ContainsKey(owner))
+                Instance.Preferences[owner] = new Dictionary<string, object>();
+            Instance.Preferences[owner][key] = value!;
+            _changesSaved = false;
         }
 
         /// <summary>
@@ -52,21 +42,13 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Preference</returns>
         public static object GetPreference(Guid owner, string key)
         {
-            if (preferences.ContainsKey(owner))
+            if (Instance.Preferences.ContainsKey(owner))
             {
-                if (preferences[owner].ContainsKey(key))
-                {
-                    return preferences[owner][key];
-                }
-                else
-                {
-                    throw new ArgumentException(string.Format("There is no key of value \"{0}\" under owner \"{1}\"", key, owner));
-                }
+                if (Instance.Preferences[owner].ContainsKey(key))
+                    return Instance.Preferences[owner][key];
+                throw new ArgumentException($"There is no key of value \"{key}\" under owner \"{owner}\"");
             }
-            else
-            {
-                throw new ArgumentException(string.Format("There is no owner of value \"{0}\"", owner));
-            }
+            throw new ArgumentException($"There is no owner of value \"{owner}\"");
         }
 
         /// <summary>
@@ -74,38 +56,31 @@ namespace SynthesisAPI.PreferenceManager
         /// set using the <see cref="SetPreference{TValueType}(Guid, string, TValueType)"/> method
         /// </summary>
         /// <typeparam name="TValueType">Return type. If useJsonReserialization is true this type must
-        /// have a <see cref="JsonObjectAttribute">JsonObjectAttribute</c></typeparam>
+        /// have a <see cref="JsonObjectAttribute">JsonObjectAttribute</see></typeparam>
         /// <param name="owner">GUID of the owner</param>
         /// <param name="key">Identifier for preference</param>
-        /// <param name="useJsonReserialization">Set this to true if you are trying to retrieve an object of a custom type. Be sure
+        /// <param name="useJsonDeserialization">Set this to true if you are trying to retrieve an object of a custom type. Be sure
         /// to label everything inside the type with the Attributes Newtonsoft provides</param>
         /// <returns>Preference</returns>
-        public static TValueType GetPreference<TValueType>(Guid owner, string key, bool useJsonReserialization = false)
+        public static TValueType GetPreference<TValueType>(Guid owner, string key, bool useJsonDeserialization = false)
         {
-            if (preferences.ContainsKey(owner))
+            if (Instance.Preferences.ContainsKey(owner))
             {
-                if (preferences[owner].ContainsKey(key))
+                if (Instance.Preferences[owner].ContainsKey(key))
                 {
-                    if (useJsonReserialization)
+                    if (useJsonDeserialization)
                     {
                         if (!typeof(TValueType).IsDefined(typeof(JsonObjectAttribute), false))
-                            throw new ArgumentException(string.Format("Type \"{0}\" does not have the Newtonsoft.Json.JsonObjectAttribute",
-                                typeof(TValueType).FullName));
+                            throw new ArgumentException(
+                                $"Type \"{typeof(TValueType).FullName}\" does not have the Newtonsoft.Json.JsonObjectAttribute");
 
-                        return JsonConvert.DeserializeObject<TValueType>(JsonConvert.SerializeObject(preferences[owner][key]));
+                        return JsonConvert.DeserializeObject<TValueType>(JsonConvert.SerializeObject(Instance.Preferences[owner][key]));
                     }
-                    else
-                    {
-                        return (TValueType)Convert.ChangeType(preferences[owner][key], typeof(TValueType));
-                    }
-                } else
-                {
-                    throw new ArgumentException(string.Format("There is no key of value \"{0}\" under owner \"{1}\"", key, owner));
+                    return (TValueType) Instance.Preferences[owner][key];
                 }
-            } else
-            {
-                throw new ArgumentException(string.Format("There is no owner of value \"{0}\"", owner));
+                throw new ArgumentException($"There is no key of value \"{key}\" under owner \"{owner}\"");
             }
+            throw new ArgumentException($"There is no owner of value \"{owner}\"");
         }
 
         /// <summary>
@@ -114,8 +89,8 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="owner">Your guid</param>
         public static void ClearPreferences(Guid owner)
         {
-            preferences[owner] = new Dictionary<string, object>();
-            modified = true;
+            Instance.Preferences[owner] = new Dictionary<string, object>();
+            _changesSaved = false;
         }
 
         #endregion
@@ -129,24 +104,20 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the load executed successfully</returns>
         public static bool Load(bool overrideChanges = false)
         {
-            if (!overrideChanges && modified)
+            if (!overrideChanges && !_changesSaved)
                 return false;
 
-            if (entry == null)
-            {
-                entry = AssetManager.AssetManager.ImportOrCreate<JSONAsset>("text/json", VirtualFilePath.path, VirtualFilePath.file, Guid.Empty, Permissions.PublicWrite, ActualFilePath);
-            }
+            Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
+                VirtualFilePath.Path, VirtualFilePath.File, Guid.Empty,
+                Permissions.PublicWrite, VirtualFilePath.File)!;
 
-            entry.SharedStream.Seek(0); // TODO do we want to do this automatically?
-            var deserialized = entry.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
-            entry.SharedStream.Seek(0); // TODO do we want to do this automatically?
-            if (deserialized != null) // TODO throw if null?
-            {
-                preferences = deserialized;
-            }
+            var deserialized =
+                Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                    retainPosition: true);
+            Instance.Preferences =
+                deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
 
-            SavedOrReset();
-
+            _changesSaved = true;
             return true;
         }
 
@@ -156,30 +127,54 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
         {
-            JSONAsset entry;
+            JsonAsset? jsonAsset;
 
-            if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
+            if (FileSystem.ResourceExists(VirtualFilePath.Path, VirtualFilePath.File))
             {
-                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONAsset;
+                jsonAsset = FileSystem.Traverse(VirtualFilePath.Path + '/' + VirtualFilePath.File) as JsonAsset;
             }
             else
             {
-                entry = new JSONAsset(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
-                FileSystem.AddResource(VirtualFilePath.path, entry);
+                jsonAsset = new JsonAsset(VirtualFilePath.File, Guid.Empty, Permissions.Private, VirtualFilePath.File);
+                FileSystem.AddResource(VirtualFilePath.Path, jsonAsset);
             }
 
-            entry.Serialize(preferences);
-            entry.SaveToFile();
+            jsonAsset?.Serialize(Instance.Preferences);
+            jsonAsset?.SaveToFile();
 
-            SavedOrReset();
+            _changesSaved = true;
 
             return true;
         }
 
         #endregion
 
-        private static void SavedOrReset() => modified = false;
-        private static bool modified = false;
+        private static bool _changesSaved = false;
+
+        private class Inner
+        {
+            private Inner()
+            {
+                Preferences = new Dictionary<Guid, Dictionary<string, object>>();
+            }
+            public Dictionary<Guid, Dictionary<string, object>> Preferences;
+
+            public JsonAsset? Asset;
+            private static Inner _instance = null!;
+            public static Inner InnerInstance
+            {
+                get
+                {
+                    if (_instance is null)
+                    {
+                        _instance = new Inner();
+                        PreferenceManager.Load();
+                    }
+
+                    return _instance;
+                }
+            }
+        }
+        private static Inner Instance => Inner.InnerInstance;
     }
-    
 }

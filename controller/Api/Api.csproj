@@ -50,9 +50,9 @@
     <Compile Include="AssetManager\Asset.cs" />
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="AssetManager\BinaryAsset.cs" />
-    <Compile Include="AssetManager\JSONAsset.cs" />
+    <Compile Include="AssetManager\JsonAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
-    <Compile Include="AssetManager\XMLAsset.cs" />
+    <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
     <Compile Include="InputManager\InputManager.cs" />

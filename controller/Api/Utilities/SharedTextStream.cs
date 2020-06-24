@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SynthesisAPI.Utilities
 {
@@ -12,29 +8,29 @@ namespace SynthesisAPI.Utilities
     /// A thread-dafe text stream
     /// </summary>
     /// <typeparam name="TStream">The type of stream to use</typeparam>
-    public class SharedTextStream<TStream> where TStream : Stream
+    public class SharedTextStream
     {
         // TODO ref_count for dispose function?
         // TODO combine with SharedBinaryStream
 
-        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck, int t)
+        public SharedTextStream(Stream stream, ReaderWriterLockSlim lck, int t)
         {
             Timeout = t;
-            RWLock = lck;
+            RwLock = lck;
             Stream = stream;
             Reader = new StreamReader(Stream);
             Writer = new StreamWriter(Stream);
         }
 
-        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
+        public SharedTextStream(Stream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
 
         private const int DefaultTimeout = 5000;
 
-        private ReaderWriterLockSlim RWLock { get; set; }
+        private ReaderWriterLockSlim RwLock { get; set; }
 
         public int Timeout { get; set; } // ms
 
-        public TStream Stream { get; private set; }
+        public Stream Stream { get; private set; }
 
         private StreamReader Reader { get; set; }
 
@@ -43,7 +39,7 @@ namespace SynthesisAPI.Utilities
 
         public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -51,7 +47,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -63,7 +59,7 @@ namespace SynthesisAPI.Utilities
 
         public long? TrySeek(long offset, SeekOrigin loc = SeekOrigin.Begin)
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -71,7 +67,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -83,7 +79,7 @@ namespace SynthesisAPI.Utilities
 
         public string ReadLine()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -91,7 +87,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -100,9 +96,9 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public string TryReadLine()
+        public string? TryReadLine()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -110,7 +106,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -121,7 +117,7 @@ namespace SynthesisAPI.Utilities
 
         public string ReadToEnd()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -129,7 +125,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -140,7 +136,7 @@ namespace SynthesisAPI.Utilities
 
         public string TryReadToEnd()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -148,7 +144,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -159,7 +155,7 @@ namespace SynthesisAPI.Utilities
 
         public void WriteLine(string line)
         {
-            if (RWLock.TryEnterWriteLock(Timeout))
+            if (RwLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
@@ -168,7 +164,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitWriteLock();
+                    RwLock.ExitWriteLock();
                 }
             }
             else
@@ -179,7 +175,7 @@ namespace SynthesisAPI.Utilities
 
         public bool TryWriteLine(string line)
         {
-            if (RWLock.TryEnterWriteLock(Timeout))
+            if (RwLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
@@ -188,7 +184,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitWriteLock();
+                    RwLock.ExitWriteLock();
                 }
                 return true;
             }

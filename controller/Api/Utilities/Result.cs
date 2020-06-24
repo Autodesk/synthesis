@@ -9,56 +9,57 @@ namespace SynthesisAPI.Utilities
     /// <summary>
     /// A type intended for use as a return, encapsulates both success and failure states
     /// </summary>
-    /// <typeparam name="V">Value type of the return</typeparam>
-    /// <typeparam name="V>Possible error type of the function</typeparam>
-    public class Result<V, E> where E: Exception
+    /// <typeparam name="TValue">Value type of the return</typeparam>
+    /// <typeparam name="TError">Possible error type of the function</typeparam>
+    public class Result<TValue, TError> where TError: Exception
     {
 
-        public Result(V val) => value = val;
+        public Result(TValue val) => value = val;
 
-        public Result(E err)
+        public Result(TError err)
         {
             error = err;
             isError = true;
         }
 
-        public static implicit operator V(Result<V, E> res)
+        public static implicit operator TValue(Result<TValue, TError> res)
         {
             if (!res.isError)
                 return res.value;
             throw res.error;
         }
 
-        public static implicit operator E(Result<V, E> res)
+        public static implicit operator TError(Result<TValue, TError> res)
         {
             if (!res.isError)
                 throw new Exception("Result is not an error type");
             return res.error;
         }
 
-        public Result<V2, E> MapResult<V2>(Func<V, V2> f)
+        public Result<TNewValue, TError> MapResult<TNewValue>(Func<TValue, TNewValue> f)
         {
             if(isError)
             {
-                return new Result<V2,E>(error);
-            } 
-            return new Result<V2,E>(f(value));
+                return new Result<TNewValue,TError>(error);
+            }
+            return new Result<TNewValue,TError>(f(value));
         }
 
-        public Result<V, E2> MapError<E2>(Func<E, E2> f) where E2 : Exception
+        public Result<TValue, TNewError> MapError<TNewError>(Func<TError, TNewError> f) where TNewError : Exception
         {
             if(!isError)
             {
-                return new Result<V,E2>(value);
+                return new Result<TValue,TNewError>(value);
             }
-            return new Result<V,E2>(f(error));
+            return new Result<TValue,TNewError>(f(error));
         }
 
-        public Result<V2, E2> Map<V2, E2>(Func<V, V2> f, Func<E, E2> g) where E2 : Exception => 
+        public Result<TNewValue, TNewError> Map<TNewValue, TNewError>(Func<TValue, TNewValue> f,
+            Func<TError, TNewError> g) where TNewError : Exception =>
             MapResult(f).MapError(g);
 
         private readonly bool isError;
-        private readonly V value = default!;
-        private readonly E error = default!;
+        private readonly TValue value = default!;
+        private readonly TError error = default!;
     }
 }

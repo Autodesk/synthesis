@@ -18,7 +18,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="name"></param>
         /// <param name="owner"></param>
         /// <param name="perm"></param>
-        internal void Init(string name, Guid owner, Permissions perm)
+        private void Init(string name, Guid owner, Permissions perm)
         {
             _name = name;
             _owner = owner;
@@ -31,7 +31,7 @@ namespace SynthesisAPI.VirtualFileSystem
         public string Name => ((IEntry)this).Name;
         public Guid Owner => ((IEntry)this).Owner;
         public Permissions Permissions => ((IEntry)this).Permissions;
-        public Directory Parent => ((IEntry)this).Parent;
+        private Directory Parent => ((IEntry)this).Parent;
 
         private string _name { get; set; }
         private Guid _owner { get; set; }
@@ -51,7 +51,7 @@ namespace SynthesisAPI.VirtualFileSystem
             Entries = new Dictionary<string, IEntry>();
             Entries.Add("", this);
             Entries.Add(".", this);
-            Entries.Add("..", null);
+            Entries.Add("..", null!);
         }
 
         internal Dictionary<string, IEntry> Entries;
@@ -213,7 +213,7 @@ namespace SynthesisAPI.VirtualFileSystem
         public IEntry? this[string name]
         {
             get => TryGetEntry(name);
-            set => Entries[name] = value;
+            set => Entries[name] = value!;
         }
     }
 }

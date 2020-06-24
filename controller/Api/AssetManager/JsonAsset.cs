@@ -12,12 +12,13 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Representation of a JSON asset
     /// </summary>
-    public class JSONAsset : TextAsset
+    public class JsonAsset : TextAsset
     {
-        public JSONAsset(string name, Guid owner, Permissions perm, string source_path) :
-            base(name, owner, perm, source_path) { }
+        public JsonAsset(string name, Guid owner, Permissions perm, string sourcePath) :
+            base(name, owner, perm, sourcePath) { }
 
-        public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true) // TODO
+        public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
+            bool retainPosition = true) // TODO
         {
             long? returnPosition = null;
             if (offset != long.MaxValue)
@@ -29,7 +30,7 @@ namespace SynthesisAPI.AssetManager
                 SharedStream.Seek(offset, loc);
             }
 
-            TObject obj = JsonConvert.DeserializeObject<TObject>(SharedStream.ReadToEnd());
+            var obj = JsonConvert.DeserializeObject<TObject>(SharedStream.ReadToEnd());
 
             if (returnPosition != null)
             {
@@ -38,13 +39,12 @@ namespace SynthesisAPI.AssetManager
             return obj;
         }
 
-        public void Serialize<TObject>(TObject obj, WriteMode write_mode = WriteMode.Overwrite)
+        public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
-            if (write_mode == WriteMode.Overwrite)
-            {
+            if (writeMode == WriteMode.Overwrite)
                 SharedStream.Seek(0);
-            }
-
+            else
+                SharedStream.Seek(0, SeekOrigin.End);
             SharedStream.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented));
         }
     }

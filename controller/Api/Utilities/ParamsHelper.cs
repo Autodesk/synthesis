@@ -8,9 +8,9 @@ namespace SynthesisAPI.Utilities
 {
     public static class ParamsHelper
     {
-        public static dynamic[] CollapseTuple<T1, T2>((T1 t1, T2 t2) t) => new dynamic[] {t.t1, t.t2};
-        public static dynamic[] CollapseTuple<T1, T2, T3>((T1 t1, T2 t2, T3 t3) t) => new dynamic[] {t.t1, t.t2, t.t3};
-        public static dynamic[] CollapseTuple<T1, T2, T3, T4>((T1 t1, T2 t2, T3 t3, T4 t4) t) => new dynamic[] {t.t1, t.t2, t.t3, t.t4};
+        public static dynamic[] CollapseTuple<T1, T2>((T1 t1, T2 t2) t) => new dynamic[] {t.t1!, t.t2!};
+        public static dynamic[] CollapseTuple<T1, T2, T3>((T1 t1, T2 t2, T3 t3) t) => new dynamic[] {t.t1!, t.t2!, t.t3!};
+        public static dynamic[] CollapseTuple<T1, T2, T3, T4>((T1 t1, T2 t2, T3 t3, T4 t4) t) => new dynamic[] {t.t1!, t.t2!, t.t3!, t.t4!};
 
         public static (T1, T2, T3, T4) PackParams<T1, T2, T3, T4>(params dynamic[] args)
         {
