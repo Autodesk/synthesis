@@ -19,7 +19,7 @@ def exportRobot():
     fillDocument(ao, protoDocument)
     protoDocumentAsDict = MessageToDict(protoDocument)
     # printHierarchy(ao.root_comp)
-    print()  # put breakpoint here
+    print()  # put breakpoint here and view the protoDocumentAsDict local variable
 
 
 class ExportCommand(apper.Fusion360CommandBase):
@@ -61,6 +61,8 @@ def fillDesign(ao, protoDesign):
     fillFakeRootOccurrence(ao.root_comp, protoDesign.hierarchyRoot)
 
 
+# -----------Occurrence Tree-----------
+
 def fillFakeRootOccurrence(rootComponent, protoOccur):
     protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
     protoOccur.header.name = rootComponent.name
@@ -99,7 +101,7 @@ def fillComponent(fusionComponent, protoComponent):
     protoComponent.materialId = fusionComponent.material.id
     fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
-    # ADD: fillMeshBodies ---> see method
+    # todo ADD: fillMeshBodies ---> see method
     # for childMesh in childComponent.meshBodies:
     #     fillMeshBodies(childMesh, component.meshBodies.add())
 
@@ -111,7 +113,7 @@ def fillMeshBody(fusionMeshBody, protoMeshBody):
     protoMeshBody.materialId = fusionMeshBody.material.id
     fillPhysicalProperties(fusionMeshBody.physicalProperties, protoMeshBody.physicalProperties)
     fillBoundingBox3D(fusionMeshBody.boundingBox, protoMeshBody.boundingBox)
-    # ADD: triangleMesh
+    # todo ADD: triangleMesh
 
 
 def fillTriangleMesh(fusionTriMesh, protoTriMesh):
@@ -136,7 +138,7 @@ def fillJoints(ao, protoJoints):
 
 def isJointCorrupted(fusionJoint):
     if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
-        print("WARNING: Ignoring corrupted joint!")
+        print("WARNING: Ignoring corrupted joint!")  # todo: show this message to the user once if there are one or more corrupted joints
         return True
     return False
 
@@ -152,7 +154,18 @@ def fillJoint(fusionJoint, protoJoint):
     protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceOne)
     protoJoint.occurrenceTwoUUID = getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceTwo)
 
-    # todo: fillJointMotion
+    fillJointMotionFuncSwitcher = {
+        0: fillRigidJointMotion,
+        1: fillRevoluteJointMotion,
+        2: fillSliderJointMotion,
+        3: fillCylindricalJointMotion,
+        4: fillPinSlotJointMotion,
+        5: fillPlanarJointMotion,
+        6: fillBallJointMotion,
+    }
+
+    fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionJoint.jointMotion.jointType, lambda: None)
+    fillJointMotionFunc(fusionJoint.jointMotion, protoJoint)
 
 
 def getJointOrigin(fusionJoint):
@@ -173,6 +186,89 @@ def getJointedOccurrenceUUID(fusionJoint, fusionOccur):
     return item_id(fusionOccur, ATTR_GROUP_NAME)
 
 
+def fillRigidJointMotion(fusionJointMotion, protoJoint):
+    protoJoint.rigidJointMotion.SetInParent()
+
+
+def fillRevoluteJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.revoluteJointMotion
+
+    fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
+    protoJointMotion.rotationValue = fusionJointMotion.rotationValue
+    fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
+
+
+def fillSliderJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.sliderJointMotion
+
+    fillVector3D(fusionJointMotion.slideDirectionVector, protoJointMotion.slideDirectionVector)
+    protoJointMotion.slideValue = fusionJointMotion.slideValue
+    fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
+
+
+def fillCylindricalJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.cylindricalJointMotion
+
+    fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
+    protoJointMotion.rotationValue = fusionJointMotion.rotationValue
+    fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
+    
+    protoJointMotion.slideValue = fusionJointMotion.slideValue
+    fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
+
+
+def fillPinSlotJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.pinSlotJointMotion
+
+    fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
+    protoJointMotion.rotationValue = fusionJointMotion.rotationValue
+    fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
+    
+    fillVector3D(fusionJointMotion.slideDirectionVector, protoJointMotion.slideDirectionVector)
+    protoJointMotion.slideValue = fusionJointMotion.slideValue
+    fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
+
+
+def fillPlanarJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.planarJointMotion
+
+    fillVector3D(fusionJointMotion.normalDirectionVector, protoJointMotion.normalDirectionVector)
+    
+    fillVector3D(fusionJointMotion.primarySlideDirectionVector, protoJointMotion.primarySlideDirectionVector)
+    protoJointMotion.primarySlideValue = fusionJointMotion.primarySlideValue
+    fillJointLimits(fusionJointMotion.primarySlideLimits, protoJointMotion.primarySlideLimits)
+    
+    fillVector3D(fusionJointMotion.secondarySlideDirectionVector, protoJointMotion.secondarySlideDirectionVector)
+    protoJointMotion.secondarySlideValue = fusionJointMotion.secondarySlideValue
+    fillJointLimits(fusionJointMotion.secondarySlideLimits, protoJointMotion.secondarySlideLimits)
+
+    protoJointMotion.rotationValue = fusionJointMotion.rotationValue
+    fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
+
+
+def fillBallJointMotion(fusionJointMotion, protoJoint):
+    protoJointMotion = protoJoint.ballJointMotion
+
+    fillVector3D(fusionJointMotion.rollDirectionVector, protoJointMotion.rollDirectionVector)
+    protoJointMotion.rollValue = fusionJointMotion.rollValue
+    fillJointLimits(fusionJointMotion.rollLimits, protoJointMotion.rollLimits)
+    
+    fillVector3D(fusionJointMotion.pitchDirectionVector, protoJointMotion.pitchDirectionVector)
+    protoJointMotion.pitchValue = fusionJointMotion.pitchValue
+    fillJointLimits(fusionJointMotion.pitchLimits, protoJointMotion.pitchLimits)
+
+    fillVector3D(fusionJointMotion.yawDirectionVector, protoJointMotion.yawDirectionVector)
+    protoJointMotion.yawValue = fusionJointMotion.yawValue
+    fillJointLimits(fusionJointMotion.yawLimits, protoJointMotion.yawLimits)
+
+def fillJointLimits(fusionJointLimits, protoJointLimits):
+    protoJointLimits.isMaximumValueEnabled = fusionJointLimits.isMaximumValueEnabled
+    protoJointLimits.isMinimumValueEnabled = fusionJointLimits.isMinimumValueEnabled
+    protoJointLimits.isRestValueEnabled = fusionJointLimits.isRestValueEnabled
+    protoJointLimits.maximumValue = fusionJointLimits.maximumValue
+    protoJointLimits.minimumValue = fusionJointLimits.minimumValue
+    protoJointLimits.restValue = fusionJointLimits.restValue
+
 # -----------Materials-----------
 
 def fillMaterials(ao, protoMaterials):
@@ -184,7 +280,7 @@ def fillMaterial(childMaterial, protoMaterial):
     protoMaterial.id = childMaterial.id
     protoMaterial.name = childMaterial.name
     protoMaterial.appearanceId = childMaterial.appearance.id
-    # add protobuf def: MaterialProperties properties
+    # todo add protobuf def: MaterialProperties properties
     # fillMaterialsProperties()
 
 
@@ -205,17 +301,17 @@ def fillAppearance(fusionAppearance, protoAppearance):
     protoAppearance.id = fusionAppearance.id
     protoAppearance.name = fusionAppearance.name
     protoAppearance.hasTexture = fusionAppearance.hasTexture
-    # add protobuf def: AppearanceProperties properties
+    # todo add protobuf def: AppearanceProperties properties
 
 
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
-    pass
+    pass  # todo
 
 
 # -----------Generic-----------
 
 def fillColor(fusionColor, protoColor):
-    pass
+    pass  # todo
 
 
 def fillBoundingBox3D(fusionBoundingBox, protoBoundingBox):

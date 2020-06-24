@@ -168,8 +168,8 @@ message PlanarJointMotion {
     Vector3D secondarySlideDirectionVector = 5;
     double secondarySlideValue = 6;
     JointLimits secondarySlideLimits = 7;
-    double slideValue = 8;
-    JointLimits slideLimits = 9;
+    double rotationValue = 8;
+    JointLimits rotationLimits = 9;
 }
 
 message BallJointMotion {
