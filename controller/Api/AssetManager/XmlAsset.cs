@@ -41,9 +41,14 @@ namespace SynthesisAPI.AssetManager
         public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
             if (writeMode == WriteMode.Overwrite)
+            {
                 SharedStream.Seek(0);
+                SharedStream.SetLength(0);
+            }
             else
+            {
                 SharedStream.Seek(0, SeekOrigin.End);
+            }
 
             using (var writer = new StringWriter())
             {

@@ -39,6 +39,47 @@ namespace SynthesisAPI.Utilities
 
         private BinaryWriter Writer { get; set; }
 
+        public void SetLength(long len)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.SetLength(len);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+        }
+
+        public bool TrySetLength(long len)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.SetLength(len);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
         {
             if (RwLock.TryEnterReadLock(Timeout))
