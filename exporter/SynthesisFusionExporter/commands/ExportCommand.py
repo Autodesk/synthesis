@@ -4,6 +4,7 @@ from apper import AppObjects, item_id
 from ..proto.synthesis_importbuf_pb2 import *
 from google.protobuf.json_format import MessageToDict, MessageToJson
 from ..utils.DebugHierarchy import printHierarchy
+import time
 
 ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
 
@@ -31,34 +32,32 @@ class ExportCommand(apper.Fusion360CommandBase):
 # -----------Document-----------
 
 def fillDocument(ao, protoDocument):
-    fillUserMeta(ao, protoDocument.userMeta)
-    fillDocumentMeta(ao, protoDocument.documentMeta)
-    fillDesign(ao, protoDocument.design)
+    fillUserMeta(ao.app.currentUser, protoDocument.userMeta)
+    fillDocumentMeta(ao.document, protoDocument.documentMeta)
+    fillDesign(ao.design, protoDocument.design)
 
 
-def fillUserMeta(ao, protoUserMeta):
-    currentUser = ao.app.currentUser
-    protoUserMeta.userName = currentUser.userName
-    protoUserMeta.id = currentUser.userId
-    protoUserMeta.displayName = currentUser.displayName
-    protoUserMeta.email = currentUser.email
+def fillUserMeta(fusionCurrentUser, protoUserMeta):
+    protoUserMeta.userName = fusionCurrentUser.userName
+    protoUserMeta.id = fusionCurrentUser.userId
+    protoUserMeta.displayName = fusionCurrentUser.displayName
+    protoUserMeta.email = fusionCurrentUser.email
 
 
-def fillDocumentMeta(ao, protoDocumentMeta):
-    document = ao.document
-    protoDocumentMeta.fusionVersion = document.version
-    protoDocumentMeta.name = document.name
-    protoDocumentMeta.versionNumber = document.dataFile.versionNumber
-    protoDocumentMeta.description = document.dataFile.description
-    protoDocumentMeta.id = document.dataFile.id
+def fillDocumentMeta(fusionDocument, protoDocumentMeta):
+    protoDocumentMeta.fusionVersion = fusionDocument.version
+    protoDocumentMeta.name = fusionDocument.name
+    protoDocumentMeta.versionNumber = fusionDocument.dataFile.versionNumber
+    protoDocumentMeta.description = fusionDocument.dataFile.description
+    protoDocumentMeta.id = fusionDocument.dataFile.id
+    protoDocumentMeta.exportTime = int(time.time())
 
-
-def fillDesign(ao, protoDesign):
-    fillComponents(ao, protoDesign.components)
-    fillJoints(ao, protoDesign.joints)
-    fillMaterials(ao, protoDesign.materials)
-    fillAppearances(ao, protoDesign.appearances)
-    fillFakeRootOccurrence(ao.root_comp, protoDesign.hierarchyRoot)
+def fillDesign(fusionDesign, protoDesign):
+    fillComponents(fusionDesign.allComponents, protoDesign.components)
+    fillJoints(fusionDesign.rootComponent.allJoints, protoDesign.joints)
+    fillMaterials(fusionDesign.materials, protoDesign.materials)
+    fillAppearances(fusionDesign.appearances, protoDesign.appearances)
+    fillFakeRootOccurrence(fusionDesign.rootComponent, protoDesign.hierarchyRoot)
 
 
 # -----------Occurrence Tree-----------
@@ -86,12 +85,12 @@ def fillOccurrence(occur, protoOccur):
 
 # -----------Components-----------
 
-def fillComponents(ao, protoComponents):
-    for fusionComponent in ao.design.allComponents:
-        fillComponent(ao, fusionComponent, protoComponents.add())
+def fillComponents(fusionComponents, protoComponents):
+    for fusionComponent in fusionComponents:
+        fillComponent(fusionComponent, protoComponents.add())
 
 
-def fillComponent(ao, fusionComponent, protoComponent):
+def fillComponent(fusionComponent, protoComponent):
     protoComponent.header.uuid = item_id(fusionComponent, ATTR_GROUP_NAME)
     protoComponent.header.name = fusionComponent.name
     protoComponent.header.description = fusionComponent.description
@@ -101,24 +100,24 @@ def fillComponent(ao, fusionComponent, protoComponent):
     protoComponent.materialId = fusionComponent.material.id
     fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
-    for brepBody in fusionComponent.bRepBodies:
-        fillMeshBodyFromBrep(brepBody, protoComponent.meshBodies.add())
+    for bRepBody in fusionComponent.bRepBodies:
+        fillMeshBodyFromBrep(bRepBody, protoComponent.meshBodies.add())
 
 
-def fillMeshBodyFromBrep(fusionBrepBody, protoMeshBody):
-    protoMeshBody.header.uuid = item_id(fusionBrepBody, ATTR_GROUP_NAME)
-    protoMeshBody.header.name = fusionBrepBody.name
-    protoMeshBody.appearanceId = fusionBrepBody.appearance.id
-    protoMeshBody.materialId = fusionBrepBody.material.id
-    fillPhysicalProperties(fusionBrepBody.physicalProperties, protoMeshBody.physicalProperties)
-    fillBoundingBox3D(fusionBrepBody.boundingBox, protoMeshBody.boundingBox3D)
-    fillTriangleMesh(fusionBrepBody, protoMeshBody.triangleMesh)
+def fillMeshBodyFromBrep(fusionBRepBody, protoMeshBody):
+    protoMeshBody.header.uuid = item_id(fusionBRepBody, ATTR_GROUP_NAME)
+    protoMeshBody.header.name = fusionBRepBody.name
+    protoMeshBody.appearanceId = fusionBRepBody.appearance.id
+    protoMeshBody.materialId = fusionBRepBody.material.id
+    fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
+    fillBoundingBox3D(fusionBRepBody.boundingBox, protoMeshBody.boundingBox3D)
+    fillTriangleMeshFromBrep(fusionBRepBody, protoMeshBody.triangleMesh)
 
-def fillTriangleMesh(fusionTriangleMesh, protoTriangleMesh):
-    # calculate triangle mesh
-    meshManager = fusionTriangleMesh.meshManager
-    calculator = meshManager.createMeshCalculator()
-    mesh = calculator.calculate()
+
+def fillTriangleMeshFromBrep(fusionBRepBody, protoTriangleMesh):
+    meshCalculator = fusionBRepBody.meshManager.createMeshCalculator()
+    meshCalculator.setQuality(11)  # todo mesh quality settings
+    mesh = meshCalculator.calculate()
 
     protoTriangleMesh.vertices.extend(mesh.nodeCoordinatesAsDouble)
     protoTriangleMesh.normals.extend(mesh.nodeCoordinatesAsDouble)
@@ -136,8 +135,8 @@ def fillPhysicalProperties(fusionPhysical, protoPhysical):
 
 # -----------Joints-----------
 
-def fillJoints(ao, protoJoints):
-    for fusionJoint in ao.root_comp.allJoints:
+def fillJoints(fusionJoints, protoJoints):
+    for fusionJoint in fusionJoints:
         if isJointInvalid(fusionJoint): continue
         fillJoint(fusionJoint, protoJoints.add())
 
@@ -221,7 +220,7 @@ def fillCylindricalJointMotion(fusionJointMotion, protoJoint):
     fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
     protoJointMotion.rotationValue = fusionJointMotion.rotationValue
     fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-    
+
     protoJointMotion.slideValue = fusionJointMotion.slideValue
     fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
 
@@ -232,7 +231,7 @@ def fillPinSlotJointMotion(fusionJointMotion, protoJoint):
     fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
     protoJointMotion.rotationValue = fusionJointMotion.rotationValue
     fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-    
+
     fillVector3D(fusionJointMotion.slideDirectionVector, protoJointMotion.slideDirectionVector)
     protoJointMotion.slideValue = fusionJointMotion.slideValue
     fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
@@ -242,11 +241,11 @@ def fillPlanarJointMotion(fusionJointMotion, protoJoint):
     protoJointMotion = protoJoint.planarJointMotion
 
     fillVector3D(fusionJointMotion.normalDirectionVector, protoJointMotion.normalDirectionVector)
-    
+
     fillVector3D(fusionJointMotion.primarySlideDirectionVector, protoJointMotion.primarySlideDirectionVector)
     protoJointMotion.primarySlideValue = fusionJointMotion.primarySlideValue
     fillJointLimits(fusionJointMotion.primarySlideLimits, protoJointMotion.primarySlideLimits)
-    
+
     fillVector3D(fusionJointMotion.secondarySlideDirectionVector, protoJointMotion.secondarySlideDirectionVector)
     protoJointMotion.secondarySlideValue = fusionJointMotion.secondarySlideValue
     fillJointLimits(fusionJointMotion.secondarySlideLimits, protoJointMotion.secondarySlideLimits)
@@ -261,7 +260,7 @@ def fillBallJointMotion(fusionJointMotion, protoJoint):
     fillVector3D(fusionJointMotion.rollDirectionVector, protoJointMotion.rollDirectionVector)
     protoJointMotion.rollValue = fusionJointMotion.rollValue
     fillJointLimits(fusionJointMotion.rollLimits, protoJointMotion.rollLimits)
-    
+
     fillVector3D(fusionJointMotion.pitchDirectionVector, protoJointMotion.pitchDirectionVector)
     protoJointMotion.pitchValue = fusionJointMotion.pitchValue
     fillJointLimits(fusionJointMotion.pitchLimits, protoJointMotion.pitchLimits)
@@ -269,6 +268,7 @@ def fillBallJointMotion(fusionJointMotion, protoJoint):
     fillVector3D(fusionJointMotion.yawDirectionVector, protoJointMotion.yawDirectionVector)
     protoJointMotion.yawValue = fusionJointMotion.yawValue
     fillJointLimits(fusionJointMotion.yawLimits, protoJointMotion.yawLimits)
+
 
 def fillJointLimits(fusionJointLimits, protoJointLimits):
     protoJointLimits.isMaximumValueEnabled = fusionJointLimits.isMaximumValueEnabled
@@ -278,17 +278,18 @@ def fillJointLimits(fusionJointLimits, protoJointLimits):
     protoJointLimits.minimumValue = fusionJointLimits.minimumValue
     protoJointLimits.restValue = fusionJointLimits.restValue
 
+
 # -----------Materials-----------
 
-def fillMaterials(ao, protoMaterials):
-    for childMaterial in ao.design.materials:
-        fillMaterial(childMaterial, protoMaterials.add())
+def fillMaterials(fusionMaterials, protoMaterials):
+    for fusionMaterial in fusionMaterials:
+        fillMaterial(fusionMaterial, protoMaterials.add())
 
 
-def fillMaterial(childMaterial, protoMaterial):
-    protoMaterial.id = childMaterial.id
-    protoMaterial.name = childMaterial.name
-    protoMaterial.appearanceId = childMaterial.appearance.id
+def fillMaterial(fusionMaterial, protoMaterial):
+    protoMaterial.id = fusionMaterial.id
+    protoMaterial.name = fusionMaterial.name
+    protoMaterial.appearanceId = fusionMaterial.appearance.id
     # todo add protobuf def: MaterialProperties properties
     # fillMaterialsProperties()
 
@@ -301,8 +302,8 @@ def fillMaterialsProperties(fusionMaterials, protoMaterials):
 
 # -----------Appearances-----------
 
-def fillAppearances(ao, protoAppearances):
-    for childAppearance in ao.design.appearances:
+def fillAppearances(fusionAppearances, protoAppearances):
+    for childAppearance in fusionAppearances:
         fillAppearance(childAppearance, protoAppearances.add())
 
 
