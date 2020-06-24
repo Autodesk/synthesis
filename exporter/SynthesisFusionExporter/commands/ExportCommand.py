@@ -112,13 +112,14 @@ def fillMeshBodyFromBrep(fusionBrepBody, protoMeshBody):
     protoMeshBody.materialId = fusionBrepBody.material.id
     fillPhysicalProperties(fusionBrepBody.physicalProperties, protoMeshBody.physicalProperties)
     fillBoundingBox3D(fusionBrepBody.boundingBox, protoMeshBody.boundingBox3D)
-    
+    fillTriangleMesh(fusionBrepBody, protoMeshBody.triangleMesh)
+
+def fillTriangleMesh(fusionTriangleMesh, protoTriangleMesh):
     # calculate triangle mesh
-    meshManager = fusionBrepBody.meshManager
+    meshManager = fusionTriangleMesh.meshManager
     calculator = meshManager.createMeshCalculator()
     mesh = calculator.calculate()
 
-    protoTriangleMesh = protoMeshBody.triangleMesh
     protoTriangleMesh.vertices.extend(mesh.nodeCoordinatesAsDouble)
     protoTriangleMesh.normals.extend(mesh.nodeCoordinatesAsDouble)
     protoTriangleMesh.indices.extend(mesh.nodeIndices)
