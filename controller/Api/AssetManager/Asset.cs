@@ -10,7 +10,7 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Base class for any read-only data class in the vitual file system
     /// </summary>
-    public abstract class Asset : IAsset
+    public abstract class Asset : IEntry
     {
         /// <summary>
         /// Initialize Asset data
@@ -18,36 +18,34 @@ namespace SynthesisAPI.AssetManager
         /// <param name="name"></param>
         /// <param name="owner"></param>
         /// <param name="perm"></param>
-        internal void Init(string name, Guid owner, Permissions perm)
+        internal void Init(string name, Guid owner, Permissions perm, string source_path)
         {
             _name = name;
             _owner = owner;
             _permissions = perm;
             // Leave _parent as null
+            SourcePath = source_path;
         }
 
-        public string Name => ((IResource)this).Name;
-        public Guid Owner => ((IResource)this).Owner;
-        public Permissions Permissions => ((IResource)this).Permissions;
-        public Directory Parent => ((IResource)this).Parent;
+        public string Name => ((IEntry)this).Name;
+        public Guid Owner => ((IEntry)this).Owner;
+        public Permissions Permissions => ((IEntry)this).Permissions;
+        public Directory Parent => ((IEntry)this).Parent;
+
+        public string SourcePath { get; private set; }
 
         private string _name { get; set; }
         private Guid _owner { get; set; }
         private Permissions _permissions { get; set; }
         private Directory _parent { get; set; }
 
-        string IResource.Name { get => _name; set => _name = value; }
-        Guid IResource.Owner { get => _owner; set => _owner = value; }
-        Permissions IResource.Permissions { get => _permissions; set => _permissions = value; }
-        Directory IResource.Parent { get => _parent; set => _parent = value; }
+        string IEntry.Name { get => _name; set => _name = value; }
+        Guid IEntry.Owner { get => _owner; set => _owner = value; }
+        Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
+        Directory IEntry.Parent { get => _parent; set => _parent = value; }
 
-        void IResource.Delete() { } // Doesn't do anything by default 
+        void IEntry.Delete() { } // Doesn't do anything by default 
 
-        IResource IAsset.Load(byte[] data)
-        {
-            return Load(data);
-        }
-
-        public abstract IResource Load(byte[] data);
+        public abstract IEntry Load(byte[] data);
     }
 }

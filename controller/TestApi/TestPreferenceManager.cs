@@ -61,6 +61,7 @@ namespace TestApi
 
         public static void Test()
         {
+            PreferenceManager.Load();
             TestSavingPreferences();
             TestLoadingPreferences();
             TestSavingPreferences();

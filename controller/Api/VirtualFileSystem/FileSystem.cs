@@ -29,7 +29,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="path"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IResource
+        public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
@@ -47,7 +47,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="path"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        public static IResource? AddResource(string path, IResource resource)
+        public static IEntry? AddResource(string path, IEntry resource)
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
@@ -98,7 +98,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static TResource? Traverse<TResource>(string path) where TResource : class, IResource
+        public static TResource? Traverse<TResource>(string path) where TResource : class, IEntry
         {
             return Instance.RootNode.Traverse<TResource>(path);
         }
@@ -109,7 +109,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IResource? Traverse(string[] path)
+        public static IEntry? Traverse(string[] path)
         {
             return Instance.RootNode.Traverse(path);
         }
@@ -119,9 +119,85 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IResource? Traverse(string path)
+        public static IEntry? Traverse(string path)
         {
             return Instance.RootNode.Traverse(path);
+        }
+
+        /// <summary>
+        /// Recursively search the virtual file system for an entry with a given name
+        /// </summary>
+        /// <typeparam name="TEntry"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static TEntry? Search<TEntry>(string name) where TEntry : class, IEntry
+        {
+            return Search<TEntry>(Instance.RootNode, name);
+        }
+
+        /// <summary>
+        /// Recursively search a directory for an entry with a given name
+        /// </summary>
+        /// <typeparam name="TEntry"></typeparam>
+        /// <param name="parent"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static TEntry? Search<TEntry>(Directory parent, string name) where TEntry : class, IEntry
+        {
+            var entry = parent[name];
+            if (entry != null && entry is TEntry)
+            {
+                return (TEntry?)entry;
+            }
+            foreach (var e in parent.Entries)
+            {
+                if (e.Value is Directory directory)
+                {
+                    var result = Search<TEntry>(directory, name);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Recursively search the virtual file system for an entry with a given name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static IEntry? Search(string name)
+        {
+            return Search(Instance.RootNode, name);
+        }
+
+        /// <summary>
+        /// Recursively search a directory for an entry with a given name
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static IEntry? Search(Directory parent, string name)
+        {
+            var asset = parent[name];
+            if (asset != null)
+            {
+                return asset;
+            }
+            foreach (var e in parent.Entries)
+            {
+                if (e.Value is Directory directory)
+                {
+                    var result = Search(directory, name);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+            return null;
         }
 
         private class Inner

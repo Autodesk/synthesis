@@ -12,50 +12,40 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Representation of a JSON asset
     /// </summary>
-    public class JSONAsset : Asset
+    public class JSONAsset : TextAsset
     {
-        public JSONAsset(string name, Guid owner, Permissions perm)
-        {
-            Init(name, owner, perm);
-        }
+        public JSONAsset(string name, Guid owner, Permissions perm, string source_path) :
+            base(name, owner, perm, source_path) { }
 
-        public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
-        {
-            return stream.Seek(offset, loc);
-        }
-
-        public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
+        public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true) // TODO
         {
             long? returnPosition = null;
             if (offset != long.MaxValue)
             {
                 if (retainPosition)
                 {
-                    returnPosition = stream.Position;
+                    returnPosition = SharedStream.Stream.Position;
                 }
-                Seek(offset, loc);
+                SharedStream.Seek(offset, loc);
             }
 
-            TObject obj = JsonConvert.DeserializeObject<TObject>(reader.ReadToEnd());
+            TObject obj = JsonConvert.DeserializeObject<TObject>(SharedStream.ReadToEnd());
 
             if (returnPosition != null)
             {
-                Seek(returnPosition.Value);
+                SharedStream.Seek(returnPosition.Value);
             }
             return obj;
         }
 
-        public void Delete() { }
-
-        public override IResource Load(byte[] data)
+        public void Serialize<TObject>(TObject obj, WriteMode write_mode = WriteMode.Overwrite)
         {
-            stream = new MemoryStream(data, false);
-            reader = new StreamReader(stream);
+            if (write_mode == WriteMode.Overwrite)
+            {
+                SharedStream.Seek(0);
+            }
 
-            return this;
+            SharedStream.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented));
         }
-
-        private StreamReader reader;
-        private MemoryStream stream;
     }
 }

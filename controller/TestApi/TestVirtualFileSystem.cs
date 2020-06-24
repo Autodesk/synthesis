@@ -25,21 +25,6 @@ namespace TestApi
             Console.WriteLine(ReferenceEquals(parent, test_parent));
         }
 
-        public static void TestRawEntry()
-        {
-            RawEntry raw_entry = new RawEntry("test.txt", Program.TestGuid, Permissions.PublicRead, "files/test.txt");
-            FileSystem.AddResource("/modules/", raw_entry).Load();
-
-            string str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
-            Console.WriteLine(str);
-
-            raw_entry.SharedStream.WriteBytes("Goodbye World!");
-            raw_entry.SharedStream.SetStreamPosition(0);
-
-            str = Encoding.UTF8.GetString(raw_entry.SharedStream.ReadBytes(30));
-            Console.WriteLine(str);
-        }
-
         public static void TestMaxDepth()
         {
             string path = "";
@@ -62,7 +47,6 @@ namespace TestApi
         public static void Test()
         {
             TestDirectory();
-            TestRawEntry();
             TestMaxDepth();
         }
     }

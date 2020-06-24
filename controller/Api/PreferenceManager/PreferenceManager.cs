@@ -9,11 +9,12 @@ namespace SynthesisAPI.PreferenceManager
 {
     public static class PreferenceManager
     {
-        private static Dictionary<Guid, Dictionary<string, object>> preferences;
+        private static Dictionary<Guid, Dictionary<string, object>> preferences = new Dictionary<Guid, Dictionary<string, object>>();
 
         private static (string path, string file) VirtualFilePath = ("/modules", "preferences.json");
-        private static string ActualFilePath = FileSystem.BasePath + "files" + Path.DirectorySeparatorChar + "preferences.json";
+        private static string ActualFilePath = "preferences.json";
         private static Guid MyGuid = Guid.NewGuid();
+        private static JSONAsset entry;
 
         public static string BasePath {
             get => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + System.IO.Path.DirectorySeparatorChar
@@ -22,8 +23,6 @@ namespace SynthesisAPI.PreferenceManager
 
         static PreferenceManager()
         {
-            preferences = new Dictionary<Guid, Dictionary<string, object>>();
-
             Load();
         }
 
@@ -38,7 +37,7 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="value">Preference value</param>
         public static void SetPreference<TValueType>(Guid owner, string key, TValueType value)
         {
-            if (!preferences.ContainsKey(owner)) 
+            if (!preferences.ContainsKey(owner))
                 preferences[owner] = new Dictionary<string, object>();
             preferences[owner][key] = value;
             modified = true;
@@ -133,24 +132,12 @@ namespace SynthesisAPI.PreferenceManager
             if (!overrideChanges && modified)
                 return false;
 
-            JSONEntry entry;
-
-            if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
+            if (entry == null)
             {
-                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONEntry;
-            } else
-            {
-                entry = new JSONEntry(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
-                FileSystem.AddResource(VirtualFilePath.path, entry);
+                entry = AssetManager.AssetManager.ImportOrCreate<JSONAsset>("text/json", VirtualFilePath.path, VirtualFilePath.file, Guid.Empty, Permissions.PublicWrite, ActualFilePath);
             }
 
-            Dictionary<Guid, Dictionary<string, object>> temp = null;
-            if (!entry.Deserialize(MyGuid, out temp))
-            {
-                return false;
-            }
-
-            preferences = temp;
+            preferences = entry.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
             
             SavedOrReset();
 
@@ -163,22 +150,20 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
         {
-            JSONEntry entry;
+            JSONAsset entry;
 
             if (FileSystem.ResourceExists(VirtualFilePath.path, VirtualFilePath.file))
             {
-                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONEntry;
+                entry = FileSystem.Traverse(VirtualFilePath.path + '/' + VirtualFilePath.file) as JSONAsset;
             }
             else
             {
-                entry = new JSONEntry(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
+                entry = new JSONAsset(VirtualFilePath.file, MyGuid, Permissions.Private, ActualFilePath);
                 FileSystem.AddResource(VirtualFilePath.path, entry);
             }
 
-            if (!entry.Serialize(preferences, MyGuid))
-            {
-                return false;
-            }
+            entry.Serialize(preferences);
+            entry.SaveToFile();
 
             SavedOrReset();
 

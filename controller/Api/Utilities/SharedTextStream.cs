@@ -34,11 +34,52 @@ namespace SynthesisAPI.Utilities
 
         public int Timeout { get; set; } // ms
 
-        private TStream Stream { get; set; }
+        public TStream Stream { get; private set; }
 
         private StreamReader Reader { get; set; }
 
         private StreamWriter Writer { get; set; }
+
+
+        public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Stream.Seek(offset, loc);
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+        }
+
+        public long? TrySeek(long offset, SeekOrigin loc = SeekOrigin.Begin)
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Stream.Seek(offset, loc);
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+        }
 
         public string ReadLine()
         {
@@ -66,6 +107,44 @@ namespace SynthesisAPI.Utilities
                 try
                 {
                     return Reader.ReadLine();
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public string ReadToEnd()
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadToEnd();
+                }
+                finally
+                {
+                    RWLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public string TryReadToEnd()
+        {
+            if (RWLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadToEnd();
                 }
                 finally
                 {

@@ -10,27 +10,58 @@ namespace SynthesisAPI.VirtualFileSystem
     /// <summary>
     /// A wrapper for a dictionary of resources that gives structure to the virtual file system
     /// </summary>
-    public class Directory : Resource
+    public class Directory : IEntry
     {
+        /// <summary>
+        /// Initialize Resource data
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="owner"></param>
+        /// <param name="perm"></param>
+        internal void Init(string name, Guid owner, Permissions perm)
+        {
+            _name = name;
+            _owner = owner;
+            _permissions = perm;
+            // Leave _parent as null
+        }
+
+        public virtual void Delete() { } // Doesn't do anything by default 
+
+        public string Name => ((IEntry)this).Name;
+        public Guid Owner => ((IEntry)this).Owner;
+        public Permissions Permissions => ((IEntry)this).Permissions;
+        public Directory Parent => ((IEntry)this).Parent;
+
+        private string _name { get; set; }
+        private Guid _owner { get; set; }
+        private Permissions _permissions { get; set; }
+        private Directory _parent { get; set; }
+
+        string IEntry.Name { get => _name; set => _name = value; }
+        Guid IEntry.Owner { get => _owner; set => _owner = value; }
+        Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
+        Directory IEntry.Parent { get => _parent; set => _parent = value; }
+
         public Directory(string name) : this(name, Guid.Empty, Permissions.Private) { }
 
         public Directory(string name, Guid owner, Permissions perm)
         {
             Init(name, owner, perm);
-            Entries = new Dictionary<string, IResource>();
+            Entries = new Dictionary<string, IEntry>();
             Entries.Add("", this);
             Entries.Add(".", this);
             Entries.Add("..", null);
         }
 
-        internal Dictionary<string, IResource> Entries;
+        internal Dictionary<string, IEntry> Entries;
         
         /// <summary>
         /// Traverse this Directory and subdirectories to a resource given a file path
         /// </summary>
         /// <param name="subpaths"></param>
         /// <returns></returns>
-        public IResource? Traverse(string[] subpaths)
+        public IEntry? Traverse(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -83,7 +114,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public IResource? Traverse(string path)
+        public IEntry? Traverse(string path)
         {
             if (path.Length > 0 && path[path.Length - 1] == '/')
             {
@@ -93,7 +124,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return Traverse(path.Split('/'));
         }
 
-        public TResource? Traverse<TResource>(string path) where TResource : class, IResource
+        public TResource? Traverse<TResource>(string path) where TResource : class, IEntry
         {
             if (path[path.Length - 1] == '/')
             {
@@ -103,7 +134,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return (TResource?)Traverse(path.Split('/'));
         }
 
-        private IResource? TryGetEntry(string key)
+        private IEntry? TryGetEntry(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
         }
@@ -114,7 +145,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <typeparam name="TResource"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public TResource AddResource<TResource>(TResource value) where TResource : IResource
+        public TResource AddResource<TResource>(TResource value) where TResource : IEntry
         {
             return (TResource)AddResourceImpl(value);
         }
@@ -124,12 +155,12 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private IResource AddResource(IResource value)
+        private IEntry AddResource(IEntry value)
         {
             return AddResourceImpl(value);
         }
 
-        private IResource AddResourceImpl(IResource value)
+        private IEntry AddResourceImpl(IEntry value)
         {
             if (Entries.ContainsKey(value.Name))
             {
@@ -179,12 +210,10 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries.ContainsKey(key);
         }
 
-        public IResource? this[string name]
+        public IEntry? this[string name]
         {
             get => TryGetEntry(name);
             set => Entries[name] = value;
         }
-
-        public override void Delete() { }
     }
 }

@@ -5,7 +5,7 @@ namespace SynthesisAPI.VirtualFileSystem
     /// <summary>
     /// Any type of resource managed by the virtual file system
     /// </summary>
-    public interface IResource
+    public interface IEntry
     {
         /// <summary>
         /// Name of the resource (used as its identifier in the virtual file system)

@@ -12,18 +12,11 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Representation of an XML asset
     /// </summary>
-    public class XMLAsset : Asset
+    public class XMLAsset : TextAsset
     {
-        public XMLAsset(string name, Guid owner, Permissions perm)
-        {
-            Init(name, owner, perm);
-        }
+        public XMLAsset(string name, Guid owner, Permissions perm, string source_path) :
+            base(name, owner, perm, source_path) { }
 
-        public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
-        {
-            return stream.Seek(offset, loc);
-        }
-        
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
         {
             long? returnPosition = null;
@@ -31,31 +24,18 @@ namespace SynthesisAPI.AssetManager
             {
                 if(retainPosition)
                 {
-                    returnPosition = stream.Position;
+                    returnPosition = SharedStream.Stream.Position;
                 }
-                Seek(offset, loc);
+                SharedStream.Seek(offset, loc);
             }
 
-            TObject obj = (TObject)new XmlSerializer(typeof(TObject)).Deserialize(reader);
+            TObject obj = (TObject)new XmlSerializer(typeof(TObject)).Deserialize(new StreamReader(SharedStream.Stream));
 
             if (returnPosition != null)
             {
-                Seek(returnPosition.Value);
+                SharedStream.Seek(returnPosition.Value);
             }
             return obj;
         }
-
-        public void Delete() { }
-
-        public override IResource Load(byte[] data)
-        {
-            stream = new MemoryStream(data, false);
-            reader = new StreamReader(stream);
-            
-            return this;
-        }
-
-        private StreamReader reader;
-        private MemoryStream stream;
     }
 }

@@ -33,19 +33,19 @@ namespace SynthesisAPI.Utilities
 
         public int Timeout { get; set; } // ms
 
-        private TStream Stream { get; set; }
+        public TStream Stream { get; private set; }
 
         private BinaryReader Reader { get; set; }
 
         private BinaryWriter Writer { get; set; }
 
-        public void SetStreamPosition(long pos)
+        public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
         {
             if (RWLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
-                    Stream.Position = pos;
+                    return Stream.Seek(offset, loc);
                 }
                 finally
                 {
@@ -56,26 +56,27 @@ namespace SynthesisAPI.Utilities
             {
                 throw new Exception();
             }
+            
         }
 
-        public bool TrySetStreamPosition(long pos)
+        public long? TrySeek(long offset, SeekOrigin loc = SeekOrigin.Begin)
         {
             if (RWLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
-                    Stream.Position = pos;
+                    return Stream.Seek(offset, loc);
                 }
                 finally
                 {
                     RWLock.ExitReadLock();
                 }
-                return true;
             }
             else
             {
-                return false;
+                return null;
             }
+
         }
 
         public byte[] ReadBytes(int count)
@@ -120,6 +121,16 @@ namespace SynthesisAPI.Utilities
             {
                 return null;
             }
+        }
+
+        public byte[] ReadToEnd()
+        {
+            return ReadBytes((int)Stream.Length);
+        }
+
+        public byte[]? TryReadToEnd()
+        {
+            return TryReadBytes((int)Stream.Length);
         }
 
         public void WriteBytes(byte[] buffer)
