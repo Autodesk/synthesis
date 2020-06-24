@@ -248,7 +248,7 @@ namespace SynthesisAPI.AssetManager
                 {
                     if (args.Length != 0)
                     {
-                        throw new Exception();
+                        throw new Exception("Import of text/plain asset: wrong number of arguments");
                     }
 
                     TextAsset newAsset = new TextAsset(name, owner, perms, sourcePath);
@@ -260,7 +260,7 @@ namespace SynthesisAPI.AssetManager
                         dynamic[] args) =>
                     {
                         if (args.Length != 0)
-                            throw new Exception();
+                            throw new Exception("Import of text/xml asset: wrong number of arguments");
                         XmlAsset newAsset = new XmlAsset(name, owner, perm, sourcePath);
                         return (Asset?) FileSystem.AddResource(targetPath, newAsset.Load(data));
                     });
@@ -270,7 +270,7 @@ namespace SynthesisAPI.AssetManager
                         dynamic[] args) =>
                 {
                     if (args.Length != 0)
-                        throw new Exception();
+                        throw new Exception("Import of text/json asset: wrong number of arguments");
                     JsonAsset newAsset = new JsonAsset(name, owner, perm, sourcePath);
                     return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
                 });
@@ -290,7 +290,7 @@ namespace SynthesisAPI.AssetManager
                 var types = assetType.Split('/');
                 if (types.Length != 2)
                 {
-                    throw new Exception();
+                    throw new Exception("Splitting asset type: wrong type format");
                 }
                 return types;
             }
@@ -305,7 +305,7 @@ namespace SynthesisAPI.AssetManager
             {
                 if(AssetHandlers.ContainsKey(type) && AssetHandlers[type].ContainsKey(subtype))
                 {
-                    throw new Exception();
+                    throw new Exception($"Registering duplicate handler for {type}/{subtype}");
                 }
 
                 if (!AssetHandlers.ContainsKey(type))
@@ -335,7 +335,7 @@ namespace SynthesisAPI.AssetManager
             {
                 if (!AssetHandlers.ContainsKey(type) || !AssetHandlers[type].ContainsKey(subtype))
                 {
-                    throw new Exception();
+                    throw new Exception($"Importing asset with unregistered type {type}/{subtype}");
                 }
 
                 string path = FileSystem.BasePath + sourcePath;

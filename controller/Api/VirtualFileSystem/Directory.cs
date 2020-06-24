@@ -23,7 +23,7 @@ namespace SynthesisAPI.VirtualFileSystem
             _name = name;
             _owner = owner;
             _permissions = perm;
-            // Leave _parent as null
+            _parent = null;
         }
 
         public virtual void Delete() { } // Doesn't do anything by default 
@@ -164,7 +164,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             if (Entries.ContainsKey(value.Name))
             {
-                throw new Exception();
+                throw new Exception($"Directory: adding entry with existing name \"{value.Name}\"");
             }
             Entries.Add(value.Name, value);
 
@@ -176,7 +176,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 Directory dir = (Directory)value;
                 if (dir.Entries[".."] != null)
                 {
-                    throw new Exception();
+                    throw new Exception($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
                 }
                 dir.Entries[".."] = dir.Parent;
             }
@@ -190,7 +190,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
-                throw new Exception();
+                throw new Exception("Cannot remove this \".\" or parent \"..\" from directory entries");
             }
 
             if (Entries.ContainsKey(key))

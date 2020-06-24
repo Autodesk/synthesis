@@ -39,11 +39,6 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception();
-            }
-
             Directory? parentDir = Traverse<Directory>(path);
 
             return parentDir?.AddResource<TResource>(resource);
@@ -57,11 +52,6 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static IEntry? AddResource(string path, IEntry resource)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception();
-            }
-
             Directory? parentDir = Traverse<Directory>(path);
 
             return parentDir?.AddResource(resource);
@@ -69,26 +59,16 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public static void RemoveResource(string path, string name, Guid guid)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception();
-            }
+            Directory? parent_dir = (Directory?)Traverse(path);
 
-            Directory parent_dir = (Directory)Traverse(path);
-
-            parent_dir.RemoveEntry(name, guid);
+            parent_dir?.RemoveEntry(name, guid);
         }
 
         public static bool ResourceExists(string path, string name)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception();
-            }
+            Directory? parent_dir = (Directory?)Traverse(path);
 
-            Directory parent_dir = (Directory)Traverse(path);
-
-            return parent_dir.EntryExists(name);
+            return parent_dir != null && parent_dir.EntryExists(name);
         }
 
 		/// <summary>
@@ -108,6 +88,10 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static TResource? Traverse<TResource>(string path) where TResource : class, IEntry
         {
+            if (DepthOfPath(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
+            }
             return Instance.RootNode.Traverse<TResource>(path);
         }
 
@@ -119,6 +103,10 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static IEntry? Traverse(string[] path)
         {
+            if (path.Length >= MaxDirectoryDepth)
+            {
+                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
+            }
             return Instance.RootNode.Traverse(path);
         }
 
@@ -129,6 +117,10 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static IEntry? Traverse(string path)
         {
+            if (DepthOfPath(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
+            }
             return Instance.RootNode.Traverse(path);
         }
 

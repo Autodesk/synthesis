@@ -29,7 +29,7 @@ namespace TestApi
             {
                 PreferenceManager.SetPreference(Program.TestGuid, pref.Item1, pref.Item2);
             }
-            if (!PreferenceManager.Save()) throw new Exception();
+            if (!PreferenceManager.Save()) throw new Exception("Failed to save");
         }
 
         public static void TestLoadingPreferences()
