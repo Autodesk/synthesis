@@ -7,11 +7,11 @@ import "google/protobuf/any.proto";
 /*
 Overview:
 
-A Design stores a transform tree of occurrences, and an array of components. 
-A component stores an array of bodies (meshes). 
-The vertex coordinates of meshes stored in components are in the reference frame of their respective component (NOT relative to the root reference frame). 
+A Design stores a transform tree of occurrences, and an array of components.
+A component stores an array of bodies (meshes).
+The vertex coordinates of meshes stored in components are in the reference frame of their respective component (NOT relative to the root reference frame).
 
-Each occurrence in the occurrence tree stores the UUID of a component in the component array. 
+Each occurrence in the occurrence tree stores the UUID of a component in the component array.
 
 All units are in centimeters, radians, kilograms unless otherwise specified.
 */
@@ -54,9 +54,55 @@ message Occurrence {
 
     string componentUUID = 4;
     repeated Occurrence childOccurrences = 5;
-    
+
     map<string, google.protobuf.Any> attributes = 6;
 }
+
+//<editor-fold desc="Components">
+
+message Component {
+    Header header = 1;
+    string partNumber = 2;
+
+    BoundingBox3D boundingBox = 3;
+    string  materialId = 4;
+    PhysicalProperties physicalProperties = 5;
+
+    repeated MeshBody meshBodies = 6;
+
+    map<string, google.protobuf.Any> attributes = 7;
+}
+
+message MeshBody {
+    Header header = 1; // no description
+    string appearanceId = 2;
+    string materialId = 3;
+    PhysicalProperties physicalProperties = 4;
+    BoundingBox3D boundingBox3D = 5;
+
+    TriangleMesh triangleMesh = 6;
+
+    map<string, google.protobuf.Any> attributes = 7;
+}
+
+message TriangleMesh { // not using Vectors here to avoid overhead on large meshes
+    repeated double vertices = 1; // x y z x y z....
+    repeated double normals = 2; // x y z x y z....
+    repeated int32 indices = 3;
+    repeated double uvs = 4; // u v u v....
+}
+
+message PhysicalProperties {
+    double density = 1; // kg/(cm^3)
+    double mass = 2; // kg
+    double volume = 3; //cm^3
+    double area = 4; // cm^2
+    Vector3D centerOfMass = 5;
+}
+
+//</editor-fold>
+
+//<editor-fold desc="Joints">
 
 /*
 We're choosing not to include info about the joint geometry, such as Joint.angle, Joint.isFlipped, Joint.offset, etc. as raw brep data is not encoded anyways
@@ -69,7 +115,7 @@ message Joint {
 
     string occurrenceOneUUID = 5;
     string occurrenceTwoUUID = 6;
-    
+
     map<string, google.protobuf.Any> attributes = 7;
 
     oneof jointMotion {
@@ -147,45 +193,9 @@ message JointLimits {
     double restValue = 6;
 }
 
-message Component {
-    Header header = 1;
-    string partNumber = 2;
+//</editor-fold>
 
-    BoundingBox3D boundingBox = 3;
-    string  materialId = 4;
-    PhysicalProperties physicalProperties = 5;
-
-    repeated MeshBody meshBodies = 6;
-
-    map<string, google.protobuf.Any> attributes = 7;
-}
-
-message MeshBody {
-    Header header = 1; // no description
-    string appearanceId = 2;
-    string materialId = 3;
-    PhysicalProperties physicalProperties = 4;
-    BoundingBox3D boundingBox3D = 5;
-
-    TriangleMesh triangleMesh = 6;
-
-    map<string, google.protobuf.Any> attributes = 7;
-}
-
-message TriangleMesh { // not using Vectors here to avoid overhead on large meshes
-    repeated double vertices = 1; // x y z x y z....
-    repeated double normals = 2; // x y z x y z....
-    repeated int32 indices = 3; 
-    repeated double uvs = 4; // u v u v....
-}
-
-message PhysicalProperties {
-    double density = 1; // kg/(cm^3)
-    double mass = 2; // kg
-    double volume = 3; //cm^3
-    double area = 4; // cm^2
-    Vector3D centerOfMass = 5;
-}
+//<editor-fold desc="Materials">
 
 message Material {
     string id = 1; // unique id, ex. "MaterialInv_072"
@@ -195,6 +205,18 @@ message Material {
 
     MaterialProperties properties = 4;
 }
+
+message MaterialProperties { // todo: support for other mechanical/thermal properties
+    int32 density = 1;
+    int32 yieldStrength = 2;
+    int32 tensileStrength = 3;
+
+    map<string, google.protobuf.Any> attributes = 4;
+}
+
+//</editor-fold>
+
+//<editor-fold desc="Appearances">
 
 message Appearance {
     string id = 1; // unique id, ex. "PrismMaterial-079_physmat_aspects:Prism-121"
@@ -225,19 +247,13 @@ message AppearanceProperties { // todo: support for textures/images, bump maps, 
     map<string, google.protobuf.Any> attributes = 12;
 }
 
-message MaterialProperties { // todo: support for other mechanical/thermal properties
-    int32 density = 1;
-    int32 yieldStrength = 2;
-    int32 tensileStrength = 3;
-
-    map<string, google.protobuf.Any> attributes = 4;
-}
+//</editor-fold>
 
 message Header {
     string uuid = 1; // generated with apper's item_id and persistant in fusion file
     string name = 2;
     string description = 3;
-    string revisionId = 4; // fusion generated id, changes 
+    string revisionId = 4; // fusion generated id, changes
 }
 
 // RGBA 0-255
@@ -262,3 +278,4 @@ message Vector3D {
 message Matrix3D {
     repeated double cells = 1; // 16 cells (no fixed length arrays in protobuf??)
 }
+
