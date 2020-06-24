@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="background-color: rgba(255, 0, 0, 255); height: 103px; width: 354px;" />
+</ui:UXML>

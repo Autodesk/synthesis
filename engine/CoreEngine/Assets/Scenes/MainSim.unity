@@ -221,7 +221,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 734031875}
-  - component: {fileID: 734031877}
   - component: {fileID: 734031874}
   m_Layer: 0
   m_Name: SimulatorController
@@ -239,10 +238,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 734031873}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84362f7535dc7ce43ad3d2cfeeeff92f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9bb666d55b3fff54c999e220e161e70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultUIRenderer: {fileID: 0}
+  SynthesisToolbar: {fileID: 1068973615}
 --- !u!4 &734031875
 Transform:
   m_ObjectHideFlags: 0
@@ -257,19 +256,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &734031877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 734031873}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71875479637c8be44b3e128702061ef2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlaneMeshRenderer: {fileID: 907356239}
 --- !u!1 &907356237
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +418,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uxml: {fileID: 9197481963319205126, guid: c0f09adeff0277240b6e1912c92b3d60, type: 3}
   unityStyleSheet: {fileID: 11400000, guid: d610daef742b54fdda82fd41508f7f2e, type: 2}
-  stylesheets: []
+  stylesheets:
+  - {fileID: 7433441132597879392, guid: 7d649b7b3a4ec8f489db5d033d5c7b5f, type: 3}
   targetTexture: {fileID: 0}
   panelTransform: {fileID: 0}
   enableLiveUpdates: 0
@@ -595,7 +582,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f240ee69ddf8b95499610c974e3913f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updatePrint: 0
 --- !u!20 &1687258584
 Camera:
   m_ObjectHideFlags: 0

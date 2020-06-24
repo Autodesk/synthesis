@@ -11,7 +11,7 @@ public class DefaultUI : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("Wow");
-        DefaultUIRenderer.postUxmlReload = BindDefaultUI;
+        //DefaultUIRenderer.postUxmlReload = BindDefaultUI;
     }
 
     private IEnumerable<Object> BindDefaultUI()
