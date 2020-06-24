@@ -19,7 +19,7 @@ def fillComponent(childComponent, component):
     component.header.description = childComponent.description
     component.header.revisionId = childComponent.revisionId
     component.partNumber = childComponent.partNumber
-    fillBoundingBoxes(childComponent.boundingBox, component.boundingBox)
+    fillBoundingBox3D(childComponent.boundingBox, component.boundingBox)
     component.materialId = childComponent.material.id
     fillPhysicalProperties(childComponent.physicalProperties, component.physicalProperties)
 
@@ -28,7 +28,7 @@ def fillComponent(childComponent, component):
     #     fillMeshBodies(childMesh, component.meshBodies.add())
 
 
-def fillBoundingBoxes(fusionBoundingBox, protoBoundingBox):
+def fillBoundingBox3D(fusionBoundingBox, protoBoundingBox):
     fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
     fillVector3D(fusionBoundingBox.minPoint, protoBoundingBox.minPoint)
 
@@ -53,7 +53,7 @@ def fillMeshBodies(fusionMesh, protoMesh):
     protoMesh.appearanceId = fusionMesh.appearance.id
     protoMesh.materialId = fusionMesh.material.id
     fillPhysicalProperties(fusionMesh.physicalProperties, protoMesh.physicalProperties)
-    fillBoundingBoxes(fusionMesh.boundingBox, protoMesh.boundingBox)
+    fillBoundingBox3D(fusionMesh.boundingBox, protoMesh.boundingBox)
     # ADD: triangleMesh
 
 
@@ -111,7 +111,7 @@ def fillMaterial(childMaterial, materials):
     materials.id = childMaterial.id
     materials.name = childMaterial.name
     materials.appearanceId = childMaterial.appearance.id
-    # add protobuf def: MaterialProperties properties 
+    # add protobuf def: MaterialProperties properties
     # fillMaterialsProperties()
 
 
