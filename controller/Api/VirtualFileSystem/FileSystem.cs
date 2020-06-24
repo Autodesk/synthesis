@@ -19,16 +19,11 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <summary>
         /// Base path for files on disk
         /// </summary>
-        public static readonly string BasePath =
-            System.IO.Directory
-                .GetParent(System.IO.Directory
-                    .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).ToString()).ToString() +
-            Path.DirectorySeparatorChar + "test_assets" + Path.DirectorySeparatorChar; // TODO distinguish between test path and release path
-        /*
         public static string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 Path.DirectorySeparatorChar);
-        */
+
+        public static string TestPath = BasePath + $"test{Path.DirectorySeparatorChar}";
 
         /// <summary>
         /// Add a new resource to a the file system at a given destination

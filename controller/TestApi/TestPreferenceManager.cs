@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace TestApi
 {
     [TestFixture]
-    public class TestPreferenceManager
+    public static class TestPreferenceManager
     {
         [JsonObject("CustomStruct")]
         public struct CustomStruct
@@ -19,7 +19,7 @@ namespace TestApi
         }
 
         [Test]
-        public void TestSavingLoading()
+        public static void TestSavingLoading()
         {
             PreferenceManager.SetPreference(Program.TestGuid, "name", "Nikola Tesla");
             PreferenceManager.SetPreference(Program.TestGuid, "age", 163);
@@ -33,13 +33,13 @@ namespace TestApi
         }
 
         [Test]
-        public void TestCustomTypeSavingLoading()
+        public static void TestCustomTypeSavingLoading()
         {
             CustomStruct customOriginal = new CustomStruct() { Name = "Thomas Edison" };
             PreferenceManager.SetPreference(Program.TestGuid, "custom_type", customOriginal);
             if (!PreferenceManager.Save()) throw new Exception();
             if (!PreferenceManager.Load()) throw new Exception();
-            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestGuid, "custom_type", useJsonReserialization: true);
+            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestGuid, "custom_type", useJsonDeserialization: true);
 
             Assert.AreEqual(customOriginal, customCopy);
         }

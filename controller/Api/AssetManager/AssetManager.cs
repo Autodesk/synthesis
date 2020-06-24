@@ -364,6 +364,7 @@ namespace SynthesisAPI.AssetManager
                 {
                     if (createOnFail)
                     {
+                        System.IO.Directory.CreateDirectory(path);
                         File.Create(path);
                         data = new byte[0];
                     }
@@ -373,7 +374,7 @@ namespace SynthesisAPI.AssetManager
                     data = File.ReadAllBytes(path);
                 }
 
-                return AssetHandlers[type][subtype](data ?? new byte[0], targetPath, name, owner, perm, sourcePath, args);
+                return AssetHandlers[type][subtype](data ?? new byte[0], targetPath, name, owner, perm, path, args);
             }
 
             public static readonly Inner InnerInstance = new Inner();

@@ -71,7 +71,7 @@ namespace SynthesisAPI.PreferenceManager
 
                         return JsonConvert.DeserializeObject<TValueType>(JsonConvert.SerializeObject(Instance.Preferences[owner][key]));
                     }
-                    return (TValueType) Instance.Preferences[owner][key];
+                    return (TValueType) Convert.ChangeType(Instance.Preferences[owner][key], typeof(TValueType));
                 }
                 throw new ArgumentException($"There is no key of value \"{key}\" under owner \"{owner}\"");
             }

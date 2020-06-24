@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SynthesisAPI.VirtualFileSystem;
+using NUnit.Framework;
 
 namespace TestApi
 {
+    [TestFixture]
     public static class TestVirtualFileSystem
     {
+        [Test]
         public static void TestDirectory()
         {
             Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicRead);
@@ -16,15 +15,16 @@ namespace TestApi
 
             Directory test_dir = (Directory)FileSystem.Traverse("/modules/directory");
 
-            Console.WriteLine(ReferenceEquals(test_dir, dir));
+            Assert.AreSame(dir, test_dir);
 
             Directory parent = (Directory)FileSystem.Traverse("/modules");
 
             Directory test_parent = (Directory)test_dir.Traverse("..");
 
-            Console.WriteLine(ReferenceEquals(parent, test_parent));
+            Assert.AreSame(parent, test_parent);
         }
 
+        [Test]
         public static void TestMaxDepth()
         {
             string path = "";
@@ -36,18 +36,12 @@ namespace TestApi
                     FileSystem.AddResource(path, dir);
                     path += "/" + dir.Name;
                 }
-                Console.WriteLine("Failure");
+                Assert.Fail();
             }
             catch (Exception)
             {
-                Console.WriteLine("Success");
+                Assert.Pass();
             }
-        }
-
-        public static void Test()
-        {
-            TestDirectory();
-            TestMaxDepth();
         }
     }
 }
