@@ -162,7 +162,7 @@ namespace SynthesisAPI.PreferenceManager
                     if (_instance is null)
                     {
                         _instance = new Inner();
-                        PreferenceManager.Load();
+                        Load();
                     }
 
                     return _instance;
