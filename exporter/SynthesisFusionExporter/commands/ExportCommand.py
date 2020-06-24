@@ -88,10 +88,10 @@ def fillOccurrence(occur, protoOccur):
 
 def fillComponents(ao, protoComponents):
     for fusionComponent in ao.design.allComponents:
-        fillComponent(fusionComponent, protoComponents.add())
+        fillComponent(ao, fusionComponent, protoComponents.add())
 
 
-def fillComponent(fusionComponent, protoComponent):
+def fillComponent(ao, fusionComponent, protoComponent):
     protoComponent.header.uuid = item_id(fusionComponent, ATTR_GROUP_NAME)
     protoComponent.header.name = fusionComponent.name
     protoComponent.header.description = fusionComponent.description
@@ -102,22 +102,29 @@ def fillComponent(fusionComponent, protoComponent):
     fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
     # todo ADD: fillMeshBodies ---> see method
-    # for childMesh in childComponent.meshBodies:
-    #     fillMeshBodies(childMesh, component.meshBodies.add())
+    for brepBody in fusionComponent.bRepBodies:
+        fillMeshBodyFromBrep(brepBody, protoComponent.meshBodies.add())
+
+    #for brepBody in ao.design.rootComponent.bRepBodies:
+    # fillMeshBody(ao, fusionComponent.meshBodies, protoComponent.meshBodies)
+    # print(fusionComponent.meshBodies)
 
 
-def fillMeshBody(fusionMeshBody, protoMeshBody):
-    protoMeshBody.header.uuid = item_id(fusionMeshBody, ATTR_GROUP_NAME)
-    protoMeshBody.header.name = fusionMeshBody.name
-    protoMeshBody.appearanceId = fusionMeshBody.appearance.id
-    protoMeshBody.materialId = fusionMeshBody.material.id
-    fillPhysicalProperties(fusionMeshBody.physicalProperties, protoMeshBody.physicalProperties)
-    fillBoundingBox3D(fusionMeshBody.boundingBox, protoMeshBody.boundingBox)
+def fillMeshBodyFromBrep(fusionBrepBody, protoMeshBody):
+    
+    meshManager = fusionBrepBody.meshManager
+    calculator = meshManager.createMeshCalculator()
+    mesh = calculator.calculate()
+
+    protoMeshBody.triangleMesh.vertices.extend(mesh.nodeCoordinatesAsDouble)
+
+    protoMeshBody.header.uuid = item_id(fusionBrepBody, ATTR_GROUP_NAME)
+    # protoMeshBody.header.name = fusionMeshBody.name
+    # protoMeshBody.appearanceId = fusionMeshBody.appearance.id
+    # protoMeshBody.materialId = fusionMeshBody.material.id
+    # fillPhysicalProperties(fusionMeshBody.physicalProperties, protoMeshBody.physicalProperties)
+    # fillBoundingBox3D(fusionMeshBody.boundingBox, protoMeshBody.boundingBox)
     # todo ADD: triangleMesh
-
-
-def fillTriangleMesh(fusionTriMesh, protoTriMesh):
-    pass
 
 
 def fillPhysicalProperties(fusionPhysical, protoPhysical):
