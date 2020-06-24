@@ -9,9 +9,9 @@ namespace SynthesisAPI.AssetManager
     /// <summary>
     /// Representation of a binary asset
     /// </summary>
-    public class BinaryTextAsset : Asset
+    public class BinaryAsset : Asset
     {
-        public BinaryTextAsset(string name, Guid owner, Permissions perm, string sourcePath)
+        public BinaryAsset(string name, Guid owner, Permissions perm, string sourcePath)
         {
             Init(name, owner, perm, sourcePath);
             RwLock = new ReaderWriterLockSlim();
