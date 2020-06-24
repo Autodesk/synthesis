@@ -101,13 +101,8 @@ def fillComponent(ao, fusionComponent, protoComponent):
     protoComponent.materialId = fusionComponent.material.id
     fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
-    # todo ADD: fillMeshBodies ---> see method
     for brepBody in fusionComponent.bRepBodies:
         fillMeshBodyFromBrep(brepBody, protoComponent.meshBodies.add())
-
-    #for brepBody in ao.design.rootComponent.bRepBodies:
-    # fillMeshBody(ao, fusionComponent.meshBodies, protoComponent.meshBodies)
-    # print(fusionComponent.meshBodies)
 
 
 def fillMeshBodyFromBrep(fusionBrepBody, protoMeshBody):
