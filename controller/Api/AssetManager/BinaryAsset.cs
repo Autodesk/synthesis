@@ -35,6 +35,8 @@ namespace SynthesisAPI.AssetManager
             return this;
         }
 
+        public byte[]? ReadToEnd() => SharedStream?.ReadToEnd();
+
         protected SharedBinaryStream SharedStream { get; set; }
         private ReaderWriterLockSlim RwLock;
     }

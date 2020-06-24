@@ -16,14 +16,17 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public static class AssetManager
     {
-        // TODO add dummy structs so we can do stuff like AssetManager.AssetManager.ImportOrCreate<Text,Json>(ActualFilePath);
+        // TODO do we want to add dummy structs so we can do stuff like AssetManager.ImportOrCreate<Text,Json>(ActualFilePath)
 
         /// <summary>
         /// Asset-type-specific function delegate used to process asset data on import
         /// </summary>
-        /// <param name="sourcePath"></param>
         /// <param name="data"></param>
         /// <param name="targetPath"></param>
+        /// <param name="name"></param>
+        /// <param name="owner"></param>
+        /// <param name="perm"></param>
+        /// <param name="sourcePath"></param>
         /// <param name="args"></param>
         /// <returns></returns>
         public delegate Asset? HandlerFunc(byte[] data, string targetPath, string name, Guid owner, Permissions perm,
@@ -101,9 +104,32 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Search(VirtualFileSystem.Directory parent, string name) =>
             (Asset?)FileSystem.Search(parent, name);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system and create it if import fails
+        /// </summary>
+        /// <param name="assetType"></param>
+        /// <param name="targetPath"></param>
+        /// <param name="name"></param>
+        /// <param name="owner"></param>
+        /// <param name="perm"></param>
+        /// <param name="sourcePath"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static Asset? ImportOrCreate(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) =>
            InnerInstance.Import(assetType, true, null, targetPath, name, owner, perm, sourcePath, args);
 
+        /// <summary>
+        /// Import a new asset into the virtual file system and create it if import fails
+        /// </summary>
+        /// <typeparam name="TAsset"></typeparam>
+        /// <param name="assetType"></param>
+        /// <param name="targetPath"></param>
+        /// <param name="name"></param>
+        /// <param name="owner"></param>
+        /// <param name="perm"></param>
+        /// <param name="sourcePath"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static TAsset? ImportOrCreate<TAsset>(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset =>
             (TAsset?)InnerInstance.Import(assetType, true, null, targetPath, name, owner, perm, sourcePath, args);
 

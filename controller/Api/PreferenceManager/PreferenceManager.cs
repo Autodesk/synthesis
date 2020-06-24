@@ -10,11 +10,7 @@ namespace SynthesisAPI.PreferenceManager
     public static class PreferenceManager
     {
 
-        private static readonly (string Path, string File) VirtualFilePath = ("/modules", "preferences.json");
-
-        public static string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                Path.DirectorySeparatorChar);
+        private static readonly (string Path, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
         #region Accessing Preferences
 
@@ -97,6 +93,16 @@ namespace SynthesisAPI.PreferenceManager
 
         #region IO
 
+        private static void ImportPreferencesAsset()
+        {
+            if (Instance.Asset == null)
+            {
+                Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
+                    VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
+                    Permissions.PublicWrite, VirtualFilePath.Name)!;
+            }
+        }
+
         /// <summary>
         /// Loads a JSON file that stores preference data
         /// </summary>
@@ -107,9 +113,7 @@ namespace SynthesisAPI.PreferenceManager
             if (!overrideChanges && !_changesSaved)
                 return false;
 
-            Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
-                VirtualFilePath.Path, VirtualFilePath.File, Guid.Empty,
-                Permissions.PublicWrite, VirtualFilePath.File)!;
+            ImportPreferencesAsset();
 
             var deserialized =
                 Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
@@ -127,20 +131,10 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
         {
-            JsonAsset? jsonAsset;
+            ImportPreferencesAsset();
 
-            if (FileSystem.ResourceExists(VirtualFilePath.Path, VirtualFilePath.File))
-            {
-                jsonAsset = FileSystem.Traverse(VirtualFilePath.Path + '/' + VirtualFilePath.File) as JsonAsset;
-            }
-            else
-            {
-                jsonAsset = new JsonAsset(VirtualFilePath.File, Guid.Empty, Permissions.Private, VirtualFilePath.File);
-                FileSystem.AddResource(VirtualFilePath.Path, jsonAsset);
-            }
-
-            jsonAsset?.Serialize(Instance.Preferences);
-            jsonAsset?.SaveToFile();
+            Instance.Asset.Serialize(Instance.Preferences);
+            Instance.Asset.SaveToFile();
 
             _changesSaved = true;
 

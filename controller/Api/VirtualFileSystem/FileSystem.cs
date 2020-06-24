@@ -23,8 +23,12 @@ namespace SynthesisAPI.VirtualFileSystem
             System.IO.Directory
                 .GetParent(System.IO.Directory
                     .GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).ToString()).ToString() +
-            Path.DirectorySeparatorChar;
-        // public static string BasePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar;
+            Path.DirectorySeparatorChar + "test_assets" + Path.DirectorySeparatorChar; // TODO distinguish between test path and release path
+        /*
+        public static string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Path.DirectorySeparatorChar);
+        */
 
         /// <summary>
         /// Add a new resource to a the file system at a given destination

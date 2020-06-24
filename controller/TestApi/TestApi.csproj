@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="files\test.json" />
+    <None Include="test_assets\test.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -66,8 +66,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="files\test.txt" />
-    <Content Include="files\test.xml" />
+    <Content Include="test_assets\test.txt" />
+    <Content Include="test_assets\test.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
