@@ -8,6 +8,82 @@ from ..utils.DebugHierarchy import printHierarchy
 ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
 
 
+def exportRobot():
+    ao = AppObjects()
+
+    if ao.document.dataFile is None:
+        print("Error: You must save your fusion document before exporting!")
+        return
+
+    protoDocument = Document()
+    fillDocument(ao, protoDocument)
+    protoDocumentAsDict = MessageToDict(protoDocument)
+    # printHierarchy(ao.root_comp)
+    print()  # put breakpoint here
+
+
+class ExportCommand(apper.Fusion360CommandBase):
+
+    def on_execute(self, command: adsk.core.Command, inputs: adsk.core.CommandInputs, args, input_values):
+        exportRobot()
+
+
+# -----------Document-----------
+
+def fillDocument(ao, protoDocument):
+    fillUserMeta(ao, protoDocument.userMeta)
+    fillDocumentMeta(ao, protoDocument.documentMeta)
+    fillDesign(ao, protoDocument.design)
+
+
+def fillUserMeta(ao, protoUserMeta):
+    currentUser = ao.app.currentUser
+    protoUserMeta.userName = currentUser.userName
+    protoUserMeta.id = currentUser.userId
+    protoUserMeta.displayName = currentUser.displayName
+    protoUserMeta.email = currentUser.email
+
+
+def fillDocumentMeta(ao, protoDocumentMeta):
+    document = ao.document
+    protoDocumentMeta.fusionVersion = document.version
+    protoDocumentMeta.name = document.name
+    protoDocumentMeta.versionNumber = document.dataFile.versionNumber
+    protoDocumentMeta.description = document.dataFile.description
+    protoDocumentMeta.id = document.dataFile.id
+
+
+def fillDesign(ao, protoDesign):
+    fillComponents(ao, protoDesign.components)
+    fillJoints(ao, protoDesign.joints)
+    fillMaterials(ao, protoDesign.materials)
+    fillAppearances(ao, protoDesign.appearances)
+    fillFakeRootOccurrence(ao.root_comp, protoDesign.hierarchyRoot)
+
+
+def fillFakeRootOccurrence(rootComponent, protoOccur):
+    protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
+    protoOccur.header.name = rootComponent.name
+    protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
+
+    for childOccur in rootComponent.occurrences:
+        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+
+
+def fillOccurrence(occur, protoOccur):
+    protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
+    protoOccur.header.name = occur.name
+    protoOccur.isGrounded = occur.isGrounded
+    fillMatrix3D(occur.transform, protoOccur.transform)
+
+    protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
+
+    for childOccur in occur.childOccurrences:
+        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+
+
+# -----------Components-----------
+
 def fillComponents(ao, protoComponents):
     for fusionComponent in ao.design.allComponents:
         fillComponent(fusionComponent, protoComponents.add())
@@ -28,15 +104,18 @@ def fillComponent(fusionComponent, protoComponent):
     #     fillMeshBodies(childMesh, component.meshBodies.add())
 
 
-def fillBoundingBox3D(fusionBoundingBox, protoBoundingBox):
-    fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
-    fillVector3D(fusionBoundingBox.minPoint, protoBoundingBox.minPoint)
+def fillMeshBody(fusionMeshBody, protoMeshBody):
+    protoMeshBody.header.uuid = item_id(fusionMeshBody, ATTR_GROUP_NAME)
+    protoMeshBody.header.name = fusionMeshBody.name
+    protoMeshBody.appearanceId = fusionMeshBody.appearance.id
+    protoMeshBody.materialId = fusionMeshBody.material.id
+    fillPhysicalProperties(fusionMeshBody.physicalProperties, protoMeshBody.physicalProperties)
+    fillBoundingBox3D(fusionMeshBody.boundingBox, protoMeshBody.boundingBox)
+    # ADD: triangleMesh
 
 
-def fillVector3D(fusionVector3D, protoVector3D):
-    protoVector3D.x = fusionVector3D.x
-    protoVector3D.y = fusionVector3D.y
-    protoVector3D.z = fusionVector3D.z
+def fillTriangleMesh(fusionTriMesh, protoTriMesh):
+    pass
 
 
 def fillPhysicalProperties(fusionPhysical, protoPhysical):
@@ -47,32 +126,19 @@ def fillPhysicalProperties(fusionPhysical, protoPhysical):
     fillVector3D(fusionPhysical.centerOfMass, protoPhysical.centerOfMass)
 
 
-def fillMeshBody(fusionMesh, protoMesh):
-    protoMesh.header.uuid = item_id(fusionMesh, ATTR_GROUP_NAME)
-    protoMesh.header.name = fusionMesh.name
-    protoMesh.appearanceId = fusionMesh.appearance.id
-    protoMesh.materialId = fusionMesh.material.id
-    fillPhysicalProperties(fusionMesh.physicalProperties, protoMesh.physicalProperties)
-    fillBoundingBox3D(fusionMesh.boundingBox, protoMesh.boundingBox)
-    # ADD: triangleMesh
+# -----------Joints-----------
+
+def fillJoints(ao, protoJoints):
+    for fusionJoint in ao.root_comp.allJoints:
+        if isJointCorrupted(fusionJoint): continue
+        fillJoint(fusionJoint, protoJoints.add())
 
 
-def getJointedOccurrenceUUID(fusionJoint, fusionOccur):
-    if fusionOccur is None:
-        return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
-    return item_id(fusionOccur, ATTR_GROUP_NAME)
-
-
-def getJointOrigin(fusionJoint):
-    geometryOrOrigin = fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo
-    if geometryOrOrigin.objectType == 'adsk::fusion::JointGeometry':
-        return geometryOrOrigin.origin
-    else:  # adsk::fusion::JointOrigin
-        origin = geometryOrOrigin.geometry.origin
-        return adsk.core.Point3D.create(  # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
-            origin.x + geometryOrOrigin.offsetX.value,
-            origin.y + geometryOrOrigin.offsetY.value,
-            origin.z + geometryOrOrigin.offsetZ.value)
+def isJointCorrupted(fusionJoint):
+    if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
+        print("WARNING: Ignoring corrupted joint!")
+        return True
+    return False
 
 
 def fillJoint(fusionJoint, protoJoint):
@@ -89,18 +155,25 @@ def fillJoint(fusionJoint, protoJoint):
     # todo: fillJointMotion
 
 
-def isJointCorrupted(fusionJoint):
-    if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
-        print("WARNING: Ignoring corrupted joint!")
-        return True
-    return False
+def getJointOrigin(fusionJoint):
+    geometryOrOrigin = fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo
+    if geometryOrOrigin.objectType == 'adsk::fusion::JointGeometry':
+        return geometryOrOrigin.origin
+    else:  # adsk::fusion::JointOrigin
+        origin = geometryOrOrigin.geometry.origin
+        return adsk.core.Point3D.create(  # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
+            origin.x + geometryOrOrigin.offsetX.value,
+            origin.y + geometryOrOrigin.offsetY.value,
+            origin.z + geometryOrOrigin.offsetZ.value)
 
 
-def fillJoints(ao, protoJoints):
-    for fusionJoint in ao.root_comp.allJoints:
-        if isJointCorrupted(fusionJoint): continue
-        fillJoint(fusionJoint, protoJoints.add())
+def getJointedOccurrenceUUID(fusionJoint, fusionOccur):
+    if fusionOccur is None:
+        return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
+    return item_id(fusionOccur, ATTR_GROUP_NAME)
 
+
+# -----------Materials-----------
 
 def fillMaterials(ao, protoMaterials):
     for childMaterial in ao.design.materials:
@@ -121,6 +194,8 @@ def fillMaterialsProperties(fusionMaterials, protoMaterials):
     protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 
+# -----------Appearances-----------
+
 def fillAppearances(ao, protoAppearances):
     for childAppearance in ao.design.appearances:
         fillAppearance(childAppearance, protoAppearances.add())
@@ -133,78 +208,27 @@ def fillAppearance(fusionAppearance, protoAppearance):
     # add protobuf def: AppearanceProperties properties
 
 
+def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
+    pass
+
+
+# -----------Generic-----------
+
+def fillColor(fusionColor, protoColor):
+    pass
+
+
+def fillBoundingBox3D(fusionBoundingBox, protoBoundingBox):
+    fillVector3D(fusionBoundingBox.maxPoint, protoBoundingBox.maxPoint)
+    fillVector3D(fusionBoundingBox.minPoint, protoBoundingBox.minPoint)
+
+
+def fillVector3D(fusionVector3D, protoVector3D):
+    protoVector3D.x = fusionVector3D.x
+    protoVector3D.y = fusionVector3D.y
+    protoVector3D.z = fusionVector3D.z
+
+
 def fillMatrix3D(fusionTransform, protoTransform):
     assert len(protoTransform.cells) == 0  # Don't try to fill a matrix that's already full
     protoTransform.cells.extend(fusionTransform.asArray())
-
-
-def fillOccurrence(occur, protoOccur):
-    protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
-    protoOccur.header.name = occur.name
-    protoOccur.isGrounded = occur.isGrounded
-    fillMatrix3D(occur.transform, protoOccur.transform)
-
-    protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
-
-    for childOccur in occur.childOccurrences:
-        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
-
-
-def fillFakeRootOccurrence(rootComponent, protoOccur):
-    protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
-    protoOccur.header.name = rootComponent.name
-    protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
-
-    for childOccur in rootComponent.occurrences:
-        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
-
-
-def fillDesign(ao, protoDesign):
-    fillComponents(ao, protoDesign.components)
-    fillJoints(ao, protoDesign.joints)
-    fillMaterials(ao, protoDesign.materials)
-    fillAppearances(ao, protoDesign.appearances)
-    fillFakeRootOccurrence(ao.root_comp, protoDesign.hierarchyRoot)
-
-
-def fillUserMeta(ao, protoUserMeta):
-    currentUser = ao.app.currentUser
-    protoUserMeta.userName = currentUser.userName
-    protoUserMeta.id = currentUser.userId
-    protoUserMeta.displayName = currentUser.displayName
-    protoUserMeta.email = currentUser.email
-
-
-def fillDocumentMeta(ao, protoDocumentMeta):
-    document = ao.document
-    protoDocumentMeta.fusionVersion = document.version
-    protoDocumentMeta.name = document.name
-    protoDocumentMeta.versionNumber = document.dataFile.versionNumber
-    protoDocumentMeta.description = document.dataFile.description
-    protoDocumentMeta.id = document.dataFile.id
-
-
-def fillDocument(ao, protoDocument):
-    fillUserMeta(ao, protoDocument.userMeta)
-    fillDocumentMeta(ao, protoDocument.documentMeta)
-    fillDesign(ao, protoDocument.design)
-
-
-def exportRobot():
-    ao = AppObjects()
-
-    if ao.document.dataFile is None:
-        print("Error: You must save your fusion document before exporting!")
-        return
-
-    protoDocument = Document()
-    fillDocument(ao, protoDocument)
-    protoDocumentAsDict = MessageToDict(protoDocument)
-    # printHierarchy(ao.root_comp)
-    print()  # put breakpoint here
-
-
-class ExportCommand(apper.Fusion360CommandBase):
-
-    def on_execute(self, command: adsk.core.Command, inputs: adsk.core.CommandInputs, args, input_values):
-        exportRobot()
