@@ -10,13 +10,10 @@
                     <ui:Button name="change-environment-button" tooltip="Change Environment" class="toolbar-button" style="left: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
                     <ui:Button name="modules-button" tooltip="Modules" class="toolbar-button" style="right: 60px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
                 </ui:VisualElement>
-                <ui:VisualElement name="tab-panel" style="height: 30px; position: absolute; right: 90px; background-color: rgb(204, 204, 204); top: 0; left: 60px; flex-direction: row; margin-left: 5px; margin-right: 5px;">
-                    <ui:Button text="Test" name="default-tab" class="tab-button" />
-                </ui:VisualElement>
-                <ui:VisualElement name="workspace-panel" style="background-color: rgba(255, 0, 0, 255); height: 70px;" />
+                <ui:VisualElement name="tab-panel" style="height: 30px; position: absolute; right: 90px; background-color: rgb(204, 204, 204); top: 0; left: 60px; flex-direction: row; margin-left: 5px; margin-right: 5px;" />
+                <ui:VisualElement name="workspace-panel" style="background-color: rgb(242, 242, 242); height: 70px;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Button text="add tab" name="add-button" />
-        <ui:Button text="remove tab" name="remove-button" />
+        <ui:Button text="debug button: load tabs" name="load-setup" />
     </ui:VisualElement>
 </ui:UXML>

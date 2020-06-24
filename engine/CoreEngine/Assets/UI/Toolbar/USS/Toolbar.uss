@@ -43,7 +43,7 @@
     margin-right: 1.5px;
     margin-top: 4px;
     margin-bottom: 0;
-    background-color: rgb(242, 242, 242);
+    background-color: rgb(187, 187, 187);
     padding-top: 0;
     padding-right: 0;
     padding-left: 0;
@@ -52,5 +52,5 @@
 }
 
 .tab-button:hover {
-    background-color: rgba(217, 217, 217, 255);
+    background-color: rgb(217, 217, 217);
 }

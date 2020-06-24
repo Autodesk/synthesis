@@ -241,7 +241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bb666d55b3fff54c999e220e161e70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SynthesisToolbar: {fileID: 1068973615}
+  synthesisToolbar: {fileID: 1068973615}
+  synthesisToolbarTab: {fileID: 9197481963319205126, guid: aedc22dcb5541784ebf49eb64a4ba179,
+    type: 3}
 --- !u!4 &734031875
 Transform:
   m_ObjectHideFlags: 0

@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Button text="Tab" name="blank-tab" class="tab-button">
+        <Style src="USS/Toolbar.uss" />
+    </ui:Button>
+</ui:UXML>

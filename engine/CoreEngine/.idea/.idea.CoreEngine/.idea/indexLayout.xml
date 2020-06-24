@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelUserStore">
+    <attachedFolders />
+    <explicitIncludes>
+      <Path>Library/PackageCache/com.unity.collab-proxy@1.2.16</Path>
+      <Path>Library/PackageCache/com.unity.ext.nunit@1.0.0</Path>
+      <Path>Library/PackageCache/com.unity.ide.rider@1.1.4</Path>
+      <Path>Library/PackageCache/com.unity.ide.vscode@1.2.0</Path>
+      <Path>Library/PackageCache/com.unity.render-pipelines.core@7.3.1</Path>
+      <Path>Library/PackageCache/com.unity.render-pipelines.universal@7.3.1</Path>
+      <Path>Library/PackageCache/com.unity.shadergraph@7.3.1</Path>
+      <Path>Library/PackageCache/com.unity.test-framework@1.1.14</Path>
+      <Path>Library/PackageCache/com.unity.textmeshpro@2.0.1</Path>
+      <Path>Library/PackageCache/com.unity.timeline@1.2.10</Path>
+      <Path>Library/PackageCache/com.unity.ui.builder@0.11.2-preview</Path>
+      <Path>Packages</Path>
+      <Path>ProjectSettings</Path>
+    </explicitIncludes>
+    <explicitExcludes>
+      <Path>.idea</Path>
+      <Path>.vs</Path>
+      <Path>Library</Path>
+      <Path>Logs</Path>
+      <Path>Styles</Path>
+      <Path>UIElementsSchema</Path>
+      <Path>obj</Path>
+    </explicitExcludes>
+  </component>
+</project>

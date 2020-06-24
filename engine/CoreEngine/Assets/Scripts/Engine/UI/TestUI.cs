@@ -26,8 +26,7 @@ public class TestUI : MonoBehaviour
     {
         var root = panelRenderer.visualTree;
         VisualElement tabContainer = root.Q<VisualElement>(name: "tab-panel");
-
-
+        
         Button customTab = defaultTab.CloneTree().Q<Button>(name: "default-tab");
         customTab.text = "BLAH";
 
