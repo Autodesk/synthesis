@@ -3,6 +3,7 @@ using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
+using SynthesisAPI.AssetManager.DummyAssetTypes;
 
 namespace TestApi
 {
@@ -117,6 +118,20 @@ namespace TestApi
             var testJson = AssetManager.Import<JsonAsset>("/modules/module1", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/modules/module1/test.json");
+
+            Assert.AreSame(testJson, test);
+
+            var obj = test?.Deserialize<TestJsonObject>();
+
+            Console.WriteLine(obj?.Text);
+        }
+
+        [Test]
+        public static void TestDummyStructs()
+        {
+            var testJson = AssetManager.Import<Text, Json>("/modules", "test.json2", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json2");
 
             Assert.AreSame(testJson, test);
 

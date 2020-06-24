@@ -53,6 +53,7 @@
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="AssetManager\BinaryAsset.cs" />
     <Compile Include="AssetManager\CssAsset.cs" />
+    <Compile Include="AssetManager\DummyAssetTypes.cs" />
     <Compile Include="AssetManager\JsonAsset.cs" />
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
