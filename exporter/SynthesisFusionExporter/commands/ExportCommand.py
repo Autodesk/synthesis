@@ -132,13 +132,16 @@ def fillPhysicalProperties(fusionPhysical, protoPhysical):
 
 def fillJoints(ao, protoJoints):
     for fusionJoint in ao.root_comp.allJoints:
-        if isJointCorrupted(fusionJoint): continue
+        if isJointInvalid(fusionJoint): continue
         fillJoint(fusionJoint, protoJoints.add())
 
 
-def isJointCorrupted(fusionJoint):
+def isJointInvalid(fusionJoint):
     if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
-        print("WARNING: Ignoring corrupted joint!")  # todo: show this message to the user once if there are one or more corrupted joints
+        print("WARNING: Ignoring joint with unknown occurrences!")  # todo: Show these messages to the user
+        return True
+    if fusionJoint.jointMotion.jointType not in range(6):
+        print("WARNING: Ignoring joint with unknown type!")
         return True
     return False
 
