@@ -7,6 +7,7 @@ using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Axis;
 using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.EventBus;
+using PM = SynthesisAPI.PreferenceManager.PreferenceManager;
 using UnityInput = UnityEngine.Input;
 using SynthesisAPI.InputManager.Behaviors;
 
@@ -17,6 +18,8 @@ namespace SynthesisAPI.InputManager
      */
     public static class InputManager
     {
+        private static readonly Guid MyGuid = Guid.NewGuid();
+
         // Map for binding DigitalInput to EventHandlers
         public static BiDictionary<IDigitalInput, string> MappedDigital = new BiDictionary<IDigitalInput, string>();
         // Used for giving custom names to axes
@@ -40,9 +43,23 @@ namespace SynthesisAPI.InputManager
             LastControllerNames = UnityInput.GetJoystickNames();
             EvaluateControllerTypes();
 
+            MappedDigital[(KeyDigital)new [] { "A" }] = "test_action";
+
             // Assign general axes. (Do I need this???)
             MappedAxes["MouseX"] = (DualAxis)"Mouse X";
             MappedAxes["MouseY"] = (DualAxis)"Mouse Y";
+
+            // TODO: Subscribe PostLoad and PreSave to corresponding events
+        }
+
+        private static void PostLoad()
+        {
+            MappedDigital = PM.GetPreference<BiDictionary<IDigitalInput, string>>(MyGuid, "all_bindings", useJsonReserialization: true);
+        }
+
+        private static void PreSave()
+        {
+            PM.SetPreference(MyGuid, "all_bindings", MappedDigital);
         }
 
         #region Getting active inputs
