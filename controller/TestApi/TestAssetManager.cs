@@ -6,61 +6,84 @@ using System.Text;
 using System.Threading.Tasks;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
+using NUnit.Framework;
 
 namespace TestApi
 {
+    [TestFixture]
     public static class TestAssetManager
     {
+        [SetUp]
+        public static void Init()
+        {
+            if (!System.IO.Directory.Exists(FileSystem.TestPath))
+            {
+                System.IO.Directory.CreateDirectory(FileSystem.TestPath);
+            }
+
+            string text_string = "Hello World!";
+
+            if (!File.Exists(FileSystem.TestPath + "test.txt"))
+            {
+                File.WriteAllText(FileSystem.TestPath + "test.txt", text_string);
+            }
+
+            string json_string = "{\n\t\"Text\": \"Hello world of JSON!\"\n}";
+
+            if (!File.Exists(FileSystem.TestPath + "test.json"))
+            {
+                File.WriteAllText(FileSystem.TestPath + "test.json", json_string);
+            }
+
+            string xml_string = "<TestXMLObject>\n\t<Text>Hello world of XML!</Text>\n</TestXMLObject>";
+
+            if (!File.Exists(FileSystem.TestPath + "test.xml"))
+            {
+                File.WriteAllText(FileSystem.TestPath + "test.xml", xml_string);
+            }
+        }
+
+        [Test]
         public static void TestPlainText()
         {
-            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.txt");
-            PlainTextAsset test_txt = AssetManager.Import<PlainTextAsset>("text/plain", "/modules", file_data, "test2.txt", Program.TestGuid, Permissions.PublicRead);
+            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/modules", "test2.txt", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.txt");
 
-            PlainTextAsset test = AssetManager.GetAsset<PlainTextAsset>("/modules/test2.txt");
+            TextAsset test = AssetManager.GetAsset<TextAsset>("/modules/test2.txt");
 
-            Console.WriteLine(ReferenceEquals(test_txt, test));
+            Assert.AreSame(testTxt, test);
 
-            var reader = test_txt.CreateReader();
-
-            Console.WriteLine(reader.ReadToEnd());
+            Console.WriteLine(testTxt?.ReadToEnd());
         }
 
-        public static void TestXML()
+        [Test]
+        public static void TestXml()
         {
-            // var test_xml = new XMLAsset("test.xml", Program.TestGuid, Permissions.PublicRead, "/modules");
-            // test_xml.LoadAsset(File.ReadAllBytes(FileSystem.BasePath + "files/test.xml"));
+            // byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "test.xml");
+            // XmlAsset test_xml = AssetManager.Import<XmlAsset>("text/xml", file_data, "/modules", "test.xml", Program.TestGuid, Permissions.PublicRead, "test.xml");
 
-            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.xml");
-            XMLAsset test_xml = AssetManager.Import<XMLAsset>("text/xml", "/modules", file_data, "test.xml", Program.TestGuid, Permissions.PublicRead);
+            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/modules", "test.xml", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.xml");
 
-            XMLAsset test = AssetManager.GetAsset<XMLAsset>("/modules/test.xml");
+            var test = AssetManager.GetAsset<XmlAsset>("/modules/test.xml");
 
-            Console.WriteLine(ReferenceEquals(test_xml, test));
+            Assert.AreSame(testXml, test);
 
-            TestXMLObject obj = test_xml.Deserialize<TestXMLObject>();
+            var obj = testXml?.Deserialize<TestXMLObject>();
 
-            Console.WriteLine(obj.Text);
+            Console.WriteLine(obj?.Text);
         }
 
-        public static void TestJSON()
+        [Test]
+        public static void TestJson()
         {
-            byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "files/test.json");
-            JSONAsset test_json = AssetManager.Import<JSONAsset>("text/json", "/modules", file_data, "test.json", Program.TestGuid, Permissions.PublicRead);
+            var testJson = AssetManager.Import<JsonAsset>("text/json", "/modules", "test.json", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.json");
 
-            JSONAsset test = AssetManager.GetAsset<JSONAsset>("/modules/test.json");
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json");
 
-            Console.WriteLine(ReferenceEquals(test_json, test));
+            Assert.AreSame(testJson, test);
 
-            TestJSONObject obj = test.Deserialize<TestJSONObject>();
+            var obj = test?.Deserialize<TestJSONObject>();
 
-            Console.WriteLine(obj.Text);
-        }
-
-        public static void Test()
-        {
-            TestPlainText();
-            TestXML();
-            TestJSON();
+            Console.WriteLine(obj?.Text);
         }
     }
 }

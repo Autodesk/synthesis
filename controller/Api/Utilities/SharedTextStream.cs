@@ -1,44 +1,124 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SynthesisAPI.Utilities
 {
-    public class SharedTextStream<TStream> where TStream : Stream
+    /// <summary>
+    /// A thread-dafe text stream
+    /// </summary>
+    /// <typeparam name="TStream">The type of stream to use</typeparam>
+    public class SharedTextStream
     {
         // TODO ref_count for dispose function?
         // TODO combine with SharedBinaryStream
 
-        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck, int t)
+        public SharedTextStream(Stream stream, ReaderWriterLockSlim lck, int t)
         {
             Timeout = t;
-            RWLock = lck;
+            RwLock = lck;
             Stream = stream;
             Reader = new StreamReader(Stream);
             Writer = new StreamWriter(Stream);
         }
 
-        public SharedTextStream(TStream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
+        public SharedTextStream(Stream stream, ReaderWriterLockSlim lck) : this(stream, lck, DefaultTimeout) { }
 
         private const int DefaultTimeout = 5000;
 
-        private ReaderWriterLockSlim RWLock { get; set; }
+        private ReaderWriterLockSlim RwLock { get; set; }
 
         public int Timeout { get; set; } // ms
 
-        private TStream Stream { get; set; }
+        public Stream Stream { get; private set; }
 
         private StreamReader Reader { get; set; }
 
         private StreamWriter Writer { get; set; }
 
+        public void SetLength(long len)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.SetLength(len);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+        }
+
+        public bool TrySetLength(long len)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    Stream.SetLength(len);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        public long Seek(long offset, SeekOrigin loc = SeekOrigin.Begin)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Stream.Seek(offset, loc);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+        }
+
+        public long? TrySeek(long offset, SeekOrigin loc = SeekOrigin.Begin)
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Stream.Seek(offset, loc);
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
         public string ReadLine()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -46,7 +126,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -55,9 +135,9 @@ namespace SynthesisAPI.Utilities
             }
         }
 
-        public string TryReadLine()
+        public string? TryReadLine()
         {
-            if (RWLock.TryEnterReadLock(Timeout))
+            if (RwLock.TryEnterReadLock(Timeout))
             {
                 try
                 {
@@ -65,7 +145,45 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitReadLock();
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public string ReadToEnd()
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadToEnd();
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public string TryReadToEnd()
+        {
+            if (RwLock.TryEnterReadLock(Timeout))
+            {
+                try
+                {
+                    return Reader.ReadToEnd();
+                }
+                finally
+                {
+                    RwLock.ExitReadLock();
                 }
             }
             else
@@ -76,7 +194,7 @@ namespace SynthesisAPI.Utilities
 
         public void WriteLine(string line)
         {
-            if (RWLock.TryEnterWriteLock(Timeout))
+            if (RwLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
@@ -85,7 +203,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitWriteLock();
+                    RwLock.ExitWriteLock();
                 }
             }
             else
@@ -96,7 +214,7 @@ namespace SynthesisAPI.Utilities
 
         public bool TryWriteLine(string line)
         {
-            if (RWLock.TryEnterWriteLock(Timeout))
+            if (RwLock.TryEnterWriteLock(Timeout))
             {
                 try
                 {
@@ -105,7 +223,7 @@ namespace SynthesisAPI.Utilities
                 }
                 finally
                 {
-                    RWLock.ExitWriteLock();
+                    RwLock.ExitWriteLock();
                 }
                 return true;
             }

@@ -14,14 +14,7 @@ namespace TestApi
 
         public static void Main(string[] args)
         {
-            Console.WriteLine("Tests started\n=============================================");
 
-            FileSystem.Init();
-            TestVirtualFileSystem.Test();
-
-            TestAssetManager.Test();
-
-            Console.WriteLine("=============================================\nTests finished");
         }
     }
 }
