@@ -137,8 +137,14 @@ namespace SynthesisAPI.PreferenceManager
                 entry = AssetManager.AssetManager.ImportOrCreate<JSONAsset>("text/json", VirtualFilePath.path, VirtualFilePath.file, Guid.Empty, Permissions.PublicWrite, ActualFilePath);
             }
 
-            preferences = entry.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
-            
+            entry.SharedStream.Seek(0); // TODO do we want to do this automatically?
+            var deserialized = entry.Deserialize<Dictionary<Guid, Dictionary<string, object>>>();
+            entry.SharedStream.Seek(0); // TODO do we want to do this automatically?
+            if (deserialized != null) // TODO throw if null?
+            {
+                preferences = deserialized;
+            }
+
             SavedOrReset();
 
             return true;
