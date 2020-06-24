@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace SynthesisAPI.AssetManager
 {
+    /// <summary>
+    /// Representation of a Unity Sprite asset
+    /// 
+    /// Only PNG and JPEG images are supported for import
+    /// </summary>
     public class SpriteAsset : Asset
     {
         public SpriteAsset(string name, Guid owner, Permissions perm, string sourcePath)
