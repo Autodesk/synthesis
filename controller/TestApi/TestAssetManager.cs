@@ -46,7 +46,7 @@ namespace TestApi
         [Test]
         public static void TestPlainText()
         {
-            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/modules", "test2.txt", Program.TestGuid, Permissions.PublicRead, "test/test.txt");
+            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/modules", "test2.txt", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.txt");
 
             TextAsset test = AssetManager.GetAsset<TextAsset>("/modules/test2.txt");
 
@@ -61,7 +61,7 @@ namespace TestApi
             // byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "test.xml");
             // XmlAsset test_xml = AssetManager.Import<XmlAsset>("text/xml", file_data, "/modules", "test.xml", Program.TestGuid, Permissions.PublicRead, "test.xml");
 
-            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/modules", "test.xml", Program.TestGuid, Permissions.PublicRead, "test/test.xml");
+            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/modules", "test.xml", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.xml");
 
             var test = AssetManager.GetAsset<XmlAsset>("/modules/test.xml");
 
@@ -75,7 +75,7 @@ namespace TestApi
         [Test]
         public static void TestJson()
         {
-            var testJson = AssetManager.Import<JsonAsset>("text/json", "/modules", "test.json", Program.TestGuid, Permissions.PublicRead, "test/test.json");
+            var testJson = AssetManager.Import<JsonAsset>("text/json", "/modules", "test.json", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json");
 
