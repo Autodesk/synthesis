@@ -15,11 +15,6 @@ namespace SynthesisAPI.PreferenceManager
         private static string ActualFilePath = FileSystem.BasePath + "files" + Path.DirectorySeparatorChar + "preferences.json";
         private static Guid MyGuid = Guid.NewGuid();
 
-        public static string BasePath {
-            get => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + System.IO.Path.DirectorySeparatorChar
-                + "Autodesk" + System.IO.Path.DirectorySeparatorChar + "Synthesis" + System.IO.Path.DirectorySeparatorChar;
-        }
-
         static PreferenceManager()
         {
             preferences = new Dictionary<Guid, Dictionary<string, object>>();

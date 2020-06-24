@@ -21,8 +21,6 @@ namespace TestApi
 
             TestAssetManager.Test();
 
-            TestPreferenceManager.Test();
-
             Console.WriteLine("=============================================\nTests finished");
         }
     }
