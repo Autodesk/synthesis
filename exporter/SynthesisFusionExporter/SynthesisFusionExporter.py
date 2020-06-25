@@ -26,18 +26,26 @@ try:
 
     # Figure out a better way to install and import protobuf TODO: check for cross compatibility
     try:
+        from pygltflib import *
         from .proto.synthesis_importbuf_pb2 import *
+        import numpy as np
     except:
         try:
             from pathlib import Path
             p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
             with cd(p):
+                os.system("python -m pip install pygltflib") # Install protobuf with the fusion
                 os.system("python -m pip install protobuf") # Install protobuf with the fusion
+                os.system("python -m pip install numpy") # Install protobuf with the fusion
+            from pygltflib import *
             from .proto.synthesis_importbuf_pb2 import *
+            import numpy as np
+
         except:
             app = adsk.core.Application.get()
             ui = app.userInterface
             if ui:
+                ui.messageBox('Fatal Error: Unable to import pygltflib {}'.format(traceback.format_exc()))
                 ui.messageBox('Fatal Error: Unable to import protobuf {}'.format(traceback.format_exc()))
 
     # Basic Fusion 360 Command Base samples

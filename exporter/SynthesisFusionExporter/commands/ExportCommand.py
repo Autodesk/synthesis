@@ -1,10 +1,16 @@
-import adsk, adsk.core, adsk.fusion, traceback
+import time
+
+import adsk
+import adsk.core
+import adsk.fusion
+from google.protobuf.json_format import MessageToDict
+import numpy as np
+
 import apper
 from apper import AppObjects, item_id
 from ..proto.synthesis_importbuf_pb2 import *
-from google.protobuf.json_format import MessageToDict, MessageToJson
-from ..utils.DebugHierarchy import printHierarchy
-import time
+from ..utils.DebugHierarchy import *
+from ..utils.GLTFUtils import *
 
 ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
 
@@ -16,17 +22,37 @@ def exportRobot():
         print("Error: You must save your fusion document before exporting!")
         return
 
-    protoDocument = Document()
-    fillDocument(ao, protoDocument)
-    protoDocumentAsDict = MessageToDict(protoDocument)
+    # protoDocument = Document()
+    # fillDocument(ao, protoDocument)
+    # protoDocumentAsDict = MessageToDict(protoDocument)
+
+    gltf = GLTF2()
+
+    fillGltf(ao, gltf)
+
+    # scene = Scene()
+    # gltf.scenes.append(scene)
+    # add_indexed_geometry(gltf, [(0, 1, 2)], [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0)])
+
+    jsonFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', "test", int(time.time()), "gltf")
+    gltf.save_json(jsonFilePath)
+
+    # gltf.convert_buffers(BufferFormat.BINARYBLOB)
+    # glbFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', "test", int(time.time()), "glb")
+    # gltf.save_binary(glbFilePath)
+
+
+    # json = gltf.to_json()
+    dict = gltf_asdict(gltf)
+
     # printHierarchy(ao.root_comp)
     print()  # put breakpoint here and view the protoDocumentAsDict local variable
-    
-    filePath = '{0}{1}_{2}.{3}'.format('C:/temp/', protoDocument.documentMeta.name.replace(" ", "_"), protoDocument.documentMeta.exportTime, "synimport")
 
-    file = open(filePath, 'wb')
-    file.write(protoDocument.SerializeToString())
-    file.close()
+    # filePath = '{0}{1}_{2}.{3}'.format('C:/temp/', protoDocument.documentMeta.name.replace(" ", "_"), protoDocument.documentMeta.exportTime, "synimport")
+    #
+    # file = open(filePath, 'wb')
+    # file.write(protoDocument.SerializeToString())
+    # file.close()
 
 
 class ExportCommand(apper.Fusion360CommandBase):
@@ -35,100 +61,121 @@ class ExportCommand(apper.Fusion360CommandBase):
         exportRobot()
 
 
-# -----------Document-----------
+# -----------Gltf-----------
 
-def fillDocument(ao, protoDocument):
-    fillUserMeta(ao.app.currentUser, protoDocument.userMeta)
-    fillDocumentMeta(ao.document, protoDocument.documentMeta)
-    fillDesign(ao.design, protoDocument.design)
+def fillGltf(ao, gltf):
+    bufferAccum = GltfBufferAccumulator(gltf)
+
+    fillAssetMetadata(ao, gltf.asset)
+    componentUuidToIndex = fillMeshes(ao.design.allComponents, gltf, bufferAccum)
+    # fillJoints(ao.design.rootComponent.allJoints, gltf)
+    # fillMaterialsAndAppearances(ao.design, gltf)
+    fillScene(ao.design.rootComponent, gltf, componentUuidToIndex)
+
+    bufferAccum.close()
 
 
-def fillUserMeta(fusionCurrentUser, protoUserMeta):
-    protoUserMeta.userName = fusionCurrentUser.userName
-    protoUserMeta.id = fusionCurrentUser.userId
-    protoUserMeta.displayName = fusionCurrentUser.displayName
-    protoUserMeta.email = fusionCurrentUser.email
-
-
-def fillDocumentMeta(fusionDocument, protoDocumentMeta):
-    protoDocumentMeta.fusionVersion = fusionDocument.version
-    protoDocumentMeta.name = fusionDocument.name
-    protoDocumentMeta.versionNumber = fusionDocument.dataFile.versionNumber
-    protoDocumentMeta.description = fusionDocument.dataFile.description
-    protoDocumentMeta.id = fusionDocument.dataFile.id
-    protoDocumentMeta.exportTime = int(time.time())
-
-def fillDesign(fusionDesign, protoDesign):
-    fillComponents(fusionDesign.allComponents, protoDesign.components)
-    fillJoints(fusionDesign.rootComponent.allJoints, protoDesign.joints)
-    fillMaterials(fusionDesign.materials, protoDesign.materials)
-    fillAppearances(fusionDesign.appearances, protoDesign.appearances)
-    fillFakeRootOccurrence(fusionDesign.rootComponent, protoDesign.hierarchyRoot)
+def fillAssetMetadata(ao, asset):
+    fusionDocument = ao.document
+    fusionCurrentUser = ao.app.currentUser
+    #
+    # asset.fusionVersion = fusionDocument.version
+    # asset.name = fusionDocument.name
+    # asset.versionNumber = fusionDocument.dataFile.versionNumber
+    # asset.description = fusionDocument.dataFile.description
+    # asset.id = fusionDocument.dataFile.id
+    # asset.exportTime = int(time.time())
+    #
+    # asset.userName = fusionCurrentUser.userName
+    # asset.id = fusionCurrentUser.userId
+    # asset.displayName = fusionCurrentUser.displayName
+    # asset.email = fusionCurrentUser.email
 
 
 # -----------Occurrence Tree-----------
 
-def fillFakeRootOccurrence(rootComponent, protoOccur):
-    protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
-    protoOccur.header.name = rootComponent.name
-    protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
-
-    for childOccur in rootComponent.occurrences:
-        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+def fillScene(rootComponent, gltf, componentUuidToIndex):
+    scene = Scene()
+    scene.nodes.append(fillRootNode(rootComponent, gltf, componentUuidToIndex))
+    gltf.scenes.append(scene)
 
 
-def fillOccurrence(occur, protoOccur):
-    protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
-    protoOccur.header.name = occur.name
-    protoOccur.isGrounded = occur.isGrounded
-    fillMatrix3D(occur.transform, protoOccur.transform)
+def fillRootNode(rootComponent, gltf, componentUuidToIndex):
+    node = Node()
+    node.name = rootComponent.name
+    node.mesh = componentUuidToIndex[item_id(rootComponent, ATTR_GROUP_NAME)]
+    node.extras['uuid'] = item_id(rootComponent, ATTR_GROUP_NAME)
 
-    protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
+    node.children = [fillNode(occur, gltf, componentUuidToIndex) for occur in rootComponent.occurrences]
+    gltf.nodes.append(node)
+    return len(gltf.nodes) - 1
 
-    for childOccur in occur.childOccurrences:
-        fillOccurrence(childOccur, protoOccur.childOccurrences.add())
+
+def fillNode(occur, gltf, componentUuidToIndex):
+    node = Node()
+    node.name = occur.name
+    transformArray = occur.transform.asArray()
+    node.matrix = np.reshape(transformArray, (4, 4), order='F').flatten().tolist()  # todo: GLTF is col-major, fusion doesn't say...
+    node.mesh = componentUuidToIndex[item_id(occur.component, ATTR_GROUP_NAME)]
+    node.extras['uuid'] = item_id(occur, ATTR_GROUP_NAME)
+
+    # protoOccur.isGrounded = occur.isGrounded
+
+    node.children = [fillNode(occur, gltf, componentUuidToIndex) for occur in occur.childOccurrences]
+    gltf.nodes.append(node)
+    return len(gltf.nodes) - 1
 
 
 # -----------Components-----------
 
-def fillComponents(fusionComponents, protoComponents):
+# <editor-fold desc="Components">
+
+def fillMeshes(fusionComponents, gltf, bufferAccum):
+    componentUuidToIndex = {}
+
     for fusionComponent in fusionComponents:
-        fillComponent(fusionComponent, protoComponents.add())
+        uuid, index = fillMesh(fusionComponent, gltf, bufferAccum)
+        componentUuidToIndex[uuid] = index
+
+    return componentUuidToIndex
 
 
-def fillComponent(fusionComponent, protoComponent):
-    protoComponent.header.uuid = item_id(fusionComponent, ATTR_GROUP_NAME)
-    protoComponent.header.name = fusionComponent.name
-    protoComponent.header.description = fusionComponent.description
-    protoComponent.header.revisionId = fusionComponent.revisionId
-    protoComponent.partNumber = fusionComponent.partNumber
-    fillBoundingBox3D(fusionComponent.boundingBox, protoComponent.boundingBox)
-    protoComponent.materialId = fusionComponent.material.id
-    fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
+def fillMesh(fusionComponent, gltf, bufferAccum):
+    mesh = Mesh()
+    meshUUID = item_id(fusionComponent, ATTR_GROUP_NAME)
+    mesh.extras['uuid'] = meshUUID
+    mesh.name = fusionComponent.name
+    mesh.extras['description'] = fusionComponent.description
+    mesh.extras['revisionId'] = fusionComponent.revisionId
+    mesh.extras['partNumber'] = fusionComponent.partNumber
+    # fillBoundingBox3D(fusionComponent.boundingBox, protoComponent.boundingBox)
+    # protoComponent.materialId = fusionComponent.material.id
+    # fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
-    for bRepBody in fusionComponent.bRepBodies:
-        fillMeshBodyFromBrep(bRepBody, protoComponent.meshBodies.add())
+    mesh.primitives = [fillPrimitiveFromBrep(bRepBody, gltf, bufferAccum) for bRepBody in fusionComponent.bRepBodies]
 
-
-def fillMeshBodyFromBrep(fusionBRepBody, protoMeshBody):
-    protoMeshBody.header.uuid = item_id(fusionBRepBody, ATTR_GROUP_NAME)
-    protoMeshBody.header.name = fusionBRepBody.name
-    protoMeshBody.appearanceId = fusionBRepBody.appearance.id
-    protoMeshBody.materialId = fusionBRepBody.material.id
-    fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
-    fillBoundingBox3D(fusionBRepBody.boundingBox, protoMeshBody.boundingBox3D)
-    fillTriangleMeshFromBrep(fusionBRepBody, protoMeshBody.triangleMesh)
+    gltf.meshes.append(mesh)
+    return meshUUID, len(gltf.meshes) - 1
 
 
-def fillTriangleMeshFromBrep(fusionBRepBody, protoTriangleMesh):
+def fillPrimitiveFromBrep(fusionBRepBody, gltf, bufferAccum):
+    primitive = Primitive()
+    primitive.extras['uuid'] = item_id(fusionBRepBody, ATTR_GROUP_NAME)
+    primitive.extras['name'] = fusionBRepBody.name
+    # protoMeshBody.appearanceId = fusionBRepBody.appearance.id
+    # protoMeshBody.materialId = fusionBRepBody.material.id
+    # fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
+    # fillBoundingBox3D(fusionBRepBody.boundingBox, protoMeshBody.boundingBox3D)
     meshCalculator = fusionBRepBody.meshManager.createMeshCalculator()
     meshCalculator.setQuality(11)  # todo mesh quality settings
     mesh = meshCalculator.calculate()
 
-    protoTriangleMesh.vertices.extend(mesh.nodeCoordinatesAsDouble)
-    protoTriangleMesh.normals.extend(mesh.nodeCoordinatesAsDouble)
-    protoTriangleMesh.indices.extend(mesh.nodeIndices)
-    protoTriangleMesh.uvs.extend(mesh.nodeCoordinatesAsDouble)
+    indicesBufferViewIndex, verticesBufferViewIndex = addPrimitiveData(gltf, bufferAccum, mesh.nodeIndices, mesh.nodeCoordinatesAsFloat)
+    primitive.attributes = Attributes()
+    primitive.attributes.POSITION = verticesBufferViewIndex
+    primitive.indices = indicesBufferViewIndex
+
+    return primitive
 
 
 def fillPhysicalProperties(fusionPhysical, protoPhysical):
@@ -139,7 +186,11 @@ def fillPhysicalProperties(fusionPhysical, protoPhysical):
     fillVector3D(fusionPhysical.centerOfMass, protoPhysical.centerOfMass)
 
 
+# </editor-fold>
+
 # -----------Joints-----------
+
+# <editor-fold desc="Joints">
 
 def fillJoints(fusionJoints, protoJoints):
     for fusionJoint in fusionJoints:
@@ -285,9 +336,13 @@ def fillJointLimits(fusionJointLimits, protoJointLimits):
     protoJointLimits.restValue = fusionJointLimits.restValue
 
 
+# </editor-fold>
+
 # -----------Materials-----------
 
-def fillMaterials(fusionMaterials, protoMaterials):
+# <editor-fold desc="Materials">
+
+def fillMaterialsAndAppearances(fusionMaterials, protoMaterials):
     for fusionMaterial in fusionMaterials:
         fillMaterial(fusionMaterial, protoMaterials.add())
 
@@ -306,7 +361,11 @@ def fillMaterialsProperties(fusionMaterials, protoMaterials):
     protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 
+# </editor-fold>
+
 # -----------Appearances-----------
+
+# <editor-fold desc="Appearances">
 
 def fillAppearances(fusionAppearances, protoAppearances):
     for childAppearance in fusionAppearances:
@@ -323,6 +382,8 @@ def fillAppearance(fusionAppearance, protoAppearance):
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
     pass  # todo
 
+
+# </editor-fold>
 
 # -----------Generic-----------
 
