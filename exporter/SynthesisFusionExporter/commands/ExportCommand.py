@@ -289,27 +289,18 @@ def fillMaterial(childMaterial, protoMaterial):
     protoMaterial.id = childMaterial.id
     protoMaterial.name = childMaterial.name
     protoMaterial.appearanceId = childMaterial.appearance.id
-    # todo add protobuf def: MaterialProperties properties
-    # fillMaterialsProperties()
 
-    for x in childMaterial.materialProperties:
-        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
-        fillMaterialsProperties(x, protoMaterial.properties)
+    for prop in childMaterial.materialProperties:
+        fillMaterialsProperties(prop, protoMaterial.properties)
 
 
 def fillMaterialsProperties(fusionMaterials, protoMaterials):
-    #print("Name: "+fusionMaterials.name+" Id: "+fusionMaterials.id+" Value: "+str(fusionMaterials.value))
     if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
         protoMaterials.density = int(fusionMaterials.value)
     if (fusionMaterials.id == 'structural_Minimum_tensile_strength') and (fusionMaterials.value is not None):
         protoMaterials.yieldStrength = int(fusionMaterials.value)
     if (fusionMaterials.id == 'structural_Minimum_yield_stress') and (fusionMaterials.value is not None):
         protoMaterials.tensileStrength = int(fusionMaterials.value)
-    #protoMaterials.density = fusionMaterials.id
-    #protoMaterials.density = fusionMaterials.itemById(structural_Density.value)
-    # protoMaterials.density = fusionMaterials.density
-    # protoMaterials.yieldStrength = fusionMaterials.yieldStrength
-    # protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 
 # -----------Appearances-----------
@@ -344,7 +335,8 @@ def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
     # int32 selfIlluminationLuminance
     # int32 selfIlluminationColorTemp
 
-    print("Name: "+fusionAppearanceProps.name+" Id: "+fusionAppearanceProps.id+" Object: "+fusionAppearanceProps.objectType)
+    # for debug to print appearanceProperties list
+    # print("Name: "+fusionAppearanceProps.name+" Id: "+fusionAppearanceProps.id+" Object: "+fusionAppearanceProps.objectType)
 
 
 # -----------Generic-----------
