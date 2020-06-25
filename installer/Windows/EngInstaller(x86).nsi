@@ -1,13 +1,13 @@
 !include MUI2.nsh
-;!include LogicLib.nsh
+!define PRODUCT_VERSION "5.0.0"
 
 Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 5.0.0 (x86) Setup"
+Caption "Synthesis ${PRODUCT_VERSION} (x86) Setup"
 
-OutFile "SynthesisWin(x86)5.0.0.exe"
+OutFile "SynthesisWin(x86)${PRODUCT_VERSION}.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -127,7 +127,7 @@ Section "Synthesis (required)"
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "5.0.0" ;UPDATE ON RELEASE
+                 "DisplayVersion" "${PRODUCT_VERSION}"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
