@@ -43,17 +43,14 @@ namespace SynthesisAPI.EventBus
             }
         }
 
-        public static ChannelReader<IEvent> Subscribe (string tag)
+        public static IEvent newTagListener (string tag)
         {
             Channel<IEvent> ch;
             if (topics.TryGetValue(tag, out ch))
             {
-                return ch.Reader;
-            }
-            else
-            {
-                ch = CreateChannel(tag);
-                return ch.Reader;
+                IEvent result; 
+                ch.Reader.TryRead(out result);
+                return result;
             }
         }
 
