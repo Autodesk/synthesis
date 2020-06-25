@@ -85,5 +85,34 @@ namespace TestApi
 
             Console.WriteLine(obj?.Text);
         }
+
+        [Test]
+        public static void TestTypeFromFileExtension()
+        {
+            string source = $"test{Path.DirectorySeparatorChar}test.json";
+            var testJson = AssetManager.Import("/modules", "test2.json", Program.TestGuid, Permissions.PublicRead, source);
+
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/test2.json");
+
+            Assert.AreSame(testJson, test);
+
+            var obj = test?.Deserialize<TestJSONObject>();
+
+            Console.WriteLine(obj?.Text);
+        }
+
+        [Test]
+        public static void TestTypeFromTypeParameter()
+        {
+            var testJson = AssetManager.Import<JsonAsset>("/modules", "test3.json", Program.TestGuid, Permissions.PublicRead, $"test{Path.DirectorySeparatorChar}test.json");
+
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/test3.json");
+
+            Assert.AreSame(testJson, test);
+
+            var obj = test?.Deserialize<TestJSONObject>();
+
+            Console.WriteLine(obj?.Text);
+        }
     }
 }
