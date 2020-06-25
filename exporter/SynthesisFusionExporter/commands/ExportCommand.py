@@ -294,12 +294,16 @@ def fillMaterial(childMaterial, protoMaterial):
 
     for x in childMaterial.materialProperties:
 
-        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
+        print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
         fillMaterialsProperties(x, protoMaterial.properties)
 
 
 def fillMaterialsProperties(fusionMaterials, protoMaterials):
-    print("Name: "+fusionMaterials.name+" Id: "+fusionMaterials.id+" Value: "+str(fusionMaterials.value))
+    #print("Name: "+fusionMaterials.name+" Id: "+fusionMaterials.id+" Value: "+str(fusionMaterials.value))
+    if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
+        protoMaterials.density = int(fusionMaterials.value)
+    #protoMaterials.density = fusionMaterials.id
+    #protoMaterials.density = fusionMaterials.itemById(structural_Density.value)
     # protoMaterials.density = fusionMaterials.density
     # protoMaterials.yieldStrength = fusionMaterials.yieldStrength
     # protoMaterials.tensileStrength = fusionMaterials.tensileStrength
