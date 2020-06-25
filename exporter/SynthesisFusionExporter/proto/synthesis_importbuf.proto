@@ -37,6 +37,7 @@ message DocumentMeta {
     int32 versionNumber = 3;
     string description = 4;
     string id = 5; // ex. "urn:adsk.wipprod:dm.lineage:vUFmflIzT6-M91MZpDjFiQ"
+    int64 exportTime = 6; // unix time
 }
 
 message Design {
