@@ -292,11 +292,17 @@ def fillMaterial(childMaterial, protoMaterial):
     # todo add protobuf def: MaterialProperties properties
     # fillMaterialsProperties()
 
+    for x in childMaterial.materialProperties:
+
+        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
+        fillMaterialsProperties(x, protoMaterial.properties)
+
 
 def fillMaterialsProperties(fusionMaterials, protoMaterials):
-    protoMaterials.density = fusionMaterials.density
-    protoMaterials.yieldStrength = fusionMaterials.yieldStrength
-    protoMaterials.tensileStrength = fusionMaterials.tensileStrength
+    print("Name: "+fusionMaterials.name+" Id: "+fusionMaterials.id+" Value: "+str(fusionMaterials.value))
+    # protoMaterials.density = fusionMaterials.density
+    # protoMaterials.yieldStrength = fusionMaterials.yieldStrength
+    # protoMaterials.tensileStrength = fusionMaterials.tensileStrength
 
 
 # -----------Appearances-----------
@@ -311,6 +317,13 @@ def fillAppearance(fusionAppearance, protoAppearance):
     protoAppearance.name = fusionAppearance.name
     protoAppearance.hasTexture = fusionAppearance.hasTexture
     # todo add protobuf def: AppearanceProperties properties
+    
+    # for x in fusionAppearance.appearanceProperties:
+    #     if x.value is not None:
+    #         print("Appearance\n")
+    #         print("Name: "+x.name)
+            # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
+        # [print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value)) for x in ao.root_comp.material.materialProperties]
 
 
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
