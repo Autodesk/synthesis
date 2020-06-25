@@ -364,8 +364,8 @@ namespace SynthesisAPI.AssetManager
                 {
                     if (createOnFail)
                     {
-                        System.IO.Directory.CreateDirectory(path);
-                        File.Create(path);
+                        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
+                        File.Create(path).Close();
                         data = new byte[0];
                     }
                 }
