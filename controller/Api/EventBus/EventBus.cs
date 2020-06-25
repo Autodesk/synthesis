@@ -11,8 +11,7 @@ namespace SynthesisAPI.EventBus
 {
     public static class EventBus
     {
-        public static Dictionary<string, Channel<IEvent>> topics = new Dictionary<string, Channel<IEvent>>();
-
+        public static Dictionary<string, Channel<IEvent>[]> topics = new Dictionary<string, Channel<IEvent>[]>();
         static EventBus()
         {
 
@@ -28,22 +27,41 @@ namespace SynthesisAPI.EventBus
         {
             foreach (string tag in tags)
             {
-                Channel<IEvent> ch;
+                Channel<IEvent>[] ch;
                 if (topics.TryGetValue(tag, out ch)) 
                 {
-                    await ch.Writer.WriteAsync(event);
-                    ch.Writer.Complete();
+                    for(c in ch)
+                    {
+                        await ch.Writer.WriteAsync(event);
+                        ch.Writer.Complete();
+                    }
                 } 
                 else 
                 {
-                    ch = CreateChannel(tag);
+                    ch = {CreateChannel(tag)};
                     await ch.Writer.WriteAsync(event);
                     ch.Writer.Complete();
                 }
             }
         }
 
-        public static IEvent newTagListener (string tag)
+        public ChannelReader<IEvent> Subscribe(string tag)
+        {
+            Channel<IEvent>[] ch;
+            Channel<IEvent> channel = Channel.CreateUnbounded<IEvent>();
+            if (topics.TryGetValue(tag, out ch))
+            {
+                ch.Append(channel);
+            } 
+            else
+            {
+                ch = {channel};
+                topics.Add(tag, ch);
+            }
+
+            return channel.Reader;
+        }
+        public static IEvent newTagListener(string tag)
         {
             Channel<IEvent> ch;
             if (topics.TryGetValue(tag, out ch))
