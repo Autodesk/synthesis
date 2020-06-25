@@ -302,6 +302,10 @@ def fillMaterialsProperties(fusionMaterials, protoMaterials):
     #print("Name: "+fusionMaterials.name+" Id: "+fusionMaterials.id+" Value: "+str(fusionMaterials.value))
     if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
         protoMaterials.density = int(fusionMaterials.value)
+    if (fusionMaterials.id == 'structural_Minimum_tensile_strength') and (fusionMaterials.value is not None):
+        protoMaterials.yieldStrength = int(fusionMaterials.value)
+    if (fusionMaterials.id == 'structural_Minimum_yield_stress') and (fusionMaterials.value is not None):
+        protoMaterials.tensileStrength = int(fusionMaterials.value)
     #protoMaterials.density = fusionMaterials.id
     #protoMaterials.density = fusionMaterials.itemById(structural_Density.value)
     # protoMaterials.density = fusionMaterials.density
