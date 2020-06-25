@@ -327,13 +327,25 @@ def fillAppearance(fusionAppearance, protoAppearance):
     
     for x in fusionAppearance.appearanceProperties:
         # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
-        print("Name: "+x.name+" Id: "+x.id)
-        # fillAppearanceProperties(x, protoAppearance.properties)
+        # print("Name: "+x.name+" Id: "+x.id)
+        fillAppearanceProperties(x, protoAppearance.properties)
 
 
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
     # Color albedo
-    pass
+    fillColor(fusionAppearanceProps, protoAppearanceProps.albedo)
+    # int32 glossiness
+    # HighlightsMode highlights
+    # int32 reflectivityDirect
+    # int32 reflectivityOblique 
+    # int32 transparency
+    # int32 translucency
+    # int32 refractiveIndex
+    # Color selfIlluminationColor
+    # int32 selfIlluminationLuminance
+    # int32 selfIlluminationColorTemp
+
+    print("Name: "+fusionAppearanceProps.name+" Id: "+fusionAppearanceProps.id+" Object: "+fusionAppearanceProps.objectType)
 
     
     # if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
@@ -347,7 +359,11 @@ def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
 # -----------Generic-----------
 
 def fillColor(fusionColor, protoColor):
-    pass  # todo
+    if (fusionColor.name == 'Color') and (fusionColor.value is not None):
+        protoColor.R = fusionColor.value.red
+        protoColor.G = fusionColor.value.green
+        protoColor.B = fusionColor.value.blue
+        protoColor.A = fusionColor.value.opacity
 
 
 def fillBoundingBox3D(fusionBoundingBox, protoBoundingBox):
