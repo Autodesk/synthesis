@@ -293,8 +293,7 @@ def fillMaterial(childMaterial, protoMaterial):
     # fillMaterialsProperties()
 
     for x in childMaterial.materialProperties:
-
-        print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
+        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
         fillMaterialsProperties(x, protoMaterial.properties)
 
 
@@ -326,16 +325,23 @@ def fillAppearance(fusionAppearance, protoAppearance):
     protoAppearance.hasTexture = fusionAppearance.hasTexture
     # todo add protobuf def: AppearanceProperties properties
     
-    # for x in fusionAppearance.appearanceProperties:
-    #     if x.value is not None:
-    #         print("Appearance\n")
-    #         print("Name: "+x.name)
-            # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
-        # [print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value)) for x in ao.root_comp.material.materialProperties]
+    for x in fusionAppearance.appearanceProperties:
+        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
+        print("Name: "+x.name+" Id: "+x.id)
+        # fillAppearanceProperties(x, protoAppearance.properties)
 
 
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
-    pass  # todo
+    # Color albedo
+    pass
+
+    
+    # if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
+    #     protoMaterials.density = int(fusionMaterials.value)
+    # if (fusionMaterials.id == 'structural_Minimum_tensile_strength') and (fusionMaterials.value is not None):
+    #     protoMaterials.yieldStrength = int(fusionMaterials.value)
+    # if (fusionMaterials.id == 'structural_Minimum_yield_stress') and (fusionMaterials.value is not None):
+    #     protoMaterials.tensileStrength = int(fusionMaterials.value)
 
 
 # -----------Generic-----------
