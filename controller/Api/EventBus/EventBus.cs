@@ -18,12 +18,6 @@ namespace SynthesisAPI.EventBus
 
         }
 
-        private static Channel<IEvent> CreateChannel(string tag)
-        {
-            Channel<IEvent> c = Channel.CreateUnbounded<IEvent>();
-            topics.Add(tag, c);
-            return c;
-        }
         public static void Push(IEvent event, String [] tags)
         {
             foreach (string tag in tags)
@@ -40,8 +34,8 @@ namespace SynthesisAPI.EventBus
                 } 
                 else 
                 {
-                    Channel<IEvent> channel = CreateChannel(tag); 
-                    ch = {channel};
+                    Channel<IEvent> channel = Channel.CreateUnbounded<IEvent>();
+                    ch = new Channel<IEvent>[]{channel};
                     topics.Add(tag, ch);
                     await channel.Writer.WriteAsync(event);
                     channel.Writer.Complete();
@@ -59,13 +53,13 @@ namespace SynthesisAPI.EventBus
             } 
             else
             {
-                ch = {channel};
+                ch = new Channel<IEvent>[]{channel};
                 topics.Add(tag, ch);
             }
 
             return channel.Reader;
         }
-        public static IEvent newTagListener(string tag)
+        public static IEvent NewTagListener(string tag)
         {
             Channel<IEvent> ch;
             if (topics.TryGetValue(tag, out ch))
