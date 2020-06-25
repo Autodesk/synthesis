@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading.Channels;
 using System.Collections;
 using SynthesisAPI.EventBus;
+using System.Diagnostics.Tracing;
 
 namespace SynthesisAPI.EventBus
 {
@@ -30,17 +31,20 @@ namespace SynthesisAPI.EventBus
                 Channel<IEvent>[] ch;
                 if (topics.TryGetValue(tag, out ch)) 
                 {
-                    for(c in ch)
+                    foreach(Channel<IEvent> channel in ch)
                     {
-                        await ch.Writer.WriteAsync(event);
-                        ch.Writer.Complete();
+                        
+                        await channel.Writer.WriteAsync(event);
+                        channel.Writer.Complete();
                     }
                 } 
                 else 
                 {
-                    ch = {CreateChannel(tag)};
-                    await ch.Writer.WriteAsync(event);
-                    ch.Writer.Complete();
+                    Channel<IEvent> channel = CreateChannel(tag); 
+                    ch = {channel};
+                    topics.Add(tag, ch);
+                    await channel.Writer.WriteAsync(event);
+                    channel.Writer.Complete();
                 }
             }
         }
