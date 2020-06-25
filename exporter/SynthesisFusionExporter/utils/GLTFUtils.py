@@ -15,9 +15,8 @@ class GltfBufferAccumulator():
         self.gltfIndex = len(gltf.buffers) - 1
         self.offset = 0
 
-        # add the data
         stream = "data:application/octet-stream;base64,"
-        self.buffer.uri = stream  # first part of the datastream is set up
+        self.buffer.uri = stream
 
     def addBytes(self, bytes, length):
         self.buffer.uri += bytes

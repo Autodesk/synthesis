@@ -3,12 +3,10 @@ import time
 import adsk
 import adsk.core
 import adsk.fusion
-from google.protobuf.json_format import MessageToDict
 import numpy as np
 
 import apper
 from apper import AppObjects, item_id
-from ..proto.synthesis_importbuf_pb2 import *
 from ..utils.DebugHierarchy import *
 from ..utils.GLTFUtils import *
 
@@ -22,37 +20,20 @@ def exportRobot():
         print("Error: You must save your fusion document before exporting!")
         return
 
-    # protoDocument = Document()
-    # fillDocument(ao, protoDocument)
-    # protoDocumentAsDict = MessageToDict(protoDocument)
-
     gltf = GLTF2()
-
     fillGltf(ao, gltf)
 
-    # scene = Scene()
-    # gltf.scenes.append(scene)
-    # add_indexed_geometry(gltf, [(0, 1, 2)], [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0)])
+    # jsonFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', "test", int(time.time()), "gltf")
+    # gltf.save_json(jsonFilePath)
 
-    jsonFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', "test", int(time.time()), "gltf")
-    gltf.save_json(jsonFilePath)
+    gltf.convert_buffers(BufferFormat.BINARYBLOB)
+    glbFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', ao.document.name.replace(" ", "_"), int(time.time()), "glb")
+    gltf.save_binary(glbFilePath)
 
-    # gltf.convert_buffers(BufferFormat.BINARYBLOB)
-    # glbFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', "test", int(time.time()), "glb")
-    # gltf.save_binary(glbFilePath)
-
-
-    # json = gltf.to_json()
-    dict = gltf_asdict(gltf)
+    dict = gltf_asdict(gltf) # debugging only
 
     # printHierarchy(ao.root_comp)
     print()  # put breakpoint here and view the protoDocumentAsDict local variable
-
-    # filePath = '{0}{1}_{2}.{3}'.format('C:/temp/', protoDocument.documentMeta.name.replace(" ", "_"), protoDocument.documentMeta.exportTime, "synimport")
-    #
-    # file = open(filePath, 'wb')
-    # file.write(protoDocument.SerializeToString())
-    # file.close()
 
 
 class ExportCommand(apper.Fusion360CommandBase):
@@ -67,10 +48,10 @@ def fillGltf(ao, gltf):
     bufferAccum = GltfBufferAccumulator(gltf)
 
     fillAssetMetadata(ao, gltf.asset)
-    componentUuidToIndex = fillMeshes(ao.design.allComponents, gltf, bufferAccum)
+    componentUuidToIndexMap = fillMeshes(ao.design.allComponents, gltf, bufferAccum)
     # fillJoints(ao.design.rootComponent.allJoints, gltf)
     # fillMaterialsAndAppearances(ao.design, gltf)
-    fillScene(ao.design.rootComponent, gltf, componentUuidToIndex)
+    fillScene(ao.design.rootComponent, gltf, componentUuidToIndexMap)
 
     bufferAccum.close()
 
@@ -94,34 +75,33 @@ def fillAssetMetadata(ao, asset):
 
 # -----------Occurrence Tree-----------
 
-def fillScene(rootComponent, gltf, componentUuidToIndex):
+def fillScene(rootComponent, gltf, componentUuidToIndexMap):
     scene = Scene()
-    scene.nodes.append(fillRootNode(rootComponent, gltf, componentUuidToIndex))
+    scene.nodes.append(fillRootNode(rootComponent, gltf, componentUuidToIndexMap))
     gltf.scenes.append(scene)
 
 
-def fillRootNode(rootComponent, gltf, componentUuidToIndex):
+def fillRootNode(rootComponent, gltf, componentUuidToIndexMap):
     node = Node()
     node.name = rootComponent.name
-    node.mesh = componentUuidToIndex[item_id(rootComponent, ATTR_GROUP_NAME)]
+    node.mesh = componentUuidToIndexMap.get(item_id(rootComponent, ATTR_GROUP_NAME), None)
     node.extras['uuid'] = item_id(rootComponent, ATTR_GROUP_NAME)
 
-    node.children = [fillNode(occur, gltf, componentUuidToIndex) for occur in rootComponent.occurrences]
+    node.children = [fillNode(occur, gltf, componentUuidToIndexMap) for occur in rootComponent.occurrences]
     gltf.nodes.append(node)
     return len(gltf.nodes) - 1
 
 
-def fillNode(occur, gltf, componentUuidToIndex):
+def fillNode(occur, gltf, componentUuidToIndexMap):
     node = Node()
     node.name = occur.name
-    transformArray = occur.transform.asArray()
-    node.matrix = np.reshape(transformArray, (4, 4), order='F').flatten().tolist()  # todo: GLTF is col-major, fusion doesn't say...
-    node.mesh = componentUuidToIndex[item_id(occur.component, ATTR_GROUP_NAME)]
-    node.extras['uuid'] = item_id(occur, ATTR_GROUP_NAME)
+    # print("[N] "+occur.name)
+    node.matrix = np.reshape(occur.transform.asArray(), (4, 4), order='F').flatten().tolist()  # transpose the flat array
+    node.mesh = componentUuidToIndexMap.get(item_id(occur.component, ATTR_GROUP_NAME), None)
+    # node.extras['uuid'] = item_id(occur, ATTR_GROUP_NAME)
+    node.extras['isGrounded'] = occur.isGrounded
 
-    # protoOccur.isGrounded = occur.isGrounded
-
-    node.children = [fillNode(occur, gltf, componentUuidToIndex) for occur in occur.childOccurrences]
+    node.children = [fillNode(occur, gltf, componentUuidToIndexMap) for occur in occur.childOccurrences]
     gltf.nodes.append(node)
     return len(gltf.nodes) - 1
 
@@ -134,6 +114,7 @@ def fillMeshes(fusionComponents, gltf, bufferAccum):
     componentUuidToIndex = {}
 
     for fusionComponent in fusionComponents:
+        if len(fusionComponent.bRepBodies) == 0: continue
         uuid, index = fillMesh(fusionComponent, gltf, bufferAccum)
         componentUuidToIndex[uuid] = index
 
@@ -145,6 +126,7 @@ def fillMesh(fusionComponent, gltf, bufferAccum):
     meshUUID = item_id(fusionComponent, ATTR_GROUP_NAME)
     mesh.extras['uuid'] = meshUUID
     mesh.name = fusionComponent.name
+    # print("[M] "+fusionComponent.name)
     mesh.extras['description'] = fusionComponent.description
     mesh.extras['revisionId'] = fusionComponent.revisionId
     mesh.extras['partNumber'] = fusionComponent.partNumber
@@ -160,7 +142,7 @@ def fillMesh(fusionComponent, gltf, bufferAccum):
 
 def fillPrimitiveFromBrep(fusionBRepBody, gltf, bufferAccum):
     primitive = Primitive()
-    primitive.extras['uuid'] = item_id(fusionBRepBody, ATTR_GROUP_NAME)
+    # primitive.extras['uuid'] = item_id(fusionBRepBody, ATTR_GROUP_NAME)
     primitive.extras['name'] = fusionBRepBody.name
     # protoMeshBody.appearanceId = fusionBRepBody.appearance.id
     # protoMeshBody.materialId = fusionBRepBody.material.id
