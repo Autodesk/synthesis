@@ -325,15 +325,14 @@ def fillAppearance(fusionAppearance, protoAppearance):
     protoAppearance.hasTexture = fusionAppearance.hasTexture
     # todo add protobuf def: AppearanceProperties properties
     
-    for x in fusionAppearance.appearanceProperties:
-        # print("Name: "+x.name+" Id: "+x.id+" Value: "+str(x.value))
-        # print("Name: "+x.name+" Id: "+x.id)
-        fillAppearanceProperties(x, protoAppearance.properties)
+    for prop in fusionAppearance.appearanceProperties:
+        fillAppearanceProperties(prop, protoAppearance.properties)
 
 
 def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
-    # Color albedo
     fillColor(fusionAppearanceProps, protoAppearanceProps.albedo)
+
+    # todo
     # int32 glossiness
     # HighlightsMode highlights
     # int32 reflectivityDirect
@@ -346,14 +345,6 @@ def fillAppearanceProperties(fusionAppearanceProps, protoAppearanceProps):
     # int32 selfIlluminationColorTemp
 
     print("Name: "+fusionAppearanceProps.name+" Id: "+fusionAppearanceProps.id+" Object: "+fusionAppearanceProps.objectType)
-
-    
-    # if (fusionMaterials.id == 'structural_Density') and (fusionMaterials.value is not None):
-    #     protoMaterials.density = int(fusionMaterials.value)
-    # if (fusionMaterials.id == 'structural_Minimum_tensile_strength') and (fusionMaterials.value is not None):
-    #     protoMaterials.yieldStrength = int(fusionMaterials.value)
-    # if (fusionMaterials.id == 'structural_Minimum_yield_stress') and (fusionMaterials.value is not None):
-    #     protoMaterials.tensileStrength = int(fusionMaterials.value)
 
 
 # -----------Generic-----------
