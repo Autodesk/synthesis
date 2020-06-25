@@ -54,16 +54,16 @@ namespace SynthesisAPI.VirtualFileSystem
 
         public static void RemoveResource(string path, string name, Guid guid)
         {
-            Directory? parent_dir = (Directory?)Traverse(path);
+            Directory? parentDir = (Directory?)Traverse(path);
 
-            parent_dir?.RemoveEntry(name, guid);
+            parentDir?.RemoveEntry(name, guid);
         }
 
         public static bool ResourceExists(string path, string name)
         {
-            Directory? parent_dir = (Directory?)Traverse(path);
+            Directory? parentDir = (Directory?)Traverse(path);
 
-            return parent_dir != null && parent_dir.EntryExists(name);
+            return parentDir != null && parentDir.EntryExists(name);
         }
 
 		/// <summary>

@@ -36,8 +36,7 @@ namespace SynthesisAPI.AssetManager
         /// Register a handler for importing a new type of asset
         /// </summary>
         /// <param name="assetType"></param>
-        /// <param name="byteHandler"></param>
-        /// <param name="streamHandler"></param>
+        /// <param name="handler"></param>
         public static void RegisterAssetType(string assetType, HandlerFunc handler) =>
             InnerInstance.RegisterAssetType(assetType, handler);
 
@@ -46,8 +45,7 @@ namespace SynthesisAPI.AssetManager
         /// </summary>
         /// <param name="type"></param>
         /// <param name="subtype"></param>
-        /// <param name="byteHandler"></param>
-        /// <param name="streamHandler"></param>
+        /// <param name="handler"></param>
         public static void RegisterAssetType(string type, string subtype, HandlerFunc handler) =>
             InnerInstance.RegisterAsset(type, subtype, handler);
 

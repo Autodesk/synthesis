@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Synthesis.Core.Util;
 using UnityEngine;
 using Synthesis.Simulator.Input;
 using Synthesis.Util;
@@ -25,7 +26,7 @@ namespace Synthesis.Simulator
             {
                 Style s;
                 if (Application.isEditor) s = new Style(@".\Styles\style.xml");
-                else s = new Style(IOHandler.FileStorage + Path.PathSeparator + IOHandler.StyleFolder + Path.PathSeparator + "style.xml");
+                else s = new Style(IOHandler.FileStorage + Path.PathSeparator + "style.xml");
                 StyleHandler.SelectStyle(s);
             } catch (Exception e)
             {
