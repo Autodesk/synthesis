@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>
@@ -30,8 +32,17 @@ namespace SynthesisAPI.AssetManager
             SharedStream = new SharedTextStream(new MemoryStream(), RwLock);
         }
 
+        [ExposedApi]
         public void SaveToFile()
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            SaveToFileImpl();
+        }
+
+        internal void SaveToFileImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+
             var pos = SharedStream.Stream.Position;
             SharedStream.Seek(0);
             File.WriteAllText(SourcePath, SharedStream.ReadToEnd());
@@ -48,7 +59,18 @@ namespace SynthesisAPI.AssetManager
             return this;
         }
 
-        public string? ReadToEnd() => SharedStream?.ReadToEnd();
+        [ExposedApi]
+        public string? ReadToEnd()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return ReadToEndImpl();
+        }
+
+        internal string? ReadToEndImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            return SharedStream?.ReadToEnd();
+        }
 
         protected SharedTextStream SharedStream { get; set; }
         private ReaderWriterLockSlim RwLock;

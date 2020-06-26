@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.VirtualFileSystem;
+﻿using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using System;
 using UnityEngine;
 
@@ -25,11 +26,29 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
 
             return this;
         }
 
-        public Sprite Sprite { get; private set; }
+        protected Sprite sprite;
+
+        [ExposedApi]
+        public Sprite Sprite {
+            get {
+                using var _ = ApiCallSource.StartExternalCall();
+                return GetSpriteImpl();
+            } 
+            private set
+            {
+                sprite = value;
+            }
+        }
+
+        internal Sprite GetSpriteImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            return sprite;
+        }
     }
 }

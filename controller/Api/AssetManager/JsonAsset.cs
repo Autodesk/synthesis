@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,19 @@ namespace SynthesisAPI.AssetManager
         public JsonAsset(string name, Guid owner, Permissions perm, string sourcePath) :
             base(name, owner, perm, sourcePath) { }
 
+        [ExposedApi]
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
             bool retainPosition = true) // TODO
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            return DeserializeImpl<TObject>(offset, loc, retainPosition);
+        }
+
+
+        internal TObject DeserializeImpl<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
+            bool retainPosition = true) // TODO
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
             long? returnPosition = null;
             if (offset != long.MaxValue)
             {
@@ -39,8 +50,16 @@ namespace SynthesisAPI.AssetManager
             return obj;
         }
 
+        [ExposedApi]
         public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            SerializeImpl<TObject>(obj, writeMode);
+        }
+
+        internal void SerializeImpl<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (writeMode == WriteMode.Overwrite)
             {
                 SharedStream.Seek(0);

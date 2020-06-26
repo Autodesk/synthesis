@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Threading;
 
+#nullable enable
+
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>
@@ -17,8 +19,17 @@ namespace SynthesisAPI.AssetManager
             RwLock = new ReaderWriterLockSlim();
         }
 
+        [ExposedApi]
         public void SaveToFile()
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            SaveToFileImpl();
+        }
+
+        internal void SaveToFileImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+
             long pos = SharedStream.Stream.Position;
             SharedStream.Seek(0);
             File.WriteAllBytes(SourcePath, SharedStream.ReadToEnd());
@@ -35,7 +46,18 @@ namespace SynthesisAPI.AssetManager
             return this;
         }
 
-        public byte[]? ReadToEnd() => SharedStream?.ReadToEnd();
+        [ExposedApi]
+        public byte[]? ReadToEnd()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return ReadToEndImpl();
+        }
+
+        internal byte[]? ReadToEndImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            return SharedStream?.ReadToEnd();
+        }
 
         protected SharedBinaryStream SharedStream { get; set; }
         private ReaderWriterLockSlim RwLock;

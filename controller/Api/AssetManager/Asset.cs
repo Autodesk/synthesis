@@ -71,6 +71,6 @@ namespace SynthesisAPI.AssetManager
             ApiCallSource.AssertAccess(Permissions, Access.Write);
         }
 
-        public abstract IEntry Load(byte[] data);
+        public abstract IEntry Load(byte[] data); // TODO make internal?
     }
 }
