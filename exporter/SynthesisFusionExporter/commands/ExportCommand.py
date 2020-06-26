@@ -23,15 +23,20 @@ def exportRobot():
         return
 
     start = time.perf_counter()
+    startRealtime = time.time()
 
     exporter = GLTFDesignExporter(ao)
-    glbFilePath = '{0}{1}_{2}.{3}'.format('C:/temp/', ao.document.name.replace(" ", "_"), int(time.time()), "glb")
-    exporter.saveGLB(glbFilePath)
+    filePath = '{0}{1}_{2}.{3}'.format('C:/temp/', ao.document.name.replace(" ", "_"), int(time.time()), "glb")
+    perfResults, bufferResults = exporter.saveGLB(filePath)
 
-    savedFile = time.perf_counter()
-    finishedMessage = f"GLTF export completed in {round(savedFile - start, 1)} seconds\n" \
-            f"File saved to {glbFilePath}"
-    print(finishedMessage)
+    end = time.perf_counter()
+    endRealtime = time.time()
+    finishedMessage = f"GLTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n" \
+                      f"File saved to {filePath}\n\n" \
+                      f"==== Export Performance Results ====\n" \
+                      f"{perfResults}\n\n"\
+                      f"==== Buffer Performance Results ====\n" \
+                      f"{bufferResults}"
     ao.ui.messageBox(finishedMessage)
 
 
@@ -39,4 +44,3 @@ class ExportCommand(apper.Fusion360CommandBase):
 
     def on_execute(self, command: adsk.core.Command, inputs: adsk.core.CommandInputs, args, input_values):
         exportRobot()
-

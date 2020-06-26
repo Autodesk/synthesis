@@ -8,6 +8,7 @@ import adsk.fusion
 
 from pygltflib import *
 from apper import AppObjects
+from .timers import SegmentedStopwatch
 
 from ..utils import GLTFConstants, GLTFUtils
 
@@ -46,6 +47,8 @@ class GLTFDesignExporter:
 
     def __init__(self, ao: AppObjects):
         self.ao = ao
+        self.perfWatch = SegmentedStopwatch(time.perf_counter)
+        self.bufferWatch = SegmentedStopwatch(time.perf_counter)
 
         self.gltf = GLTF2()
 
@@ -60,10 +63,14 @@ class GLTFDesignExporter:
         with open(filename, 'wb') as fileByteStream:
             self.saveGLBToStream(fileByteStream)
 
+        return str(self.perfWatch), str(self.bufferWatch)
+
     def saveGLBToStream(self, stream: io.BytesIO):
         self.primaryBufferStream = io.BytesIO()
 
         self.gltf.scene = self.exportScene()  # export the current document
+
+        self.perfWatch.switch_segment('encoding and file writing')
 
         self.primaryBuffer.byteLength = calculateAlignment(len(self.primaryBufferStream.getbuffer()))
 
@@ -96,11 +103,16 @@ class GLTFDesignExporter:
 
         stream.flush()
 
+        self.perfWatch.stop()
+
     def exportScene(self):
         scene = Scene()
 
         componentRevIDToIndexMap = self.exportMeshes(self.ao.design.allComponents)
+
+        self.perfWatch.switch_segment('exporting node tree')
         scene.nodes.append(self.exportRootNode(self.ao.root_comp, componentRevIDToIndexMap))
+        self.perfWatch.stop()
 
         self.gltf.scenes.append(scene)
         return len(self.gltf.scenes) - 1
@@ -160,17 +172,23 @@ class GLTFDesignExporter:
         # protoMeshBody.appearanceId = fusionBRepBody.appearance.id
         # protoMeshBody.materialId = fusionBRepBody.material.id
         # fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
+        self.perfWatch.switch_segment('calculating mesh')
+
         meshCalculator = fusionBRepBody.meshManager.createMeshCalculator()
         meshCalculator.setQuality(11)  # todo mesh quality settings
         mesh = meshCalculator.calculate()
 
+        self.perfWatch.switch_segment('writing mesh to bytebuffer')
+
         primitive.attributes = Attributes()
-        primitive.attributes.POSITION = self.exportVec3Accessor(mesh.nodeCoordinatesAsFloat)
+        primitive.attributes.POSITION = self.exportVec3Accessor(mesh.nodeCoordinatesAsFloat, True)  # limits required for positions
         primitive.indices = self.exportIndicesAccessor(mesh.nodeIndices)
+
+        self.perfWatch.stop()
 
         return primitive
 
-    def exportIndicesAccessor(self, array: List[int]):  # todo: combine accessor exporting methods
+    def exportIndicesAccessor(self, array: List[int], calculateLimits: bool = False):  # todo: combine accessor exporting methods
         count = int(len(array) / GLTFConstants.DataType.num_elements(GLTFConstants.DataType.Scalar))
         assert count != 0
 
@@ -179,11 +197,16 @@ class GLTFDesignExporter:
         accessor.count = count
         accessor.type = GLTFConstants.DataType.Scalar
 
-        accessor.max = GLTFUtils.max_components(array, GLTFConstants.DataType.Scalar)
-        accessor.min = GLTFUtils.min_components(array, GLTFConstants.DataType.Scalar)
+        self.bufferWatch.switch_segment("indices calculating min/max")
+
+        if calculateLimits:
+            accessor.max = (max(array),)
+            accessor.min = (min(array),)
 
         alignToBoundary(self.primaryBufferStream, b'\x00')
         byteOffset = calculateAlignment(self.primaryBufferStream.tell())
+
+        self.bufferWatch.switch_segment("indices writing to stream")
 
         accessor.componentType = GLTFConstants.ComponentType.UnsignedShort  # todo: smallest component type needed
         for item in array:
@@ -194,9 +217,10 @@ class GLTFDesignExporter:
         accessor.bufferView = self.exportBufferView(byteOffset, byteLength)
 
         self.gltf.accessors.append(accessor)
+        self.bufferWatch.stop()
         return len(self.gltf.accessors) - 1
 
-    def exportVec3Accessor(self, array: List[int]):  # todo: combine accessor exporting methods
+    def exportVec3Accessor(self, array: List[int], calculateLimits: bool = False):  # todo: combine accessor exporting methods
         count = int(len(array) / GLTFConstants.DataType.num_elements(GLTFConstants.DataType.Vec3))
         assert count != 0
 
@@ -205,15 +229,22 @@ class GLTFDesignExporter:
         accessor.count = count
         accessor.type = GLTFConstants.DataType.Vec3
 
-        accessor.max = GLTFUtils.max_components(array, GLTFConstants.DataType.Vec3)
-        accessor.min = GLTFUtils.min_components(array, GLTFConstants.DataType.Vec3)
+        self.bufferWatch.switch_segment("vec3 calculating min/max")
+
+        if calculateLimits:
+            accessor.max = (max(array[0::3]), max(array[1::3]), max(array[2::3]))
+            accessor.min = (min(array[0::3]), min(array[1::3]), min(array[2::3]))
 
         alignToBoundary(self.primaryBufferStream, b'\x00')
         byteOffset = calculateAlignment(self.primaryBufferStream.tell())
 
+        self.bufferWatch.switch_segment("vec3 writing to stream")
+
         accessor.componentType = GLTFConstants.ComponentType.Float
         for item in array:
             self.primaryBufferStream.write(struct.pack("<f", item))
+
+        self.bufferWatch.stop()
 
         byteLength = calculateAlignment(self.primaryBufferStream.tell() - byteOffset)
 
