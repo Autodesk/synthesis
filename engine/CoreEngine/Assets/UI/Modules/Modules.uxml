@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="window" style="background-color: rgb(255, 255, 255); height: 400px; width: 500px;">
+        <Style src="Modules.uss" />
+        <Style src="/Assets/UI/Window/USS/Window.uss" />
+        <ui:VisualElement name="header" class="window-header-container">
+            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+            <ui:Label text="Modules" name="title" class="panel-heading window-header-title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content" style="height: 400px;">
+            <ui:VisualElement name="module-list" style="height: 100%; width: auto; background-color: rgba(231, 231, 230, 255); margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
+            <ui:VisualElement name="left" style="height: 100%; width: 50%; flex-direction: row;">
+                <ui:Button text="Add..." name="add-module-button" class="window-button" />
+                <ui:Button text="Remove..." name="remove-module-button" class="window-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="right" style="height: 100%; width: 50%; flex-direction: row; justify-content: flex-end;">
+                <ui:Button text="OK" name="ok-button" class="window-button-blue" />
+                <ui:Button text="Close" name="close-button" class="window-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -15,5 +15,6 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:Button text="debug button: load tabs" name="load-setup" />
+        <ui:Button text="debug button: show modules screen" name="test-modules-button" />
     </ui:VisualElement>
 </ui:UXML>
