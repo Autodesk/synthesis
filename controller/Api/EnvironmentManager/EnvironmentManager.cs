@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using SynthesisAPI.Modules;
+
+
 //Entity is a 32 bit generational index
 // 1st 16 bits represent index
 // 2nd 16 bits represent generation
@@ -20,6 +23,9 @@ namespace SynthesisAPI.EnvironmentManager
         const Entity NULL_ENTITY = 0;
         const ushort BASE_GEN = 1; //no entity should have a generation of 0
 
+
+        #region EntityManagement
+
         /// <summary>
         /// Create and allocate new entity
         /// </summary>
@@ -30,14 +36,14 @@ namespace SynthesisAPI.EnvironmentManager
             if (removed.Count > 0) //allocates empty/deallocated spaces in entities
             {
                 Entity oldEntity = removed.Pop();
-                ushort oldEntityIndex = EntityManager.GetIndex(oldEntity);
-                ushort oldEntityGen = EntityManager.GetGen(oldEntity);
-                newEntity = EntityManager.SetGen(oldEntity, (ushort)(oldEntityGen + 1));
+                ushort oldEntityIndex = oldEntity.GetIndex();
+                ushort oldEntityGen = oldEntity.GetGen();
+                newEntity = oldEntity.SetGen((ushort)(oldEntityGen + 1));
                 entities[oldEntityIndex] = newEntity;
             }
             else //adds entity by increasing entity list size
             {
-                newEntity = EntityManager.CreateEntity((ushort)entities.Count, BASE_GEN);
+                newEntity = CreateEntity((ushort)entities.Count, BASE_GEN);
                 entities.Add(newEntity);
             }
             return newEntity;
@@ -48,47 +54,13 @@ namespace SynthesisAPI.EnvironmentManager
         /// </summary>
         /// <param name="entity">entity to be removed</param>
         /// <returns>if entity was removed - will only return false if entity does not exist/is not allocated</returns>
-        public static bool RemoveEntity(Entity entity)
+        public static bool RemoveEntity(this Entity entity)
         {
             if (!EntityExists(entity))
                 return false;
             removed.Push(entity); //deallocate entity
-            entities[EntityManager.GetIndex(entity)] = NULL_ENTITY; //invalidate components
+            entities[entity.GetIndex()] = NULL_ENTITY; //invalidate components
             return true;
-        }
-
-        /// <summary>
-        /// Get component of type, T, that is associated with the given entity
-        /// </summary>
-        /// <typeparam name="T">Component Type</typeparam>
-        /// <param name="entity">given entity</param>
-        /// <returns>Component instance</returns>
-        public static T GetComponent<T>(Entity entity)
-        {
-            if (EntityExists(entity))
-                return components.Get<T>(entity);
-            return default;
-        }
-
-        /// <summary>
-        /// Set component of type, T, to the given entity
-        /// </summary>
-        /// <typeparam name="T">Component Type</typeparam>
-        /// <param name="entity">given entity</param>
-        /// <param name="component">instance of component to be set</param>
-        public static void SetComponent<T>(Entity entity, T component)
-        {
-            if (EntityExists(entity)) components.Set<T>(entity, component);
-        }
-
-        /// <summary>
-        /// Remove component (sets component to null) of type, T, from given entity
-        /// </summary>
-        /// <typeparam name="T">Component Type</typeparam>
-        /// <param name="entity">given entity</param>
-        public static void RemoveComponent<T>(Entity entity)
-        {
-            if (EntityExists(entity)) components.Remove<T>(entity);
         }
 
         /// <summary>
@@ -96,54 +68,141 @@ namespace SynthesisAPI.EnvironmentManager
         /// </summary>
         /// <param name="entity">entity to be checked</param>
         /// <returns>if entity equals the entity in its given index</returns>
-        public static bool EntityExists(Entity entity)
+        public static bool EntityExists(this Entity entity)
         {
-            ushort entityIndex = EntityManager.GetIndex(entity);
+            ushort entityIndex = entity.GetIndex();
             return entityIndex < entities.Count && entities[entityIndex] == entity;
         }
 
-        //
+        #endregion
+
+        #region ComponentManagement
+
+        /// <summary>
+        /// Get component of type, TComponent, that is associated with the given entity
+        /// </summary>
+        /// <typeparam name="TComponent">Component type</typeparam>
+        /// <param name="entity">given entity</param>
+        /// <returns>Component instance</returns>
+        public static TComponent? GetComponent<TComponent>(this Entity entity) where TComponent : Component
+        {
+            return (TComponent?) GetComponent(entity, typeof(TComponent));
+        }
+
+        public static Component? GetComponent(this Entity entity,Type componentType)
+        {
+            if (IsComponent(componentType) && EntityExists(entity))
+                return components.Get(entity,componentType);
+            return null;
+        }
+
+        /// <summary>
+        /// Set component of type, TComponent, to the given entity
+        /// </summary>
+        /// <typeparam name="T">Component Type</typeparam>
+        /// <param name="entity">given entity</param>
+        /// <param name="component">instance of component to be set</param>
+        public static void SetComponent(this Entity entity, Component component)
+        {
+            if (EntityExists(entity))
+                components.Set(entity, component);
+        }
+
+        /// <summary>
+        /// Remove component (sets component to null) of type, TComponent, from given entity
+        /// </summary>
+        /// <typeparam name="TComponent">Component Type</typeparam>
+        /// <param name="entity">given entity</param>
+        public static void RemoveComponent<TComponent>(this Entity entity) where TComponent : Component
+        {
+            RemoveComponent(entity, typeof(TComponent));
+        }
+
+        public static void RemoveComponent(this Entity entity, Type componentType)
+        {
+            if (IsComponent(componentType) && EntityExists(entity))
+                components.Remove(entity, componentType);
+
+        }
+
+        private static bool IsComponent(Type type)
+        {
+            return type.IsSubclassOf(typeof(Component)) || type == typeof(Component);
+        }
+
+        #endregion
+
+        #region EntityBitModifier
+
+        private static ushort GetIndex(this Entity entity)
+        {
+            return (ushort)(entity >> 16);
+        }
+        //last 16 bits
+        private static ushort GetGen(this Entity entity)
+        {
+            return (ushort)(entity & 65535);
+        }
+        private static Entity CreateEntity(ushort index, ushort gen)
+        {
+            return ((uint)index << 16) + gen;
+        }
+        private static Entity SetIndex(this Entity entity, ushort index)
+        {
+            return ((uint)index << 16) + (entity & 65535);
+        }
+        private static Entity SetGen(this Entity entity, ushort gen)
+        {
+            return (entity & 4294901760) + gen;
+        }
+
+        #endregion
+
+        #region AnyMap
 
         /// <summary>
         /// Dynamic mapping of any reference type to its corresponding GenIndexArray
         /// </summary>
         class AnyMap
         {
-            public Dictionary<Type, object> componentDict; //Dictionary<T,GenIndexArray<T>>
+            Dictionary<Type, GenIndexArray> componentDict; 
             public AnyMap()
             {
-                componentDict = new Dictionary<Type, object>();
+                componentDict = new Dictionary<Type, GenIndexArray>();
             }
-            public void Set<T>(Entity entity, T val)
+            public void Set(Entity entity, Component val)
             {
-                object arr;
-                if (componentDict.TryGetValue(typeof(T), out arr))
-                    ((GenIndexArray<T>)arr).Set(entity, val);
+                if (componentDict.TryGetValue(val.GetType(), out GenIndexArray arr))
+                    arr.Set(entity, val);
                 else
                 {
-                    componentDict.Add(typeof(T), new GenIndexArray<T>());
-                    Set<T>(entity, val);
+                    componentDict.Add(val.GetType(), new GenIndexArray());
+                    Set(entity, val);
                 }
             }
-            public void Remove<T>(Entity entity)
+
+            public void Remove(Entity entity,Type componentType)
             {
-                object arr;
-                if (componentDict.TryGetValue(typeof(T), out arr))
-                    ((GenIndexArray<T>)arr).Set(entity, default);
+                if (componentDict.TryGetValue(componentType, out GenIndexArray arr))
+                    arr.Set(entity, null);
             }
-            public T Get<T>(Entity entity)
+
+            public Component? Get(Entity entity,Type componentType)
             {
-                object arr;
-                if (componentDict.TryGetValue(typeof(T), out arr))
-                    return ((GenIndexArray<T>)arr).Get(entity);
+                if (componentDict.TryGetValue(componentType, out GenIndexArray arr))
+                {
+                    return arr.Get(entity);
+                }
                 else
-                    return default;
+                    return null;
             }
+            
+            #region GenIndexArray
+
             /// <summary>
             /// Maps Entity to its component by its index : component index in entries is the same as Entity index
             /// </summary>
-            /// <typeparam name="T">Component Type i.e. Mesh</typeparam>
-            class GenIndexArray<T>
+            class GenIndexArray
             {
                 List<Entry> entries;
 
@@ -154,70 +213,47 @@ namespace SynthesisAPI.EnvironmentManager
 
                 struct Entry
                 {
-                    public Entry(T val, ulong gen)
+                    public Entry(Component? val, ulong gen)
                     {
                         Val = val;
                         Gen = gen;
                     }
-                    public T Val { get; }
+                    public Component? Val { get; }
                     public ulong Gen { get; }
                 }
 
-                public void Set(Entity entity, T val)
+                public void Set(Entity entity, Component? val)
                 {
-                    ushort entityIndex = EntityManager.GetIndex(entity);
-                    ushort entityGen = EntityManager.GetGen(entity);
+                    ushort entityIndex = entity.GetIndex();
+                    ushort entityGen = entity.GetGen();
                     if (entityIndex < entries.Count)
                         entries[entityIndex] = new Entry(val, entityGen);
                     else
                     {
                         //increase list size by populating "null" Entry so we can add value at index which is outside of bounds
                         for (int i = entries.Count; i < entityIndex; i++)
-                            entries.Add(new Entry(default, 0)); //no Entity has gen of 0 so these entries are essentially null
+                            entries.Add(new Entry(null, 0)); //no Entity has gen of 0 so these entries can never be accessed
                         entries.Add(new Entry(val, entityGen));
                     }
                 }
 
-                public T Get(Entity entity)
+                public Component? Get(Entity entity)
                 {
-                    ushort entityIndex = EntityManager.GetIndex(entity);
-                    ushort entityGen = EntityManager.GetGen(entity);
-                    if (entityIndex >= entries.Count) return default; //prevents IndexOutOfBoundsException
+                    ushort entityIndex = entity.GetIndex();
+                    ushort entityGen = entity.GetGen();
+                    if (entityIndex >= entries.Count)
+                        return null; //prevents IndexOutOfBoundsException
                     Entry entry = entries[entityIndex];
                     //only get component if generations match - avoids having reallocated Entities point to the components of deallocated Entities
-                    if (entry.Gen == entityGen) return entry.Val;
-                    return default;
+                    if (entry.Gen == entityGen)
+                        return entry.Val;
+                    return null;
                 }
             }
+
+            #endregion
         }
 
-        /// <summary>
-        /// Reads and writes bits of an Entity
-        /// </summary>
-        class EntityManager
-        {
-            //first 16 bits
-            public static ushort GetIndex(Entity entity)
-            {
-                return (ushort)(entity >> 16);
-            }
-            //last 16 bits
-            public static ushort GetGen(Entity entity)
-            {
-                return (ushort)(entity & 65535);
-            }
-            public static Entity CreateEntity(ushort index, ushort gen)
-            {
-                return ((uint)index << 16) + gen;
-            }
-            public static Entity SetIndex(Entity entity, ushort index)
-            {
-                return ((uint)index << 16) + (entity & 65535);
-            }
-            public static Entity SetGen(Entity entity, ushort gen)
-            {
-                return (entity & 4294901760) + gen;
-            }
-        }
+        #endregion
     }
 }
