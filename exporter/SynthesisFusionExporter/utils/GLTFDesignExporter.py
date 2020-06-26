@@ -12,8 +12,23 @@ from apper import AppObjects
 from ..utils import gltf2_io_constants, gltf2_blender_utils
 
 GLTF_VERSION = 2
-GLTFHeaderSize = 12
-SectionHeaderSize = 8
+GLB_HEADER_SIZE = 12
+GLB_CHUNK_SIZE = 8
+
+IDENTITY_MATRIX_3D = (
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+)
+
+
+def isIdentityMatrix(matrix, tolerance=0.00001):
+    for i in range(len(IDENTITY_MATRIX_3D)):
+        if abs(matrix[i] - IDENTITY_MATRIX_3D[i]) > tolerance:
+            return False
+    return True
+
 
 def calculateAlignment(currentSize: int, byteAlignment: int = 4):
     if currentSize % byteAlignment == 0: return currentSize
@@ -27,7 +42,7 @@ def alignToBoundary(stream: io.BytesIO, pad: bytes, byteAlignment: int = 4):
         stream.write(pad)
 
 
-class GLTFDesignExporter():
+class GLTFDesignExporter:
 
     def __init__(self, ao: AppObjects):
         self.ao = ao
@@ -60,9 +75,9 @@ class GLTFDesignExporter():
 
         alignToBoundary(self.primaryBufferStream, b'\x00')
 
-        glbLength = GLTFHeaderSize + \
-                    SectionHeaderSize + len(json_blob) + \
-                    SectionHeaderSize + len(self.primaryBufferStream.getbuffer())
+        glbLength = GLB_HEADER_SIZE + \
+                    GLB_CHUNK_SIZE + len(json_blob) + \
+                    GLB_CHUNK_SIZE + len(self.primaryBufferStream.getbuffer())
 
         # header
         stream.write(b'glTF')
@@ -88,7 +103,6 @@ class GLTFDesignExporter():
 
         meshesDone = time.perf_counter()
 
-
         scene = Scene()
         scene.nodes.append(self.exportRootNode(self.ao.root_comp, componentRevIDToIndexMap))
         self.gltf.scenes.append(scene)
@@ -111,7 +125,11 @@ class GLTFDesignExporter():
     def exportNode(self, occur, componentRevIDToIndexMap):
         node = Node()
         node.name = occur.name
-        node.matrix = np.reshape(occur.transform.asArray(), (4, 4), order='F').flatten().tolist()  # transpose the flat array
+
+        flatMatrix = occur.transform.asArray()
+        if not isIdentityMatrix(flatMatrix):
+            node.matrix = np.reshape(flatMatrix, (4, 4), order='F').flatten().tolist()  # transpose the flat array
+
         node.mesh = componentRevIDToIndexMap.get(occur.component.revisionId, None)
         # node.extras['isGrounded'] = occur.isGrounded
 
@@ -175,7 +193,7 @@ class GLTFDesignExporter():
         return primitive
 
     def exportIndicesAccessor(self, array: List[int]):
-        count = int(len(array)/gltf2_io_constants.DataType.num_elements(gltf2_io_constants.DataType.Scalar))
+        count = int(len(array) / gltf2_io_constants.DataType.num_elements(gltf2_io_constants.DataType.Scalar))
         assert count != 0
 
         accessor = Accessor()
@@ -201,7 +219,7 @@ class GLTFDesignExporter():
         return len(self.gltf.accessors) - 1
 
     def exportVec3Accessor(self, array: List[int]):
-        count = int(len(array)/gltf2_io_constants.DataType.num_elements(gltf2_io_constants.DataType.Vec3))
+        count = int(len(array) / gltf2_io_constants.DataType.num_elements(gltf2_io_constants.DataType.Vec3))
         assert count != 0
 
         accessor = Accessor()
