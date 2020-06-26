@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
+using SynthesisAPI.Utilities;
+
+#nullable enable
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -96,6 +99,7 @@ namespace SynthesisAPI.PreferenceManager
         {
             if (Instance.Asset == null)
             {
+                using var _ = ApiCallSource.ForceInternalCall();
                 Instance.Asset = AssetManager.AssetManager.ImportOrCreateImpl<JsonAsset>("text/json",
                     VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
                     Permissions.PublicReadWrite, VirtualFilePath.Name)!;
@@ -111,7 +115,14 @@ namespace SynthesisAPI.PreferenceManager
         /// </summary>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
+        [ExposedApi]
         public static bool Load(bool overrideChanges = false)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return LoadImpl(overrideChanges);
+        }
+
+        internal static bool LoadImpl(bool overrideChanges = false)
         {
             if (!overrideChanges && !_changesSaved)
                 return false;
@@ -119,7 +130,7 @@ namespace SynthesisAPI.PreferenceManager
             ImportPreferencesAsset();
 
             var deserialized =
-                Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                Instance.Asset.DeserializeImpl<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
             Instance.Preferences =
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
@@ -132,12 +143,19 @@ namespace SynthesisAPI.PreferenceManager
         /// Saves a JSON file with preference data
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
+        [ExposedApi]
         public static bool Save()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return SaveImpl();
+        }
+
+        public static bool SaveImpl()
         {
             ImportPreferencesAsset();
 
-            Instance.Asset.Serialize(Instance.Preferences);
-            Instance.Asset.SaveToFile();
+            Instance.Asset.SerializeImpl(Instance.Preferences);
+            Instance.Asset.SaveToFileImpl();
 
             _changesSaved = true;
 
