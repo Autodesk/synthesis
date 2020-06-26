@@ -35,17 +35,6 @@ class ComponentType(IntEnum):
         }[component_type]
 
     @classmethod
-    def from_legacy_define(cls, type_define):
-        return {
-            GLTF_COMPONENT_TYPE_BYTE: ComponentType.Byte,
-            GLTF_COMPONENT_TYPE_UNSIGNED_BYTE: ComponentType.UnsignedByte,
-            GLTF_COMPONENT_TYPE_SHORT: ComponentType.Short,
-            GLTF_COMPONENT_TYPE_UNSIGNED_SHORT: ComponentType.UnsignedShort,
-            GLTF_COMPONENT_TYPE_UNSIGNED_INT: ComponentType.UnsignedInt,
-            GLTF_COMPONENT_TYPE_FLOAT: ComponentType.Float
-        }[type_define]
-
-    @classmethod
     def get_size(cls, component_type):
         return {
             ComponentType.Byte: 1,
@@ -98,33 +87,3 @@ class DataType:
             9: DataType.Mat3,
             16: DataType.Mat4
         }[num_elems]
-
-
-#################
-# LEGACY DEFINES
-
-GLTF_VERSION = "2.0"
-
-#
-# Component Types
-#
-GLTF_COMPONENT_TYPE_BYTE = "BYTE"
-GLTF_COMPONENT_TYPE_UNSIGNED_BYTE = "UNSIGNED_BYTE"
-GLTF_COMPONENT_TYPE_SHORT = "SHORT"
-GLTF_COMPONENT_TYPE_UNSIGNED_SHORT = "UNSIGNED_SHORT"
-GLTF_COMPONENT_TYPE_UNSIGNED_INT = "UNSIGNED_INT"
-GLTF_COMPONENT_TYPE_FLOAT = "FLOAT"
-
-
-#
-# Data types
-#
-GLTF_DATA_TYPE_SCALAR = "SCALAR"
-GLTF_DATA_TYPE_VEC2 = "VEC2"
-GLTF_DATA_TYPE_VEC3 = "VEC3"
-GLTF_DATA_TYPE_VEC4 = "VEC4"
-GLTF_DATA_TYPE_MAT2 = "MAT2"
-GLTF_DATA_TYPE_MAT3 = "MAT3"
-GLTF_DATA_TYPE_MAT4 = "MAT4"
-
-
