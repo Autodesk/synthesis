@@ -35,7 +35,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public void Dispose()
             {
-                ApiCallSource.isInternal = true;
+                ApiCallSource.externalCalls -= 1;
             }
         }
 
@@ -49,7 +49,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static ExternalCallLifetimeClass StartExternalCall()
         {
-            isInternal = false;
+            externalCalls += 1;
             return new ExternalCallLifetimeClass();
         }
 
@@ -61,9 +61,9 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private static uint forceInternal = 0;
 
-        private static bool isInternal = true;
+        private static uint externalCalls = 0;
 
-        internal static bool IsInternal => isInternal || forceInternal != 0;
+        internal static bool IsInternal => externalCalls == 0 || forceInternal > 0;
 
         public static void AssertAccess(Permissions perm, Access access)
         {
