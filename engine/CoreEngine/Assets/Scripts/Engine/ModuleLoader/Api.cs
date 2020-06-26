@@ -33,6 +33,10 @@ namespace Engine.ModuleLoader
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider()); 
             var modules = new List<(ZipArchive, ModuleMetadata)>();
+			if (!Directory.Exists(FileSystem.BasePath + "modules"))
+			{
+				Directory.CreateDirectory(FileSystem.BasePath + "modules");
+			}
             foreach (var file in Directory.GetFiles(FileSystem.BasePath + "modules"))
             {
                 (ZipArchive module, ModuleMetadata metadata) =
@@ -56,7 +60,7 @@ namespace Engine.ModuleLoader
 					var extension = Path.GetExtension(entry.Name); // Path.GetExtension
 					string targetPath = "modules/" + metadata.TargetPath;
 					Stream stream = entry.Open();
-					Permissions perm = Permissions.PublicWrite;
+					Permissions perm = Permissions.PublicReadWrite;
 					if (extension == "dll")
 					{
 						if (!LoadAssembly(stream))
