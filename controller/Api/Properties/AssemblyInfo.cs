@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Api")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Synthesis™ : An Autodesk® Technology")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Api")]

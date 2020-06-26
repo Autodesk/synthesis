@@ -1,0 +1,3 @@
+namespace Synthesis.Core.Object {
+  
+}
