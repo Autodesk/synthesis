@@ -3,6 +3,9 @@ import os
 import sys
 import adsk, adsk.core, adsk.fusion, traceback
 import traceback
+#
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('localhost', port=12343, stdoutToServer=True, stderrToServer=True)
 
 app_path = os.path.dirname(__file__)
 
