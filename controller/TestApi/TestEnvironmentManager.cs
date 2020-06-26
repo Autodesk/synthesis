@@ -21,6 +21,7 @@ namespace TestApi
             Assert.True(EnvironmentManager.EntityExists(e2));
             Assert.True(e2.EntityExists());
             Assert.AreNotEqual(e1, e2);
+            EnvironmentManager.Clear();
         }
         
         [Test]
@@ -45,6 +46,7 @@ namespace TestApi
             TestComponent t2 = new TestComponent();
             e2.SetComponent(t2);
             Assert.AreSame(e2.GetComponent<TestComponent>(), t2);
+            EnvironmentManager.Clear();
         }
         [Test]
         public static void TestRemoveEntity()
@@ -54,6 +56,7 @@ namespace TestApi
             Assert.True(e1.RemoveEntity());
             Assert.False(e1.RemoveEntity());
             Assert.False(e1.EntityExists());
+            EnvironmentManager.Clear();
         }
 
         [Test]
@@ -66,6 +69,7 @@ namespace TestApi
             Assert.AreSame(e1.GetComponent<TestComponent>(), t);
             e1.RemoveComponent<TestComponent>();
             Assert.Null(e1.GetComponent<TestComponent>());
+            EnvironmentManager.Clear();
         }
 
         [Test]
@@ -84,6 +88,7 @@ namespace TestApi
             Assert.AreEqual(e1 >> 16, e2 >> 16);
             Assert.AreNotEqual(e1 & 65535, e2 & 65535);
             Assert.Null(e2.GetComponent<TestComponent>());
+            EnvironmentManager.Clear();
         }
 
         [Test]
@@ -103,6 +108,7 @@ namespace TestApi
             Assert.Null(e2.GetComponent<TestComponent>());
             e2.SetComponent(t);
             Assert.Null(e2.GetComponent<TestComponent>());
+            EnvironmentManager.Clear();
         }
     }
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using SynthesisAPI.Modules;
-
+using UnityEngine.PlayerLoop;
 
 //Entity is a 32 bit generational index
 // 1st 16 bits represent index
@@ -156,6 +156,21 @@ namespace SynthesisAPI.EnvironmentManager
             return (entity & 4294901760) + gen;
         }
 
+        public static void Clear()
+        {
+            if (AppDomain.CurrentDomain.GetAssemblies()
+                .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework")))
+            {
+                components.Clear();
+                entities.Clear();
+                removed.Clear();
+            }
+            else
+            {
+                throw new Exception("Users are not allowed to clear the environment manager");
+            }
+        }
+
         #endregion
 
         #region AnyMap
@@ -196,7 +211,12 @@ namespace SynthesisAPI.EnvironmentManager
                 else
                     return null;
             }
-            
+
+            public void Clear()
+            {
+                componentDict.Clear();
+            }
+
             #region GenIndexArray
 
             /// <summary>
