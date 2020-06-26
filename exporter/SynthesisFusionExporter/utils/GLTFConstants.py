@@ -45,6 +45,17 @@ class ComponentType(IntEnum):
             ComponentType.Float: 4
         }[component_type]
 
+    @classmethod
+    def get_limits(cls, component_type):
+        return {
+            ComponentType.Byte: (-128, 127),
+            ComponentType.UnsignedByte: (0, 255),
+            ComponentType.Short: (-32768, 32767),
+            ComponentType.UnsignedShort: (0, 65535),
+            ComponentType.UnsignedInt: (0, 4294967295),
+            ComponentType.Float: None
+        }[component_type]
+
 
 class DataType:
     Scalar = "SCALAR"

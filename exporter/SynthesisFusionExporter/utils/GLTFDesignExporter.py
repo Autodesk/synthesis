@@ -1,16 +1,20 @@
 import io
 import time
+import struct
 import numpy as np
+
+from typing import Any, Dict, List
+from typing import Callable, Optional, Tuple, TypeVar, Union
 
 import adsk
 import adsk.core
 import adsk.fusion
 
-from pygltflib import *
+from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer
 from apper import AppObjects
 from .timers import SegmentedStopwatch
 
-from ..utils import GLTFConstants
+from ..utils.GLTFConstants import ComponentType, DataType
 
 GLTF_VERSION = 2
 GLB_HEADER_SIZE = 12
@@ -181,68 +185,69 @@ class GLTFDesignExporter:
         self.perfWatch.switch_segment('writing mesh to bytebuffer')
 
         primitive.attributes = Attributes()
-        primitive.attributes.POSITION = self.exportVec3Accessor(mesh.nodeCoordinatesAsFloat, True)  # limits required for positions
-        primitive.indices = self.exportIndicesAccessor(mesh.nodeIndices)
+        primitive.attributes.POSITION = self.exportAccessor(mesh.nodeCoordinatesAsFloat, DataType.Vec3, ComponentType.Float, True)  # limits required for positions
+        primitive.indices = self.exportAccessor(mesh.nodeIndices, DataType.Scalar, None, False)
 
         self.perfWatch.stop()
 
         return primitive
 
-    def exportIndicesAccessor(self, array: List[int], calculateLimits: bool = False):  # todo: combine accessor exporting methods
-        count = int(len(array) / GLTFConstants.DataType.num_elements(GLTFConstants.DataType.Scalar))
-        assert count != 0
+    def exportAccessor(self, array: List[int], dataType: DataType, componentType: Optional[ComponentType], calculateLimits: bool):
+        """
+        @param array:
+        @param dataType:
+        @param componentType: Set to None to autodetect smallest necessary unsigned integer type (for indices)
+        @param calculateLimits:
+        @return:
+        """
+        componentCount = len(array)
+        componentsPerData = DataType.num_elements(dataType)
+        dataCount = int(componentCount / componentsPerData)
+
+        assert componentCount != 0
 
         accessor = Accessor()
 
-        accessor.count = count
-        accessor.type = GLTFConstants.DataType.Scalar
+        accessor.count = dataCount
+        accessor.type = dataType
 
-        self.bufferWatch.switch_segment("indices calculating min/max")
+        self.bufferWatch.switch_segment("calculating min/max")
 
-        if calculateLimits:
-            accessor.max = (max(array),)
-            accessor.min = (min(array),)
+        if calculateLimits or componentType is None:  # must calculate limits if auto type detection is necessary
+            accessor.max = tuple(max(array[i::componentsPerData]) for i in range(componentsPerData))
+            accessor.min = tuple(min(array[i::componentsPerData]) for i in range(componentsPerData))
 
         alignToBoundary(self.primaryBufferStream, b'\x00')
         byteOffset = calculateAlignment(self.primaryBufferStream.tell())
 
-        self.bufferWatch.switch_segment("indices writing to stream")
-
-        accessor.componentType = GLTFConstants.ComponentType.UnsignedInt  # todo: smallest component type needed
-        for item in array:
-            self.primaryBufferStream.write(struct.pack("<I", item))
-
-        byteLength = calculateAlignment(self.primaryBufferStream.tell() - byteOffset)
-
-        accessor.bufferView = self.exportBufferView(byteOffset, byteLength)
-
-        self.gltf.accessors.append(accessor)
         self.bufferWatch.stop()
-        return len(self.gltf.accessors) - 1
 
-    def exportVec3Accessor(self, array: List[int], calculateLimits: bool = False):  # todo: combine accessor exporting methods
-        count = int(len(array) / GLTFConstants.DataType.num_elements(GLTFConstants.DataType.Vec3))
-        assert count != 0
+        if componentType is None:  # auto detect type
+            componentMin = min(accessor.min)
+            componentMax = max(accessor.max)
 
-        accessor = Accessor()
+            ubyteMin, ubyteMax = ComponentType.get_limits(ComponentType.UnsignedByte)
+            ushortMin, ushortMax = ComponentType.get_limits(ComponentType.UnsignedShort)
+            uintMin, uintMax = ComponentType.get_limits(ComponentType.UnsignedInt)
 
-        accessor.count = count
-        accessor.type = GLTFConstants.DataType.Vec3
+            if ubyteMin <= componentMin and componentMax < ubyteMax:
+                componentType = ComponentType.UnsignedByte
+            elif ushortMin <= componentMin and componentMax < ushortMax:
+                componentType = ComponentType.UnsignedShort
+            elif uintMin <= componentMin and componentMax < uintMax:
+                componentType = ComponentType.UnsignedInt
+            else:
+                raise ValueError(f"Failed to autodetect unsigned integer type for limits ({componentMin}, {componentMax})")
 
-        self.bufferWatch.switch_segment("vec3 calculating min/max")
+            self.bufferWatch.switch_segment(f"component type detected: {str(componentType).split('.')[1]}")
+            self.bufferWatch.stop()
 
-        if calculateLimits:
-            accessor.max = (max(array[0::3]), max(array[1::3]), max(array[2::3]))
-            accessor.min = (min(array[0::3]), min(array[1::3]), min(array[2::3]))
+        self.bufferWatch.switch_segment("writing to stream")
 
-        alignToBoundary(self.primaryBufferStream, b'\x00')
-        byteOffset = calculateAlignment(self.primaryBufferStream.tell())
-
-        self.bufferWatch.switch_segment("vec3 writing to stream")
-
-        accessor.componentType = GLTFConstants.ComponentType.Float
+        accessor.componentType = componentType
+        packFormat = "<" + ComponentType.to_type_code(componentType)
         for item in array:
-            self.primaryBufferStream.write(struct.pack("<f", item))
+            self.primaryBufferStream.write(struct.pack(packFormat, item))
 
         self.bufferWatch.stop()
 
