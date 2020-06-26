@@ -12,12 +12,12 @@ namespace SynthesisAPI.Utilities
     /// Be sure to mark the API call source as external before calling any internal functions
     /// 
     /// For example:
-    /// internal void FunctionImpl() { }
+    /// internal void FunctionInner() { }
     /// 
     /// [ExposedApi]
     /// public void Function() {
     ///     using var _ = ApiCallSource.ExternalCall();
-    ///     FunctionImpl();
+    ///     FunctionInner();
     /// }
     /// </summary>
     public class ExposedApi : Attribute { }

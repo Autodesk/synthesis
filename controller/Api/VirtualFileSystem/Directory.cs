@@ -58,26 +58,26 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            DeleteImpl();
+            DeleteInner();
         }
 
-        internal virtual void DeleteImpl() {
+        internal virtual void DeleteInner() {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             foreach (var e in Entries)
             {
                 if (e.Key != "" && e.Key != "." && e.Key != "..")
                 {
-                    e.Value.DeleteImpl();
+                    e.Value.DeleteInner();
                 }
             }
         }
 
-        void IEntry.DeleteImpl()
+        void IEntry.DeleteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
         }
 
-        private IEntry? _TraverseImpl(string[] subpaths)
+        private IEntry? TraverseImpl(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -95,7 +95,7 @@ namespace SynthesisAPI.VirtualFileSystem
                     {
                         return Parent;
                     }
-                    return Parent.Traverse(subpaths);
+                    return Parent.TraverseInner(subpaths);
                 }
                 return null;
             }
@@ -105,7 +105,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 return this;
             }
 
-            var next = TryGetEntryImpl(subpaths[0]);
+            var next = TryGetEntryInner(subpaths[0]);
 
             if (subpaths.Length == 1)
             {
@@ -119,7 +119,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
             if (next.GetType() == typeof(Directory))
             {
-                return ((Directory)next)._TraverseImpl(subpaths);
+                return ((Directory)next).TraverseImpl(subpaths);
             }
 
             return null;
@@ -135,14 +135,15 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return _TraverseImpl(subpaths);
+            return TraverseInner(subpaths);
         }
 
-        public IEntry? TraverseImpl(string[] subpaths)
+
+        internal IEntry? TraverseInner(string[] subpaths)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return _TraverseImpl(subpaths);
+            return TraverseImpl(subpaths);
         }
 
         /// <summary>
@@ -155,10 +156,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl(path);
+            return TraverseInner(path);
         }
 
-        internal IEntry? TraverseImpl(string path)
+        internal IEntry? TraverseInner(string path)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             if (path.Length > 0 && path[path.Length - 1] == '/')
@@ -166,7 +167,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
                 path = path.Remove(path.Length - 1, 1);
             }
-            return _TraverseImpl(path.Split('/'));
+            return TraverseImpl(path.Split('/'));
         }
 
         [ExposedApi]
@@ -174,10 +175,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl<TResource>(path);
+            return TraverseInner<TResource>(path);
         }
 
-        internal TResource? TraverseImpl<TResource>(string path) where TResource : class, IEntry
+        internal TResource? TraverseInner<TResource>(string path) where TResource : class, IEntry
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             if (path.Length > 0 && path[path.Length - 1] == '/')
@@ -185,17 +186,17 @@ namespace SynthesisAPI.VirtualFileSystem
                 // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
                 path = path.Remove(path.Length - 1, 1);
             }
-            return (TResource?)_TraverseImpl(path.Split('/'));
+            return (TResource?)TraverseImpl(path.Split('/'));
         }
 
         [ExposedApi]
         public IEntry? TryGetEntry(string key)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return TryGetEntryImpl(key);
+            return TryGetEntryInner(key);
         }
 
-        internal IEntry? TryGetEntryImpl(string key)
+        internal IEntry? TryGetEntryInner(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
         }
@@ -211,12 +212,12 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceImpl<TResource>(value);
+            return AddResourceInner<TResource>(value);
         }
 
-        internal TResource AddResourceImpl<TResource>(TResource value) where TResource : IEntry
+        internal TResource AddResourceInner<TResource>(TResource value) where TResource : IEntry
         {
-            return (TResource)_AddResourceImpl(value);
+            return (TResource)AddResourceImpl(value);
         }
 
         /// <summary>
@@ -229,10 +230,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return _AddResourceImpl(value);
+            return AddResourceImpl(value);
         }
 
-        private IEntry _AddResourceImpl(IEntry value)
+        private IEntry AddResourceImpl(IEntry value)
         {
             if (Entries.ContainsKey(value.Name))
             {
@@ -260,10 +261,11 @@ namespace SynthesisAPI.VirtualFileSystem
         public void RemoveEntry(string key)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            RemoveEntryImpl(key);
+
+            RemoveEntryInner(key);
         }
 
-        internal void RemoveEntryImpl(string key)
+        internal void RemoveEntryInner(string key)
         {
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
@@ -272,7 +274,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
             if (Entries.ContainsKey(key))
             {
-                Entries[key].DeleteImpl();
+                Entries[key].DeleteInner();
                 Entries.Remove(key);
             }
         }
@@ -281,10 +283,10 @@ namespace SynthesisAPI.VirtualFileSystem
         public bool EntryExists(string key)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return EntryExistsImpl(key);
+            return EntryExistsInner(key);
         }
 
-        internal bool EntryExistsImpl(string key)
+        internal bool EntryExistsInner(string key)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             return Entries.ContainsKey(key);

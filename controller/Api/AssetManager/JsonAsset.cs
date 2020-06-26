@@ -23,11 +23,11 @@ namespace SynthesisAPI.AssetManager
             bool retainPosition = true) // TODO
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return DeserializeImpl<TObject>(offset, loc, retainPosition);
+            return DeserializeInner<TObject>(offset, loc, retainPosition);
         }
 
 
-        internal TObject DeserializeImpl<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
+        internal TObject DeserializeInner<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
             bool retainPosition = true) // TODO
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
@@ -54,10 +54,10 @@ namespace SynthesisAPI.AssetManager
         public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            SerializeImpl<TObject>(obj, writeMode);
+            SerializeInner<TObject>(obj, writeMode);
         }
 
-        internal void SerializeImpl<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
+        internal void SerializeInner<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (writeMode == WriteMode.Overwrite)

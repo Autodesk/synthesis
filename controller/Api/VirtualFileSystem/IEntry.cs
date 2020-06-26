@@ -33,6 +33,6 @@ namespace SynthesisAPI.VirtualFileSystem
         [ExposedApi]
         public void Delete();
 
-        internal void DeleteImpl();
+        internal void DeleteInner();
     }
 }

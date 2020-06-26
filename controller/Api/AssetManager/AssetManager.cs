@@ -41,10 +41,10 @@ namespace SynthesisAPI.AssetManager
         public static void RegisterAssetType<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            RegisterAssetTypeImpl<TAsset>(assetType, fileExtensions, handler);
+            RegisterAssetTypeInner<TAsset>(assetType, fileExtensions, handler);
         }
 
-        internal static void RegisterAssetTypeImpl<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        internal static void RegisterAssetTypeInner<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
         {
             InnerInstance.RegisterAssetType<TAsset>(assetType, fileExtensions, handler);
         }
@@ -59,10 +59,10 @@ namespace SynthesisAPI.AssetManager
         public static void RegisterAssetType<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            RegisterAssetTypeImpl<TAsset>(type, subtype, fileExtensions, handler);
+            RegisterAssetTypeInner<TAsset>(type, subtype, fileExtensions, handler);
         }
 
-        internal static void RegisterAssetTypeImpl<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        internal static void RegisterAssetTypeInner<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
         {
             InnerInstance.RegisterAsset<TAsset>(type, subtype, fileExtensions, handler);
         }
@@ -76,10 +76,10 @@ namespace SynthesisAPI.AssetManager
         public static Asset? GetAsset(string targetPath)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return GetAssetImpl(targetPath);
+            return GetAssetInner(targetPath);
         }
 
-        internal static Asset? GetAssetImpl(string targetPath)
+        internal static Asset? GetAssetInner(string targetPath)
         {
             return InnerInstance.GetAsset(targetPath);
         }
@@ -94,10 +94,10 @@ namespace SynthesisAPI.AssetManager
         public static TAsset? GetAsset<TAsset>(string targetPath) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return GetAssetImpl<TAsset>(targetPath);
+            return GetAssetInner<TAsset>(targetPath);
         }
 
-        internal static TAsset? GetAssetImpl<TAsset>(string targetPath) where TAsset : Asset
+        internal static TAsset? GetAssetInner<TAsset>(string targetPath) where TAsset : Asset
         {
             return (TAsset?)InnerInstance.GetAsset(targetPath);
         }
@@ -112,12 +112,12 @@ namespace SynthesisAPI.AssetManager
         public static TAsset? Search<TAsset>(string name) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return SearchImpl<TAsset>(name);
+            return SearchInner<TAsset>(name);
         }
 
-        internal static TAsset? SearchImpl<TAsset>(string name) where TAsset : Asset
+        internal static TAsset? SearchInner<TAsset>(string name) where TAsset : Asset
         {
-            return FileSystem.SearchImpl<TAsset>(name);
+            return FileSystem.SearchInner<TAsset>(name);
         }
 
         /// <summary>
@@ -131,12 +131,12 @@ namespace SynthesisAPI.AssetManager
         public static TAsset? Search<TAsset>(VirtualFileSystem.Directory parent, string name) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return SearchImpl<TAsset>(parent, name);
+            return SearchInner<TAsset>(parent, name);
         }
 
-        internal static TAsset? SearchImpl<TAsset>(VirtualFileSystem.Directory parent, string name) where TAsset : Asset
+        internal static TAsset? SearchInner<TAsset>(VirtualFileSystem.Directory parent, string name) where TAsset : Asset
         {
-            return FileSystem.SearchImpl<TAsset>(parent, name);
+            return FileSystem.SearchInner<TAsset>(parent, name);
         }
 
         /// <summary>
@@ -148,12 +148,12 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Search(string name)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return SearchImpl(name);
+            return SearchInner(name);
         }
 
-        internal static Asset? SearchImpl(string name)
+        internal static Asset? SearchInner(string name)
         {
-            return (Asset?)FileSystem.SearchImpl(name);
+            return (Asset?)FileSystem.SearchInner(name);
         }
 
         /// <summary>
@@ -166,12 +166,12 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Search(VirtualFileSystem.Directory parent, string name)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return SearchImpl(parent, name);
+            return SearchInner(parent, name);
         }
 
-        internal static Asset? SearchImpl(VirtualFileSystem.Directory parent, string name)
+        internal static Asset? SearchInner(VirtualFileSystem.Directory parent, string name)
         {
-            return (Asset?)FileSystem.SearchImpl(parent, name);
+            return (Asset?)FileSystem.SearchInner(parent, name);
         }
 
         /// <summary>
@@ -189,10 +189,10 @@ namespace SynthesisAPI.AssetManager
         public static Asset? ImportOrCreate(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportOrCreateImpl(assetType, targetPath, name, owner, perm, sourcePath, args);
+            return ImportOrCreateInner(assetType, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportOrCreateImpl(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportOrCreateInner(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(assetType, true, null, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -213,10 +213,10 @@ namespace SynthesisAPI.AssetManager
         public static TAsset? ImportOrCreate<TAsset>(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportOrCreateImpl<TAsset>(assetType, targetPath, name, owner, perm, sourcePath, args);
+            return ImportOrCreateInner<TAsset>(assetType, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportOrCreateImpl<TAsset>(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        internal static TAsset? ImportOrCreateInner<TAsset>(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             return (TAsset?)InnerInstance.Import(assetType, true, null, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -225,10 +225,10 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Import(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl(targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner(targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportImpl(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportInner(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(false, null, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -237,10 +237,10 @@ namespace SynthesisAPI.AssetManager
         public static TAsset? Import<TAsset>(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl<TAsset>(targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner<TAsset>(targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportImpl<TAsset>(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        internal static TAsset? ImportInner<TAsset>(string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             return InnerInstance.Import<TAsset>(false, null, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -260,10 +260,10 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Import(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl(assetType, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner(assetType, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportImpl(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportInner(string assetType, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(assetType, false, null, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -285,10 +285,10 @@ namespace SynthesisAPI.AssetManager
             Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl<TAsset>(assetType, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner<TAsset>(assetType, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportImpl<TAsset>(string assetType, string targetPath, string name, Guid owner,
+        internal static TAsset? ImportInner<TAsset>(string assetType, string targetPath, string name, Guid owner,
             Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             return (TAsset?)InnerInstance.Import(assetType, false, null, targetPath, name, owner, perm, sourcePath, args);
@@ -310,10 +310,10 @@ namespace SynthesisAPI.AssetManager
         public static Asset? Import(string assetType, byte[] data, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl(assetType, data, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner(assetType, data, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportImpl(string assetType, byte[] data, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportInner(string assetType, byte[] data, string targetPath, string name, Guid owner, Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(assetType, false, data, targetPath, name, owner, perm, sourcePath, args);
         }
@@ -335,10 +335,10 @@ namespace SynthesisAPI.AssetManager
             Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl(assetType, stream, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner(assetType, stream, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportImpl(string assetType, Stream stream, string targetPath, string name, Guid owner,
+        internal static Asset? ImportInner(string assetType, Stream stream, string targetPath, string name, Guid owner,
             Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(assetType, false, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()),
@@ -363,10 +363,10 @@ namespace SynthesisAPI.AssetManager
             Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl<TAsset>(assetType, data, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner<TAsset>(assetType, data, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportImpl<TAsset>(string assetType, byte[] data, string targetPath, string name,
+        internal static TAsset? ImportInner<TAsset>(string assetType, byte[] data, string targetPath, string name,
             Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             return (TAsset?)InnerInstance.Import(assetType, false, data, targetPath, name, owner, perm, sourcePath, args);
@@ -392,10 +392,10 @@ namespace SynthesisAPI.AssetManager
             Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl<TAsset>(assetType, stream, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner<TAsset>(assetType, stream, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportImpl<TAsset>(string assetType, Stream stream, string targetPath, string name,
+        internal static TAsset? ImportInner<TAsset>(string assetType, Stream stream, string targetPath, string name,
             Guid owner, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             return (TAsset?)InnerInstance.Import(assetType, false,
@@ -408,10 +408,10 @@ namespace SynthesisAPI.AssetManager
             Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportImpl(stream, targetPath, name, owner, perm, sourcePath, args);
+            return ImportInner(stream, targetPath, name, owner, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportImpl(Stream stream, string targetPath, string name, Guid owner,
+        internal static Asset? ImportInner(Stream stream, string targetPath, string name, Guid owner,
             Permissions perm, string sourcePath, params dynamic[] args)
         {
             return InnerInstance.Import(false, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()),
@@ -531,7 +531,7 @@ namespace SynthesisAPI.AssetManager
                 AssetHandlers[type][subtype] = handler;
             }
 
-            public Asset? GetAsset(string targetPath) => (Asset?)FileSystem.TraverseImpl(targetPath);
+            public Asset? GetAsset(string targetPath) => (Asset?)FileSystem.TraverseInner(targetPath);
 
             public Asset? Import(bool createOnFail, byte[]? data, string targetPath, string name,
                 Guid owner, Permissions perm, string sourcePath, params dynamic[] args)

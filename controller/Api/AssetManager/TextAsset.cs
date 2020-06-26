@@ -36,10 +36,10 @@ namespace SynthesisAPI.AssetManager
         public void SaveToFile()
         {
             using var _ = ApiCallSource.StartExternalCall();
-            SaveToFileImpl();
+            SaveToFileInner();
         }
 
-        internal void SaveToFileImpl()
+        internal void SaveToFileInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
 
@@ -63,10 +63,10 @@ namespace SynthesisAPI.AssetManager
         public string? ReadToEnd()
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ReadToEndImpl();
+            return ReadToEndInner();
         }
 
-        internal string? ReadToEndImpl()
+        internal string? ReadToEndInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             return SharedStream?.ReadToEnd();

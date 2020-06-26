@@ -37,7 +37,7 @@ namespace SynthesisAPI.AssetManager
         public Sprite Sprite {
             get {
                 using var _ = ApiCallSource.StartExternalCall();
-                return GetSpriteImpl();
+                return GetSpriteInner();
             } 
             private set
             {
@@ -45,7 +45,7 @@ namespace SynthesisAPI.AssetManager
             }
         }
 
-        internal Sprite GetSpriteImpl()
+        internal Sprite GetSpriteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             return sprite;

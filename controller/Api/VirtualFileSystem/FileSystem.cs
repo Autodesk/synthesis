@@ -36,14 +36,14 @@ namespace SynthesisAPI.VirtualFileSystem
         public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return AddResourceImpl<TResource>(path, resource);
+            return AddResourceInner<TResource>(path, resource);
         }
 
-        internal static TResource? AddResourceImpl<TResource>(string path, TResource resource) where TResource : class, IEntry
+        internal static TResource? AddResourceInner<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
-            Directory? parentDir = TraverseImpl<Directory>(path);
+            Directory? parentDir = TraverseInner<Directory>(path);
 
-            return parentDir?.AddResourceImpl<TResource>(resource);
+            return parentDir?.AddResourceInner<TResource>(resource);
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceImpl(path, resource);
+            return AddResourceInner(path, resource);
         }
 
-        internal static IEntry? AddResourceImpl(string path, IEntry resource)
+        internal static IEntry? AddResourceInner(string path, IEntry resource)
         {
-            Directory? parentDir = TraverseImpl<Directory>(path);
+            Directory? parentDir = TraverseInner<Directory>(path);
 
             return parentDir?.AddResource(resource);
         }
@@ -72,14 +72,14 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            RemoveResourceImpl(path, name);
+            RemoveResourceInner(path, name);
         }
 
-        internal static void RemoveResourceImpl(string path, string name)
+        internal static void RemoveResourceInner(string path, string name)
         {
-            Directory? parentDir = (Directory?)TraverseImpl(path);
+            Directory? parentDir = (Directory?)TraverseInner(path);
 
-            parentDir?.RemoveEntryImpl(name);
+            parentDir?.RemoveEntryInner(name);
         }
 
         [ExposedApi]
@@ -87,14 +87,14 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return ResourceExistsImpl(path, name);
+            return ResourceExistsInner(path, name);
         }
 
-        internal static bool ResourceExistsImpl(string path, string name)
+        internal static bool ResourceExistsInner(string path, string name)
         {
-            Directory? parentDir = (Directory?)TraverseImpl(path);
+            Directory? parentDir = (Directory?)TraverseInner(path);
 
-            return parentDir != null && parentDir.EntryExistsImpl(name);
+            return parentDir != null && parentDir.EntryExistsInner(name);
         }
 
         /// <summary>
@@ -117,16 +117,16 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl<TResource>(path);
+            return TraverseInner<TResource>(path);
         }
 
-        internal static TResource? TraverseImpl<TResource>(string path) where TResource : class, IEntry
+        internal static TResource? TraverseInner<TResource>(string path) where TResource : class, IEntry
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
                 throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
             }
-            return Instance.RootNode.TraverseImpl<TResource>(path);
+            return Instance.RootNode.TraverseInner<TResource>(path);
         }
 
         /// <summary>
@@ -139,16 +139,16 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl(path);
+            return TraverseInner(path);
         }
 
-        internal static IEntry? TraverseImpl(string[] path)
+        internal static IEntry? TraverseInner(string[] path)
         {
             if (path.Length >= MaxDirectoryDepth)
             {
                 throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
             }
-            return Instance.RootNode.TraverseImpl(path);
+            return Instance.RootNode.TraverseInner(path);
         }
 
         /// <summary>
@@ -161,16 +161,16 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl(path);
+            return TraverseInner(path);
         }
 
-        internal static IEntry? TraverseImpl(string path)
+        internal static IEntry? TraverseInner(string path)
         {
             if (DepthOfPath(path) >= MaxDirectoryDepth)
             {
                 throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
             }
-            return Instance.RootNode.TraverseImpl(path);
+            return Instance.RootNode.TraverseInner(path);
         }
 
         /// <summary>
@@ -184,12 +184,12 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return SearchImpl<TEntry>(Instance.RootNode, name);
+            return SearchInner<TEntry>(Instance.RootNode, name);
         }
 
-        internal static TEntry? SearchImpl<TEntry>(string name) where TEntry : class, IEntry
+        internal static TEntry? SearchInner<TEntry>(string name) where TEntry : class, IEntry
         {
-            return SearchImpl<TEntry>(Instance.RootNode, name);
+            return SearchInner<TEntry>(Instance.RootNode, name);
         }
 
         /// <summary>
@@ -204,10 +204,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return SearchImpl<TEntry>(parent, name);
+            return SearchInner<TEntry>(parent, name);
         }
 
-        internal static TEntry? SearchImpl<TEntry>(Directory parent, string name) where TEntry : class, IEntry
+        internal static TEntry? SearchInner<TEntry>(Directory parent, string name) where TEntry : class, IEntry
         {
             var entry = parent[name];
             if (entry != null && entry is TEntry)
@@ -218,7 +218,7 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 if (e.Value is Directory directory)
                 {
-                    var result = SearchImpl<TEntry>(directory, name);
+                    var result = SearchInner<TEntry>(directory, name);
                     if (result != null)
                     {
                         return result;
@@ -238,12 +238,12 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return Search(Instance.RootNode, name);
+            return SearchInner(Instance.RootNode, name);
         }
 
-        internal static IEntry? SearchImpl(string name)
+        internal static IEntry? SearchInner(string name)
         {
-            return SearchImpl(Instance.RootNode, name);
+            return SearchInner(Instance.RootNode, name);
         }
 
         /// <summary>
@@ -257,10 +257,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return SearchImpl(parent, name);
+            return SearchInner(parent, name);
         }
 
-        internal static IEntry? SearchImpl(Directory parent, string name)
+        internal static IEntry? SearchInner(Directory parent, string name)
         {
             var asset = parent[name];
             if (asset != null)
@@ -271,7 +271,7 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 if (e.Value is Directory directory)
                 {
-                    var result = SearchImpl(directory, name);
+                    var result = SearchInner(directory, name);
                     if (result != null)
                     {
                         return result;
@@ -287,9 +287,9 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 using var _ = ApiCallSource.ForceInternalCall();
                 RootNode = new Directory("", Guid.Empty, Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-                RootNode.AddResourceImpl(new Directory("environment", Guid.Empty, Permissions.PublicReadOnly));
-                RootNode.AddResourceImpl(new Directory("modules", Guid.Empty, Permissions.PublicReadOnly));
-                RootNode.AddResourceImpl(new Directory("temp", Guid.Empty, Permissions.PublicReadWrite));
+                RootNode.AddResourceInner(new Directory("environment", Guid.Empty, Permissions.PublicReadOnly));
+                RootNode.AddResourceInner(new Directory("modules", Guid.Empty, Permissions.PublicReadOnly));
+                RootNode.AddResourceInner(new Directory("temp", Guid.Empty, Permissions.PublicReadWrite));
             }
 
             /// <summary>

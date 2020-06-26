@@ -100,7 +100,7 @@ namespace SynthesisAPI.PreferenceManager
             if (Instance.Asset == null)
             {
                 using var _ = ApiCallSource.ForceInternalCall();
-                Instance.Asset = AssetManager.AssetManager.ImportOrCreateImpl<JsonAsset>("text/json",
+                Instance.Asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
                     VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
                     Permissions.PublicReadWrite, VirtualFilePath.Name)!;
                 if(Instance.Asset == null)
@@ -119,10 +119,10 @@ namespace SynthesisAPI.PreferenceManager
         public static bool Load(bool overrideChanges = false)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return LoadImpl(overrideChanges);
+            return LoadInner(overrideChanges);
         }
 
-        internal static bool LoadImpl(bool overrideChanges = false)
+        internal static bool LoadInner(bool overrideChanges = false)
         {
             if (!overrideChanges && !_changesSaved)
                 return false;
@@ -130,7 +130,7 @@ namespace SynthesisAPI.PreferenceManager
             ImportPreferencesAsset();
 
             var deserialized =
-                Instance.Asset.DeserializeImpl<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                Instance.Asset.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
             Instance.Preferences =
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
@@ -147,15 +147,15 @@ namespace SynthesisAPI.PreferenceManager
         public static bool Save()
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return SaveImpl();
+            return SaveInner();
         }
 
-        public static bool SaveImpl()
+        public static bool SaveInner()
         {
             ImportPreferencesAsset();
 
-            Instance.Asset.SerializeImpl(Instance.Preferences);
-            Instance.Asset.SaveToFileImpl();
+            Instance.Asset.SerializeInner(Instance.Preferences);
+            Instance.Asset.SaveToFileInner();
 
             _changesSaved = true;
 

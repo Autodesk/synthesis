@@ -52,21 +52,21 @@ namespace SynthesisAPI.AssetManager
         public virtual void Delete()
         {
             using var _ = ApiCallSource.StartExternalCall();
-            DeleteImpl();
+            DeleteInner();
         }
 
         [ExposedApi]
         void IEntry.Delete() {
             using var _ = ApiCallSource.StartExternalCall();
-            DeleteImpl();
+            DeleteInner();
         }
 
-        internal virtual void DeleteImpl()
+        internal virtual void DeleteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
         }
 
-        void IEntry.DeleteImpl()
+        void IEntry.DeleteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
         }
