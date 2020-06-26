@@ -86,19 +86,13 @@ namespace SynthesisAPI.UIManager
             }
         }
 
-        private static StyleFloat ToStyleFloat(string str)
-        {
-            return new StyleFloat(float.Parse(str));
-        }
+        private static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str));
 
-        private static StyleInt ToStyleInt(string str)
-        {
-            return new StyleInt(int.Parse(str));
-        }
+        private static StyleInt ToStyleInt(string str) => new StyleInt(int.Parse(str));
 
         private static StyleLength ToStyleLength(string str)
         {
-            StyleLength length = new StyleLength();
+            var length = new StyleLength();
             str = str.Replace(" ", "");
             if (str.Contains("auto"))
             {
@@ -107,9 +101,8 @@ namespace SynthesisAPI.UIManager
             else
             {
                 length.keyword = StyleKeyword.None;
-                bool usePercent = str.Contains("%");
-                str = str.Replace("%", "");
-                length.value = new Length(float.Parse(str), usePercent ? LengthUnit.Percent : LengthUnit.Pixel);
+                length.value = new Length(float.Parse(str.Replace("%", "")),
+                    str.Contains("%") ? LengthUnit.Percent : LengthUnit.Pixel);
             }
             return length;
         }
