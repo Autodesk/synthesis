@@ -10,7 +10,7 @@ from pygltflib import *
 from apper import AppObjects
 from .timers import SegmentedStopwatch
 
-from ..utils import GLTFConstants, GLTFUtils
+from ..utils import GLTFConstants
 
 GLTF_VERSION = 2
 GLB_HEADER_SIZE = 12

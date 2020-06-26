@@ -8,14 +8,13 @@ import numpy as np
 import apper
 from apper import AppObjects, item_id
 from ..utils.DebugHierarchy import *
-from ..utils.GLTFUtils import *
 from ..utils.GLTFDesignExporter import GLTFDesignExporter
 
 ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
 
 
 def exportRobot():
-    print(f"GLTF export starting...")
+    print(f"glTF export starting...")
     ao = AppObjects()
 
     if ao.document.dataFile is None:
@@ -31,11 +30,11 @@ def exportRobot():
 
     end = time.perf_counter()
     endRealtime = time.time()
-    finishedMessage = f"GLTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n" \
+    finishedMessage = f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n" \
                       f"File saved to {filePath}\n\n" \
                       f"==== Export Performance Results ====\n" \
                       f"{perfResults}\n\n"\
-                      f"==== Buffer Performance Results ====\n" \
+                      f"==== Buffer Writing Results ====\n" \
                       f"{bufferResults}"
     ao.ui.messageBox(finishedMessage)
 
