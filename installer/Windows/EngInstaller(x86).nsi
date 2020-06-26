@@ -53,8 +53,6 @@ RequestExecutionLevel admin
 Section
 
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
-    MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
-      true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 		
 		; Remove inventor plugins
@@ -93,14 +91,6 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
 		;DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
 		
-        Goto next
-
-      false:
-        Quit
-
-      next:
-
-# default section end
 SectionEnd
 
 Section "Synthesis (required)"
