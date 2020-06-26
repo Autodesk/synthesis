@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -26,8 +27,6 @@ namespace SynthesisAPI.VirtualFileSystem
             _parent = null;
         }
 
-        public virtual void Delete() { } // Doesn't do anything by default 
-
         public string Name => ((IEntry)this).Name;
         public Guid Owner => ((IEntry)this).Owner;
         public Permissions Permissions => ((IEntry)this).Permissions;
@@ -43,6 +42,8 @@ namespace SynthesisAPI.VirtualFileSystem
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
         Directory IEntry.Parent { get => _parent; set => _parent = value; }
 
+        internal Dictionary<string, IEntry> Entries;
+
         public Directory(string name, Guid owner, Permissions perm)
         {
             Init(name, owner, perm);
@@ -52,14 +53,31 @@ namespace SynthesisAPI.VirtualFileSystem
             Entries.Add("..", null!);
         }
 
-        internal Dictionary<string, IEntry> Entries;
-        
-        /// <summary>
-        /// Traverse this Directory and subdirectories to a resource given a file path
-        /// </summary>
-        /// <param name="subpaths"></param>
-        /// <returns></returns>
-        public IEntry? TraverseImpl(string[] subpaths)
+        [ExposedApi]
+        public virtual void Delete()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            DeleteImpl();
+        }
+
+        internal virtual void DeleteImpl() {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+            foreach (var e in Entries)
+            {
+                if (e.Key != "" && e.Key != "." && e.Key != "..")
+                {
+                    e.Value.DeleteImpl();
+                }
+            }
+        }
+
+        void IEntry.DeleteImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+        }
+
+        private IEntry? _TraverseImpl(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -87,7 +105,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 return this;
             }
 
-            var next = this[subpaths[0]];
+            var next = TryGetEntryImpl(subpaths[0]);
 
             if (subpaths.Length == 1)
             {
@@ -101,7 +119,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
             if (next.GetType() == typeof(Directory))
             {
-                return ((Directory) next).Traverse(subpaths);
+                return ((Directory)next)._TraverseImpl(subpaths);
             }
 
             return null;
@@ -112,11 +130,19 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="subpaths"></param>
         /// <returns></returns>
+        [ExposedApi]
         public IEntry? Traverse(string[] subpaths)
         {
-            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseImpl(subpaths);
+            return _TraverseImpl(subpaths);
+        }
+
+        public IEntry? TraverseImpl(string[] subpaths)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return _TraverseImpl(subpaths);
         }
 
         /// <summary>
@@ -124,18 +150,15 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
+        [ExposedApi]
         public IEntry? Traverse(string path)
         {
-            ApiCallSource.AssertAccess(Permissions, Access.Read);
-            if (path.Length > 0 && path[path.Length - 1] == '/')
-            {
-                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
-                path = path.Remove(path.Length - 1, 1);
-            }
-            return TraverseImpl(path.Split('/'));
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return TraverseImpl(path);
         }
 
-        public TResource? Traverse<TResource>(string path) where TResource : class, IEntry
+        internal IEntry? TraverseImpl(string path)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             if (path.Length > 0 && path[path.Length - 1] == '/')
@@ -143,10 +166,36 @@ namespace SynthesisAPI.VirtualFileSystem
                 // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
                 path = path.Remove(path.Length - 1, 1);
             }
-            return (TResource?)TraverseImpl(path.Split('/'));
+            return _TraverseImpl(path.Split('/'));
         }
 
-        private IEntry? TryGetEntry(string key)
+        [ExposedApi]
+        public TResource? Traverse<TResource>(string path) where TResource : class, IEntry
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return TraverseImpl<TResource>(path);
+        }
+
+        internal TResource? TraverseImpl<TResource>(string path) where TResource : class, IEntry
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            if (path.Length > 0 && path[path.Length - 1] == '/')
+            {
+                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
+                path = path.Remove(path.Length - 1, 1);
+            }
+            return (TResource?)_TraverseImpl(path.Split('/'));
+        }
+
+        [ExposedApi]
+        public IEntry? TryGetEntry(string key)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return TryGetEntryImpl(key);
+        }
+
+        internal IEntry? TryGetEntryImpl(string key)
         {
             return Entries.TryGetValue(key, out var x) ? x : null;
         }
@@ -157,9 +206,17 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <typeparam name="TResource"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
+        [ExposedApi]
         public TResource AddResource<TResource>(TResource value) where TResource : IEntry
         {
-            return (TResource)AddResourceImpl(value);
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return AddResourceImpl<TResource>(value);
+        }
+
+        internal TResource AddResourceImpl<TResource>(TResource value) where TResource : IEntry
+        {
+            return (TResource)_AddResourceImpl(value);
         }
 
         /// <summary>
@@ -167,12 +224,15 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private IEntry AddResource(IEntry value)
+        [ExposedApi]
+        public IEntry AddResource(IEntry value)
         {
-            return AddResourceImpl(value);
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return _AddResourceImpl(value);
         }
 
-        private IEntry AddResourceImpl(IEntry value)
+        private IEntry _AddResourceImpl(IEntry value)
         {
             if (Entries.ContainsKey(value.Name))
             {
@@ -196,9 +256,14 @@ namespace SynthesisAPI.VirtualFileSystem
             return Entries[value.Name];
         }
 
-        public void RemoveEntry(string key) => RemoveEntry(key, Guid.Empty);
+        [ExposedApi]
+        public void RemoveEntry(string key)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            RemoveEntryImpl(key);
+        }
 
-        public void RemoveEntry(string key, Guid guid)
+        internal void RemoveEntryImpl(string key)
         {
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
@@ -207,25 +272,28 @@ namespace SynthesisAPI.VirtualFileSystem
 
             if (Entries.ContainsKey(key))
             {
-                if (Entries[key].Permissions == Permissions.PublicWrite || Entries[key].Owner == guid)
-                {
-                    Entries[key].Delete();
-                    Entries.Remove(key);
-                }
-                else
-                    throw new Exception(string.Format("\"{0}\" doesn't have permission to delete \"{1}\"", guid, key));
+                Entries[key].DeleteImpl();
+                Entries.Remove(key);
             }
         }
 
+        [ExposedApi]
         public bool EntryExists(string key)
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            return EntryExistsImpl(key);
+        }
+
+        internal bool EntryExistsImpl(string key)
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
             return Entries.ContainsKey(key);
         }
 
+        [ExposedApi]
         public IEntry? this[string name]
         {
             get => TryGetEntry(name);
-            set => Entries[name] = value!;
         }
     }
 }

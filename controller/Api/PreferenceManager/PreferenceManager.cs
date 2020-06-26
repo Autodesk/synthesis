@@ -98,15 +98,11 @@ namespace SynthesisAPI.PreferenceManager
             {
                 Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
                     VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
-<<<<<<< HEAD
-                    Permissions.PublicWrite, VirtualFilePath.Name)!;
-=======
                     Permissions.PublicReadWrite, VirtualFilePath.Name)!;
                 if(Instance.Asset == null)
                 {
                     throw new Exception("Failed to create preferences.json");
                 }
->>>>>>> 0a0c3ea8b... Continue working on implementing Asset access permissions
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.VirtualFileSystem;
+﻿using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -47,7 +48,28 @@ namespace SynthesisAPI.AssetManager
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
         Directory IEntry.Parent { get => _parent; set => _parent = value; }
 
-        void IEntry.Delete() { } // Doesn't do anything by default 
+        [ExposedApi]
+        public virtual void Delete()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            DeleteImpl();
+        }
+
+        [ExposedApi]
+        void IEntry.Delete() {
+            using var _ = ApiCallSource.StartExternalCall();
+            DeleteImpl();
+        }
+
+        internal virtual void DeleteImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+        }
+
+        void IEntry.DeleteImpl()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
+        }
 
         public abstract IEntry Load(byte[] data);
     }

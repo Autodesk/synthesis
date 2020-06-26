@@ -29,15 +29,23 @@ namespace TestApi
         {
             try
             {
-                Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicReadWrite);
+                Directory dir = new Directory("directoryperms", Program.TestGuid, Permissions.PublicReadWrite);
+
+                FileSystem.AddResource("temp/", dir);
+            }
+            catch (PermissionsExpcetion)
+            {
+                Assert.Fail();
+            }
+            try
+            {
+                Directory dir = new Directory("directoryperms2", Program.TestGuid, Permissions.PublicReadWrite);
 
                 FileSystem.AddResource("", dir);
                 Assert.Fail();
             }
-            catch (Exception)
-            {
-                Assert.Pass();
-            }
+            catch (PermissionsExpcetion) { }
+            Assert.Pass();
         }
 
         [Test]

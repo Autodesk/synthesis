@@ -20,6 +20,15 @@ namespace SynthesisAPI.VirtualFileSystem
         Write
     }
 
+    public class PermissionsExpcetion : Exception
+    {
+        public PermissionsExpcetion() { }
+
+        public PermissionsExpcetion(string message) : base(message) { }
+
+        public PermissionsExpcetion(string message, Exception inner) : base(message, inner) { }
+    }
+
     public static class ApiCallSource
     {
         internal class ExternalCallLifetimeClass : IDisposable
@@ -29,11 +38,29 @@ namespace SynthesisAPI.VirtualFileSystem
                 ApiCallSource.IsInternal = true;
             }
         }
-        internal static ExternalCallLifetimeClass ExternalCall()
+
+        internal class InternalCallLifetimeClass : IDisposable
+        {
+            public void Dispose()
+            {
+                ApiCallSource.IsInternal = _internal_backup;
+            }
+        }
+
+        internal static ExternalCallLifetimeClass StartExternalCall()
         {
             IsInternal = false;
             return new ExternalCallLifetimeClass();
         }
+
+        internal static InternalCallLifetimeClass ForceInternalCall()
+        {
+            _internal_backup = IsInternal;
+            IsInternal = true;
+            return new InternalCallLifetimeClass();
+        }
+
+        private static bool _internal_backup { get; set; } = true;
 
         internal static bool IsInternal { get; private set; } = true;
 
@@ -41,7 +68,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             if (CannotAccess(perm, access))
             {
-                throw new Exception("Missing permissions");
+                throw new PermissionsExpcetion("Missing required permissions: Permissions: " + perm.ToString() + ", Operation: " + (IsInternal ? "Private" : "Public") + " " + access.ToString());
             }
         }
 

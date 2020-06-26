@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.Utilities;
+using System;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
@@ -29,6 +30,9 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         public Directory Parent { get; internal set; }
 
+        [ExposedApi]
         public void Delete();
+
+        internal void DeleteImpl();
     }
 }
