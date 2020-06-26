@@ -35,7 +35,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public void Dispose()
             {
-                ApiCallSource.IsInternal = true;
+                ApiCallSource.isInternal = true;
             }
         }
 
@@ -43,26 +43,27 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public void Dispose()
             {
-                ApiCallSource.IsInternal = _internal_backup;
+                ApiCallSource.forceInternal -= 1;
             }
         }
 
         internal static ExternalCallLifetimeClass StartExternalCall()
         {
-            IsInternal = false;
+            isInternal = false;
             return new ExternalCallLifetimeClass();
         }
 
         internal static InternalCallLifetimeClass ForceInternalCall()
         {
-            _internal_backup = IsInternal;
-            IsInternal = true;
+            forceInternal += 1;
             return new InternalCallLifetimeClass();
         }
 
-        private static bool _internal_backup { get; set; } = true;
+        private static uint forceInternal = 0;
 
-        internal static bool IsInternal { get; private set; } = true;
+        private static bool isInternal = true;
+
+        internal static bool IsInternal => isInternal || forceInternal != 0;
 
         public static void AssertAccess(Permissions perm, Access access)
         {

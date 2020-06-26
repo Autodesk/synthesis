@@ -412,6 +412,8 @@ namespace SynthesisAPI.AssetManager
                     data = File.ReadAllBytes(path);
                 }
 
+                using var _ = ApiCallSource.IsInternal ? ApiCallSource.ForceInternalCall() : null;
+
                 return AssetHandlers[type][subtype](data ?? new byte[0], targetPath, name, owner, perm, path, args);
             }
 
