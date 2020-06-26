@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 
 #nullable enable
 
@@ -199,10 +198,10 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public Inner()
             {
-                RootNode = new Directory(""); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-                RootNode.AddResource(new Directory("environment"));
-                RootNode.AddResource(new Directory("modules"));
-                RootNode.AddResource(new Directory("temp"));
+                RootNode = new Directory("", Guid.Empty, Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
+                RootNode.AddResource(new Directory("environment", Guid.Empty, Permissions.PublicReadOnly));
+                RootNode.AddResource(new Directory("modules", Guid.Empty, Permissions.PublicReadOnly));
+                RootNode.AddResource(new Directory("temp", Guid.Empty, Permissions.PublicReadWrite));
             }
 
             /// <summary>

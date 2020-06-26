@@ -43,8 +43,6 @@ namespace SynthesisAPI.VirtualFileSystem
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
         Directory IEntry.Parent { get => _parent; set => _parent = value; }
 
-        public Directory(string name) : this(name, Guid.Empty, Permissions.Private) { }
-
         public Directory(string name, Guid owner, Permissions perm)
         {
             Init(name, owner, perm);
@@ -61,7 +59,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// </summary>
         /// <param name="subpaths"></param>
         /// <returns></returns>
-        public IEntry? Traverse(string[] subpaths)
+        public IEntry? TraverseImpl(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {
@@ -112,26 +110,40 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <summary>
         /// Traverse this Directory and subdirectories to a resource given a file path
         /// </summary>
+        /// <param name="subpaths"></param>
+        /// <returns></returns>
+        public IEntry? Traverse(string[] subpaths)
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+
+            return TraverseImpl(subpaths);
+        }
+
+        /// <summary>
+        /// Traverse this Directory and subdirectories to a resource given a file path
+        /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         public IEntry? Traverse(string path)
         {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
             if (path.Length > 0 && path[path.Length - 1] == '/')
             {
                 // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
                 path = path.Remove(path.Length - 1, 1);
             }
-            return Traverse(path.Split('/'));
+            return TraverseImpl(path.Split('/'));
         }
 
         public TResource? Traverse<TResource>(string path) where TResource : class, IEntry
         {
-            if (path[path.Length - 1] == '/')
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            if (path.Length > 0 && path[path.Length - 1] == '/')
             {
                 // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
                 path = path.Remove(path.Length - 1, 1);
             }
-            return (TResource?)Traverse(path.Split('/'));
+            return (TResource?)TraverseImpl(path.Split('/'));
         }
 
         private IEntry? TryGetEntry(string key)

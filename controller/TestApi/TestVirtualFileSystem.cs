@@ -10,14 +10,14 @@ namespace TestApi
         [Test]
         public static void TestDirectory()
         {
-            Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicRead);
-            FileSystem.AddResource("/modules", dir);
+            Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicReadWrite);
+            FileSystem.AddResource("/temp", dir);
 
-            Directory test_dir = (Directory)FileSystem.Traverse("/modules/directory");
+            Directory test_dir = (Directory)FileSystem.Traverse("/temp/directory");
 
             Assert.AreSame(dir, test_dir);
 
-            Directory parent = (Directory)FileSystem.Traverse("/modules");
+            Directory parent = (Directory)FileSystem.Traverse("/temp");
 
             Directory test_parent = (Directory)test_dir.Traverse("..");
 
@@ -25,12 +25,28 @@ namespace TestApi
         }
 
         [Test]
-        public static void TestMaxDepth()
+        public static void TestDirectoryPermissions()
         {
-            string path = "";
             try
             {
-                for (var i = 0; i < FileSystem.MaxDirectoryDepth; i++)
+                Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicReadWrite);
+
+                FileSystem.AddResource("", dir);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public static void TestMaxDepth()
+        {
+            string path = "/temp";
+            try
+            {
+                for (var i = 1; i < FileSystem.MaxDirectoryDepth; i++)
                 {
                     Directory dir = new Directory("directory" + i, Program.TestGuid, Permissions.PublicRead);
                     FileSystem.AddResource(path, dir);

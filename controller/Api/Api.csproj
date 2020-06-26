@@ -78,6 +78,7 @@
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="UIManager\UIManager.cs" />
+    <Compile Include="Utilities\ExposedApi.cs" />
     <Compile Include="Utilities\ParamsHelper.cs" />
     <Compile Include="Utilities\ReflectHelper.cs" />
     <Compile Include="Utilities\Result.cs" />
