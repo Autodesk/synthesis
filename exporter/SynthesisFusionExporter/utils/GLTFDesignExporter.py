@@ -208,9 +208,9 @@ class GLTFDesignExporter:
 
         self.bufferWatch.switch_segment("indices writing to stream")
 
-        accessor.componentType = GLTFConstants.ComponentType.UnsignedShort  # todo: smallest component type needed
+        accessor.componentType = GLTFConstants.ComponentType.UnsignedInt  # todo: smallest component type needed
         for item in array:
-            self.primaryBufferStream.write(struct.pack("<H", item))
+            self.primaryBufferStream.write(struct.pack("<I", item))
 
         byteLength = calculateAlignment(self.primaryBufferStream.tell() - byteOffset)
 
