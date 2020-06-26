@@ -15,7 +15,7 @@ ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with
 
 
 def exportRobot():
-    print(f"Export starting...")
+    print(f"GLTF export starting...")
     ao = AppObjects()
 
     if ao.document.dataFile is None:
@@ -29,13 +29,10 @@ def exportRobot():
     exporter.saveGLB(glbFilePath)
 
     savedFile = time.perf_counter()
-    print(f"Export completed in {savedFile-start} seconds")
-    print(f"savedFile {savedFile} seconds")
-
-    # dict = gltf_asdict(gltf) # debugging only
-
-    # printHierarchy(ao.root_comp)
-    print()  # put breakpoint here and view the protoDocumentAsDict local variable
+    finishedMessage = f"GLTF export completed in {round(savedFile - start, 1)} seconds\n" \
+            f"File saved to {glbFilePath}"
+    print(finishedMessage)
+    ao.ui.messageBox(finishedMessage)
 
 
 class ExportCommand(apper.Fusion360CommandBase):
