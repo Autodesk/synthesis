@@ -3,14 +3,12 @@ import time
 import adsk
 import adsk.core
 import adsk.fusion
-import numpy as np
+from importlib import reload
 
 import apper
-from apper import AppObjects, item_id
-from ..utils.DebugHierarchy import *
-from ..utils.GLTFDesignExporter import GLTFDesignExporter
-
-ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
+from apper import AppObjects
+from ..gltfutils.DebugHierarchy import *
+from ..gltfutils.GLTFDesignExporter import GLTFDesignExporter
 
 
 def exportRobot():
@@ -33,7 +31,7 @@ def exportRobot():
     finishedMessage = f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n" \
                       f"File saved to {filePath}\n\n" \
                       f"==== Export Performance Results ====\n" \
-                      f"{perfResults}\n\n"\
+                      f"{perfResults}\n\n" \
                       f"==== Buffer Writing Results ====\n" \
                       f"{bufferResults}"
     ao.ui.messageBox(finishedMessage)

@@ -88,6 +88,9 @@ class SegmentedStopwatch(object):
     time.process_time - The sum of the system and user CPU time of the current process
     time.perf_counter - A clock with the highest available resolution to measure a short duration.
                         It does include time elapsed during sleep and is system-wide.
+
+    Returns:
+      :
     """
     self._segments = OrderedDict()
     self._active_counts = dict()

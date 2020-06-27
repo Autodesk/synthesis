@@ -160,7 +160,13 @@ debug = False
 def run(context):
     my_addin.run_app()
 
-    exportRobot() # export on startup for debugging purposes TODO delete me
+    try:
+        exportRobot()  # export on startup for debugging purposes TODO delete me
+    except:
+        app = adsk.core.Application.get()
+        ui = app.userInterface
+        if ui:
+            ui.messageBox('Initialization: {}'.format(traceback.format_exc()))
 
 
 def stop(context):
