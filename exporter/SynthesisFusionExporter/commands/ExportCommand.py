@@ -1,6 +1,6 @@
 import adsk, adsk.core, adsk.fusion, traceback
 import apper
-from apper import AppObjects, item_id
+from apper import AppObjects
 from ..proto.synthesis_importbuf_pb2 import *
 from google.protobuf.json_format import MessageToDict, MessageToJson
 from ..utils.DebugHierarchy import printHierarchy
@@ -16,17 +16,24 @@ def exportRobot():
         print("Error: You must save your fusion document before exporting!")
         return
 
+    start = time.perf_counter()
+
     protoDocument = Document()
     fillDocument(ao, protoDocument)
-    protoDocumentAsDict = MessageToDict(protoDocument)
-    # printHierarchy(ao.root_comp)
-    print()  # put breakpoint here and view the protoDocumentAsDict local variable
-    
+    # protoDocumentAsDict = MessageToDict(protoDocument)
+
     filePath = '{0}{1}_{2}.{3}'.format('C:/temp/', protoDocument.documentMeta.name.replace(" ", "_"), protoDocument.documentMeta.exportTime, "synimport")
 
     file = open(filePath, 'wb')
     file.write(protoDocument.SerializeToString())
     file.close()
+
+    end = time.perf_counter()
+    finishedMessage = f"Export completed in {round(end - start, 1)} seconds\n" \
+            f"File saved to {filePath}"
+    print(finishedMessage)
+    ao.ui.messageBox(finishedMessage)
+
 
 
 class ExportCommand(apper.Fusion360CommandBase):
@@ -59,31 +66,41 @@ def fillDocumentMeta(fusionDocument, protoDocumentMeta):
     protoDocumentMeta.exportTime = int(time.time())
 
 def fillDesign(fusionDesign, protoDesign):
+    # start = time.perf_counter()
+
     fillComponents(fusionDesign.allComponents, protoDesign.components)
-    fillJoints(fusionDesign.rootComponent.allJoints, protoDesign.joints)
-    fillMaterials(fusionDesign.materials, protoDesign.materials)
-    fillAppearances(fusionDesign.appearances, protoDesign.appearances)
+
+    # components = time.perf_counter()
+
+    # fillJoints(fusionDesign.rootComponent.allJoints, protoDesign.joints)
+    # fillMaterials(fusionDesign.materials, protoDesign.materials)
+    # fillAppearances(fusionDesign.appearances, protoDesign.appearances)
     fillFakeRootOccurrence(fusionDesign.rootComponent, protoDesign.hierarchyRoot)
+
+    # end = time.perf_counter()
+    # ao = AppObjects()
+    # ao.ui.messageBox(f"Components {components - start} seconds\n")
+    # ao.ui.messageBox(f"Occurrences {end - components} seconds\n")
 
 
 # -----------Occurrence Tree-----------
 
 def fillFakeRootOccurrence(rootComponent, protoOccur):
-    protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
+    # protoOccur.header.uuid = item_id(rootComponent, ATTR_GROUP_NAME)
     protoOccur.header.name = rootComponent.name
-    protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
+    # protoOccur.componentUUID = item_id(rootComponent, ATTR_GROUP_NAME)
+    protoOccur.componentUUID = rootComponent.revisionId
 
     for childOccur in rootComponent.occurrences:
         fillOccurrence(childOccur, protoOccur.childOccurrences.add())
 
 
 def fillOccurrence(occur, protoOccur):
-    protoOccur.header.uuid = item_id(occur, ATTR_GROUP_NAME)
     protoOccur.header.name = occur.name
     protoOccur.isGrounded = occur.isGrounded
     fillMatrix3D(occur.transform, protoOccur.transform)
 
-    protoOccur.componentUUID = item_id(occur.component, ATTR_GROUP_NAME)
+    protoOccur.componentUUID = occur.component.revisionId
 
     for childOccur in occur.childOccurrences:
         fillOccurrence(childOccur, protoOccur.childOccurrences.add())
@@ -97,26 +114,28 @@ def fillComponents(fusionComponents, protoComponents):
 
 
 def fillComponent(fusionComponent, protoComponent):
-    protoComponent.header.uuid = item_id(fusionComponent, ATTR_GROUP_NAME)
+    protoComponent.header.uuid = fusionComponent.revisionId
     protoComponent.header.name = fusionComponent.name
     protoComponent.header.description = fusionComponent.description
     protoComponent.header.revisionId = fusionComponent.revisionId
     protoComponent.partNumber = fusionComponent.partNumber
-    fillBoundingBox3D(fusionComponent.boundingBox, protoComponent.boundingBox)
-    protoComponent.materialId = fusionComponent.material.id
-    fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
+    # fillBoundingBox3D(fusionComponent.boundingBox, protoComponent.boundingBox)
+    if fusionComponent.material is not None:
+        protoComponent.materialId = fusionComponent.material.id
+    # fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
     for bRepBody in fusionComponent.bRepBodies:
         fillMeshBodyFromBrep(bRepBody, protoComponent.meshBodies.add())
 
 
 def fillMeshBodyFromBrep(fusionBRepBody, protoMeshBody):
-    protoMeshBody.header.uuid = item_id(fusionBRepBody, ATTR_GROUP_NAME)
     protoMeshBody.header.name = fusionBRepBody.name
-    protoMeshBody.appearanceId = fusionBRepBody.appearance.id
-    protoMeshBody.materialId = fusionBRepBody.material.id
-    fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
-    fillBoundingBox3D(fusionBRepBody.boundingBox, protoMeshBody.boundingBox3D)
+    if protoMeshBody.appearanceId is not None:
+        protoMeshBody.appearanceId = fusionBRepBody.appearance.id
+    if protoMeshBody.materialId is not None:
+        protoMeshBody.materialId = fusionBRepBody.material.id
+    # fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
+    # fillBoundingBox3D(fusionBRepBody.boundingBox, protoMeshBody.boundingBox3D)
     fillTriangleMeshFromBrep(fusionBRepBody, protoMeshBody.triangleMesh)
 
 
@@ -158,7 +177,7 @@ def isJointInvalid(fusionJoint):
 
 
 def fillJoint(fusionJoint, protoJoint):
-    protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
+    # protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
     protoJoint.header.name = fusionJoint.name
     fillVector3D(getJointOrigin(fusionJoint), protoJoint.origin)
     protoJoint.isLocked = fusionJoint.isLocked
@@ -195,9 +214,12 @@ def getJointOrigin(fusionJoint):
 
 
 def getJointedOccurrenceUUID(fusionJoint, fusionOccur):
+    # if fusionOccur is None:
+    #     return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
+    # return item_id(fusionOccur, ATTR_GROUP_NAME)
     if fusionOccur is None:
-        return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
-    return item_id(fusionOccur, ATTR_GROUP_NAME)
+        return ""  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
+    return fusionOccur.fullPathName
 
 
 def fillRigidJointMotion(fusionJointMotion, protoJoint):
