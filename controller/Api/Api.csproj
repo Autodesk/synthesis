@@ -72,6 +72,7 @@
     <Compile Include="Modules\Entity.cs" />
     <Compile Include="Modules\GlobalSystem.cs" />
     <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="Modules\Object.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

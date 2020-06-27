@@ -80,6 +80,11 @@ namespace Engine.ModuleLoader
 					}
 				}
             }
+			foreach (var (archive, metadata) in modules)
+			{
+				SynthesisAPI.Modules.ModuleManager.AddToLoadedModuleList(metadata.Name);
+			}
+			SynthesisAPI.Modules.ModuleManager.MarkFinishedLoading();
 		}
 
         private (ZipArchive, ModuleMetadata)? PreloadModule(string filePath)
@@ -90,7 +95,7 @@ namespace Engine.ModuleLoader
                 return null;
             }
 
-            var metadata = ModuleMetadata.Parse(module.Entries
+            var metadata = ModuleMetadata.Deserialize(module.Entries
                     .First(e => e.Name == ModuleMetadata.MetadataFilename).Open());
 			return (module, metadata);
         }

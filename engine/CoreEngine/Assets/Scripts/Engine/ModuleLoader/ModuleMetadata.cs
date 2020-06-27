@@ -21,9 +21,14 @@ namespace Engine.ModuleLoader
 
         public static string MetadataFilename = "metadata.xml";
 
-        public static ModuleMetadata Parse(Stream stream)
+        public static ModuleMetadata Deserialize(Stream stream)
         {
             return (ModuleMetadata) new XmlSerializer(typeof(ModuleMetadata)).Deserialize(new StreamReader(stream));
+        }
+
+        public void Serialize(Stream stream)
+        {
+            new XmlSerializer(typeof(ModuleMetadata)).Serialize(new StreamWriter(stream), this);
         }
 
         public string Name { get; set; }
