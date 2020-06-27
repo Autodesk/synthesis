@@ -49,6 +49,11 @@ namespace SynthesisAPI.Runtime
 			throw new Exception("No Api instance defined");
 		}
 
+		}
+			return Instance?.InstantiateFocusable<TUnityType>();
+		public static TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable
+		{
+
 		public static Component? AddComponent(Type t, uint entity) => Instance?.AddComponent(t, entity);
 	}
 }

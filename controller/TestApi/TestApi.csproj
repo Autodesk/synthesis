@@ -64,9 +64,12 @@
     <Compile Include="TestEnvironmentManager.cs" />
     <Compile Include="TestEventBus.cs" />
     <Compile Include="TestJsonObject.cs" />
+    <Compile Include="TestUIParsing.cs" />
+    <Compile Include="TestJSONObject.cs" />
     <Compile Include="TestVirtualFileSystem.cs" />
     <Compile Include="TestXmlObject.cs" />
     <Compile Include="TestPreferenceManager.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
