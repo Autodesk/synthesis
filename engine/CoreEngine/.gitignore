@@ -36,6 +36,10 @@ ExportedObj/
 *.pidb.meta
 *.pdb.meta
 
+# SynthesisAPI Library
+Assets/Packages/Api.dll
+Assets/Packages/Api.dll.meta
+
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
