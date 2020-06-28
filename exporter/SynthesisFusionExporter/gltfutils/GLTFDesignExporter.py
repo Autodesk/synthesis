@@ -10,7 +10,7 @@ import adsk
 import adsk.core
 import adsk.fusion
 
-from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer
+from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
 from apper import AppObjects
 from .timers import SegmentedStopwatch
 
@@ -36,6 +36,10 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         primaryBuffer: The buffer referencing the one inline buffer in the final glB file.
         primaryBufferId: The index of the primaryBuffer in the glTF buffers list.
         primaryBufferStream: The memory stream for temporary storage of the glB buffer data.
+
+    todo unit conversion
+    todo allow multiple exports (incremental) with one GLTFDesignExporter
+    todo coordinate system conversion
     """
 
     # types
@@ -114,6 +118,25 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
     def alignByteArrayToBoundary(cls, byteArray: bytearray, byteAlignment: int = 4) -> None:
         byteArray.extend(b'   '[0:cls.calculateAlignmentNumPadding(len(byteArray), byteAlignment)])
         assert len(byteArray) % byteAlignment == 0
+
+    @classmethod
+    def colorByteToFloat(cls, byte: int) -> float:
+        return byte/255
+
+    @classmethod
+    def fusionColorToArray(cls, color: adsk.core.Color) -> List[float]:
+        return [
+            cls.colorByteToFloat(color.red),
+            cls.colorByteToFloat(color.green),
+            cls.colorByteToFloat(color.blue),
+            cls.colorByteToFloat(color.opacity),
+        ]
+
+    @classmethod
+    def fusionAttenLengthToAlpha(cls, attenLength: adsk.core.FloatProperty) -> float:
+        if attenLength is None:
+            return 1
+        return max(min((464 - 7 * attenLength.value) / 1938, 1), 0.03) # todo: this conversion is just made up
 
     def __init__(self, ao: AppObjects):  # todo: allow the export of designs besides the one in the foreground?
         self.ao = ao
@@ -331,6 +354,14 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         primitive.attributes.POSITION = self.exportAccessor(mesh.nodeCoordinatesAsFloat, DataType.Vec3, ComponentType.Float, True)  # glTF requires limits for position coordinates.
         primitive.indices = self.exportAccessor(mesh.nodeIndices, DataType.Scalar, None, False)  # Autodetect component type on a per-mesh basis. glTF does not require limits for indices.
 
+        self.perfWatch.switch_segment('exporting materials')
+
+        bodyAppearance = fusionBRepBody.appearance
+        if bodyAppearance is not None:
+            appearIndex = self.exportGltfMaterialFromFusAppear(bodyAppearance)
+            if appearIndex is not None:
+                primitive.material = appearIndex
+
         self.perfWatch.stop()
 
         return primitive
@@ -424,3 +455,50 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
 
         self.gltf.bufferViews.append(bufferView)
         return len(self.gltf.bufferViews) - 1
+
+    def exportGltfMaterialFromFusAppear(self, fusionAppearance: adsk.core.Appearance) -> Optional[GLTFIndex]:
+        props = fusionAppearance.appearanceProperties
+
+        material = Material()
+        material.alphaCutoff = None # this is a bug with the gltf python lib
+        material.name = fusionAppearance.name
+
+        pbr = PbrMetallicRoughness()
+        pbr.baseColorFactor = None # this is a bug with the gltf python lib
+        pbr.metallicFactor = 0.0
+        pbr.roughnessFactor = props.itemById("surface_roughness").value
+
+        baseColor = None
+
+        modelItem = props.itemById("interior_model")
+        if modelItem is None:
+            return None
+        matModelType = modelItem.value
+
+        if matModelType == 0: # Opaque
+            baseColor = props.itemById("opaque_albedo").value
+            if props.itemById("opaque_emission").value:
+                material.emissiveFactor = self.fusionColorToArray(props.itemById("opaque_luminance_modifier").value)[:3]
+        elif matModelType == 1: # Metal
+            pbr.metallicFactor = 1.0
+            baseColor = props.itemById("metal_f0").value
+        elif matModelType == 2: # Layered
+            baseColor = props.itemById("layered_diffuse").value
+        elif matModelType == 3: # Transparent
+            baseColor = props.itemById("transparent_color").value
+            material.alphaMode = "BLEND"
+        elif matModelType == 5: # Glazing
+            baseColor = props.itemById("glazing_transmission_color").value
+        else: # ??? idk what type 4 material is
+            print(f"[WARNING] Unsupported material type: {material.name}")
+
+        if baseColor is None:
+            return None
+
+        pbr.baseColorFactor = self.fusionColorToArray(baseColor)[:3] + [self.fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
+        material.pbrMetallicRoughness = pbr
+
+        self.ao.ui.messageBox(material.name)
+
+        self.gltf.materials.append(material)
+        return len(self.gltf.materials) - 1
