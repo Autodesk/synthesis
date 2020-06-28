@@ -1,13 +1,13 @@
 !include MUI2.nsh
-;!include LogicLib.nsh
+!define PRODUCT_VERSION "5.0.0"
 
 Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 5.0.0 (x86) Setup"
+Caption "Synthesis ${PRODUCT_VERSION} (x86) Setup"
 
-OutFile "SynthesisWin(x86)5.0.0.exe"
+OutFile "SynthesisWin(x86)${PRODUCT_VERSION}.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -53,8 +53,6 @@ RequestExecutionLevel admin
 Section
 
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
-    MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
-      true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 		
 		; Remove inventor plugins
@@ -93,14 +91,6 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
 		;DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
 		
-        Goto next
-
-      false:
-        Quit
-
-      next:
-
-# default section end
 SectionEnd
 
 Section "Synthesis (required)"
@@ -127,7 +117,7 @@ Section "Synthesis (required)"
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "5.0.0" ;UPDATE ON RELEASE
+                 "DisplayVersion" "${PRODUCT_VERSION}"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -140,15 +130,6 @@ Section "Synthesis (required)"
 	; Extract field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
 	File /r "Fields\*"
-
-SectionEnd
-
-Section "MixAndMatch Files"
-
-  ; Set extraction path for Mix&Match files
-  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
-
-  File /r "MixAndMatch\*"
 
 SectionEnd
 

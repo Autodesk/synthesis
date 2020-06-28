@@ -1,14 +1,14 @@
 !include MUI2.nsh
 !include x64.nsh
-;!include LogicLib.nsh
+!define PRODUCT_VERSION "5.0.0"
 
 Name "Synthesis"
 
 Icon "W16_SYN_launch.ico"
 
-Caption "Synthesis 5.0.0 Setup"
+Caption "Synthesis ${PRODUCT_VERSION} Setup"
 
-OutFile "SynthesisWin5.0.0.exe"
+OutFile "SynthesisWin${PRODUCT_VERSION}.exe"
 
 InstallDir $PROGRAMFILES64\Autodesk\Synthesis
 
@@ -64,8 +64,6 @@ RequestExecutionLevel admin
 Section
 
 IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
-    MessageBox MB_YESNO "You appear to have Synthesis installed; would you like to reinstall it?" IDYES true IDNO false
-      true:
         DeleteRegKey HKLM SOFTWARE\Synthesis
 		
 		; Remove fusion plugins
@@ -110,15 +108,14 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 		DeleteRegKey HKCU "SOFTWARE\Autodesk\Synthesis"
 		;DeleteRegKey HKCU "SOFTWARE\Autodesk\BXD Synthesis"
+		
+	; Execute QEMU uninstaller
+	IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
+		file_found:
+		MessageBox MB_YESNO "QEMU Installation Detected! $\r$\nSynthesis no longer uses QEMU. Would you like to remove it?" IDNO uninstall_complete
+		Exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe"'
+		uninstall_complete:
 
-        Goto next
-
-      false:
-        Quit
-
-      next:
-	  
-# default section end
 SectionEnd
 
 Section "Synthesis (required)" Synthesis
@@ -148,7 +145,7 @@ Section "Synthesis (required)" Synthesis
                 "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayVersion" "5.0.0" ;UPDATE ON RELEASE
+                 "DisplayVersion" "${PRODUCT_VERSION}"
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -161,15 +158,6 @@ Section "Synthesis (required)" Synthesis
 	; Set extraction path for field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
 	File /r "Fields\*"
-
-SectionEnd
-
-Section "MixAndMatch Files" MaM
-
-  ; Set extraction path for Mix&Match files
-  SetOutPath $APPDATA\Autodesk\Synthesis\MixAndMatch
-
-  File /r "MixAndMatch\*"
 
 SectionEnd
 
@@ -204,41 +192,19 @@ Section "Robot Files" RobotFiles
 
 SectionEnd
 
-Section "Code Emulator" Emulator
-
-	; INetC.dll must be installed to proper NSIS Plugins x86 directories
-	inetc::get "https://qemu.weilnetz.de/w64/2019/qemu-w64-setup-20190724.exe" "$PLUGINSDIR\qemu-w64-setup-20190724.exe"
-	Pop $R0 ;Get the return value
-	
-	${If} $R0 == "OK"  ;Return value should be "OK"
-	SetOutPath $APPDATA\Autodesk\Synthesis\Emulator
-	  File /r "Emulator\*"
-	  HideWindow
-	  ExecWait '"$PLUGINSDIR\qemu-w64-setup-20190724.exe" /SILENT'
-	  ShowWindow hwnd show_state
-	${Else}
-	  MessageBox MB_ICONSTOP "Error: $R0" ;Show cancel/error message
-	${EndIf}
-		
-SectionEnd
-
 ;--------------------------------
 ;Component Descriptions
 
   LangString DESC_Synthesis ${LANG_ENGLISH} "The Unity5 Simulator Engine is what the exported fields and robots are loaded into. In real-time, it simulates a real world physics environment for robots to interact with fields or other robots"
-  LangString DESC_MaM ${LANG_ENGLISH} "Mix and Match will allow the user to quickly choose from pre-configured robot parts such as wheels, drive bases and manipulators within the simulator"
   LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
-  LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
-  !insertmacro MUI_DESCRIPTION_TEXT ${MaM} $(DESC_MaM)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
-  !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
@@ -293,15 +259,5 @@ Section "Uninstall"
   Delete "$DESKTOP\BXD Synthesis.lnk"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
-  
-  ; Execute QEMU uninstaller
-  IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
-  
-	file_found:
-	MessageBox MB_YESNO "Would you like to uninstall QEMU as well?" IDNO uninstall_complete
-	Exec '"$PROGRAMFILES64\qemu\qemu-uninstall.exe"'
-	Quit
-	
-	uninstall_complete:
 
 SectionEnd
