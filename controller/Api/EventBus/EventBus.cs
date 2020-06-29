@@ -7,68 +7,86 @@ using System.Threading.Channels;
 using System.Collections;
 using SynthesisAPI.EventBus;
 using System.Diagnostics.Tracing;
+using UnityEngine;
 
 namespace SynthesisAPI.EventBus
 {
     public static class EventBus
     {
-        public static Dictionary<string, Channel<IEvent>[]> topics = new Dictionary<string, Channel<IEvent>[]>();
-        static EventBus()
-        {
+        public delegate void EventCallback(IEvent eventInfo);
 
+        public static void Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
+        {
+            if (Instance.tagSubscribers.ContainsKey(eventInfo.EventType))
+            {
+                Instance.tagSubscribers[eventInfo.EventType](eventInfo);
+            }
+            else
+                throw new Exception(message: "No subscribers found");
         }
 
-        public static void Push(IEvent event, String [] tags)
+        public static void Push<TEvent>(TEvent eventInfo, string tag) where TEvent : IEvent
         {
-            foreach (string tag in tags)
+            if (Instance.tagSubscribers.ContainsKey(tag))
             {
-                Channel<IEvent>[] ch;
-                if (topics.TryGetValue(tag, out ch)) 
+                Instance.tagSubscribers[tag](eventInfo);
+            }
+            else
+                throw new Exception(message: "No subscribers found");
+        }
+
+        public static void NewTypeListener(string type, EventCallback callback)
+        {
+            if (Instance.typeSubscribers.ContainsKey(type))
+                Instance.typeSubscribers[type] += callback;
+            else
+                Instance.typeSubscribers.Add(type, callback);
+        }
+
+        public static void NewTagListener(string tag, EventCallback callback)
+        {
+            if (Instance.tagSubscribers.ContainsKey(tag))
+                Instance.tagSubscribers[tag] += callback;
+            else
+                Instance.tagSubscribers.Add(tag, callback);
+        }
+
+        private class Inner
+        {
+            public Dictionary<string, EventCallback> typeSubscribers;
+            public Dictionary<string, EventCallback> tagSubscribers;
+
+            private Inner()
+            {
+                typeSubscribers = new Dictionary<string, EventCallback>();
+                tagSubscribers = new Dictionary<string, EventCallback>();
+            }
+
+            private static Inner _inst;
+            public static Inner InnerInstance
+            {
+                get
                 {
-                    foreach(Channel<IEvent> channel in ch)
-                    {
-                        
-                        await channel.Writer.WriteAsync(event);
-                        channel.Writer.Complete();
-                    }
-                } 
-                else 
-                {
-                    Channel<IEvent> channel = Channel.CreateUnbounded<IEvent>();
-                    ch = new Channel<IEvent>[]{channel};
-                    topics.Add(tag, ch);
-                    await channel.Writer.WriteAsync(event);
-                    channel.Writer.Complete();
+                    if (_inst == null)
+                        _inst = new Inner();
+                    return _inst;
                 }
             }
         }
 
-        public ChannelReader<IEvent> Subscribe(string tag)
-        {
-            Channel<IEvent>[] ch;
-            Channel<IEvent> channel = Channel.CreateUnbounded<IEvent>();
-            if (topics.TryGetValue(tag, out ch))
-            {
-                ch.Append(channel);
-            } 
-            else
-            {
-                ch = new Channel<IEvent>[]{channel};
-                topics.Add(tag, ch);
-            }
-
-            return channel.Reader;
-        }
-        public static IEvent NewTagListener(string tag)
-        {
-            Channel<IEvent> ch;
-            if (topics.TryGetValue(tag, out ch))
-            {
-                IEvent result; 
-                ch.Reader.TryRead(out result);
-                return result;
-            }
-        }
-
+        private static Inner Instance => Inner.InnerInstance;
     }
+
+/*    public class Subscriber
+    {
+        public Subscriber()
+        {
+            EventBus.Sub("test", CallBackMethod);
+        }
+
+        public void CallBackMethod(IEvent e)
+        {
+
+        }
+    }*/
 }
