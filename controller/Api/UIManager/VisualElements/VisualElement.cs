@@ -29,5 +29,9 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => _visualElement.name;
             set => _visualElement.name = value;
         }
+
+        public UnityEngine.UIElements.IStyle style {
+            get => _visualElement.style;
+        }
     }
 }

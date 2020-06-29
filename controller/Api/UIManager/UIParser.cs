@@ -17,6 +17,16 @@ namespace SynthesisAPI.UIManager
     // ReSharper disable once InconsistentNaming
     public static class UIParser
     {
+        public static SynVisualElement CreateVisualElement(XmlDocument doc)
+        {
+            if (doc.FirstChild.Name == "ui:UXML")
+            {
+
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Parse an XmlNode into a VisualElement.
         /// TODO: Account for other types of VisualElements with special attributes (i.e. Label, Button, etc.)
@@ -25,47 +35,38 @@ namespace SynthesisAPI.UIManager
         /// <returns></returns>
         public static SynVisualElement CreateVisualElement(XmlNode node)
         {
-            // VisualElement element = new VisualElement();
-            Debug.Log("==1==");
-            // Type elementType = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
-            Debug.Log($"Type name: {elementType.FullName}");
-            Debug.Log("==2==");
-            // dynamic element = Activator.CreateInstance(elementType);
             dynamic element = typeof(ApiProvider).GetMethod("InstantiateFocusable").MakeGenericMethod(elementType).Invoke(null, null);
+
             Debug.Log(element.style.GetType().FullName);
-            if (element == null) throw new Exception("Activator failed to create an instance");
-            Debug.Log("==3==");
-
-            foreach (XmlAttribute attr in node.Attributes)
+            if (element != null)
             {
-                var property = elementType.GetProperty(attr.Name);
-                if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
-                Debug.Log("==4L==");
 
-                switch (property.PropertyType.Name)
+                foreach (XmlAttribute attr in node.Attributes)
                 {
-                    case "Boolean":
-                        Debug.Log("==5L==");
-                        property.SetValue(element, bool.Parse(attr.Value));
-                        break;
-                    case "String":
-                        Debug.Log("==6L==");
-                        property.SetValue(element, attr.Value);
-                        break;
-                    case "IStyle":
-                        Debug.Log("==7L==");
-                        element = ParseStyle(attr.Value, element);
-                        break;
-                    default:
-                        throw new Exception($"Found no matching type to {property.PropertyType.FullName}");
+                    var property = elementType.GetProperty(attr.Name);
+                    if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
+
+                    switch (property.PropertyType.Name)
+                    {
+                        case "Boolean":
+                            property.SetValue(element, bool.Parse(attr.Value));
+                            break;
+                        case "String":
+                            property.SetValue(element, attr.Value);
+                            break;
+                        case "IStyle":
+                            element = ParseStyle(attr.Value, element);
+                            break;
+                        default:
+                            throw new Exception($"Found no matching type to {property.PropertyType.FullName}");
+                    }
                 }
-                Debug.Log("==8L==");
             }
 
             foreach (XmlNode child in node.ChildNodes)
-                elementType.GetMethod("Add", BindingFlags.Public).Invoke(element, new object[] { child }); //.Add(CreateVisualElement(child));
-            Debug.Log("==9==");
+                elementType.GetMethod("Add", BindingFlags.Public).Invoke(element, new object[] { child });
+
             return element;
         }
 
@@ -94,17 +95,16 @@ namespace SynthesisAPI.UIManager
         private static dynamic ParseEntry(string entry, dynamic element)
         {
             var entrySplit = entry.Split(':');
-            Debug.Log("--1--");
             entrySplit[0] = entrySplit[0].Replace(" ", "");
             if (entrySplit[0] == "") return element;
-            Debug.Log("--2--");
+
             string propertyName;
             propertyName = MapCssName(entrySplit[0]);
             if (propertyName == "unityFontStyle") propertyName = "unityFontStyleAndWeight";
             var property = typeof(IStyle).GetProperty(propertyName);
             if (property == null)
             {
-                Debug.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"");
+                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"");
                 Debug.Log($"Type of style: \"{element.style.GetType()}\"");
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
