@@ -66,11 +66,11 @@
     <Compile Include="Modules\Attributes\ExportedFieldAttribute.cs" />
     <Compile Include="Modules\Attributes\ExportedMethodAttribute.cs" />
     <Compile Include="Modules\Attributes\ModuleExportAttribute.cs" />
-    <Compile Include="Modules\Behavior.cs" />
+    <Compile Include="Modules\System.cs" />
     <Compile Include="Modules\Component.cs" />
     <Compile Include="Modules\Components\Mesh.cs" />
     <Compile Include="Modules\Entity.cs" />
-    <Compile Include="Modules\GlobalBehavior.cs" />
+    <Compile Include="Modules\GlobalSystem.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\Object.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
