@@ -4,20 +4,20 @@ using UnityEngine;
 
 namespace Engine.ModuleLoader
 {
-	public class BehaviorAdapter : MonoBehaviour, IApiAdapter<Behavior>
+	public class BehaviorAdapter : MonoBehaviour, IApiAdapter<SystemBase>
 	{
-		public void Start() => behavior.Start();
-		public void Update() => behavior.Update();
-		public void FixedUpdate() => behavior.FixedUpdate();
-		public void LateUpdate() => behavior.LateUpdate();
-		public void OnGUI() => behavior.OnGUI();
-		public void OnDisable() => behavior.OnDisable();
-		public void OnEnable() => behavior.OnEnable();
+		public void Start() => _system.Start();
+		public void Update() => _system.Update();
+		public void FixedUpdate() => _system.FixedUpdate();
+		public void LateUpdate() => _system.LateUpdate();
+		public void OnGUI() => _system.OnGUI();
+		public void OnDisable() => _system.OnDisable();
+		public void OnEnable() => _system.OnEnable();
 
-		private Behavior behavior = new Behavior();
-		public void SetInstance(Behavior instance)
+		private SystemBase _system = new SystemBase();
+		public void SetInstance(SystemBase instance)
 		{
-			behavior = instance;
+			_system = instance;
 		}
 	}
 }

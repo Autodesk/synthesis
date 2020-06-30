@@ -526,7 +526,7 @@ namespace SynthesisAPI.AssetManager
             public Asset? Import(bool createOnFail, byte[]? data, string targetPath, string name,
                 Permissions perm, string sourcePath, params dynamic[] args)
             {
-                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath)];
+                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
 
                 return Import(types.Item1, types.Item2, createOnFail, data, targetPath, name, perm, sourcePath, args);
             }
@@ -536,7 +536,7 @@ namespace SynthesisAPI.AssetManager
             {
                 var types = TypeAssetTypes[typeof(TAsset)];
 
-                var types2 = FileExtensionAssetTypes[Path.GetExtension(sourcePath)];
+                var types2 = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
                 if (types.Item1 != types2.Item1 || types.Item2 != types2.Item2)
                 {
                     // TODO error message
@@ -561,7 +561,7 @@ namespace SynthesisAPI.AssetManager
                     throw new Exception($"Importing asset with unregistered type {type}/{subtype}");
                 }
 
-                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath)];
+                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
                 if(type != types.Item1 || subtype != types.Item2)
                 {
                     // TODO error message

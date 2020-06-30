@@ -1,6 +1,6 @@
 ﻿namespace SynthesisAPI.Modules
 {
-	public abstract class System : Component
+	public class SystemBase : Component
 	{
 		public virtual void Start() {}
 		public virtual void Update() {}

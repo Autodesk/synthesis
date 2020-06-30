@@ -5,7 +5,7 @@
 	/// lives in the background, running constantly.
 	/// </summary>
 	/// <typeparam name="TSystem"></typeparam>
-	public class GlobalSystem<TSystem> : Object where TSystem : System
+	public class GlobalSystem<TSystem> : Object where TSystem : SystemBase
 	{
 		protected GlobalSystem()
 		{

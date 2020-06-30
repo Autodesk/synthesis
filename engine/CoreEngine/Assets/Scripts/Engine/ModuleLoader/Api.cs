@@ -72,19 +72,18 @@ namespace Engine.ModuleLoader
 					}
 					else
 					{
-						if (AssetManager.Import(entry.Open(), targetPath, entry.Name, Guid.Empty, perm,
-							"") == null)
+						if (AssetManager.Import(entry.Open(), targetPath, entry.Name, perm, "") == null)
 						{
 							throw new Exception("Asset module type");
 						}
 					}
 				}
             }
-			foreach (var (archive, metadata) in modules)
+			foreach (var (_, metadata) in modules)
 			{
-				SynthesisAPI.Modules.ModuleManager.AddToLoadedModuleList(metadata.Name);
+				ModuleManager.AddToLoadedModuleList(metadata.Name);
 			}
-			SynthesisAPI.Modules.ModuleManager.MarkFinishedLoading();
+			ModuleManager.MarkFinishedLoading();
 		}
 
         private (ZipArchive, ModuleMetadata)? PreloadModule(string filePath)
@@ -134,7 +133,7 @@ namespace Engine.ModuleLoader
 				{
 					foreach (var export in exports)
 					{
-						if (SynthesisAPI.Utilities.ReflectHelper.IsSubclassOfRawGeneric(typeof(GlobalBehavior<>),
+						if (SynthesisAPI.Utilities.ReflectHelper.IsSubclassOfRawGeneric(typeof(GlobalSystem<>),
 							export))
 						{
 							Activator.CreateInstance(export);
@@ -198,9 +197,9 @@ namespace Engine.ModuleLoader
 					{
 						throw new Exception("Builtin type lacked way to create new instance");
 					}
-				} else if (t.IsSubclassOf(typeof(Behavior)))
+				} else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
-					component = (Behavior) Activator.CreateInstance(t);
+					component = (SystemBase) Activator.CreateInstance(t);
 					type = typeof(BehaviorAdapter);
 				}
 				else

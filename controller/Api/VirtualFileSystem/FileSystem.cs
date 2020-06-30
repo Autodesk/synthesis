@@ -329,8 +329,8 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 using var _ = ApiCallSource.ForceInternalCall();
                 RootNode = new Directory("", Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-                RootNode.AddResourceInner(new Directory("environment", Permissions.PublicReadOnly));
-                RootNode.AddResourceInner(new Directory("modules", Permissions.PublicReadOnly));
+                RootNode.AddResourceInner(new Directory("environment", Permissions.PublicReadWrite));
+                RootNode.AddResourceInner(new Directory("modules", Permissions.PublicReadWrite));
                 RootNode.AddResourceInner(new Directory("temp", Permissions.PublicReadWrite));
             }
 
