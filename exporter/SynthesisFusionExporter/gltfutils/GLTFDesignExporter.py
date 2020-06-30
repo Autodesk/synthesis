@@ -43,6 +43,9 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
     todo unit conversion
     todo allow multiple exports (incremental) with one GLTFDesignExporter
     todo coordinate system conversion
+
+    todo rotation fix
+    # update - looks like view cube orientation isn't accessable by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
     """
 
     # types
@@ -69,9 +72,12 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
     primaryBuffer: Buffer
     primaryBufferStream: BytesIO
 
+    progressBar: adsk.core.ProgressDialog
+
     componentRevIdToMeshTemplate: Dict[FusionRevId, Mesh]
     componentRevIdToMatOverrideDict: Dict[FusionRevId, Dict[GLTFIndex, GLTFIndex]]  # dict from gltf material override id to gltf mesh with that material override
 
+    defaultAppearance: adsk.core.Appearance
     materialNameToGltfIndex: Dict[FusionMatName, GLTFIndex]
 
     warnings: List[str]
@@ -157,11 +163,15 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
                 return False
         return True
 
-    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False):  # todo: allow the export of designs besides the one in the foreground?
+    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly = True):  # todo: allow the export of designs besides the one in the foreground?
+        self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
         self.enableFaceMaterials = enableFaceMaterials
         self.ao = ao
+
+        self.progressBar = self.ao.ui.createProgressDialog()
+        self.progressBar.isCancelButtonShown = False
 
         self.warnings = []
 
@@ -196,34 +206,23 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         Returns: Performance logs
 
         """
-        with open(filepath, 'xb') as fileByteStream:
-            self.saveGLBToStream(fileByteStream)
 
-        # self.warnings.append(str(self.componentRevIdToMatOverrideDict))
+        if self.checkIfAppearancesAreBugged():
+            result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
+                                        f"Do you want to continue the export with materials turned off?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
+            if result != adsk.core.DialogResults.DialogYes:
+                return None
+            self.enableMaterials = False
 
-        stats = (f"scenes: {len(self.gltf.scenes)}\n"
-                 f"nodes: {len(self.gltf.nodes)}\n"
-                 f"meshes: {len(self.gltf.meshes)}\n"
-                 f"primitives: {sum([len(x.primitives) for x in self.gltf.meshes])}\n"
-                 f"materials: {len(self.gltf.materials)}\n"
-                 f"accessors: {len(self.gltf.accessors)}\n"
-                 f"bufferViews: {len(self.gltf.bufferViews)}\n"
-                 f"buffers: {len(self.gltf.buffers)}\n"
-                 )
+        self.progressBar.reset()
+        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "", 0, 100, 0)
 
-        if len(self.warnings) == 0:
-            self.warnings.append("None :)")
-        return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter)
-
-    def saveGLBToStream(self, stream: BinaryIO) -> None:
-        """
-        Exports the current fusion document into glTF binary format and write the data to a stream.
-
-        Args:
-            stream: A BinaryIO stream, usually a file stream created with open()
-        """
+        self.defaultAppearance = self.getDefaultAppearance()
 
         self.gltf.scene = self.exportScene()  # export the current fusion document
+
+        self.progressBar.message = "Serializing data to file..."
+        self.progressBar.progressValue+=1
 
         self.perfWatch.switch_segment('encoding and file writing')
 
@@ -244,25 +243,44 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
                     self.GLB_CHUNK_SIZE + len(jsonBytes) + \
                     self.GLB_CHUNK_SIZE + len(primaryBufferData)
 
-        # header
-        stream.write(b'glTF')  # magic
-        stream.write(struct.pack('<I', self.GLTF_VERSION))  # version
-        stream.write(struct.pack('<I', glbLength))  # length
+        with open(filepath, 'xb') as stream:
+            # header
+            stream.write(b'glTF')  # magic
+            stream.write(struct.pack('<I', self.GLTF_VERSION))  # version
+            stream.write(struct.pack('<I', glbLength))  # length
 
-        # json chunk
-        stream.write(struct.pack('<I', len(jsonBytes)))  # chunk length
-        stream.write(bytes("JSON", 'utf-8'))  # chunk type
-        stream.write(jsonBytes)  # chunk data
+            # json chunk
+            stream.write(struct.pack('<I', len(jsonBytes)))  # chunk length
+            stream.write(bytes("JSON", 'utf-8'))  # chunk type
+            stream.write(jsonBytes)  # chunk data
 
-        # buffer chunk
-        stream.write(struct.pack('<I', len(primaryBufferData)))  # chunk length
-        stream.write(bytes("BIN\x00", 'utf-8'))  # chunk type
-        # noinspection PyTypeChecker
-        stream.write(primaryBufferData)  # chunk data
+            # buffer chunk
+            stream.write(struct.pack('<I', len(primaryBufferData)))  # chunk length
+            stream.write(bytes("BIN\x00", 'utf-8'))  # chunk type
+            # noinspection PyTypeChecker
+            stream.write(primaryBufferData)  # chunk data
 
-        stream.flush()  # flush to file
+            stream.flush()  # flush to file
 
-        self.perfWatch.stop()
+            self.perfWatch.stop()
+
+        self.progressBar.hide()
+
+        # self.warnings.append(str(self.componentRevIdToMatOverrideDict))
+
+        stats = (f"scenes: {len(self.gltf.scenes)}\n"
+                 f"nodes: {len(self.gltf.nodes)}\n"
+                 f"meshes: {len(self.gltf.meshes)}\n"
+                 f"primitives: {sum([len(x.primitives) for x in self.gltf.meshes])}\n"
+                 f"materials: {len(self.gltf.materials)}\n"
+                 f"accessors: {len(self.gltf.accessors)}\n"
+                 f"bufferViews: {len(self.gltf.bufferViews)}\n"
+                 f"buffers: {len(self.gltf.buffers)}\n"
+                 )
+
+        if len(self.warnings) == 0:
+            self.warnings.append("None :)")
+        return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter)
 
     def exportScene(self) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.
@@ -279,6 +297,8 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         self.exportMeshes(self.ao.design.allComponents)
 
         self.perfWatch.switch_segment('exporting node tree')
+        self.progressBar.message = "Exporting occurrence tree..."
+        self.progressBar.progressValue+=1
         scene.nodes.append(self.exportRootNode(self.ao.root_comp))
         self.perfWatch.stop()
 
@@ -307,6 +327,7 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
 
         Args:
             occur: An occurrence to be exported.
+            materialOverride: The current occurrence-level material override in effect.
 
         Returns: The index of the exported node in the glTF nodes list.
         """
@@ -323,7 +344,8 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         if not self.isIdentityMatrix3D(flatMatrix):
             node.matrix = [flatMatrix[i + j * 4] for i in range(4) for j in range(4)]  # transpose the flat 4x4 matrix3d
 
-        node.mesh = self.exportMeshWithOverrideCached(occur.component.revisionId, materialOverride)
+        if not self.exportVisibleBodiesOnly or occur.isVisible:
+            node.mesh = self.exportMeshWithOverrideCached(occur.component.revisionId, materialOverride)
         # node.extras['isGrounded'] = occur.isGrounded
 
         node.children = [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences]
@@ -343,10 +365,15 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         self.materialNameToGltfIndex = {}
 
         self.perfWatch.switch_segment("reading list of fusion components")
+        self.progressBar.message = "Reading list of fusion components..."
         fusionComponents = list(fusionComponents)
+        numComponents = len(fusionComponents)
+        self.progressBar.maximumValue = numComponents + 2
         self.perfWatch.stop()
 
-        for fusionComponent in fusionComponents:  # accessing the list of components is slow, ~1sec/500 components
+        for index, fusionComponent in enumerate(fusionComponents):  # accessing the list of components is slow, ~1sec/500 components
+            self.progressBar.message = f"Calculating meshes for component {index} of {numComponents}..."
+            self.progressBar.progressValue = index
             self.exportMesh(fusionComponent)
 
     def exportMesh(self, fusionComponent: adsk.fusion.Component) -> None:
@@ -396,6 +423,10 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         # protoMeshBody.appearanceId = fusionBRepBody.appearance.id
         # protoMeshBody.materialId = fusionBRepBody.material.id
         # fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
+
+        if self.exportVisibleBodiesOnly and not fusionBRepBody.isVisible:
+            self.eventCounter.event("ignored invisible brepbody")
+            return []
 
         self.perfWatch.switch_segment('deciding whether to separate faces')
 
@@ -454,8 +485,7 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
             self.perfWatch.switch_segment('exporting materials')
 
             materialIndex = self.exportMaterialFromAppearanceCached(fusionBRep.appearance)
-            if materialIndex is not None:
-                primitive.material = materialIndex
+            primitive.material = materialIndex # doesn't matter if it's None
 
             appearSourceType = fusionBRep.appearanceSourceType
             if appearSourceType != 1 and appearSourceType != 3:
@@ -463,6 +493,8 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
                 primitive.extras[self.MAT_OVERRIDEABLE_TAG] = True
 
             self.perfWatch.stop()
+        else:
+            primitive.material = self.exportMaterialFromAppearanceCached(self.defaultAppearance)
 
         return primitive
 
@@ -654,10 +686,7 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         pbr.baseColorFactor = None  # this is a bug with the gltf python lib
         pbr.metallicFactor = 0.0
         roughnessProp = props.itemById("surface_roughness")
-        if roughnessProp is None:
-            self.warnings.append(f"Ignoring material that does not have roughness: {material.name}")
-            return None
-        pbr.roughnessFactor = roughnessProp.value
+        pbr.roughnessFactor = roughnessProp.value if roughnessProp is not None else 0.1
 
         baseColor = None
 
@@ -684,6 +713,7 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
             self.warnings.append(f"Unsupported material modeling type: {material.name}")
 
         if baseColor is None:
+            self.warnings.append(f"Ignoring material that does not have color: {material.name}")
             return None
 
         pbr.baseColorFactor = self.fusionColorToArray(baseColor)[:3] + [self.fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
@@ -691,3 +721,27 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
 
         self.gltf.materials.append(material)
         return len(self.gltf.materials) - 1
+
+    def checkIfAppearancesAreBugged(self) -> bool:
+        """Checks if the appearances of a fusion document are bugged.
+
+        According to the Fusion 360 API documentation, the id property of a adsk.core.Appearance should be unique.
+        For many models imported into Fusion 360 (as opposed to being designed in Fusion), the material ids are duplicated.
+        This leads to a bug where the Fusion 360 API does not return the correct materials for a model, thus making it impossible to export the materials.
+
+        Returns: True if the appearances are bugged.
+
+        """
+        usedIdMap = {}
+        for material in self.ao.design.materials:
+            if material.id in usedIdMap:
+                return True
+            usedIdMap[material.id] = True
+        return False
+
+    def getDefaultAppearance(self) -> Optional[adsk.core.Appearance]:
+        fusionMatLib = self.ao.app.materialLibraries.itemById("C1EEA57C-3F56-45FC-B8CB-A9EC46A9994C") # Fusion 360 Material Library
+        if fusionMatLib is None:
+            return None
+        aluminum = fusionMatLib.appearances.itemById("PrismMaterial-002_physmat_aspects:Prism-028") # Aluminum - Satin
+        return aluminum

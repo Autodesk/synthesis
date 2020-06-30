@@ -8,7 +8,7 @@ Usage
 -----
 The SynthesisFusionExporter add-in is installed into Fusion 360 automatically by the Synthesis installer.
 
-TODO: Robot export instructions
+TODO: Assembly export instructions
 
 Development Installation (Windows)
 ----------------------------------

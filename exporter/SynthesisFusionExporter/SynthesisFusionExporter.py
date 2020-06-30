@@ -48,7 +48,7 @@ try:
                 ui.messageBox('Fatal Error: Unable to import libraries {}'.format(traceback.format_exc()))
 
     # Basic Fusion 360 Command Base samples
-    from .commands.ExportCommand import ExportCommand, exportRobot
+    from .commands.ExportCommand import ExportCommand, exportDesign
     from .commands.SampleCommand2 import SampleCommand2
 
     # Palette Command Base samples
@@ -66,10 +66,10 @@ try:
 
     # Creates a basic Hello World message box on execute
     my_addin.add_command(
-        'Export Robot',
+        'Export Assembly',
         ExportCommand,
         {
-            'cmd_description': 'Export your robot to Synthesis.',
+            'cmd_description': 'Export your assembly to Synthesis.',
             'cmd_id': 'sample_cmd_1',
             'workspace': 'FusionSolidEnvironment',
             'toolbar_panel_id': 'Commands',
@@ -161,7 +161,7 @@ def run(context):
     my_addin.run_app()
 
     try:
-        exportRobot()  # export on startup for debugging purposes TODO delete me
+        exportDesign()  # export on startup for debugging purposes TODO delete me
     except:
         app = adsk.core.Application.get()
         ui = app.userInterface
