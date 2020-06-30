@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 
+#nullable enable
+
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
@@ -31,15 +33,15 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="resource"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IEntry
+        public static TResource? AddResource<TResource>(string path, TResource resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return AddResourceInner(path, resource);
+            return AddResourceInner(path, resource, createPath, perm);
         }
 
-        private static TResource? AddResourceInner<TResource>(string path, TResource resource) where TResource : class, IEntry
+        private static TResource? AddResourceInner<TResource>(string path, TResource resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
         {
-            Directory? parentDir = TraverseInner<Directory>(path);
+            Directory? parentDir = createPath ? CreatePathInner(path, perm) : TraverseInner<Directory>(path);
 
             return parentDir?.AddResourceInner(resource);
         }
@@ -51,16 +53,16 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="resource"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static IEntry? AddResource(string path, IEntry resource)
+        public static IEntry? AddResource(string path, IEntry resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceInner(path, resource);
+            return AddResourceInner(path, resource, createPath, perm);
         }
 
-        internal static IEntry? AddResourceInner(string path, IEntry resource)
+        internal static IEntry? AddResourceInner(string path, IEntry resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite)
         {
-            Directory? parentDir = TraverseInner<Directory>(path);
+            Directory? parentDir = createPath ? CreatePathInner(path, perm) : TraverseInner<Directory>(path);
 
             return parentDir?.AddResource(resource);
         }
@@ -102,7 +104,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <returns></returns>
         public static int DepthOfPath(string path)
         {
-            return path.Split('/').Length;
+            return Directory.SplitPath(path).Length;
         }
 
         /// <summary>
@@ -125,6 +127,48 @@ namespace SynthesisAPI.VirtualFileSystem
                 throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
             }
             return Instance.RootNode.TraverseInner<TResource>(path);
+        }
+
+        [ExposedApi]
+        public static Directory? CreatePath(string path, Permissions perm)
+        {
+            return CreatePathInner(path, perm);
+        }
+
+        internal static Directory? CreatePathInner(string path, Permissions perm)
+        {
+            if (DepthOfPath(path) >= MaxDirectoryDepth)
+            {
+                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
+            }
+            string[] subpaths = Directory.SplitPath(path);
+            string top;
+            
+            (top, subpaths) = Directory.GetTopDirectory(subpaths);
+
+            Directory? dir = Instance.RootNode.TraverseInner<Directory>(top);
+            
+            while(subpaths.Length > 0) {
+                (top, subpaths) = Directory.GetTopDirectory(subpaths);
+
+                if (!dir.EntryExistsInner<Directory>(top))
+                {
+                    if (dir.EntryExistsInner(top))
+                    {
+                        throw new Exception("Attempting to create directory with same name as another entry \"" + top + "\"");
+                    }
+                    dir = dir.AddResourceInner(new Directory(top, perm));
+                }
+                else
+                {
+                    dir = dir.TraverseInner<Directory>(dir.Name + "/" + top);
+                }
+                if(dir == null)
+                {
+                    throw new Exception("Failed to create directory");
+                }
+            }
+            return dir;
         }
 
         /// <summary>

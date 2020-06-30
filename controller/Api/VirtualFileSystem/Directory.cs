@@ -68,15 +68,36 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
         }
 
-        private IEntry? TraverseImpl(string[] subpaths)
+        internal static (string, string[]) GetTopDirectory(string[] paths)
+        {
+            if(paths.Length == 0)
+            {
+                throw new Exception();
+            }
+            string target = paths[0];
+            paths = paths.Skip(1).ToArray();
+            return (target, paths);
+        }
+
+        internal static string[] SplitPath(string path)
+        {
+            if (path.Length > 0 && path[path.Length - 1] == '/')
+            {
+                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
+                path = path.Remove(path.Length - 1, 1);
+            }
+            return path.Split('/');
+        }
+
+        private IEntry? TraverseImpl(string[] subpaths) // TODO rework using TDD
         {
             if (subpaths.Length == 0)
             {
                 return null;
             }
 
-            string target = subpaths[0];
-            subpaths = subpaths.Skip(1).ToArray();
+            string target;
+            (target, subpaths) = GetTopDirectory(subpaths);
 
             if (target != Name)
             {
@@ -153,12 +174,7 @@ namespace SynthesisAPI.VirtualFileSystem
         internal IEntry? TraverseInner(string path)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
-            if (path.Length > 0 && path[path.Length - 1] == '/')
-            {
-                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
-                path = path.Remove(path.Length - 1, 1);
-            }
-            return TraverseImpl(path.Split('/'));
+            return TraverseImpl(SplitPath(path));
         }
 
         [ExposedApi]
@@ -172,12 +188,7 @@ namespace SynthesisAPI.VirtualFileSystem
         internal TResource? TraverseInner<TResource>(string path) where TResource : class, IEntry
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
-            if (path.Length > 0 && path[path.Length - 1] == '/')
-            {
-                // trim the last slash? (ex: "/modules/sample_module/" -> "/modules/sample_module")
-                path = path.Remove(path.Length - 1, 1);
-            }
-            return (TResource?)TraverseImpl(path.Split('/'));
+            return (TResource?)TraverseImpl(SplitPath(path));
         }
 
         [ExposedApi]
@@ -268,6 +279,19 @@ namespace SynthesisAPI.VirtualFileSystem
                 Entries[key].DeleteInner();
                 Entries.Remove(key);
             }
+        }
+
+        [ExposedApi]
+        public bool EntryExists<TResource>(string key) where TResource : IEntry
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return EntryExistsInner(key);
+        }
+
+        internal bool EntryExistsInner<TResource>(string key) where TResource : IEntry
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            return Entries.ContainsKey(key) && Entries[key] is TResource;
         }
 
         [ExposedApi]

@@ -67,5 +67,17 @@ namespace TestApi
                 Assert.Pass();
             }
         }
+
+        [Test]
+        public static void TestCreatePath()
+        {
+            string path = "/temp/new_dir/new_dir/new_dir/new_dir";
+            
+            Directory dir = new Directory("new_dir", Permissions.PrivateReadWrite);
+
+            Assert.Null(FileSystem.AddResource(path, dir));
+
+            Assert.NotNull(FileSystem.AddResource(path, dir, true));
+        }
     }
 }
