@@ -110,5 +110,19 @@ namespace TestApi
 
             Console.WriteLine(obj?.Text);
         }
+
+        [Test]
+        public static void TestCreatePathWithImport()
+        {
+            var testJson = AssetManager.Import<JsonAsset>("/modules/module1", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/module1/test.json");
+
+            Assert.AreSame(testJson, test);
+
+            var obj = test?.Deserialize<TestJsonObject>();
+
+            Console.WriteLine(obj?.Text);
+        }
     }
 }

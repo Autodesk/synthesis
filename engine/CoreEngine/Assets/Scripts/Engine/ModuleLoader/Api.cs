@@ -58,7 +58,7 @@ namespace Engine.ModuleLoader
 						continue;
 
 					var extension = Path.GetExtension(entry.Name); // Path.GetExtension
-					string targetPath = "modules/" + metadata.TargetPath;
+					string targetPath = "/modules/" + metadata.TargetPath;
 					Stream stream = entry.Open();
 					Permissions perm = Permissions.PublicReadWrite;
 					if (extension == "dll")
