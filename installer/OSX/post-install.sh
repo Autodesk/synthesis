@@ -17,14 +17,6 @@ function printError(){
 }
 
 function install(){
-    # Sanity check for brew
-    if [ type brew &> /dev/null ]
-    then
-        printWarning ' Could not find Brew installed on local machine ';
-    else
-        printSuccess ' Found Brew '
-    fi;
-
     # Sanity check for unzip
     if [ type unzip &> /dev/null ]
     then
@@ -46,7 +38,7 @@ function install(){
     cd $HOME/.config/Autodesk/synthesis
 
     printWarning " Downloading Robots "
-    wget https://github.com/Autodesk/synthesis/releases/download/v4.2.3/SynthesisSampleAssets.zip -q --show-progress
+    curl -LO https://github.com/Autodesk/synthesis/releases/download/v4.2.3/SynthesisSampleAssets.zip
 
     printWarning " Unzipping Assets "
     unzip -a -o SynthesisSampleAssets.zip | awk 'BEGIN {ORS=" "} {if(NR%10==0)print "."}'
