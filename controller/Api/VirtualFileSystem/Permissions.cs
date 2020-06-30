@@ -35,7 +35,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public void Dispose()
             {
-                ApiCallSource.externalCalls -= 1;
+                ApiCallSource._externalCalls -= 1;
             }
         }
 
@@ -43,33 +43,35 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             public void Dispose()
             {
-                ApiCallSource.forceInternal -= 1;
+                ApiCallSource._forceInternal -= 1;
             }
         }
 
         internal static ExternalCallLifetimeClass StartExternalCall()
         {
-            externalCalls += 1;
+            _externalCalls += 1;
             return new ExternalCallLifetimeClass();
         }
 
         internal static InternalCallLifetimeClass ForceInternalCall()
         {
-            forceInternal += 1;
+            _forceInternal += 1;
             return new InternalCallLifetimeClass();
         }
 
-        private static uint forceInternal = 0;
+        private static uint _forceInternal;
 
-        private static uint externalCalls = 0;
+        private static uint _externalCalls;
 
-        internal static bool IsInternal => externalCalls == 0 || forceInternal > 0;
+        internal static bool IsInternal => _externalCalls == 0 || _forceInternal > 0;
 
         public static void AssertAccess(Permissions perm, Access access)
         {
             if (CannotAccess(perm, access))
             {
-                throw new PermissionsExpcetion("Missing required permissions: Permissions: " + perm.ToString() + ", Operation: " + (IsInternal ? "Private" : "Public") + " " + access.ToString());
+                throw new PermissionsExpcetion("Missing required permissions: Permissions: " + perm.ToString() +
+                                               ", Operation: " + (IsInternal ? "Private" : "Public") + " " +
+                                               access.ToString());
             }
         }
 

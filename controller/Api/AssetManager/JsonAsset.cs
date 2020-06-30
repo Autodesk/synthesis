@@ -1,12 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -15,8 +10,8 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class JsonAsset : TextAsset
     {
-        public JsonAsset(string name, Guid owner, Permissions perm, string sourcePath) :
-            base(name, owner, perm, sourcePath) { }
+        public JsonAsset(string name, Permissions perm, string sourcePath) :
+            base(name, perm, sourcePath) { }
 
         [ExposedApi]
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
@@ -54,7 +49,7 @@ namespace SynthesisAPI.AssetManager
         public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            SerializeInner<TObject>(obj, writeMode);
+            SerializeInner(obj, writeMode);
         }
 
         internal void SerializeInner<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)

@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using SynthesisAPI.Utilities;
-
-#nullable enable
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -101,7 +98,7 @@ namespace SynthesisAPI.PreferenceManager
             {
                 using var _ = ApiCallSource.ForceInternalCall();
                 Instance.Asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
-                    VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
+                    VirtualFilePath.Path, VirtualFilePath.Name,
                     Permissions.PublicReadWrite, VirtualFilePath.Name)!;
                 if(Instance.Asset == null)
                 {
@@ -130,7 +127,7 @@ namespace SynthesisAPI.PreferenceManager
             ImportPreferencesAsset();
 
             var deserialized =
-                Instance.Asset.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                Instance.Asset?.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
             Instance.Preferences =
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
@@ -154,8 +151,8 @@ namespace SynthesisAPI.PreferenceManager
         {
             ImportPreferencesAsset();
 
-            Instance.Asset.SerializeInner(Instance.Preferences);
-            Instance.Asset.SaveToFileInner();
+            Instance.Asset?.SerializeInner(Instance.Preferences);
+            Instance.Asset?.SaveToFileInner();
 
             _changesSaved = true;
 
@@ -164,7 +161,7 @@ namespace SynthesisAPI.PreferenceManager
 
         #endregion
 
-        private static bool _changesSaved = false;
+        private static bool _changesSaved;
 
         private class Inner
         {

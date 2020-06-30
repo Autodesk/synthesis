@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 
 #nullable enable
 
@@ -11,57 +10,49 @@ namespace SynthesisAPI.VirtualFileSystem
     /// <summary>
     /// A wrapper for a dictionary of resources that gives structure to the virtual file system
     /// </summary>
-    public class Directory : IEntry
+    public sealed class Directory : IEntry
     {
         /// <summary>
         /// Initialize Resource data
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="owner"></param>
         /// <param name="perm"></param>
-        private void Init(string name, Guid owner, Permissions perm)
+        private void Init(string name, Permissions perm)
         {
             _name = name;
-            _owner = owner;
             _permissions = perm;
-            _parent = null;
+            _parent = null!;
         }
 
         public string Name => ((IEntry)this).Name;
-        public Guid Owner => ((IEntry)this).Owner;
         public Permissions Permissions => ((IEntry)this).Permissions;
         private Directory Parent => ((IEntry)this).Parent;
 
         private string _name { get; set; }
-        private Guid _owner { get; set; }
         private Permissions _permissions { get; set; }
         private Directory _parent { get; set; }
 
         string IEntry.Name { get => _name; set => _name = value; }
-        Guid IEntry.Owner { get => _owner; set => _owner = value; }
         Permissions IEntry.Permissions { get => _permissions; set => _permissions = value; }
         Directory IEntry.Parent { get => _parent; set => _parent = value; }
 
         internal Dictionary<string, IEntry> Entries;
 
-        public Directory(string name, Guid owner, Permissions perm)
+        public Directory(string name, Permissions perm)
         {
-            Init(name, owner, perm);
-            Entries = new Dictionary<string, IEntry>();
-            Entries.Add("", this);
-            Entries.Add(".", this);
-            Entries.Add("..", null!);
+            Init(name, perm);
+            Entries = new Dictionary<string, IEntry> {{"", this}, {".", this}, {"..", null!}};
         }
 
         [ExposedApi]
-        public virtual void Delete()
+        public void Delete()
         {
             using var _ = ApiCallSource.StartExternalCall();
 
             DeleteInner();
         }
 
-        internal virtual void DeleteInner() {
+        internal void DeleteInner() {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             foreach (var e in Entries)
             {
@@ -117,9 +108,9 @@ namespace SynthesisAPI.VirtualFileSystem
                 return null;
             }
 
-            if (next.GetType() == typeof(Directory))
+            if (next is Directory directory)
             {
-                return ((Directory)next).TraverseImpl(subpaths);
+                return directory.TraverseImpl(subpaths);
             }
 
             return null;
@@ -212,7 +203,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceInner<TResource>(value);
+            return AddResourceInner(value);
         }
 
         internal TResource AddResourceInner<TResource>(TResource value) where TResource : IEntry
@@ -235,6 +226,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private IEntry AddResourceImpl(IEntry value)
         {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (Entries.ContainsKey(value.Name))
             {
                 throw new Exception($"Directory: adding entry with existing name \"{value.Name}\"");
@@ -244,9 +236,8 @@ namespace SynthesisAPI.VirtualFileSystem
             // Set this as the parent of the resource.
             // If the resource is a directory, then add the parent (this) to its list of entries
             value.Parent = this;
-            if (value.GetType() == typeof(Directory))
+            if (value is Directory dir)
             {
-                Directory dir = (Directory)value;
                 if (dir.Entries[".."] != null)
                 {
                     throw new Exception($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");

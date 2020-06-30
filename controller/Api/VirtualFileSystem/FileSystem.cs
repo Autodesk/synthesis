@@ -2,8 +2,6 @@
 using System;
 using System.IO;
 
-#nullable enable
-
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
@@ -19,11 +17,11 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <summary>
         /// Base path for files on disk
         /// </summary>
-        public static string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
+        public static readonly string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 Path.DirectorySeparatorChar);
 
-        public static string TestPath = BasePath + $"test{Path.DirectorySeparatorChar}";
+        public static readonly string TestPath = BasePath + $"test{Path.DirectorySeparatorChar}";
 
         /// <summary>
         /// Add a new resource to a the file system at a given destination
@@ -36,14 +34,14 @@ namespace SynthesisAPI.VirtualFileSystem
         public static TResource? AddResource<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return AddResourceInner<TResource>(path, resource);
+            return AddResourceInner(path, resource);
         }
 
-        internal static TResource? AddResourceInner<TResource>(string path, TResource resource) where TResource : class, IEntry
+        private static TResource? AddResourceInner<TResource>(string path, TResource resource) where TResource : class, IEntry
         {
             Directory? parentDir = TraverseInner<Directory>(path);
 
-            return parentDir?.AddResourceInner<TResource>(resource);
+            return parentDir?.AddResourceInner(resource);
         }
 
         /// <summary>
@@ -283,13 +281,13 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private class Inner
         {
-            public Inner()
+            private Inner()
             {
                 using var _ = ApiCallSource.ForceInternalCall();
-                RootNode = new Directory("", Guid.Empty, Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-                RootNode.AddResourceInner(new Directory("environment", Guid.Empty, Permissions.PublicReadOnly));
-                RootNode.AddResourceInner(new Directory("modules", Guid.Empty, Permissions.PublicReadOnly));
-                RootNode.AddResourceInner(new Directory("temp", Guid.Empty, Permissions.PublicReadWrite));
+                RootNode = new Directory("", Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
+                RootNode.AddResourceInner(new Directory("environment", Permissions.PublicReadOnly));
+                RootNode.AddResourceInner(new Directory("modules", Permissions.PublicReadOnly));
+                RootNode.AddResourceInner(new Directory("temp", Permissions.PublicReadWrite));
             }
 
             /// <summary>
@@ -297,18 +295,9 @@ namespace SynthesisAPI.VirtualFileSystem
             /// </summary>
             public Directory RootNode { get; private set; }
 
-            internal static readonly Inner instance = new Inner();
+            public static readonly Inner Instance = new Inner();
         }
 
-        private static Inner Instance { get {
-                try
-                {
-                    return Inner.instance;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            } }
+        private static Inner Instance => Inner.Instance;
     }
 }

@@ -14,11 +14,6 @@ namespace SynthesisAPI.VirtualFileSystem
         public string Name { get; internal set; }
 
         /// <summary>
-        /// Module that owns this resource
-        /// </summary>
-        public Guid Owner { get; internal set; }
-
-        /// <summary>
         /// Access permissions of this resource
         /// </summary>
         public Permissions Permissions { get; internal set; }

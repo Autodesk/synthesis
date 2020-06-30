@@ -12,9 +12,9 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class SpriteAsset : Asset
     {
-        public SpriteAsset(string name, Guid owner, Permissions perm, string sourcePath)
+        public SpriteAsset(string name, Permissions perm, string sourcePath)
         {
-            Init(name, owner, perm, sourcePath);
+            Init(name, perm, sourcePath);
         }
 
         public override IEntry Load(byte[] data)
@@ -26,12 +26,12 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
 
             return this;
         }
 
-        protected Sprite sprite;
+        private Sprite _sprite = null!;
 
         [ExposedApi]
         public Sprite Sprite {
@@ -39,16 +39,12 @@ namespace SynthesisAPI.AssetManager
                 using var _ = ApiCallSource.StartExternalCall();
                 return GetSpriteInner();
             } 
-            private set
-            {
-                sprite = value;
-            }
         }
 
-        internal Sprite GetSpriteInner()
+        private Sprite GetSpriteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
-            return sprite;
+            return _sprite;
         }
     }
 }

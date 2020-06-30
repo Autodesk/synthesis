@@ -43,24 +43,11 @@ namespace SynthesisAPI.Modules
             }
 
             public List<string> LoadedModules; // TODO maybe include metadata too (and move that class to the API)?
-            public bool IsFinishedLoading { get; set; } = false;
+            public bool IsFinishedLoading { get; set; }
 
-            internal static readonly Inner instance = new Inner();
+            public static readonly Inner Instance = new Inner();
         }
 
-        private static Inner Instance
-        {
-            get
-            {
-                try
-                {
-                    return Inner.instance;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-        }
+        private static Inner Instance => Inner.Instance;
     }
 }

@@ -13,10 +13,10 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class BinaryAsset : Asset
     {
-        public BinaryAsset(string name, Guid owner, Permissions perm, string sourcePath)
+        public BinaryAsset(string name, Permissions perm, string sourcePath)
         {
-            Init(name, owner, perm, sourcePath);
-            RwLock = new ReaderWriterLockSlim();
+            Init(name, perm, sourcePath);
+            _rwLock = new ReaderWriterLockSlim();
         }
 
         [ExposedApi]
@@ -26,7 +26,7 @@ namespace SynthesisAPI.AssetManager
             SaveToFileInner();
         }
 
-        internal void SaveToFileInner()
+        private void SaveToFileInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
 
@@ -41,7 +41,7 @@ namespace SynthesisAPI.AssetManager
             var stream = new MemoryStream();
             stream.Write(data, 0, data.Length);
             stream.Position = 0;
-            SharedStream = new SharedBinaryStream(stream, RwLock);
+            SharedStream = new SharedBinaryStream(stream, _rwLock);
 
             return this;
         }
@@ -59,7 +59,7 @@ namespace SynthesisAPI.AssetManager
             return SharedStream?.ReadToEnd();
         }
 
-        protected SharedBinaryStream SharedStream { get; set; }
-        private ReaderWriterLockSlim RwLock;
+        private SharedBinaryStream SharedStream { get; set; } = null!;
+        private readonly ReaderWriterLockSlim _rwLock;
     }
 }

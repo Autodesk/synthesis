@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
@@ -46,7 +42,7 @@ namespace TestApi
         [Test]
         public static void TestPlainText()
         {
-            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/temp", "test2.txt", Program.TestGuid, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/temp", "test2.txt", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
 
             TextAsset test = AssetManager.GetAsset<TextAsset>("/temp/test2.txt");
 
@@ -61,13 +57,13 @@ namespace TestApi
             // byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "test.xml");
             // XmlAsset test_xml = AssetManager.Import<XmlAsset>("text/xml", file_data, "/temp", "test.xml", Program.TestGuid, Permissions.PublicRead, "test.xml");
 
-            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/temp", "test.xml", Program.TestGuid, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.xml");
+            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/temp", "test.xml", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.xml");
 
             var test = AssetManager.GetAsset<XmlAsset>("/temp/test.xml");
 
             Assert.AreSame(testXml, test);
 
-            var obj = testXml?.Deserialize<TestXMLObject>();
+            var obj = testXml?.Deserialize<TestXmlObject>();
 
             Console.WriteLine(obj?.Text);
         }
@@ -75,13 +71,13 @@ namespace TestApi
         [Test]
         public static void TestJson()
         {
-            var testJson = AssetManager.Import<JsonAsset>("text/json", "/temp", "test.json", Program.TestGuid, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+            var testJson = AssetManager.Import<JsonAsset>("text/json", "/temp", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test.json");
 
             Assert.AreSame(testJson, test);
 
-            var obj = test?.Deserialize<TestJSONObject>();
+            var obj = test?.Deserialize<TestJsonObject>();
 
             Console.WriteLine(obj?.Text);
         }
@@ -90,13 +86,13 @@ namespace TestApi
         public static void TestTypeFromFileExtension()
         {
             string source = $"test{Path.DirectorySeparatorChar}test.json";
-            var testJson = AssetManager.Import("/temp", "test2.json", Program.TestGuid, Permissions.PublicReadWrite, source);
+            var testJson = AssetManager.Import("/temp", "test2.json", Permissions.PublicReadWrite, source);
 
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test2.json");
 
             Assert.AreSame(testJson, test);
 
-            var obj = test?.Deserialize<TestJSONObject>();
+            var obj = test?.Deserialize<TestJsonObject>();
 
             Console.WriteLine(obj?.Text);
         }
@@ -104,13 +100,13 @@ namespace TestApi
         [Test]
         public static void TestTypeFromTypeParameter()
         {
-            var testJson = AssetManager.Import<JsonAsset>("/temp", "test3.json", Program.TestGuid, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+            var testJson = AssetManager.Import<JsonAsset>("/temp", "test3.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test3.json");
 
             Assert.AreSame(testJson, test);
 
-            var obj = test?.Deserialize<TestJSONObject>();
+            var obj = test?.Deserialize<TestJsonObject>();
 
             Console.WriteLine(obj?.Text);
         }
