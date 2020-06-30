@@ -28,7 +28,8 @@ namespace SynthesisAPI.EventBus
 
         /// <summary>
         /// Activates all callback functions that are listening to a particular
-        /// tag and passes event information to those functions 
+        /// tag or to the IEvent type of eventInfo and passes event information to 
+        /// those listener functions 
         /// </summary>
         /// <typeparam name="TEvent">Type of event</typeparam>
         /// <param name="eventInfo">Event to be passed to callback functions</param>
