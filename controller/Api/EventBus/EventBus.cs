@@ -86,8 +86,6 @@ namespace SynthesisAPI.EventBus
                 Instance.tagSubscribers.Add(tag, callback);
         }
 
-        //Removal of listeners 
-
         /// <summary>
         /// Unsubscribes listener from recieving further events of specified type
         /// </summary>
@@ -107,11 +105,11 @@ namespace SynthesisAPI.EventBus
         }
 
         /// <summary>
-        /// Adds a callback function that is activated by an event 
-        /// being pushed to the specified tag
+        /// Unsubscribes listener from recieving further events of specified tag
         /// </summary>
-        /// <param name="tag">The tag to listen for</param>
-        /// <param name="callback">The callback function to be activated</param>
+        /// <param name="tag">The tag to stop listening for</param>
+        /// <param name="callback">The callback function to be removed</param>
+        ///  <returns>True if listener was successfully removed and false if tag was not found</returns>
         public static bool RemoveTagListener(string tag, EventCallback callback)
         {
             if (Instance.tagSubscribers.ContainsKey(tag) && Instance.tagSubscribers[tag] != null)
