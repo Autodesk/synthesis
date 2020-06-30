@@ -1,4 +1,4 @@
-SynthesisFusionExporter
+SynthesisFusionGltfExporter
 =======================
 
 
@@ -6,7 +6,7 @@ A Fusion 360 add-in to export assemblies into Synthesis
 
 Usage
 -----
-The SynthesisFusionExporter add-in is installed into Fusion 360 automatically by the Synthesis installer.
+The SynthesisFusionGltfExporter add-in is installed into Fusion 360 automatically by the Synthesis installer.
 
 TODO: Assembly export instructions
 
@@ -24,12 +24,12 @@ Requirements
 Installation
 ^^^^^^^^^^^^
 - git clone https://github.com/Autodesk/synthesis
-- Run the compile.bat script in the .../synthesis/exporter/SynthesisFusionExporter/proto folder to generate the protobuf format
+- Run the compile.bat script in the .../synthesis/exporter/SynthesisFusionGltfExporter/proto folder to generate the protobuf format
 - Open Fusion 360
 - Navigate to the Tools Tab > Add-ins > Scripts and Add-ins...
 - Click the Add-ins tab and click on the green plus
-- Navigate to the location of the repo and select the folder .../synthesis/exporter/SynthesisFusionExporter
-- Click on SynthesisFusionExporter which will appear in the My Add-ins list
+- Navigate to the location of the repo and select the folder .../synthesis/exporter/SynthesisFusionGltfExporter
+- Click on SynthesisFusionGltfExporter which will appear in the My Add-ins list
 - Click the "Edit" button to open the VSCode editor
 - To debug the Add-in, go back to Fusion and click on the dropdown next to the "Run" button, then click "Debug"
 
