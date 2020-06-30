@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -92,15 +94,12 @@ namespace SynthesisAPI.PreferenceManager
 
         #region IO
 
-        private static void ImportPreferencesAsset()
-        {
-            if (Instance.Asset == null)
-            {
-                Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
-                    VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
-                    Permissions.PublicWrite, VirtualFilePath.Name)!;
-            }
-        }
+        /// <summary>
+        /// Loads a JSON file asynchronously and loads preference data
+        /// </summary>
+        /// <param name="overrideChanges">Load regardless of unsaved data</param>
+        /// <returns>Whether or not the load executed successfully</returns>
+        public static Task<bool> LoadAsync(bool overrideChanges = false) => Task<bool>.Factory.StartNew(() => Load(overrideChanges));
 
         /// <summary>
         /// Loads a JSON file that stores preference data
@@ -111,8 +110,6 @@ namespace SynthesisAPI.PreferenceManager
         {
             if (!overrideChanges && !_changesSaved)
                 return false;
-
-            ImportPreferencesAsset();
 
             var deserialized =
                 Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
@@ -125,13 +122,17 @@ namespace SynthesisAPI.PreferenceManager
         }
 
         /// <summary>
+        /// Saves a JSON file with preference data asynchronously
+        /// </summary>
+        /// <returns>Whether or not the save executed successfully</returns>
+        public static Task<bool> SaveAsync() => Task<bool>.Factory.StartNew(() => Save());
+
+        /// <summary>
         /// Saves a JSON file with preference data
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
         public static bool Save()
         {
-            ImportPreferencesAsset();
-
             Instance.Asset.Serialize(Instance.Preferences);
             Instance.Asset.SaveToFile();
 
@@ -146,13 +147,26 @@ namespace SynthesisAPI.PreferenceManager
 
         private class Inner
         {
+            public readonly object InstanceLock = new object();
+
+            public Dictionary<Guid, Dictionary<string, object>> Preferences;
+
+            private JsonAsset _asset;
+            public JsonAsset Asset {
+                get {
+                    if (_asset == null)
+                        _asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
+                            VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
+                            Permissions.PublicWrite, VirtualFilePath.Name)!;
+                    return _asset;
+                }
+            }
+
             private Inner()
             {
                 Preferences = new Dictionary<Guid, Dictionary<string, object>>();
             }
-            public Dictionary<Guid, Dictionary<string, object>> Preferences;
 
-            public JsonAsset? Asset;
             private static Inner _instance = null!;
             public static Inner InnerInstance
             {
@@ -168,6 +182,13 @@ namespace SynthesisAPI.PreferenceManager
                 }
             }
         }
-        private static Inner Instance => Inner.InnerInstance;
+        private static Inner Instance {
+            get {
+                lock (Inner.InnerInstance.InstanceLock)
+                {
+                    return Inner.InnerInstance;
+                }
+            }
+        }
     }
 }
