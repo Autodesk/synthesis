@@ -13,15 +13,15 @@ namespace TestApi
             Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicReadWrite);
             FileSystem.AddResource("/temp", dir);
 
-            Directory test_dir = (Directory)FileSystem.Traverse("/temp/directory");
+            Directory testDir = (Directory)FileSystem.Traverse("/temp/directory");
 
-            Assert.AreSame(dir, test_dir);
+            Assert.AreSame(dir, testDir);
 
             Directory parent = (Directory)FileSystem.Traverse("/temp");
 
-            Directory test_parent = (Directory)test_dir.Traverse("..");
+            Directory testParent = (Directory)testDir.Traverse("..");
 
-            Assert.AreSame(parent, test_parent);
+            Assert.AreSame(parent, testParent);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace TestApi
         {
             try
             {
-                Directory dir = new Directory("directoryperms", Program.TestGuid, Permissions.PublicReadWrite);
+                var dir = new Directory("directoryperms", Program.TestGuid, Permissions.PublicReadWrite);
 
                 FileSystem.AddResource("temp/", dir);
             }
@@ -39,7 +39,7 @@ namespace TestApi
             }
             try
             {
-                Directory dir = new Directory("directoryperms2", Program.TestGuid, Permissions.PublicReadWrite);
+                var dir = new Directory("directoryperms2", Program.TestGuid, Permissions.PublicReadWrite);
 
                 FileSystem.AddResource("", dir);
                 Assert.Fail();
@@ -56,7 +56,7 @@ namespace TestApi
             {
                 for (var i = 1; i < FileSystem.MaxDirectoryDepth; i++)
                 {
-                    Directory dir = new Directory("directory" + i, Program.TestGuid, Permissions.PublicRead);
+                    Directory dir = new Directory("directory" + i, Program.TestGuid, Permissions.PublicReadOnly);
                     FileSystem.AddResource(path, dir);
                     path += "/" + dir.Name;
                 }
