@@ -152,5 +152,37 @@ namespace TestApi
             Assert.IsFalse(EventBus.Push<TestEvent>(new TestEvent()));
         }
 
+        [Test]
+        public static void TestTagListenerRemoval()
+        {
+            Subscriber s = new Subscriber();
+            Assert.IsFalse(EventBus.RemoveTagListener("tag", s.TestMethod));
+            EventBus.NewTagListener("tag", s.TestMethod);
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+            Assert.IsTrue(EventBus.RemoveTagListener("tag", s.TestMethod));
+            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+            Assert.IsFalse(EventBus.RemoveTagListener("tag", s.TestMethod));
+            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+        }
+
+        [Test]
+        public static void TestTypeListenerRemoval()
+        {
+            Subscriber s = new Subscriber();
+            Assert.IsFalse(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod);
+            Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+            Assert.IsTrue(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
+            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+            Assert.IsFalse(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
+            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s.count1, 1);
+        }
+
     }
 }

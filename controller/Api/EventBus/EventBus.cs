@@ -17,7 +17,7 @@ namespace SynthesisAPI.EventBus
         public static bool Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
         {
             string type = eventInfo.GetType().ToString();
-            if (Instance.typeSubscribers.ContainsKey(type))
+            if (Instance.typeSubscribers.ContainsKey(type) && Instance.typeSubscribers[type] != null)
             {
                 Instance.typeSubscribers[type](eventInfo);
                 return true;
@@ -39,16 +39,16 @@ namespace SynthesisAPI.EventBus
         public static bool Push<TEvent>(string tag, TEvent eventInfo) where TEvent : IEvent
         {
             string type = eventInfo.GetType().ToString();
-            if (Instance.tagSubscribers.ContainsKey(tag))
+            if (Instance.tagSubscribers.ContainsKey(tag) && Instance.tagSubscribers[tag] != null)
             {
                 Instance.tagSubscribers[tag](eventInfo);
-                if (Instance.typeSubscribers.ContainsKey(type))
+                if (Instance.typeSubscribers.ContainsKey(type) && Instance.typeSubscribers[type] != null)
                 {
                     Instance.typeSubscribers[type](eventInfo);
                 }
                 return true;
             }
-            else if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
+            else if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType) && Instance.typeSubscribers[type] != null)
             {
                 Instance.typeSubscribers[eventInfo.EventType](eventInfo);
                 return true;
@@ -84,6 +84,43 @@ namespace SynthesisAPI.EventBus
                 Instance.tagSubscribers[tag] += callback;
             else
                 Instance.tagSubscribers.Add(tag, callback);
+        }
+
+        //Removal of listeners 
+
+        /// <summary>
+        /// Unsubscribes listener from recieving further events of specified type
+        /// </summary>
+        /// <typeparam name="TEvent">Type of event to stop listening for</typeparam>
+        /// <param name="callback">The callback function to be removed</param>
+        /// <returns>True if listener was successfully removed and false if type was not found</returns>
+        public static bool RemoveTypeListener<TEvent>(EventCallback callback) where TEvent : IEvent
+        {
+            string type = typeof(TEvent).ToString();
+            if (Instance.typeSubscribers.ContainsKey(type) && Instance.typeSubscribers[type] != null)
+            {
+                Instance.typeSubscribers[type] -= callback;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Adds a callback function that is activated by an event 
+        /// being pushed to the specified tag
+        /// </summary>
+        /// <param name="tag">The tag to listen for</param>
+        /// <param name="callback">The callback function to be activated</param>
+        public static bool RemoveTagListener(string tag, EventCallback callback)
+        {
+            if (Instance.tagSubscribers.ContainsKey(tag) && Instance.tagSubscribers[tag] != null)
+            {
+                Instance.tagSubscribers[tag] -= callback;
+                return true;
+            }
+            else
+                return false;
         }
 
         public static void resetAllListeners()
