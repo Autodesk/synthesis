@@ -5,7 +5,7 @@ namespace SynthesisAPI.EventBus
 {
     public interface IEvent 
     {
-        public string EventType { get; internal set; }
+        public string EventType { get; }
 
         public byte[] getData();
     }

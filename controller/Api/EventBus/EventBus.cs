@@ -1,13 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Channels;
-using System.Collections;
-using SynthesisAPI.EventBus;
-using System.Diagnostics.Tracing;
-using UnityEngine;
 
 namespace SynthesisAPI.EventBus
 {
@@ -15,26 +7,54 @@ namespace SynthesisAPI.EventBus
     {
         public delegate void EventCallback(IEvent eventInfo);
 
+        /// <summary>
+        /// Activates all callback functions that are listening to a particular
+        /// EventType and passes event information to those functions 
+        /// </summary>
+        /// <typeparam name="TEvent">Type of event</typeparam>
+        /// <param name="eventInfo">Event to be passed to callback functions</param>
         public static void Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
         {
-            if (Instance.tagSubscribers.ContainsKey(eventInfo.EventType))
+            if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
             {
-                Instance.tagSubscribers[eventInfo.EventType](eventInfo);
+                Instance.typeSubscribers[eventInfo.EventType](eventInfo);
             }
             else
                 throw new Exception(message: "No subscribers found");
         }
 
-        public static void Push<TEvent>(TEvent eventInfo, string tag) where TEvent : IEvent
+        /// <summary>
+        /// Activates all callback functions that are listening to a particular
+        /// tag and passes event information to those functions 
+        /// </summary>
+        /// <typeparam name="TEvent">Type of event</typeparam>
+        /// <param name="eventInfo">Event to be passed to callback functions</param>
+        /// <param name="tag">Tag corresponding to the group of listener functions to be activated</param>
+       
+        public static void Push<TEvent>(string tag, TEvent eventInfo) where TEvent : IEvent
         {
             if (Instance.tagSubscribers.ContainsKey(tag))
             {
                 Instance.tagSubscribers[tag](eventInfo);
+                if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
+                {
+                    Instance.typeSubscribers[eventInfo.EventType](eventInfo);
+                }
+            }
+            else if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
+            {
+                Instance.typeSubscribers[eventInfo.EventType](eventInfo);
             }
             else
                 throw new Exception(message: "No subscribers found");
         }
 
+        /// <summary>
+        /// Adds a callback function that is activated by an event of
+        /// the specified type
+        /// </summary>
+        /// <param name="type">The event type to listen for</param>
+        /// <param name="callback">The callback function to be activated</param>
         public static void NewTypeListener(string type, EventCallback callback)
         {
             if (Instance.typeSubscribers.ContainsKey(type))
@@ -43,6 +63,12 @@ namespace SynthesisAPI.EventBus
                 Instance.typeSubscribers.Add(type, callback);
         }
 
+        /// <summary>
+        /// Adds a callback function that is activated by an event 
+        /// being pushed to the specified tag
+        /// </summary>
+        /// <param name="tag">The tag to listen for</param>
+        /// <param name="callback">The callback function to be activated</param>
         public static void NewTagListener(string tag, EventCallback callback)
         {
             if (Instance.tagSubscribers.ContainsKey(tag))
@@ -51,6 +77,11 @@ namespace SynthesisAPI.EventBus
                 Instance.tagSubscribers.Add(tag, callback);
         }
 
+        public static void resetAllListeners()
+        {
+            Instance.typeSubscribers = new Dictionary<string, EventCallback>();
+            Instance.tagSubscribers = new Dictionary<string, EventCallback>();
+        }
         private class Inner
         {
             public Dictionary<string, EventCallback> typeSubscribers;
@@ -77,7 +108,7 @@ namespace SynthesisAPI.EventBus
         private static Inner Instance => Inner.InnerInstance;
     }
 
-/*    public class Subscriber
+/*   public class Subscriber
     {
         public Subscriber()
         {
