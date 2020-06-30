@@ -101,7 +101,7 @@ try:
             'command_promoted': True,
             'palette_id': 'sample_palette',
             'palette_name': 'Sample Fusion 360 HTML Palette',
-            'palette_html_file_url': 'palette_html/SynthesisFusionExporter.html',
+            'palette_html_file_url': 'palette_html/SynthesisFusionProtobufExporter.html',
             'palette_is_visible': True,
             'palette_show_close_button': True,
             'palette_is_resizable': True,
@@ -130,16 +130,16 @@ try:
     ui = app.userInterface
 
     # Uncomment as necessary.  Running all at once can be overwhelming :)
-    # my_addin.add_custom_event("SynthesisFusionExporter_message_system", SampleCustomEvent1)
+    # my_addin.add_custom_event("SynthesisFusionProtobufExporter_message_system", SampleCustomEvent1)
 
-    # my_addin.add_document_event("SynthesisFusionExporter_open_event", app.documentActivated, SampleDocumentEvent1)
-    # my_addin.add_document_event("SynthesisFusionExporter_close_event", app.documentClosed, SampleDocumentEvent2)
+    # my_addin.add_document_event("SynthesisFusionProtobufExporter_open_event", app.documentActivated, SampleDocumentEvent1)
+    # my_addin.add_document_event("SynthesisFusionProtobufExporter_close_event", app.documentClosed, SampleDocumentEvent2)
 
-    # my_addin.add_workspace_event("SynthesisFusionExporter_workspace_event", ui.workspaceActivated, SampleWorkspaceEvent1)
+    # my_addin.add_workspace_event("SynthesisFusionProtobufExporter_workspace_event", ui.workspaceActivated, SampleWorkspaceEvent1)
 
-    # my_addin.add_web_request_event("SynthesisFusionExporter_web_request_event", app.openedFromURL, SampleWebRequestOpened)
+    # my_addin.add_web_request_event("SynthesisFusionProtobufExporter_web_request_event", app.openedFromURL, SampleWebRequestOpened)
 
-    # my_addin.add_command_event("SynthesisFusionExporter_command_event", app.userInterface.commandStarting, SampleCommandEvent)
+    # my_addin.add_command_event("SynthesisFusionProtobufExporter_command_event", app.userInterface.commandStarting, SampleCommandEvent)
 
 except:
     app = adsk.core.Application.get()

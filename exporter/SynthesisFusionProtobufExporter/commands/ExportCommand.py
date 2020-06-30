@@ -6,7 +6,7 @@ from google.protobuf.json_format import MessageToDict, MessageToJson
 from ..utils.DebugHierarchy import printHierarchy
 import time
 
-ATTR_GROUP_NAME = "SynthesisFusionExporter"  # attribute group name for use with apper's item_id
+ATTR_GROUP_NAME = "SynthesisFusionProtobufExporter"  # attribute group name for use with apper's item_id
 
 
 def exportRobot():
