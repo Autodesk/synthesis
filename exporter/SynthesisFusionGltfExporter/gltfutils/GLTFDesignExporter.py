@@ -30,8 +30,8 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
     Fusion Component -> glTF mesh
     Fusion BRepBody -> glTF primitive
     Fusion MeshBody -> glTF primitive
-    Fusion Appearances -> glTF materials todo
-    Fusion Materials -> (contained in the 'extras' of glTF materials) todo
+    Fusion Appearances -> glTF materials
+    Fusion Materials -> (contained in the 'extras' of glTF materials)
     Fusion Joints -> ??? glTF doesn't really have a concept of node motion around points that aren't nodes todo
 
     Attributes:
@@ -40,12 +40,9 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         primaryBufferId: The index of the primaryBuffer in the glTF buffers list.
         primaryBufferStream: The memory stream for temporary storage of the glB buffer data.
 
-    todo unit conversion
     todo allow multiple exports (incremental) with one GLTFDesignExporter
-    todo coordinate system conversion
 
-    todo rotation fix
-    # update - looks like view cube orientation isn't accessable by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
+    # todo rotation fix # update - looks like view cube orientation isn't accessible by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
     """
 
     # types
@@ -317,6 +314,14 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         node.name = rootComponent.name
 
         node.mesh = self.exportMeshWithOverrideCached(rootComponent.revisionId, -1)
+
+        scale = 0.01 # fusion uses cm, glTF uses meters, so scale the root transform matrix
+        node.matrix = [
+            scale, 0, 0, 0,
+            0, scale, 0, 0,
+            0, 0, scale, 0,
+            0, 0, 0, 1,
+        ]
 
         node.children = [self.exportNode(occur, -1) for occur in rootComponent.occurrences]
         self.gltf.nodes.append(node)
