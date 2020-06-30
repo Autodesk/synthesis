@@ -569,18 +569,21 @@ namespace SynthesisAPI.AssetManager
 
                 string path = FileSystem.BasePath + sourcePath;
 
-                if (!File.Exists(path))
+                if (sourcePath != "")
                 {
-                    if (createOnFail)
+                    if (!File.Exists(path))
                     {
-                        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
-                        File.Create(path).Close();
-                        data = new byte[0];
+                        if (createOnFail)
+                        {
+                            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
+                            File.Create(path).Close();
+                            data = new byte[0];
+                        }
                     }
-                }
-                else
-                {
-                    data = File.ReadAllBytes(path);
+                    else
+                    {
+                        data = File.ReadAllBytes(path);
+                    }
                 }
 
                 using var _ = ApiCallSource.IsInternal ? ApiCallSource.ForceInternalCall() : null; // TODO make this safe

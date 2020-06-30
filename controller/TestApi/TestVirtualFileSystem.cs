@@ -75,9 +75,9 @@ namespace TestApi
             
             Directory dir = new Directory("new_dir", Permissions.PrivateReadWrite);
 
-            Assert.Null(FileSystem.AddResource(path, dir));
+            Assert.Null(FileSystem.Traverse(path));
 
-            Assert.NotNull(FileSystem.AddResource(path, dir, true));
+            Assert.NotNull(FileSystem.AddResource(path, dir));
         }
     }
 }

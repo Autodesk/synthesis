@@ -33,15 +33,15 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="resource"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TResource? AddResource<TResource>(string path, TResource resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
+        public static TResource? AddResource<TResource>(string path, TResource resource, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return AddResourceInner(path, resource, createPath, perm);
+            return AddResourceInner(path, resource, perm);
         }
 
-        private static TResource? AddResourceInner<TResource>(string path, TResource resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
+        private static TResource? AddResourceInner<TResource>(string path, TResource resource, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
         {
-            Directory? parentDir = createPath ? CreatePathInner(path, perm) : TraverseInner<Directory>(path);
+            Directory? parentDir = CreatePathInner(path, perm);
 
             return parentDir?.AddResourceInner(resource);
         }
@@ -53,16 +53,16 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <param name="resource"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static IEntry? AddResource(string path, IEntry resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite)
+        public static IEntry? AddResource(string path, IEntry resource, Permissions perm = Permissions.PublicReadWrite)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceInner(path, resource, createPath, perm);
+            return AddResourceInner(path, resource, perm);
         }
 
-        internal static IEntry? AddResourceInner(string path, IEntry resource, bool createPath = false, Permissions perm = Permissions.PublicReadWrite)
+        internal static IEntry? AddResourceInner(string path, IEntry resource, Permissions perm = Permissions.PublicReadWrite)
         {
-            Directory? parentDir = createPath ? CreatePathInner(path, perm) : TraverseInner<Directory>(path);
+            Directory? parentDir = CreatePathInner(path, perm);
 
             return parentDir?.AddResource(resource);
         }
