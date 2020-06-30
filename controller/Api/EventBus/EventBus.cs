@@ -9,18 +9,21 @@ namespace SynthesisAPI.EventBus
 
         /// <summary>
         /// Activates all callback functions that are listening to a particular
-        /// EventType and passes event information to those functions 
+        /// IEvent type and passes event information to those functions 
         /// </summary>
         /// <typeparam name="TEvent">Type of event</typeparam>
         /// <param name="eventInfo">Event to be passed to callback functions</param>
-        public static void Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
+        /// <returns>True if message was pushed to subscribers, false if no subscribers were found</returns>
+        public static bool Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
         {
-            if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
+            string type = eventInfo.GetType().ToString();
+            if (Instance.typeSubscribers.ContainsKey(type))
             {
-                Instance.typeSubscribers[eventInfo.EventType](eventInfo);
+                Instance.typeSubscribers[type](eventInfo);
+                return true;
             }
             else
-                throw new Exception(message: "No subscribers found");
+                return false;
         }
 
         /// <summary>
@@ -30,33 +33,38 @@ namespace SynthesisAPI.EventBus
         /// <typeparam name="TEvent">Type of event</typeparam>
         /// <param name="eventInfo">Event to be passed to callback functions</param>
         /// <param name="tag">Tag corresponding to the group of listener functions to be activated</param>
-       
-        public static void Push<TEvent>(string tag, TEvent eventInfo) where TEvent : IEvent
+        /// <returns>True if message was pushed to subscribers, false if no subscribers were found</returns>
+
+        public static bool Push<TEvent>(string tag, TEvent eventInfo) where TEvent : IEvent
         {
+            string type = eventInfo.GetType().ToString();
             if (Instance.tagSubscribers.ContainsKey(tag))
             {
                 Instance.tagSubscribers[tag](eventInfo);
-                if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
+                if (Instance.typeSubscribers.ContainsKey(type))
                 {
-                    Instance.typeSubscribers[eventInfo.EventType](eventInfo);
+                    Instance.typeSubscribers[type](eventInfo);
                 }
+                return true;
             }
             else if (Instance.typeSubscribers.ContainsKey(eventInfo.EventType))
             {
                 Instance.typeSubscribers[eventInfo.EventType](eventInfo);
+                return true;
             }
             else
-                throw new Exception(message: "No subscribers found");
+                return false;
         }
 
         /// <summary>
         /// Adds a callback function that is activated by an event of
         /// the specified type
         /// </summary>
-        /// <param name="type">The event type to listen for</param>
+        /// <typeparam name="TEvent">Type of event to listen for</typeparam>
         /// <param name="callback">The callback function to be activated</param>
-        public static void NewTypeListener(string type, EventCallback callback)
+        public static void NewTypeListener<TEvent>(EventCallback callback) where TEvent : IEvent
         {
+            string type = typeof(TEvent).ToString();
             if (Instance.typeSubscribers.ContainsKey(type))
                 Instance.typeSubscribers[type] += callback;
             else
@@ -108,16 +116,4 @@ namespace SynthesisAPI.EventBus
         private static Inner Instance => Inner.InnerInstance;
     }
 
-/*   public class Subscriber
-    {
-        public Subscriber()
-        {
-            EventBus.Sub("test", CallBackMethod);
-        }
-
-        public void CallBackMethod(IEvent e)
-        {
-
-        }
-    }*/
 }

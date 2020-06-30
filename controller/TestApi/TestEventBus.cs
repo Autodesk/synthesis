@@ -84,10 +84,10 @@ namespace TestApi
         {
             Subscriber s = new Subscriber();
             EventBus.NewTagListener("tag", s.TestMethod);
-            EventBus.NewTypeListener("test", s.TestMethod2);
-            EventBus.Push<TestEvent>(new TestEvent());
-            EventBus.Push<TestEvent>(new TestEvent());
-            EventBus.Push<TestEvent>("tag", new TestEvent());
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod2);
+            Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
+            Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count2, 3);
             Assert.AreEqual(s.count1, 1);
             EventBus.resetAllListeners();
@@ -97,13 +97,13 @@ namespace TestApi
         public static void TestMultipleTypeSubscriber()
         {
             Subscriber s = new Subscriber();
-            EventBus.NewTypeListener("test", s.TestMethod);
-            EventBus.Push<TestEvent>(new TestEvent());
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod);
+            Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 0);
-            EventBus.NewTypeListener("test", s.TestMethod2);
-            EventBus.NewTypeListener("test", s.TestMethod3);
-            EventBus.Push<TestEvent>(new TestEvent());
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod2);
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod3);
+            Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 1);
             EventBus.resetAllListeners();
@@ -114,12 +114,12 @@ namespace TestApi
         {
             Subscriber s = new Subscriber();
             EventBus.NewTagListener("tag", s.TestMethod);
-            EventBus.Push<TestEvent>("tag", new TestEvent());
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 0);
             EventBus.NewTagListener("tag", s.TestMethod2);
             EventBus.NewTagListener("tag", s.TestMethod3);
-            EventBus.Push<TestEvent>("tag", new TestEvent());
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 1);
             EventBus.resetAllListeners();
@@ -129,12 +129,12 @@ namespace TestApi
         public static void TestVariedTypes()
         {
             Subscriber s = new Subscriber();
-            EventBus.NewTypeListener("test", s.TestMethod);
-            EventBus.NewTypeListener("other", s.TestMethod2);
+            EventBus.NewTypeListener<TestEvent>(s.TestMethod);
+            EventBus.NewTypeListener<OtherEvent>(s.TestMethod2);
             EventBus.NewTagListener("tag", s.TestMethod3);
-            EventBus.Push<TestEvent>("tag", new TestEvent());
-            EventBus.Push<TestEvent>("tag", new TestEvent());
-            EventBus.Push<OtherEvent>("tag", new OtherEvent());
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.IsTrue(EventBus.Push<OtherEvent>("tag", new OtherEvent()));
             Assert.AreEqual(s.count1, -1);
             Assert.AreEqual(s.count2, 1);
             EventBus.resetAllListeners();
@@ -143,15 +143,13 @@ namespace TestApi
         [Test]
         public static void TestPushToNonexistentTag()
         {
-            var ex = Assert.Throws<Exception>(() => EventBus.Push<TestEvent>("tag", new TestEvent()));
-            Assert.That(ex.Message == "No subscribers found");
+            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
         }
 
         [Test]
         public static void TestPushToNonexistentType()
         {
-            var ex = Assert.Throws<Exception>(() => EventBus.Push<TestEvent>(new TestEvent()));
-            Assert.That(ex.Message == "No subscribers found");
+            Assert.IsFalse(EventBus.Push<TestEvent>(new TestEvent()));
         }
 
     }
