@@ -171,27 +171,27 @@ SubSection "Engine" Engine
 
 SubSectionEnd
 
-Section "Inventor Plugin" iExporter
+SubSection "Exporter" Exporter
 
-  ; Set extraction path to Inventor plugin directory
-  SetOutPath $INSTDIR\Exporter
-  File /r "InventorExporter\*"
+  Section "Inventor Plugin" iExporter
+    ; Set extraction path to Inventor plugin directory
+    SetOutPath $INSTDIR\Exporter
+    File /r "InventorExporter\*"
   
-  SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-  File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
-
+    SetOutPath $APPDATA\Autodesk\ApplicationPlugins
+    File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
 SectionEnd
 
-Section "Fusion Plugin" fExporter
-
-  ; Set extraction path to Fusion plugin directories
-  SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
-  File /r "FusionExporter\*"
+  Section "Fusion Plugin" fExporter
+    ; Set extraction path to Fusion plugin directories
+	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
+    File /r "FusionExporter\*"
   
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
-  File /r "FusionExporter\FusionRobotExporter.dll"
+    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
+    File /r "FusionExporter\FusionRobotExporter.dll"
+  SectionEnd
 
-SectionEnd
+SubSectionEnd
 
 ;--------------------------------
 ;Component Descriptions
@@ -199,14 +199,16 @@ SectionEnd
   LangString DESC_Engine ${LANG_ENGLISH} "The Simulator Engine is what the exported robots and environments are loaded into"
   LangString DESC_Core ${LANG_ENGLISH} "The Core Engine is the core Unity runtime environment for the physics engine with the required default modules"
   LangString DESC_Environments ${LANG_ENGLISH} "A library of default environments pre-loaded into the simulator"
-  LangString DESC_iExporter ${LANG_ENGLISH} "The Robot Exporter Plugin is an Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
-  LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
+  LangString DESC_Exporter ${LANG_ENGLISH} "CAD addins for exporting custom robot models directly into the simulator"
+  LangString DESC_iExporter ${LANG_ENGLISH} "An Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
+  LangString DESC_fExporter ${LANG_ENGLISH} "A Fusion360 addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Engine} $(DESC_Engine)
   !insertmacro MUI_DESCRIPTION_TEXT ${Core} $(DESC_Core)
   !insertmacro MUI_DESCRIPTION_TEXT ${Environments} $(DESC_Environments)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Exporter} $(DESC_Exporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
