@@ -18,7 +18,7 @@
 
 6. Install AppDMG ` npm i -g appdmg `
 
-7. change directories to the osx/application directory ` cd synthesis/installer/osx/application/ `
+7. Change directories to the osx/application directory ` cd synthesis/installer/osx/application/ `
 
 8. Run ` appdmg spec.json Synthesis.app `
 
