@@ -5,12 +5,19 @@ using SynthesisAPI.UIManager.VisualElements;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
+using Unity.UIElements.Runtime;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
 public class UIParseTest : MonoBehaviour
 {
+    public StyleSheet styleSheet;
+    public PanelRenderer renderer;
+    public VisualElement generated;
+
     void Awake()
     {
         ApiProvider.RegisterApiProvider(new ApiInstance());
@@ -18,15 +25,25 @@ public class UIParseTest : MonoBehaviour
 
     void Start()
     {
-        UnityEngine.UIElements.VisualElement element = new UnityEngine.UIElements.VisualElement();
-        var property = typeof(IStyle).GetProperty("height");
-        StyleLength len = UIParser.ToStyleLength(" 100%"); // Units => Percent
-        property.SetValue(element.style, len);
-        Debug.Log(element.style.height.value.unit); // Units => Pixels
-        /*XmlDocument testDoc = new XmlDocument();
-        testDoc.LoadXml("<Label text=\"Label\" name=\"title\" style=\"height: 100%; margin-left: 10px; margin-right: 10px; -unity-text-align: middle-center; -unity-font-style: bold; font-size: 22px;\" />");
-        dynamic element = UIParser.CreateVisualElement(testDoc.FirstChild);
-        Debug.Log(element.GetType());*/
+        // UnityWebRequestTexture.GetTexture()
+        
+        XmlDocument doc = new XmlDocument();
+        doc.Load($"Assets{Path.DirectorySeparatorChar}TestButton.uxml");
+        generated = UIParser.CreateVisualElement("Test_UI", doc);
+        renderer.postUxmlReload += () =>
+        {
+            renderer.visualTree.Q(name = "screen").Add(generated);
+            return null;
+        };
+        // UIManager.AddVisualElement(element);
+    }
+
+    private void RecursivePrint(VisualElement e, int level = 0)
+    {
+        // e.styleSheets.Add(styleSheet);
+        Debug.Log($"{level}: {e.name}, {e.GetType().Name}");
+        foreach (VisualElement a in e.Children())
+            RecursivePrint(a, level + 1);
     }
 }
 
@@ -84,9 +101,16 @@ public class ApiInstance : IApiProvider
 
     public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable
     {
+        Debug.Log($"Creating instance of type: {typeof(TUnityType).FullName}");
         dynamic a = (TUnityType) Activator.CreateInstance(typeof(TUnityType));
-        Debug.Log(a.style.GetType().FullName);
         return a;
+    }
+
+    public VisualElement GetRootVisualElement()
+    {
+        PanelRenderer prr = GameObject.FindGameObjectWithTag("UI_RENDERER").GetComponent<PanelRenderer>();
+        prr.RecreateUIFromUxml(); // Incase it hasn't loaded uxml data yet
+        return prr.visualTree;
     }
 
     public void Log(object o)

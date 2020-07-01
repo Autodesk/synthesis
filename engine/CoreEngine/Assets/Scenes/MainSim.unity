@@ -242,6 +242,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662e4cc3425a80349b155c1f2bc65873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  styleSheet: {fileID: 11400000, guid: d610daef742b54fdda82fd41508f7f2e, type: 2}
+  renderer: {fileID: 1068973615}
 --- !u!4 &734031875
 Transform:
   m_ObjectHideFlags: 0
@@ -377,7 +379,7 @@ GameObject:
   - component: {fileID: 1068973614}
   m_Layer: 0
   m_Name: Toolbar
-  m_TagString: Untagged
+  m_TagString: UI_RENDERER
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

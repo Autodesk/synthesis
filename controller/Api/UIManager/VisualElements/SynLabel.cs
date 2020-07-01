@@ -8,24 +8,24 @@ using UnityLabel = UnityEngine.UIElements.Label;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class Label
+    public class SynLabel
     {
         private UnityLabel _element;
 
-        public static implicit operator UnityLabel(Label element) => element._element;
-        public static implicit operator Label(UnityLabel element) => new Label(element);
+        public static implicit operator UnityLabel(SynLabel element) => element._element;
+        public static implicit operator SynLabel(UnityLabel element) => new SynLabel(element);
 
         public string Text {
             get => _element.text;
             set => _element.text = value;
         }
 
-        public Label()
+        public SynLabel()
         {
             _element = ApiProvider.InstantiateFocusable<UnityLabel>();
         }
 
-        public Label(UnityLabel element)
+        public SynLabel(UnityLabel element)
         {
             _element = element;
         }

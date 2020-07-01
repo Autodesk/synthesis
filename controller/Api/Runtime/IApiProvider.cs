@@ -13,6 +13,12 @@ namespace SynthesisAPI.Runtime
 
 		uint AddEntity();
 
+        #region UI
+
+        TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
+		UnityEngine.UIElements.VisualElement GetRootVisualElement();
+
+        #endregion
 		TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
 		Component AddComponent(Type t, uint entity);
 		TComponent AddComponent<TComponent>(uint entity) where TComponent : Component;

@@ -54,6 +54,8 @@ namespace SynthesisAPI.Runtime
 		public static TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable
 		{
 
+		public static UnityEngine.UIElements.VisualElement GetRootVisualElement() => Instance?.GetRootVisualElement();
+
 		public static Component? AddComponent(Type t, uint entity) => Instance?.AddComponent(t, entity);
 	}
 }

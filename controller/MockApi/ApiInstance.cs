@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.UIElements;
 
 namespace MockApi
 {
@@ -61,6 +62,11 @@ namespace MockApi
         }
 
         public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : global::UnityEngine.UIElements.Focusable
+        {
+            throw new NotImplementedException();
+        }
+
+        public VisualElement GetRootVisualElement()
         {
             throw new NotImplementedException();
         }

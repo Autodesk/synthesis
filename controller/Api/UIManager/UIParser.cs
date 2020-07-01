@@ -7,24 +7,29 @@ using SynthesisAPI.UIManager.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
-using SynVisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
-// using SynButton = SynthesisAPI.UIManager.VisualElements.Button;
-// using SynLabel = SynthesisAPI.UIManager.VisualElements.Label;
 
 namespace SynthesisAPI.UIManager
 {
     // ReSharper disable once InconsistentNaming
     public static class UIParser
     {
-        public static SynVisualElement CreateVisualElement(XmlDocument doc)
+        public static SynVisualElement CreateVisualElement(string name, XmlDocument doc)
         {
-            if (doc.FirstChild.Name == "ui:UXML")
+            return doc.FirstChild.Name.Replace("ui:", "") == "UXML" ?
+                CreateVisualElements(name, doc.FirstChild.ChildNodes) :
+                CreateVisualElements(name, doc.ChildNodes);
+        }
+
+        public static SynVisualElement CreateVisualElements(string name, XmlNodeList nodes)
+        {
+            UnityVisualElement root = new UnityVisualElement() { name = name };
+            foreach (XmlNode node in nodes)
             {
-
+                if (node.Name.Replace("ui:", "") != "Style")
+                    root.Add(CreateVisualElement(node));
             }
-
-            return null;
+            return root;
         }
 
         /// <summary>
@@ -35,39 +40,62 @@ namespace SynthesisAPI.UIManager
         /// <returns></returns>
         public static SynVisualElement CreateVisualElement(XmlNode node)
         {
+            if (node == null)
+                throw new Exception("Node is null");
+
+            ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
             dynamic element = typeof(ApiProvider).GetMethod("InstantiateFocusable").MakeGenericMethod(elementType).Invoke(null, null);
 
-            Debug.Log(element.style.GetType().FullName);
             if (element != null)
             {
+                ApiProvider.Log("Creating element..");
 
                 foreach (XmlAttribute attr in node.Attributes)
                 {
+                    ApiProvider.Log("Parsing Attribute");
+
                     var property = elementType.GetProperty(attr.Name);
                     if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
 
                     switch (property.PropertyType.Name)
                     {
                         case "Boolean":
+                            ApiProvider.Log($"Parsing Boolean: {attr.Value}");
                             property.SetValue(element, bool.Parse(attr.Value));
                             break;
                         case "String":
+                            ApiProvider.Log($"Parsing String: {attr.Value}");
                             property.SetValue(element, attr.Value);
                             break;
                         case "IStyle":
+                            ApiProvider.Log("Parsing IStyle");
                             element = ParseStyle(attr.Value, element);
                             break;
                         default:
                             throw new Exception($"Found no matching type to {property.PropertyType.FullName}");
                     }
+
+                    ApiProvider.Log($"Finished Parsing Attribute: {attr.Name}");
                 }
+            } else
+            {
+                element = ApiProvider.InstantiateFocusable<UnityVisualElement>();
             }
 
-            foreach (XmlNode child in node.ChildNodes)
-                elementType.GetMethod("Add", BindingFlags.Public).Invoke(element, new object[] { child });
+            ApiProvider.Log("Finished Creating Element");
 
-            return element;
+            UnityVisualElement resultElement = (UnityVisualElement)element;
+
+            foreach (XmlNode child in node.ChildNodes)
+            {
+                ApiProvider.Log($"Adding child: {child.Name}");
+                resultElement.Add(CreateVisualElement(child));
+                ApiProvider.Log($"Finished adding child: {child.Name}");
+            }
+
+            ApiProvider.Log("Returning Result");
+            return resultElement;
         }
 
         /// <summary>
@@ -105,20 +133,16 @@ namespace SynthesisAPI.UIManager
             if (property == null)
             {
                 ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"");
-                Debug.Log($"Type of style: \"{element.style.GetType()}\"");
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
-            Debug.Log("--3--");
 
             if (property.PropertyType.GenericTypeArguments.Length > 0)
             {
-                Debug.Log("--4--");
                 property.SetValue(element.style,
                     typeof(UIParser).GetMethod("ToStyleEnum").MakeGenericMethod(property.PropertyType.GenericTypeArguments[0])
                         .Invoke(null, new object[] { entrySplit[1] }));
                 return element;
             }
-            Debug.Log("--5--");
             switch (property.PropertyType.Name)
             {
                 case "StyleFloat":
@@ -147,9 +171,9 @@ namespace SynthesisAPI.UIManager
                 default:
                     throw new Exception("Unhandled type in USS parser");
             }
-            Debug.Log("--6--");
+
             return element;
-            }
+        }
 
         public static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str));
 

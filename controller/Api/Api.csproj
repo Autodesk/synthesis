@@ -94,6 +94,9 @@
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="UIManager\UIParser.cs" />
     <Compile Include="UIManager\UIManager.cs" />
+    <Compile Include="UIManager\VisualElements\SynLabel.cs" />
+    <Compile Include="UIManager\VisualElements\SynVisualElement.cs" />
+    <Compile Include="UIManager\VisualElements\SynButton.cs" />
     <Compile Include="Utilities\AnyMap.cs" />
     <Compile Include="VirtualFileSystem\DirectroyExpection.cs" />
     <Compile Include="VirtualFileSystem\ExposedApiAttribute.cs" />
