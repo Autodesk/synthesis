@@ -24,7 +24,7 @@ from ..proto.synthesis_importbuf_pb2 import Joint
 from google.protobuf.json_format import MessageToDict
 
 
-class GLTFDesignExporter(object):  # todo: can this exporter be made generic (non fusion specific?)
+class GLTFDesignExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
 
     Fusion API objects are translated into glTF as follows:
@@ -36,7 +36,7 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
     Fusion MeshBody -> glTF primitive
     Fusion Appearances -> glTF materials
     Fusion Materials -> (contained in the 'extras' of glTF materials)
-    Fusion Joints -> ??? glTF doesn't really have a concept of node motion around points that aren't nodes todo
+    Fusion Joints -> ??? glTF doesn't really have a concept of node motion around points that aren't nodes
 
     Attributes:
         gltf: Main glTF storage object, gets JSON serialized for export.
@@ -44,9 +44,9 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         primaryBufferId: The index of the primaryBuffer in the glTF buffers list.
         primaryBufferStream: The memory stream for temporary storage of the glB buffer data.
 
-    todo allow multiple exports (incremental) with one GLTFDesignExporter
+    todo allow incremental export with one GLTFDesignExporter
 
-    # todo rotation fix # update - looks like view cube orientation isn't accessible by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
+    # xtodo rotation fix # update - looks like view cube orientation isn't accessible by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
     """
 
     # types
