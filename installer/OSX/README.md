@@ -24,4 +24,4 @@
 
 ### Package
 
-1. Publish the newly created Synthesis.dmg
+Publish the newly created Synthesis.dmg
