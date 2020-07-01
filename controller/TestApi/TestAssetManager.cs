@@ -4,6 +4,8 @@ using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
 using SynthesisAPI.AssetManager.DummyAssetTypes;
+using SynthesisAPI.EventBus;
+using System.Collections.Generic;
 
 namespace TestApi
 {
@@ -49,7 +51,7 @@ namespace TestApi
 
             Assert.AreSame(testTxt, test);
 
-            Console.WriteLine(testTxt?.ReadToEnd());
+            Console.WriteLine(testTxt?.ReadToEnd()); // TODO
         }
 
         [Test]
@@ -66,7 +68,7 @@ namespace TestApi
 
             var obj = testXml?.Deserialize<TestXmlObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -80,7 +82,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -95,7 +97,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -109,7 +111,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -123,7 +125,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -137,7 +139,43 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Console.WriteLine(obj?.Text); // TODO
+        }
+
+        private class AssetImportSubscriber
+        {
+            public List<IEvent> Events { get; private set; }
+            public AssetImportSubscriber()
+            {
+                Events = new List<IEvent>();
+            }
+
+            public void Handler(IEvent e)
+            {
+                Events.Add(e);
+            }
+        }
+
+        [Test]
+        public static void TestAssetImportEvent()
+        {
+            AssetImportSubscriber s = new AssetImportSubscriber();
+            EventBus.NewTagListener(AssetImportEvent.Tag, s.Handler);
+            EventBus.NewTypeListener<TestEvent>(s.Handler);
+
+            string location = "/temp";
+            string name = "test3.txt";
+            string type = "text/plain";
+
+            TextAsset testTxt = AssetManager.Import<TextAsset>(type, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+
+            Assert.AreEqual(s.Events.Count, 1);
+            Assert.AreEqual(3, s.Events[0].GetArguments().Length);
+            Assert.AreEqual(name, s.Events[0].GetArguments()[0]);
+            Assert.AreEqual(location, s.Events[0].GetArguments()[1]);
+            Assert.AreEqual(type, s.Events[0].GetArguments()[2]);
+
+            EventBus.ResetAllListeners();
         }
     }
 }
