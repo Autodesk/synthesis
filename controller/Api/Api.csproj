@@ -59,6 +59,7 @@
     <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
+    <Compile Include="EventBus\IEvent.cs" />
     <Compile Include="InputManager\InputManager.cs" />
     <Compile Include="Modules\Attributes\BuiltinComponentAttribute.cs" />
     <Compile Include="Modules\Attributes\ComponentAttribute.cs" />
