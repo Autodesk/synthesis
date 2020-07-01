@@ -12,6 +12,7 @@ namespace TestApi
     [TestFixture]
     public static class TestAssetManager
     {
+
         [OneTimeSetUp]
         public static void Init()
         {
@@ -51,7 +52,7 @@ namespace TestApi
 
             Assert.AreSame(testTxt, test);
 
-            Console.WriteLine(testTxt?.ReadToEnd()); // TODO
+            Assert.AreEqual("Hello World!", testTxt?.ReadToEnd());
         }
 
         [Test]
@@ -68,7 +69,7 @@ namespace TestApi
 
             var obj = testXml?.Deserialize<TestXmlObject>();
 
-            Console.WriteLine(obj?.Text); // TODO
+            Assert.AreEqual("Hello world of XML!", obj?.Text);
         }
 
         [Test]
@@ -82,7 +83,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text); // TODO
+            Assert.AreEqual("Hello world of JSON!", obj?.Text);
         }
 
         [Test]
@@ -94,10 +95,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test2.json");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -108,10 +105,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test3.json");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -122,10 +115,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/modules/module1/test.json");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text); // TODO
         }
 
         [Test]
@@ -136,10 +125,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json2");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text); // TODO
         }
 
         private class AssetImportSubscriber
