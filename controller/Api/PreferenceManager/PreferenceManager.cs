@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using System.Threading;
 using System.Threading.Tasks;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -101,18 +101,31 @@ namespace SynthesisAPI.PreferenceManager
         /// <returns>Whether or not the load executed successfully</returns>
         public static Task<bool> LoadAsync(bool overrideChanges = false) => Task<bool>.Factory.StartNew(() => Load(overrideChanges));
 
+        private static void ImportPreferencesAsset()
+        {
+            using var _ = ApiCallSource.ForceInternalCall();
+            Instance.ImportPreferencesAsset();
+        }
+
         /// <summary>
         /// Loads a JSON file that stores preference data
         /// </summary>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
+        [ExposedApi]
         public static bool Load(bool overrideChanges = false)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return LoadInner(overrideChanges);
+        }
+
+        internal static bool LoadInner(bool overrideChanges = false)
         {
             if (!overrideChanges && !_changesSaved)
                 return false;
 
             var deserialized =
-                Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                Instance.Asset?.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
             Instance.Preferences =
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
@@ -125,16 +138,25 @@ namespace SynthesisAPI.PreferenceManager
         /// Saves a JSON file with preference data asynchronously
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
-        public static Task<bool> SaveAsync() => Task<bool>.Factory.StartNew(() => Save());
+        public static Task<bool> SaveAsync() => Task<bool>.Factory.StartNew(Save);
 
         /// <summary>
         /// Saves a JSON file with preference data
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
+        [ExposedApi]
         public static bool Save()
         {
-            Instance.Asset.Serialize(Instance.Preferences);
-            Instance.Asset.SaveToFile();
+            using var _ = ApiCallSource.StartExternalCall();
+            return SaveInner();
+        }
+
+        public static bool SaveInner()
+        {
+            ImportPreferencesAsset();
+
+            Instance.Asset?.SerializeInner(Instance.Preferences);
+            Instance.Asset?.SaveToFileInner();
 
             _changesSaved = true;
 
@@ -143,7 +165,7 @@ namespace SynthesisAPI.PreferenceManager
 
         #endregion
 
-        private static bool _changesSaved = false;
+        private static bool _changesSaved;
 
         private class Inner
         {
@@ -152,14 +174,9 @@ namespace SynthesisAPI.PreferenceManager
             public Dictionary<Guid, Dictionary<string, object>> Preferences;
 
             private JsonAsset _asset;
-            public JsonAsset Asset {
-                get {
-                    if (_asset == null)
-                        _asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
-                            VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
-                            Permissions.PublicWrite, VirtualFilePath.Name)!;
-                    return _asset;
-                }
+            public JsonAsset? Asset
+            {
+                get => _asset;
             }
 
             private Inner()
@@ -167,12 +184,26 @@ namespace SynthesisAPI.PreferenceManager
                 Preferences = new Dictionary<Guid, Dictionary<string, object>>();
             }
 
+            public void ImportPreferencesAsset()
+            {
+                if (_asset == null)
+                {
+                    _asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
+                        VirtualFilePath.Path, VirtualFilePath.Name,
+                        Permissions.PublicReadWrite, VirtualFilePath.Name)!;
+                    if (_asset == null)
+                    {
+                        throw new Exception("Failed to create preferences.json");
+                    }
+                }
+            }
+
             private static Inner _instance = null!;
             public static Inner InnerInstance
             {
                 get
                 {
-                    if (_instance is null)
+                    if (_instance == null)
                     {
                         _instance = new Inner();
                         Load();

@@ -10,29 +10,53 @@ namespace TestApi
         [Test]
         public static void TestDirectory()
         {
-            Directory dir = new Directory("directory", Program.TestGuid, Permissions.PublicRead);
-            FileSystem.AddResource("/modules", dir);
+            var dir = new Directory("directory", Permissions.PublicReadWrite);
+            FileSystem.AddResource("/temp", dir);
 
-            Directory test_dir = (Directory)FileSystem.Traverse("/modules/directory");
+            var testDir = (Directory)FileSystem.Traverse("/temp/directory");
 
-            Assert.AreSame(dir, test_dir);
+            Assert.AreSame(dir, testDir);
 
-            Directory parent = (Directory)FileSystem.Traverse("/modules");
+            var parent = (Directory)FileSystem.Traverse("/temp");
 
-            Directory test_parent = (Directory)test_dir.Traverse("..");
+            var testParent = (Directory)testDir?.Traverse("..");
 
-            Assert.AreSame(parent, test_parent);
+            Assert.AreSame(parent, testParent);
+        }
+
+        [Test]
+        public static void TestDirectoryPermissions()
+        {
+            try
+            {
+                var dir = new Directory("directoryperms", Permissions.PublicReadWrite);
+
+                FileSystem.AddResource("temp/", dir);
+            }
+            catch (PermissionsExpcetion)
+            {
+                Assert.Fail();
+            }
+            try
+            {
+                var dir = new Directory("directoryperms2", Permissions.PublicReadWrite);
+
+                FileSystem.AddResource("", dir);
+                Assert.Fail();
+            }
+            catch (PermissionsExpcetion) { }
+            Assert.Pass();
         }
 
         [Test]
         public static void TestMaxDepth()
         {
-            string path = "";
+            string path = "/temp";
             try
             {
-                for (var i = 0; i < FileSystem.MaxDirectoryDepth; i++)
+                for (var i = 1; i < FileSystem.MaxDirectoryDepth; i++)
                 {
-                    Directory dir = new Directory("directory" + i, Program.TestGuid, Permissions.PublicRead);
+                    Directory dir = new Directory("directory" + i,  Permissions.PublicReadOnly);
                     FileSystem.AddResource(path, dir);
                     path += "/" + dir.Name;
                 }
@@ -42,6 +66,18 @@ namespace TestApi
             {
                 Assert.Pass();
             }
+        }
+
+        [Test]
+        public static void TestCreatePath()
+        {
+            string path = "/temp/new_dir/new_dir/new_dir/new_dir";
+            
+            Directory dir = new Directory("new_dir", Permissions.PrivateReadWrite);
+
+            Assert.Null(FileSystem.Traverse(path));
+
+            Assert.NotNull(FileSystem.AddResource(path, dir));
         }
     }
 }

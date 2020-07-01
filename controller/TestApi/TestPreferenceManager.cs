@@ -1,9 +1,6 @@
 using Newtonsoft.Json;
-using SynthesisAPI.AssetManager;
 using SynthesisAPI.PreferenceManager;
-using SynthesisAPI.VirtualFileSystem;
 using System;
-using System.Text;
 using NUnit.Framework;
 using System.Threading.Tasks;
 

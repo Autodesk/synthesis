@@ -1,6 +1,6 @@
 ﻿namespace SynthesisAPI.Modules
 {
-	public class Behavior : Component
+	public class SystemBase : Component
 	{
 		public virtual void Start() {}
 		public virtual void Update() {}

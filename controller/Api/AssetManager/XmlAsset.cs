@@ -1,10 +1,6 @@
-﻿using SynthesisAPI.VirtualFileSystem;
-using System;
-using System.Collections.Generic;
+﻿using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace SynthesisAPI.AssetManager
@@ -14,11 +10,19 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class XmlAsset : TextAsset
     {
-        public XmlAsset(string name, Guid owner, Permissions perm, string sourcePath) :
-            base(name, owner, perm, sourcePath) { }
+        public XmlAsset(string name, Permissions perm, string sourcePath) :
+            base(name, perm, sourcePath) { }
 
+        [ExposedApi]
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            return DeserializeInner<TObject>(offset, loc, retainPosition);
+        }
+
+        internal TObject DeserializeInner<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin, bool retainPosition = true)
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
             long? returnPosition = null;
             if (offset != long.MaxValue)
             {
@@ -38,8 +42,16 @@ namespace SynthesisAPI.AssetManager
             return obj;
         }
 
+        [ExposedApi]
         public void Serialize<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
         {
+            using var _ = ApiCallSource.StartExternalCall();
+            SerializeInner(obj, writeMode);
+        }
+
+        internal void SerializeInner<TObject>(TObject obj, WriteMode writeMode = WriteMode.Overwrite)
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (writeMode == WriteMode.Overwrite)
             {
                 SharedStream.Seek(0);

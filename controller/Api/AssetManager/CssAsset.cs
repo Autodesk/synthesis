@@ -1,5 +1,4 @@
 ﻿using SynthesisAPI.VirtualFileSystem;
-using System;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -8,8 +7,8 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class CssAsset : TextAsset
     {
-        public CssAsset(string name, Guid owner, Permissions perm, string sourcePath) :
-            base(name, owner, perm, sourcePath)
+        public CssAsset(string name, Permissions perm, string sourcePath) :
+            base(name, perm, sourcePath)
         { }
     }
 }

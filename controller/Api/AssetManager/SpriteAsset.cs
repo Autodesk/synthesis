@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.VirtualFileSystem;
+﻿using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using System;
 using UnityEngine;
 
@@ -11,9 +12,9 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class SpriteAsset : Asset
     {
-        public SpriteAsset(string name, Guid owner, Permissions perm, string sourcePath)
+        public SpriteAsset(string name, Permissions perm, string sourcePath)
         {
-            Init(name, owner, perm, sourcePath);
+            Init(name, perm, sourcePath);
         }
 
         public override IEntry Load(byte[] data)
@@ -25,11 +26,25 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
 
             return this;
         }
 
-        public Sprite Sprite { get; private set; }
+        private Sprite _sprite = null!;
+
+        [ExposedApi]
+        public Sprite Sprite {
+            get {
+                using var _ = ApiCallSource.StartExternalCall();
+                return GetSpriteInner();
+            } 
+        }
+
+        private Sprite GetSpriteInner()
+        {
+            ApiCallSource.AssertAccess(Permissions, Access.Read);
+            return _sprite;
+        }
     }
 }

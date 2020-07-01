@@ -8,10 +8,7 @@ namespace SynthesisAPI.Modules
 	public abstract class Object
 	{
 
-		public override int GetHashCode()
-		{
-			return _id.GetHashCode();
-		}
+		public override int GetHashCode() => _id.GetHashCode();
 
 		private Guid _id;
 		public Transform Transform => ApiProvider.GetTransformById(_id)!;
