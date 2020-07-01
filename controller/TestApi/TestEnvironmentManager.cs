@@ -1,8 +1,6 @@
-﻿using System;
-using SynthesisAPI.EnvironmentManager;
+﻿using SynthesisAPI.EnvironmentManager;
 using NUnit.Framework;
 using Entity = System.UInt32;
-using SynthesisAPI.Modules.Components;
 using SynthesisAPI.Modules;
 
 namespace TestApi

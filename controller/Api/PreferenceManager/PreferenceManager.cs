@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.PreferenceManager
 {
@@ -96,9 +96,14 @@ namespace SynthesisAPI.PreferenceManager
         {
             if (Instance.Asset == null)
             {
-                Instance.Asset = AssetManager.AssetManager.ImportOrCreate<JsonAsset>("text/json",
-                    VirtualFilePath.Path, VirtualFilePath.Name, Guid.Empty,
-                    Permissions.PublicWrite, VirtualFilePath.Name)!;
+                using var _ = ApiCallSource.ForceInternalCall();
+                Instance.Asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
+                    VirtualFilePath.Path, VirtualFilePath.Name,
+                    Permissions.PublicReadWrite, VirtualFilePath.Name)!;
+                if(Instance.Asset == null)
+                {
+                    throw new Exception("Failed to create preferences.json");
+                }
             }
         }
 
@@ -107,7 +112,14 @@ namespace SynthesisAPI.PreferenceManager
         /// </summary>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
+        [ExposedApi]
         public static bool Load(bool overrideChanges = false)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return LoadInner(overrideChanges);
+        }
+
+        internal static bool LoadInner(bool overrideChanges = false)
         {
             if (!overrideChanges && !_changesSaved)
                 return false;
@@ -115,7 +127,7 @@ namespace SynthesisAPI.PreferenceManager
             ImportPreferencesAsset();
 
             var deserialized =
-                Instance.Asset.Deserialize<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
+                Instance.Asset?.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
             Instance.Preferences =
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
@@ -128,12 +140,19 @@ namespace SynthesisAPI.PreferenceManager
         /// Saves a JSON file with preference data
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
+        [ExposedApi]
         public static bool Save()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return SaveInner();
+        }
+
+        public static bool SaveInner()
         {
             ImportPreferencesAsset();
 
-            Instance.Asset.Serialize(Instance.Preferences);
-            Instance.Asset.SaveToFile();
+            Instance.Asset?.SerializeInner(Instance.Preferences);
+            Instance.Asset?.SaveToFileInner();
 
             _changesSaved = true;
 
@@ -142,7 +161,7 @@ namespace SynthesisAPI.PreferenceManager
 
         #endregion
 
-        private static bool _changesSaved = false;
+        private static bool _changesSaved;
 
         private class Inner
         {
@@ -158,7 +177,7 @@ namespace SynthesisAPI.PreferenceManager
             {
                 get
                 {
-                    if (_instance is null)
+                    if (_instance == null)
                     {
                         _instance = new Inner();
                         Load();
