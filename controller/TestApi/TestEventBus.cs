@@ -130,16 +130,22 @@ namespace TestApi
         public static void TestTagListenerRemoval()
         {
             Subscriber s = new Subscriber();
+            Subscriber s2 = new Subscriber();
             Assert.IsFalse(EventBus.RemoveTagListener("tag", s.TestMethod));
             EventBus.NewTagListener("tag", s.TestMethod);
+            EventBus.NewTagListener("tag", s2.TestMethod);
             Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
+            Assert.AreEqual(s2.count1, 1);
             Assert.IsTrue(EventBus.RemoveTagListener("tag", s.TestMethod));
-            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
-            Assert.IsFalse(EventBus.RemoveTagListener("tag", s.TestMethod));
-            Assert.IsFalse(EventBus.Push<TestEvent>("tag", new TestEvent()));
+            Assert.AreEqual(s2.count1, 2);
+            EventBus.RemoveTagListener("tag", s.TestMethod);
+            Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
+            Assert.AreEqual(s2.count1, 3);
+            EventBus.ResetAllListeners();
         }
 
         [Test]
