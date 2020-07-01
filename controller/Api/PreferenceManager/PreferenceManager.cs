@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
+using System.Threading;
+using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.PreferenceManager
@@ -92,19 +94,17 @@ namespace SynthesisAPI.PreferenceManager
 
         #region IO
 
+        /// <summary>
+        /// Loads a JSON file asynchronously and loads preference data
+        /// </summary>
+        /// <param name="overrideChanges">Load regardless of unsaved data</param>
+        /// <returns>Whether or not the load executed successfully</returns>
+        public static Task<bool> LoadAsync(bool overrideChanges = false) => Task<bool>.Factory.StartNew(() => Load(overrideChanges));
+
         private static void ImportPreferencesAsset()
         {
-            if (Instance.Asset == null)
-            {
-                using var _ = ApiCallSource.ForceInternalCall();
-                Instance.Asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
-                    VirtualFilePath.Path, VirtualFilePath.Name,
-                    Permissions.PublicReadWrite, VirtualFilePath.Name)!;
-                if(Instance.Asset == null)
-                {
-                    throw new Exception("Failed to create preferences.json");
-                }
-            }
+            using var _ = ApiCallSource.ForceInternalCall();
+            Instance.ImportPreferencesAsset();
         }
 
         /// <summary>
@@ -124,8 +124,6 @@ namespace SynthesisAPI.PreferenceManager
             if (!overrideChanges && !_changesSaved)
                 return false;
 
-            ImportPreferencesAsset();
-
             var deserialized =
                 Instance.Asset?.DeserializeInner<Dictionary<Guid, Dictionary<string, object>>>(offset: 0,
                     retainPosition: true);
@@ -135,6 +133,12 @@ namespace SynthesisAPI.PreferenceManager
             _changesSaved = true;
             return true;
         }
+
+        /// <summary>
+        /// Saves a JSON file with preference data asynchronously
+        /// </summary>
+        /// <returns>Whether or not the save executed successfully</returns>
+        public static Task<bool> SaveAsync() => Task<bool>.Factory.StartNew(Save);
 
         /// <summary>
         /// Saves a JSON file with preference data
@@ -165,13 +169,35 @@ namespace SynthesisAPI.PreferenceManager
 
         private class Inner
         {
+            public readonly object InstanceLock = new object();
+
+            public Dictionary<Guid, Dictionary<string, object>> Preferences;
+
+            private JsonAsset _asset;
+            public JsonAsset? Asset
+            {
+                get => _asset;
+            }
+
             private Inner()
             {
                 Preferences = new Dictionary<Guid, Dictionary<string, object>>();
             }
-            public Dictionary<Guid, Dictionary<string, object>> Preferences;
 
-            public JsonAsset? Asset;
+            public void ImportPreferencesAsset()
+            {
+                if (_asset == null)
+                {
+                    _asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
+                        VirtualFilePath.Path, VirtualFilePath.Name,
+                        Permissions.PublicReadWrite, VirtualFilePath.Name)!;
+                    if (_asset == null)
+                    {
+                        throw new Exception("Failed to create preferences.json");
+                    }
+                }
+            }
+
             private static Inner _instance = null!;
             public static Inner InnerInstance
             {
@@ -187,6 +213,13 @@ namespace SynthesisAPI.PreferenceManager
                 }
             }
         }
-        private static Inner Instance => Inner.InnerInstance;
+        private static Inner Instance {
+            get {
+                lock (Inner.InnerInstance.InstanceLock)
+                {
+                    return Inner.InnerInstance;
+                }
+            }
+        }
     }
 }
