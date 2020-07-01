@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SynthesisAPI.EventBus
@@ -151,9 +152,18 @@ namespace SynthesisAPI.EventBus
 
             public static void ResetAllListeners()
             {
-                _inst!.TypeSubscribers = new Dictionary<string, EventCallback>();
-                _inst!.TagSubscribers = new Dictionary<string, EventCallback>();
+                if (AppDomain.CurrentDomain.GetAssemblies()
+                    .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework")))
+                {
+                    _inst!.TypeSubscribers = new Dictionary<string, EventCallback>();
+                    _inst!.TagSubscribers = new Dictionary<string, EventCallback>();
+                }
+                else
+                {
+                    throw new Exception("Cannot reset all listeners outside of test suite");
+                }
             }
+
             private Inner()
             {
                 TypeSubscribers = new Dictionary<string, EventCallback>();

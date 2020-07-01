@@ -1,22 +1,42 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using SynthesisAPI.EventBus;
+using SynthesisAPI.Utilities;
 
 namespace TestApi
 {
     public class TestEvent : IEvent
     {
-        public object[] GetArguments() => new object[]{};
+        public object[] GetArguments() => new object[] { };
     }
 
     public class OtherEvent : IEvent
     {
-        public object[] GetArguments() => new object[]{};
+        public object[] GetArguments() => new object[] { };
+    }
+
+    public class ParameterizedEvent : IEvent
+    {
+        readonly int    _numberArg;
+        readonly string _stringArg;
+
+        public ParameterizedEvent(int numberArg, string stringArg)
+        {
+            _numberArg = numberArg;
+            _stringArg = stringArg;
+        }
+
+        public object[] GetArguments() => new object[] {_numberArg, _stringArg};
     }
 
     public class Subscriber
     {
         public int Count1;
         public int Count2;
+
+        public int Num;
+        public string String;
+
         public Subscriber()
         {
             Count1 = 0;
@@ -36,6 +56,18 @@ namespace TestApi
         public void TestMethod3(IEvent e)
         {
             Count1 -= 1;
+        }
+
+        public void TestMethod4(IEvent e)
+        {
+            if (!(e is ParameterizedEvent))
+            {
+                throw new Exception();
+            }
+            else
+            {
+                (Num, String) = ParamsHelper.PackParams<int, string>(e.GetArguments());
+            }
         }
     }
 
@@ -151,7 +183,18 @@ namespace TestApi
             Assert.IsFalse(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
             Assert.IsFalse(EventBus.Push("tag", new TestEvent()));
             Assert.AreEqual(s.Count1, 1);
+            EventBus.ResetAllListeners();
         }
 
+        [Test]
+        public static void TestParameterizedListener()
+        {
+            Subscriber s = new Subscriber();
+            EventBus.NewTypeListener<ParameterizedEvent>(s.TestMethod4);
+            EventBus.Push(new ParameterizedEvent(1, "test"));
+            Assert.IsTrue(s.Num == 1);
+            Assert.IsTrue(s.String == "test");
+            EventBus.ResetAllListeners();
+        }
     }
 }
