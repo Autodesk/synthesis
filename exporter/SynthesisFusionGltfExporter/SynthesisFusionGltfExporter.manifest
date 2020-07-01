@@ -1,9 +1,9 @@
 {
     "autodeskProduct": "Fusion360",
     "type": "addin",
-    "id": "e37e5edf-83b5-4ae4-964d-866b79987640",
+    "id": "441c2ccf-6f33-445a-8e15-c64a1e57b6d4",
     "author": "Synthesis Team",
-    "description": "Assembly exporter for Synthesis",
+    "description": "glTF assembly exporter for Synthesis",
     "version": "0.1.0",
     "runOnStartup": false,
     "supportedOS": "windows|mac",

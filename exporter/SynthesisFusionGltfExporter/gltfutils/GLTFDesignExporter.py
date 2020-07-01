@@ -167,9 +167,6 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
         self.enableFaceMaterials = enableFaceMaterials
         self.ao = ao
 
-        self.progressBar = self.ao.ui.createProgressDialog()
-        self.progressBar.isCancelButtonShown = False
-
         self.warnings = []
 
         # These stopwatches are for export performance testing only.
@@ -211,8 +208,11 @@ class GLTFDesignExporter(object):  # todo: can this exporter be made generic (no
                 return None
             self.enableMaterials = False
 
+        self.progressBar = self.ao.ui.createProgressDialog()
+        self.progressBar.isCancelButtonShown = False
+
         self.progressBar.reset()
-        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "", 0, 100, 0)
+        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Waiting for save path selection...", 0, 100, 0)
 
         self.defaultAppearance = self.getDefaultAppearance()
 

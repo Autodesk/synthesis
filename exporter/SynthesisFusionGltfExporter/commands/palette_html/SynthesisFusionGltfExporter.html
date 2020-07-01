@@ -1,43 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>SynthesisFusionExporter</title>
-        <p>Assembly exporter for Synthesis</p>
-    </head>
-    <body>
-        <p id='p1'>Click the button below or use the "Send info to HTML" command in the ADD-INS panel.</p>
-        <button type='button' onclick='sendInfoToFusion()'>Click to send info to Fusion</button>
-        <br /><br />
-        <p id='message'>Send a Message from Fusion 360 here by clicking Fusion Palette Send Command</p>
-        <br /><br />
-    </body>
-    <script>
-        function sendInfoToFusion(){
-            var args = {
-                arg1 : "Sample argument 1",
-                arg2 : "Sample argument 2"
-            };
-            adsk.fusionSendData('send', JSON.stringify(args));
-        }
+<head>
+    <link href="css/fusion360.css" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <title>SynthesisFusionGltfExporter</title>
+</head>
+<body>
+<div class="fusion-content">
+    <b>glTF Export Settings:</b>
+    <br><br>
+    <label for="materials">Export Materials</label>
+    <input class="setting" id="materials" type="checkbox" onchange="validateForm(this)" checked>
+    <br><br>
+    <label for="faceMaterials">Export Face Materials</label>
+    <input class="setting" id="faceMaterials" type="checkbox" onchange="validateForm(this)" checked>
+    <br><br>
+    <label for="exportHidden">Export Hidden Bodies</label>
+    <input class="setting" id="exportHidden" type="checkbox" onchange="validateForm(this)">
+</div>
+<div class="fusion-footer">
+    <button type="button" onclick="cancel()">Cancel</button>
+    <button id="finished-button" type="button" style="width: 100px;" onclick='exportDesign()'>Export Design</button>
+</div>
+</body>
+<script>
 
-        window.fusionJavaScriptHandler = {handle: function(action, data){
-            try {
-                if (action === 'send') {
-					// Update a paragraph with the data passed in.
-					document.getElementById('message').innerHTML = data;
-				}
-				else if (action === 'debugger') {
-                    debugger;
-				}
-				else {
-					return 'Unexpected command type: ' + action;
-                }
-            } catch (e) {
-                console.log(e);
-                console.log('exception caught with command: ' + action + ', data: ' + data);
+    var settings = {}
+
+    window.addEventListener('load', () => { // Set defaults
+        let settingCheckboxes = document.getElementsByClassName("setting");
+        for (let checkbox of settingCheckboxes) {
+            settings[checkbox.id] = checkbox.checked
+        }
+    })
+
+    function validateForm(checkbox) {
+        settings[checkbox.id] = checkbox.checked
+
+        if (checkbox.id === "materials") {
+            let faceMatElement = document.getElementById("faceMaterials");
+            faceMatElement.disabled = !checkbox.checked
+            if (!checkbox.checked) {
+                faceMatElement.checked = false
             }
-            return 'OK';
-        }};
-    </script>
+            validateForm(faceMatElement)
+        }
+    }
+
+    function getSettingsObject() {
+        return settings
+    }
+
+    function exportDesign() {
+        var args = {
+            action: "export",
+            settings: getSettingsObject()
+        };
+        adsk.fusionSendData('send', JSON.stringify(args));
+    }
+
+    function cancel() {
+        var args = {
+            action: "cancel",
+        };
+        adsk.fusionSendData('send', JSON.stringify(args));
+    }
+</script>
 </html>

@@ -49,87 +49,47 @@ try:
 
     # Basic Fusion 360 Command Base samples
     from .commands.ExportCommand import ExportCommand, exportDesign
-    from .commands.SampleCommand2 import SampleCommand2
 
     # Palette Command Base samples
-    from .commands.SamplePaletteCommand import SamplePaletteSendCommand, SamplePaletteShowCommand
+    from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
 
-    # Various Application event samples
-    from .commands.SampleCustomEvent import SampleCustomEvent1
-    from .commands.SampleDocumentEvents import SampleDocumentEvent1, SampleDocumentEvent2
-    from .commands.SampleWorkspaceEvents import SampleWorkspaceEvent1
-    from .commands.SampleWebRequestEvent import SampleWebRequestOpened
-    from .commands.SampleCommandEvents import SampleCommandEvent
 
 # Create our addin definition object
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)
 
-    # Creates a basic Hello World message box on execute
-    my_addin.add_command(
-        'Export Assembly',
-        ExportCommand,
-        {
-            'cmd_description': 'Export your assembly to Synthesis.',
-            'cmd_id': 'sample_cmd_1',
-            'workspace': 'FusionSolidEnvironment',
-            'toolbar_panel_id': 'Commands',
-            'cmd_resources': 'command_icons',
-            'command_visible': True,
-            'command_promoted': True,
-        }
-    )
-
-    # General command showing inputs and user interaction
-    my_addin.add_command(
-        'Sample Command 2',
-        SampleCommand2,
-        {
-            'cmd_description': 'A simple example of a Fusion 360 Command with various inputs',
-            'cmd_id': 'sample_cmd_2',
-            'workspace': 'FusionSolidEnvironment',
-            'toolbar_panel_id': 'Commands',
-            'cmd_resources': 'command_icons',
-            'command_visible': True,
-            'command_promoted': False,
-        }
-    )
+    # # Creates a basic Hello World message box on execute
+    # my_addin.add_command(
+    #     'Export Assembly',
+    #     ExportCommand,
+    #     {
+    #         'cmd_description': 'Export your assembly to Synthesis.',
+    #         'cmd_id': 'sample_cmd_1',
+    #         'workspace': 'FusionSolidEnvironment',
+    #         'toolbar_panel_id': 'Commands',
+    #         'cmd_resources': 'command_icons',
+    #         'command_visible': True,
+    #         'command_promoted': True,
+    #     }
+    # )
 
     # Create an html palette to as an alternative UI
     my_addin.add_command(
-        'Sample Palette Command - Show',
-        SamplePaletteShowCommand,
+        'Export to glTF',
+        ExportPaletteShowCommand,
         {
-            'cmd_description': 'Shows the Fusion 360 Demo Palette',
-            'cmd_id': 'sample_palette_show',
+            'cmd_description': 'Exports the open design to a glTF file.',
+            'cmd_id': 'export_gltf_palette_show',
             'workspace': 'FusionSolidEnvironment',
-            'toolbar_panel_id': 'Palette',
-            'cmd_resources': 'palette_icons',
+            'toolbar_panel_id': 'Export to glTF',
+            'cmd_resources': 'command_icons',
             'command_visible': True,
             'command_promoted': True,
-            'palette_id': 'sample_palette',
-            'palette_name': 'Sample Fusion 360 HTML Palette',
+            'palette_id': 'export_gltf_palette',
+            'palette_name': 'Export Design to glTF',
             'palette_html_file_url': 'palette_html/SynthesisFusionGltfExporter.html',
             'palette_is_visible': True,
-            'palette_show_close_button': True,
-            'palette_is_resizable': True,
-            'palette_width': 500,
-            'palette_height': 600,
-        }
-    )
-
-    # Send data from Fusion 360 to the palette
-    my_addin.add_command(
-        'Send Info to Palette',
-        SamplePaletteSendCommand,
-        {
-            'cmd_description': 'Send data from a regular Fusion 360 command to a palette',
-            'cmd_id': 'sample_palette_send',
-            'workspace': 'FusionSolidEnvironment',
-            'toolbar_panel_id': 'Palette',
-            'cmd_resources': 'palette_icons',
-            'command_visible': True,
-            'command_promoted': False,
-            'palette_id': 'sample_palette',
+            'palette_show_close_button': False,
+            'palette_is_resizable': False,
         }
     )
 
@@ -159,14 +119,14 @@ debug = False
 
 def run(context):
     my_addin.run_app()
-
-    try:
-        exportDesign()  # export on startup for debugging purposes TODO delete me
-    except:
-        app = adsk.core.Application.get()
-        ui = app.userInterface
-        if ui:
-            ui.messageBox('Initialization: {}'.format(traceback.format_exc()))
+    #
+    # try:
+    #     exportDesign()  # export on startup for debugging purposes TODO delete me
+    # except:
+    #     app = adsk.core.Application.get()
+    #     ui = app.userInterface
+    #     if ui:
+    #         ui.messageBox('Initialization: {}'.format(traceback.format_exc()))
 
 
 def stop(context):
