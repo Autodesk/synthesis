@@ -173,8 +173,8 @@ SubSectionEnd
 
 SubSection "Exporter" Exporter
 
-  Section "Inventor Plugin" iExporter
-    ; Set extraction path to Inventor plugin directory
+  Section "Inventor Addin" iExporter
+    ; Set extraction path to Inventor addin directory
     SetOutPath $INSTDIR\Exporter
     File /r "InventorExporter\*"
   
@@ -182,8 +182,8 @@ SubSection "Exporter" Exporter
     File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
 SectionEnd
 
-  Section "Fusion Plugin" fExporter
-    ; Set extraction path to Fusion plugin directories
+  Section "Fusion Addin" fExporter
+    ; Set extraction path to Fusion addin directories
 	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
     File /r "FusionExporter\*"
   
@@ -193,25 +193,39 @@ SectionEnd
 
 SubSectionEnd
 
+SubSection "Controller" Controller
+
+  Section "Code Module" Code
+	SectionIn RO
+	; Set extraction path to Module directory
+	SetOutPath $APPDATA\Autodesk\Synthesis\Modules
+  SectionEnd
+  
+SubSectionEnd
+
 ;--------------------------------
 ;Component Descriptions
 
   LangString DESC_Engine ${LANG_ENGLISH} "The Simulator Engine is what the exported robots and environments are loaded into"
   LangString DESC_Core ${LANG_ENGLISH} "The Core Engine is the core Unity runtime environment for the physics engine with the required default modules"
+  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
   LangString DESC_Environments ${LANG_ENGLISH} "A library of default environments pre-loaded into the simulator"
   LangString DESC_Exporter ${LANG_ENGLISH} "CAD addins for exporting custom robot models directly into the simulator"
   LangString DESC_iExporter ${LANG_ENGLISH} "An Inventor addin used to export Autodesk Inventor Assemblies directly into the simulator"
   LangString DESC_fExporter ${LANG_ENGLISH} "A Fusion360 addin used to export Autodesk Fusion Assemblies directly into the simulator"
-  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
+  LangString DESC_Controller ${LANG_ENGLISH} "Virtual control system for developing and testing robot code in the simulator"
+  LangString DESC_Code ${LANG_ENGLISH} "A module for importing robot code into the simulator using the Synthesis API"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Engine} $(DESC_Engine)
   !insertmacro MUI_DESCRIPTION_TEXT ${Core} $(DESC_Core)
+  !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
   !insertmacro MUI_DESCRIPTION_TEXT ${Environments} $(DESC_Environments)
   !insertmacro MUI_DESCRIPTION_TEXT ${Exporter} $(DESC_Exporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${iExporter} $(DESC_iExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
-  !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Controller} $(DESC_Controller)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Code} $(DESC_Code)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
