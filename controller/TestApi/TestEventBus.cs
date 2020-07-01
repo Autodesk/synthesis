@@ -12,42 +12,16 @@ namespace TestApi
 {
     public class TestEvent : IEvent
     {
-        public TestEvent()
-        {
-        }
-        string IEvent.EventType
-        {
-            get
-            {
-                return "test";
-            }
-
-        }
-
-        byte[] IEvent.getData()
-        {
-            return null; ;
-        }
+        public TestEvent() { }
+        string IEvent.EventType => "test";
+        byte[] IEvent.getData() => null;
     }
 
     public class OtherEvent : IEvent
     {
-        public OtherEvent()
-        {
-        }
-        string IEvent.EventType
-        {
-            get
-            {
-                return "other";
-            }
-
-        }
-
-        byte[] IEvent.getData()
-        {
-            return null; ;
-        }
+        public OtherEvent() { }
+        string IEvent.EventType => "other";
+        byte[] IEvent.getData() => null;
     }
 
     public class Subscriber
@@ -90,7 +64,7 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count2, 3);
             Assert.AreEqual(s.count1, 1);
-            EventBus.resetAllListeners();
+            EventBus.ResetAllListeners();
         }
 
         [Test]
@@ -106,7 +80,7 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push<TestEvent>(new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 1);
-            EventBus.resetAllListeners();
+            EventBus.ResetAllListeners();
         }
 
         [Test]
@@ -122,7 +96,7 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push<TestEvent>("tag", new TestEvent()));
             Assert.AreEqual(s.count1, 1);
             Assert.AreEqual(s.count2, 1);
-            EventBus.resetAllListeners();
+            EventBus.ResetAllListeners();
         }
 
         [Test]
@@ -137,7 +111,7 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push<OtherEvent>("tag", new OtherEvent()));
             Assert.AreEqual(s.count1, -1);
             Assert.AreEqual(s.count2, 1);
-            EventBus.resetAllListeners();
+            EventBus.ResetAllListeners();
         }
 
         [Test]
