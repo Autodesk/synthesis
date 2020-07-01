@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SynthesisAPI.EventBus
 {
@@ -48,9 +48,9 @@ namespace SynthesisAPI.EventBus
                 }
                 return true;
             }
-            else if (Instance.TypeSubscribers.ContainsKey(eventInfo.EventType) && Instance.TypeSubscribers[type] != null)
+            else if (Instance.TypeSubscribers.ContainsKey(eventInfo.Name()) && Instance.TypeSubscribers[type] != null)
             {
-                Instance.TypeSubscribers[eventInfo.EventType](eventInfo);
+                Instance.TypeSubscribers[eventInfo.Name()](eventInfo);
                 return true;
             }
             else
@@ -95,13 +95,23 @@ namespace SynthesisAPI.EventBus
         public static bool RemoveTypeListener<TEvent>(EventCallback callback) where TEvent : IEvent
         {
             string type = typeof(TEvent).FullName;
-            if (Instance.TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
+            if (TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
             {
-                Instance.TypeSubscribers[type] -= callback;
-                return true;
+                if (Instance.TypeSubscribers[type].GetInvocationList().Contains(callback))
+                {
+                    // ReSharper disable once DelegateSubtraction
+                    TypeSubscribers[type] -= callback;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -112,25 +122,38 @@ namespace SynthesisAPI.EventBus
         ///  <returns>True if listener was successfully removed and false if tag was not found</returns>
         public static bool RemoveTagListener(string tag, EventCallback callback)
         {
-            if (Instance.TagSubscribers.ContainsKey(tag) && Instance.TagSubscribers[tag] != null)
+            if (TagSubscribers.ContainsKey(tag) && TagSubscribers[tag] != null)
             {
-                Instance.TagSubscribers[tag] -= callback;
-                return true;
+                if (TagSubscribers[tag].GetInvocationList().Contains(callback)) {
+                    TagSubscribers[tag] -= callback;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
+            {
                 return false;
+            }
         }
 
         public static void ResetAllListeners()
         {
-            Instance.TypeSubscribers = new Dictionary<string, EventCallback>();
-            Instance.TagSubscribers = new Dictionary<string, EventCallback>();
+            Inner.ResetAllListeners();
         }
+
         private class Inner
         {
             public Dictionary<string, EventCallback> TypeSubscribers;
             public Dictionary<string, EventCallback> TagSubscribers;
 
+            public static void ResetAllListeners()
+            {
+                _inst!.TypeSubscribers = new Dictionary<string, EventCallback>();
+                _inst!.TagSubscribers = new Dictionary<string, EventCallback>();
+            }
             private Inner()
             {
                 TypeSubscribers = new Dictionary<string, EventCallback>();
@@ -138,16 +161,11 @@ namespace SynthesisAPI.EventBus
             }
 
             private static Inner? _inst;
-            public static Inner InnerInstance
-            {
-                get
-                {
-                    if (_inst == null)
-                        _inst = new Inner();
-                    return _inst;
-                }
-            }
+            public static Inner InnerInstance => _inst ??= new Inner();
         }
+
+        private static Dictionary<string, EventCallback> TypeSubscribers => Instance.TypeSubscribers;
+        private static Dictionary<string, EventCallback> TagSubscribers => Instance.TagSubscribers;
 
         private static Inner Instance => Inner.InnerInstance;
     }
