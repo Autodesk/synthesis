@@ -627,7 +627,7 @@ namespace SynthesisAPI.AssetManager
 
                 Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
 
-                return newAsset == null ? null : (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                return newAsset == null ? null : (Asset?)FileSystem.AddEntry(targetPath, newAsset.Load(data));
             }
 
             public static readonly Inner InnerInstance = new Inner();

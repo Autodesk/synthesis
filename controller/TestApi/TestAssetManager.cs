@@ -10,7 +10,7 @@ namespace TestApi
     [TestFixture]
     public static class TestAssetManager
     {
-        [SetUp]
+        [OneTimeSetUp]
         public static void Init()
         {
             if (!System.IO.Directory.Exists(FileSystem.TestPath))

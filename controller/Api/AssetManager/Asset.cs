@@ -53,11 +53,16 @@ namespace SynthesisAPI.AssetManager
         internal virtual void DeleteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
+            if (Parent != null)
+            {
+                Parent.RemoveEntryInner(Name);
+            }
         }
 
         void IEntry.DeleteInner()
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
+            DeleteInner();
         }
 
         public abstract IEntry Load(byte[] data); // TODO make internal?
