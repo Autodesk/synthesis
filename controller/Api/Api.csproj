@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="glTFLoader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\glTF2Loader.1.0.0\lib\net452\glTFLoader.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -51,6 +54,7 @@
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="AssetManager\BinaryAsset.cs" />
     <Compile Include="AssetManager\CssAsset.cs" />
+    <Compile Include="AssetManager\GltfAsset.cs" />
     <Compile Include="AssetManager\JsonAsset.cs" />
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
@@ -87,7 +91,11 @@
     <Compile Include="VirtualFileSystem\FileSystem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="packages\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

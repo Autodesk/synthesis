@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
+using glTFLoader;
 
 namespace TestApi
 {
@@ -84,6 +85,13 @@ namespace TestApi
             var obj = test?.Deserialize<TestJSONObject>();
 
             Console.WriteLine(obj?.Text);
+        }
+
+        [Test]
+        public static void TestGltf()
+        {
+            var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
+            Assert.IsNotNull(deserializedFile);
         }
     }
 }
