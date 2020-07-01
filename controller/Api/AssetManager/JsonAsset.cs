@@ -15,7 +15,7 @@ namespace SynthesisAPI.AssetManager
 
         [ExposedApi]
         public TObject Deserialize<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
-            bool retainPosition = true) // TODO
+            bool retainPosition = true)
         {
             using var _ = ApiCallSource.StartExternalCall();
             return DeserializeInner<TObject>(offset, loc, retainPosition);
@@ -23,7 +23,7 @@ namespace SynthesisAPI.AssetManager
 
 
         internal TObject DeserializeInner<TObject>(long offset = long.MaxValue, SeekOrigin loc = SeekOrigin.Begin,
-            bool retainPosition = true) // TODO
+            bool retainPosition = true)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Read);
             long? returnPosition = null;

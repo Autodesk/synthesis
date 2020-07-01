@@ -18,14 +18,12 @@ namespace SynthesisAPI.AssetManager
         /// <summary>
         /// Asset-type-specific function delegate used to process asset data on import
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="targetPath"></param>
         /// <param name="name"></param>
         /// <param name="perm"></param>
         /// <param name="sourcePath"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public delegate Asset? HandlerFunc(byte[] data, string targetPath, string name, Permissions perm,
+        public delegate Asset? HandlerFunc(string name, Permissions perm,
             string sourcePath, params dynamic[] args);
 
         /// <summary>
@@ -413,7 +411,6 @@ namespace SynthesisAPI.AssetManager
         }
 
 
-        // TODO: Remove assetType
         /// <summary>
         /// Import a new asset into the virtual file system
         /// </summary>
@@ -469,51 +466,43 @@ namespace SynthesisAPI.AssetManager
                 TypeAssetTypes = new Dictionary<Type, (string, string)>();
 
                 RegisterAssetType<TextAsset>("text/plain", new[]{".txt"},
-                    (data, targetPath, name, perms, sourcePath, args) =>
-                {
-                    if (args.Length != 0)
+                    (name, perms, sourcePath, args) =>
                     {
-                        throw new Exception("Import of text/plain asset: wrong number of arguments");
-                    }
-
-                    TextAsset newAsset = new TextAsset(name, perms, sourcePath);
-                    return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
-                });
+                        if (args.Length != 0)
+                            throw new Exception("Import of text/plain asset: wrong number of arguments");
+                        return new TextAsset(name, perms, sourcePath);
+                    });
 
                 RegisterAssetType<XmlAsset>("text/xml", new[] { ".xml" },
-                    (data, targetPath, name, perm, sourcePath, args) =>
+                    (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)
                             throw new Exception("Import of text/xml asset: wrong number of arguments");
-                        XmlAsset newAsset = new XmlAsset(name, perm, sourcePath);
-                        return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                        return new XmlAsset(name, perm, sourcePath);
                     });
 
                 RegisterAssetType<JsonAsset>("text/json", new[] { ".json" },
-                    (data, targetPath, name, perm, sourcePath, args) =>
+                    (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)
                             throw new Exception("Import of text/json asset: wrong number of arguments");
-                        JsonAsset newAsset = new JsonAsset(name, perm, sourcePath);
-                        return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                        return new JsonAsset(name, perm, sourcePath);
                     });
 
                 RegisterAssetType<CssAsset>("text/css", new[] { ".css" },
-                   (data, targetPath, name, perm, sourcePath, args) =>
+                   (name, perm, sourcePath, args) =>
                    {
                        if (args.Length != 0)
                            throw new Exception("Import of text/css asset: wrong number of arguments");
-                       CssAsset newAsset = new CssAsset(name, perm, sourcePath);
-                       return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                       return new CssAsset(name, perm, sourcePath);
                    });
 
                 RegisterAssetType<SpriteAsset>("image/sprite", new[] { ".png", ".jpeg" },
-                   (data, targetPath, name, perm, sourcePath, args) =>
+                   (name, perm, sourcePath, args) =>
                    {
                        if (args.Length != 0)
                            throw new Exception("Import of image/sprite asset: wrong number of arguments");
-                       SpriteAsset newAsset = new SpriteAsset(name, perm, sourcePath);
-                       return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                       return new SpriteAsset(name, perm, sourcePath);
                    });
             }
 
@@ -576,7 +565,7 @@ namespace SynthesisAPI.AssetManager
                 return Import(types.Item1, types.Item2, createOnFail, data, targetPath, name, perm, sourcePath, args);
             }
 
-            public TAsset? Import<TAsset>(bool createOnFail, byte[]? data, string targetPath, string name, // TODO standardize argument order
+            public TAsset? Import<TAsset>(bool createOnFail, byte[]? data, string targetPath, string name,
                 Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
             {
                 var types = TypeAssetTypes[typeof(TAsset)];
@@ -584,7 +573,7 @@ namespace SynthesisAPI.AssetManager
                 var types2 = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
                 if (types.Item1 != types2.Item1 || types.Item2 != types2.Item2)
                 {
-                    // TODO error message
+                    throw new Exception("Mismatched asset types during import");
                 }
 
                 return (TAsset?)Import(types.Item1, types.Item2, createOnFail, data, targetPath, name, perm, sourcePath, args);
@@ -614,7 +603,7 @@ namespace SynthesisAPI.AssetManager
                 var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
                 if(type != types.Item1 || subtype != types.Item2)
                 {
-                    // TODO error message
+                    throw new Exception("Mismatched asset types during import");
                 }
 
                 string path = FileSystem.BasePath + sourcePath;
@@ -636,9 +625,9 @@ namespace SynthesisAPI.AssetManager
                     }
                 }
 
-                using var _ = ApiCallSource.IsInternal ? ApiCallSource.ForceInternalCall() : null; // TODO make this safe
+                Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
 
-                return AssetHandlers[type][subtype](data ?? new byte[0], targetPath, name, perm, path, args);
+                return newAsset == null ? null : (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
             }
 
             public static readonly Inner InnerInstance = new Inner();
