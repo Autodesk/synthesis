@@ -32,7 +32,7 @@ namespace TestApi
                 File.WriteAllText(FileSystem.TestPath + "test.json", json_string);
             }
 
-            string xml_string = "<TestXMLObject>\n\t<Text>Hello world of XML!</Text>\n</TestXMLObject>";
+            string xml_string = "<TestXmlObject>\n\t<Text>Hello world of XML!</Text>\n</TestXmlObject>";
 
             if (!File.Exists(FileSystem.TestPath + "test.xml"))
             {
