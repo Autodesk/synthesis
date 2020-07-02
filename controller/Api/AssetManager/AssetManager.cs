@@ -294,6 +294,16 @@ namespace SynthesisAPI.AssetManager
                        SpriteAsset newAsset = new SpriteAsset(name, owner, perm, sourcePath);
                        return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
                    });
+
+                RegisterAssetType("text/gltf",
+                   (byte[] data, string targetPath, string name, Guid owner, Permissions perm, string sourcePath,
+                       dynamic[] args) =>
+                   {
+                       if (args.Length != 0)
+                           throw new Exception("Import of text/gltf asset: wrong number of arguments");
+                       GltfAsset newAsset = new GltfAsset(name, owner, perm, sourcePath);
+                       return (Asset?)FileSystem.AddResource(targetPath, newAsset.Load(data));
+                   });
             }
             
             public Dictionary<string, Dictionary<string, HandlerFunc>> AssetHandlers;

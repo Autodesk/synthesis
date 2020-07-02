@@ -8,35 +8,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.VirtualFileSystem;
 using glTFLoader;
-using glTFLoader.Schema;
+using SharpGLTF;
+using SharpGLTF.Schema2;
+using System.Threading;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.AssetManager
 {
     public class GltfAsset : Asset
     {
-        private string PathToDir;
-
-        //public GltfAsset(string name, Guid owner, Permissions permissions, string path)
-        //{
-        //    Init(name, owner, permissions, path);
-        //}
-
-        public void Init()
+        public GltfAsset(string name, Guid owner, Permissions perm, string sourcePath)
         {
-            PathToDir = @"\Users\t_corbk\Documents\GitHub\synthesis\controller\Api\AssetManager\Full_Robot_Rough_v10_1593496385.glb";
-            GetGLTF(PathToDir);
-        }
+            Init(name, owner, perm, sourcePath);
+            //var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
+            // ParseJson
 
-        private static glTFLoader.Schema.Gltf GetGLTF(string filePath)
-        {
-            var deserializedFile = Interface.LoadModel(filePath);
+            ModelRoot model = null;
+            bool tryFix = false;
 
-            return deserializedFile;
+            try
+            {
+                var settings = tryFix ? SharpGLTF.Validation.ValidationMode.TryFix : SharpGLTF.Validation.ValidationMode.Strict;
+
+                // "Full_Robot_Rough_v10_1593496385.glb
+                model = ModelRoot.Load(sourcePath, settings);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed");
+            }
         }
 
         public override IEntry Load(byte[] data)
         {
-            throw new NotImplementedException();
+            var stream = new MemoryStream();
+            stream.Write(data, 0, data.Length);
+            stream.Position = 0;
+
+            return this;
         }
     }
 }

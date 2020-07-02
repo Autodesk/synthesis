@@ -8,6 +8,7 @@ using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
 using glTFLoader;
+using SharpGLTF.Schema2.LoadAndSave;
 
 namespace TestApi
 {
@@ -29,7 +30,7 @@ namespace TestApi
                 File.WriteAllText(FileSystem.TestPath + "test.txt", text_string);
             }
 
-            string json_string = "{\n\t\"Text\": \"Hello world of JSON!\"\n}";
+            string json_string = "{\n\t\"Text\": \"Hello  of JSON!\"\n}";
 
             if (!File.Exists(FileSystem.TestPath + "test.json"))
             {
@@ -90,8 +91,10 @@ namespace TestApi
         [Test]
         public static void TestGltf()
         {
-            var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
-            Assert.IsNotNull(deserializedFile);
+            //var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
+            //Assert.IsNotNull(deserializedFile);
+            var glb = AssetManager.Import<GltfAsset>("text/gltf", "/modules", "test.gltf", Program.TestGuid, Permissions.PublicRead, "Full_Robot_Rough_v10_1593496385.glb");
+            Assert.IsNotNull(glb);
         }
     }
 }
