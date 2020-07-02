@@ -619,7 +619,7 @@ namespace SynthesisAPI.AssetManager
                             data = new byte[0];
                         }
                     }
-                    else
+                    else if (data == null)
                     {
                         data = File.ReadAllBytes(path);
                     }
