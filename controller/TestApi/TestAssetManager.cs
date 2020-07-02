@@ -8,7 +8,6 @@ using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
 using glTFLoader;
-using SharpGLTF.Schema2.LoadAndSave;
 
 namespace TestApi
 {
