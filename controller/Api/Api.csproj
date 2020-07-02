@@ -58,6 +58,7 @@
     <Compile Include="AssetManager\LazyAsset.cs" />
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
+    <Compile Include="AssetManager\TextureAsset.cs" />
     <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
