@@ -22,6 +22,14 @@ namespace SynthesisAPI.AssetManager
             Init(name, owner, perm, sourcePath);
             //var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
             // ParseJson
+            // store final object in gltf asset
+        }
+
+        public override IEntry Load(byte[] data)
+        {
+            var stream = new MemoryStream();
+            stream.Write(data, 0, data.Length);
+            stream.Position = 0;
 
             ModelRoot model = null;
             bool tryFix = false;
@@ -31,19 +39,12 @@ namespace SynthesisAPI.AssetManager
                 var settings = tryFix ? SharpGLTF.Validation.ValidationMode.TryFix : SharpGLTF.Validation.ValidationMode.Strict;
 
                 // "Full_Robot_Rough_v10_1593496385.glb
-                model = ModelRoot.Load(sourcePath, settings);
+                model = ModelRoot.ReadGLB(stream, settings);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Failed");
             }
-        }
-
-        public override IEntry Load(byte[] data)
-        {
-            var stream = new MemoryStream();
-            stream.Write(data, 0, data.Length);
-            stream.Position = 0;
 
             return this;
         }

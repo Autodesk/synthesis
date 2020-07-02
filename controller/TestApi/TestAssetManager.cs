@@ -93,7 +93,8 @@ namespace TestApi
         {
             //var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
             //Assert.IsNotNull(deserializedFile);
-            var glb = AssetManager.Import<GltfAsset>("text/gltf", "/modules", "test.gltf", Program.TestGuid, Permissions.PublicRead, "Full_Robot_Rough_v10_1593496385.glb");
+            var fs = File.OpenRead(FileSystem.TestPath + "MultiDepthHierarchy_v9_1593489237.glb");
+            var glb = AssetManager.Import<GltfAsset>("text/gltf", fs, "/modules", "test.gltf", Program.TestGuid, Permissions.PublicRead, "MultiDepthHierarchy_v9_1593489237.glb");
             Assert.IsNotNull(glb);
         }
     }
