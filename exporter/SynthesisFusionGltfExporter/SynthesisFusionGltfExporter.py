@@ -51,10 +51,8 @@ try:
     from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
 
-    # Create our addin definition object
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)
 
-    # # Creates a basic Hello World message box on execute
     # my_addin.add_command(
     #     'Export Assembly',
     #     ExportCommand,
@@ -69,7 +67,6 @@ try:
     #     }
     # )
 
-    # Create an html palette to as an alternative UI
     my_addin.add_command(
         'Export to glTF',
         ExportPaletteShowCommand,
@@ -79,7 +76,7 @@ try:
             'workspace': 'FusionSolidEnvironment',
             'toolbar_panel_id': 'Export to glTF',
             'toolbar_tab_id': 'export_gltf_tab',
-            'toolbar_tab_name': 'glTF Exporter',
+            'toolbar_tab_name': 'Synthesis glTF Exporter',
             'cmd_resources': 'command_icons',
             'command_visible': True,
             'command_promoted': True,
