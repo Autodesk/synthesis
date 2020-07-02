@@ -82,6 +82,7 @@
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="UIManager\UIManager.cs" />
+    <Compile Include="VirtualFileSystem\DirectroyDepthExpection.cs" />
     <Compile Include="VirtualFileSystem\ExposedApi.cs" />
     <Compile Include="Utilities\ParamsHelper.cs" />
     <Compile Include="Utilities\ReflectHelper.cs" />

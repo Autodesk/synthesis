@@ -41,6 +41,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private static TEntry? AddEntryInner<TEntry>(string path, TEntry entry, Permissions perm = Permissions.PublicReadWrite) where TEntry : class, IEntry
         {
+            CheckPathDepth(DepthOfPath(path) + 1); // path depth plus 1 for new entry
             Directory? parentDir = CreatePathInner(path, perm);
 
             return parentDir?.AddEntryInner(entry);
@@ -62,6 +63,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? AddEntryInner(string path, IEntry entry, Permissions perm = Permissions.PublicReadWrite)
         {
+            CheckPathDepth(DepthOfPath(path) + 1); // path depth plus 1 for new entry
+
             Directory? parentDir = CreatePathInner(path, perm);
 
             return parentDir?.AddEntry(entry);
@@ -133,6 +136,24 @@ namespace SynthesisAPI.VirtualFileSystem
             return Directory.SplitPath(path).Length;
         }
 
+        private static void CheckPathDepth(string[] path)
+        {
+            CheckPathDepth(path.Length);
+        }
+
+        private static void CheckPathDepth(string path)
+        {
+            CheckPathDepth(DepthOfPath(path));
+        }
+
+        private static void CheckPathDepth(int depth)
+        {
+            if (depth > MaxDirectoryDepth)
+            {
+                throw new DirectroyDepthExpection(depth);
+            }
+        }
+
         /// <summary>
         /// Traverse the file system
         /// </summary>
@@ -148,25 +169,21 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static TEntry? TraverseInner<TEntry>(string path) where TEntry : class, IEntry
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
+            CheckPathDepth(path);
             return Instance.RootNode.TraverseInner<TEntry>(path);
         }
 
         [ExposedApi]
         public static Directory? CreatePath(string path, Permissions perm)
         {
+            using var _ = ApiCallSource.StartExternalCall();
             return CreatePathInner(path, perm);
         }
 
         internal static Directory? CreatePathInner(string path, Permissions perm)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
+            CheckPathDepth(path);
+
             string[] subpaths = Directory.SplitPath(path);
             string top;
             
@@ -212,10 +229,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string[] path)
         {
-            if (path.Length >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
+            CheckPathDepth(path);
             return Instance.RootNode.TraverseInner(path);
         }
 
@@ -234,10 +248,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string path)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
+            CheckPathDepth(path);
             return Instance.RootNode.TraverseInner(path);
         }
 

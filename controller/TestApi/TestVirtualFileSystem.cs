@@ -106,15 +106,16 @@ namespace TestApi
             string path = "/temp";
             try
             {
-                for (var i = 1; i < FileSystem.MaxDirectoryDepth; i++)
+                Console.WriteLine(FileSystem.DepthOfPath(path));
+                for (var i = FileSystem.DepthOfPath(path); i < FileSystem.MaxDirectoryDepth + 1; i++)
                 {
-                    Directory dir = new Directory("TestMaxDepthDir" + i,  Permissions.PublicReadOnly);
+                    Directory dir = new Directory("TestMaxDepthDir" + i,  Permissions.PublicReadWrite);
                     FileSystem.AddEntry(path, dir);
                     path += "/" + dir.Name;
                 }
                 Assert.Fail();
             }
-            catch (Exception)
+            catch (DirectroyDepthExpection)
             {
                 Assert.Pass();
             }

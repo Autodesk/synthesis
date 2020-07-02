@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApi", "..\TestApi\TestA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockApi", "..\MockApi\MockApi.csproj", "{6533CA2E-B8FF-4013-9748-2F1FD84DFCB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenchmarkApi", "..\BenchmarkApi\BenchmarkApi.csproj", "{7DCB8E5B-BF7D-47B4-A486-C0A93B059BEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6533CA2E-B8FF-4013-9748-2F1FD84DFCB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6533CA2E-B8FF-4013-9748-2F1FD84DFCB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6533CA2E-B8FF-4013-9748-2F1FD84DFCB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DCB8E5B-BF7D-47B4-A486-C0A93B059BEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DCB8E5B-BF7D-47B4-A486-C0A93B059BEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DCB8E5B-BF7D-47B4-A486-C0A93B059BEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DCB8E5B-BF7D-47B4-A486-C0A93B059BEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
