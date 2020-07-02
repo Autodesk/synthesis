@@ -254,25 +254,29 @@ class GLTFDesignExporter(object):
 
         """
 
-        if self.checkIfAppearancesAreBugged():
+        if self.enableMaterials and self.checkIfAppearancesAreBugged():
             result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
-                                        f"Do you want to continue the export with materials turned off?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
-            if result != adsk.core.DialogResults.DialogYes:
-                return None
-            self.enableMaterials = False
+                                           f"Do you want to continue the export with materials turned off?\n"
+                                           f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
+            if result == 0 or result == 2: # yes
+                self.enableMaterials = False
+            elif result == 3:
+                pass
+            else:
+                return
 
         self.progressBar = self.ao.ui.createProgressDialog()
         self.progressBar.isCancelButtonShown = False
 
         self.progressBar.reset()
-        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Waiting for save path selection...", 0, 100, 0)
+        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
 
         self.defaultAppearance = self.getDefaultAppearance()
 
         self.gltf.scene = self.exportScene()  # export the current fusion document
 
         self.progressBar.message = "Serializing data to file..."
-        self.progressBar.progressValue+=1
+        self.progressBar.progressValue = self.progressBar.maximumValue - 1
 
         self.perfWatch.switch_segment('encoding and file writing')
 
@@ -329,7 +333,7 @@ class GLTFDesignExporter(object):
                  f"accessors: {len(self.gltf.accessors)}\n"
                  f"bufferViews: {len(self.gltf.bufferViews)}\n"
                  f"buffers: {len(self.gltf.buffers)}\n"
-                 f"joints: {len(self.gltf.extras['joints'])}\n"
+                 f"joints: {len(self.gltf.extras['joints']) if 'joints' in self.gltf.extras else 'could not export'}\n"
                  )
 
         if len(self.warnings) == 0:
@@ -348,20 +352,29 @@ class GLTFDesignExporter(object):
 
         # self.deDuplicateAppearanceNames()
 
-        self.exportMeshes(self.ao.design.allComponents)
+        self.componentRevIdToMeshTemplate = {}
+        self.componentRevIdToMatOverrideDict = {}
+        self.materialNameToGltfIndex = {}
 
         self.perfWatch.switch_segment('exporting node tree')
-        self.progressBar.message = "Exporting occurrence tree..."
-        self.progressBar.progressValue+=1
-        scene.nodes.append(self.exportRootNode(self.ao.root_comp))
+        self.progressBar.message = "Reading list of fusion components..."
+        self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
+        # self.progressBar.message = "Exporting occurrence tree..."
+        # self.progressBar.progressValue+=1
+        rootNode = self.exportRootNode(self.ao.root_comp)
+        if rootNode is not None:
+            scene.nodes.append(rootNode)
         self.perfWatch.stop()
 
-        self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
+        try:
+            self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
+        except RuntimeError:
+            self.ao.ui.messageBox("Could not export joints due to a bug in the Fusion API; export will continue with joints disabled.") # todo: report this bug
 
         self.gltf.scenes.append(scene)
         return len(self.gltf.scenes) - 1
 
-    def exportRootNode(self, rootComponent: adsk.fusion.Component) -> GLTFIndex:
+    def exportRootNode(self, rootComponent: adsk.fusion.Component) -> Optional[GLTFIndex]:
         """Recursively exports the component hierarchy of the open fusion document to glTF nodes, starting with the root component.
         
         Args:
@@ -372,7 +385,7 @@ class GLTFDesignExporter(object):
         node = Node()
         node.name = rootComponent.name
 
-        node.mesh = self.exportMeshWithOverrideCached(rootComponent.revisionId, -1)
+        node.mesh = self.exportMeshWithOverrideCached(rootComponent, -1)
 
         scale = 0.01 # fusion uses cm, glTF uses meters, so scale the root transform matrix
         node.matrix = [
@@ -382,11 +395,14 @@ class GLTFDesignExporter(object):
             0, 0, 0, 1,
         ]
 
-        node.children = [self.exportNode(occur, -1) for occur in rootComponent.occurrences]
+        node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
+
+        if len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0:
+            return
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
 
-    def exportNode(self, occur: adsk.fusion.Occurrence, materialOverride: GLTFIndex) -> GLTFIndex:
+    def exportNode(self, occur: adsk.fusion.Occurrence, materialOverride: GLTFIndex) -> Optional[GLTFIndex]:
         """Recursively exports the component hierarchy of the open fusion document to glTF nodes, starting with an occurrence in the fusion hierarchy.
 
         Args:
@@ -409,10 +425,13 @@ class GLTFDesignExporter(object):
             node.matrix = [flatMatrix[i + j * 4] for i in range(4) for j in range(4)]  # transpose the flat 4x4 matrix3d
 
         if not self.exportVisibleBodiesOnly or occur.isVisible:
-            node.mesh = self.exportMeshWithOverrideCached(occur.component.revisionId, materialOverride)
+            node.mesh = self.exportMeshWithOverrideCached(occur.component, materialOverride)
         # node.extras['isGrounded'] = occur.isGrounded
 
-        node.children = [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences]
+        node.children = [index for index in [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences] if index is not None]
+
+        if len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0:
+            return
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
 
@@ -424,29 +443,29 @@ class GLTFDesignExporter(object):
 
         Returns: A mapping from unique ids of fusion components to their index in the glTF mesh list.
         """
-        self.componentRevIdToMeshTemplate = {}
-        self.componentRevIdToMatOverrideDict = {}
-        self.materialNameToGltfIndex = {}
+        # self.componentRevIdToMeshTemplate = {}
+        # self.componentRevIdToMatOverrideDict = {}
+        # self.materialNameToGltfIndex = {}
 
-        self.perfWatch.switch_segment("reading list of fusion components")
-        self.progressBar.message = "Reading list of fusion components..."
-        fusionComponents = list(fusionComponents)
-        numComponents = len(fusionComponents)
-        self.progressBar.maximumValue = numComponents + 2
-        self.perfWatch.stop()
+        # self.perfWatch.switch_segment("reading list of fusion components")
+        # self.progressBar.message = "Reading list of fusion components..."
+        # fusionComponents = list(fusionComponents)
+        # numComponents = len(fusionComponents)
+        # self.progressBar.maximumValue = numComponents + 2
+        # self.perfWatch.stop()
+        #
+        # for index, fusionComponent in enumerate(fusionComponents):  # accessing the list of components is slow, ~1sec/500 components
+        #     self.progressBar.message = f"Calculating meshes for component {index} of {numComponents}..."
+        #     self.progressBar.progressValue = index
+        #     self.exportMesh(fusionComponent)
 
-        for index, fusionComponent in enumerate(fusionComponents):  # accessing the list of components is slow, ~1sec/500 components
-            self.progressBar.message = f"Calculating meshes for component {index} of {numComponents}..."
-            self.progressBar.progressValue = index
-            self.exportMesh(fusionComponent)
-
-    def exportMesh(self, fusionComponent: adsk.fusion.Component) -> None:
+    def exportMesh(self, fusionComponent: adsk.fusion.Component) -> Optional[Mesh]:
         """Exports a fusion component to a glTF mesh.
 
         Args:
             fusionComponent: The fusion component to export.
 
-        Returns: The index of the exported mesh in the glTF mesh list.
+        Returns: The mesh that was exported.
         """
         bodies = fusionComponent.bRepBodies
         if len(bodies) == 0:
@@ -473,6 +492,10 @@ class GLTFDesignExporter(object):
 
         self.componentRevIdToMeshTemplate[revisionId] = mesh
         self.componentRevIdToMatOverrideDict[revisionId] = {}
+        numMeshes = len(self.componentRevIdToMeshTemplate)
+        self.progressBar.progressValue = numMeshes
+        self.progressBar.message = f"Calculating meshes for component {numMeshes} of {self.progressBar.maximumValue}..."
+        return mesh
 
     def exportPrimitiveBRepBodyAutosplit(self, fusionBRepBody: adsk.fusion.BRepBody) -> List[Primitive]:
         """Exports a fusion bRep body to a glTF primitive.
@@ -652,31 +675,34 @@ class GLTFDesignExporter(object):
         self.gltf.bufferViews.append(bufferView)
         return len(self.gltf.bufferViews) - 1
 
-    def exportMeshWithOverrideCached(self, componentRevId: FusionRevId, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
+    def exportMeshWithOverrideCached(self, fusionComponent: adsk.fusion.Component, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
         """Makes a copy of a glTF mesh with the provided glTF override material, or returns a cached material-overridden mesh if one exists.
 
         This method requires the mesh template map (componentRevIdToMeshTemplate) to be filled.
 
         Args:
-            componentRevId: The revision id of the fusion component which the mesh should be
+            fusionComponent: The fusion component which the mesh should be derived from.
             overrideMatIndex: The index in the glTF object's material array of the material the returned mesh should be overridden with.
 
         Returns: The index of the material-overridden mesh in the meshes list of the glTF object.
 
         """
         # If we've already created a gltf mesh with the same material override, just use that one
-        if componentRevId not in self.componentRevIdToMeshTemplate:
-            return None  # mesh was empty
-        overrideDict = self.componentRevIdToMatOverrideDict[componentRevId]
-        if overrideMatIndex in overrideDict:
-            self.eventCounter.event("used cached mesh with materials")
-            return overrideDict[overrideMatIndex]
+        if fusionComponent.revisionId not in self.componentRevIdToMeshTemplate:
+            meshTemplate = self.exportMesh(fusionComponent)
+        else:
+            overrideDict = self.componentRevIdToMatOverrideDict[fusionComponent.revisionId]
+            if overrideMatIndex in overrideDict:
+                self.eventCounter.event("used cached mesh with materials")
+                return overrideDict[overrideMatIndex]
+            meshTemplate = self.componentRevIdToMeshTemplate.get(fusionComponent.revisionId, None)
 
-        meshTemplate = self.componentRevIdToMeshTemplate.get(componentRevId, None)
-        assert meshTemplate is not None
+        # Create a mesh with the material override from the template
+        if meshTemplate is None:
+            return
         newMeshIndex = self.exportMeshWithOverride(meshTemplate, overrideMatIndex)
 
-        overrideDict[overrideMatIndex] = newMeshIndex
+        self.componentRevIdToMatOverrideDict[fusionComponent.revisionId][overrideMatIndex] = newMeshIndex
         return newMeshIndex
 
     def exportMeshWithOverride(self, templateMesh: Mesh, overrideMat: GLTFIndex) -> GLTFIndex:
