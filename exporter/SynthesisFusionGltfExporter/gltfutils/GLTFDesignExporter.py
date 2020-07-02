@@ -19,9 +19,58 @@ from pyutils.timers import SegmentedStopwatch
 
 from gltfutils.GLTFConstants import ComponentType, DataType
 
-from ..proto.synthesis_importbuf_pb2 import Joint
+from proto.gltf_extras_pb2 import Joint
 
 from google.protobuf.json_format import MessageToDict
+
+
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True):
+    ao = AppObjects()
+
+    if ao.document.dataFile is None:
+        ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
+        return
+
+    start = time.perf_counter()
+    startRealtime = time.time()
+
+    exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly)
+    if showFileDialog:
+        dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
+        dialog.filter = "glTF Binary (*.glb)"
+        dialog.isMultiSelectEnabled = False
+        dialog.title = "Select glTF Export Location"
+        dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.glb'
+        results = dialog.showSave()
+        if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
+            ao.ui.messageBox(f"The glTF export was cancelled.")
+            return
+        filePath = dialog.filename
+
+    else:
+        filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
+    exportResults = exporter.saveGLB(filePath)
+    if exportResults is None:
+        ao.ui.messageBox(f"The glTF export was cancelled.")
+        return
+    perfResults, bufferResults, warnings, modelStats, eventCounter = exportResults
+
+    end = time.perf_counter()
+    endRealtime = time.time()
+    finishedMessage = (f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n"
+                       f"File saved to {filePath}\n\n"
+                       f"==== Export Performance Results ====\n"
+                       f"{perfResults}\n"
+                       f"==== Buffer Writing Results ====\n"
+                       f"{bufferResults}\n"
+                       f"==== Model Stats ====\n"
+                       f"{modelStats}\n"
+                       f"==== Events Counter ====\n"
+                       f"{eventCounter}\n"
+                       f"==== Warnings ====\n"
+                       f"{warnings}\n"
+                       )
+    ao.ui.messageBox(finishedMessage)
 
 
 class GLTFDesignExporter(object):
@@ -231,7 +280,10 @@ class GLTFDesignExporter(object):
         self.primaryBuffer.byteLength = self.calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
 
         # ==== do NOT make changes to the glTF object beyond this point ====
-        jsonBytes = bytearray(self.gltf.gltf_to_json().encode("utf-8"))  # type: bytearray
+        json = self.gltf.gltf_to_json()
+        with open(filepath+".debug.json", "wt") as jsonFile:
+            jsonFile.write(json)
+        jsonBytes = bytearray(json.encode("utf-8"))  # type: bytearray
 
         # add padding bytes to the end of each chunk data
         self.alignByteArrayToBoundary(jsonBytes)
@@ -277,6 +329,7 @@ class GLTFDesignExporter(object):
                  f"accessors: {len(self.gltf.accessors)}\n"
                  f"bufferViews: {len(self.gltf.bufferViews)}\n"
                  f"buffers: {len(self.gltf.buffers)}\n"
+                 f"joints: {len(self.gltf.extras['joints'])}\n"
                  )
 
         if len(self.warnings) == 0:
@@ -303,7 +356,7 @@ class GLTFDesignExporter(object):
         scene.nodes.append(self.exportRootNode(self.ao.root_comp))
         self.perfWatch.stop()
 
-        scene.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
+        self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
 
         self.gltf.scenes.append(scene)
         return len(self.gltf.scenes) - 1

@@ -3,60 +3,10 @@ import adsk.fusion
 import adsk.cam
 
 import json
-import time
 
 import apper
-from apper import AppObjects
-from fusionutils.DebugHierarchy import *
-from ..gltfutils.GLTFDesignExporter import GLTFDesignExporter
+from ..gltfutils.GLTFDesignExporter import exportDesign
 
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True):
-    ao = AppObjects()
-
-    if ao.document.dataFile is None:
-        ao.ui.messageBox("Export error: You must save your Fusion design before exporting!")
-        return
-
-    start = time.perf_counter()
-    startRealtime = time.time()
-
-    exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly)
-    if showFileDialog:
-        dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
-        dialog.filter = "glTF Binary (*.glb)"
-        dialog.isMultiSelectEnabled = False
-        dialog.title = "Select glTF Export Location"
-        dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.glb'
-        results = dialog.showSave()
-        if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
-            ao.ui.messageBox(f"The glTF export was cancelled.")
-            return
-        filePath = dialog.filename
-
-    else:
-        filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
-    exportResults = exporter.saveGLB(filePath)
-    if exportResults is None:
-        ao.ui.messageBox(f"The glTF export was cancelled.")
-        return
-    perfResults, bufferResults, warnings, modelStats, eventCounter = exportResults
-
-    end = time.perf_counter()
-    endRealtime = time.time()
-    finishedMessage = (f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n"
-                       f"File saved to {filePath}\n\n"
-                       f"==== Export Performance Results ====\n"
-                       f"{perfResults}\n"
-                       f"==== Buffer Writing Results ====\n"
-                       f"{bufferResults}\n"
-                       f"==== Model Stats ====\n"
-                       f"{modelStats}\n"
-                       f"==== Events Counter ====\n"
-                       f"{eventCounter}\n"
-                       f"==== Warnings ====\n"
-                       f"{warnings}\n"
-                       )
-    ao.ui.messageBox(finishedMessage)
 
 # Class for a Fusion 360 Palette Command
 class ExportPaletteShowCommand(apper.PaletteCommandBase):

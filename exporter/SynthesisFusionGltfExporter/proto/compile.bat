@@ -1,1 +1,1 @@
-protoc --python_out=. .\synthesis_importbuf.proto
+protoc --python_out=. .\gltf_extras.proto
