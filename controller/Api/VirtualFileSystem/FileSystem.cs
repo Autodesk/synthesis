@@ -7,7 +7,7 @@ using System.IO;
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
-    /// A virtual file system that manages resources and assets as a tree
+    /// A virtual file system that manages entries and assets as a tree
     /// </summary>
     public static class FileSystem
     {
@@ -26,71 +26,100 @@ namespace SynthesisAPI.VirtualFileSystem
         public static readonly string TestPath = BasePath + $"test{Path.DirectorySeparatorChar}";
 
         /// <summary>
-        /// Add a new resource to a the file system at a given destination
+        /// Add a new entry to a the file system at a given destination
         /// </summary>
-        /// <typeparam name="TResource"></typeparam>
+        /// <typeparam name="TEntry"></typeparam>
         /// <param name="path"></param>
-        /// <param name="resource"></param>
+        /// <param name="entry"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TResource? AddResource<TResource>(string path, TResource resource, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
+        public static TEntry? AddEntry<TEntry>(string path, TEntry entry, Permissions perm = Permissions.PublicReadWrite) where TEntry : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return AddResourceInner(path, resource, perm);
+            return AddEntryInner(path, entry, perm);
         }
 
-        private static TResource? AddResourceInner<TResource>(string path, TResource resource, Permissions perm = Permissions.PublicReadWrite) where TResource : class, IEntry
+        private static TEntry? AddEntryInner<TEntry>(string path, TEntry entry, Permissions perm = Permissions.PublicReadWrite) where TEntry : class, IEntry
         {
+            CheckPath(Directory.MakePath(path, entry.Name));
             Directory? parentDir = CreatePathInner(path, perm);
 
-            return parentDir?.AddResourceInner(resource);
+            return parentDir?.AddEntryInner(entry);
         }
 
         /// <summary>
-        /// Add a new resource to the file system at a given desitnation
+        /// Add a new entry to the file system at a given desitnation
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="resource"></param>
+        /// <param name="entry"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static IEntry? AddResource(string path, IEntry resource, Permissions perm = Permissions.PublicReadWrite)
+        public static IEntry? AddEntry(string path, IEntry entry, Permissions perm = Permissions.PublicReadWrite)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return AddResourceInner(path, resource, perm);
+            return AddEntryInner(path, entry, perm);
         }
 
-        internal static IEntry? AddResourceInner(string path, IEntry resource, Permissions perm = Permissions.PublicReadWrite)
+        internal static IEntry? AddEntryInner(string path, IEntry entry, Permissions perm = Permissions.PublicReadWrite)
         {
+            CheckPath(Directory.MakePath(path, entry.Name));
+
             Directory? parentDir = CreatePathInner(path, perm);
 
-            return parentDir?.AddResource(resource);
+            return parentDir?.AddEntry(entry);
         }
 
         [ExposedApi]
-        public static void RemoveResource(string path, string name)
+        public static void DeleteEntry(string path)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            RemoveResourceInner(path, name);
+            DeleteEntryInner(path);
         }
 
-        internal static void RemoveResourceInner(string path, string name)
+        internal static void DeleteEntryInner(string path)
+        {
+            TraverseInner(path)?.DeleteInner();
+        }
+
+        [ExposedApi]
+        public static void DeleteEntry(string path, string name)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            DeleteEntryInner(path, name);
+        }
+
+        internal static void DeleteEntryInner(string path, string name)
         {
             Directory? parentDir = (Directory?)TraverseInner(path);
 
-            parentDir?.RemoveEntryInner(name);
+            parentDir?.DeleteEntryInner(name);
         }
 
         [ExposedApi]
-        public static bool ResourceExists(string path, string name)
+        public static bool EntryExists(string path)
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return ResourceExistsInner(path, name);
+            return EntryExistsInner(path);
         }
 
-        internal static bool ResourceExistsInner(string path, string name)
+        internal static bool EntryExistsInner(string path)
+        {
+            return TraverseInner(path) != null;
+        }
+
+        [ExposedApi]
+        public static bool EntryExists(string path, string name)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return EntryExistsInner(path, name);
+        }
+
+        internal static bool EntryExistsInner(string path, string name)
         {
             Directory? parentDir = (Directory?)TraverseInner(path);
 
@@ -107,65 +136,72 @@ namespace SynthesisAPI.VirtualFileSystem
             return Directory.SplitPath(path).Length;
         }
 
+        private static string[] CheckPath(string path)
+        {
+            return CheckPath(Directory.SplitPath(path));
+        }
+
+        private static string[] CheckPath(string[] path)
+        {
+            var (top, actualPath) = Directory.GetTopDirectory(path);
+            if (top != Instance.RootNode.Name)
+            {
+                throw new DirectroyExpection("Path outside of virtual file system");
+            }
+            if (path.Length > MaxDirectoryDepth)
+            {
+                throw new DirectroyDepthExpection(path.Length);
+            }
+            return actualPath;
+        }
+
         /// <summary>
         /// Traverse the file system
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TResource? Traverse<TResource>(string path) where TResource : class, IEntry
+        public static TEntry? Traverse<TEntry>(string path) where TEntry : class, IEntry
         {
             using var _ = ApiCallSource.StartExternalCall();
 
-            return TraverseInner<TResource>(path);
+            return TraverseInner<TEntry>(path);
         }
 
-        internal static TResource? TraverseInner<TResource>(string path) where TResource : class, IEntry
+        internal static TEntry? TraverseInner<TEntry>(string path) where TEntry : class, IEntry
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
-            return Instance.RootNode.TraverseInner<TResource>(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner<TEntry>(actualPath);
         }
 
         [ExposedApi]
         public static Directory? CreatePath(string path, Permissions perm)
         {
+            using var _ = ApiCallSource.StartExternalCall();
             return CreatePathInner(path, perm);
         }
 
         internal static Directory? CreatePathInner(string path, Permissions perm)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
-            string[] subpaths = Directory.SplitPath(path);
+            var subpaths = CheckPath(path);
             string top;
-            
-            (top, subpaths) = Directory.GetTopDirectory(subpaths);
 
-            Directory? dir = Instance.RootNode.TraverseInner<Directory>(top);
+            Directory? dir = Instance.RootNode;
             
             while(subpaths.Length > 0) {
                 (top, subpaths) = Directory.GetTopDirectory(subpaths);
 
                 if (!dir.EntryExistsInner<Directory>(top))
                 {
-                    if (dir.EntryExistsInner(top))
-                    {
-                        throw new Exception("Attempting to create directory with same name as another entry \"" + top + "\"");
-                    }
-                    dir = dir.AddResourceInner(new Directory(top, perm));
+                    dir = dir.AddEntryInner(new Directory(top, perm));
                 }
                 else
                 {
-                    dir = dir.TraverseInner<Directory>(dir.Name + "/" + top);
+                    dir = dir.TraverseInner<Directory>(top);
                 }
                 if(dir == null)
                 {
-                    throw new Exception("Failed to create directory");
+                    throw new DirectroyExpection("Failed to create directory");
                 }
             }
             return dir;
@@ -186,11 +222,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string[] path)
         {
-            if (path.Length >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
-            return Instance.RootNode.TraverseInner(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner(actualPath);
         }
 
         /// <summary>
@@ -208,11 +241,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string path)
         {
-            if (DepthOfPath(path) >= MaxDirectoryDepth)
-            {
-                throw new Exception($"FileSystem: traversing path would exceed maximum directory depth of {MaxDirectoryDepth}");
-            }
-            return Instance.RootNode.TraverseInner(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner(actualPath);
         }
 
         /// <summary>
@@ -329,9 +359,9 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 using var _ = ApiCallSource.ForceInternalCall();
                 RootNode = new Directory("", Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
-                RootNode.AddResourceInner(new Directory("environment", Permissions.PublicReadWrite));
-                RootNode.AddResourceInner(new Directory("modules", Permissions.PublicReadWrite));
-                RootNode.AddResourceInner(new Directory("temp", Permissions.PublicReadWrite));
+                RootNode.AddEntryInner(new Directory("environment", Permissions.PublicReadWrite));
+                RootNode.AddEntryInner(new Directory("modules", Permissions.PublicReadWrite));
+                RootNode.AddEntryInner(new Directory("temp", Permissions.PublicReadWrite));
             }
 
             /// <summary>

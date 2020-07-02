@@ -50,9 +50,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssetManager\Asset.cs" />
+    <Compile Include="AssetManager\AssetImportEvent.cs" />
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="AssetManager\BinaryAsset.cs" />
     <Compile Include="AssetManager\CssAsset.cs" />
+    <Compile Include="AssetManager\DummyAssetTypes.cs" />
     <Compile Include="AssetManager\JsonAsset.cs" />
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="UIManager\UIManager.cs" />
+    <Compile Include="VirtualFileSystem\DirectroyExpection.cs" />
     <Compile Include="VirtualFileSystem\ExposedApi.cs" />
     <Compile Include="Utilities\ParamsHelper.cs" />
     <Compile Include="Utilities\ReflectHelper.cs" />

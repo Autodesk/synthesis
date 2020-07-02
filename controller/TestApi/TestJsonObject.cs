@@ -2,7 +2,7 @@
 
 namespace TestApi
 {
-    [JsonObject("TestJSONObject")]
+    [JsonObject("TestJsonObject")]
     public class TestJsonObject
     {
         [JsonProperty("Text")]

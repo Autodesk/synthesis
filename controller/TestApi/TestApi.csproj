@@ -63,9 +63,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEnvironmentManager.cs" />
     <Compile Include="TestEventBus.cs" />
-    <Compile Include="TestJSONObject.cs" />
+    <Compile Include="TestJsonObject.cs" />
     <Compile Include="TestVirtualFileSystem.cs" />
-    <Compile Include="TestXMLObject.cs" />
+    <Compile Include="TestXmlObject.cs" />
     <Compile Include="TestPreferenceManager.cs" />
   </ItemGroup>
   <ItemGroup>

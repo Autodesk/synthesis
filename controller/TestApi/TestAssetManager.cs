@@ -3,13 +3,17 @@ using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
+using SynthesisAPI.AssetManager.DummyAssetTypes;
+using SynthesisAPI.EventBus;
+using System.Collections.Generic;
 
 namespace TestApi
 {
     [TestFixture]
     public static class TestAssetManager
     {
-        [SetUp]
+
+        [OneTimeSetUp]
         public static void Init()
         {
             if (!System.IO.Directory.Exists(FileSystem.TestPath))
@@ -31,7 +35,7 @@ namespace TestApi
                 File.WriteAllText(FileSystem.TestPath + "test.json", json_string);
             }
 
-            string xml_string = "<TestXMLObject>\n\t<Text>Hello world of XML!</Text>\n</TestXMLObject>";
+            string xml_string = "<TestXmlObject>\n\t<Text>Hello world of XML!</Text>\n</TestXmlObject>";
 
             if (!File.Exists(FileSystem.TestPath + "test.xml"))
             {
@@ -48,7 +52,7 @@ namespace TestApi
 
             Assert.AreSame(testTxt, test);
 
-            Console.WriteLine(testTxt?.ReadToEnd());
+            Assert.AreEqual("Hello World!", testTxt?.ReadToEnd());
         }
 
         [Test]
@@ -65,7 +69,7 @@ namespace TestApi
 
             var obj = testXml?.Deserialize<TestXmlObject>();
 
-            Console.WriteLine(obj?.Text);
+            Assert.AreEqual("Hello world of XML!", obj?.Text);
         }
 
         [Test]
@@ -79,7 +83,7 @@ namespace TestApi
 
             var obj = test?.Deserialize<TestJsonObject>();
 
-            Console.WriteLine(obj?.Text);
+            Assert.AreEqual("Hello world of JSON!", obj?.Text);
         }
 
         [Test]
@@ -91,10 +95,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test2.json");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text);
         }
 
         [Test]
@@ -105,10 +105,6 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test3.json");
 
             Assert.AreSame(testJson, test);
-
-            var obj = test?.Deserialize<TestJsonObject>();
-
-            Console.WriteLine(obj?.Text);
         }
 
         [Test]
@@ -119,10 +115,52 @@ namespace TestApi
             var test = AssetManager.GetAsset<JsonAsset>("/modules/module1/test.json");
 
             Assert.AreSame(testJson, test);
+        }
 
-            var obj = test?.Deserialize<TestJsonObject>();
+        [Test]
+        public static void TestDummyStructs()
+        {
+            var testJson = AssetManager.Import<Text, Json>("/modules", "test.json2", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
-            Console.WriteLine(obj?.Text);
+            var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json2");
+
+            Assert.AreSame(testJson, test);
+        }
+
+        private class AssetImportSubscriber
+        {
+            public List<IEvent> Events { get; private set; }
+            public AssetImportSubscriber()
+            {
+                Events = new List<IEvent>();
+            }
+
+            public void Handler(IEvent e)
+            {
+                Events.Add(e);
+            }
+        }
+
+        [Test]
+        public static void TestAssetImportEvent()
+        {
+            AssetImportSubscriber s = new AssetImportSubscriber();
+            EventBus.NewTagListener(AssetImportEvent.Tag, s.Handler);
+            EventBus.NewTypeListener<TestEvent>(s.Handler);
+
+            string location = "/temp";
+            string name = "test3.txt";
+            string type = "text/plain";
+
+            TextAsset testTxt = AssetManager.Import<TextAsset>(type, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+
+            Assert.AreEqual(s.Events.Count, 1);
+            Assert.AreEqual(3, s.Events[0].GetArguments().Length);
+            Assert.AreEqual(name, s.Events[0].GetArguments()[0]);
+            Assert.AreEqual(location, s.Events[0].GetArguments()[1]);
+            Assert.AreEqual(type, s.Events[0].GetArguments()[2]);
+
+            EventBus.ResetAllListeners();
         }
     }
 }

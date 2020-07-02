@@ -2,7 +2,7 @@
 
 namespace TestApi
 {
-    [XmlRoot("TestXMLObject")]
+    [XmlRoot("TestXmlObject")]
     public class TestXmlObject
     {
         [XmlElement("Text")]

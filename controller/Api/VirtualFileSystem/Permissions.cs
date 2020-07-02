@@ -3,7 +3,7 @@
 namespace SynthesisAPI.VirtualFileSystem
 {
     /// <summary>
-    /// Access permissions for resources in the virtual file system
+    /// Access permissions for entries in the virtual file system
     /// </summary>
     [Flags]
     public enum Permissions
