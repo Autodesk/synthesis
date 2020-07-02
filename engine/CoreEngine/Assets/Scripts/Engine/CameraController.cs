@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Synthesis.Simulator.Input;
+// using Synthesis.Simulator.Input;
 using Synthesis.Simulator.Interaction;
-using Synthesis.UI.Style;
 using System.Xml;
 using System.IO;
 

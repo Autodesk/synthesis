@@ -3,9 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using Synthesis.Core.Util;
 using UnityEngine;
-using Synthesis.Simulator.Input;
+// using Synthesis.Simulator.Input;
 using Synthesis.Util;
-using Synthesis.UI.Style;
 
 namespace Synthesis.Simulator
 {
@@ -20,19 +19,7 @@ namespace Synthesis.Simulator
         /// <summary>
         /// Constructs the <see cref="Synthesis.Simulator.SimulatorHandler"/>
         /// </summary>
-        private SimulatorHandler() {
-            // Load default style
-            try
-            {
-                Style s;
-                if (Application.isEditor) s = new Style(@".\Styles\style.xml");
-                else s = new Style(IOHandler.FileStorage + Path.PathSeparator + "style.xml");
-                StyleHandler.SelectStyle(s);
-            } catch (Exception e)
-            {
-                Debug.Log("Failed to load style");
-            }
-        }
+        private SimulatorHandler() { }
 
         #region Load Functions
 

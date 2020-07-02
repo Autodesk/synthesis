@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SynthesisAPI.InputManager.Axis;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Digital
 {
     /// <summary>
     /// For keyboard input
@@ -16,6 +17,9 @@ namespace Synthesis.Simulator.Input
         public static implicit operator KeyDigital(KeyCode[] ks) => new KeyDigital(ks);
         public static implicit operator KeyDigital(KeyCode k) => new KeyDigital(k);
         public static implicit operator int[](KeyDigital i) => i.keys.ToIntArray();
+
+        public static explicit operator KeyDigital(string[] keyStrings) => FromStringArray(keyStrings);
+        public static explicit operator string[](KeyDigital data) => data.ToStringArray();
 
         public int Length { get => keys.Length; }
 
@@ -165,10 +169,35 @@ namespace Synthesis.Simulator.Input
             string a = keys[0].ToString();
             for (int i = 1; i < keys.Length; i++)
             {
-                a += keys[i].ToString();
+                a += ',' + keys[i].ToString();
             }
 
             return a;
+        }
+
+        public string[] ToStringArray()
+        {
+            List<string> keyStrings = new List<string>();
+
+            foreach (KeyCode k in keys)
+            {
+                keyStrings.Add(k.ToString());
+            }
+
+            return keyStrings.ToArray();
+        }
+
+        public static KeyDigital FromStringArray(string[] keyStrings)
+        {
+            List<KeyCode> keyCodes = new List<KeyCode>();
+
+            KeyCode temp;
+            foreach (string k in keyStrings)
+            {
+                if (!Enum.TryParse(k, out temp)) throw new ArgumentException(string.Format("Failed to read \"{0}\" as a KeyCode", k));
+                keyCodes.Add(temp);
+            }
+            return keyCodes.ToArray();
         }
 
         public override bool Equals(object obj)

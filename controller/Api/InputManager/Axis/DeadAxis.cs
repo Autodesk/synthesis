@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
     /// <summary>
     /// Used for giving a placeholder axis that always returns 0 for the value

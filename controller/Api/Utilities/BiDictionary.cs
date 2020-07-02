@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Synthesis.Util
+namespace SynthesisAPI.Utilities
 {
-    public class SynList<A, B> : IEnumerable<KeyValuePair<A, B>>
+    public class BiDictionary<A, B> : IEnumerable<KeyValuePair<A, B>>
     {
         private List<KeyValuePair<A, B>> colleciton = new List<KeyValuePair<A, B>>();
 

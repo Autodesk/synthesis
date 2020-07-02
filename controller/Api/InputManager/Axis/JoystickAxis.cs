@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
     /// <summary>
     /// Used for axes on gamepads

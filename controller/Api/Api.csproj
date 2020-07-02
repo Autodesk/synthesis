@@ -61,6 +61,18 @@
     <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
+    <Compile Include="InputManager\Axis\DeadAxis.cs" />
+    <Compile Include="InputManager\Axis\DualAxis.cs" />
+    <Compile Include="InputManager\Axis\IAxisInput.cs" />
+    <Compile Include="InputManager\Axis\JoystickAxis.cs" />
+    <Compile Include="InputManager\Axis\UnityAxis.cs" />
+    <Compile Include="InputManager\Behaviors\InputGlobalBehavior.cs" />
+    <Compile Include="InputManager\Digital\ButtonDigital.cs" />
+    <Compile Include="InputManager\Digital\IDigitalInput.cs" />
+    <Compile Include="InputManager\Digital\KeyDigital.cs" />
+    <Compile Include="InputManager\Events\AxisValueEvent.cs" />
+    <Compile Include="InputManager\Events\DigitalStateEvent.cs" />
+    <Compile Include="InputManager\Behaviors\InputBehavior.cs" />
     <Compile Include="EventBus\IEvent.cs" />
     <Compile Include="InputManager\InputManager.cs" />
     <Compile Include="Modules\Attributes\BuiltinComponentAttribute.cs" />
@@ -87,6 +99,7 @@
     <Compile Include="Utilities\Result.cs" />
     <Compile Include="Utilities\SharedBinaryStream.cs" />
     <Compile Include="Utilities\SharedTextStream.cs" />
+    <Compile Include="Utilities\BiDictionary.cs" />
     <Compile Include="VirtualFileSystem\Directory.cs" />
     <Compile Include="VirtualFileSystem\IEntry.cs" />
     <Compile Include="VirtualFileSystem\Permissions.cs" />

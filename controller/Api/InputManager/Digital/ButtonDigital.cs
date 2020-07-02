@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SynthesisAPI.InputManager.Axis;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Digital
 {
     /// <summary>
     /// For buttons on a gamepad

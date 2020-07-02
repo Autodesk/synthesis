@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
     /// <summary>
     /// Interface for axis input. These are intended to be a read in a single direction.
