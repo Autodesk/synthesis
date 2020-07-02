@@ -10,6 +10,21 @@ namespace TestApi
         public static string FilePrefix = typeof(TestVirtualFileSystem).Name;
 
         [Test]
+        public static void TestTraverse()
+        {
+            Assert.AreEqual("temp", FileSystem.Traverse<Directory>("/temp")?.Name);
+            try
+            {
+                FileSystem.Traverse<Directory>("temp");
+                Assert.Fail();
+            }
+            catch (DirectroyExpection e)
+            {
+                Assert.NotNull(e);
+            }
+        }
+
+        [Test]
         public static void TestAddEntry()
         {
             string dirLoc = "/temp";

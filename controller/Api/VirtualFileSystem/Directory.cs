@@ -43,7 +43,7 @@ namespace SynthesisAPI.VirtualFileSystem
         public Directory(string name, Permissions perm)
         {
             Init(name, perm);
-            Entries = new Dictionary<string, IEntry> {{"", this}, {".", this}, {"..", null!}};
+            Entries = new Dictionary<string, IEntry> {{".", this}, {"..", null!}};
         }
 
         [ExposedApi]
@@ -82,11 +82,17 @@ namespace SynthesisAPI.VirtualFileSystem
             DeleteInner();
         }
 
+        [ExposedApi]
+        public static string MakePath(params string[] subpaths)
+        {
+            return String.Join(DirectorySeparatorChar.ToString(), subpaths);
+        }
+
         internal static (string, string[]) GetTopDirectory(string[] paths)
         {
             if(paths.Length == 0)
             {
-                throw new Exception();
+                throw new DirectroyExpection();
             }
             string target = paths[0];
             paths = paths.Skip(1).ToArray();
@@ -113,27 +119,9 @@ namespace SynthesisAPI.VirtualFileSystem
             string target;
             (target, subpaths) = GetTopDirectory(subpaths);
 
-            if (target != Name)
-            {
-                if (target == ".." && Parent != null)
-                {
-                    if (subpaths.Length == 0)
-                    {
-                        return Parent;
-                    }
-                    return Parent.TraverseInner(subpaths);
-                }
-                return null;
-            }
+            var next = TryGetEntryInner(target);
 
-            if(subpaths.Length == 0)
-            {
-                return this;
-            }
-
-            var next = TryGetEntryInner(subpaths[0]);
-
-            if (subpaths.Length == 1)
+            if (subpaths.Length == 0)
             {
                 return next;
             }
@@ -170,6 +158,22 @@ namespace SynthesisAPI.VirtualFileSystem
             using var _ = ApiCallSource.StartExternalCall();
 
             return TraverseImpl(subpaths);
+        }
+
+        [ExposedApi]
+        public TEntry? Traverse<TEntry>(string[] subpaths) where TEntry : class, IEntry
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return TraverseInner<TEntry>(subpaths);
+        }
+
+
+        internal TEntry? TraverseInner<TEntry>(string[] subpaths) where TEntry : class, IEntry
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+
+            return (TEntry?)TraverseImpl(subpaths);
         }
 
         /// <summary>
@@ -252,9 +256,13 @@ namespace SynthesisAPI.VirtualFileSystem
         private IEntry AddEntryImpl(IEntry value)
         {
             ApiCallSource.AssertAccess(Permissions, Access.Write);
+            if (value.Name.Equals(""))
+            {
+                throw new DirectroyExpection("Directory: adding entry with empty name");
+            }
             if (Entries.ContainsKey(value.Name))
             {
-                throw new Exception($"Directory: adding entry with existing name \"{value.Name}\"");
+                throw new DirectroyExpection($"Directory: adding entry with existing name \"{value.Name}\"");
             }
             Entries.Add(value.Name, value);
 
@@ -265,7 +273,7 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 if (dir.Entries[".."] != null)
                 {
-                    throw new Exception($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
+                    throw new DirectroyExpection($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
                 }
                 dir.Entries[".."] = dir.Parent;
             }
@@ -286,7 +294,7 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
-                throw new Exception("Cannot remove this \".\" or parent \"..\" from directory entries");
+                throw new DirectroyExpection("Cannot remove this \".\" or parent \"..\" from directory entries");
             }
 
             if (Entries.ContainsKey(key))
@@ -307,7 +315,7 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
-                throw new Exception("Cannot remove this \".\" or parent \"..\" from directory entries");
+                throw new DirectroyExpection("Cannot remove this \".\" or parent \"..\" from directory entries");
             }
 
             if (Entries.ContainsKey(key))

@@ -8,7 +8,7 @@ namespace TestApi
 
         public static void Main(string[] args)
         {
-            TestVirtualFileSystem.TestMaxDepth();
+
         }
     }
 }

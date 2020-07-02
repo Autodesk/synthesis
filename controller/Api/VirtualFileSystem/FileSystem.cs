@@ -41,7 +41,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         private static TEntry? AddEntryInner<TEntry>(string path, TEntry entry, Permissions perm = Permissions.PublicReadWrite) where TEntry : class, IEntry
         {
-            CheckPathDepth(DepthOfPath(path) + 1); // path depth plus 1 for new entry
+            CheckPath(Directory.MakePath(path, entry.Name));
             Directory? parentDir = CreatePathInner(path, perm);
 
             return parentDir?.AddEntryInner(entry);
@@ -63,7 +63,7 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? AddEntryInner(string path, IEntry entry, Permissions perm = Permissions.PublicReadWrite)
         {
-            CheckPathDepth(DepthOfPath(path) + 1); // path depth plus 1 for new entry
+            CheckPath(Directory.MakePath(path, entry.Name));
 
             Directory? parentDir = CreatePathInner(path, perm);
 
@@ -136,22 +136,23 @@ namespace SynthesisAPI.VirtualFileSystem
             return Directory.SplitPath(path).Length;
         }
 
-        private static void CheckPathDepth(string[] path)
+        private static string[] CheckPath(string path)
         {
-            CheckPathDepth(path.Length);
+            return CheckPath(Directory.SplitPath(path));
         }
 
-        private static void CheckPathDepth(string path)
+        private static string[] CheckPath(string[] path)
         {
-            CheckPathDepth(DepthOfPath(path));
-        }
-
-        private static void CheckPathDepth(int depth)
-        {
-            if (depth > MaxDirectoryDepth)
+            var (top, actualPath) = Directory.GetTopDirectory(path);
+            if (top != Instance.RootNode.Name)
             {
-                throw new DirectroyDepthExpection(depth);
+                throw new DirectroyExpection("Path outside of virtual file system");
             }
+            if (path.Length > MaxDirectoryDepth)
+            {
+                throw new DirectroyDepthExpection(path.Length);
+            }
+            return actualPath;
         }
 
         /// <summary>
@@ -169,8 +170,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static TEntry? TraverseInner<TEntry>(string path) where TEntry : class, IEntry
         {
-            CheckPathDepth(path);
-            return Instance.RootNode.TraverseInner<TEntry>(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner<TEntry>(actualPath);
         }
 
         [ExposedApi]
@@ -182,33 +183,25 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static Directory? CreatePathInner(string path, Permissions perm)
         {
-            CheckPathDepth(path);
-
-            string[] subpaths = Directory.SplitPath(path);
+            var subpaths = CheckPath(path);
             string top;
-            
-            (top, subpaths) = Directory.GetTopDirectory(subpaths);
 
-            Directory? dir = Instance.RootNode.TraverseInner<Directory>(top);
+            Directory? dir = Instance.RootNode;
             
             while(subpaths.Length > 0) {
                 (top, subpaths) = Directory.GetTopDirectory(subpaths);
 
                 if (!dir.EntryExistsInner<Directory>(top))
                 {
-                    if (dir.EntryExistsInner(top))
-                    {
-                        throw new Exception("Attempting to create directory with same name as another entry \"" + top + "\"");
-                    }
                     dir = dir.AddEntryInner(new Directory(top, perm));
                 }
                 else
                 {
-                    dir = dir.TraverseInner<Directory>(dir.Name + Directory.DirectorySeparatorChar + top);
+                    dir = dir.TraverseInner<Directory>(top);
                 }
                 if(dir == null)
                 {
-                    throw new Exception("Failed to create directory");
+                    throw new DirectroyExpection("Failed to create directory");
                 }
             }
             return dir;
@@ -229,8 +222,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string[] path)
         {
-            CheckPathDepth(path);
-            return Instance.RootNode.TraverseInner(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner(actualPath);
         }
 
         /// <summary>
@@ -248,8 +241,8 @@ namespace SynthesisAPI.VirtualFileSystem
 
         internal static IEntry? TraverseInner(string path)
         {
-            CheckPathDepth(path);
-            return Instance.RootNode.TraverseInner(path);
+            var actualPath = CheckPath(path);
+            return Instance.RootNode.TraverseInner(actualPath);
         }
 
         /// <summary>
