@@ -32,8 +32,14 @@ namespace SynthesisAPI.AssetManager
             stream.Position = 0;
 
             ModelRoot model = null;
-            bool tryFix = false;
 
+            GetModelInfo(model, stream, false);
+
+            return this;
+        }
+
+        private ModelRoot GetModelInfo(ModelRoot model, MemoryStream stream, bool tryFix = false)
+        {
             try
             {
                 var settings = tryFix ? SharpGLTF.Validation.ValidationMode.TryFix : SharpGLTF.Validation.ValidationMode.Strict;
@@ -46,7 +52,7 @@ namespace SynthesisAPI.AssetManager
                 Console.WriteLine("Failed");
             }
 
-            return this;
+            return model;
         }
     }
 }

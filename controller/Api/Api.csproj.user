@@ -3,4 +3,8 @@
   <PropertyGroup>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Project</StartAction>
+    <StartProgram>C:\Program Files\Unity\Editor\Unity.exe</StartProgram>
+  </PropertyGroup>
 </Project>
