@@ -131,6 +131,9 @@ namespace SynthesisAPI.PreferenceManager
                 deserialized ?? new Dictionary<Guid, Dictionary<string, object>>(); // Failed to load; reset to default
 
             _changesSaved = true;
+
+            EventBus.EventBus.Push("prefs/io",
+                new PreferencesIOEvent(PreferencesIOEvent.Status.PostLoad));
             return true;
         }
 
@@ -154,6 +157,9 @@ namespace SynthesisAPI.PreferenceManager
         public static bool SaveInner()
         {
             ImportPreferencesAsset();
+            
+            EventBus.EventBus.Push("prefs/io",
+                new PreferencesIOEvent(PreferencesIOEvent.Status.PreSave));
 
             Instance.Asset?.SerializeInner(Instance.Preferences);
             Instance.Asset?.SaveToFileInner();

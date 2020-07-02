@@ -30,7 +30,7 @@ namespace SynthesisAPI.InputManager.Digital
 
         #region Getting Key States
 
-        public IDigitalInput.DigitalState GetState()
+        public InputManager.DigitalState GetState()
         {
             bool getAtleastOneDown = false;
             int up = keys.Length;
@@ -59,15 +59,15 @@ namespace SynthesisAPI.InputManager.Digital
             if (down == 0)
             {
                 if (getAtleastOneDown)
-                    return IDigitalInput.DigitalState.Down;
+                    return InputManager.DigitalState.Down;
                 else
-                    return IDigitalInput.DigitalState.Held;
+                    return InputManager.DigitalState.Held;
             } else if (up == 0)
             {
-                return IDigitalInput.DigitalState.Up;
+                return InputManager.DigitalState.Up;
             } else
             {
-                return IDigitalInput.DigitalState.None;
+                return InputManager.DigitalState.None;
             }
         }
 
@@ -128,8 +128,8 @@ namespace SynthesisAPI.InputManager.Digital
         public float GetValue(bool positiveOnly = false)
         {
             var state = GetState();
-            return state == IDigitalInput.DigitalState.Held ||
-                state == IDigitalInput.DigitalState.Down ? 1 : 0;
+            return state == InputManager.DigitalState.Held ||
+                state == InputManager.DigitalState.Down ? 1 : 0;
         }
 
         public static KeyDigital GetCurrentlyActiveKeyDigital(params KeyCode[] keysToIgnore)

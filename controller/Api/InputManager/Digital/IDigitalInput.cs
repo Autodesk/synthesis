@@ -10,11 +10,8 @@ namespace SynthesisAPI.InputManager.Digital
     public interface IDigitalInput
     {
         int Length { get; }
-        DigitalState GetState();
+        InputManager.DigitalState GetState();
 
-        enum DigitalState
-        {
-            Up, Down, Held, None
-        }
+        
     }
 }

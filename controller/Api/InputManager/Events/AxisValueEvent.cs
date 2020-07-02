@@ -1,4 +1,5 @@
 ﻿using System;
+using SynthesisAPI.EventBus;
 
 
 namespace SynthesisAPI.InputManager.Events
@@ -7,7 +8,7 @@ namespace SynthesisAPI.InputManager.Events
     /// Event for updating subscribers on a registered axis
     /// TODO: Inherit yet to be made Event interface
     /// </summary>
-    public struct AxisValueEvent
+    public struct AxisValueEvent : IEvent
     {
         /// <summary>
         /// Customized name used for identification of the value
@@ -20,5 +21,7 @@ namespace SynthesisAPI.InputManager.Events
             Name = name;
             Value = value;
         }
+
+        public object[] GetArguments() => new object[] { Name, Value };
     }
 }

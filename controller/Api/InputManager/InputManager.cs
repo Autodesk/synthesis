@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Utilities;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules;
 using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Axis;
@@ -9,7 +10,7 @@ using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.EventBus;
 using PM = SynthesisAPI.PreferenceManager.PreferenceManager;
 using UnityInput = UnityEngine.Input;
-using SynthesisAPI.InputManager.Behaviors;
+using SynthesisAPI.PreferenceManager;
 
 namespace SynthesisAPI.InputManager
 {
@@ -21,9 +22,9 @@ namespace SynthesisAPI.InputManager
         private static readonly Guid MyGuid = Guid.NewGuid();
 
         // Map for binding DigitalInput to EventHandlers
-        public static BiDictionary<IDigitalInput, string> MappedDigital = new BiDictionary<IDigitalInput, string>();
+        private static BiDictionary<IDigitalInput, string> _mappedDigital = new BiDictionary<IDigitalInput, string>();
         // Used for giving custom names to axes
-        public static Dictionary<string, IAxisInput> MappedAxes = new Dictionary<string, IAxisInput>();
+        private static Dictionary<string, IAxisInput> _mappedAxes = new Dictionary<string, IAxisInput>();
 
         // Used to identify controller type because ps4 be wack
         public static Dictionary<int, ControllerType> ControllerRegistry = new Dictionary<int, ControllerType>();
@@ -32,7 +33,7 @@ namespace SynthesisAPI.InputManager
         static InputManager()
         {
             // TODO: Find new way of attaching to update loop
-            _ = InputGlobalBehavior.Instance;
+            // _ = InputGlobalBehavior.Instance;
 
             for (int i = 1; i <= 11; i++)
             {
@@ -43,23 +44,46 @@ namespace SynthesisAPI.InputManager
             LastControllerNames = UnityInput.GetJoystickNames();
             EvaluateControllerTypes();
 
-            MappedDigital[(KeyDigital)new [] { "A" }] = "test_action";
+            // _mappedDigital[(KeyDigital)new [] { "A" }] = "test_action";
 
             // Assign general axes. (Do I need this???)
-            MappedAxes["MouseX"] = (DualAxis)"Mouse X";
-            MappedAxes["MouseY"] = (DualAxis)"Mouse Y";
+            _mappedAxes["MouseX"] = (DualAxis)"Mouse X";
+            _mappedAxes["MouseY"] = (DualAxis)"Mouse Y";
 
             // TODO: Subscribe PostLoad and PreSave to corresponding events
+            
+            EventBus.EventBus.NewTagListener("prefs/io", e =>
+            {
+                if ((PreferencesIOEvent.Status)e.GetArguments()[0] == PreferencesIOEvent.Status.PreSave)
+                    PreSave();
+                else
+                    PostLoad();
+            });
         }
+
+        public static void AssignAxis(string name, IAxisInput input) => _mappedAxes[name] = input;
+
+        public static float GetAxisValue(string axisName, bool positiveOnly = false) =>
+            _mappedAxes.ContainsKey(axisName)? _mappedAxes[axisName].GetValue(positiveOnly) : 0.0f;
+
+        public static void AssignDigital(string name, IDigitalInput input, EventBus.EventBus.EventCallback? callback = null)
+        {
+            _mappedDigital[name] = input;
+            if (callback != null)
+                EventBus.EventBus.NewTagListener($"input/{name}", callback);
+        }
+
+        public static void AssignCallback(string name, EventBus.EventBus.EventCallback callback) =>
+            EventBus.EventBus.NewTagListener($"input/{name}", callback);
 
         private static void PostLoad()
         {
-            MappedDigital = PM.GetPreference<BiDictionary<IDigitalInput, string>>(MyGuid, "all_bindings", useJsonReserialization: true);
+            _mappedDigital = PM.GetPreference<BiDictionary<IDigitalInput, string>>(MyGuid, "all_bindings", useJsonDeserialization: true);
         }
 
         private static void PreSave()
         {
-            PM.SetPreference(MyGuid, "all_bindings", MappedDigital);
+            PM.SetPreference(MyGuid, "all_bindings", _mappedDigital);
         }
 
         #region Getting active inputs
@@ -186,5 +210,70 @@ namespace SynthesisAPI.InputManager
         }
 
         #endregion
+        
+        public enum DigitalState
+        {
+            Up = 1, Down = 2, Held = 3, None = 0
+        }
+        
+        #region Systems
+        
+        /// <summary>
+        /// A behavior to actively update the InputManager
+        /// TODO: Attach to a global object and keep this class to a single instance
+        /// </summary>
+        public class InputSystem : SystemBase
+        {
+            /// <summary>
+            /// Updates all the key presses.
+            /// TODO: Publish axes to event bus as well.
+            /// </summary>
+            public override void Update()
+            {
+                InputManager.DigitalState inputState;
+                foreach (var kvp in InputManager._mappedDigital)
+                {
+                    inputState = kvp.Key.GetState();
+                    if (inputState != InputManager.DigitalState.None)
+                    {
+                        // EventBus.Publish(new DigitalStateEvent(kvp.Value, inputState))
+                        // TODO: Publish to event bus with value identifier and state
+                        EventBus.EventBus.Push($"input/{kvp.Value}",
+                            new DigitalStateEvent(kvp.Value, inputState));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Checks for controller change, and if so, re-evaluates which controllers
+            /// are ps4 and which aren't.
+            /// </summary>
+            public override void FixedUpdate()
+            {
+                int res = InputManager.LastControllerNames.Length;
+                string[] currentNames = UnityInput.GetJoystickNames();
+                if (res == currentNames.Length)
+                {
+                    for (int i = 0; i < currentNames.Length; i++)
+                    {
+                        if (currentNames[i].Equals(InputManager.LastControllerNames[i])) res -= 1;
+                    }
+                }
+                if (res != 0)
+                {
+                    InputManager.LastControllerNames = currentNames;
+                    InputManager.EvaluateControllerTypes();
+                } 
+            }
+        }
+
+        public class InputGlobalSystem : GlobalSystem<InputSystem>
+        {
+            public InputGlobalSystem() : base() { }
+        }
+        
+        #endregion
     }
+    
+    
 }
