@@ -26,5 +26,7 @@ namespace SynthesisAPI.Utilities
 
             return false;
         }
+    public static T CastObject<T>(object input) => (T) input;
     }
+
 }

@@ -31,8 +31,8 @@ namespace TestApi
             Assert.True(e2.EntityExists());
             TestComponent t = new TestComponent();
             AnotherTestComponent at = new AnotherTestComponent();
-            e2.SetComponent(t); //EnvironmentManager.SetComponent(e2,t)
-            e2.SetComponent(at);
+            e2.AddComponent(t); //EnvironmentManager.SetComponent(e2,t)
+            e2.AddComponent(at);
             Assert.Null(e1.GetComponent(typeof(TestComponent)));
             Assert.Null(e1.GetComponent(typeof(AnotherTestComponent)));
             Assert.Null(e1.GetComponent<TestComponent>());
@@ -42,7 +42,7 @@ namespace TestApi
             Assert.AreSame(e2.GetComponent<TestComponent>(), t);
             Assert.AreSame(e2.GetComponent<AnotherTestComponent>(), at);
             TestComponent t2 = new TestComponent();
-            e2.SetComponent(t2);
+            e2.AddComponent(t2);
             Assert.AreSame(e2.GetComponent<TestComponent>(), t2);
             EnvironmentManager.Clear();
         }
@@ -63,7 +63,7 @@ namespace TestApi
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(e1.EntityExists());
             TestComponent t = new TestComponent();
-            e1.SetComponent(t);
+            e1.AddComponent(t);
             Assert.AreSame(e1.GetComponent<TestComponent>(), t);
             e1.RemoveComponent<TestComponent>();
             Assert.Null(e1.GetComponent<TestComponent>());
@@ -76,7 +76,7 @@ namespace TestApi
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(e1.EntityExists());
             TestComponent t = new TestComponent();
-            e1.SetComponent(t);
+            e1.AddComponent(t);
             Assert.AreEqual(e1.GetComponent<TestComponent>(), t);
             Assert.True(e1.RemoveEntity());
             Assert.False(e1.RemoveEntity());
@@ -97,14 +97,14 @@ namespace TestApi
             Assert.False(e1.RemoveEntity());
             Assert.Null(e1.GetComponent<TestComponent>());
             TestComponent t = new TestComponent();
-            e1.SetComponent(t);
+            e1.AddComponent(t);
             Assert.Null(e1.GetComponent<TestComponent>());
             EnvironmentManager.AddEntity();
             Entity e2 = 2;
             Assert.False(e2.EntityExists());
             Assert.False(e2.RemoveEntity());
             Assert.Null(e2.GetComponent<TestComponent>());
-            e2.SetComponent(t);
+            e2.AddComponent(t);
             Assert.Null(e2.GetComponent<TestComponent>());
             EnvironmentManager.Clear();
         }
