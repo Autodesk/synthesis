@@ -254,26 +254,43 @@ class GLTFDesignExporter(object):
 
         """
 
+        self.progressBar = self.ao.ui.createProgressDialog()
+        self.progressBar.isCancelButtonShown = False
+        self.progressBar.reset()
+        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
+
+        adsk.doEvents()
+
         if self.enableMaterials and self.checkIfAppearancesAreBugged():
             result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
                                            f"Do you want to continue the export with materials turned off?\n"
                                            f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
             if result == 0 or result == 2: # yes
                 self.enableMaterials = False
-            elif result == 3:
+            elif result == 3: # no
                 pass
-            else:
+            else: # cancel
                 return
 
-        self.progressBar = self.ao.ui.createProgressDialog()
-        self.progressBar.isCancelButtonShown = False
-
-        self.progressBar.reset()
-        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
+        try:
+            self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
+        except RuntimeError: # todo: report this bug
+            result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
+                                           f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
+            if result == 0 or result == 2: # yes
+                pass
+            else: # no
+                return
 
         self.defaultAppearance = self.getDefaultAppearance()
 
         self.gltf.scene = self.exportScene()  # export the current fusion document
+
+        # Clean tags
+        for mesh in self.gltf.meshes:
+            for prim in mesh.primitives:
+                if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
+                    prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
 
         self.progressBar.message = "Serializing data to file..."
         self.progressBar.progressValue = self.progressBar.maximumValue - 1
@@ -365,11 +382,6 @@ class GLTFDesignExporter(object):
         if rootNode is not None:
             scene.nodes.append(rootNode)
         self.perfWatch.stop()
-
-        try:
-            self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
-        except RuntimeError:
-            self.ao.ui.messageBox("Could not export joints due to a bug in the Fusion API; export will continue with joints disabled.") # todo: report this bug
 
         self.gltf.scenes.append(scene)
         return len(self.gltf.scenes) - 1
