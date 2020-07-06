@@ -1,4 +1,4 @@
-﻿namespace SynthesisAPI.Modules
+﻿namespace SynthesisAPI.EnvironmentManager
 {
 	public abstract class SystemBase : Component
 	{

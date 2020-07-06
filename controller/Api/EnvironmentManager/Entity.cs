@@ -1,13 +1,6 @@
-﻿using SynthesisAPI.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SynthesisAPI.Modules
+﻿namespace SynthesisAPI.EnvironmentManager
 {
-    class Entity
+    public class Entity
     {
         public ulong GetId() => _id;
 

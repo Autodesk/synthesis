@@ -70,10 +70,10 @@
     <Compile Include="Modules\Attributes\ExportedFieldAttribute.cs" />
     <Compile Include="Modules\Attributes\ExportedMethodAttribute.cs" />
     <Compile Include="Modules\Attributes\ModuleExportAttribute.cs" />
-    <Compile Include="Modules\SystemBase.cs" />
-    <Compile Include="Modules\Component.cs" />
-    <Compile Include="Modules\Components\Mesh.cs" />
-    <Compile Include="Modules\Entity.cs" />
+    <Compile Include="EnvironmentManager\SystemBase.cs" />
+    <Compile Include="EnvironmentManager\Component.cs" />
+    <Compile Include="EnvironmentManager\Components\Mesh.cs" />
+    <Compile Include="EnvironmentManager\Entity.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
