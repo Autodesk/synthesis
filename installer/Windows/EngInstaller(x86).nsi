@@ -35,6 +35,7 @@ RequestExecutionLevel admin
   ; Installer GUI Pages
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "Apache2.txt"
+  !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
 
@@ -93,7 +94,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 		
 SectionEnd
 
-Section "Synthesis (required)"
+Section "Engine" Engine
 
   SectionIn RO
   
@@ -126,21 +127,46 @@ Section "Synthesis (required)"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
-  
-	; Extract field files
-	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
-	File /r "Fields\*"
 
 SectionEnd
 
-Section "Robot Files"
+Section "Robot Models" RobotFiles
 
   ; Set extraction path for preloaded robot files
   SetOutPath $APPDATA\Autodesk\Synthesis\Robots
-
   File /r "Robots\*"
 
 SectionEnd
+
+Section "Environments" Environments
+
+	; Extract field files
+	SetOutPath $APPDATA\Autodesk\Synthesis\Environments
+	File /r "Environments\*"
+	
+SectionEnd  
+
+Section "Controller" Code
+
+	; Set extraction path to Module directory
+	SetOutPath $APPDATA\Autodesk\Synthesis\Modules
+
+SectionEnd
+  
+;--------------------------------
+;Component Descriptions
+
+  LangString DESC_Engine ${LANG_ENGLISH} "The Simulator Engine is the physics environment the exported robots and environments are loaded into along with the default modules"
+  LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
+  LangString DESC_Environments ${LANG_ENGLISH} "A library of default environments pre-loaded into the simulator"
+  LangString DESC_Code ${LANG_ENGLISH} "A module for importing robot code into the simulator using the Synthesis API"
+
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${Engine} $(DESC_Engine)
+  !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Environments} $(DESC_Environments)
+  !insertmacro MUI_DESCRIPTION_TEXT ${Code} $(DESC_Code)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
   
