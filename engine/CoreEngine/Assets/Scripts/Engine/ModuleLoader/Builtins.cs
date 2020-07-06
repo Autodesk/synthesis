@@ -7,7 +7,7 @@ using Engine.ModuleLoader;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
-using Mesh = SynthesisAPI.Modules.Components.Mesh;
+using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 namespace Core.ModuleLoader
 {
 	public sealed class MeshAdapter : MonoBehaviour, IApiAdapter<Mesh>

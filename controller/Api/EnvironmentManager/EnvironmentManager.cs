@@ -9,6 +9,8 @@ using UnityEngine.PlayerLoop;
 // 2nd 16 bits represent generation
 using Entity = System.UInt32;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager
 {
     /// <summary>
@@ -89,20 +91,20 @@ namespace SynthesisAPI.EnvironmentManager
             return (TComponent?) GetComponent(entity, typeof(TComponent));
         }
 
-        public static Component? GetComponent(this Entity entity,Type componentType)
+        public static Component? GetComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
                 return components.Get(entity,componentType);
             return null;
         }
 
+        public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity);
         /// <summary>
         /// Set component of type, TComponent, to the given entity
         /// </summary>
-        /// <typeparam name="T">Component Type</typeparam>
         /// <param name="entity">given entity</param>
         /// <param name="component">instance of component to be set</param>
-        public static void SetComponent(this Entity entity, Component component)
+        public static void AddComponent(this Entity entity, Component component)
         {
             if (EntityExists(entity))
                 components.Set(entity, component);
@@ -210,6 +212,19 @@ namespace SynthesisAPI.EnvironmentManager
                 }
                 else
                     return null;
+            }
+
+            public List<Component>? GetAll(Entity entity)
+            {
+                var output = new List<Component>();
+                foreach (var type in componentDict.Keys)
+                {
+                    var entry = Get(entity, type);
+                    if (entry != null)
+                        output.Add(entry);
+                }
+
+                return output;
             }
 
             public void Clear()
