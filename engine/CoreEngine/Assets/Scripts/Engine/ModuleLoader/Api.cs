@@ -35,15 +35,26 @@ namespace Engine.ModuleLoader
 	{
 		public void Awake()
 		{
-			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider()); 
-            var modules = new List<(ZipArchive, ModuleMetadata)>();
+			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+			foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+				a.GetTypes()))
+			{
+
+				var instance = Activator.CreateInstance(type);
+				foreach (var callback in type.GetMethods()
+					.Where(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null))
+				{
+					RegisterCallbackByMethodInfo(callback, instance);
+				}
+			}
+			var modules = new List<(ZipArchive, ModuleMetadata)>();
 			if (!Directory.Exists(FileSystem.BasePath + "modules"))
 			{
 				Directory.CreateDirectory(FileSystem.BasePath + "modules");
 			}
             foreach (var file in Directory.GetFiles(FileSystem.BasePath + "modules").Where(fn => Path.GetExtension(fn) == ".zip"))
             {
-                (ZipArchive module, ModuleMetadata metadata) =
+                var (module, metadata) =
 	                PreloadModule($"{Path.DirectorySeparatorChar}{file.Split(Path.DirectorySeparatorChar).Last()}") ??
 	                (null, null);
                 if (module is null)
@@ -53,35 +64,7 @@ namespace Engine.ModuleLoader
 
             ResolveDependencies(modules);
 			foreach(var (archive, metadata) in modules) {
-				foreach (var entry in archive.Entries)
-				{
-
-					if (entry.Name == ModuleMetadata.MetadataFilename)
-						continue;
-					if (!metadata.FileManifest.Contains(entry.Name))
-						continue;
-
-					var extension = Path.GetExtension(entry.Name); // Path.GetExtension
-					string targetPath = "/modules/" + metadata.TargetPath;
-					Stream stream = entry.Open();
-					Permissions perm = Permissions.PublicReadWrite;
-					if (extension == ".dll")
-					{
-						if (!LoadAssembly(stream))
-						{
-							Debug.Log($"Failed to load assembly {entry.Name}");
-						}
-
-						break;
-					}
-					else
-					{
-						if (AssetManager.Import(entry.Open(), targetPath, entry.Name, perm, "") == null)
-						{
-							throw new Exception("Asset module type");
-						}
-					}
-				}
+				ImportAssetsFromModule((archive, metadata));
             }
 			foreach (var (_, metadata) in modules)
 			{
@@ -125,6 +108,29 @@ namespace Engine.ModuleLoader
 			moduleList.AddRange(solutionSet.ToList());
         }
 
+        private void ImportAssetsFromModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
+        {
+			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
+				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name)))
+			{
+				var extension = Path.GetExtension(entry.Name);
+				var targetPath = "/modules/" + moduleInfo.metadata.TargetPath;
+				var stream = entry.Open();
+				var perm = Permissions.PublicReadWrite;
+				if (extension == ".dll" && !LoadAssembly(stream))
+				{
+					Debug.Log($"Failed to load assembly {entry.Name}");
+				}
+				else
+				{
+					if (AssetManager.Import(entry.Open(), targetPath, entry.Name, perm, "") == null)
+					{
+						throw new Exception("Asset module type");
+					}
+				}
+			}
+        }
+
         private bool LoadAssembly(Stream stream)
 		{
 		    var memStream = new MemoryStream();
@@ -148,16 +154,27 @@ namespace Engine.ModuleLoader
 				foreach (var callback in export.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
 				{
-					var eventType = callback.GetParameters().First().ParameterType;
-					typeof(EventBus).GetMethod("NewTypeListener")
-						?.MakeGenericMethod(eventType).Invoke(null, new object[]
-						{
-							CreateEventCallback(callback, instance, eventType)
-						});
+					RegisterCallbackByMethodInfo(callback, instance);
 				}
 			}
 			return true;
 		}
+
+        private void RegisterCallbackByMethodInfo(MethodInfo callback, object instance)
+        {
+	        if (instance.GetType() != callback.DeclaringType)
+	        {
+				throw new Exception(
+					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
+	        }
+	        var eventType = callback.GetParameters().First().ParameterType;
+			typeof(EventBus).GetMethod("NewTypeListener")
+				?.MakeGenericMethod(eventType).Invoke(null, new object[]
+				{
+					CreateEventCallback(callback, instance, eventType)
+				});
+
+        }
 
         EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
         {
