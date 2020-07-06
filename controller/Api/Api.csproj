@@ -90,6 +90,8 @@
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
     <Compile Include="AssetManager\XmlAsset.cs" />
+    <Compile Include="EnvironmentManager\Design.cs" />
+    <Compile Include="EnvironmentManager\DesignMeta.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
     <Compile Include="InputManager\InputManager.cs" />
