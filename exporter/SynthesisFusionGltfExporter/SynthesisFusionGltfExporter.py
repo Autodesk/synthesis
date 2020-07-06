@@ -46,7 +46,7 @@ try:
             if ui:
                 ui.messageBox('Fatal Error: Unable to import libraries {}'.format(traceback.format_exc()))
 
-    from .gltfutils.GLTFDesignExporter import exportDesign
+    from .gltf.GLTFDesignExporter import exportDesign
 
     from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand

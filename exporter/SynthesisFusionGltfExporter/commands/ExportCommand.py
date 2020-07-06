@@ -4,7 +4,7 @@ import adsk.core
 
 import apper
 from apper import AppObjects
-from ..gltfutils.GLTFDesignExporter import exportDesign
+from ..gltf.GLTFDesignExporter import exportDesign
 
 
 class ExportCommand(apper.Fusion360CommandBase):

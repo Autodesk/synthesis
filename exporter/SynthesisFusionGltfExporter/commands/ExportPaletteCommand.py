@@ -5,7 +5,7 @@ import adsk.cam
 import json
 
 import apper
-from ..gltfutils.GLTFDesignExporter import exportDesign
+from ..gltf.GLTFDesignExporter import exportDesign
 
 
 # Class for a Fusion 360 Palette Command

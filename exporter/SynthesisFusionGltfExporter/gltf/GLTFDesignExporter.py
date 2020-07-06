@@ -1,27 +1,25 @@
-import io
-import time
-import struct
-from io import BytesIO
-
-from typing import Dict, List, BinaryIO
-from typing import Optional, Union
-
 import copy
+import struct
+import time
+from io import BytesIO
+from typing import Dict, List
+from typing import Optional, Union
 
 import adsk
 import adsk.core
 import adsk.fusion
-
 from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
+
 from apper import AppObjects
-from pyutils.counters import EventCounter
-from pyutils.timers import SegmentedStopwatch
+from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
+from .utils.GLTFUtils import isEmptyLeafNode
+from ..pyutils.counters import EventCounter
+from ..pyutils.timers import SegmentedStopwatch
+from .GLTFConstants import ComponentType, DataType
+from .utils.ByteUtils import *
+from .utils.MathUtils import isIdentityMatrix3D
+from .extras.ExportJoints import exportJoints
 
-from gltfutils.GLTFConstants import ComponentType, DataType
-
-from proto.gltf_extras_pb2 import Joint
-
-from google.protobuf.json_format import MessageToDict
 
 
 def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True):
@@ -76,6 +74,8 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
 class GLTFDesignExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
 
+    You should create a new instance for EVERY export # todo: remove this requirement and add caching
+
     Fusion API objects are translated into glTF as follows:
 
     Fusion Design -> glTF scene
@@ -90,10 +90,11 @@ class GLTFDesignExporter(object):
     Attributes:
         gltf: Main glTF storage object, gets JSON serialized for export.
         primaryBuffer: The buffer referencing the one inline buffer in the final glB file.
-        primaryBufferId: The index of the primaryBuffer in the glTF buffers list.
+        primaryBufferIndex: The index of the primaryBuffer in the glTF buffers list.
         primaryBufferStream: The memory stream for temporary storage of the glB buffer data.
 
     todo allow incremental export with one GLTFDesignExporter
+    todo preserve material names even for materials that could not be exported (in case user wants to assign different material later)
 
     # xtodo rotation fix # update - looks like view cube orientation isn't accessible by the api https://forums.autodesk.com/t5/fusion-360-api-and-scripts/vieworientation-doesn-t-work-consistently-how-to-set-current/m-p/9464031/highlight/true#M9922
     """
@@ -101,117 +102,36 @@ class GLTFDesignExporter(object):
     # types
     GLTFIndex = int
     FusionRevId = int
-    FusionMatName = int
 
     # constants
     GLTF_VERSION = 2
     GLB_HEADER_SIZE = 12
     GLB_CHUNK_SIZE = 8
-    IDENTITY_MATRIX_3D = (
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1,
-    )
+    GLTF_GENERATOR_ID = "Autodesk.Synthesis.Fusion"
+
     MAT_OVERRIDEABLE_TAG = "fusExpMatOverrideable"
+
+    DESIGN_SCALE = 0.01  # fusion uses cm, glTF uses meters, so scale the root transform matrix
 
     # fields
     gltf: GLTF2
 
-    primaryBufferId: int
+    # The glB format only allows one buffer to be embedded in the main file.
+    # We'll call this buffer the primaryBuffer.
+    primaryBufferIndex: int
     primaryBuffer: Buffer
-    primaryBufferStream: BytesIO
+
+    primaryBufferStream: BytesIO  # this memory stream will temporarily contain the binary data during the export, and will get written to chunk 1 of the glb file
 
     progressBar: adsk.core.ProgressDialog
 
-    componentRevIdToMeshTemplate: Dict[FusionRevId, Mesh]
-    componentRevIdToMatOverrideDict: Dict[FusionRevId, Dict[GLTFIndex, GLTFIndex]]  # dict from gltf material override id to gltf mesh with that material override
+    componentRevIdToMeshTemplate: Dict[FusionRevId, Mesh]  # dict for mesh caching, from component ids to generated meshes with the default materials
+    componentRevIdToMatOverrideDict: Dict[FusionRevId, Dict[GLTFIndex, GLTFIndex]]  # dict for material overridden mesh caching, from gltf material override id to gltf mesh with that material override
 
-    defaultAppearance: adsk.core.Appearance
-    materialNameToGltfIndex: Dict[FusionMatName, GLTFIndex]
+    defaultAppearance: adsk.core.Appearance  # aluminum
+    materialNameToGltfIndex: Dict[str, GLTFIndex]  # dict for gltf material caching, from fusion appearance name to material gltf index
 
     warnings: List[str]
-
-    @classmethod
-    def isIdentityMatrix3D(cls, matrix: List[float], tolerance: float = 0.00001) -> bool:
-        """Determines whether the input matrix is equal to the 4x4 identity matrix.
-
-        Args:
-            matrix: The flat Matrix3D to compare.
-            tolerance: The maximum distance from the true identity matrix to tolerate.
-
-
-        Returns: True if the given matrix is equal to the identity matrix within the tolerance.
-        """
-        for i in range(len(cls.IDENTITY_MATRIX_3D)):
-
-            if abs(matrix[i] - cls.IDENTITY_MATRIX_3D[i]) > tolerance:
-                return False
-        return True
-
-    @classmethod
-    def calculateAlignmentNumPadding(cls, currentSize: int, byteAlignment: int = 4) -> int:
-        """Calculates the number of bytes needed to pad a data structure to the given alignment.
-
-        Args:
-            currentSize: The current size of the data structure that needs alignment.
-            byteAlignment: The required byte alignment, e.g. 4 for 32 bit alignment.
-
-        Returns: The number of bytes of padding which need to be added to the end of the structure.
-        """
-        if currentSize % byteAlignment == 0:
-            return 0
-        return byteAlignment - currentSize % byteAlignment
-
-    @classmethod
-    def calculateAlignment(cls, currentSize: int, byteAlignment: int = 4) -> int:
-        """Calculate the new length of the a data structure after it has been aligned.
-
-        Args:
-            currentSize: The current length of the data structure in bytes.
-            byteAlignment: The required byte alignment, e.g. 4 for 32 bit alignment.
-
-        Returns: The new length of the data structure in bytes.
-        """
-        return currentSize + cls.calculateAlignmentNumPadding(currentSize, byteAlignment)
-
-    @classmethod
-    def alignBytesIOToBoundary(cls, stream: io.BytesIO, byteAlignment: int = 4) -> None:
-        stream.write(b'\x00\x00\x00'[0:cls.calculateAlignmentNumPadding(stream.seek(0, io.SEEK_END), byteAlignment)])
-        assert stream.tell() % byteAlignment == 0
-
-    @classmethod
-    def alignByteArrayToBoundary(cls, byteArray: bytearray, byteAlignment: int = 4) -> None:
-        byteArray.extend(b'   '[0:cls.calculateAlignmentNumPadding(len(byteArray), byteAlignment)])
-        assert len(byteArray) % byteAlignment == 0
-
-    @classmethod
-    def colorByteToFloat(cls, byte: int) -> float:
-        return byte / 255
-
-    @classmethod
-    def fusionColorToArray(cls, color: adsk.core.Color) -> List[float]:
-        return [
-            cls.colorByteToFloat(color.red),
-            cls.colorByteToFloat(color.green),
-            cls.colorByteToFloat(color.blue),
-            cls.colorByteToFloat(color.opacity),
-        ]
-
-    @classmethod
-    def fusionAttenLengthToAlpha(cls, attenLength: adsk.core.FloatProperty) -> float:
-        if attenLength is None:
-            return 1
-        return max(min((464 - 7 * attenLength.value) / 1938, 1), 0.03)  # todo: this conversion is just made up, figure out an accurate one
-
-    @classmethod
-    def canExportFacesTogether(cls, faces: List[adsk.fusion.BRepFace]):
-        # if all faces use the same material
-        materialName = faces[0].appearance.name
-        for face in faces[1:]:
-            if face.appearance.name != materialName:
-                return False
-        return True
 
     def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly = True):  # todo: allow the export of designs besides the one in the foreground?
         self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
@@ -230,18 +150,22 @@ class GLTFDesignExporter(object):
         self.gltf = GLTF2()  # The root glTF object.
 
         self.gltf.asset = Asset()
-        self.gltf.asset.generator = "Autodesk.Synthesis.Fusion"
+        self.gltf.asset.generator = self.GLTF_GENERATOR_ID
 
         self.gltf.scene = 0  # set the default scene to index 0
 
         # The glB format only allows one buffer to be embedded in the main file.
         # We'll call this buffer the primaryBuffer.
         self.primaryBuffer = Buffer()
-        self.primaryBufferId = len(self.gltf.buffers)
+        self.primaryBufferIndex = len(self.gltf.buffers)
         self.gltf.buffers.append(self.primaryBuffer)
 
         # The actual binary data for the buffer will get stored in this memory stream
         self.primaryBufferStream = io.BytesIO()
+
+        self.componentRevIdToMeshTemplate = {}
+        self.componentRevIdToMatOverrideDict = {}
+        self.materialNameToGltfIndex = {}
 
     def saveGLB(self, filepath: str):
         """
@@ -259,6 +183,7 @@ class GLTFDesignExporter(object):
         self.progressBar.reset()
         self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
 
+        # noinspection PyUnresolvedReferences
         adsk.doEvents() # show progress bar
 
         if self.enableMaterials and self.checkIfAppearancesAreBugged():
@@ -273,7 +198,7 @@ class GLTFDesignExporter(object):
                 return
 
         try:
-            self.gltf.extras['joints'] = self.exportJoints(self.ao.design.rootComponent.allJoints)
+            self.gltf.extras['joints'] = exportJoints(self.ao.design.rootComponent.allJoints)
         except RuntimeError: # todo: report this bug
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
@@ -298,7 +223,7 @@ class GLTFDesignExporter(object):
         self.perfWatch.switch_segment('encoding and file writing')
 
         # convert gltf to json and serialize
-        self.primaryBuffer.byteLength = self.calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
+        self.primaryBuffer.byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
 
         # ==== do NOT make changes to the glTF object beyond this point ====
         json = self.gltf.gltf_to_json()
@@ -307,8 +232,8 @@ class GLTFDesignExporter(object):
         jsonBytes = bytearray(json.encode("utf-8"))  # type: bytearray
 
         # add padding bytes to the end of each chunk data
-        self.alignByteArrayToBoundary(jsonBytes)
-        self.alignBytesIOToBoundary(self.primaryBufferStream)
+        alignByteArrayToBoundary(jsonBytes)
+        alignBytesIOToBoundary(self.primaryBufferStream)
 
         # get the memoryView of the primary buffer stream
         primaryBufferData = self.primaryBufferStream.getbuffer()
@@ -367,12 +292,6 @@ class GLTFDesignExporter(object):
         # We export components into meshes first while recording a mapping from fusion component unique ids to glTF mesh indices so we can refer to mesh instances as we export the nodes.
         # This allows us to avoid serializing duplicate meshes for components which occur multiple times in one assembly, similar to fusion's system of components and occurrences.
 
-        # self.deDuplicateAppearanceNames()
-
-        self.componentRevIdToMeshTemplate = {}
-        self.componentRevIdToMatOverrideDict = {}
-        self.materialNameToGltfIndex = {}
-
         self.perfWatch.switch_segment('exporting node tree')
         self.progressBar.message = "Reading list of fusion components..."
         self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
@@ -399,7 +318,7 @@ class GLTFDesignExporter(object):
 
         node.mesh = self.exportMeshWithOverrideCached(rootComponent, -1)
 
-        scale = 0.01 # fusion uses cm, glTF uses meters, so scale the root transform matrix
+        scale = self.DESIGN_SCALE
         node.matrix = [
             scale, 0, 0, 0,
             0, scale, 0, 0,
@@ -409,7 +328,7 @@ class GLTFDesignExporter(object):
 
         node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
 
-        if len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0:
+        if isEmptyLeafNode(node):
             return
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
@@ -433,7 +352,7 @@ class GLTFDesignExporter(object):
                 materialOverride = self.exportMaterialFromAppearanceCached(appearance)
 
         flatMatrix = occur.transform.asArray()
-        if not self.isIdentityMatrix3D(flatMatrix):
+        if not isIdentityMatrix3D(flatMatrix):
             node.matrix = [flatMatrix[i + j * 4] for i in range(4) for j in range(4)]  # transpose the flat 4x4 matrix3d
 
         if not self.exportVisibleBodiesOnly or occur.isVisible:
@@ -442,7 +361,7 @@ class GLTFDesignExporter(object):
 
         node.children = [index for index in [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences] if index is not None]
 
-        if len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0:
+        if isEmptyLeafNode(node):
             return
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
@@ -535,10 +454,7 @@ class GLTFDesignExporter(object):
             if len(fusionBRepBody.faces) == 0:
                 return []
             faces = list(fusionBRepBody.faces)  # type: List[adsk.fusion.BRepFace] # this is REALLY slow
-            if self.canExportFacesTogether(faces):
-                exportFacesTogether = True
-            else:
-                exportFacesTogether = False
+            exportFacesTogether = isSameMaterial(faces)
         else:
             exportFacesTogether = True
 
@@ -627,8 +543,8 @@ class GLTFDesignExporter(object):
             accessor.max = tuple(max(array[i::componentsPerData]) for i in range(componentsPerData))  # tuple of max values in each position of the data type
             accessor.min = tuple(min(array[i::componentsPerData]) for i in range(componentsPerData))  # tuple of min values in each position of the data type
 
-        self.alignBytesIOToBoundary(self.primaryBufferStream)  # buffers should start/end at aligned values for efficiency
-        bufferByteOffset = self.calculateAlignment(self.primaryBufferStream.tell())  # start of the buffer to be created
+        alignBytesIOToBoundary(self.primaryBufferStream)  # buffers should start/end at aligned values for efficiency
+        bufferByteOffset = calculateAlignment(self.primaryBufferStream.tell())  # start of the buffer to be created
 
         self.bufferWatch.stop()
 
@@ -663,7 +579,7 @@ class GLTFDesignExporter(object):
 
         self.bufferWatch.stop()
 
-        bufferByteLength = self.calculateAlignment(self.primaryBufferStream.tell() - bufferByteOffset)  # Calculate the length of the bufferView to be created.
+        bufferByteLength = calculateAlignment(self.primaryBufferStream.tell() - bufferByteOffset)  # Calculate the length of the bufferView to be created.
 
         accessor.bufferView = self.exportBufferView(bufferByteOffset, bufferByteLength)  # Create the glTF bufferView object with the calculated start and length.
 
@@ -680,7 +596,7 @@ class GLTFDesignExporter(object):
         Returns: The index of the exported bufferView in the glTF bufferViews list.
         """
         bufferView = BufferView()
-        bufferView.buffer = self.primaryBufferId  # index of the default glB buffer.
+        bufferView.buffer = self.primaryBufferIndex  # index of the default glB buffer.
         bufferView.byteOffset = byteOffset
         bufferView.byteLength = byteLength
 
@@ -800,7 +716,7 @@ class GLTFDesignExporter(object):
         if matModelType == 0:  # Opaque
             baseColor = props.itemById("opaque_albedo").value
             if props.itemById("opaque_emission").value:
-                material.emissiveFactor = self.fusionColorToArray(props.itemById("opaque_luminance_modifier").value)[:3]
+                material.emissiveFactor = fusionColorToRGBAArray(props.itemById("opaque_luminance_modifier").value)[:3]
         elif matModelType == 1:  # Metal
             pbr.metallicFactor = 1.0
             baseColor = props.itemById("metal_f0").value
@@ -818,7 +734,7 @@ class GLTFDesignExporter(object):
             self.warnings.append(f"Ignoring material that does not have color: {material.name}")
             return None
 
-        pbr.baseColorFactor = self.fusionColorToArray(baseColor)[:3] + [self.fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
+        pbr.baseColorFactor = fusionColorToRGBAArray(baseColor)[:3] + [fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
         material.pbrMetallicRoughness = pbr
 
         self.gltf.materials.append(material)
@@ -835,10 +751,10 @@ class GLTFDesignExporter(object):
 
         """
         usedIdMap = {}
-        for material in self.ao.design.materials:
-            if material.id in usedIdMap:
+        for appearance in self.ao.design.appearances:
+            if appearance.id in usedIdMap:
                 return True
-            usedIdMap[material.id] = True
+            usedIdMap[appearance.id] = True
         return False
 
     def getDefaultAppearance(self) -> Optional[adsk.core.Appearance]:
@@ -847,147 +763,3 @@ class GLTFDesignExporter(object):
             return None
         aluminum = fusionMatLib.appearances.itemById("PrismMaterial-002_physmat_aspects:Prism-028") # Aluminum - Satin
         return aluminum
-
-    def exportJoints(self, fusionJoints):
-        joints = []
-        for fusionJoint in fusionJoints:
-            if self.isJointInvalid(fusionJoint):
-                continue
-            joints.append(MessageToDict(self.fillJoint(fusionJoint)))
-        return joints
-
-    def isJointInvalid(self, fusionJoint):
-        if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
-            print("WARNING: Ignoring joint with unknown occurrences!")  # todo: Show these messages to the user
-            return True
-        if fusionJoint.jointMotion.jointType not in range(6):
-            print("WARNING: Ignoring joint with unknown type!")
-            return True
-        return False
-
-    def fillJoint(self, fusionJoint):
-        protoJoint = Joint()
-        # protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
-        protoJoint.header.name = fusionJoint.name
-        self.fillVector3D(self.getJointOrigin(fusionJoint), protoJoint.origin)
-        protoJoint.isLocked = fusionJoint.isLocked
-        protoJoint.isSuppressed = fusionJoint.isSuppressed
-
-        # If occurrenceOne or occurrenceTwo is null, the joint is jointed to the root component
-        protoJoint.occurrenceOneUUID = self.getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceOne)
-        protoJoint.occurrenceTwoUUID = self.getJointedOccurrenceUUID(fusionJoint, fusionJoint.occurrenceTwo)
-
-        fillJointMotionFuncSwitcher = {
-            0: self.fillRigidJointMotion,
-            1: self.fillRevoluteJointMotion,
-            2: self.fillSliderJointMotion,
-            3: self.fillCylindricalJointMotion,
-            4: self.fillPinSlotJointMotion,
-            5: self.fillPlanarJointMotion,
-            6: self.fillBallJointMotion,
-        }
-
-        fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionJoint.jointMotion.jointType, lambda: None)
-        fillJointMotionFunc(fusionJoint.jointMotion, protoJoint)
-        return protoJoint
-
-    def getJointOrigin(self, fusionJoint):
-        geometryOrOrigin = fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo
-        if geometryOrOrigin.objectType == 'adsk::fusion::JointGeometry':
-            return geometryOrOrigin.origin
-        else:  # adsk::fusion::JointOrigin
-            origin = geometryOrOrigin.geometry.origin
-            return adsk.core.Point3D.create(  # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
-                origin.x + geometryOrOrigin.offsetX.value,
-                origin.y + geometryOrOrigin.offsetY.value,
-                origin.z + geometryOrOrigin.offsetZ.value)
-
-    def getJointedOccurrenceUUID(self, fusionJoint, fusionOccur):
-        # if fusionOccur is None:
-        #     return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
-        # return item_id(fusionOccur, ATTR_GROUP_NAME)
-        if fusionOccur is None:
-            return ""  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
-        return fusionOccur.fullPathName
-
-    def fillRigidJointMotion(self, fusionJointMotion, protoJoint):
-        protoJoint.rigidJointMotion.SetInParent()
-
-    def fillRevoluteJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.revoluteJointMotion
-
-        self.fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
-        protoJointMotion.rotationValue = fusionJointMotion.rotationValue
-        self.fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-
-    def fillSliderJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.sliderJointMotion
-
-        self.fillVector3D(fusionJointMotion.slideDirectionVector, protoJointMotion.slideDirectionVector)
-        protoJointMotion.slideValue = fusionJointMotion.slideValue
-        self.fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
-
-    def fillCylindricalJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.cylindricalJointMotion
-
-        self.fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
-        protoJointMotion.rotationValue = fusionJointMotion.rotationValue
-        self.fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-
-        protoJointMotion.slideValue = fusionJointMotion.slideValue
-        self.fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
-
-    def fillPinSlotJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.pinSlotJointMotion
-
-        self.fillVector3D(fusionJointMotion.rotationAxisVector, protoJointMotion.rotationAxisVector)
-        protoJointMotion.rotationValue = fusionJointMotion.rotationValue
-        self.fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-
-        self.fillVector3D(fusionJointMotion.slideDirectionVector, protoJointMotion.slideDirectionVector)
-        protoJointMotion.slideValue = fusionJointMotion.slideValue
-        self.fillJointLimits(fusionJointMotion.slideLimits, protoJointMotion.slideLimits)
-
-    def fillPlanarJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.planarJointMotion
-
-        self.fillVector3D(fusionJointMotion.normalDirectionVector, protoJointMotion.normalDirectionVector)
-
-        self.fillVector3D(fusionJointMotion.primarySlideDirectionVector, protoJointMotion.primarySlideDirectionVector)
-        protoJointMotion.primarySlideValue = fusionJointMotion.primarySlideValue
-        self.fillJointLimits(fusionJointMotion.primarySlideLimits, protoJointMotion.primarySlideLimits)
-
-        self.fillVector3D(fusionJointMotion.secondarySlideDirectionVector, protoJointMotion.secondarySlideDirectionVector)
-        protoJointMotion.secondarySlideValue = fusionJointMotion.secondarySlideValue
-        self.fillJointLimits(fusionJointMotion.secondarySlideLimits, protoJointMotion.secondarySlideLimits)
-
-        protoJointMotion.rotationValue = fusionJointMotion.rotationValue
-        self.fillJointLimits(fusionJointMotion.rotationLimits, protoJointMotion.rotationLimits)
-
-    def fillBallJointMotion(self, fusionJointMotion, protoJoint):
-        protoJointMotion = protoJoint.ballJointMotion
-
-        self.fillVector3D(fusionJointMotion.rollDirectionVector, protoJointMotion.rollDirectionVector)
-        protoJointMotion.rollValue = fusionJointMotion.rollValue
-        self.fillJointLimits(fusionJointMotion.rollLimits, protoJointMotion.rollLimits)
-
-        self.fillVector3D(fusionJointMotion.pitchDirectionVector, protoJointMotion.pitchDirectionVector)
-        protoJointMotion.pitchValue = fusionJointMotion.pitchValue
-        self.fillJointLimits(fusionJointMotion.pitchLimits, protoJointMotion.pitchLimits)
-
-        self.fillVector3D(fusionJointMotion.yawDirectionVector, protoJointMotion.yawDirectionVector)
-        protoJointMotion.yawValue = fusionJointMotion.yawValue
-        self.fillJointLimits(fusionJointMotion.yawLimits, protoJointMotion.yawLimits)
-
-    def fillJointLimits(self, fusionJointLimits, protoJointLimits):
-        protoJointLimits.isMaximumValueEnabled = fusionJointLimits.isMaximumValueEnabled
-        protoJointLimits.isMinimumValueEnabled = fusionJointLimits.isMinimumValueEnabled
-        protoJointLimits.isRestValueEnabled = fusionJointLimits.isRestValueEnabled
-        protoJointLimits.maximumValue = fusionJointLimits.maximumValue
-        protoJointLimits.minimumValue = fusionJointLimits.minimumValue
-        protoJointLimits.restValue = fusionJointLimits.restValue
-
-    def fillVector3D(self, fusionVector3D, protoVector3D):
-        protoVector3D.x = fusionVector3D.x
-        protoVector3D.y = fusionVector3D.y
-        protoVector3D.z = fusionVector3D.z
