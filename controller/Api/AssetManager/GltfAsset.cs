@@ -32,8 +32,8 @@ namespace SynthesisAPI.AssetManager
             stream.Position = 0;
 
             ModelRoot model = null;
-
-            GetModelInfo(model, stream, false);
+            bool tryFix = false;
+            model = GetModelInfo(model, stream, tryFix);
 
             return this;
         }
@@ -46,6 +46,7 @@ namespace SynthesisAPI.AssetManager
 
                 // "Full_Robot_Rough_v10_1593496385.glb
                 model = ModelRoot.ReadGLB(stream, settings);
+                //model = ModelRoot.Load("MultiDepthHierarchy_v9_1593489237.glb", settings);
             }
             catch (Exception ex)
             {
