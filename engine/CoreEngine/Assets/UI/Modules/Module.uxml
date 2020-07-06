@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="module" class="module">
+        <Style src="Module.uss" />
+        <ui:VisualElement name="icon" class="module-icon" style="background-image: url(&apos;/Assets/UI/Modules/Icons/module-icon.png&apos;);" />
+        <ui:VisualElement name="details">
+            <ui:Label text="Engine v1.0" name="name" style="-unity-font-style: bold; font-size: 20px;" />
+            <ui:Label text="created by Synthesis" name="author" />
+        </ui:VisualElement>
+        <ui:VisualElement name="middle" class="module-middle-container" />
+        <ui:VisualElement name="buttons">
+            <ui:Button name="information-button" class="module-button" style="background-image: url(&apos;/Assets/UI/Modules/Icons/arrow-out.png&apos;);" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,28 @@
+.module-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+.module {
+    background-color: rgba(204, 200, 200, 255);
+    flex-direction: row;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.module-button {
+    width: 30px;
+    height: 30px;
+}
+
+.module-left-container {
+    flex-direction: row;
+}
+
+.module-middle-container {
+    flex-grow: 1;
+}

@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
+    public GameObject UIContainer;
     public PanelRenderer synthesisToolbar;
     public VisualTreeAsset synthesisToolbarTab;
     private VisualElement synthesisToolbarTree;
@@ -85,10 +86,9 @@ public class UIManager : MonoBehaviour
         
         foreach (VisualElement childTab in tabContainer.Children())
         {
-            var inactiveTabColor = new Color(187.0f / 255.0f, 187.0f / 255.0f, 187.0f / 255.0f); // #BBBBBB
             var activeTabColor = new Color(242.0f / 255.0f, 242.0f / 255.0f, 242.0f / 255.0f); // #F2F2F2
 
-            childTab.style.backgroundColor = !childTab.name.Equals(moduleName) ? inactiveTabColor : activeTabColor;
+            childTab.style.backgroundColor = !childTab.name.Equals(moduleName) ? new StyleColor(StyleKeyword.Null) : activeTabColor;
         }
     }
     
@@ -106,10 +106,35 @@ public class UIManager : MonoBehaviour
         {
             TempAddTabs();
         };
-        
+
+        Button modulesButton = GetButton("modules-button");
+        modulesButton.clickable.clicked += () =>
+        {
+            PanelRenderer moduleRenderer = GetUIGameObject("Modules").GetComponent<PanelRenderer>();
+            moduleRenderer.enabled = !moduleRenderer.enabled;
+        };
+
         return null;
     }
-    
+
+    Button GetButton(string buttonName)
+    {
+        return synthesisToolbarTree.Q<Button>(name: buttonName);
+    }
+
+    GameObject GetUIGameObject(string elementName)
+    {
+        for (int i = 0; i < UIContainer.transform.childCount; i++)
+        {
+            GameObject childObject = UIContainer.transform.GetChild(i).gameObject;
+            if (childObject.name.Equals(elementName))
+            {
+                return childObject;
+            }
+        }
+        return null;
+    }
+
     private void TempAddTabs()
     {
         // in the future will iterate through all available modules and methods would be called externally
