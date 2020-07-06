@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using SynthesisAPI.Modules;
+using SynthesisAPI.Utilities;
 using UnityEngine.PlayerLoop;
-
-//Entity is a 32 bit generational index
-// 1st 16 bits represent index
-// 2nd 16 bits represent generation
-using Entity = System.UInt32;
 
 #nullable enable
 
 namespace SynthesisAPI.EnvironmentManager
 {
+    //Entity is a 32 bit generational index
+    // 1st 16 bits represent index
+    // 2nd 16 bits represent generation
+    using Entity = System.UInt32;
+
     /// <summary>
     /// ECS System
     /// </summary>
     public static class EnvironmentManager
     {
-        static AnyMap components = new AnyMap(); //dynamic mapping of components to Entity by index
+        static AnyMap<Component> components = new AnyMap<Component>(); //dynamic mapping of components to Entity by index
         static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
         static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
 
@@ -94,11 +95,11 @@ namespace SynthesisAPI.EnvironmentManager
         public static Component? GetComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
-                return components.Get(entity,componentType);
+                return components.Get(entity.GetIndex(), entity.GetGen() ,componentType);
             return null;
         }
 
-        public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity);
+        public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity.GetIndex(), entity.GetGen());
         /// <summary>
         /// Set component of type, TComponent, to the given entity
         /// </summary>
@@ -107,7 +108,7 @@ namespace SynthesisAPI.EnvironmentManager
         public static void AddComponent(this Entity entity, Component component)
         {
             if (EntityExists(entity))
-                components.Set(entity, component);
+                components.Set(entity.GetIndex(), entity.GetGen(), component);
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace SynthesisAPI.EnvironmentManager
         public static void RemoveComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
-                components.Remove(entity, componentType);
+                components.Remove(entity.GetIndex(), entity.GetGen(), componentType);
 
         }
 
@@ -158,6 +159,8 @@ namespace SynthesisAPI.EnvironmentManager
             return (entity & 4294901760) + gen;
         }
 
+        #endregion
+
         public static void Clear()
         {
             if (AppDomain.CurrentDomain.GetAssemblies()
@@ -172,123 +175,5 @@ namespace SynthesisAPI.EnvironmentManager
                 throw new Exception("Users are not allowed to clear the environment manager");
             }
         }
-
-        #endregion
-
-        #region AnyMap
-
-        /// <summary>
-        /// Dynamic mapping of any reference type to its corresponding GenIndexArray
-        /// </summary>
-        class AnyMap
-        {
-            Dictionary<Type, GenIndexArray> componentDict; 
-            public AnyMap()
-            {
-                componentDict = new Dictionary<Type, GenIndexArray>();
-            }
-            public void Set(Entity entity, Component val)
-            {
-                if (componentDict.TryGetValue(val.GetType(), out GenIndexArray arr))
-                    arr.Set(entity, val);
-                else
-                {
-                    componentDict.Add(val.GetType(), new GenIndexArray());
-                    Set(entity, val);
-                }
-            }
-
-            public void Remove(Entity entity,Type componentType)
-            {
-                if (componentDict.TryGetValue(componentType, out GenIndexArray arr))
-                    arr.Set(entity, null);
-            }
-
-            public Component? Get(Entity entity,Type componentType)
-            {
-                if (componentDict.TryGetValue(componentType, out GenIndexArray arr))
-                {
-                    return arr.Get(entity);
-                }
-                else
-                    return null;
-            }
-
-            public List<Component>? GetAll(Entity entity)
-            {
-                var output = new List<Component>();
-                foreach (var type in componentDict.Keys)
-                {
-                    var entry = Get(entity, type);
-                    if (entry != null)
-                        output.Add(entry);
-                }
-
-                return output;
-            }
-
-            public void Clear()
-            {
-                componentDict.Clear();
-            }
-
-            #region GenIndexArray
-
-            /// <summary>
-            /// Maps Entity to its component by its index : component index in entries is the same as Entity index
-            /// </summary>
-            class GenIndexArray
-            {
-                List<Entry> entries;
-
-                public GenIndexArray()
-                {
-                    entries = new List<Entry>();
-                }
-
-                struct Entry
-                {
-                    public Entry(Component? val, ulong gen)
-                    {
-                        Val = val;
-                        Gen = gen;
-                    }
-                    public Component? Val { get; }
-                    public ulong Gen { get; }
-                }
-
-                public void Set(Entity entity, Component? val)
-                {
-                    ushort entityIndex = entity.GetIndex();
-                    ushort entityGen = entity.GetGen();
-                    if (entityIndex < entries.Count)
-                        entries[entityIndex] = new Entry(val, entityGen);
-                    else
-                    {
-                        //increase list size by populating "null" Entry so we can add value at index which is outside of bounds
-                        for (int i = entries.Count; i < entityIndex; i++)
-                            entries.Add(new Entry(null, 0)); //no Entity has gen of 0 so these entries can never be accessed
-                        entries.Add(new Entry(val, entityGen));
-                    }
-                }
-
-                public Component? Get(Entity entity)
-                {
-                    ushort entityIndex = entity.GetIndex();
-                    ushort entityGen = entity.GetGen();
-                    if (entityIndex >= entries.Count)
-                        return null; //prevents IndexOutOfBoundsException
-                    Entry entry = entries[entityIndex];
-                    //only get component if generations match - avoids having reallocated Entities point to the components of deallocated Entities
-                    if (entry.Gen == entityGen)
-                        return entry.Val;
-                    return null;
-                }
-            }
-
-            #endregion
-        }
-
-        #endregion
     }
 }
