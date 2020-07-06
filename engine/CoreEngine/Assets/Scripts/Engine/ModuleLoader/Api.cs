@@ -1,45 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Core.ModuleLoader;
-using Synthesis.Core.ModuleLoader;
 using SynthesisAPI.Modules;
 using SynthesisAPI.Runtime;
 using UnityEngine;
 using Component = SynthesisAPI.Modules.Component;
+using SynthesisAPI.Modules.Attributes;
 using Debug = UnityEngine.Debug;
 
 using System.IO.Compression;
-using System.Text;
-using System.Xml.Serialization;
 using Assets.Scripts.Engine.Util;
-using JetBrains.Annotations;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
-using UnityEditor;
 using Directory = System.IO.Directory;
-using TextAsset = UnityEngine.TextAsset;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
 
 namespace Engine.ModuleLoader
 {
-	public class Api : MonoBehaviour
+    public class Api : MonoBehaviour
 	{
 		public void Awake()
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
 			foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
-				a.GetTypes()))
+				a.GetTypes()).Where(e => e.GetMethods().Any(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null)))
 			{
-
 				var instance = Activator.CreateInstance(type);
 				foreach (var callback in type.GetMethods()
 					.Where(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null))
@@ -68,6 +59,7 @@ namespace Engine.ModuleLoader
             }
 			foreach (var (_, metadata) in modules)
 			{
+				// Debug.Log("Loaded " + metadata.Name);
 				ModuleManager.AddToLoadedModuleList(metadata.Name);
 			}
 			ModuleManager.MarkFinishedLoading();
@@ -75,7 +67,7 @@ namespace Engine.ModuleLoader
 
         private (ZipArchive, ModuleMetadata)? PreloadModule(string filePath)
         {
-            var module = ZipFile.Open(FileSystem.BasePath + Path.DirectorySeparatorChar + "modules" + filePath, ZipArchiveMode.Read);
+            var module = ZipFile.Open(FileSystem.BasePath + "modules" + filePath, ZipArchiveMode.Read);
             if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
             {
                 return null;
@@ -114,20 +106,21 @@ namespace Engine.ModuleLoader
 				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name)))
 			{
 				var extension = Path.GetExtension(entry.Name);
-				var targetPath = "/modules/" + moduleInfo.metadata.TargetPath;
+				var targetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules" + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + moduleInfo.metadata.TargetPath;
 				var stream = entry.Open();
 				var perm = Permissions.PublicReadWrite;
-				if (extension == ".dll" && !LoadAssembly(stream))
+				if (extension == ".dll")
 				{
-					Debug.Log($"Failed to load assembly {entry.Name}");
-				}
-				else
-				{
-					if (AssetManager.Import(entry.Open(), targetPath, entry.Name, perm, "") == null)
+					if (!LoadAssembly(stream))
 					{
-						throw new Exception("Asset module type");
+						Debug.Log($"Failed to load assembly {entry.Name}");
 					}
 				}
+				else if (AssetManager.Import(stream, targetPath, entry.Name, perm, "") == null)
+				{
+					throw new Exception("Asset module type");
+				}
+				// Debug.Log("Loaded " + entry.Name);
 			}
         }
 
@@ -173,7 +166,6 @@ namespace Engine.ModuleLoader
 				{
 					CreateEventCallback(callback, instance, eventType)
 				});
-
         }
 
         EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
