@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Threading;
 using SynthesisAPI.VirtualFileSystem;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -20,19 +21,18 @@ namespace SynthesisAPI.AssetManager
         {
             string tempFile = Path.GetTempPath() + "\\temp_synthesis_texture.syn";
             File.WriteAllBytes(tempFile, data);
-            GetTexture(tempFile);
-            return this;
-        }
-        
-        private IEnumerator GetTexture(string file)
-        {
+            
             var request = UnityWebRequestTexture.GetTexture($"file:////{file}");
-            yield return request;
+            
+            while (request.isDone)
+                Thread.Sleep(50);
             
             if (request.isNetworkError || request.isHttpError)
                 throw new Exception("Failed to load texture");
 
             _textureData = ((DownloadHandlerTexture)request.downloadHandler).texture;
+            
+            return this;
         }
     }
 }
