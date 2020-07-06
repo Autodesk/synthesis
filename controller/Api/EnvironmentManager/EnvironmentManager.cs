@@ -9,6 +9,8 @@ using UnityEngine.PlayerLoop;
 // 2nd 16 bits represent generation
 using Entity = System.UInt32;
 
+#nullable enable
+
 namespace SynthesisAPI.EnvironmentManager
 {
     /// <summary>

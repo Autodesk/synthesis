@@ -1,5 +1,5 @@
 ﻿using SynthesisAPI.EventBus;
-using SynthesisAPI.Modules;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 
 namespace Controller

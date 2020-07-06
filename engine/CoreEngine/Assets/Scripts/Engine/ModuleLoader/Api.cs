@@ -6,7 +6,7 @@ using System.Reflection;
 using SynthesisAPI.Modules;
 using SynthesisAPI.Runtime;
 using UnityEngine;
-using Component = SynthesisAPI.Modules.Component;
+using Component = SynthesisAPI.EnvironmentManager.Component;
 using SynthesisAPI.Modules.Attributes;
 using Debug = UnityEngine.Debug;
 

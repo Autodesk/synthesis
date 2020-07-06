@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SynthesisAPI.Modules;
 using UnityEngine;
-using Component = SynthesisAPI.Modules.Component;
+using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {

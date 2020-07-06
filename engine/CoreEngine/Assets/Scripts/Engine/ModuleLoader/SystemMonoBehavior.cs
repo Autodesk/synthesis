@@ -1,5 +1,5 @@
 ﻿using Core.ModuleLoader;
-using SynthesisAPI.Modules;
+using SynthesisAPI.EnvironmentManager;
 using UnityEngine;
 
 namespace Engine.ModuleLoader
