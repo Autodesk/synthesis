@@ -83,8 +83,20 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push(new TestEvent()));
             Assert.IsTrue(EventBus.Push(new TestEvent()));
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count2, 3);
-            Assert.AreEqual(s.Count1, 1);
+            Assert.AreEqual(3, s.Count2);
+            Assert.AreEqual(1, s.Count1);
+            EventBus.ResetAllListeners();
+        }
+
+        [Test]
+        public static void TestMultipleTagEvent()
+        {
+            Subscriber s = new Subscriber();
+            EventBus.NewTagListener("tag1", s.TestMethod);
+            EventBus.NewTagListener("tag2", s.TestMethod2);
+            Assert.IsTrue(EventBus.Push(new[] { "tag1", "tag2" }, new TestEvent()));
+            Assert.AreEqual(1, s.Count2);
+            Assert.AreEqual(1, s.Count1);
             EventBus.ResetAllListeners();
         }
 
@@ -94,13 +106,13 @@ namespace TestApi
             Subscriber s = new Subscriber();
             EventBus.NewTypeListener<TestEvent>(s.TestMethod);
             Assert.IsTrue(EventBus.Push(new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s.Count2, 0);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(0, s.Count2);
             EventBus.NewTypeListener<TestEvent>(s.TestMethod2);
             EventBus.NewTypeListener<TestEvent>(s.TestMethod3);
             Assert.IsTrue(EventBus.Push(new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s.Count2, 1);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(1, s.Count2);
             EventBus.ResetAllListeners();
         }
 
@@ -110,13 +122,13 @@ namespace TestApi
             Subscriber s = new Subscriber();
             EventBus.NewTagListener("tag", s.TestMethod);
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s.Count2, 0);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(0, s.Count2);
             EventBus.NewTagListener("tag", s.TestMethod2);
             EventBus.NewTagListener("tag", s.TestMethod3);
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s.Count2, 1);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(1, s.Count2);
             EventBus.ResetAllListeners();
         }
 
@@ -130,8 +142,8 @@ namespace TestApi
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
             Assert.IsTrue(EventBus.Push("tag", new OtherEvent()));
-            Assert.AreEqual(s.Count1, -1);
-            Assert.AreEqual(s.Count2, 1);
+            Assert.AreEqual(-1, s.Count1);
+            Assert.AreEqual(1, s.Count2);
             EventBus.ResetAllListeners();
         }
 
@@ -156,16 +168,16 @@ namespace TestApi
             EventBus.NewTagListener("tag", s.TestMethod);
             EventBus.NewTagListener("tag", s2.TestMethod);
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s2.Count1, 1);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(1, s2.Count1);
             Assert.IsTrue(EventBus.RemoveTagListener("tag", s.TestMethod));
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s2.Count1, 2);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(2, s2.Count1);
             EventBus.RemoveTagListener("tag", s.TestMethod);
             Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
-            Assert.AreEqual(s2.Count1, 3);
+            Assert.AreEqual(1, s.Count1);
+            Assert.AreEqual(3, s2.Count1);
             EventBus.ResetAllListeners();
         }
 
@@ -176,13 +188,13 @@ namespace TestApi
             Assert.IsFalse(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
             EventBus.NewTypeListener<TestEvent>(s.TestMethod);
             Assert.IsTrue(EventBus.Push(new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
+            Assert.AreEqual(1, s.Count1);
             Assert.IsTrue(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
             Assert.IsFalse(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
+            Assert.AreEqual(1, s.Count1);
             Assert.IsFalse(EventBus.RemoveTypeListener<TestEvent>(s.TestMethod));
             Assert.IsFalse(EventBus.Push("tag", new TestEvent()));
-            Assert.AreEqual(s.Count1, 1);
+            Assert.AreEqual(1, s.Count1);
             EventBus.ResetAllListeners();
         }
 
@@ -192,8 +204,8 @@ namespace TestApi
             Subscriber s = new Subscriber();
             EventBus.NewTypeListener<ParameterizedEvent>(s.TestMethod4);
             EventBus.Push(new ParameterizedEvent(1, "test"));
-            Assert.IsTrue(s.Num == 1);
-            Assert.IsTrue(s.String == "test");
+            Assert.AreEqual(1, s.Num);
+            Assert.AreEqual("test", s.String);
             EventBus.ResetAllListeners();
         }
     }

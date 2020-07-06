@@ -11,7 +11,7 @@ namespace SynthesisAPI.EventBus
     // ReSharper disable once InconsistentNaming
     public static class IEventExtension
     {
-        public static string Name(this IEvent e) => e.GetType().Name;
+        public static string Name(this IEvent e) => e.GetType().FullName;
     }
 
 }
