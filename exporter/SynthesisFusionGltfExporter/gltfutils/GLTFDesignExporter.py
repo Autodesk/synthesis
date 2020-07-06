@@ -230,7 +230,7 @@ class GLTFDesignExporter(object):
         self.gltf = GLTF2()  # The root glTF object.
 
         self.gltf.asset = Asset()
-        self.gltf.asset.generator = "Fusion 360 exporter for Synthesis"
+        self.gltf.asset.generator = "Autodesk.Synthesis.Fusion"
 
         self.gltf.scene = 0  # set the default scene to index 0
 
@@ -259,7 +259,7 @@ class GLTFDesignExporter(object):
         self.progressBar.reset()
         self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
 
-        adsk.doEvents()
+        adsk.doEvents() # show progress bar
 
         if self.enableMaterials and self.checkIfAppearancesAreBugged():
             result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
