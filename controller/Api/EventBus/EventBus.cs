@@ -17,14 +17,13 @@ namespace SynthesisAPI.EventBus
         /// <returns>True if message was pushed to subscribers, false if no subscribers were found</returns>
         public static bool Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
         {
-            string type = eventInfo.GetType().FullName;
+            string type = eventInfo.Name();
             if (Instance.TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
             {
                 Instance.TypeSubscribers[type](eventInfo);
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
         /// <summary>
@@ -39,23 +38,38 @@ namespace SynthesisAPI.EventBus
 
         public static bool Push<TEvent>(string tag, TEvent eventInfo) where TEvent : IEvent
         {
-            string type = eventInfo.GetType().FullName;
+            string type = eventInfo.Name();
             if (Instance.TagSubscribers.ContainsKey(tag) && Instance.TagSubscribers[tag] != null)
             {
                 Instance.TagSubscribers[tag](eventInfo);
-                if (Instance.TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
-                {
-                    Instance.TypeSubscribers[type](eventInfo);
-                }
+                Push<TEvent>(eventInfo);
                 return true;
             }
-            else if (Instance.TypeSubscribers.ContainsKey(eventInfo.Name()) && Instance.TypeSubscribers[type] != null)
+            if (Instance.TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
             {
-                Instance.TypeSubscribers[eventInfo.Name()](eventInfo);
+                Instance.TypeSubscribers[type](eventInfo);
                 return true;
             }
-            else
-                return false;
+            return false;
+        }
+
+        /// <summary>
+        /// Activates all callback functions that are listening to a particular
+        /// set of tags or to the IEvent type of eventInfo and passes event
+        /// information to those listener functions 
+        /// </summary>
+        /// <typeparam name="TEvent">Type of event</typeparam>
+        /// <param name="eventInfo">Event to be passed to callback functions</param>
+        /// <param name="tags">Tags corresponding to the group of listener functions to be activated</param>
+        /// <returns>True if message was pushed to subscribers, false if no subscribers were found</returns>
+        public static bool Push<TEvent>(IEnumerable<string> tags, TEvent eventInfo) where TEvent : IEvent
+        {
+            bool pushed = false;
+            foreach (var tag in tags)
+            {
+                pushed |= Push<TEvent>(tag, eventInfo);
+            }
+            return pushed;
         }
 
         /// <summary>
@@ -104,15 +118,9 @@ namespace SynthesisAPI.EventBus
                     TypeSubscribers[type] -= callback;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
                 return false;
             }
+            return false;
         }
 
         /// <summary>
@@ -129,15 +137,9 @@ namespace SynthesisAPI.EventBus
                     TagSubscribers[tag] -= callback;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
                 return false;
             }
+            return false;
         }
 
         public static void ResetAllListeners()
