@@ -625,6 +625,11 @@ namespace SynthesisAPI.AssetManager
                     }
                 }
 
+                if (data == null)
+                {
+                    throw new Exception($"Failed to import byte data from file \"{path}\" (read null)");
+                }
+
                 Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
 
                 if(newAsset != null)

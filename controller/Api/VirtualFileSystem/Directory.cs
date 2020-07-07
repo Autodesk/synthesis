@@ -109,6 +109,25 @@ namespace SynthesisAPI.VirtualFileSystem
             return path.Split(DirectorySeparatorChar);
         }
 
+        [ExposedApi]
+        public string GetPath()
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return GetPathInner();
+        }
+
+        internal string GetPathInner()
+        {
+            string path = "";
+            Directory dir = this;
+            while (dir != null) {
+                path = dir.Name + DirectorySeparatorChar + path;
+
+                dir = dir.Parent;
+            }
+            return path;
+        }
+
         private IEntry? TraverseImpl(string[] subpaths) // TODO rework using TDD
         {
             if (subpaths.Length == 0)
@@ -262,7 +281,7 @@ namespace SynthesisAPI.VirtualFileSystem
             }
             if (Entries.ContainsKey(value.Name))
             {
-                throw new DirectroyExpection($"Directory: adding entry with existing name \"{value.Name}\"");
+                throw new DirectroyExpection($"Directory: adding entry to \"{GetPathInner()}\" with existing name \"{value.Name}\"");
             }
             Entries.Add(value.Name, value);
 
