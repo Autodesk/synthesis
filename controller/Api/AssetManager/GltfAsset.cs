@@ -64,42 +64,39 @@ namespace SynthesisAPI.AssetManager
         public Design ImportDesign(ModelRoot modelRoot)
         {
             Design design = new Design();
-            
+
+            // this is the root ---> modelRoot.DefaultScence.VisualChildren
             foreach (Node child in modelRoot.DefaultScene.VisualChildren)
             {
-               Components = ImportComponents(child);
+                // todo: ImportComponents needs ALL components
+                //Components = ImportComponents(child);
+
+                design.RootOccurence = ImportOccurence(child);
             }
-
-            // todo: ImportComponents needs ALL components
-            //Components = ImportComponents(modelRoot.DefaultScene.VisualChildren);
-
-            // todo: LogicalNodes[0] actual the right node? Needs rootNode
-            // this is the root ---> modelRoot.DefaultScence.VisualChildren
-            //design.RootOccurence = ImportOccurence(modelRoot.LogicalNodes[0]);
 
             return design;
         }
 
-        private IDictionary<int, Design.Component> ImportComponents(Node node)
-        {
-            foreach (Node child in node.VisualChildren)
-            {
-                ImportComponents(Components.Add(node.VisualChildren.GetEnumerator, child));
-            }
-            return Components;
-
-        }
-
-        //public Occurence ImportOccurence(Node node)
+        //private IDictionary<int, Design.Component> ImportComponents(Node node)
         //{
-        //    Occurence occurence;
-
         //    foreach (Node child in node.VisualChildren)
         //    {
-        //        occurence = ImportOccurence(child);
+        //        ImportComponents(Components.Add(node.VisualChildren.GetEnumerator, child));
         //    }
+        //    return Components;
 
-        //    return occurence;
         //}
+
+        public Occurence ImportOccurence(Node node)
+        {
+            Occurence occurence = new Occurence();
+
+            foreach (Node child in node.VisualChildren)
+            {
+                occurence.ChildOccurences.Add(ImportOccurence(child));
+            }
+
+            return occurence;
+        }
     }
 }
