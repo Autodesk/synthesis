@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <welcome file="welcome.html" mime-type="text/html" />
+    <license file="license.html" mime-type="text/html" />
+    <conclusion file="conclusion.html" mime-type="text/html" />
+    <pkg-ref id="org.autodesk.synthesis.app"/>
+    <pkg-ref id="org.autodesk.synthesis.assets"/>
+    <options customize="allow" require-scripts="false"/>
+    <choices-outline>
+        <line choice="org.autodesk.synthesis.app"/>
+        <line choice="org.autodesk.synthesis.assets"/>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.autodesk.synthesis.app" visible="true" title="Synthesis">
+        <pkg-ref id="org.autodesk.synthesis.app"/>
+    </choice>
+    <pkg-ref id="org.autodesk.synthesis.app" version="0" onConclusion="none">App.pkg</pkg-ref>
+    <choice id="org.autodesk.synthesis.assets" visible="true" title="Synthesis Assets">
+        <pkg-ref id="org.autodesk.synthesis.assets"/>
+    </choice>
+    <pkg-ref id="org.autodesk.synthesis.assets" version="0" onConclusion="none">Assets.pkg</pkg-ref>
+</installer-gui-script>

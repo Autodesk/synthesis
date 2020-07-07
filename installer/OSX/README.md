@@ -1,27 +1,30 @@
 # OSX packager
 
-## Build step :
+## Build steps :
 
 1. Get signed Synthesis.app
 
-2. Make new directory ` mkdir [synthesis/installer/osx/application/.Assets] `
+2.  Synthesis.app ` cp [Synthesis.app] [synthesis/installer/OSX/App/payload] `
 
-3. Copy Synthesis.app to synthesis macos install application ` cp [Synthesis.app] [synthesis/installer/osx/applcation/.Assets] `
+2b. Remove the Synthesis.app placeholder ` rm [synthesis/installer/OSX/App/payload/README.md] `
 
-4. Add data files to synthesis/installer/osx/application/.Assets/Synthesis
-	
-	- Add Environments to synthesis/installer/osx/application/.Assets/Synthesis/Environments
-	- Add Robots to synthesis/installer/osx/application/.Assets/Synthesis/Robots
-	- Add Modules to synthesis/installer/osx/application/.Assets/Synthesis/Modules
+3. Add data files to synthesis/installer/OSX/Assets/payload/Contents/Synthesis
 
-5. Install Node / NPM ` brew install node `
+3b. Remove the data file placeholder ` rm [synthesis/installer/OSX/Assets/payload/Contents/Synthesis/README.md] `	
 
-6. Install AppDMG ` npm i -g appdmg `
+4. Change directories to the osx installer directory ` cd synthesis/installer/OSX `
 
-7. Change directories to the osx/application directory ` cd synthesis/installer/osx/application/ `
+5. Run the pkginstall script ` ./pkginstall `
 
-8. Run ` appdmg spec.json Synthesis.app `
+### Optional Build Steps
 
-### Package
+Update the license, welcome and conclusion installer menus located in synthesis/installer/OSX/Installer/Resources
 
-Publish the newly created Synthesis.dmg
+## Package
+
+Publish the newly created Synthesis.pkg
+
+##Important Note
+
+**Do not** rename or move files
+

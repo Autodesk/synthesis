@@ -1,0 +1,8 @@
+#!/bin/bash
+#Build app
+pkgbuild --install-location /Applications/Synthesis.app --root ./App/payload/ --identifier org.autodesk.synthesis.app ./Installer/App.pkg
+#Build data files
+pkgbuild --install-location /tmp/.Synthesis --root ./Assets/payload/ --scripts ./Assets/scripts/ --identifier org.autodesk.synthesis.assets ./Installer/Assets.pkg
+#Build installer
+cd Installer
+productbuild --distribution Distribution.xml --resources Resources/ ../Synthesis.pkg

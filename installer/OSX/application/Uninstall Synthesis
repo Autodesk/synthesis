@@ -1,6 +1,0 @@
-#!/bin/bash
-
-rm -rf $HOME/.config/Autodesk/Synthesis 
-rm -rf /Applications/Synthesis.app
-hdiutil detach /Volumes/Synthesis\ Installer -force
-exit  
