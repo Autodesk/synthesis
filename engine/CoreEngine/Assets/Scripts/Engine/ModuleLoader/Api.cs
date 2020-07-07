@@ -17,6 +17,8 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
+using UnityEditor;
+using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
@@ -261,6 +263,15 @@ namespace Engine.ModuleLoader
 			public TComponent GetComponent<TComponent>(uint entity) where TComponent : Component =>
 				entity.GetComponent<TComponent>();
 
+			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable
+			{
+				throw new NotImplementedException();
+			}
+
+			public VisualElement GetRootVisualElement()
+			{
+				throw new NotImplementedException();
+			}
 			public List<Component> GetComponents(uint entity) => entity.GetComponents();
 		}
 	}

@@ -360,6 +360,14 @@ namespace SynthesisAPI.AssetManager
                            throw new Exception("Import of image/sprite asset: wrong number of arguments");
                        return new SpriteAsset(name, perm, sourcePath);
                    });
+
+                RegisterAssetType<TextureAsset>("image/texture", new[] {".png", ".jpeg"},
+                    (name, perm, sourcePath, args) =>
+                    {
+                        if (args.Length != 0)
+                            throw new Exception("Import of image/texture asset: wrong number of arguments");
+                        return new TextureAsset(name, perm, sourcePath);
+                    });
             }
 
             private Dictionary<string, Dictionary<string, HandlerFunc>> AssetHandlers { get; }

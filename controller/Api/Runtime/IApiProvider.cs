@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using SynthesisAPI.Modules;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace SynthesisAPI.Runtime
 
         #region UI
 
+        T CreateUnityType<T>(params object[] args);
         TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
 		UnityEngine.UIElements.VisualElement GetRootVisualElement();
 
