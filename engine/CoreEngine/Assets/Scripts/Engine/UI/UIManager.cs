@@ -1,146 +1,172 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.UIElements.Runtime;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class UIManager : MonoBehaviour
+public class UIManager2 : MonoBehaviour
 {
-    public GameObject UIContainer;
-    public PanelRenderer synthesisToolbar;
-    public VisualTreeAsset synthesisToolbarTab;
-    private VisualElement synthesisToolbarTree;
+    public PanelRenderer UIContainer;
+    public VisualTreeAsset tabTemplate;
 
-    private readonly Dictionary<string, Button> tabs = new Dictionary<string, Button>();
-    
-    public void AddTab(string tabName)
+    private Dictionary<string, Element> elements = new Dictionary<string, Element>();
+
+    /// <summary>
+    /// Adds a UI element
+    /// </summary>
+    /// <param name="element">Element to add</param>
+    /// <param name="isVisible">Whether the element is initially visible or hidden</param>
+    private void RegisterUIElement(Element element, bool isVisible)
     {
-        if (!tabs.ContainsKey(tabName))
+        if (!elements.ContainsKey(element.uniqueKey))
         {
-            synthesisToolbarTree = synthesisToolbar.visualTree;
-            var tabContainer = synthesisToolbarTree.Q<VisualElement>(name: "tab-panel");
-
-            Button customTab = synthesisToolbarTab.CloneTree().Q<Button>(name: "blank-tab");
-
-            customTab.clickable.clicked += () =>
-            {
-                DisplayPane(tabName);
-                HighlightTab(tabName);
-            };
+            VisualElement parentElement = UIContainer.visualTree.Q<VisualElement>(name: element.treeName);
             
-            customTab.name = tabName;
-            customTab.text = tabName;
-            tabContainer.Add(customTab);
+            element.visualElement.visible = isVisible;
+            parentElement.Add(element.visualElement);
 
-            tabs.Add(tabName, customTab);
-        } else
-        {
-            Debug.LogError("Tab failed to be added because a tab with that name already exists");
-        }
-
-    }
-
-    public void RemoveTab(string tabName)
-    {
-        if (tabs.ContainsKey(tabName))
-        {
-            var tabContainer = synthesisToolbarTree.Q<VisualElement>(name: "tab-panel");
-
-            tabContainer.Remove(tabs[tabName]);
-            tabs.Remove(tabName);
-        } else
-        {
-            Debug.LogError("Removal of tab [" + tabName + "] failed because no such tab exists");
-        }
-    }
-
-    private void DisplayPane(string moduleName)
-    {
-        // in editor function only
-#if UNITY_EDITOR
-        var modulePane = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/Testing/Modules/" + moduleName + "/ui/Pane.uxml");
-        if (modulePane != null)
-        {
-            var paneContainer = synthesisToolbarTree.Q<VisualElement>(name: "workspace-panel");
-
-            for (int i = 0; i < paneContainer.childCount; i++)
-            {
-                if (paneContainer[i] != null)
-                {
-                    paneContainer.RemoveAt(i);
-                }
-            }
-            
-            paneContainer.Add(modulePane.CloneTree());
+            elements.Add(element.uniqueKey, element);
         }
         else
         {
-            Debug.LogError("Failed to load pane for module [" + moduleName + "] because the UXML file could not be found");
+            Debug.LogError("Could not add UI element with key [" + element.uniqueKey + "] because the key is not unique");
         }
-#endif
     }
 
-    public void HighlightTab(string moduleName)
+    /// <summary>
+    /// Removes a UI element entirely, consider ToggleUIElement first
+    /// </summary>
+    /// <param name="uniqueKey">Key identifier for UI element</param>
+    private void UnregisterUIElement(string uniqueKey)
     {
-        var tabContainer = synthesisToolbarTree.Q<VisualElement>(name: "tab-panel");
+        if (elements.ContainsKey(uniqueKey))
+        {
+            Element elementToRemove = elements[uniqueKey];
+
+            elements.Remove(uniqueKey);
+            elementToRemove.visualElement.RemoveFromHierarchy();
+        }
+        else
+        {
+            Debug.LogError("Could not unregister UI element with key [" + uniqueKey + "] because the key does not exist");
+        }
+    }
+
+    /// <summary>
+    /// Toggles a UI element's visibility
+    /// </summary>
+    /// <param name="uniqueKey">Key identifier for UI element</param>
+    private void ToggleUIElement(string uniqueKey)
+    {
+        if (elements.ContainsKey(uniqueKey))
+        {
+            Element element = elements[uniqueKey];
+            element.visualElement.visible = !element.visualElement.visible;
+        }
+        else
+        {
+            Debug.LogError("Could not toggle UI element with key [" + uniqueKey + "] because the key does not exist");
+        }
+    }
+
+    /// <summary>
+    /// Adds a tab to the toolbar
+    /// </summary>
+    /// <param name="tabName">Name of the tab - should match Module name</param>
+    private void AddTab(string tabName)
+    {
+        VisualTreeAsset tabAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/Toolbar/Tab.uxml");
+        VisualElement tabContainer = GetTree(UIContainer).Q<VisualElement>(name: "tab-container");
         
+        Button customTab = tabAsset.CloneTree().Q<Button>(name: "blank-tab");
+        customTab.name = tabName;
+        customTab.text = tabName;
+        
+        customTab.clickable.clicked += () =>
+        {
+            HighlightTab(tabName);
+            ToggleUIElement(tabName);
+        };
+        
+        tabContainer.Add(customTab);
+    }
+
+    /// <summary>
+    /// Removes a tab from the toolbar
+    /// </summary>
+    /// <param name="tabName">Name of the tab</param>
+    private void RemoveTab(string tabName)
+    {
+        var tabContainer = GetTree(UIContainer).Q<VisualElement>(name: "tab-container");
+        foreach (VisualElement childTab in tabContainer.Children())
+        {
+            if (childTab.name.Equals(tabName))
+            {
+                tabContainer.Remove(childTab);
+                return;
+            }
+        }
+    }
+    
+    private void HighlightTab(string tabName)
+    {
+        var tabContainer = GetTree(UIContainer).Q<VisualElement>(name: "tab-container");
+
         foreach (VisualElement childTab in tabContainer.Children())
         {
             var activeTabColor = new Color(242.0f / 255.0f, 242.0f / 255.0f, 242.0f / 255.0f); // #F2F2F2
 
-            childTab.style.backgroundColor = !childTab.name.Equals(moduleName) ? new StyleColor(StyleKeyword.Null) : activeTabColor;
+            childTab.style.backgroundColor = !childTab.name.Equals(tabName) ? new StyleColor(StyleKeyword.Null) : activeTabColor;
         }
     }
-    
+
     void Start()
     {
-        synthesisToolbar.postUxmlReload += Bind;
+        UIContainer.postUxmlReload += Bind;
     }
 
     IEnumerable<Object> Bind()
     {
-        synthesisToolbarTree = synthesisToolbar.visualTree;
+        RegisterUIElement(new Element("Assets/UI/Toolbar/Toolbar.uxml", "root", "toolbar"), true);
+        RegisterUIElement(new Element("Assets/UI/Modules/Modules.uxml", "root", "modules"), false);
+        RegisterUIElement(new Element("Assets/UI/Settings/Settings.uxml", "root", "settings"), false);
+        RegisterUIElement(new Element("Assets/UI/Modules/Module.uxml", "module-list", "testModule"), false);
 
-        Button setupButton = synthesisToolbarTree.Q<Button>(name: "load-setup");
-        setupButton.clickable.clicked += () =>
-        {
-            TempAddTabs();
-        };
+        RegisterUIElement(new Element("Assets/Scripts/Testing/Modules/Falcon/ui/Pane.uxml", "bottom", "Falcon"), false);
+        
+        AddTab("Falcon");
+        AddTab("Test2");
 
-        Button modulesButton = GetButton("modules-button");
+        RegisterCoreButtons();
+
+        return null;
+    }
+
+    private void RegisterCoreButtons()
+    {
+        VisualElement mainTree = GetTree(UIContainer);
+
+        Button modulesButton = mainTree.Q<Button>(name: "modules-button");
         modulesButton.clickable.clicked += () =>
         {
-            PanelRenderer moduleRenderer = GetUIGameObject("Modules").GetComponent<PanelRenderer>();
-            moduleRenderer.enabled = !moduleRenderer.enabled;
+            ToggleUIElement("modules");
+            ToggleUIElement("testModule");
         };
 
-        return null;
-    }
-
-    Button GetButton(string buttonName)
-    {
-        return synthesisToolbarTree.Q<Button>(name: buttonName);
-    }
-
-    GameObject GetUIGameObject(string elementName)
-    {
-        for (int i = 0; i < UIContainer.transform.childCount; i++)
+        Button settingsButton = mainTree.Q<Button>(name: "settings-button");
+        settingsButton.clickable.clicked += () =>
         {
-            GameObject childObject = UIContainer.transform.GetChild(i).gameObject;
-            if (childObject.name.Equals(elementName))
-            {
-                return childObject;
-            }
-        }
-        return null;
+            ToggleUIElement("settings");
+        };
+
     }
 
-    private void TempAddTabs()
+    VisualElement GetTree(PanelRenderer panel)
     {
-        // in the future will iterate through all available modules and methods would be called externally
-        AddTab("Falcon");
-        AddTab("Apollo");
-        AddTab("Engine");
+        return panel.visualTree;
     }
 
 }
