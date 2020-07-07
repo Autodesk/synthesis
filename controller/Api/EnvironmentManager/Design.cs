@@ -9,27 +9,24 @@ namespace SynthesisAPI.EnvironmentManager
     {
         public DesignMeta MetaData { get; set; }
 
-        public IList<Component> Components { get; set; }
+        public static IDictionary<int, Component> Components { get; set; }
         public Occurence RootOccurence { get; set; }
         public IList<Joint> Joints { get; set; }
         public IList<Material> Materials { get; set; }
         public IList<Appearance> Appearances { get; set; }
 
-        public Design(DesignMeta metaData)
+        public Design()
         {
+            DesignMeta metaData = new DesignMeta();
+
             MetaData = metaData;
-            Components = new List<Component>();
+            //Components = new List<Component>();
+            Components = new Dictionary<int, Component>();
             RootOccurence = new Occurence();
             Joints = new List<Joint>();
             Materials = new List<Material>();
             Appearances = new List<Appearance>();
         }
-
-        //public Design ImportDesign(ModelRoot modelRoot)
-        //{
-        //    Scene scenes = modelRoot.DefaultScene;
-        //    return;
-        //}
 
         #region Construction Data
 
@@ -50,17 +47,6 @@ namespace SynthesisAPI.EnvironmentManager
                 ChildOccurences = new List<Occurence>();
                 Attributes = new Dictionary<string, object>();
             }
-
-            //public Occurence importOccurence(Node node)
-            //{
-            //    Occurence occurence;
-
-            //    foreach (Node child in node.VisualChildren)
-            //    {
-            //        traverseOccurence(child);
-            //    }
-            //    return occurence;
-            //}
         }
 
         public class Joint
