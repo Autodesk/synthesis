@@ -24,7 +24,7 @@ namespace BenchmarkApi
                 System.IO.Directory.CreateDirectory(FileSystem.TestPath);
             }
 
-            string text_string = String.Concat(Enumerable.Repeat("Hello ", 10000));
+            string text_string = String.Concat(Enumerable.Repeat("123456789 ", 50000));
 
             if (!File.Exists(FileSystem.TestPath + LargeTextFileName))
             {
@@ -64,12 +64,20 @@ namespace BenchmarkApi
             AssetManager.Import(type, false, "/temp/", LargeTextFileName, Permissions.PublicReadWrite, fileName).Delete();
         }
 
-        /*
         [Benchmark]
-        public void ImportLargeTextAssetLazy()
+        public void ImportLazyLargeTextAsset()
         {
-            AssetManager.Import("temp/", "test_large.txt", Permissions.PrivateReadWrite, "");
+            string fileName = FileSystem.TestPathLocal + LargeTextFileName;
+            string type = AssetManager.GetTypeFromFileExtension(fileName);
+            AssetManager.ImportLazy(type, false, "/temp/", LargeTextFileName, Permissions.PublicReadWrite, fileName).Delete();
         }
-        */
+
+        [Benchmark]
+        public void ImportLazyLargeTextAssetAndLoad()
+        {
+            string fileName = FileSystem.TestPathLocal + LargeTextFileName;
+            string type = AssetManager.GetTypeFromFileExtension(fileName);
+            AssetManager.ImportLazy(type, false, "/temp/", LargeTextFileName, Permissions.PublicReadWrite, fileName).Load().Delete();
+        }
     }
 }

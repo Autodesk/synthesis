@@ -86,6 +86,28 @@ namespace TestApi
         }
 
         [Test]
+        public static void TestLazyImport()
+        {
+            var testJson = AssetManager.ImportLazy("text/json", false, "/temp", "test_lazy.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+
+            Assert.NotNull(testJson);
+
+            var testLazy = AssetManager.GetAsset("/temp/test_lazy.json");
+
+            Assert.True(testLazy is LazyAsset);
+
+            ((LazyAsset)testLazy).Load();
+
+            var testContents = AssetManager.GetAsset("/temp/test_lazy.json");
+
+            Assert.True(testContents is JsonAsset);
+
+            var obj = ((JsonAsset)testContents).Deserialize<TestJsonObject>();
+
+            Assert.AreEqual("Hello world of JSON!", obj?.Text);
+        }
+
+        [Test]
         public static void TestTypeFromFileExtension()
         {
             string source = $"test{Path.DirectorySeparatorChar}test.json";

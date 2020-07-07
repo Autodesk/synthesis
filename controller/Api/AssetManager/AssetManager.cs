@@ -96,6 +96,8 @@ namespace SynthesisAPI.AssetManager
             return (TAsset?)InnerInstance.GetAsset(targetPath);
         }
 
+        #region Search
+
         /// <summary>
         /// Recursively search the virtual file system for an asset with a given name
         /// </summary>
@@ -168,6 +170,10 @@ namespace SynthesisAPI.AssetManager
             return (Asset?)FileSystem.SearchInner(parent, name);
         }
 
+        #endregion
+
+        #region Import from File
+
         /// <summary>
         /// Import a new asset into the virtual file system and create it if import fails
         /// </summary>
@@ -187,7 +193,7 @@ namespace SynthesisAPI.AssetManager
 
         internal static Asset? ImportInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
         {
-            return InnerInstance.Import(assetType, createOnFail, null, targetPath, name, perm, sourcePath, args);
+            return InnerInstance.Import(assetType, createOnFail, false, null, targetPath, name, perm, sourcePath, args);
         }
 
         /// <summary>
@@ -210,8 +216,12 @@ namespace SynthesisAPI.AssetManager
 
         internal static TAsset? ImportInner<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
-            return (TAsset?)InnerInstance.Import(assetType, createOnFail, null, targetPath, name, perm, sourcePath, args);
+            return (TAsset?)ImportInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
+
+        #endregion
+
+        #region Import from Stream
 
         /// <summary>
         /// Import a new asset into the virtual file system
@@ -235,7 +245,7 @@ namespace SynthesisAPI.AssetManager
         internal static Asset? ImportInner(string assetType, Stream stream, string targetPath, string name,
             Permissions perm, string sourcePath, params dynamic[] args)
         {
-            return InnerInstance.Import(assetType, false, stream, targetPath, name, perm, sourcePath, args);
+            return InnerInstance.Import(assetType, false, false, stream, targetPath, name, perm, sourcePath, args);
         }
 
         /// <summary>
@@ -261,8 +271,40 @@ namespace SynthesisAPI.AssetManager
         internal static TAsset? ImportInner<TAsset>(string assetType, Stream stream, string targetPath, string name,
             Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
-            return (TAsset?)InnerInstance.Import(assetType, false, stream, targetPath, name, perm, sourcePath, args);
+            return (TAsset?)ImportInner(assetType, stream, targetPath, name, perm, sourcePath, args);
         }
+
+        #region Lazy Imports
+
+        [ExposedApi]
+        public static LazyAsset? ImportLazy(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return ImportLazyInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
+        }
+
+        internal static LazyAsset? ImportLazyInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        {
+            return (LazyAsset?)InnerInstance.Import(assetType, createOnFail, true, null, targetPath, name, perm, sourcePath, args);
+        }
+
+        [ExposedApi]
+        public static LazyAsset? ImportLazy(string assetType, Stream stream, string targetPath, string name,
+            Permissions perm, string sourcePath, params dynamic[] args)
+        {
+            using var _ = ApiCallSource.StartExternalCall();
+            return ImportLazyInner(assetType, stream, targetPath, name, perm, sourcePath, args);
+        }
+
+        internal static LazyAsset? ImportLazyInner(string assetType, Stream stream, string targetPath, string name,
+            Permissions perm, string sourcePath, params dynamic[] args)
+        {
+            return (LazyAsset?)InnerInstance.Import(assetType, false, true, stream, targetPath, name, perm, sourcePath, args);
+        }
+
+        #endregion
+
+        #endregion
 
         public static string? GetTypeFromFileExtension(string fileName)
         {
@@ -373,14 +415,14 @@ namespace SynthesisAPI.AssetManager
                 return FileExtensionAssetTypes.TryGetValue(Path.GetExtension(fileName), out string type) ? type : null;
             }
 
-            public Asset? Import(string assetType, bool createOnFail, Stream? sourceStream, string targetPath, string name,
+            public Asset? Import(string assetType, bool createOnFail, bool lazyImport, Stream? sourceStream, string targetPath, string name,
                 Permissions perm, string sourcePath, params dynamic[] args)
             {
                 var types = SplitAssetType(assetType);
-                return Import(types[0], types[1], createOnFail, sourceStream, targetPath, name, perm, sourcePath, args);
+                return Import(types[0], types[1], createOnFail, lazyImport, sourceStream, targetPath, name, perm, sourcePath, args);
             }
 
-            public Asset? Import(string type, string subtype, bool createOnFail, Stream? sourceStream, string targetPath,
+            public Asset? Import(string type, string subtype, bool createOnFail, bool lazyImport, Stream? sourceStream, string targetPath,
                 string name, Permissions perm, string sourcePath, params dynamic[] args)
             {
                 if (!AssetHandlers.ContainsKey(type) || !AssetHandlers[type].ContainsKey(subtype))
@@ -402,7 +444,7 @@ namespace SynthesisAPI.AssetManager
                     }
                     else
                     {
-                        sourceStream = File.Open(path, FileMode.Open);
+                        sourceStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
                     }
                 }
 
@@ -411,19 +453,28 @@ namespace SynthesisAPI.AssetManager
                     throw new Exception("Source stream for import is empty");
                 }
 
+                Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
+
+                if (newAsset == null)
+                {
+                    return null;
+                }
+
+                EventBus.EventBus.Push(AssetImportEvent.Tag, new AssetImportEvent(name, targetPath, type + "/" + subtype));
+
+                if (lazyImport)
+                {
+                    LazyAsset lazyAsset = new LazyAsset(newAsset, sourceStream, targetPath);
+                    return (Asset?)FileSystem.AddEntry(targetPath, lazyAsset.Load(new byte[0]));
+                }
+
                 byte[] data = new byte[sourceStream.Length];
                 sourceStream.Read(data, 0, (int)sourceStream.Length);
                 sourceStream.Close();
 
-                Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
-
-                if(newAsset != null)
-                {
-                    EventBus.EventBus.Push(AssetImportEvent.Tag, new AssetImportEvent(name, targetPath, type + "/" + subtype));
-                    return (Asset?)FileSystem.AddEntry(targetPath, newAsset.Load(data));
-                }
-
-                return null;
+                // TODO make it so we don't have to allocate twice the size of the asset every
+                // time we import it (i.e. a 500 KB asset will result in 1000 KB of allocation)
+                return (Asset?)FileSystem.AddEntry(targetPath, newAsset.Load(data));
             }
 
             public static readonly Inner InnerInstance = new Inner();
