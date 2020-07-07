@@ -65,7 +65,6 @@
     <Compile Include="TestEventBus.cs" />
     <Compile Include="TestJsonObject.cs" />
     <Compile Include="TestUIParsing.cs" />
-    <Compile Include="TestJSONObject.cs" />
     <Compile Include="TestVirtualFileSystem.cs" />
     <Compile Include="TestXmlObject.cs" />
     <Compile Include="TestPreferenceManager.cs" />

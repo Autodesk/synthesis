@@ -28,18 +28,14 @@ public class UIParseTest : MonoBehaviour
 
     public TextureAsset asset;
     public Texture2D texture;
-    
-    void Awake()
-    {
-        // ApiProvider.RegisterApiProvider(new ApiInstance());
-    }
 
     void Start()
     {
         Debug.Log("Starting");
 
-        // asset = AssetManager.Import<TextureAsset>("image/texture", "/temp", "test.jpeg",
-            // Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
+        
+        asset = AssetManager.Import<TextureAsset>("image/texture", "/temp", "test.jpeg",
+            Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
         
         XmlDocument doc = new XmlDocument();
         doc.Load($"Assets{Path.DirectorySeparatorChar}TestButton.uxml");
@@ -47,25 +43,12 @@ public class UIParseTest : MonoBehaviour
         renderer.postUxmlReload += () =>
         {
             renderer.visualTree.Q(name = "screen").Add(generated);
+            RecursivePrint(generated);
             return null;
         };
         // UIManager.AddVisualElement(generated);
         
-        // RecursivePrint(generated);
-    }
-
-    private bool gate = false;
-
-    private void Update()
-    {
-        if (!gate)
-        {
-            if (asset.TextureData != null)
-            {
-                gate = true;
-                RecursivePrint(generated);
-            }
-        }
+        
     }
 
     private void RecursivePrint(VisualElement e, int level = 0)
@@ -81,87 +64,5 @@ public class UIParseTest : MonoBehaviour
             
             RecursivePrint(a, level + 1);
         }
-    }
-}
-
-public class ApiInstance : IApiProvider
-{
-    public SynthesisAPI.Modules.Component AddComponent(Type t, Guid objectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public TComponent AddComponent<TComponent>(Guid objectId) where TComponent : SynthesisAPI.Modules.Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public SynthesisAPI.Modules.Component GetComponent(Type t, Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public TComponent GetComponent<TComponent>(Guid id) where TComponent : SynthesisAPI.Modules.Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<SynthesisAPI.Modules.Component> GetComponents(Guid objectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<TComponent> GetComponents<TComponent>(Guid id) where TComponent : SynthesisAPI.Modules.Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<IModule> GetModules()
-    {
-        throw new NotImplementedException();
-    }
-
-    public SynthesisAPI.Modules.Object GetObject(Guid objectId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public T CreateUnityType<T>(params object[] args)
-    {
-        return (T)Activator.CreateInstance(typeof(T), args);
-    }
-
-    public Transform GetTransformById(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public (Guid Id, bool valid) Instantiate(SynthesisAPI.Modules.Object o)
-    {
-        throw new NotImplementedException();
-    }
-
-    public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable
-    {
-        Debug.Log($"Creating instance of type: {typeof(TUnityType).FullName}");
-        dynamic a = (TUnityType) Activator.CreateInstance(typeof(TUnityType));
-        return a;
-    }
-
-    public VisualElement GetRootVisualElement()
-    {
-        PanelRenderer prr = GameObject.FindGameObjectWithTag("UI_RENDERER").GetComponent<PanelRenderer>();
-        prr.RecreateUIFromUxml(); // Incase it hasn't loaded uxml data yet
-        return prr.visualTree;
-    }
-
-    public void Log(object o)
-    {
-        // Debug.Log(o);
-    }
-
-    public void RegisterModule(IModule module)
-    {
-        throw new NotImplementedException();
     }
 }

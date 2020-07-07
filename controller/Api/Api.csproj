@@ -101,9 +101,6 @@
     <Compile Include="Utilities\AnyMap.cs" />
     <Compile Include="VirtualFileSystem\DirectroyExpection.cs" />
     <Compile Include="VirtualFileSystem\ExposedApiAttribute.cs" />
-    <Compile Include="UIManager\VisualElements\Label.cs" />
-    <Compile Include="UIManager\VisualElements\VisualElement.cs" />
-    <Compile Include="UIManager\VisualElements\Button.cs" />
     <Compile Include="Utilities\ParamsHelper.cs" />
     <Compile Include="Utilities\ReflectHelper.cs" />
     <Compile Include="Utilities\Result.cs" />
