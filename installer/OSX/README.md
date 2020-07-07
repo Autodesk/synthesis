@@ -6,12 +6,12 @@
 
 2.  Synthesis.app ` cp [Synthesis.app] [synthesis/installer/OSX/App/payload] `
 
-2b. Remove the Synthesis.app placeholder ` rm [synthesis/installer/OSX/App/payload/README.md] `
+    - Remove the Synthesis.app placeholder ` rm [synthesis/installer/OSX/App/payload/README.md] `
 
 3. Add data files to synthesis/installer/OSX/Assets/payload/Contents/Synthesis
 
-3b. Remove the data file placeholder ` rm [synthesis/installer/OSX/Assets/payload/Contents/Synthesis/README.md] `	
-
+    - Remove the data file placeholder ` rm [synthesis/installer/OSX/Assets/payload/Contents/Synthesis/README.md] `	
+  
 4. Change directories to the osx installer directory ` cd synthesis/installer/OSX `
 
 5. Run the pkginstall script ` ./pkginstall `
