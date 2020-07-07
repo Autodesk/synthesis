@@ -188,7 +188,7 @@ namespace SynthesisAPI.PreferenceManager
             {
                 if (_asset == null)
                 {
-                    _asset = AssetManager.AssetManager.ImportOrCreateInner<JsonAsset>("text/json",
+                    _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", true,
                         VirtualFilePath.Path, VirtualFilePath.Name,
                         Permissions.PublicReadWrite, VirtualFilePath.Name)!;
                     if (_asset == null)

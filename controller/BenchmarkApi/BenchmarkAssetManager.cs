@@ -59,7 +59,9 @@ namespace BenchmarkApi
         [Benchmark]
         public void ImportLargeTextAsset()
         {
-            AssetManager.Import("/temp/", LargeTextFileName, Permissions.PublicReadWrite, FileSystem.TestPathLocal + LargeTextFileName).Delete();
+            string fileName = FileSystem.TestPathLocal + LargeTextFileName;
+            string type = AssetManager.GetTypeFromFileExtension(fileName);
+            AssetManager.Import(type, false, "/temp/", LargeTextFileName, Permissions.PublicReadWrite, fileName).Delete();
         }
 
         /*

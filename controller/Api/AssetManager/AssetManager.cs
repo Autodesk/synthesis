@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using SynthesisAPI.AssetManager.DummyAssetTypes;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 
@@ -33,15 +31,15 @@ namespace SynthesisAPI.AssetManager
         /// <param name="fileExtensions"></param>
         /// <param name="handler"></param>
         [ExposedApi]
-        public static void RegisterAssetType<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        public static void RegisterAssetType(string assetType, string[] fileExtensions, HandlerFunc handler)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            RegisterAssetTypeInner<TAsset>(assetType, fileExtensions, handler);
+            RegisterAssetTypeInner(assetType, fileExtensions, handler);
         }
 
-        internal static void RegisterAssetTypeInner<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        internal static void RegisterAssetTypeInner(string assetType, string[] fileExtensions, HandlerFunc handler)
         {
-            InnerInstance.RegisterAssetType<TAsset>(assetType, fileExtensions, handler);
+            InnerInstance.RegisterAssetType(assetType, fileExtensions, handler);
         }
 
         /// <summary>
@@ -52,15 +50,15 @@ namespace SynthesisAPI.AssetManager
         /// <param name="fileExtensions"></param>
         /// <param name="handler"></param>
         [ExposedApi]
-        public static void RegisterAssetType<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        public static void RegisterAssetType(string type, string subtype, string[] fileExtensions, HandlerFunc handler)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            RegisterAssetTypeInner<TAsset>(type, subtype, fileExtensions, handler);
+            RegisterAssetTypeInner(type, subtype, fileExtensions, handler);
         }
 
-        internal static void RegisterAssetTypeInner<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+        internal static void RegisterAssetTypeInner(string type, string subtype, string[] fileExtensions, HandlerFunc handler)
         {
-            InnerInstance.RegisterAsset<TAsset>(type, subtype, fileExtensions, handler);
+            InnerInstance.RegisterAsset(type, subtype, fileExtensions, handler);
         }
 
         /// <summary>
@@ -181,32 +179,16 @@ namespace SynthesisAPI.AssetManager
         /// <param name="args"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static Asset? ImportOrCreate(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        public static Asset? Import(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportOrCreateInner(assetType, targetPath, name, perm, sourcePath, args);
+            return ImportInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportOrCreateInner(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
         {
-            return InnerInstance.Import(assetType, true, null, targetPath, name, perm, sourcePath, args);
+            return InnerInstance.Import(assetType, createOnFail, null, targetPath, name, perm, sourcePath, args);
         }
-
-        /// <summary>
-        /// Import a new asset into the virtual file system and create it if import fails
-        /// </summary>
-        /// <typeparam name="TAssetType"></typeparam>
-        /// <typeparam name="TAssetSubtype"></typeparam>
-        /// <param name="targetPath"></param>
-        /// <param name="name"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static Asset? ImportOrCreate<TAssetType, TAssetSubtype>(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
-            where TAssetType : IAssetType
-            where TAssetSubtype : IAssetSubtype =>
-            InnerInstance.Import(ConvertDummyAssetTypes<TAssetType, TAssetSubtype>(), false, null, targetPath, name, perm, sourcePath, args);
 
         /// <summary>
         /// Import a new asset into the virtual file system and create it if import fails
@@ -220,142 +202,15 @@ namespace SynthesisAPI.AssetManager
         /// <param name="args"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TAsset? ImportOrCreate<TAsset>(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        public static TAsset? Import<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
-            return ImportOrCreateInner<TAsset>(assetType, targetPath, name, perm, sourcePath, args);
+            return ImportInner<TAsset>(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportOrCreateInner<TAsset>(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        internal static TAsset? ImportInner<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
-            return (TAsset?)InnerInstance.Import(assetType, true, null, targetPath, name, perm, sourcePath, args);
-        }
-
-        [ExposedApi]
-        public static Asset? Import(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner(targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static Asset? ImportInner(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            return InnerInstance.Import(false, null, targetPath, name, perm, sourcePath, args);
-        }
-
-        [ExposedApi]
-        public static TAsset? Import<TAsset>(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner<TAsset>(targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static TAsset? ImportInner<TAsset>(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            return InnerInstance.Import<TAsset>(false, null, targetPath, name, perm, sourcePath, args);
-        }
-
-        /// <summary>
-        /// Convert the IAssetType and IAssetSubtype type parameters to the MIME type as an array
-        /// </summary>
-        /// <typeparam name="TAssetType"></typeparam>
-        /// <typeparam name="TAssetSubtype"></typeparam>
-        /// <returns></returns>
-        private static string[] ConvertDummyAssetTypes<TAssetType, TAssetSubtype>() where TAssetType : IAssetType where TAssetSubtype : IAssetSubtype
-        {
-            return new string[]
-            {
-                typeof(TAssetType).Name.ToLower(),
-                typeof(TAssetSubtype).Name.ToLower()
-            };
-        }
-
-        /// <summary>
-        /// Import a new asset into the virtual file system
-        /// </summary>
-        /// <typeparam name="TAssetType"></typeparam>
-        /// <typeparam name="TAssetSubtype"></typeparam>
-        /// <param name="targetPath"></param>
-        /// <param name="name"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static Asset? Import<TAssetType, TAssetSubtype>(string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) 
-            where TAssetType: IAssetType 
-            where TAssetSubtype : IAssetSubtype =>
-            InnerInstance.Import(ConvertDummyAssetTypes<TAssetType, TAssetSubtype>(), false, null, targetPath, name, perm, sourcePath, args);
-
-        /// <summary>
-        /// Import a new asset into the virtual file system
-        /// </summary>
-        /// <param name="assetType"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="targetPath"></param>
-        /// <param name="args"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [ExposedApi]
-        public static Asset? Import(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner(assetType, targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static Asset? ImportInner(string assetType, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            return InnerInstance.Import(assetType, false, null, targetPath, name, perm, sourcePath, args);
-        }
-
-        /// <summary>
-        /// Import a new asset into the virtual file system
-        /// </summary>
-        /// <typeparam name="TAsset"></typeparam>
-        /// <param name="assetType"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="targetPath"></param>
-        /// <param name="args"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [ExposedApi]
-        public static TAsset? Import<TAsset>(string assetType, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner<TAsset>(assetType, targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static TAsset? ImportInner<TAsset>(string assetType, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            return (TAsset?)InnerInstance.Import(assetType, false, null, targetPath, name, perm, sourcePath, args);
-        }
-
-        /// <summary>
-        /// Import a new asset into the virtual file system
-        /// </summary>
-        /// <param name="assetType"></param>
-        /// <param name="data"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="targetPath"></param>
-        /// <param name="args"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [ExposedApi]
-        public static Asset? Import(string assetType, byte[] data, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner(assetType, data, targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static Asset? ImportInner(string assetType, byte[] data, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            return InnerInstance.Import(assetType, false, data, targetPath, name, perm, sourcePath, args);
+            return (TAsset?)InnerInstance.Import(assetType, createOnFail, null, targetPath, name, perm, sourcePath, args);
         }
 
         /// <summary>
@@ -380,36 +235,8 @@ namespace SynthesisAPI.AssetManager
         internal static Asset? ImportInner(string assetType, Stream stream, string targetPath, string name,
             Permissions perm, string sourcePath, params dynamic[] args)
         {
-            return InnerInstance.Import(assetType, false, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()),
-                targetPath, name, perm, sourcePath, args);
+            return InnerInstance.Import(assetType, false, stream, targetPath, name, perm, sourcePath, args);
         }
-
-        /// <summary>
-        /// Import a new asset into the virtual file system
-        /// </summary>
-        /// <typeparam name="TAsset"></typeparam>
-        /// <param name="assetType"></param>
-        /// <param name="perm"></param>
-        /// <param name="sourcePath"></param>
-        /// <param name="data"></param>
-        /// <param name="targetPath"></param>
-        /// <param name="args"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        [ExposedApi]
-        public static TAsset? Import<TAsset>(string assetType, byte[] data, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner<TAsset>(assetType, data, targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static TAsset? ImportInner<TAsset>(string assetType, byte[] data, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-        {
-            return (TAsset?)InnerInstance.Import(assetType, false, data, targetPath, name, perm, sourcePath, args);
-        }
-
 
         /// <summary>
         /// Import a new asset into the virtual file system
@@ -434,24 +261,12 @@ namespace SynthesisAPI.AssetManager
         internal static TAsset? ImportInner<TAsset>(string assetType, Stream stream, string targetPath, string name,
             Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
         {
-            return (TAsset?)InnerInstance.Import(assetType, false,
-                Encoding.UTF8.GetBytes(new StreamReader(stream).ReadToEnd()), targetPath, name, perm, sourcePath,
-                args);
+            return (TAsset?)InnerInstance.Import(assetType, false, stream, targetPath, name, perm, sourcePath, args);
         }
 
-        [ExposedApi]
-        public static Asset? Import(Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
+        public static string? GetTypeFromFileExtension(string fileName)
         {
-            using var _ = ApiCallSource.StartExternalCall();
-            return ImportInner(stream, targetPath, name, perm, sourcePath, args);
-        }
-
-        internal static Asset? ImportInner(Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
-        {
-            return InnerInstance.Import(false, Encoding.UTF8.GetBytes((new StreamReader(stream)).ReadToEnd()),
-               targetPath, name, perm, sourcePath, args);
+            return InnerInstance.GetTypeFromFileExtension(fileName);
         }
 
         /// <summary>
@@ -462,10 +277,9 @@ namespace SynthesisAPI.AssetManager
             private Inner()
             {
                 AssetHandlers = new Dictionary<string, Dictionary<string, HandlerFunc>>();
-                FileExtensionAssetTypes = new Dictionary<string, (string, string)>();
-                TypeAssetTypes = new Dictionary<Type, (string, string)>();
+                FileExtensionAssetTypes = new Dictionary<string, string>();
 
-                RegisterAssetType<TextAsset>("text/plain", new[]{".txt"},
+                RegisterAssetType("text/plain", new[]{".txt"},
                     (name, perms, sourcePath, args) =>
                     {
                         if (args.Length != 0)
@@ -473,7 +287,7 @@ namespace SynthesisAPI.AssetManager
                         return new TextAsset(name, perms, sourcePath);
                     });
 
-                RegisterAssetType<XmlAsset>("text/xml", new[] { ".xml" },
+                RegisterAssetType("text/xml", new[] { ".xml" },
                     (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)
@@ -481,7 +295,7 @@ namespace SynthesisAPI.AssetManager
                         return new XmlAsset(name, perm, sourcePath);
                     });
 
-                RegisterAssetType<JsonAsset>("text/json", new[] { ".json" },
+                RegisterAssetType("text/json", new[] { ".json" },
                     (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)
@@ -489,7 +303,7 @@ namespace SynthesisAPI.AssetManager
                         return new JsonAsset(name, perm, sourcePath);
                     });
 
-                RegisterAssetType<CssAsset>("text/css", new[] { ".css" },
+                RegisterAssetType("text/css", new[] { ".css" },
                    (name, perm, sourcePath, args) =>
                    {
                        if (args.Length != 0)
@@ -497,7 +311,7 @@ namespace SynthesisAPI.AssetManager
                        return new CssAsset(name, perm, sourcePath);
                    });
 
-                RegisterAssetType<SpriteAsset>("image/sprite", new[] { ".png", ".jpeg" },
+                RegisterAssetType("image/sprite", new[] { ".png", ".jpeg" },
                    (name, perm, sourcePath, args) =>
                    {
                        if (args.Length != 0)
@@ -507,8 +321,7 @@ namespace SynthesisAPI.AssetManager
             }
 
             private Dictionary<string, Dictionary<string, HandlerFunc>> AssetHandlers { get; }
-            private Dictionary<string, (string, string)> FileExtensionAssetTypes { get; }
-            private Dictionary<Type, (string, string)> TypeAssetTypes { get; }
+            private Dictionary<string, string> FileExtensionAssetTypes { get; }
 
             /// <summary>
             /// Split a media type into type and subtype
@@ -527,14 +340,13 @@ namespace SynthesisAPI.AssetManager
                 return types;
             }
 
-            public void RegisterAssetType<TAsset>(string assetType, string[] fileExtensions, HandlerFunc handler)
-                where TAsset : Asset
+            public void RegisterAssetType(string assetType, string[] fileExtensions, HandlerFunc handler)
             {
                 string[] types = SplitAssetType(assetType);
-                RegisterAsset<TAsset>(types[0], types[1], fileExtensions, handler);
+                RegisterAsset(types[0], types[1], fileExtensions, handler);
             }
 
-            public void RegisterAsset<TAsset>(string type, string subtype, string[] fileExtensions, HandlerFunc handler) where TAsset : Asset
+            public void RegisterAsset(string type, string subtype, string[] fileExtensions, HandlerFunc handler)
             {
                 if(AssetHandlers.ContainsKey(type) && AssetHandlers[type].ContainsKey(subtype))
                 {
@@ -546,53 +358,29 @@ namespace SynthesisAPI.AssetManager
                     AssetHandlers[type] = new Dictionary<string, HandlerFunc>();
                 }
 
-                foreach (var fileExtension in fileExtensions) {
-                    FileExtensionAssetTypes[fileExtension] = (type, subtype);
+                foreach (var fileExtension in fileExtensions)
+                {
+                    FileExtensionAssetTypes[fileExtension] = type + "/" + subtype;
                 }
-
-                TypeAssetTypes[typeof(TAsset)] = (type, subtype);
 
                 AssetHandlers[type][subtype] = handler;
             }
 
             public Asset? GetAsset(string targetPath) => (Asset?)FileSystem.TraverseInner(targetPath);
 
-            public Asset? Import(bool createOnFail, byte[]? data, string targetPath, string name,
-                Permissions perm, string sourcePath, params dynamic[] args)
+            public string? GetTypeFromFileExtension(string fileName)
             {
-                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
-
-                return Import(types.Item1, types.Item2, createOnFail, data, targetPath, name, perm, sourcePath, args);
+                return FileExtensionAssetTypes.TryGetValue(Path.GetExtension(fileName), out string type) ? type : null;
             }
 
-            public TAsset? Import<TAsset>(bool createOnFail, byte[]? data, string targetPath, string name,
-                Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
-            {
-                var types = TypeAssetTypes[typeof(TAsset)];
-
-                var types2 = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
-                if (types.Item1 != types2.Item1 || types.Item2 != types2.Item2)
-                {
-                    throw new Exception("Mismatched asset types during import");
-                }
-
-                return (TAsset?)Import(types.Item1, types.Item2, createOnFail, data, targetPath, name, perm, sourcePath, args);
-            }
-
-            public Asset? Import(string assetType, bool createOnFail, byte[]? data, string targetPath, string name,
+            public Asset? Import(string assetType, bool createOnFail, Stream? sourceStream, string targetPath, string name,
                 Permissions perm, string sourcePath, params dynamic[] args)
             {
                 var types = SplitAssetType(assetType);
-                return Import(types[0], types[1], createOnFail, data, targetPath, name, perm, sourcePath, args);
+                return Import(types[0], types[1], createOnFail, sourceStream, targetPath, name, perm, sourcePath, args);
             }
 
-            public Asset? Import(string[] assetType, bool createOnFail, byte[]? data, string targetPath, string name,
-                Permissions perm, string sourcePath, params dynamic[] args)
-            {
-                return Import(assetType[0], assetType[1], createOnFail, data, targetPath, name, perm, sourcePath, args);
-            }
-
-            public Asset? Import(string type, string subtype, bool createOnFail, byte[]? data, string targetPath,
+            public Asset? Import(string type, string subtype, bool createOnFail, Stream? sourceStream, string targetPath,
                 string name, Permissions perm, string sourcePath, params dynamic[] args)
             {
                 if (!AssetHandlers.ContainsKey(type) || !AssetHandlers[type].ContainsKey(subtype))
@@ -600,35 +388,32 @@ namespace SynthesisAPI.AssetManager
                     throw new Exception($"Importing asset with unregistered type {type}/{subtype}");
                 }
 
-                var types = FileExtensionAssetTypes[Path.GetExtension(sourcePath == "" ? name : sourcePath)];
-                if(type != types.Item1 || subtype != types.Item2)
-                {
-                    throw new Exception("Mismatched asset types during import");
-                }
-
                 string path = FileSystem.BasePath + sourcePath;
 
-                if (sourcePath != "")
+                if (sourceStream == null && sourcePath != "") // We need to read it
                 {
                     if (!File.Exists(path))
                     {
                         if (createOnFail)
                         {
                             System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path));
-                            File.Create(path).Close();
-                            data = new byte[0];
+                            sourceStream = File.Create(path);
                         }
                     }
-                    else if (data == null)
+                    else
                     {
-                        data = File.ReadAllBytes(path);
+                        sourceStream = File.Open(path, FileMode.Open);
                     }
                 }
 
-                if (data == null)
+                if (sourceStream == null)
                 {
-                    throw new Exception($"Failed to import byte data from file \"{path}\" (read null)");
+                    throw new Exception("Source stream for import is empty");
                 }
+
+                byte[] data = new byte[sourceStream.Length];
+                sourceStream.Read(data, 0, (int)sourceStream.Length);
+                sourceStream.Close();
 
                 Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
 
