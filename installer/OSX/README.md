@@ -24,7 +24,7 @@ Update the license, welcome and conclusion installer menus located in synthesis/
 
 Publish the newly created Synthesis.pkg
 
-##Important Note
+## Important Note
 
 **Do not** rename or move files
 
