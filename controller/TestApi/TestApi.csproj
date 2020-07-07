@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="MultiDepthHierarchy_v9_1593489237.glb" />
     <None Include="test_assets\test.json" />
     <None Include="packages.config" />
   </ItemGroup>

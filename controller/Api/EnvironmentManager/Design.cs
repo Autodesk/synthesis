@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using SharpGLTF.Schema2;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Profiling.Memory.Experimental;
 
 namespace SynthesisAPI.EnvironmentManager
 {
@@ -26,6 +25,12 @@ namespace SynthesisAPI.EnvironmentManager
             Appearances = new List<Appearance>();
         }
 
+        //public Design ImportDesign(ModelRoot modelRoot)
+        //{
+        //    Scene scenes = modelRoot.DefaultScene;
+        //    return;
+        //}
+
         #region Construction Data
 
         public class Occurence
@@ -45,6 +50,17 @@ namespace SynthesisAPI.EnvironmentManager
                 ChildOccurences = new List<Occurence>();
                 Attributes = new Dictionary<string, object>();
             }
+
+            //public Occurence importOccurence(Node node)
+            //{
+            //    Occurence occurence;
+
+            //    foreach (Node child in node.VisualChildren)
+            //    {
+            //        traverseOccurence(child);
+            //    }
+            //    return occurence;
+            //}
         }
 
         public class Joint

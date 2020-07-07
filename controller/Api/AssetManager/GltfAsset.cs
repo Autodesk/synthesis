@@ -20,9 +20,6 @@ namespace SynthesisAPI.AssetManager
         public GltfAsset(string name, Guid owner, Permissions perm, string sourcePath)
         {
             Init(name, owner, perm, sourcePath);
-            //var deserializedFile = Interface.LoadModel("Full_Robot_Rough_v10_1593496385.glb");
-            // ParseJson
-            // store final object in gltf asset
         }
 
         public override IEntry Load(byte[] data)
@@ -47,6 +44,9 @@ namespace SynthesisAPI.AssetManager
                 // "Full_Robot_Rough_v10_1593496385.glb
                 model = ModelRoot.ReadGLB(stream, settings);
                 //model = ModelRoot.Load("MultiDepthHierarchy_v9_1593489237.glb", settings);
+
+
+
             }
             catch (Exception ex)
             {
