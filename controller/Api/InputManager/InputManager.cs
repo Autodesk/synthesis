@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.EventBus;
-using SynthesisAPI.Modules;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Axis;
 using SynthesisAPI.InputManager.Events;
-using SynthesisAPI.EventBus;
 using PM = SynthesisAPI.PreferenceManager.PreferenceManager;
 using UnityInput = UnityEngine.Input;
 using SynthesisAPI.PreferenceManager;
+
+#nullable enable
 
 namespace SynthesisAPI.InputManager
 {
@@ -228,8 +229,10 @@ namespace SynthesisAPI.InputManager
             /// Updates all the key presses.
             /// TODO: Publish axes to event bus as well.
             /// </summary>
-            public override void Update()
+            public override void OnUpdate()
             {
+                UpdateControllerTypes();
+
                 InputManager.DigitalState inputState;
                 foreach (var kvp in InputManager._mappedDigital)
                 {
@@ -248,7 +251,7 @@ namespace SynthesisAPI.InputManager
             /// Checks for controller change, and if so, re-evaluates which controllers
             /// are ps4 and which aren't.
             /// </summary>
-            public override void FixedUpdate()
+            public void UpdateControllerTypes()
             {
                 int res = InputManager.LastControllerNames.Length;
                 string[] currentNames = UnityInput.GetJoystickNames();
@@ -265,11 +268,6 @@ namespace SynthesisAPI.InputManager
                     InputManager.EvaluateControllerTypes();
                 } 
             }
-        }
-
-        public class InputGlobalSystem : GlobalSystem<InputSystem>
-        {
-            public InputGlobalSystem() : base() { }
         }
         
         #endregion
