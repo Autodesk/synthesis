@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using Unity.UIElements.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
@@ -7,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class UIManager2 : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     public PanelRenderer UIContainer;
     public VisualTreeAsset tabTemplate;
@@ -26,6 +27,7 @@ public class UIManager2 : MonoBehaviour
             VisualElement parentElement = UIContainer.visualTree.Q<VisualElement>(name: element.treeName);
             
             element.visualElement.visible = isVisible;
+
             parentElement.Add(element.visualElement);
 
             elements.Add(element.uniqueKey, element);
@@ -64,7 +66,11 @@ public class UIManager2 : MonoBehaviour
         if (elements.ContainsKey(uniqueKey))
         {
             Element element = elements[uniqueKey];
-            element.visualElement.visible = !element.visualElement.visible;
+            bool toBeVisible = !element.visualElement.visible;
+
+            element.visualElement.visible = toBeVisible;
+
+            SetChildrenVisibility(element.visualElement, toBeVisible);
         }
         else
         {
@@ -72,6 +78,34 @@ public class UIManager2 : MonoBehaviour
         }
     }
 
+    private void SetChildrenVisibility(VisualElement parent, bool toBeVisible)
+    {
+        if (parent.childCount > 0)
+        {
+            foreach (VisualElement child in parent.Children())
+            {
+                child.visible = toBeVisible;
+                SetChildrenVisibility(child, toBeVisible);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Centers a UI element horizontally
+    /// </summary>
+    /// <param name="elementKey">Key of element</param>
+    /// <param name="width">Width of element container</param>
+    private void CenterUIElementHorizontally(string elementKey, float width)
+    {
+        Element element = elements[elementKey];
+        var elementStyle = element.visualElement.style;
+        
+        elementStyle.position = Position.Absolute;
+        elementStyle.left = new StyleLength(Length.Percent(50.0f));
+        elementStyle.top = new StyleLength(Length.Percent(20.0f));
+        elementStyle.marginLeft = width / -2;
+    }
+    
     /// <summary>
     /// Adds a tab to the toolbar
     /// </summary>
@@ -133,9 +167,15 @@ public class UIManager2 : MonoBehaviour
         RegisterUIElement(new Element("Assets/UI/Toolbar/Toolbar.uxml", "root", "toolbar"), true);
         RegisterUIElement(new Element("Assets/UI/Modules/Modules.uxml", "root", "modules"), false);
         RegisterUIElement(new Element("Assets/UI/Settings/Settings.uxml", "root", "settings"), false);
+        
         RegisterUIElement(new Element("Assets/UI/Modules/Module.uxml", "module-list", "testModule"), false);
-
+        RegisterUIElement(new Element("Assets/UI/Modules/Module.uxml", "module-list", "testModule2"), false);
+        RegisterUIElement(new Element("Assets/UI/Modules/Module.uxml", "module-list", "testModule3"), false);
+        
         RegisterUIElement(new Element("Assets/Scripts/Testing/Modules/Falcon/ui/Pane.uxml", "bottom", "Falcon"), false);
+        
+        CenterUIElementHorizontally("modules", 500f);
+        CenterUIElementHorizontally("settings", 600f);
         
         AddTab("Falcon");
         AddTab("Test2");
@@ -153,13 +193,18 @@ public class UIManager2 : MonoBehaviour
         modulesButton.clickable.clicked += () =>
         {
             ToggleUIElement("modules");
-            ToggleUIElement("testModule");
         };
 
         Button settingsButton = mainTree.Q<Button>(name: "settings-button");
         settingsButton.clickable.clicked += () =>
         {
             ToggleUIElement("settings");
+        };
+
+        Button helpButton = mainTree.Q<Button>(name: "help-button");
+        helpButton.clickable.clicked += () =>
+        {
+            Application.OpenURL("https://synthesis.autodesk.com/tutorials.html");
         };
 
     }

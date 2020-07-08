@@ -1,7 +1,7 @@
 .module-label {
-    margin-left: 40px;
-    margin-right: 40px;
+    padding-right: 70px;
 }
 
 .module-labels {
+    flex-direction: row;
 }

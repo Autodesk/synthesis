@@ -57,10 +57,10 @@
     border-right-color: rgb(210, 210, 210);
     border-top-color: rgb(210, 210, 210);
     border-bottom-color: rgb(210, 210, 210);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-top-width: 0.5px;
+    border-bottom-width: 0.5px;
 }
 
 .window-button:active {
