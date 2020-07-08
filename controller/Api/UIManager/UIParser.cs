@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Reflection;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -43,17 +45,17 @@ namespace SynthesisAPI.UIManager
             if (node == null)
                 throw new Exception("Node is null");
 
-            ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
+            // ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
             dynamic element = typeof(ApiProvider).GetMethod("InstantiateFocusable").MakeGenericMethod(elementType).Invoke(null, null);
 
             if (element != null)
             {
-                ApiProvider.Log("Creating element..");
+                // ApiProvider.Log("Creating element..");
 
                 foreach (XmlAttribute attr in node.Attributes)
                 {
-                    ApiProvider.Log("Parsing Attribute");
+                    // ApiProvider.Log("Parsing Attribute");
 
                     var property = elementType.GetProperty(attr.Name);
                     if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
@@ -61,40 +63,40 @@ namespace SynthesisAPI.UIManager
                     switch (property.PropertyType.Name)
                     {
                         case "Boolean":
-                            ApiProvider.Log($"Parsing Boolean: {attr.Value}");
+                            // ApiProvider.Log($"Parsing Boolean: {attr.Value}");
                             property.SetValue(element, bool.Parse(attr.Value));
                             break;
                         case "String":
-                            ApiProvider.Log($"Parsing String: {attr.Value}");
+                            // ApiProvider.Log($"Parsing String: {attr.Value}");
                             property.SetValue(element, attr.Value);
                             break;
                         case "IStyle":
-                            ApiProvider.Log("Parsing IStyle");
+                            // ApiProvider.Log("Parsing IStyle");
                             element = ParseStyle(attr.Value, element);
                             break;
                         default:
                             throw new Exception($"Found no matching type to {property.PropertyType.FullName}");
                     }
 
-                    ApiProvider.Log($"Finished Parsing Attribute: {attr.Name}");
+                    // ApiProvider.Log($"Finished Parsing Attribute: {attr.Name}");
                 }
             } else
             {
                 element = ApiProvider.InstantiateFocusable<UnityVisualElement>();
             }
 
-            ApiProvider.Log("Finished Creating Element");
+            // ApiProvider.Log("Finished Creating Element");
 
             UnityVisualElement resultElement = (UnityVisualElement)element;
 
             foreach (XmlNode child in node.ChildNodes)
             {
-                ApiProvider.Log($"Adding child: {child.Name}");
+                // ApiProvider.Log($"Adding child: {child.Name}");
                 resultElement.Add(CreateVisualElement(child));
-                ApiProvider.Log($"Finished adding child: {child.Name}");
+                // ApiProvider.Log($"Finished adding child: {child.Name}");
             }
 
-            ApiProvider.Log("Returning Result");
+            // ApiProvider.Log("Returning Result");
             return resultElement;
         }
 
@@ -201,7 +203,32 @@ namespace SynthesisAPI.UIManager
 
         public static StyleFont ToStyleFont(string _) => new StyleFont(StyleKeyword.Null);
 
-        public static StyleBackground ToStyleBackground(string _) => new StyleBackground(StyleKeyword.Null);
+        public static StyleBackground ToStyleBackground(string str)
+        {
+            ApiProvider.Log($"\"{str}\"");
+            string path = str.Replace(" ", "").Substring(5, str.Length - 8);
+            ApiProvider.Log($"\"{path}\"");
+            
+            try
+            {
+                TextureAsset? asset = AssetManager.AssetManager.GetAsset<TextureAsset>(path);
+                if (asset == null)
+                {
+                    ApiProvider.Log("Can't find asset");
+                    return new StyleBackground(StyleKeyword.Null);
+                }
+                else
+                {
+                    return new StyleBackground(asset.TextureData);
+                }
+            }
+            catch (Exception e)
+            {
+                // FAIL TO GET TEXTURE
+                ApiProvider.Log("Exception when parsing background texture");
+                return new StyleBackground(StyleKeyword.Null);
+            }
+        }
 
         public static StyleCursor ToStyleCursor(string _) => new StyleCursor(StyleKeyword.Null);
 
