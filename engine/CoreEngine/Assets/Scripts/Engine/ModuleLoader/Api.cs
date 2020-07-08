@@ -125,7 +125,7 @@ namespace Engine.ModuleLoader
 						Debug.Log($"Failed to load assembly {entry.Name}");
 					}
 				}
-				else if (AssetManager.Import(stream, targetPath, entry.Name, perm, "") == null)
+				else if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension), stream, targetPath, entry.Name, perm, "") == null)
 				{
 					throw new Exception("Asset module type");
 				}
