@@ -6,11 +6,10 @@ namespace SynthesisAPI.InputManager.Events
 {
     /// <summary>
     /// Event for when a registered key press is activated
-    /// TODO: Inherit yet to be made Event interface
     /// </summary>
     public class DigitalStateEvent : IEvent
     {
-        public string Name { get; private set; }
+        public string Name { get; private set; } // Rename to InputName or something
         public InputManager.DigitalState KeyState { get; private set; }
 
         public DigitalStateEvent(string name, InputManager.DigitalState keyState)

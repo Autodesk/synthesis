@@ -33,9 +33,6 @@ namespace SynthesisAPI.InputManager
 
         static InputManager()
         {
-            // TODO: Find new way of attaching to update loop
-            // _ = InputGlobalBehavior.Instance;
-
             for (int i = 1; i <= 11; i++)
             {
                 ControllerRegistry.Add(i, ControllerType.Other); // Default all the controllers to other
@@ -192,20 +189,25 @@ namespace SynthesisAPI.InputManager
         /// Evaluates the type of all the controllers. There isn't an effective way
         /// of isolating this process to just newly connected/disconnected controllers
         /// so this will just be run when it we detect any change in controllers.
-        /// TODO: Maybe publish an event for when controllers are re-evaluated.
         /// </summary>
         public static void EvaluateControllerTypes()
         {
             for (int i = 1; i <= 11; i++)
             {
+                ControllerType prev = ControllerRegistry[i];
                 if (UnityInput.GetAxis("Joystick " + i + " Axis 4") < -0.9
                     && UnityInput.GetAxis("Joystick " + i + " Axis 5") < -0.9)
                 {
                     ControllerRegistry[i] = ControllerType.Ps4;
                     Debug.Log(i + " is Ps4");
-                } else
+                } 
+                else
                 {
                     ControllerRegistry[i] = ControllerType.Other;
+                }
+                if (ControllerRegistry[i] != prev)
+                {
+                    EventBus.EventBus.Push(new ControllerConnectionEvent(i, ControllerRegistry[i])); // TODO either rename event or add more types to ControllerType
                 }
             }
         }
@@ -221,13 +223,11 @@ namespace SynthesisAPI.InputManager
         
         /// <summary>
         /// A behavior to actively update the InputManager
-        /// TODO: Attach to a global object and keep this class to a single instance
         /// </summary>
         public class InputSystem : SystemBase
         {
             /// <summary>
             /// Updates all the key presses.
-            /// TODO: Publish axes to event bus as well.
             /// </summary>
             public override void OnUpdate()
             {
@@ -239,8 +239,6 @@ namespace SynthesisAPI.InputManager
                     inputState = kvp.Key.GetState();
                     if (inputState != InputManager.DigitalState.None)
                     {
-                        // EventBus.Publish(new DigitalStateEvent(kvp.Value, inputState))
-                        // TODO: Publish to event bus with value identifier and state
                         EventBus.EventBus.Push($"input/{kvp.Value}",
                             new DigitalStateEvent(kvp.Value, inputState));
                     }

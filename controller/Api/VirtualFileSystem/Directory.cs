@@ -109,7 +109,7 @@ namespace SynthesisAPI.VirtualFileSystem
             return path.Split(DirectorySeparatorChar);
         }
 
-        private IEntry? TraverseImpl(string[] subpaths) // TODO rework using TDD
+        private IEntry? TraverseImpl(string[] subpaths)
         {
             if (subpaths.Length == 0)
             {

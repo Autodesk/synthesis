@@ -70,6 +70,7 @@
     <Compile Include="InputManager\Digital\IDigitalInput.cs" />
     <Compile Include="InputManager\Digital\KeyDigital.cs" />
     <Compile Include="InputManager\Events\AxisValueEvent.cs" />
+    <Compile Include="InputManager\Events\ControllerConnectionEvent.cs" />
     <Compile Include="InputManager\Events\DigitalStateEvent.cs" />
     <Compile Include="EventBus\IEvent.cs" />
     <Compile Include="InputManager\InputManager.cs" />

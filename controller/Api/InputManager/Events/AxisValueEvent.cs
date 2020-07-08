@@ -6,7 +6,6 @@ namespace SynthesisAPI.InputManager.Events
 {
     /// <summary>
     /// Event for updating subscribers on a registered axis
-    /// TODO: Inherit yet to be made Event interface
     /// </summary>
     public struct AxisValueEvent : IEvent
     {
