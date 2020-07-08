@@ -268,6 +268,8 @@ namespace SynthesisAPI.InputManager
                     InputManager.EvaluateControllerTypes();
                 } 
             }
+
+            public override void OnPhysicsUpdate() { }
         }
         
         #endregion

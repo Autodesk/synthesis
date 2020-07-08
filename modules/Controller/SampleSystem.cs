@@ -19,5 +19,7 @@ namespace Controller
 				_counter = 0;
 			}
 		}
+
+		public override void OnPhysicsUpdate() { }
 	}
 }
