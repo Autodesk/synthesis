@@ -3,7 +3,6 @@ using System.IO;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
-using SynthesisAPI.AssetManager.DummyAssetTypes;
 using SynthesisAPI.EventBus;
 using System.Collections.Generic;
 
@@ -46,7 +45,7 @@ namespace TestApi
         [Test]
         public static void TestPlainText()
         {
-            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", "/temp", "test2.txt", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+            TextAsset testTxt = AssetManager.Import<TextAsset>("text/plain", false, "/temp", "test2.txt", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
 
             TextAsset test = AssetManager.GetAsset<TextAsset>("/temp/test2.txt");
 
@@ -58,7 +57,7 @@ namespace TestApi
         [Test]
         public static void TestXml()
         {
-            var testXml = AssetManager.Import<XmlAsset>("text/xml", "/temp", "test.xml", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.xml");
+            var testXml = AssetManager.Import<XmlAsset>("text/xml", false, "/temp", "test.xml", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.xml");
 
             var test = AssetManager.GetAsset<XmlAsset>("/temp/test.xml");
 
@@ -72,7 +71,7 @@ namespace TestApi
         [Test]
         public static void TestJson()
         {
-            var testJson = AssetManager.Import<JsonAsset>("text/json", "/temp", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+            var testJson = AssetManager.Import<JsonAsset>("text/json", false, "/temp", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test.json");
 
@@ -84,42 +83,46 @@ namespace TestApi
         }
 
         [Test]
+        public static void TestLazyImport()
+        {
+            var testJson = AssetManager.ImportLazy("text/json", false, "/temp", "test_lazy.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+
+            Assert.NotNull(testJson);
+
+            var testLazy = AssetManager.GetAsset("/temp/test_lazy.json");
+
+            Assert.True(testLazy is LazyAsset);
+
+            ((LazyAsset)testLazy).Load();
+
+            var testContents = AssetManager.GetAsset("/temp/test_lazy.json");
+
+            Assert.True(testContents is JsonAsset);
+
+            var obj = ((JsonAsset)testContents).Deserialize<TestJsonObject>();
+
+            Assert.AreEqual("Hello world of JSON!", obj?.Text);
+        }
+
+        [Test]
         public static void TestTypeFromFileExtension()
         {
             string source = $"test{Path.DirectorySeparatorChar}test.json";
-            var testJson = AssetManager.Import("/temp", "test2.json", Permissions.PublicReadWrite, source);
+            string type = AssetManager.GetTypeFromFileExtension(source);
+            var testJson = AssetManager.Import(type, false, "/temp", "test2.json", Permissions.PublicReadWrite, source);
 
             var test = AssetManager.GetAsset<JsonAsset>("/temp/test2.json");
 
             Assert.AreSame(testJson, test);
         }
 
-        [Test]
-        public static void TestTypeFromTypeParameter()
-        {
-            var testJson = AssetManager.Import<JsonAsset>("/temp", "test3.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
-
-            var test = AssetManager.GetAsset<JsonAsset>("/temp/test3.json");
-
-            Assert.AreSame(testJson, test);
-        }
 
         [Test]
         public static void TestCreatePathWithImport()
         {
-            var testJson = AssetManager.Import<JsonAsset>("/modules/module1", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
+            var testJson = AssetManager.Import<JsonAsset>("text/json", false, "/modules/module1", "test.json", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
 
             var test = AssetManager.GetAsset<JsonAsset>("/modules/module1/test.json");
-
-            Assert.AreSame(testJson, test);
-        }
-
-        [Test]
-        public static void TestDummyStructs()
-        {
-            var testJson = AssetManager.Import<Text, Json>("/modules", "test.json2", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.json");
-
-            var test = AssetManager.GetAsset<JsonAsset>("/modules/test.json2");
 
             Assert.AreSame(testJson, test);
         }
@@ -149,7 +152,7 @@ namespace TestApi
             string name = "test3.txt";
             string type = "text/plain";
 
-            TextAsset testTxt = AssetManager.Import<TextAsset>(type, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+            TextAsset testTxt = AssetManager.Import<TextAsset>(type, false, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
 
             Assert.AreEqual(s.Events.Count, 1);
             Assert.AreEqual(3, s.Events[0].GetArguments().Length);

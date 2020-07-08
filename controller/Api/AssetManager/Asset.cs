@@ -24,10 +24,10 @@ namespace SynthesisAPI.AssetManager
         }
 
         public string Name => ((IEntry)this).Name;
-        protected Permissions Permissions => ((IEntry)this).Permissions;
+        public Permissions Permissions => ((IEntry)this).Permissions;
         public Directory Parent => ((IEntry)this).Parent;
 
-        protected string SourcePath { get; private set; } = "";
+        public string SourcePath { get; private set; } = "";
 
         private string _name { get; set; } = "";
         private Permissions _permissions { get; set; }

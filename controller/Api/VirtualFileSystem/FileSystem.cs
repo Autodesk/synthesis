@@ -23,7 +23,9 @@ namespace SynthesisAPI.VirtualFileSystem
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 Path.DirectorySeparatorChar);
 
-        public static readonly string TestPath = BasePath + $"test{Path.DirectorySeparatorChar}";
+        public static readonly string TestPathLocal = $"test{Path.DirectorySeparatorChar}";
+
+        public static readonly string TestPath = BasePath + TestPathLocal;
 
         /// <summary>
         /// Add a new entry to a the file system at a given destination
