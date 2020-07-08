@@ -4,7 +4,7 @@ namespace TestApi
 {
     public class Program
     {
-        public static Guid TestGuid = Guid.Empty;
+        public static string TestModuleName = "TestModule";
 
         public static void Main(string[] args)
         {

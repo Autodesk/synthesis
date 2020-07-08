@@ -58,9 +58,6 @@ namespace TestApi
         [Test]
         public static void TestXml()
         {
-            // byte[] file_data = File.ReadAllBytes(FileSystem.BasePath + "test.xml");
-            // XmlAsset test_xml = AssetManager.Import<XmlAsset>("text/xml", file_data, "/temp", "test.xml", Program.TestGuid, Permissions.PublicRead, "test.xml");
-
             var testXml = AssetManager.Import<XmlAsset>("text/xml", "/temp", "test.xml", Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.xml");
 
             var test = AssetManager.GetAsset<XmlAsset>("/temp/test.xml");

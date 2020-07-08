@@ -19,14 +19,14 @@ namespace TestApi
         [Test]
         public static void TestSavingLoading()
         {
-            PreferenceManager.SetPreference(Program.TestGuid, "name", "Nikola Tesla");
-            PreferenceManager.SetPreference(Program.TestGuid, "age", 163);
+            PreferenceManager.SetPreference(Program.TestModuleName, "name", "Nikola Tesla");
+            PreferenceManager.SetPreference(Program.TestModuleName, "age", 163);
 
             if (!PreferenceManager.Save()) throw new Exception();
             if (!PreferenceManager.Load()) throw new Exception();
             
-            string name = PreferenceManager.GetPreference<string>(Program.TestGuid, "name");
-            int age = PreferenceManager.GetPreference<int>(Program.TestGuid, "age");
+            string name = PreferenceManager.GetPreference<string>(Program.TestModuleName, "name");
+            int age = PreferenceManager.GetPreference<int>(Program.TestModuleName, "age");
 
             Assert.AreEqual(name, "Nikola Tesla");
             Assert.AreEqual(age, 163);
@@ -35,8 +35,8 @@ namespace TestApi
         [Test]
         public static void TestAsyncSaveLoad()
         {
-            PreferenceManager.SetPreference(Program.TestGuid, "name", "Nikola Tesla");
-            PreferenceManager.SetPreference(Program.TestGuid, "age", 163);
+            PreferenceManager.SetPreference(Program.TestModuleName, "name", "Nikola Tesla");
+            PreferenceManager.SetPreference(Program.TestModuleName, "age", 163);
 
             Task<bool> saveTask = PreferenceManager.SaveAsync();
             if (!saveTask.Wait(1000)) throw new Exception();
@@ -44,8 +44,8 @@ namespace TestApi
             Task<bool> loadTask = PreferenceManager.LoadAsync();
             if (!loadTask.Wait(1000)) throw new Exception();
 
-            string name = PreferenceManager.GetPreference<string>(Program.TestGuid, "name");
-            int age = PreferenceManager.GetPreference<int>(Program.TestGuid, "age");
+            string name = PreferenceManager.GetPreference<string>(Program.TestModuleName, "name");
+            int age = PreferenceManager.GetPreference<int>(Program.TestModuleName, "age");
 
             Assert.AreEqual(name, "Nikola Tesla");
             Assert.AreEqual(age, 163);
@@ -55,12 +55,12 @@ namespace TestApi
         public static void TestCustomTypeSavingLoading()
         {
             CustomStruct customOriginal = new CustomStruct() { Name = "Thomas Edison" };
-            PreferenceManager.SetPreference(Program.TestGuid, "custom_type", customOriginal);
+            PreferenceManager.SetPreference(Program.TestModuleName, "custom_type", customOriginal);
 
             if (!PreferenceManager.Save()) throw new Exception();
             if (!PreferenceManager.Load()) throw new Exception();
 
-            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestGuid, "custom_type", useJsonDeserialization: true);
+            CustomStruct customCopy = PreferenceManager.GetPreference<CustomStruct>(Program.TestModuleName, "custom_type", useJsonDeserialization: true);
 
             Assert.AreEqual(customOriginal, customCopy);
         }

@@ -15,14 +15,9 @@ using SynthesisAPI.PreferenceManager;
 
 namespace SynthesisAPI.InputManager
 {
-    public static class InputManager
+    public static class InputManager // TODO make static class wrapper around singleton
     {
-        private class Inner // TODO
-        {
-
-        }
-
-        private static readonly Guid MyGuid = Guid.NewGuid();
+        private static readonly string ModuleName = "API"; // TODO
 
         // Map for binding DigitalInput to EventHandlers
         private static BiDictionary<IDigitalInput, string> _mappedDigital = new BiDictionary<IDigitalInput, string>();
@@ -76,12 +71,12 @@ namespace SynthesisAPI.InputManager
 
         private static void PostLoad()
         {
-            _mappedDigital = PM.GetPreference<BiDictionary<IDigitalInput, string>>(MyGuid, "all_bindings", useJsonDeserialization: true);
+            _mappedDigital = PM.GetPreference<BiDictionary<IDigitalInput, string>>(ModuleName, "all_bindings", useJsonDeserialization: true);
         }
 
         private static void PreSave()
         {
-            PM.SetPreference(MyGuid, "all_bindings", _mappedDigital);
+            PM.SetPreference(ModuleName, "all_bindings", _mappedDigital);
         }
 
         #region Getting active inputs
