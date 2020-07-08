@@ -26,7 +26,7 @@ namespace SynthesisAPI.InputManager.Digital
 
         #region Getting States
 
-        public InputManager.DigitalState GetState()
+        public DigitalState GetState()
         {
             int down = buttons.Length;
             int up = buttons.Length;
@@ -38,7 +38,7 @@ namespace SynthesisAPI.InputManager.Digital
                 joyNum = button.joystick;
                 buttonNum = button.button;
                 // Just skip the ps4 buttons 6 & 7 cuz they are actually axes. This is incase the joystick of this bind becomes a ps4 controller
-                if (InputManager.ControllerRegistry[joyNum] == InputManager.ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
+                if (InputManager.ControllerRegistry[joyNum].Type == ControllerType.Ps4 && (buttonNum == 6 || buttonNum == 7))
                 {
                     down -= 1;
                     up -= 1;
@@ -59,16 +59,16 @@ namespace SynthesisAPI.InputManager.Digital
             }
             if (down == 0) {
                 if (atLeastOneDown)
-                    return InputManager.DigitalState.Down;
+                    return DigitalState.Down;
                 else
-                    return InputManager.DigitalState.Held;
+                    return DigitalState.Held;
             }
             else if (up == 0)
             {
-                return InputManager.DigitalState.Up;
+                return DigitalState.Up;
             } else
             {
-                return InputManager.DigitalState.None;
+                return DigitalState.None;
             }
         }
 
@@ -138,19 +138,19 @@ namespace SynthesisAPI.InputManager.Digital
         public float GetValue(bool positiveOnly = false)
         {
             var state = GetState();
-            return state == InputManager.DigitalState.Held ||
-                state == InputManager.DigitalState.Down ? 1 : 0;
+            return state == DigitalState.Held ||
+                state == DigitalState.Down ? 1 : 0;
         }
 
         public static ButtonDigital GetCurrentlyActiveButtonDigital(params (int joystick, int button)[] buttonsToIgnore)
         {
             List<(int joystick, int button)> buttonsActive = new List<(int joystick, int button)>();
             (int joystick, int button) button;
-            for (int j = 1; j <= 11; j++)
+            for (int j = 0; j < ControllerInfo.MaxControllers; j++)
             {
                 for (int b = 0; b <= 19; b++)
                 {
-                    if (InputManager.ControllerRegistry[j] == InputManager.ControllerType.Ps4 && (b == 6 || b == 7))
+                    if (InputManager.ControllerRegistry[j].Type == ControllerType.Ps4 && (b == 6 || b == 7))
                     {
                         continue;
                     }

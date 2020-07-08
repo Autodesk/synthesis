@@ -24,8 +24,8 @@ public class TestInput2 : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
-        InputManager.DigitalState state = key.GetState();
-        if (state != InputManager.DigitalState.None)
+        DigitalState state = key.GetState();
+        if (state != DigitalState.None)
         {
             // Debug.Log(state.ToString());
         }

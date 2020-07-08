@@ -10,9 +10,9 @@ namespace SynthesisAPI.InputManager.Events
     public class DigitalStateEvent : IEvent
     {
         public string Name { get; private set; } // Rename to InputName or something
-        public InputManager.DigitalState KeyState { get; private set; }
+        public DigitalState KeyState { get; private set; }
 
-        public DigitalStateEvent(string name, InputManager.DigitalState keyState)
+        public DigitalStateEvent(string name, DigitalState keyState)
         {
             Name = name;
             KeyState = keyState;

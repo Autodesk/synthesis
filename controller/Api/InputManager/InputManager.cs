@@ -15,11 +15,13 @@ using SynthesisAPI.PreferenceManager;
 
 namespace SynthesisAPI.InputManager
 {
-    /**
-     * Still very much a work in progress
-     */
     public static class InputManager
     {
+        private class Inner // TODO
+        {
+
+        }
+
         private static readonly Guid MyGuid = Guid.NewGuid();
 
         // Map for binding DigitalInput to EventHandlers
@@ -27,19 +29,17 @@ namespace SynthesisAPI.InputManager
         // Used for giving custom names to axes
         private static Dictionary<string, IAxisInput> _mappedAxes = new Dictionary<string, IAxisInput>();
 
-        // Used to identify controller type because ps4 be wack
-        public static Dictionary<int, ControllerType> ControllerRegistry = new Dictionary<int, ControllerType>();
-        public static string[] LastControllerNames = new string[1];
+        // Used to identify controller names and type because ps4 be wack
+        public static ControllerInfo[] ControllerRegistry = new ControllerInfo[12];
 
         static InputManager()
         {
-            for (int i = 1; i <= 11; i++)
-            {
-                ControllerRegistry.Add(i, ControllerType.Other); // Default all the controllers to other
-            }
-
             // So we can start detecting changes in controllers;
-            LastControllerNames = UnityInput.GetJoystickNames();
+            var names = UnityInput.GetJoystickNames();
+            for (var i = 0; i < ControllerInfo.MaxControllers; i++)
+            {
+                ControllerRegistry[i] = new ControllerInfo(names.Length > i ? names[i] : "", ControllerType.Other); // Default all the controllers to other
+            }
             EvaluateControllerTypes();
 
             // _mappedDigital[(KeyDigital)new [] { "A" }] = "test_action";
@@ -180,11 +180,6 @@ namespace SynthesisAPI.InputManager
 
         #region Controller configuration
 
-        public enum ControllerType
-        {
-            Ps4, Other
-        }
-
         /// <summary>
         /// Evaluates the type of all the controllers. There isn't an effective way
         /// of isolating this process to just newly connected/disconnected controllers
@@ -192,85 +187,63 @@ namespace SynthesisAPI.InputManager
         /// </summary>
         public static void EvaluateControllerTypes()
         {
-            for (int i = 1; i <= 11; i++)
+            for (int joy = 0; joy < ControllerInfo.MaxControllers; joy++)
             {
-                ControllerType prev = ControllerRegistry[i];
-                if (UnityInput.GetAxis("Joystick " + i + " Axis 4") < -0.9
-                    && UnityInput.GetAxis("Joystick " + i + " Axis 5") < -0.9)
+                int joy_index = joy + 1;
+                ControllerType prev = ControllerRegistry[joy].Type;
+                if (UnityInput.GetAxis("Joystick " + joy_index + " Axis 4") < -0.9
+                    && UnityInput.GetAxis("Joystick " + joy_index + " Axis 5") < -0.9)
                 {
-                    ControllerRegistry[i] = ControllerType.Ps4;
-                    Debug.Log(i + " is Ps4");
+                    ControllerRegistry[joy].Type = ControllerType.Ps4;
+                    Debug.Log(joy + " is Ps4");
                 } 
                 else
                 {
-                    ControllerRegistry[i] = ControllerType.Other;
+                    ControllerRegistry[joy].Type = ControllerType.Other;
                 }
-                if (ControllerRegistry[i] != prev)
+                if (ControllerRegistry[joy].Type != prev)
                 {
-                    EventBus.EventBus.Push(new ControllerConnectionEvent(i, ControllerRegistry[i])); // TODO either rename event or add more types to ControllerType
+                    EventBus.EventBus.Push(new ControllerStatusEvent(joy, ControllerRegistry[joy].Name, ControllerRegistry[joy].Type)); // TODO either rename event or add more types to ControllerType
                 }
             }
         }
 
         #endregion
-        
-        public enum DigitalState
+
+        public static void UpdateDigitalStates()
         {
-            Up = 1, Down = 2, Held = 3, None = 0
+            DigitalState inputState;
+            foreach (var kvp in InputManager._mappedDigital)
+            {
+                inputState = kvp.Key.GetState();
+                if (inputState != DigitalState.None)
+                {
+                    EventBus.EventBus.Push($"input/{kvp.Value}",
+                        new DigitalStateEvent(kvp.Value, inputState));
+                }
+            }
         }
-        
-        #region Systems
-        
+
         /// <summary>
-        /// A behavior to actively update the InputManager
+        /// Checks for controller change, and if so, re-evaluates which controllers
+        /// are ps4 and which aren't.
         /// </summary>
-        public class InputSystem : SystemBase
+        public static void UpdateControllerTypes()
         {
-            /// <summary>
-            /// Updates all the key presses.
-            /// </summary>
-            public override void OnUpdate()
+            int res = InputManager.ControllerRegistry.Length;
+            string[] currentNames = UnityInput.GetJoystickNames();
+            for (int i = 0; i < ControllerInfo.MaxControllers; i++)
             {
-                UpdateControllerTypes();
-
-                InputManager.DigitalState inputState;
-                foreach (var kvp in InputManager._mappedDigital)
-                {
-                    inputState = kvp.Key.GetState();
-                    if (inputState != InputManager.DigitalState.None)
-                    {
-                        EventBus.EventBus.Push($"input/{kvp.Value}",
-                            new DigitalStateEvent(kvp.Value, inputState));
-                    }
-                }
+                var name = currentNames.Length > i ? currentNames[i] : "";
+                if (name.Equals(InputManager.ControllerRegistry[i].Name))
+                    res -= 1;
+                InputManager.ControllerRegistry[i].Name = name;
             }
-
-            /// <summary>
-            /// Checks for controller change, and if so, re-evaluates which controllers
-            /// are ps4 and which aren't.
-            /// </summary>
-            public void UpdateControllerTypes()
+            if (res != 0)
             {
-                int res = InputManager.LastControllerNames.Length;
-                string[] currentNames = UnityInput.GetJoystickNames();
-                if (res == currentNames.Length)
-                {
-                    for (int i = 0; i < currentNames.Length; i++)
-                    {
-                        if (currentNames[i].Equals(InputManager.LastControllerNames[i])) res -= 1;
-                    }
-                }
-                if (res != 0)
-                {
-                    InputManager.LastControllerNames = currentNames;
-                    InputManager.EvaluateControllerTypes();
-                } 
+                InputManager.EvaluateControllerTypes();
             }
-
-            public override void OnPhysicsUpdate() { }
         }
-        
-        #endregion
     }
     
     

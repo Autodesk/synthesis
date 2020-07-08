@@ -10,7 +10,7 @@ namespace SynthesisAPI.InputManager.Digital
     public interface IDigitalInput
     {
         int Length { get; }
-        InputManager.DigitalState GetState();
+        DigitalState GetState();
 
         
     }
