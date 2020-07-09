@@ -17,16 +17,14 @@ namespace TestApi
 
     public class ParameterizedEvent : IEvent
     {
-        readonly int    _numberArg;
-        readonly string _stringArg;
+        public readonly int    NumberArg;
+        public readonly string StringArg;
 
         public ParameterizedEvent(int numberArg, string stringArg)
         {
-            _numberArg = numberArg;
-            _stringArg = stringArg;
+            NumberArg = numberArg;
+            StringArg = stringArg;
         }
-
-        public object[] GetArguments() => new object[] {_numberArg, _stringArg};
     }
 
     public class Subscriber
@@ -60,13 +58,14 @@ namespace TestApi
 
         public void TestMethod4(IEvent e)
         {
-            if (!(e is ParameterizedEvent))
+            if (e is ParameterizedEvent paramEvent)
             {
-                throw new Exception();
+                Num = paramEvent.NumberArg;
+                String = paramEvent.StringArg;
             }
             else
             {
-                (Num, String) = ParamsHelper.PackParams<int, string>(e.GetArguments());
+                throw new Exception();
             }
         }
     }

@@ -4,15 +4,13 @@ namespace Controller
 {
 	public class SampleEvent : IEvent
 	{
-		private string a;
-		private int b;
+		public string A { get; private set; }
+		public int B { get; private set; }
 
 		public SampleEvent(string a, int b)
 		{
-			this.a = a;
-			this.b = b;
+			A = a;
+			B = b;
 		}
-
-		public object[] GetArguments() => new object[] {a,b};
 	}
 }

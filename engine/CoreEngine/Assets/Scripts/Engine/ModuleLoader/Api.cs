@@ -177,7 +177,7 @@ namespace Engine.ModuleLoader
 			return true;
 		}
 
-		private static void RegisterTagCallbackByMethodInfo(MethodInfo callback, object instance)
+		private void RegisterTagCallbackByMethodInfo(MethodInfo callback, object instance)
 		{
 			if (instance.GetType() != callback.DeclaringType)
 			{

@@ -2,7 +2,7 @@
 {
     public interface IEvent 
     {
-        public object[] GetArguments(); // TODO delete this
+        // public object[] GetArguments(); // TODO delete this?
     }
 
     // ReSharper disable once InconsistentNaming

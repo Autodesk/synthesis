@@ -11,8 +11,6 @@ namespace SynthesisAPI.PreferenceManager
             PreferencesStatus = status;
         }
 
-        public object[] GetArguments() => new object[] { PreferencesStatus };
-
         public enum Status
         {
             PreSave = 1, PostLoad = 2
