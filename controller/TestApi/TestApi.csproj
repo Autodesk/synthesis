@@ -64,6 +64,7 @@
     <Compile Include="TestEnvironmentManager.cs" />
     <Compile Include="TestEventBus.cs" />
     <Compile Include="TestJsonObject.cs" />
+    <Compile Include="TestsSetupClass.cs" />
     <Compile Include="TestVirtualFileSystem.cs" />
     <Compile Include="TestXmlObject.cs" />
     <Compile Include="TestPreferenceManager.cs" />
@@ -77,6 +78,10 @@
     <ProjectReference Include="..\Api\Api.csproj">
       <Project>{842f03cf-245b-4f18-b6c4-4895d62bfe5a}</Project>
       <Name>Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MockApi\MockApi.csproj">
+      <Project>{6533ca2e-b8ff-4013-9748-2f1fd84dfcb5}</Project>
+      <Name>MockApi</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@ namespace SynthesisAPI.AssetManager
 {
     public class AssetImportEvent : EventBus.IEvent
     {
-        public static readonly string Tag = "AssetImport";
+        public const string Tag = "AssetImport";
 
         public string AssetName { get; }
         public string AssetLocation { get; }

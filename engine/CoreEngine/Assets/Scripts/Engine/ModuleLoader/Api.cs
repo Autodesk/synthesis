@@ -38,13 +38,19 @@ namespace Engine.ModuleLoader
 					throw new Exception("Entity is null");
 			}
 			foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
-				a.GetTypes()).Where(e => e.GetMethods().Any(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null)))
+				a.GetTypes()).Where(e => e.GetMethods().Any(
+					m => m.GetCustomAttribute<CallbackAttribute>() != null || m.GetCustomAttribute<TaggedCallbackAttribute>() != null)))
 			{
 				var instance = Activator.CreateInstance(type);
 				foreach (var callback in type.GetMethods()
-					.Where(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null))
+					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
 				{
-					RegisterCallbackByMethodInfo(callback, instance);
+					RegisterTypeCallbackByMethodInfo(callback, instance);
+				}
+				foreach (var callback in type.GetMethods()
+					.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+				{
+					RegisterTagCallbackByMethodInfo(callback, instance);
 				}
 			}
 			var modules = new List<(ZipArchive, ModuleMetadata)>();
@@ -159,13 +165,35 @@ namespace Engine.ModuleLoader
 				foreach (var callback in export.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
 				{
-					RegisterCallbackByMethodInfo(callback, instance);
+					RegisterTypeCallbackByMethodInfo(callback, instance);
+				}
+
+				foreach (var callback in export.GetMethods()
+					.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+				{
+					RegisterTagCallbackByMethodInfo(callback, instance);
 				}
 			}
 			return true;
 		}
 
-        private void RegisterCallbackByMethodInfo(MethodInfo callback, object instance)
+		private static void RegisterTagCallbackByMethodInfo(MethodInfo callback, object instance)
+		{
+			if (instance.GetType() != callback.DeclaringType)
+			{
+				throw new Exception(
+					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
+			}
+			var eventType = callback.GetParameters().First().ParameterType;
+			var tag = callback.GetCustomAttribute<TaggedCallbackAttribute>().Tag;
+			typeof(EventBus).GetMethod("NewTagListener").Invoke(null, new object[]
+				{
+					tag,
+					CreateEventCallback(callback, instance, eventType)
+				});
+		}
+
+		private void RegisterTypeCallbackByMethodInfo(MethodInfo callback, object instance)
         {
 	        if (instance.GetType() != callback.DeclaringType)
 	        {
@@ -245,6 +273,8 @@ namespace Engine.ModuleLoader
 					component = (Component) Activator.CreateInstance(t);
 					type = typeof(ComponentAdapter);
 				}
+
+				EnvironmentManager.AddComponent(entity, component);
 
 				gameObject.AddComponent(type);
 				dynamic gameObjectComponent = gameObject.GetComponent(type);

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Text;
-
-namespace SynthesisAPI.EventBus
+﻿namespace SynthesisAPI.EventBus
 {
     public interface IEvent 
     {
-        public object[] GetArguments();
+        public object[] GetArguments(); // TODO delete this
     }
 
     // ReSharper disable once InconsistentNaming
