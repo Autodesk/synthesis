@@ -60,11 +60,6 @@ namespace SynthesisAPI.EventBus
             if (mutex != null) await LogScreenView(ScreenName);
         }
 
-        public static async void LogPageViewAsync(string Title)
-        {
-            if (mutex != null) await LogPageView(Title);
-        }
-
         public static void LogElapsedTimeAsync(string Catagory, string Variable, string Label, float CurrentTime)
         {
             int milli = (int)GetElapsedTime(Label, Variable, CurrentTime);
@@ -115,21 +110,8 @@ namespace SynthesisAPI.EventBus
             {
                 mutex.WaitOne();
                 LogStandardInfo();
-                LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenname"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("t", ScreenName));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("dl", "https://www.google.com/index.html"));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
-                mutex.ReleaseMutex();
-            });
-        }
-
-        private static Task LogPageView(string Title)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                mutex.WaitOne();
-                LogStandardInfo();
-                LoggedData.Enqueue(new KeyValuePair<string, string>("t", "pageview"));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("dl", "http://test.com/" + Title));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
             });
