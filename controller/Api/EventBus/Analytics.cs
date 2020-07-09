@@ -13,8 +13,7 @@ namespace SynthesisAPI.EventBus
    
         public const string URL_COLLECT = "https://www.google-analytics.com/collect";
         public const string URL_BATCH = "https://www.google-analytics.com/batch";
-        public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
-        public const float DUMP_DELAY = 5;
+        public const string OFFICIAL_TRACKING_ID = "UA-81892961-6";
         public static string Guid = "not set";
         public static bool dataCollection = true;
 
@@ -34,6 +33,22 @@ namespace SynthesisAPI.EventBus
             EventBus.NewTypeListener<TEvent>((IEvent e) => LogEventAsync(Category, Action, Label, Value));
         }
 
+        public static void StartTime(string label, string variable, float time)
+        {
+            StartTimes.Add(new KeyValuePair<string, float>(label + "|" + variable, time));
+        }
+
+        public static float GetElapsedTime(string label, string variable, float time)
+        {
+            float a = StartTimes.Find(x => x.Key.Equals(label + "|" + variable)).Value;
+            return (time - a) * 1000;
+        }
+
+        public static void RemoveTime(string label, string variable)
+        {
+            StartTimes.Remove(StartTimes.Find(x => x.Key.Equals(label + "|" + variable)));
+        }
+
         #region AsyncMethods
         public static async void LogEventAsync(string Category, string Action, string Label, string Value)
         {
@@ -48,6 +63,18 @@ namespace SynthesisAPI.EventBus
         public static async void LogPageViewAsync(string Title)
         {
             if (mutex != null) await LogPageView(Title);
+        }
+
+        public static void LogElapsedTimeAsync(string Catagory, string Variable, string Label, float CurrentTime)
+        {
+            int milli = (int)GetElapsedTime(Label, Variable, CurrentTime);
+            RemoveTime(Label, Variable);
+            LogTimeAsync(Catagory, Variable, milli, Label);
+        }
+
+        public static async void LogTimeAsync(string Catagory, string Variable, int Time, string Label)
+        {
+            if (mutex != null) await LogTiming(Catagory, Variable, Time, Label);
         }
 
         public static async void UploadDumpAsync()
@@ -202,7 +229,7 @@ namespace SynthesisAPI.EventBus
 
             public WebClient client;
             public Queue<KeyValuePair<string, string>> LoggedData;
-
+            public List<KeyValuePair<string, float>> StartTimes;
 
             private Inner()
             {
@@ -215,6 +242,7 @@ namespace SynthesisAPI.EventBus
         }
 
         private static Queue<KeyValuePair<string, string>> LoggedData => Instance.LoggedData;
+        private static List<KeyValuePair<string, float>> StartTimes => Instance.StartTimes;
         private static WebClient client => Instance.client;
         private static Mutex mutex => Instance.mutex;
         private static Inner Instance => Inner.InnerInstance;
