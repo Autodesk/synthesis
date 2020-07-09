@@ -62,7 +62,7 @@ namespace SynthesisAPI.EventBus
         public static void LogStandardInfo()
         {
             LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
-            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", Instance.OFFICIAL_TRACKING_ID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
             LoggedData.Enqueue(new KeyValuePair<string, string>("cid", Guid));
         }
 
@@ -129,9 +129,9 @@ namespace SynthesisAPI.EventBus
             return Task.Factory.StartNew(() =>
             {
                 mutex.WaitOne();
-                if (LoggedData.Count < 1 || !dumpData)
+                if (LoggedData.Count < 1 || !dataCollection)
                 {
-                    loggedData = new Queue<KeyValuePair<string, string>>();
+                    LoggedData.Clear();
                     mutex.ReleaseMutex();
                     return;
                 }
@@ -143,7 +143,7 @@ namespace SynthesisAPI.EventBus
                 mutex.ReleaseMutex();
 
                 bool batchSend = false;
-
+                bool lastEnd = false;
                 while (loggedCopy.Count > 0)
                 {
                     KeyValuePair<string, string> pair = loggedCopy.Dequeue();
@@ -166,26 +166,17 @@ namespace SynthesisAPI.EventBus
 
                 }
 
-
-                if (client == null)
-                {
-                    client = new WebClient();
-                }
-
                 string result;
 
                 try
                 {
-                    using (var _client = new WebClient())
+                    if (batchSend)
                     {
-                        if (batchSend)
-                        {
-                            result = _client.UploadString(URL_BATCH, "POST", data);
-                        }
-                        else
-                        {
-                            result = _client.UploadString(URL_COLLECT, "POST", data);
-                        }
+                        result = client.UploadString(URL_BATCH, "POST", data);
+                    }
+                    else
+                    {
+                        result = client.UploadString(URL_COLLECT, "POST", data);
                     }
                 }
                 catch (Exception e)
@@ -201,7 +192,6 @@ namespace SynthesisAPI.EventBus
         public static void CleanUp()
         {
             mutex.Close();
-            mutex = null;
         }
 
         private class Inner
@@ -229,7 +219,4 @@ namespace SynthesisAPI.EventBus
         private static Mutex mutex => Instance.mutex;
         private static Inner Instance => Inner.InnerInstance;
     }
-}
-
-
 }
