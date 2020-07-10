@@ -131,7 +131,7 @@ namespace SynthesisAPI.AssetManager
             //Uvs = new List<double>();
             //Indices = new List<int>();
 
-            meshBody.TriangleMesh.Indices = (IList<int>)primitive.GetPoin();
+            meshBody.TriangleMesh.Indices = (IList<int>)primitive.GetPointIndices();
             // triangle mesh
 
             return meshBody;
