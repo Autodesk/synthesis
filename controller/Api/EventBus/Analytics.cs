@@ -14,7 +14,7 @@ namespace SynthesisAPI.EventBus
         public const string URL_COLLECT = "https://www.google-analytics.com/collect";
         public const string URL_BATCH = "https://www.google-analytics.com/batch";
         public const string OFFICIAL_TRACKING_ID = "UA-81892961-6";
-        public static string Guid = "not set";
+        public static string Guid = "not-set";
         public static bool dataCollection = true;
 
         public static void SetUnityPrefs(String unityGuid, bool dataPref)
@@ -23,7 +23,7 @@ namespace SynthesisAPI.EventBus
             dataCollection = dataPref;
         }
 
-        public static void LogAllTagggedEvents(String tag, string Category, String Action, string Label, string Value)
+        public static void LogAllTaggedEvents(String tag, string Category, String Action, string Label, string Value)
         {
             EventBus.NewTagListener(tag, (IEvent e) => LogEventAsync(Category, Action, Label, Value));
         }
@@ -49,6 +49,73 @@ namespace SynthesisAPI.EventBus
             StartTimes.Remove(StartTimes.Find(x => x.Key.Equals(label + "|" + variable)));
         }
 
+        public static void UploadDumpTest()
+        {
+            if (LoggedData.Count < 1 || !dataCollection)
+            {
+                Console.WriteLine("Clearing log");
+                LoggedData.Clear();
+                return;
+            }
+
+            string data = "";
+
+            Queue<KeyValuePair<string, string>> loggedCopy = new Queue<KeyValuePair<string, string>>(LoggedData);
+            LoggedData.Clear();
+
+            bool batchSend = false;
+            bool lastEnd = false;
+            while (loggedCopy.Count > 0)
+            {
+                KeyValuePair<string, string> pair = loggedCopy.Dequeue();
+                if (pair.Key != null)
+                {
+                    if (pair.Key.Equals("NEW"))
+                    {
+                        data += "\n";
+                        batchSend = true;
+                        lastEnd = true;
+                    }
+                    else
+                    {
+                        if ((data != "") && !lastEnd) data += "&";
+
+                        data += pair.Key + "=" + pair.Value;
+                        lastEnd = false;
+                    }
+                }
+
+            }
+
+            string result;
+
+            try
+            {
+                if (batchSend)
+                {
+                    Console.WriteLine("Posting");
+                    result = client.UploadString(URL_BATCH, data);
+                    Console.WriteLine(data);
+                    Console.WriteLine(result);
+                    Console.WriteLine("This ain't working");
+                }
+                else
+                {
+                    Console.WriteLine("Collecting");
+                    result = client.UploadString(URL_COLLECT, "POST", data);
+                    Console.WriteLine(data);
+                    Console.WriteLine(result);
+                    Console.WriteLine("This ain't working");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("jsldhfafdh");
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+
         #region AsyncMethods
         public static async void LogEventAsync(string Category, string Action, string Label, string Value)
         {
@@ -60,16 +127,16 @@ namespace SynthesisAPI.EventBus
             if (mutex != null) await LogScreenView(ScreenName);
         }
 
-        public static void LogElapsedTimeAsync(string Catagory, string Variable, string Label, float CurrentTime)
+        public static void LogElapsedTimeAsync(string Category, string Variable, string Label, float CurrentTime)
         {
             int milli = (int)GetElapsedTime(Label, Variable, CurrentTime);
             RemoveTime(Label, Variable);
-            LogTimeAsync(Catagory, Variable, milli, Label);
+            LogTimeAsync(Category, Variable, milli, Label);
         }
 
-        public static async void LogTimeAsync(string Catagory, string Variable, int Time, string Label)
+        public static async void LogTimeAsync(string Category, string Variable, int Time, string Label)
         {
-            if (mutex != null) await LogTiming(Catagory, Variable, Time, Label);
+            if (mutex != null) await LogTiming(Category, Variable, Time, Label);
         }
 
         public static async void UploadDumpAsync()
@@ -140,6 +207,7 @@ namespace SynthesisAPI.EventBus
                 mutex.WaitOne();
                 if (LoggedData.Count < 1 || !dataCollection)
                 {
+                    Console.WriteLine("Clearing log");
                     LoggedData.Clear();
                     mutex.ReleaseMutex();
                     return;
@@ -181,17 +249,25 @@ namespace SynthesisAPI.EventBus
                 {
                     if (batchSend)
                     {
-                        result = client.UploadString(URL_BATCH, "POST", data);
+                        Console.WriteLine("Posting");
+                        result = client.UploadString(URL_BATCH, data);
+                        Console.WriteLine(data);
+                        Console.WriteLine(result);
+                        Console.WriteLine("This ain't working");
                     }
                     else
                     {
+                        Console.WriteLine("Collecting");
                         result = client.UploadString(URL_COLLECT, "POST", data);
+                        Console.WriteLine(data);
+                        Console.WriteLine(result);
+                        Console.WriteLine("This ain't working");
                     }
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("jsldhfafdh");
                     Console.WriteLine(e.ToString());
-                    //Debug.Log(e.ToString());
                 }
             });
         }
@@ -203,12 +279,141 @@ namespace SynthesisAPI.EventBus
             mutex.Close();
         }
 
+        /// <summary>
+        /// Categories group multiple objects together. Each main category is grouped by the tabs
+        /// in the simulator. Most events will fall into one of the tab categories (e.g. HomeTab.)
+        /// </summary>
+        public static class EventCategory
+        {
+            public const string
+
+                // Main Menu has been deprecated. May consider removing or archiving MainMenu code.
+                MainSimMenu = "Main Menu",
+                MixAndMatchMenu = "Mix and Match Menu",
+                MultiplayerMenu = "LAN Multiplayer Menu",
+                MixAndMatchSimulator = "Mix and Match Simulator",
+
+                // Start of analytics tracking
+                MainSimulator = "Main Simulator",
+                //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
+
+                // Toolbar tabs
+                MenuTab = "Menu Tab",
+                HomeTab = "Home Tab",
+                DPMTab = "Gamepiece Tab",
+                ScoringTab = "Scoring Tab",
+                SensorTab = "Sensor Tab",
+                EmulationTab = "Emulation Tab",
+                ExitTab = "Exit Tab",
+
+                // Global categories
+                AddRobot = "Add Robot",
+                ChangeRobot = "Change Robot",
+                LoadRobot = "Load Robot",
+                ChangeField = "Change Field",
+                Reset = "Reset",
+                CameraView = "Camera View",
+                Help = "Help Menu",
+                Tutorials = "Tutorials";
+        }
+
+        /// <summary>
+        /// Actions for user behaviors
+        /// </summary>
+        public static class EventAction
+        {
+            public const string
+                StartSim = "Started Simulator",
+                TutorialRequest = "Requested Tutorial",
+                BackedOut = "Back",
+                Next = "Next",
+                Clicked = "Clicked",
+                Added = "Added",
+                Removed = "Removed",
+                Edited = "Edited",
+                Toggled = "Toggled",
+                Viewed = "Viewed",
+                Load = "Load",
+                Exit = "Exit",
+                Changed = "Changed";
+        }
+
+        /// <summary>
+        /// Not currently in use but implemented on backend 08/2019
+        /// </summary>
+        public static class PageView
+        {
+            public const string
+                MainSimMenu = "simMenu",
+                MixAndMatchMenu = "mixMenu",
+                MultiplayerMenu = "multiplayerMenu",
+                MainSimulator = "mainSimulator",
+                MixAndMatchSimulator = "mixSimulator",
+                MultiplayerSimulator = "multiplayerSimulator";
+        }
+
+        /// <summary>
+        /// Similar to event categories, timing categories organize objects
+        /// into various groups. 
+        /// </summary>
+        public static class TimingCategory
+        {
+            public const string
+                Main = "Main Menu",
+                MixMatch = "Mix and Match",
+                Multiplater = "Multiplayer",
+
+                MainSimulator = "In Simulator",
+                MenuTab = "Menu Tab",
+                HomeTab = "Home Tab",
+                DPMTab = "Gamepiece Tab",
+                ScoringTab = "Scoring Tab",
+                SensorTab = "Sensor Tab",
+                EmulationTab = "Emulation Tab",
+                Tab = "Toolbar Tab";
+        }
+
+        /// <summary>
+        /// Actions for timing events
+        /// </summary>a
+        public static class TimingVariable
+        {
+            public const string
+                Loading = "Loading",
+                Playing = "Playing",
+                Customizing = "Customizing",
+                Viewing = "Viewing",
+                Starting = "Starting";
+        }
+
+        /// <summary>
+        /// Additional information to expand on the timing categories. 
+        /// </summary>
+        public static class TimingLabel
+        {
+            public const string
+                MixAndMatchMenu = "Mix and Match Menu",
+                MainSimMenu = "Main Menu",
+                MultiplayerLobbyMenu = "Multiplayer Lobby Menu",
+
+                MainSimulator = "Main Simulator",
+                ResetField = "Reset Field",
+                ChangeField = "Change Field",
+                MixAndMatch = "Mix and Match Mode",
+                ReplayMode = "Replay Mode",
+
+                HomeTab = "Home Tab",
+                DPMTab = "Gamepiece Tab",
+                ScoringTab = "Scoring Tab",
+                SensorTab = "Sensor Tab",
+                EmulationTab = "Emulation Tab";
+        }
+
         private class Inner
         {
 
 
             public Mutex mutex;
-
             public WebClient client;
             public Queue<KeyValuePair<string, string>> LoggedData;
             public List<KeyValuePair<string, float>> StartTimes;
@@ -216,13 +421,14 @@ namespace SynthesisAPI.EventBus
             private Inner()
             {
                 mutex = new Mutex();
+                client = new WebClient();
                 LoggedData = new Queue<KeyValuePair<string, string>>();
+                StartTimes = new List<KeyValuePair<string, float>>();
             }
 
             private static Inner? _inst;
             public static Inner InnerInstance => _inst ??= new Inner();
         }
-
         private static Queue<KeyValuePair<string, string>> LoggedData => Instance.LoggedData;
         private static List<KeyValuePair<string, float>> StartTimes => Instance.StartTimes;
         private static WebClient client => Instance.client;
