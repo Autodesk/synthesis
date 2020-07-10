@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
 
     /// <summary>

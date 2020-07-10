@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
     /// <summary>
     /// Used for axes default to Unity

@@ -61,8 +61,21 @@
     <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
+    <Compile Include="InputManager\Axis\DeadAxis.cs" />
+    <Compile Include="InputManager\Axis\DualAxis.cs" />
+    <Compile Include="InputManager\Axis\IAxisInput.cs" />
+    <Compile Include="InputManager\Axis\JoystickAxis.cs" />
+    <Compile Include="InputManager\Axis\UnityAxis.cs" />
+    <Compile Include="InputManager\ControllerInfo.cs" />
+    <Compile Include="InputManager\DigitalState.cs" />
+    <Compile Include="InputManager\Digital\ButtonDigital.cs" />
+    <Compile Include="InputManager\Digital\IDigitalInput.cs" />
+    <Compile Include="InputManager\Digital\KeyDigital.cs" />
+    <Compile Include="InputManager\Events\ControllerStatusEvent.cs" />
+    <Compile Include="InputManager\Events\DigitalStateEvent.cs" />
     <Compile Include="EventBus\IEvent.cs" />
     <Compile Include="InputManager\InputManager.cs" />
+    <Compile Include="InputManager\InputSystem.cs" />
     <Compile Include="Modules\Attributes\BuiltinComponentAttribute.cs" />
     <Compile Include="Modules\Attributes\CallbackAttribute.cs" />
     <Compile Include="Modules\Attributes\ComponentAttribute.cs" />
@@ -75,6 +88,7 @@
     <Compile Include="EnvironmentManager\Components\Mesh.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
+    <Compile Include="PreferenceManager\PreferencesIOEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
@@ -87,6 +101,7 @@
     <Compile Include="Utilities\Result.cs" />
     <Compile Include="Utilities\SharedBinaryStream.cs" />
     <Compile Include="Utilities\SharedTextStream.cs" />
+    <Compile Include="Utilities\BiDictionary.cs" />
     <Compile Include="VirtualFileSystem\Directory.cs" />
     <Compile Include="VirtualFileSystem\IEntry.cs" />
     <Compile Include="VirtualFileSystem\Permissions.cs" />

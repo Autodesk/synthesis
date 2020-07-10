@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Synthesis.Simulator.Input;
+// using Synthesis.Simulator.Input;
 using Synthesis.Simulator.Interaction;
-using Synthesis.UI.Style;
 using System.Xml;
 using System.IO;
 
@@ -12,7 +11,8 @@ namespace Synthesis.Simulator
 
     public class CameraController : MonoBehaviour
     {
-
+        /* TODO: Modify this to work with the event bus when that is merged in
+        
         public static float SensitivityX { get => 5; } // TODO: Setup some sort of class for storing preferences
         public static float SensitivityY { get => 3; }
 
@@ -111,6 +111,7 @@ namespace Synthesis.Simulator
             // This does cause some weird effects in some cases so we may want to make this a smooth rotation as well
             transform.LookAt(pos, new Vector3(0, 1, 0));
         }
+        */
     }
 
 }

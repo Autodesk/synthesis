@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synthesis.Simulator.Input
+namespace SynthesisAPI.InputManager.Axis
 {
     /// <summary>
     /// Used for axes on gamepads
@@ -39,7 +39,7 @@ namespace Synthesis.Simulator.Input
             float rawVal = UnityEngine.Input.GetAxis("Joystick " + JoystickID + " Axis " + AxisID);
 
             // Checks to see if it needs special parsing
-            if (InputHandler.ControllerRegistry[JoystickID] == InputHandler.ControllerType.Ps4 && (AxisID == 5 || AxisID == 4))
+            if (InputManager.ControllerRegistry[JoystickID].Type == ControllerType.Ps4 && (AxisID == 5 || AxisID == 4))
             {
                 return Positive ? (rawVal + 1) / 2 : 0; // Axis 4 & 5 on a ps4 controller shouldn't ever get their negatives assign, but just in case.
             }
@@ -56,18 +56,19 @@ namespace Synthesis.Simulator.Input
         public static JoystickAxis GetCurrentlyActiveJoystickAxis(params string[] axesToIgnore)
         {
             float v = 0;
-            for (int joy = 1; joy <= 11; joy++)
+            for (int joy = 0; joy < ControllerInfo.MaxControllers; joy++)
             {
+                int joy_index = joy + 1;
                 for (int ax = 1; ax <= 20; ax++)
                 {
-                    if (Array.Exists(axesToIgnore, x => x.Equals("Joystick " + joy + " Axis " + ax))) continue;
+                    if (Array.Exists(axesToIgnore, x => x.Equals("Joystick " + joy_index + " Axis " + ax))) continue;
 
-                    v = UnityEngine.Input.GetAxis("Joystick " + joy + " Axis " + ax);
+                    v = UnityEngine.Input.GetAxis("Joystick " + joy_index + " Axis " + ax);
 
                     bool h = false;
 
                     // Account for Ps4 weirdness
-                    if (InputHandler.ControllerRegistry[joy] == InputHandler.ControllerType.Ps4 && (ax == 5 || ax == 4))
+                    if (InputManager.ControllerRegistry[joy].Type == ControllerType.Ps4 && (ax == 5 || ax == 4))
                     {
                         v = (v + 1) / 2;
                         h = true;
@@ -75,12 +76,12 @@ namespace Synthesis.Simulator.Input
 
                     if (v > 0.5)
                     {
-                        return (JoystickAxis)("Joystick " + joy + " Axis " + ax + " +");
+                        return (JoystickAxis)("Joystick " + joy_index + " Axis " + ax + " +");
                     }
                     else if (v < -0.5)
                     {
                         if (h) Debug.Log("That really shouldn't happen");
-                        return (JoystickAxis)("Joystick " + joy + " Axis " + ax + " -");
+                        return (JoystickAxis)("Joystick " + joy_index + " Axis " + ax + " -");
                     }
                 }
             }

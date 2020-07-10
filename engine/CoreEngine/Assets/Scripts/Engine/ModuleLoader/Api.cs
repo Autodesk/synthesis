@@ -28,6 +28,15 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+            foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+			     a.GetTypes()).Where(e => e.IsSubclassOf(typeof(SystemBase))))
+            {
+				var entity = SynthesisAPI.Runtime.ApiProvider.AddEntity();
+				if (entity != null)
+					SynthesisAPI.Runtime.ApiProvider.AddComponent(type, entity.Value);
+				else
+					throw new Exception("Entity is null");
+			}
 			foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
 				a.GetTypes()).Where(e => e.GetMethods().Any(m => m.GetCustomAttribute(typeof(CallbackAttribute)) != null)))
 			{
@@ -116,7 +125,7 @@ namespace Engine.ModuleLoader
 						Debug.Log($"Failed to load assembly {entry.Name}");
 					}
 				}
-				else if (AssetManager.Import(stream, targetPath, entry.Name, perm, "") == null)
+				else if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension), stream, targetPath, entry.Name, perm, "") == null)
 				{
 					throw new Exception("Asset module type");
 				}
@@ -141,7 +150,7 @@ namespace Engine.ModuleLoader
 					if (entity != null)
 						SynthesisAPI.Runtime.ApiProvider.AddComponent(export, entity.Value);
 					else
-						throw new Exception("F");
+						throw new Exception("Entity is null");
 				}
 
 				foreach (var callback in export.GetMethods()
@@ -181,11 +190,13 @@ namespace Engine.ModuleLoader
 
 		private class ApiProvider : IApiProvider
 		{
+			private GameObject _entityParent;
 			private Dictionary<uint, GameObject> _gameObjects;
 			private readonly Dictionary<Type, Type> _builtins;
 
 			public ApiProvider()
 			{
+				_entityParent = new GameObject("Entities");
 				_gameObjects = new Dictionary<uint, GameObject>();
 				_builtins = new Dictionary<Type, Type>();
 			}
@@ -198,7 +209,8 @@ namespace Engine.ModuleLoader
 			public uint AddEntity()
 			{
 				var entity = EnvironmentManager.AddEntity();
-				var gameObject = new GameObject();
+				var gameObject = new GameObject($"Entity {entity >> 16}"); // TODO replace with entity.GetId()
+				gameObject.transform.SetParent(_entityParent.transform);
 				_gameObjects.Add(entity, gameObject);
 				return entity;
 			}
