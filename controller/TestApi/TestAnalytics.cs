@@ -1,8 +1,7 @@
 ﻿using System;
 using SynthesisAPI.EventBus;
 using NUnit.Framework;
-
-
+using System.Threading;
 
 namespace TestApi
 {
@@ -28,7 +27,11 @@ namespace TestApi
         {
             Analytics.SetUnityPrefs("35009a79-1a05-49d7-b876-2b884d0f825b", true);
             Analytics.LogEventAsync(Analytics.EventCategory.HomeTab, Analytics.EventAction.Clicked, "test", "test");
-            Analytics.UploadDumpTest();
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+            Analytics.UploadDumpAsync();
+            //var task = Analytics.UploadDump();
+            //task.Wait();
+            //Thread.Sleep(1000);
             //Analytics.CleanUp();
         }
 

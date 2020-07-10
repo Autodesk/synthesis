@@ -14,42 +14,128 @@ namespace SynthesisAPI.EventBus
         public const string URL_COLLECT = "https://www.google-analytics.com/collect";
         public const string URL_BATCH = "https://www.google-analytics.com/batch";
         public const string OFFICIAL_TRACKING_ID = "UA-81892961-6";
-        public static string Guid = "not-set";
+        public static string GUID = "not-set";
         public static bool dataCollection = true;
 
+
+        /// <summary>
+        /// Sets client ID and data preferences
+        /// </summary>
+        /// <param name="unityGuid">Client ID (For Synthesis use Unity GUID)</param>
+        /// <param name="dataPref">Boolean value, is true if user has agreed to share data</param>
         public static void SetUnityPrefs(String unityGuid, bool dataPref)
         {
-            Guid = unityGuid;
+            GUID = unityGuid;
             dataCollection = dataPref;
         }
 
-        public static void LogAllTaggedEvents(String tag, string Category, String Action, string Label, string Value)
-        {
-            EventBus.NewTagListener(tag, (IEvent e) => LogEventAsync(Category, Action, Label, Value));
-        }
-
-        public static void LogAllTypeEvents<TEvent>(string Category, String Action, string Label, string Value) where TEvent : IEvent
-        {
-            EventBus.NewTypeListener<TEvent>((IEvent e) => LogEventAsync(Category, Action, Label, Value));
-        }
-
+        /// <summary>
+        /// Stores the start time of a timing event
+        /// </summary>
+        /// <param name="label">Label corresponding to timing event</param>
+        /// <param name="variable">Variable corresponding to timing event</param>
+        /// <param name="time">Start time in seconds</param>
         public static void StartTime(string label, string variable, float time)
         {
             StartTimes.Add(new KeyValuePair<string, float>(label + "|" + variable, time));
         }
 
+        /// <summary>
+        /// Returns time elapsed between start and end of a timing event
+        /// </summary>
+        /// <param name="label">Label corresponding to timing event</param>
+        /// <param name="variable">Variable corresponding to timing event</param>
+        /// <param name="time">End time in seconds</param>
         public static float GetElapsedTime(string label, string variable, float time)
         {
             float a = StartTimes.Find(x => x.Key.Equals(label + "|" + variable)).Value;
             return (time - a) * 1000;
         }
 
+        /// <summary>
+        /// Removes start time of a timing event
+        /// </summary>
+        /// <param name="label">Label corresponding to timing event</param>
+        /// <param name="variable">Variable corresponding to timing event</param>
         public static void RemoveTime(string label, string variable)
         {
             StartTimes.Remove(StartTimes.Find(x => x.Key.Equals(label + "|" + variable)));
         }
 
-        public static void UploadDumpTest()
+        /// <summary>
+        /// Logs an event locally 
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="action">The action the event should be reported under in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="value">The value the event should be reported with in Google Analytics, null if not applicable</param>
+        public static void LogEvent(string category, string action, string label, string value)
+        {
+            LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("t", "event"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("ec", category));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("ea", action));
+            if (label != null) LoggedData.Enqueue(new KeyValuePair<string, string>("el", label));
+            if (value != null) LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+        }
+
+        /// <summary>
+        /// Logs a screenview locally 
+        /// </summary>
+        /// <param name="screenName">The name of the screen as it should be reported in Google Analytics</param>
+        public static void LogScreenView(string screenName)
+        {
+            LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenview"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("cd", screenName));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+        }
+
+        /// <summary>
+        /// Logs a timing event locally given an ending time if the start time was
+        /// recorded earlier using the StartTime method
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="variable">The action the event should be reported with in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="time">The time the event ended in seconds</param>
+        public static void LogElapsedTime(string category, string variable, string label, float time)
+        {
+            int milli = (int)GetElapsedTime(label, variable, time);
+            RemoveTime(label, variable);
+            LogTiming(category, variable, label, milli);
+        }
+
+        /// <summary>
+        /// Logs a timing event locally given an integer value for the 
+        /// duration of the event in milliseconds
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="variable">The variable the event should be reported with in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="time">The duration of the event in milliseconds</param>
+        public static void LogTiming(string category, string variable, string label, int time)
+        {
+            LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("t", "timing"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("utc", category));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("utv", variable));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("utt", time.ToString()));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("utl", label));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
+        }
+
+        /// <summary>
+        /// Pushes local data to the Google Analytics server
+        /// </summary>
+        public static void UploadDump()
         {
             if (LoggedData.Count < 1 || !dataCollection)
             {
@@ -110,97 +196,108 @@ namespace SynthesisAPI.EventBus
             }
             catch (Exception e)
             {
-                Console.WriteLine("jsldhfafdh");
                 Console.WriteLine(e.ToString());
             }
         }
 
 
         #region AsyncMethods
-        public static async void LogEventAsync(string Category, string Action, string Label, string Value)
-        {
-            if (mutex != null) await LogEvent(Category, Action, Label, Value);
-        }
 
-        public static async void LogScreenViewAsync(string ScreenName)
-        {
-            if (mutex != null) await LogScreenView(ScreenName);
-        }
-
-        public static void LogElapsedTimeAsync(string Category, string Variable, string Label, float CurrentTime)
-        {
-            int milli = (int)GetElapsedTime(Label, Variable, CurrentTime);
-            RemoveTime(Label, Variable);
-            LogTimeAsync(Category, Variable, milli, Label);
-        }
-
-        public static async void LogTimeAsync(string Category, string Variable, int Time, string Label)
-        {
-            if (mutex != null) await LogTiming(Category, Variable, Time, Label);
-        }
-
-        public static async void UploadDumpAsync()
-        {
-            if (mutex != null) await UploadDump();
-        }
-
-        #endregion
-
-        #region LogTasks
-
-        public static void LogStandardInfo()
-        {
-            LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
-            LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
-            LoggedData.Enqueue(new KeyValuePair<string, string>("cid", Guid));
-        }
-
-        private static Task LogEvent(string Category, string Action, string Label, string Value)
+        /// <summary>
+        /// Creates an asynchronous task to log an event locally 
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="action">The action the event should be reported under in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="value">The value the event should be reported with in Google Analytics, null if not applicable</param>
+        /// <returns>Task that can be run asynchronously to log the event</returns>
+        public static Task LogEventAsync(string category, string action, string label, string value)
         {
             return Task.Factory.StartNew(() =>
             {
                 mutex.WaitOne();
-                LogStandardInfo();
+                LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("t", "event"));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("ec", Category));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("ea", Action));
-                if (Label != null) LoggedData.Enqueue(new KeyValuePair<string, string>("el", Label));
-                if (Value != null) LoggedData.Enqueue(new KeyValuePair<string, string>("ev", Value));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("ec", category));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("ea", action));
+                if (label != null) LoggedData.Enqueue(new KeyValuePair<string, string>("el", label));
+                if (value != null) LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
             });
         }
 
-        private static Task LogScreenView(string ScreenName)
+        /// <summary>
+        /// Creates an asynchronous task to log a screenview locally 
+        /// </summary>
+        /// <param name="screenName">The name of the screen as it should be reported in Google Analytics</param>
+        /// <returns>Task that can be run asynchronously to log the screenview</returns>
+        public static Task LogScreenViewAsync(string screenName)
         {
             return Task.Factory.StartNew(() =>
             {
                 mutex.WaitOne();
-                LogStandardInfo();
-                LoggedData.Enqueue(new KeyValuePair<string, string>("t", ScreenName));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("dl", "https://www.google.com/index.html"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenview"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("cd", screenName));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
             });
         }
 
-        private static Task LogTiming(string Category, string Var, int Time, string Label)
+        /// <summary>
+        /// Creates an asynchronous task to log a timing event locally given an ending time 
+        /// if the start time was recorded earlier using the StartTime method
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="variable">The action the event should be reported with in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="time">The time the event ended in seconds</param>
+        /// <returns>Task that can be run asynchronously to log the timing event</returns>
+        public static Task LogElapsedTimeAsync(string category, string variable, string label, float currentTime)
+        {
+            int milli = (int)GetElapsedTime(label, variable, currentTime);
+            RemoveTime(label, variable);
+            return LogTimingAsync(category, variable, label, milli);
+        }
+
+        /// <summary>
+        /// Creates an asynchronous task to log a timing event locally given an integer value 
+        /// for the duration of the event in milliseconds
+        /// </summary>
+        /// <param name="category">The category the event should be reported under in Google Analytics</param>
+        /// <param name="variable">The variable the event should be reported with in Google Analytics</param>
+        /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
+        /// <param name="time">The duration of the event in milliseconds</param>
+        /// <returns>Task that can be run asynchronously to log the timing event</returns>
+
+        public static Task LogTimingAsync(string category, string variable, string label, int time)
         {
             return Task.Factory.StartNew(() =>
             {
                 mutex.WaitOne();
-                LogStandardInfo();
+                LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("t", "timing"));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("utc", Category));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("utv", Var));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("utt", Time.ToString()));
-                LoggedData.Enqueue(new KeyValuePair<string, string>("utl", Label));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("utc", category));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("utv", variable));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("utt", time.ToString()));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("utl", label));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
             });
         }
 
-        private static Task UploadDump()
+        /// <summary>
+        /// Creates a task to push local data to the Google Analytics server asynchronously
+        /// </summary>
+        /// <returns>Task that can be run asynchronously to log the timing event</returns>
+        public static Task UploadDumpAsync()
         {
             return Task.Factory.StartNew(() =>
             {
@@ -274,6 +371,9 @@ namespace SynthesisAPI.EventBus
 
         #endregion
 
+        /// <summary>
+        /// Closes mutex, kills any async tasks that have not already completed
+        /// </summary>
         public static void CleanUp()
         {
             mutex.Close();
@@ -295,7 +395,6 @@ namespace SynthesisAPI.EventBus
 
                 // Start of analytics tracking
                 MainSimulator = "Main Simulator",
-                //MultiplayerSimulator = "multiplayerSimulator", // network multiplayer temporarily disabled.
 
                 // Toolbar tabs
                 MenuTab = "Menu Tab",
@@ -339,9 +438,9 @@ namespace SynthesisAPI.EventBus
         }
 
         /// <summary>
-        /// Not currently in use but implemented on backend 08/2019
+        /// Name of the screen the user is on
         /// </summary>
-        public static class PageView
+        public static class ScreenName
         {
             public const string
                 MainSimMenu = "simMenu",
