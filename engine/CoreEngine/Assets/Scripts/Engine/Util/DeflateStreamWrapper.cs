@@ -3,6 +3,12 @@ using System.IO.Compression;
 
 namespace Assets.Scripts.Engine.Util
 {
+	/// <summary>
+	/// Wrapper class for <see cref="System.IO.Compression.DeflateStream"/>
+	/// 
+	/// <see cref="DeflateStream"/> does not support the <see cref="Stream.Length"/> property, 
+	/// so this wrapper wraps the stream and allows a stream length to be supplied in the constructor
+	/// </summary>
     internal class DeflateStreamWrapper : Stream
 	{
 		private Stream inner;
@@ -35,9 +41,6 @@ namespace Assets.Scripts.Engine.Util
 
 		public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
 
-		public override void Close()
-		{
-			inner.Close();
-		}
+		public override void Close() => inner.Close();
 	}
 }
