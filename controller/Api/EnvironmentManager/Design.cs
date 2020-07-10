@@ -10,7 +10,7 @@ namespace SynthesisAPI.EnvironmentManager
         public DesignMeta MetaData { get; set; }
 
         public static IDictionary<int, Component> Components { get; set; }
-        public Occurence RootOccurence { get; set; }
+        public Occurrence RootOccurence { get; set; }
         public IList<Joint> Joints { get; set; }
         public IList<Material> Materials { get; set; }
         public IList<Appearance> Appearances { get; set; }
@@ -22,7 +22,7 @@ namespace SynthesisAPI.EnvironmentManager
             MetaData = metaData;
             //Components = new List<Component>();
             Components = new Dictionary<int, Component>();
-            RootOccurence = new Occurence();
+            RootOccurence = new Occurrence();
             Joints = new List<Joint>();
             Materials = new List<Material>();
             Appearances = new List<Appearance>();
@@ -30,21 +30,22 @@ namespace SynthesisAPI.EnvironmentManager
 
         #region Construction Data
 
-        public class Occurence
+        public class Occurrence
         {
             public Header OccurenceHeader { get; set; }
             public bool IsGrounded { get; set; }
             public Matrix3D Transform { get; set; }
             public string ComponentUuid { get; set; }
-            public IList<Occurence> ChildOccurences { get; set; }
+            public Component AComponent { get; set; }
+            public IList<Occurrence> ChildOccurences { get; set; }
 
             public IDictionary<string, object> Attributes { get; set; }
 
-            public Occurence()
+            public Occurrence()
             {
                 OccurenceHeader = new Header();
                 Transform = new Matrix3D();
-                ChildOccurences = new List<Occurence>();
+                ChildOccurences = new List<Occurrence>();
                 Attributes = new Dictionary<string, object>();
             }
         }

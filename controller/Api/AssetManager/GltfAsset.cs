@@ -44,14 +44,8 @@ namespace SynthesisAPI.AssetManager
             {
                 var settings = tryFix ? SharpGLTF.Validation.ValidationMode.TryFix : SharpGLTF.Validation.ValidationMode.Strict;
 
-                // "Full_Robot_Rough_v10_1593496385.glb
                 model = ModelRoot.ReadGLB(stream, settings);
-                //model = ModelRoot.Load("MultiDepthHierarchy_v9_1593489237.glb", settings);
-
-                // ImportDesign to trigger recursive calls
                 ImportDesign(model);
-
-
             }
             catch (Exception ex)
             {
@@ -68,35 +62,63 @@ namespace SynthesisAPI.AssetManager
             // this is the root ---> modelRoot.DefaultScence.VisualChildren
             foreach (Node child in modelRoot.DefaultScene.VisualChildren)
             {
-                // todo: ImportComponents needs ALL components
-                //Components = ImportComponents(child);
-
-                design.RootOccurence = ImportOccurence(child);
+                design.RootOccurence = ExportOccurrenceFromNode(child);
             }
 
             return design;
         }
 
-        //private IDictionary<int, Design.Component> ImportComponents(Node node)
-        //{
-        //    foreach (Node child in node.VisualChildren)
-        //    {
-        //        ImportComponents(Components.Add(node.VisualChildren.GetEnumerator, child));
-        //    }
-        //    return Components;
-
-        //}
-
-        public Occurence ImportOccurence(Node node)
+        public Occurrence ExportOccurrenceFromNode(Node node)
         {
-            Occurence occurence = new Occurence();
+            //// if node is in the Components maps, return it
+            //if (Components[node.LogicalIndex].Equals(node.LogicalIndex))
+            //{
+            //    // return map component
+            //} // else export the node
+
+            Occurrence occurrence = new Occurrence();
+
+            // todo:
+            // OccurenceHeader
+            // IsGrounded
+            // Transform
+            // ComponentUuid
+            // Attributes
+
+            occurrence.AComponent = ExportComponentsFromMesh(node.Mesh);
 
             foreach (Node child in node.VisualChildren)
             {
-                occurence.ChildOccurences.Add(ImportOccurence(child));
+                occurrence.ChildOccurences.Add(ExportOccurrenceFromNode(child));
             }
 
-            return occurence;
+            return occurrence;
+        }
+
+        private Design.Component ExportComponentsFromMesh(SharpGLTF.Schema2.Mesh mesh)
+        {
+            // todo: 
+            // export mesh ONLY IF it hasn't been exported yet
+
+            Design.Component component = new Design.Component();
+
+            // todo:
+            // ComponentHeader
+            // PartNumber
+            // BoundingBox
+            // MaterialId
+            // ComponentPhysicalProperties
+            // Attributes
+
+            // MeshBodies
+            //component.MeshBodies = ExportMeshesBodiesFromPrimitives(mesh);
+            //foreach(SharpGLTF.Schema2.MeshPrimitive meshBody in mesh.Primitives)
+            //{
+            //    component.MeshBodies = ExportMeshBodiesFromPrimitive(meshBody);
+            //}
+            Components.Add(mesh.LogicalIndex, component);
+
+            return component;
         }
     }
 }
