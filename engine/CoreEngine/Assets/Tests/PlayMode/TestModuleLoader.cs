@@ -7,30 +7,44 @@ using System.IO;
 using System.IO.Compression;
 using System;
 using UnityEngine.SceneManagement;
+using SynthesisAPI.AssetManager;
 
 namespace Tests
 {
     public class TestModuleLoader : IPrebuildSetup
     {
-        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module");
+        private static readonly string sourcePath = SynthesisAPI.VirtualFileSystem.FileSystem.BasePath + "modules" + Path.DirectorySeparatorChar;
+        private static readonly string zipPath = sourcePath + "test_module.zip";
+
+        private static readonly string TestTextFileName = "test.txt";
+        private static readonly string TestTextFileContents = "Hello world!";
+
+        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module", manifest: new[] { TestTextFileName });
 
         private static void CreateTestModule()
         {
-
-            string sourcePath = SynthesisAPI.VirtualFileSystem.FileSystem.BasePath + "modules" + Path.DirectorySeparatorChar;
-            string zipPath = sourcePath + "test_module.zip";
             if (File.Exists(zipPath))
             {
-                return;
+                Debug.LogWarning($"Test module path {zipPath} already exists, deleting it.");
+                File.Delete(zipPath);
+                if (File.Exists(zipPath))
+                {
+                    throw new Exception($"Test module already exists: {zipPath}");
+                }
             }
+
             string sourceFolderPath = sourcePath + "test_module";
             Directory.CreateDirectory(sourceFolderPath);
 
             Stream metadataFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + ModuleMetadata.MetadataFilename, FileMode.OpenOrCreate);
-            
             TestModuleMetadata.Serialize(metadataFile);
-
             metadataFile.Close();
+
+            Stream textFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + TestTextFileName, FileMode.OpenOrCreate);
+            var writer = new StreamWriter(textFile);
+            writer.Write(TestTextFileContents);
+            writer.Flush();
+            textFile.Close();
 
             ZipFile.CreateFromDirectory(sourceFolderPath, zipPath);
 
@@ -40,6 +54,15 @@ namespace Tests
         [SetUp]
         public void Setup() {
             CreateTestModule();
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            if (File.Exists(zipPath))
+            {
+                File.Delete(zipPath);
+            }
         }
 
         public class ApiTest : MonoBehaviour, IMonoBehaviourTest
@@ -67,7 +90,15 @@ namespace Tests
                 {
                     Debug.Log("Loaded module: " + e);
                 }
-                IsTestFinished = SynthesisAPI.Modules.ModuleManager.IsFinishedLoading;
+
+                if (SynthesisAPI.Modules.ModuleManager.IsFinishedLoading)
+                {
+                    var hasTestModule = SynthesisAPI.Modules.ModuleManager.GetLoadedModules().Contains(TestModuleMetadata.Name);
+                    var textAsset = AssetManager.GetAsset<SynthesisAPI.AssetManager.TextAsset>($"/modules/{TestModuleMetadata.TargetPath}/{TestTextFileName}");
+                    var hasTextContents = textAsset != null && textAsset.ReadToEnd() == TestTextFileContents;
+
+                    IsTestFinished = hasTestModule && hasTextContents;
+                }
             }
         }
 

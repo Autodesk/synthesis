@@ -65,6 +65,7 @@ namespace Engine.ModuleLoader
             ResolveDependencies(modules);
 			foreach(var (archive, metadata) in modules) {
 				ImportAssetsFromModule((archive, metadata));
+				archive.Dispose();
             }
 			foreach (var (_, metadata) in modules)
 			{
@@ -77,7 +78,8 @@ namespace Engine.ModuleLoader
         private (ZipArchive, ModuleMetadata)? PreloadModule(string filePath)
         {
             var module = ZipFile.Open(FileSystem.BasePath + "modules" + filePath, ZipArchiveMode.Read);
-            if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
+
+			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
             {
                 return null;
             }
@@ -125,7 +127,7 @@ namespace Engine.ModuleLoader
 						Debug.Log($"Failed to load assembly {entry.Name}");
 					}
 				}
-				else if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension), stream, targetPath, entry.Name, perm, "") == null)
+				else if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension), new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
 				{
 					throw new Exception("Asset module type");
 				}
@@ -137,6 +139,7 @@ namespace Engine.ModuleLoader
 		{
 		    var memStream = new MemoryStream();
 			stream.CopyTo(memStream);
+			stream.Close();
 			var assembly = Assembly.Load(memStream.ToArray());
 
 			foreach (var export in assembly.GetTypes()

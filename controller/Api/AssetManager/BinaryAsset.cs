@@ -38,10 +38,10 @@ namespace SynthesisAPI.AssetManager
 
         public override IEntry Load(byte[] data)
         {
-            var stream = new MemoryStream();
-            stream.Write(data, 0, data.Length);
-            stream.Position = 0;
-            SharedStream = new SharedBinaryStream(stream, _rwLock);
+            _stream = new MemoryStream();
+            _stream.Write(data, 0, data.Length);
+            _stream.Position = 0;
+            SharedStream = new SharedBinaryStream(_stream, _rwLock);
 
             return this;
         }
@@ -59,6 +59,13 @@ namespace SynthesisAPI.AssetManager
             return SharedStream?.ReadToEnd();
         }
 
+        internal override void DeleteInner()
+        {
+            base.DeleteInner();
+            _stream.Close();
+        }
+
+        private Stream _stream;
         private SharedBinaryStream SharedStream { get; set; } = null!;
         private readonly ReaderWriterLockSlim _rwLock;
     }
