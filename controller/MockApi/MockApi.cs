@@ -87,10 +87,19 @@ namespace MockApi
 
         private class MockApiProvider : IApiProvider
         {
-
+            private void LogAction(string function, string msg = "")
+            {
+                var m = $"MockApiProvider.{function}";
+                if (msg != "")
+                {
+                    m += ": {msg}";
+                }
+                Log(m);
+            }
 
             public Component AddComponent(Type t, uint entity)
             {
+                LogAction("AddComponent", $"Adding {t} to {entity}");
                 var component = (Component)Activator.CreateInstance(t);
                 EnvironmentManager.AddComponent(entity, component);
                 return component;
@@ -98,26 +107,31 @@ namespace MockApi
 
             public TComponent AddComponent<TComponent>(uint entity) where TComponent : Component
             {
+                LogAction("AddComponent", $"Adding <{typeof(TComponent)}> to {entity}");
                 return (TComponent)AddComponent(typeof(TComponent), entity) ;
             }
 
             public uint AddEntity()
             {
+                LogAction("AddEntity");
                 return EnvironmentManager.AddEntity();
             }
 
             public Component GetComponent(Type t, uint entity)
             {
+                LogAction("GetComponent", $"Get {t} from {entity}");
                 return entity.GetComponent(t);
             }
 
             public TComponent GetComponent<TComponent>(uint entity) where TComponent : Component
             {
+                LogAction("GetComponent", $"Get <{typeof(TComponent)}> from {entity}");
                 return entity.GetComponent<TComponent>();
             }
 
             public List<Component> GetComponents(uint entity)
             {
+                LogAction("GetComponents", $"Get from {entity}");
                 return entity.GetComponents();
             }
 
