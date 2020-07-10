@@ -29,9 +29,9 @@ namespace SynthesisAPI.UIManager
             foreach (XmlNode node in nodes)
             {
                 if (node.Name.Replace("ui:", "") != "Style")
-                    root.Add(CreateVisualElement(node));
+                    root.Add((UnityVisualElement)CreateVisualElement(node));
             }
-            return root;
+            return (SynVisualElement)root;
         }
 
         /// <summary>
@@ -57,9 +57,14 @@ namespace SynthesisAPI.UIManager
                 {
                     // ApiProvider.Log("Parsing Attribute");
 
-                    var property = elementType.GetProperty(attr.Name);
+                    var property = elementType.GetProperty(MapCssName(attr.Name));
                     if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
 
+                    if (property.PropertyType.IsEnum)
+                    {
+                        property.SetValue(element, Enum.Parse(property.PropertyType, attr.Value));
+                        continue;
+                    }
                     switch (property.PropertyType.Name)
                     {
                         case "Boolean":
@@ -92,12 +97,12 @@ namespace SynthesisAPI.UIManager
             foreach (XmlNode child in node.ChildNodes)
             {
                 // ApiProvider.Log($"Adding child: {child.Name}");
-                resultElement.Add(CreateVisualElement(child));
+                resultElement.Add((UnityVisualElement)CreateVisualElement(child));
                 // ApiProvider.Log($"Finished adding child: {child.Name}");
             }
 
             // ApiProvider.Log("Returning Result");
-            return resultElement;
+            return (SynVisualElement)resultElement!;
         }
 
         /// <summary>
@@ -122,7 +127,7 @@ namespace SynthesisAPI.UIManager
                 .Select(s => s != "" ? char.ToUpper(s[0]) + s.Substring(1) : "")
                 .Aggregate("", (s, s1) => s + s1).Substring(1);
 
-        private static dynamic ParseEntry(string entry, dynamic element)
+        internal static dynamic ParseEntry(string entry, dynamic element)
         {
             var entrySplit = entry.Split(':');
             entrySplit[0] = entrySplit[0].Replace(" ", "");
@@ -138,40 +143,48 @@ namespace SynthesisAPI.UIManager
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
-            if (property.PropertyType.GenericTypeArguments.Length > 0)
+            try
             {
-                property.SetValue(element.style,
-                    typeof(UIParser).GetMethod("ToStyleEnum").MakeGenericMethod(property.PropertyType.GenericTypeArguments[0])
-                        .Invoke(null, new object[] { entrySplit[1] }));
-                return element;
-            }
-            switch (property.PropertyType.Name)
-            {
-                case "StyleFloat":
-                    property.SetValue(element.style, ToStyleFloat(entrySplit[1]));
-                    break;
-                case "StyleInt":
-                    property.SetValue(element.style, ToStyleInt(entrySplit[1]));
-                    break;
-                case "StyleLength":
-                    // StyleLength len = ;
-                    property.SetValue(element.style, ToStyleLength(entrySplit[1]));
+                if (property.PropertyType.GenericTypeArguments.Length > 0)
+                {
+                    property.SetValue(element.style,
+                        typeof(UIParser).GetMethod("ToStyleEnum")
+                            .MakeGenericMethod(property.PropertyType.GenericTypeArguments[0])
+                            .Invoke(null, new object[] {entrySplit[1]}));
+                    return element;
+                }
 
-                    break;
-                case "StyleFont":
-                    property.SetValue(element.style, ToStyleFont(entrySplit[1]));
-                    break;
-                case "StyleCursor":
-                    property.SetValue(element.style, ToStyleCursor(entrySplit[1]));
-                    break;
-                case "StyleColor":
-                    property.SetValue(element.style, ToStyleColor(entrySplit[1]));
-                    break;
-                case "StyleBackground":
-                    property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
-                    break;
-                default:
-                    throw new Exception("Unhandled type in USS parser");
+                switch (property.PropertyType.Name)
+                {
+                    case "StyleFloat":
+                        property.SetValue(element.style, ToStyleFloat(entrySplit[1]));
+                        break;
+                    case "StyleInt":
+                        property.SetValue(element.style, ToStyleInt(entrySplit[1]));
+                        break;
+                    case "StyleLength":
+                        // StyleLength len = ;
+                        property.SetValue(element.style, ToStyleLength(entrySplit[1]));
+                        break;
+                    case "StyleFont":
+                        property.SetValue(element.style, ToStyleFont(entrySplit[1]));
+                        break;
+                    case "StyleCursor":
+                        property.SetValue(element.style, ToStyleCursor(entrySplit[1]));
+                        break;
+                    case "StyleColor":
+                        property.SetValue(element.style, ToStyleColor(entrySplit[1]));
+                        break;
+                    case "StyleBackground":
+                        property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
+                        break;
+                    default:
+                        throw new Exception("Unhandled type in USS parser");
+                }
+            }
+            catch (Exception e)
+            {
+                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"");
             }
 
             return element;
@@ -276,6 +289,14 @@ namespace SynthesisAPI.UIManager
 
         public static StyleEnum<T> ToStyleEnum<T>(string str) where T : struct, IConvertible => new StyleEnum<T>
             {value = (T) Enum.Parse(typeof(T), MapCssName(str.Replace(" ", "")), true)};
+
+        public static SynVisualElement GetSynVisualElement(this VisualElement element)
+        {
+            Type t = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), t => t.Name == $"Syn{element.GetType().Name}") ??
+                typeof(SynVisualElement);
+            ApiProvider.Log($"Type: {t.FullName}");
+            return (SynVisualElement)Activator.CreateInstance(t, new object[] {element});
+        }
 
     }
 }

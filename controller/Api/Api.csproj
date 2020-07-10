@@ -59,6 +59,7 @@
     <Compile Include="AssetManager\SpriteAsset.cs" />
     <Compile Include="AssetManager\TextAsset.cs" />
     <Compile Include="AssetManager\TextureAsset.cs" />
+    <Compile Include="AssetManager\SynVisualElementAsset.cs" />
     <Compile Include="AssetManager\XmlAsset.cs" />
     <Compile Include="EnvironmentManager\EnvironmentManager.cs" />
     <Compile Include="EventBus\EventBus.cs" />
@@ -95,7 +96,10 @@
     <Compile Include="Runtime\IApiProvider.cs" />
     <Compile Include="UIManager\UIParser.cs" />
     <Compile Include="UIManager\UIManager.cs" />
+    <Compile Include="UIManager\VisualElements\ButtonClickableEvent.cs" />
     <Compile Include="UIManager\VisualElements\SynLabel.cs" />
+    <Compile Include="UIManager\VisualElements\SynListView.cs" />
+    <Compile Include="UIManager\VisualElements\SynTextField.cs" />
     <Compile Include="UIManager\VisualElements\SynVisualElement.cs" />
     <Compile Include="UIManager\VisualElements\SynButton.cs" />
     <Compile Include="Utilities\AnyMap.cs" />

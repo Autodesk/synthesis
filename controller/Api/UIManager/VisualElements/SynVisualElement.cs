@@ -1,7 +1,10 @@
 ﻿using SynthesisAPI.Runtime;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,17 +15,19 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public class SynVisualElement
     {
-        private VisualElement _visualElement;
+        protected VisualElement _visualElement;
 
-        public static implicit operator VisualElement(SynVisualElement element) => element._visualElement;
-        public static implicit operator SynVisualElement(VisualElement element) => new SynVisualElement(element);
+        public static explicit operator VisualElement(SynVisualElement element) => element._visualElement;
+        public static explicit operator SynVisualElement(VisualElement element) => new SynVisualElement(element);
 
         public SynVisualElement()
         {
-            _visualElement = ApiProvider.InstantiateFocusable<VisualElement>();
+            _visualElement = ApiProvider.InstantiateFocusable<VisualElement>()!;
+            if (_visualElement == null)
+                throw new Exception("Failed to instantiate VisualElement");
         }
 
-        internal SynVisualElement(VisualElement visualElement)
+        public SynVisualElement(VisualElement visualElement)
         {
             _visualElement = visualElement;
         }
@@ -40,6 +45,35 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => _visualElement;
         }
 
-        public T Get<T>(string name = null, string className = null) where T : VisualElement => _visualElement.Q<T>(name, className);
+        public virtual IEnumerable<Object> PostUxmlLoad()
+        {
+            foreach (var child in _visualElement.Children())
+            {
+                child.GetSynVisualElement().PostUxmlLoad();
+            }
+            return null;
+        }
+
+        public SynVisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetSynVisualElement();
+        public void Add(SynVisualElement element) => _visualElement.Add(element.VisualElement);
+
+        public void SetStyleProperty(string name, string value)
+        {
+            _visualElement = UIParser.ParseEntry($"{name}:{value}", _visualElement);
+        }
+        
+        #region Dynamic Accessors
+
+        /// <summary>
+        /// Allows you to access <see cref="https://docs.unity3d.com/ScriptReference/UIElements.VisualElement.html">VisualElement</see>
+        /// and still compile without the UnityEngine assembly. This is going to be protected until we need it
+        /// </summary>
+        protected virtual dynamic DynamicVisualElement
+        {
+            get => _visualElement;
+            set => _visualElement = value is VisualElement ? value : _visualElement;
+        }
+
+        #endregion
     }
 }

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using JetBrains.Annotations;
+using Synthesis.Util;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
@@ -24,7 +25,8 @@ public class UIParseTest : MonoBehaviour
 #if UNITY_EDITOR
     public StyleSheet styleSheet;
     public PanelRenderer renderer;
-    public VisualElement generated;
+    public SynListView generated;
+    public SynVisualElementAsset entry;
 
     public UnityWebRequest request;
 
@@ -35,13 +37,32 @@ public class UIParseTest : MonoBehaviour
     {
         asset = AssetManager.Import<TextureAsset>("image/texture", "/temp", "test.jpeg",
             Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
+
+        entry = AssetManager.Import<SynVisualElementAsset>("text/uxml", "/temp", "test-entry.uxml",
+            Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test-entry.uxml");
         
         XmlDocument doc = new XmlDocument();
-        doc.Load($"Assets{Path.DirectorySeparatorChar}TestButton.uxml");
-        generated = UIParser.CreateVisualElement("Test_UI", doc);
+        doc.Load($"Assets{Path.DirectorySeparatorChar}UI{Path.DirectorySeparatorChar}TestListView.uxml");
+        generated = ((VisualElement)UIParser.CreateVisualElement("Test_UI", doc).Get(name: "test-list-view")).GetSynVisualElement() as SynListView;
+        // var doc2 = new XmlDocument();
+        // doc.Load($"Assets{Path.DirectorySeparatorChar}UI{Path.DirectorySeparatorChar}TestListEntry.uxml");
+        // entry = UIParser.CreateVisualElement("Test_Entry", doc);
+        // ApiProvider.Log($"Type: {listView.GetType().FullName}");
+
+        var sourceItem = new List<string>() {"Hi", "Hello"};
+        generated.Populate(sourceItem, () => entry.GetElement("entry"),
+            (element, index) =>
+            {
+                var label = (element.Get(name: "test-label") as SynLabel);
+                label.Text = sourceItem[index];
+            });
+        
         renderer.postUxmlReload += () =>
         {
-            renderer.visualTree.Q(name = "screen").Add(generated);
+            // generated.
+            renderer.visualTree.Q<VisualElement>(name: "screen").Add((ListView)generated);
+            ApiProvider.Log("PostUxmlLoad");
+            generated.PostUxmlLoad();
             return null;
         };
     }

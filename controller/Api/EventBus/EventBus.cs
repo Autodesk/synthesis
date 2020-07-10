@@ -148,6 +148,9 @@ namespace SynthesisAPI.EventBus
             Inner.ResetAllListeners();
         }
 
+        public static bool HasTagSubscriber(string tag) => TagSubscribers.ContainsKey(tag);
+        public static bool HasTypeSubscriber(Type type) => TypeSubscribers.ContainsKey(type.FullName);
+
         private class Inner
         {
             public Dictionary<string, EventCallback> TypeSubscribers;
