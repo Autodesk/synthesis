@@ -24,9 +24,9 @@ namespace SynthesisAPI.Modules
         }
 
         [ExposedApi]
-        public static string[] GetLoadedModules()
+        public static List<string> GetLoadedModules()
         {
-            return Instance.LoadedModules.ToArray();
+            return Instance.LoadedModules;
         }
 
         [ExposedApi]

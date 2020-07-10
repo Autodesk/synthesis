@@ -1,63 +1,115 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Engine.ModuleLoader;
+using System.IO;
+using System.IO.Compression;
+using System;
+using UnityEngine.SceneManagement;
+using SynthesisAPI.AssetManager;
 
 namespace Tests
 {
     public class TestModuleLoader : IPrebuildSetup
     {
-        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module");
+        private static readonly string sourcePath = SynthesisAPI.VirtualFileSystem.FileSystem.BasePath + "modules" + Path.DirectorySeparatorChar;
+        private static readonly string zipPath = sourcePath + "test_module.zip";
 
-        /*
-         private static void CreateTestModule()
+        private static readonly string TestTextFileName = "test.txt";
+        private static readonly string TestTextFileContents = "Hello world!";
+
+        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module", manifest: new[] { TestTextFileName });
+
+        private static void CreateTestModule()
         {
-
-            string sourcePath = SynthesisAPI.VirtualFileSystem.FileSystem.BasePath + "modules" + Path.DirectorySeparatorChar;
-            string zipPath = sourcePath + "test_module.zip";
             if (File.Exists(zipPath))
             {
-                return;
+                Debug.LogWarning($"Test module path {zipPath} already exists, deleting it.");
+                File.Delete(zipPath);
+                if (File.Exists(zipPath))
+                {
+                    throw new Exception($"Test module already exists: {zipPath}");
+                }
             }
+
             string sourceFolderPath = sourcePath + "test_module";
             Directory.CreateDirectory(sourceFolderPath);
 
             Stream metadataFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + ModuleMetadata.MetadataFilename, FileMode.OpenOrCreate);
-            
             TestModuleMetadata.Serialize(metadataFile);
-
             metadataFile.Close();
+
+            Stream textFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + TestTextFileName, FileMode.OpenOrCreate);
+            var writer = new StreamWriter(textFile);
+            writer.Write(TestTextFileContents);
+            writer.Flush();
+            textFile.Close();
 
             ZipFile.CreateFromDirectory(sourceFolderPath, zipPath);
 
             Directory.Delete(sourceFolderPath, true);
         }
-    */
+    
         [SetUp]
-        public void Setup() { }
+        public void Setup() {
+            CreateTestModule();
+        }
 
+        [TearDown]
+        public void Teardown()
+        {
+            if (File.Exists(zipPath))
+            {
+                File.Delete(zipPath);
+            }
+        }
 
         public class ApiTest : MonoBehaviour, IMonoBehaviourTest
         {
-            public bool IsTestFinished
+            public bool IsTestFinished { get; private set; }
+
+            private DateTime endTime;
+
+            public const int Timeout = 10000; // ms
+
+            public void Awake()
             {
-                get => true;//SynthesisAPI.Modules.ModuleManager.IsFinishedLoading;
+                endTime = DateTime.Now.AddMilliseconds(Timeout);
+            }
+
+            public void Update()
+            {
+                if(DateTime.Now > endTime)
+                {
+                    IsTestFinished = true;
+                    throw new Exception("Unity test timeout");
+                }
+
+                foreach (var e in SynthesisAPI.Modules.ModuleManager.GetLoadedModules())
+                {
+                    Debug.Log("Loaded module: " + e);
+                }
+
+                if (SynthesisAPI.Modules.ModuleManager.IsFinishedLoading)
+                {
+                    var hasTestModule = SynthesisAPI.Modules.ModuleManager.GetLoadedModules().Contains(TestModuleMetadata.Name);
+                    var textAsset = AssetManager.GetAsset<SynthesisAPI.AssetManager.TextAsset>($"/modules/{TestModuleMetadata.TargetPath}/{TestTextFileName}");
+                    var hasTextContents = textAsset != null && textAsset.ReadToEnd() == TestTextFileContents;
+
+                    IsTestFinished = hasTestModule && hasTextContents;
+                }
             }
         }
 
         [UnityTest]
         public IEnumerator TestLoadModule()
         {
-            // TODO get this to work
-            //yield return new WaitForFixedUpdate();
-            yield return new WaitForSecondsRealtime(10);
-            yield return new MonoBehaviourTest<ApiTest>();
-            //Assert.True(SynthesisAPI.Modules.ModuleManager.IsModuleLoaded(TestModuleMetadata.Name));
+            SceneManager.LoadScene("MainSim", LoadSceneMode.Single);
+            yield return null;
+
+            var test = new MonoBehaviourTest<ApiTest>();
+            yield return test;
         }
     }
 

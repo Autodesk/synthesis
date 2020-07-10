@@ -468,8 +468,10 @@ namespace SynthesisAPI.AssetManager
                     return (Asset?)FileSystem.AddEntry(targetPath, lazyAsset.Load(new byte[0]));
                 }
 
-                byte[] data = new byte[sourceStream.Length];
-                sourceStream.Read(data, 0, (int)sourceStream.Length);
+                int streamLength = (int)sourceStream.Length;
+
+                byte[] data = new byte[streamLength];
+                sourceStream.Read(data, 0, streamLength);
                 sourceStream.Close();
 
                 // TODO make it so we don't have to allocate twice the size of the asset every
