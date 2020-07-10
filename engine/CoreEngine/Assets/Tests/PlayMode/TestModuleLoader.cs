@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Engine.ModuleLoader;
+using System.IO;
+using System.IO.Compression;
+using System;
+using UnityEngine.SceneManagement;
 
 namespace Tests
 {
@@ -14,8 +14,7 @@ namespace Tests
     {
         private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module");
 
-        /*
-         private static void CreateTestModule()
+        private static void CreateTestModule()
         {
 
             string sourcePath = SynthesisAPI.VirtualFileSystem.FileSystem.BasePath + "modules" + Path.DirectorySeparatorChar;
@@ -37,27 +36,49 @@ namespace Tests
 
             Directory.Delete(sourceFolderPath, true);
         }
-    */
+    
         [SetUp]
-        public void Setup() { }
-
+        public void Setup() {
+            CreateTestModule();
+        }
 
         public class ApiTest : MonoBehaviour, IMonoBehaviourTest
         {
-            public bool IsTestFinished
+            public bool IsTestFinished { get; private set; }
+
+            private DateTime endTime;
+
+            public const int Timeout = 10000; // ms
+
+            public void Awake()
             {
-                get => true;//SynthesisAPI.Modules.ModuleManager.IsFinishedLoading;
+                endTime = DateTime.Now.AddMilliseconds(Timeout);
+            }
+
+            public void Update()
+            {
+                if(DateTime.Now > endTime)
+                {
+                    IsTestFinished = true;
+                    throw new Exception("Unity test timeout");
+                }
+
+                foreach (var e in SynthesisAPI.Modules.ModuleManager.GetLoadedModules())
+                {
+                    Debug.Log("Loaded module: " + e);
+                }
+                IsTestFinished = SynthesisAPI.Modules.ModuleManager.IsFinishedLoading;
             }
         }
 
         [UnityTest]
         public IEnumerator TestLoadModule()
         {
-            // TODO get this to work
-            //yield return new WaitForFixedUpdate();
-            yield return new WaitForSecondsRealtime(10);
-            yield return new MonoBehaviourTest<ApiTest>();
-            //Assert.True(SynthesisAPI.Modules.ModuleManager.IsModuleLoaded(TestModuleMetadata.Name));
+            SceneManager.LoadScene("MainSim", LoadSceneMode.Single);
+            yield return null;
+
+            var test = new MonoBehaviourTest<ApiTest>();
+            yield return test;
         }
     }
 
