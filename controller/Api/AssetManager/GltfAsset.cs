@@ -15,6 +15,7 @@ using SynthesisAPI.Utilities;
 using System.Xml.Serialization;
 using SynthesisAPI.EnvironmentManager;
 using static SynthesisAPI.EnvironmentManager.Design;
+using System.Linq;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -111,14 +112,29 @@ namespace SynthesisAPI.AssetManager
             // Attributes
 
             // MeshBodies
-            //component.MeshBodies = ExportMeshesBodiesFromPrimitives(mesh);
-            //foreach(SharpGLTF.Schema2.MeshPrimitive meshBody in mesh.Primitives)
-            //{
-            //    component.MeshBodies = ExportMeshBodiesFromPrimitive(meshBody);
-            //}
+            foreach (SharpGLTF.Schema2.MeshPrimitive meshBody in mesh.Primitives)
+            {
+                component.MeshBodies.Add(ExportMeshBodiesFromPrimitives(meshBody));
+            }
+
             Components.Add(mesh.LogicalIndex, component);
 
             return component;
+        }
+
+        private MeshBody ExportMeshBodiesFromPrimitives(MeshPrimitive primitive)
+        {
+            MeshBody meshBody = new MeshBody();
+
+            //Vertices = new List<double>();
+            //Normals = new List<double>();
+            //Uvs = new List<double>();
+            //Indices = new List<int>();
+
+            meshBody.TriangleMesh.Indices = (IList<int>)primitive.GetPoin();
+            // triangle mesh
+
+            return meshBody;
         }
     }
 }
