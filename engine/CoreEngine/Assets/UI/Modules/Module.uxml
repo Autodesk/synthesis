@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="module" class="module-container">
-        <Style src="Module.uss" />
+        <Style src="USS/Module.uss" />
         <ui:VisualElement name="icon" class="icon" style="margin-top: 5px;" />
         <ui:VisualElement name="details" class="details-label">
             <ui:Label text="Engine v1.0" name="name" class="module-label" />

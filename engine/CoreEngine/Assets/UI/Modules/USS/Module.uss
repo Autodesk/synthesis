@@ -20,13 +20,13 @@
     border-bottom-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    border-left-color: rgba(197, 197, 197, 255);
-    border-right-color: rgba(197, 197, 197, 255);
-    border-top-color: rgba(197, 197, 197, 255);
-    border-bottom-color: rgba(197, 197, 197, 255);
+    border-left-color: rgb(197, 197, 197);
+    border-right-color: rgb(197, 197, 197);
+    border-top-color: rgb(197, 197, 197);
+    border-bottom-color: rgb(197, 197, 197);
     width: 100%;
     height: 100%;
-    background-color: rgba(250, 250, 250, 255);
+    background-color: rgb(250, 250, 250);
     margin-bottom: 10px;
 }
 
