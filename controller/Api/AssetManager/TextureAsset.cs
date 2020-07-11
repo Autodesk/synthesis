@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
-using SynthesisAPI.AssetManager.DummyAssetTypes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.VirtualFileSystem;
 using UnityEngine;

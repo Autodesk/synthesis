@@ -361,7 +361,7 @@ namespace SynthesisAPI.AssetManager
                        return new SpriteAsset(name, perm, sourcePath);
                    });
 
-                RegisterAssetType<TextureAsset>("image/texture", new[] {".png", ".jpeg"},
+                RegisterAssetType("image/texture", new[] {".png", ".jpeg"},
                     (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)
@@ -369,7 +369,7 @@ namespace SynthesisAPI.AssetManager
                         return new TextureAsset(name, perm, sourcePath);
                     });
                 
-                RegisterAssetType<SynVisualElementAsset>("text/uxml", new[] { ".uxml" },
+                RegisterAssetType("text/uxml", new[] { ".uxml" },
                     (name, perm, sourcePath, args) =>
                     {
                         if (args.Length != 0)

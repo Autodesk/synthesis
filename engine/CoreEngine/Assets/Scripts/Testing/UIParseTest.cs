@@ -35,10 +35,10 @@ public class UIParseTest : MonoBehaviour
 
     void Start()
     {
-        asset = AssetManager.Import<TextureAsset>("image/texture", "/temp", "test.jpeg",
+        asset = AssetManager.Import<TextureAsset>("image/texture", false, "/temp", "test.jpeg",
             Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
 
-        entry = AssetManager.Import<SynVisualElementAsset>("text/uxml", "/temp", "test-entry.uxml",
+        entry = AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-entry.uxml",
             Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test-entry.uxml");
         
         XmlDocument doc = new XmlDocument();
