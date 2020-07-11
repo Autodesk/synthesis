@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using SynthesisAPI.Modules.Attributes;
 using UnityEngine;
@@ -50,5 +51,14 @@ namespace SynthesisAPI.Runtime
 		}
 
 		public static Component? AddComponent(Type t, uint entity) => Instance?.AddComponent(t, entity);
+
+		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
+
+		public static TUnityType? InstantiateFocusable<TUnityType>()
+			where TUnityType : UnityEngine.UIElements.Focusable =>
+			Instance?.InstantiateFocusable<TUnityType>();
+
+		public static UnityEngine.UIElements.VisualElement? GetRootVisualElement() =>
+			Instance?.GetRootVisualElement();
 	}
 }

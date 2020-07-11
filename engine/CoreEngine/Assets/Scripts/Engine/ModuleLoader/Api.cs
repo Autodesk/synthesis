@@ -17,6 +17,8 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
+using Unity.UIElements.Runtime;
+using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
@@ -262,6 +264,20 @@ namespace Engine.ModuleLoader
 				entity.GetComponent<TComponent>();
 
 			public List<Component> GetComponents(uint entity) => entity.GetComponents();
+
+			public T CreateUnityType<T>(params object[] args) where T : class =>
+				(T)Activator.CreateInstance(typeof(T), args);
+
+			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
+				(TUnityType) Activator.CreateInstance(typeof(TUnityType));
+
+			public VisualElement GetRootVisualElement()
+			{
+				// TODO: Re-evaluate this
+				PanelRenderer prr = GameObject.FindGameObjectWithTag("UI_RENDERER").GetComponent<PanelRenderer>();
+				prr.RecreateUIFromUxml(); // Incase it hasn't loaded uxml data yet
+				return prr.visualTree;
+			}
 		}
 	}
 }

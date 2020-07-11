@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockApi
+namespace MockApi.UIElements
 {
-    public class Class1
+    public class VisualElement
     {
+        public string Name { get; set; }
+        // public IStyle
     }
 }
