@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace SynthesisAPI.UIManager
 {
-    public static class UIManager
+    public class UIManager
     {
         private Dictionary<string, Element> elements = new Dictionary<string, Element>();
 
