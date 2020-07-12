@@ -472,6 +472,7 @@ namespace SynthesisAPI.AssetManager
 
                 byte[] data = new byte[streamLength];
                 sourceStream.Read(data, 0, streamLength);
+
                 sourceStream.Close();
 
                 // TODO make it so we don't have to allocate twice the size of the asset every

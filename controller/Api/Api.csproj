@@ -86,6 +86,7 @@
     <Compile Include="EnvironmentManager\SystemBase.cs" />
     <Compile Include="EnvironmentManager\Component.cs" />
     <Compile Include="EnvironmentManager\Components\Mesh.cs" />
+    <Compile Include="Modules\Attributes\TaggedCallbackAttribute.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="PreferenceManager\PreferenceManager.cs" />
     <Compile Include="PreferenceManager\PreferencesIOEvent.cs" />

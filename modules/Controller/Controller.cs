@@ -13,9 +13,8 @@ namespace Controller
 		[Callback]
 		public void SampleListenCallback(SampleEvent s)
 		{
-			var (str, num) = ParamsHelper.PackParams<string, int>(s.GetArguments());
-			ApiProvider.Log(str);
-			ApiProvider.Log(num);
+			ApiProvider.Log(s.A);
+			ApiProvider.Log(s.B);
 		}
 	}
 }

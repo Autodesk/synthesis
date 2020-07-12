@@ -10,6 +10,7 @@ using SynthesisAPI.InputManager.Events;
 using PM = SynthesisAPI.PreferenceManager.PreferenceManager;
 using UnityInput = UnityEngine.Input;
 using SynthesisAPI.PreferenceManager;
+using SynthesisAPI.Modules.Attributes;
 
 #nullable enable
 
@@ -45,12 +46,15 @@ namespace SynthesisAPI.InputManager
 
             // TODO: Subscribe PostLoad and PreSave to corresponding events
             
-            EventBus.EventBus.NewTagListener("prefs/io", e =>
+            EventBus.EventBus.NewTagListener("prefs/io", (IEvent e) =>
             {
-                if ((PreferencesIOEvent.Status)e.GetArguments()[0] == PreferencesIOEvent.Status.PreSave)
-                    PreSave();
-                else
-                    PostLoad();
+                if (e is PreferencesIOEvent)
+                {
+                    if (((PreferencesIOEvent)e).PreferencesStatus == PreferencesIOEvent.Status.PreSave)
+                        PreSave();
+                    else
+                        PostLoad();
+                }
             });
         }
 

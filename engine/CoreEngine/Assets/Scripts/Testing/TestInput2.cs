@@ -10,7 +10,8 @@ public class TestInput2 : MonoBehaviour
 
     public void DigitalStateEventCallback(IEvent e)
     {
-        Debug.Log($"DigitalStateEventCallback {e.GetArguments()[0]} {e.GetArguments()[1]}");
+        if(e is DigitalStateEvent digitalStateEvent)
+            Debug.Log($"DigitalStateEventCallback {digitalStateEvent.Name} {digitalStateEvent.KeyState}");
     }
 
     // Start is called before the first frame update

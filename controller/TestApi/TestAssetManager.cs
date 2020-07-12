@@ -5,6 +5,7 @@ using SynthesisAPI.VirtualFileSystem;
 using NUnit.Framework;
 using SynthesisAPI.EventBus;
 using System.Collections.Generic;
+using SynthesisAPI.Modules.Attributes;
 
 namespace TestApi
 {
@@ -127,15 +128,13 @@ namespace TestApi
             Assert.AreSame(testJson, test);
         }
 
+        [ModuleExport]
         private class AssetImportSubscriber
         {
-            public List<IEvent> Events { get; private set; }
-            public AssetImportSubscriber()
-            {
-                Events = new List<IEvent>();
-            }
+            static public List<AssetImportEvent> Events { get; private set; } = new List<AssetImportEvent>();
 
-            public void Handler(IEvent e)
+            [TaggedCallback(AssetImportEvent.Tag)]
+            public static void Handler(AssetImportEvent e)
             {
                 Events.Add(e);
             }
@@ -144,21 +143,17 @@ namespace TestApi
         [Test]
         public static void TestAssetImportEvent()
         {
-            AssetImportSubscriber s = new AssetImportSubscriber();
-            EventBus.NewTagListener(AssetImportEvent.Tag, s.Handler);
-            EventBus.NewTypeListener<TestEvent>(s.Handler);
-
             string location = "/temp";
             string name = "test3.txt";
             string type = "text/plain";
 
-            TextAsset testTxt = AssetManager.Import<TextAsset>(type, false, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
+            AssetManager.Import(type, false, location, name, Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.txt");
 
-            Assert.AreEqual(s.Events.Count, 1);
-            Assert.AreEqual(3, s.Events[0].GetArguments().Length);
-            Assert.AreEqual(name, s.Events[0].GetArguments()[0]);
-            Assert.AreEqual(location, s.Events[0].GetArguments()[1]);
-            Assert.AreEqual(type, s.Events[0].GetArguments()[2]);
+            Assert.AreEqual(1, AssetImportSubscriber.Events.Count);
+            Assert.AreEqual(3, AssetImportSubscriber.Events[0].GetArguments().Length);
+            Assert.AreEqual(name, AssetImportSubscriber.Events[0].GetArguments()[0]);
+            Assert.AreEqual(location, AssetImportSubscriber.Events[0].GetArguments()[1]);
+            Assert.AreEqual(type, AssetImportSubscriber.Events[0].GetArguments()[2]);
 
             EventBus.ResetAllListeners();
         }
