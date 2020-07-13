@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "rLTG5gfs66hYsT4AnBOllMJPuxKfuZjpIa2dToNmOPN5fd7Q9wiUm/QbqN75RTz6AwZo5zmRgYiB+as85JARBg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\nickb\\git\\synthesis\\modules\\Controller\\Controller.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\nickb\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\nickb\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
