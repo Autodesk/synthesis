@@ -69,7 +69,7 @@ namespace SynthesisAPI.EventBus
         /// <param name="action">The action the event should be reported under in Google Analytics</param>
         /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
         /// <param name="value">The value the event should be reported with in Google Analytics, null if not applicable</param>
-        public static void LogEvent(string category, string action, string label, string value)
+        public static void LogEvent(string category, string action, string label, int value)
         {
             LoggedData.Enqueue(new KeyValuePair<string, string>("v", "1"));
             LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
@@ -78,7 +78,7 @@ namespace SynthesisAPI.EventBus
             LoggedData.Enqueue(new KeyValuePair<string, string>("ec", category));
             LoggedData.Enqueue(new KeyValuePair<string, string>("ea", action));
             if (label != null) LoggedData.Enqueue(new KeyValuePair<string, string>("el", label));
-            if (value != null) LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value.ToString()));
             LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
         }
 
@@ -92,6 +92,7 @@ namespace SynthesisAPI.EventBus
             LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
             LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
             LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenview"));
+            LoggedData.Enqueue(new KeyValuePair<string, string>("an", "synthesis"));
             LoggedData.Enqueue(new KeyValuePair<string, string>("cd", screenName));
             LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
         }
@@ -182,21 +183,19 @@ namespace SynthesisAPI.EventBus
                     Console.WriteLine("Posting");
                     result = client.UploadString(URL_BATCH, data);
                     Console.WriteLine(data);
-                    Console.WriteLine(result);
-                    Console.WriteLine("This ain't working");
+                    Console.WriteLine("Server response" + result);
                 }
                 else
                 {
                     Console.WriteLine("Collecting");
                     result = client.UploadString(URL_COLLECT, "POST", data);
                     Console.WriteLine(data);
-                    Console.WriteLine(result);
-                    Console.WriteLine("This ain't working");
+                    Console.WriteLine("Server response" + result);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Error: " + e.ToString());
             }
         }
 
@@ -211,7 +210,7 @@ namespace SynthesisAPI.EventBus
         /// <param name="label">The label the event should be reported under in Google Analytics, null if not applicable</param>
         /// <param name="value">The value the event should be reported with in Google Analytics, null if not applicable</param>
         /// <returns>Task that can be run asynchronously to log the event</returns>
-        public static Task LogEventAsync(string category, string action, string label, string value)
+        public static Task LogEventAsync(string category, string action, string label, int value)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -223,7 +222,7 @@ namespace SynthesisAPI.EventBus
                 LoggedData.Enqueue(new KeyValuePair<string, string>("ec", category));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("ea", action));
                 if (label != null) LoggedData.Enqueue(new KeyValuePair<string, string>("el", label));
-                if (value != null) LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("ev", value.ToString()));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
             });
@@ -349,22 +348,19 @@ namespace SynthesisAPI.EventBus
                         Console.WriteLine("Posting");
                         result = client.UploadString(URL_BATCH, data);
                         Console.WriteLine(data);
-                        Console.WriteLine(result);
-                        Console.WriteLine("This ain't working");
+                        Console.WriteLine("Server response" + result);
                     }
                     else
                     {
                         Console.WriteLine("Collecting");
                         result = client.UploadString(URL_COLLECT, "POST", data);
                         Console.WriteLine(data);
-                        Console.WriteLine(result);
-                        Console.WriteLine("This ain't working");
+                        Console.WriteLine("Server response" + result);
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("jsldhfafdh");
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine("Error: " + e.ToString());
                 }
             });
         }

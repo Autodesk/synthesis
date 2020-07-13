@@ -36,7 +36,7 @@ namespace TestApi
         public static void TestLogTimeAsync()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            var task = Analytics.LogTimingAsync(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 1000);
+            var task = Analytics.LogTimingAsync(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 100);
             task.Wait();
             var task2 = Analytics.UploadDumpAsync();
             task2.Wait();
@@ -66,7 +66,7 @@ namespace TestApi
         public static void TestLogEvent()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            Analytics.LogEvent(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", "testvar");
+            Analytics.LogEvent(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", 10);
             Analytics.UploadDump();
         }
 
@@ -74,7 +74,7 @@ namespace TestApi
         public static void TestLogEventAsync()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            var task = Analytics.LogEventAsync(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", "testvar");
+            var task = Analytics.LogEventAsync(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", 10);
             task.Wait();
             var task2 = Analytics.UploadDumpAsync();
             task2.Wait();
@@ -96,7 +96,6 @@ namespace TestApi
             task.Wait();
             var task2 = Analytics.UploadDumpAsync();
             task2.Wait();
-            Analytics.CleanUp();
         }
 
     }
