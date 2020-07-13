@@ -14,57 +14,90 @@ namespace TestApi
         }
 
         [Test]
+        public static void TestSetUnityPrefs()
+        {
+            Analytics.SetUnityPrefs("testGUID", false);
+            Assert.AreEqual("testGUID", Analytics.GUID);
+            Assert.AreEqual(false, Analytics.dataCollection);
+            Analytics.SetUnityPrefs("testGUID", true);
+            Assert.AreEqual("testGUID", Analytics.GUID);
+            Assert.AreEqual(true, Analytics.dataCollection);
+        }
+
+        [Test]
         public static void TestLogTime()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            Analytics.LogTimeAsync(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, 1000, Analytics.TimingLabel.MainSimMenu);
-            Analytics.UploadDumpAsync();
-            Analytics.CleanUp();
+            Analytics.LogTiming(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 1000);
+            Analytics.UploadDump();
+        }
+
+        [Test]
+        public static void TestLogTimeAsync()
+        {
+            Analytics.SetUnityPrefs("testGUID", true);
+            var task = Analytics.LogTimingAsync(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 1000);
+            task.Wait();
+            var task2 = Analytics.UploadDumpAsync();
+            task2.Wait();
+        }
+
+        [Test]
+        public static void TestLogElapsedTime()
+        {
+            Analytics.SetUnityPrefs("testGUID", true);
+            Analytics.StartTime(Analytics.TimingLabel.MainSimMenu, Analytics.TimingVariable.Viewing, 0);
+            Analytics.LogElapsedTime(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 100);
+            Analytics.UploadDump();
+        }
+
+        [Test]
+        public static void TestLogElapsedTimeAsync()
+        {
+            Analytics.SetUnityPrefs("testGUID", true);
+            Analytics.StartTime(Analytics.TimingLabel.MainSimMenu, Analytics.TimingVariable.Viewing, 0);
+            var task = Analytics.LogElapsedTimeAsync(Analytics.TimingCategory.Main, Analytics.TimingVariable.Viewing, Analytics.TimingLabel.MainSimMenu, 100);
+            task.Wait();
+            var task2 = Analytics.UploadDumpAsync();
+            task2.Wait();
         }
 
         [Test]
         public static void TestLogEvent()
         {
-            Analytics.SetUnityPrefs("35009a79-1a05-49d7-b876-2b884d0f825b", true);
-            Analytics.LogEventAsync(Analytics.EventCategory.HomeTab, Analytics.EventAction.Clicked, "test", "test");
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
-            Analytics.UploadDumpAsync();
-            //var task = Analytics.UploadDump();
-            //task.Wait();
-            //Thread.Sleep(1000);
-            //Analytics.CleanUp();
+            Analytics.SetUnityPrefs("testGUID", true);
+            Analytics.LogEvent(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", "testvar");
+            Analytics.UploadDump();
         }
 
         [Test]
-        public static void TestLogScreenView()
+        public static void TestLogEventAsync()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            Analytics.LogScreenViewAsync(Analytics.PageView.MainSimMenu);
-            Analytics.UploadDumpAsync();
-            Analytics.CleanUp();
+            var task = Analytics.LogEventAsync(Analytics.EventCategory.AddRobot, Analytics.EventAction.Clicked, "testlabel", "testvar");
+            task.Wait();
+            var task2 = Analytics.UploadDumpAsync();
+            task2.Wait();
         }
 
         [Test]
-        public static void TestLogByEventTypes()
+        public static void TestLogScreenview()
         {
-
             Analytics.SetUnityPrefs("testGUID", true);
-            Analytics.LogAllTypeEvents<TestEvent>(Analytics.EventCategory.HomeTab, Analytics.EventAction.Clicked, "test", "test");
-            Assert.IsTrue(EventBus.Push(new TestEvent()));
-            Assert.IsTrue(EventBus.Push(new TestEvent()));
-            Analytics.UploadDumpAsync();
-            Analytics.CleanUp();
+            Analytics.LogScreenView(Analytics.ScreenName.MainSimMenu);
+            Analytics.UploadDump();
         }
 
         [Test]
-        public static void TestLogByEventTags()
+        public static void TestLogScreenviewAsync()
         {
             Analytics.SetUnityPrefs("testGUID", true);
-            Analytics.LogAllTaggedEvents("tag", Analytics.EventCategory.HomeTab, Analytics.EventAction.Clicked, "test", "test");
-            Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Assert.IsTrue(EventBus.Push("tag", new TestEvent()));
-            Analytics.UploadDumpAsync();
+            var task = Analytics.LogScreenViewAsync(Analytics.ScreenName.MainSimMenu);
+            task.Wait();
+            var task2 = Analytics.UploadDumpAsync();
+            task2.Wait();
             Analytics.CleanUp();
         }
+
     }
 }
