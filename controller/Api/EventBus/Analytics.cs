@@ -242,6 +242,7 @@ namespace SynthesisAPI.EventBus
                 LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenview"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("an", "synthesis"));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("cd", screenName));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
