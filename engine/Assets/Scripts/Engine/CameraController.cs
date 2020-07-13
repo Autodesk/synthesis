@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-// using Synthesis.Simulator.Input;
+﻿using UnityEngine;
 using Synthesis.Simulator.Interaction;
-using System.Xml;
-using System.IO;
+using SynthesisAPI.InputManager.Digital;
+using SynthesisAPI.InputManager.Axis;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Events;
+using SynthesisAPI.EventBus;
 
 namespace Synthesis.Simulator
 {
 
-    public class CameraController : MonoBehaviour
+    public class CameraController : MonoBehaviour // TODO make SystemBase ? 
     {
-        /* TODO: Modify this to work with the event bus when that is merged in
-        
         public static float SensitivityX { get => 5; } // TODO: Setup some sort of class for storing preferences
         public static float SensitivityY { get => 3; }
 
@@ -30,40 +28,45 @@ namespace Synthesis.Simulator
         /// </summary>
         public static ISelectable SelectedTarget = null;
 
-        private void Start()
+        public void Start()
         {
             // Bind controls
-            InputHandler.MappedDigital[UseOrbit] = (KeyDigital)KeyCode.Mouse2;
-            InputHandler.MappedAxes["ZoomCamera"] = (DualAxis)"Mouse ScrollWheel";
+            InputManager.AssignDigital("UseOrbit", (KeyDigital)KeyCode.Mouse0, UseOrbit);
+            InputManager.AssignAxis("ZoomCamera", (DualAxis)"Mouse ScrollWheel");
         }
 
         /// <summary>
         /// Function used to switch orbit control on and off
         /// </summary>
-        /// <param name="sender"><see cref="KeyDigital"/> object that called the method</param>
-        /// <param name="state">State the key was in when the method was called</param>
-        private void UseOrbit(object sender, KeyAction state)
+        /// <param name="e"></param>
+        public void UseOrbit(IEvent e)
         {
-            if (state == KeyAction.Down)
+            if (e is DigitalStateEvent de)
             {
-                OrbitActive = true;
-				// Debug.Log("Orbit Active");
-                Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
-                Cursor.visible = false;
-            }
-            else if (state == KeyAction.Up)
+                if (de.KeyState == DigitalState.Down)
+                {
+                    OrbitActive = true;
+                    // Debug.Log("Orbit Active");
+                    Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
+                    Cursor.visible = false;
+                }
+                else if (de.KeyState == DigitalState.Up)
+                {
+                    OrbitActive = false;
+                    // Debug.Log("Orbit Deactive");
+                    Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
+                    Cursor.visible = true;
+                }
+            } else
             {
-                OrbitActive = false;
-				// Debug.Log("Orbit Deactive");
-                Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
-                Cursor.visible = true;
+                throw new System.Exception();
             }
         }
 
         public bool updatePrint = false;
 
         private float lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera orbit speed
-        private void Update()
+        public void Update()
         {
             if (!updatePrint)
             {
@@ -71,8 +74,8 @@ namespace Synthesis.Simulator
                 updatePrint = true;
             }
 
-			// TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
-			float distMod = -InputHandler.MappedAxes["ZoomCamera"].GetValue();
+            // TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
+			float distMod = -InputManager.GetAxisValue("ZoomCamera");
 			if (distMod != 0) distMod += lastDistMod * 0.3f;
 			Distance += distMod;
 			lastDistMod = distMod;
@@ -85,8 +88,8 @@ namespace Synthesis.Simulator
             if (OrbitActive)
             { // Adjust Camera Euler to reorientate the camera
               // use mouse axes to adjust orientation
-                float yMod = InputHandler.MappedAxes["MouseX"].GetValue();
-                float xMod = InputHandler.MappedAxes["MouseY"].GetValue();
+                float yMod = InputManager.GetAxisValue("MouseX");
+                float xMod = InputManager.GetAxisValue("MouseY");
 
                 // Tinkering for the feel of the camera
                 if (xMod != 0) xMod += lastXMod * 0.3f;
@@ -111,7 +114,6 @@ namespace Synthesis.Simulator
             // This does cause some weird effects in some cases so we may want to make this a smooth rotation as well
             transform.LookAt(pos, new Vector3(0, 1, 0));
         }
-        */
     }
 
 }
