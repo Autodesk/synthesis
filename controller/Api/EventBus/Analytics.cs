@@ -13,7 +13,7 @@ namespace SynthesisAPI.EventBus
    
         public const string URL_COLLECT = "https://www.google-analytics.com/collect";
         public const string URL_BATCH = "https://www.google-analytics.com/batch";
-        public const string OFFICIAL_TRACKING_ID = "UA-81892961-6";
+        public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
         public static string GUID = "not-set";
         public static bool dataCollection = true;
 
@@ -242,6 +242,7 @@ namespace SynthesisAPI.EventBus
                 LoggedData.Enqueue(new KeyValuePair<string, string>("tid", OFFICIAL_TRACKING_ID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("cid", GUID));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("t", "screenview"));
+                LoggedData.Enqueue(new KeyValuePair<string, string>("an", "synthesis"));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("cd", screenName));
                 LoggedData.Enqueue(new KeyValuePair<string, string>("NEW", ""));
                 mutex.ReleaseMutex();
