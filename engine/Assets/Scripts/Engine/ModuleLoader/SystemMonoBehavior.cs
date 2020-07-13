@@ -12,7 +12,7 @@ namespace Engine.ModuleLoader
 
 		public void FixedUpdate() => _system.OnPhysicsUpdate();
 
-		private SystemBase _system;
+		public SystemBase _system;
 		public void SetInstance(SystemBase instance)
 		{
 			_system = instance;
