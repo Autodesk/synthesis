@@ -16,6 +16,8 @@ using System.Xml.Serialization;
 using SynthesisAPI.EnvironmentManager;
 using static SynthesisAPI.EnvironmentManager.Design;
 using System.Linq;
+using SharpGLTF.Memory;
+using UnityEngine.Assertions.Must;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -71,7 +73,7 @@ namespace SynthesisAPI.AssetManager
 
         public Occurrence ExportOccurrenceFromNode(Node node)
         {
-            //// if node is in the Components maps, return it
+            // if node is in the Components maps, return it
             //if (Components[node.LogicalIndex].Equals(node.LogicalIndex))
             //{
             //    // return map component
@@ -86,10 +88,11 @@ namespace SynthesisAPI.AssetManager
             // ComponentUuid
             // Attributes
 
-            occurrence.AComponent = ExportComponentsFromMesh(node.Mesh);
+            //occurrence.AComponent = ExportComponentsFromMesh(node.Mesh);
 
             foreach (Node child in node.VisualChildren)
             {
+                occurrence.AComponent = ExportComponentsFromMesh(child.Mesh);
                 occurrence.ChildOccurences.Add(ExportOccurrenceFromNode(child));
             }
 
@@ -126,13 +129,29 @@ namespace SynthesisAPI.AssetManager
         {
             MeshBody meshBody = new MeshBody();
 
+            // check if primitive is NORMAL or POSITION or both
+            if (primitive.VertexAccessors.Keys.ToString() == "POSITION")
+            {
+                meshBody.TriangleMesh.Vertices = primitive.GetVertices("POSITION").AsVector3Array();
+            }
+
+            if (primitive.VertexAccessors.Keys.ToString() == "NORMAL")
+            {
+                meshBody.TriangleMesh.Normals = primitive.GetVertices("NORMAL").AsVector3Array();
+            }
+
+            var indices = primitive.GetIndices();
+
+            for (int i = 0; i < indices.Count; i++)
+            {
+                meshBody.TriangleMesh.Indices.Add((int)indices[i]);
+            }
+
+            // todo:
             //Vertices = new List<double>();
             //Normals = new List<double>();
             //Uvs = new List<double>();
             //Indices = new List<int>();
-
-            meshBody.TriangleMesh.Indices = (IList<int>)primitive.GetPointIndices();
-            // triangle mesh
 
             return meshBody;
         }

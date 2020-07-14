@@ -1,4 +1,5 @@
-﻿using SharpGLTF.Schema2;
+﻿using SharpGLTF.Memory;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,8 +143,8 @@ namespace SynthesisAPI.EnvironmentManager
 
         public class TriangleMesh
         {
-            public IList<double> Vertices { get; set; }
-            public IList<double> Normals { get; set; }
+            public Vector3Array Vertices { get; set; }
+            public Vector3Array Normals { get; set; }
             public IList<double> Uvs { get; set; }
             public IList<int> Indices { get; set; }
 
@@ -152,8 +153,8 @@ namespace SynthesisAPI.EnvironmentManager
             /// </summary>
             public TriangleMesh()
             {
-                Vertices = new List<double>();
-                Normals = new List<double>();
+                Vertices = new Vector3Array();
+                Normals = new Vector3Array();
                 Uvs = new List<double>();
                 Indices = new List<int>();
             }
@@ -180,18 +181,19 @@ namespace SynthesisAPI.EnvironmentManager
 
             public static implicit operator UnityEngine.Mesh(TriangleMesh mesh) => mesh.ToUnityMesh();
 
-            private static UnityEngine.Vector3[] ToVector3Array(IList<double> list)
+            private static UnityEngine.Vector3[] ToVector3Array(Vector3Array list)
             {
                 if (list.Count % 3 != 0)
                     throw new Exception("Incomplete vector3 detected");
                 if (list.Count < 1)
                     throw new Exception("List is empty");
 
-                UnityEngine.Vector3[] vectors = new UnityEngine.Vector3[list.Count / 3];
+                UnityEngine.Vector3[] vectors = new UnityEngine.Vector3[list.Count];
 
-                for (int i = 0; i < list.Count - 2; i += 3)
-                    vectors[i / 3] = (new UnityEngine.Vector3((float)list[i],
-                        (float)list[i + 1], (float)list[i + 2]));
+                for (int i = 0; i < list.Count; i++)
+                {
+                    vectors[i] = new UnityEngine.Vector3(list[i].X, list[i].Y, list[i].Z);
+                }
 
                 return vectors;
             }
