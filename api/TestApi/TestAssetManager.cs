@@ -43,6 +43,15 @@ namespace TestApi
             }
         }
 
+        [OneTimeTearDown]
+        public static void Teardown()
+        {
+            if (System.IO.Directory.Exists(FileSystem.TestPath))
+            {
+                System.IO.Directory.Delete(FileSystem.TestPath, true);
+            }
+        }
+
         [Test]
         public static void TestPlainText()
         {
