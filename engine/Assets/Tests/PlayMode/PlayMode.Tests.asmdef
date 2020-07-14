@@ -13,6 +13,7 @@
         "nunit.framework.dll",
         "Api.dll",
         "System.IO.Compression.dll",
+        "System.IO.Compression.FileSystem.dll",
         "System.IO.Compression.ZipFile.dll"
     ],
     "autoReferenced": false,
