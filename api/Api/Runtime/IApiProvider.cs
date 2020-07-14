@@ -11,13 +11,13 @@ namespace SynthesisAPI.Runtime
 
 		void Log(object o);
 
-		uint AddEntity();
+		void AddEntityToScene(uint entity);
 
-		Component AddComponent(Type t, uint entity);
-		TComponent AddComponent<TComponent>(uint entity) where TComponent : Component;
+		void RemoveEntityFromScene(uint entity);
 
-		Component GetComponent(Type t, uint entity);
-		TComponent GetComponent<TComponent>(uint entity) where TComponent : Component;
-		List<Component> GetComponents(uint entity);
+		#nullable enable
+		Component? AddComponentToScene(uint entity, Type t);
+
+		void RemoveComponentFromScene(uint entity, Type t);
 	}
 }

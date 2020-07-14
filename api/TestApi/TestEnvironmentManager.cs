@@ -34,10 +34,8 @@ namespace TestApi
             Assert.True(e1.EntityExists());
             Entity e2 = EnvironmentManager.AddEntity();
             Assert.True(e2.EntityExists());
-            TestComponent t = new TestComponent();
-            AnotherTestComponent at = new AnotherTestComponent();
-            e2.AddComponent(t); //EnvironmentManager.SetComponent(e2,t)
-            e2.AddComponent(at);
+            TestComponent t = e2.AddComponent<TestComponent>(); //EnvironmentManager.SetComponent(e2,t)
+            AnotherTestComponent at = e2.AddComponent<AnotherTestComponent>();
             Assert.Null(e1.GetComponent(typeof(TestComponent)));
             Assert.Null(e1.GetComponent(typeof(AnotherTestComponent)));
             Assert.Null(e1.GetComponent<TestComponent>());
@@ -46,8 +44,7 @@ namespace TestApi
             Assert.AreSame(e2.GetComponent(typeof(AnotherTestComponent)), at);
             Assert.AreSame(e2.GetComponent<TestComponent>(), t);
             Assert.AreSame(e2.GetComponent<AnotherTestComponent>(), at);
-            TestComponent t2 = new TestComponent();
-            e2.AddComponent(t2);
+            TestComponent t2 = e2.AddComponent<TestComponent>();
             Assert.AreSame(e2.GetComponent<TestComponent>(), t2);
         }
         [Test]
@@ -65,8 +62,7 @@ namespace TestApi
         {
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(e1.EntityExists());
-            TestComponent t = new TestComponent();
-            e1.AddComponent(t);
+            TestComponent t = e1.AddComponent<TestComponent>();
             Assert.AreSame(e1.GetComponent<TestComponent>(), t);
             e1.RemoveComponent<TestComponent>();
             Assert.Null(e1.GetComponent<TestComponent>());
@@ -77,8 +73,7 @@ namespace TestApi
         {
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(e1.EntityExists());
-            TestComponent t = new TestComponent();
-            e1.AddComponent(t);
+            TestComponent t = e1.AddComponent<TestComponent>();
             Assert.AreEqual(e1.GetComponent<TestComponent>(), t);
             Assert.True(e1.RemoveEntity());
             Assert.False(e1.RemoveEntity());
@@ -98,15 +93,14 @@ namespace TestApi
             Assert.False(e1.EntityExists());
             Assert.False(e1.RemoveEntity());
             Assert.Null(e1.GetComponent<TestComponent>());
-            TestComponent t = new TestComponent();
-            e1.AddComponent(t);
+            TestComponent t = e1.AddComponent<TestComponent>();
             Assert.Null(e1.GetComponent<TestComponent>());
             EnvironmentManager.AddEntity();
             Entity e2 = 2;
             Assert.False(e2.EntityExists());
             Assert.False(e2.RemoveEntity());
             Assert.Null(e2.GetComponent<TestComponent>());
-            e2.AddComponent(t);
+            e2.AddComponent<TestComponent>();
             Assert.Null(e2.GetComponent<TestComponent>());
         }
     }

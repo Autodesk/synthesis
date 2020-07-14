@@ -20,6 +20,7 @@ using SynthesisAPI.VirtualFileSystem;
 using Directory = System.IO.Directory;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
+using Core.ModuleLoader;
 
 namespace Engine.ModuleLoader
 {
@@ -31,11 +32,8 @@ namespace Engine.ModuleLoader
 			var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
 			foreach (var type in apiAssembly.GetTypes().Where(e => e.IsSubclassOf(typeof(SystemBase))))
             {
-				var entity = SynthesisAPI.Runtime.ApiProvider.AddEntity();
-				if (entity != null)
-					SynthesisAPI.Runtime.ApiProvider.AddComponent(type, entity.Value);
-				else
-					throw new Exception("Entity is null");
+				var entity = EnvironmentManager.AddEntity();
+				entity.AddComponent(type);
 			}
 			foreach (var type in apiAssembly.GetTypes().Where(e => e.GetMethods().Any(
 					m => m.GetCustomAttribute<CallbackAttribute>() != null || m.GetCustomAttribute<TaggedCallbackAttribute>() != null)))
@@ -154,11 +152,8 @@ namespace Engine.ModuleLoader
 
 				if (export.IsSubclassOf(typeof(SystemBase)))
 				{
-					var entity = SynthesisAPI.Runtime.ApiProvider.AddEntity();
-					if (entity != null)
-						SynthesisAPI.Runtime.ApiProvider.AddComponent(export, entity.Value);
-					else
-						throw new Exception("Entity is null");
+					var entity = EnvironmentManager.AddEntity();
+					entity.AddComponent(export);
 				}
 
 				foreach (var callback in export.GetMethods()
@@ -229,6 +224,7 @@ namespace Engine.ModuleLoader
 				_entityParent = new GameObject("Entities");
 				_gameObjects = new Dictionary<uint, GameObject>();
 				_builtins = new Dictionary<Type, Type>();
+				_builtins.Add(typeof(MeshAdapter), typeof(Mesh));
 			}
 
 			public void Log(object o)
@@ -236,22 +232,28 @@ namespace Engine.ModuleLoader
 				Debug.Log(o);
 			}
 
-			public uint AddEntity()
+			public void AddEntityToScene(uint entity)
 			{
-				var entity = EnvironmentManager.AddEntity();
+				if (_gameObjects.ContainsKey(entity))
+					throw new Exception($"Entity \"{entity}\" already exists");
 				var gameObject = new GameObject($"Entity {entity >> 16}"); // TODO replace with entity.GetId()
 				gameObject.transform.SetParent(_entityParent.transform);
 				_gameObjects.Add(entity, gameObject);
-				return entity;
 			}
 
-			public Component AddComponent(Type t, uint entity)
+			public void RemoveEntityFromScene(uint entity)
 			{
-				var gameObject = _gameObjects[entity];
-				if (gameObject == null)
-				{
-					throw new Exception($"No GameObject exists with id \"{entity}\"");
-				}
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Destroy(gameObject);
+			}
+
+			public Component AddComponentToScene(uint entity, Type t)
+			{
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
 				dynamic component;
 				Type type;
 				if (_builtins.ContainsKey(t))
@@ -273,8 +275,6 @@ namespace Engine.ModuleLoader
 					type = typeof(ComponentAdapter);
 				}
 
-				EnvironmentManager.AddComponent(entity, component);
-
 				gameObject.AddComponent(type);
 				dynamic gameObjectComponent = gameObject.GetComponent(type);
 				gameObjectComponent.SetInstance(component);
@@ -282,15 +282,26 @@ namespace Engine.ModuleLoader
 				return component;
 			}
 
-			public TComponent AddComponent<TComponent>(uint entity) where TComponent : Component =>
-				(TComponent) AddComponent(typeof(TComponent), entity);
-
-			public Component GetComponent(Type t, uint entity) => entity.GetComponent(t);
-
-			public TComponent GetComponent<TComponent>(uint entity) where TComponent : Component =>
-				entity.GetComponent<TComponent>();
-
-			public List<Component> GetComponents(uint entity) => entity.GetComponents();
+			public void RemoveComponentFromScene(uint entity, Type t)
+            {
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Type type;
+				if (_builtins.ContainsKey(t))
+				{
+					type = _builtins[t];
+				}
+				else if (t.IsSubclassOf(typeof(SystemBase)))
+				{
+					type = typeof(SystemMonoBehavior);
+				}
+				else
+				{
+					type = typeof(ComponentAdapter);
+				}
+				Destroy(gameObject.GetComponent(type));
+			}
 		}
 	}
 }
