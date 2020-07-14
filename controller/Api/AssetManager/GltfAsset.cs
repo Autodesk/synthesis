@@ -130,12 +130,12 @@ namespace SynthesisAPI.AssetManager
             MeshBody meshBody = new MeshBody();
 
             // check if primitive is NORMAL or POSITION or both
-            if (primitive.VertexAccessors.Keys.ToString() == "POSITION")
+            if (primitive.VertexAccessors.ContainsKey("POSITION"))
             {
                 meshBody.TriangleMesh.Vertices = primitive.GetVertices("POSITION").AsVector3Array();
             }
 
-            if (primitive.VertexAccessors.Keys.ToString() == "NORMAL")
+            if (primitive.VertexAccessors.ContainsKey("NORMAL"))
             {
                 meshBody.TriangleMesh.Normals = primitive.GetVertices("NORMAL").AsVector3Array();
             }
@@ -143,7 +143,7 @@ namespace SynthesisAPI.AssetManager
             var indices = primitive.GetIndices();
 
             for (int i = 0; i < indices.Count; i++)
-            {
+            {                
                 meshBody.TriangleMesh.Indices.Add((int)indices[i]);
             }
 
@@ -151,7 +151,6 @@ namespace SynthesisAPI.AssetManager
             //Vertices = new List<double>();
             //Normals = new List<double>();
             //Uvs = new List<double>();
-            //Indices = new List<int>();
 
             return meshBody;
         }

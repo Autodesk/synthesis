@@ -90,10 +90,16 @@ namespace TestApi
         [Test]
         public static void TestGltf()
         {
+            // Khronos glTF CSharp Loader
             //var deserializedFile = Interface.LoadModel("MultiDepthHierarchy_v9_1593489237.glb");
             //Assert.IsNotNull(deserializedFile);
-            var fs = File.OpenRead(FileSystem.TestPath + "MultiDepthHierarchy_v9_1593489237.glb");
-            var glb = AssetManager.Import<GltfAsset>("text/gltf", fs, "/modules", "test.gltf", Program.TestGuid, Permissions.PublicRead, "MultiDepthHierarchy_v9_1593489237.glb");
+
+
+            string joints = "MultiDepthHierarchy_v2_Joints.glb";
+            string noJoints = "MultiDepthHierarchy_v9_No_Joints.glb";
+            //var fs = File.OpenRead(FileSystem.TestPath + "MultiDepthHierarchy_v9_No_Joints.glb");
+            var fs = File.OpenRead(FileSystem.TestPath + joints);
+            var glb = AssetManager.Import<GltfAsset>("text/gltf", fs, "/modules", "test.gltf", Program.TestGuid, Permissions.PublicRead, joints);
             Assert.IsNotNull(glb);
         }
     }
