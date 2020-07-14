@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+﻿using SynthesisAPI.EnvironmentManager;
 namespace Engine.ModuleLoader
 {
-	public class ComponentAdapter : MonoBehaviour, IApiAdapter<Component>
+	public class ComponentAdapter : UnityEngine.MonoBehaviour, IApiAdapter<Component>
 	{
 		private Component component;
-		public void SetInstance(Component mesh)
+		public void SetInstance(Component component)
 		{
-			component = mesh;
+			this.component = component;
 		}
 	}
 }
