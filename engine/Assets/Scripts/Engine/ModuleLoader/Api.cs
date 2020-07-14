@@ -48,9 +48,9 @@ namespace Engine.ModuleLoader
 			foreach (var (arhive, metadata) in modules)
 			{
 				LoadModule((arhive, metadata));
-				// Debug.Log("Loaded " + metadata.Name);
 				EventBus.Push(new LoadModuleEvent(metadata.Name));
 				ModuleManager.AddToLoadedModuleList(metadata.Name);
+				// Debug.Log("Loaded " + metadata.Name);
 			}
 			ModuleManager.MarkFinishedLoading();
 		}
@@ -65,6 +65,17 @@ namespace Engine.ModuleLoader
 				var module = PreloadModule(Path.GetFileName(file));
 				if (module is null)
 					continue;
+				foreach (var (_, metadata) in modules)
+				{
+					if (metadata.Name == module?.Item2.Name)
+					{
+						throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
+					}
+					if (metadata.TargetPath == module?.Item2.TargetPath)
+					{
+						throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
+					}
+				}
 				modules.Add(module.Value);
 			}
 			return modules;
@@ -72,24 +83,36 @@ namespace Engine.ModuleLoader
 
         private PreloadedModule? PreloadModule(string filePath)
         {
-            var module = ZipFile.Open($"{ModulesSourcePath}{Path.DirectorySeparatorChar}{filePath}", ZipArchiveMode.Read);
+			var fullPath = $"{ModulesSourcePath}{Path.DirectorySeparatorChar}{filePath}";
+
+			var module = ZipFile.Open(fullPath, ZipArchiveMode.Read);
 
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
             {
-                return null;
+				Debug.LogWarning($"Potential module missing is metadata file: {filePath}");
+				return null;
             }
 
 			// Parse module metadata
-            var metadata = ModuleMetadata.Deserialize(module.Entries
-                    .First(e => e.Name == ModuleMetadata.MetadataFilename).Open()); // TODO handle deserialization failure
-			return (module, metadata);
+			try
+			{
+				var metadata = ModuleMetadata.Deserialize(module.Entries
+					.First(e => e.Name == ModuleMetadata.MetadataFilename).Open());
+				return (module, metadata);
+			}
+			catch (Exception e)
+			{
+				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
+			}
         }
 
         private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
         {
 			// Use Kahns algorithm to resolve module dependencies, ordering modules in list
 			// in the order they should be loaded
+
+			// TODO check for cyclic dependencies and throw
 			var resolvedEntries = moduleList.Where(t => !t.metadata.Dependencies.Any()).ToList();
             var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
             while (resolvedEntries.Count > 0)
@@ -111,16 +134,21 @@ namespace Engine.ModuleLoader
 
         private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
         {
+			var fileManifest = new List<string>();
+			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
+
 			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
-				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name))) // TODO warn if manifest != entries?
+				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name)))
 			{
+
+				fileManifest.Remove(entry.Name);
 				var extension = Path.GetExtension(entry.Name);
 				var stream = entry.Open();
 				if (extension == ".dll")
 				{
 					if (!LoadModuleAssembly(stream))
 					{
-						Debug.Log($"Failed to load assembly {entry.Name}");
+						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
 				}
 				else
@@ -130,11 +158,15 @@ namespace Engine.ModuleLoader
 					if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension),
 						new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
 					{
-						throw new Exception("Asset module type");
+						throw new LoadModuleException($"Failed to import asset: {entry.Name}");
 					}
 				}
 				// Debug.Log("Loaded " + entry.Name);
 			}
+			foreach(var file in fileManifest)
+            {
+				Debug.LogWarning($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}");
+            }
 			moduleInfo.archive.Dispose();
 		}
 
@@ -208,7 +240,7 @@ namespace Engine.ModuleLoader
 		{
 			if (instance.GetType() != callback.DeclaringType) // Sanity check
 			{
-				throw new Exception(
+				throw new LoadModuleException(
 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
 			}
 			var eventType = callback.GetParameters().First().ParameterType;
@@ -224,7 +256,7 @@ namespace Engine.ModuleLoader
         {
 	        if (instance.GetType() != callback.DeclaringType) // Sanity check
 			{
-				throw new Exception(
+				throw new LoadModuleException(
 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
 	        }
 	        var eventType = callback.GetParameters().First().ParameterType;
