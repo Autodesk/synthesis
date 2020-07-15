@@ -25,8 +25,6 @@ namespace SynthesisCore
                 Entity e = EnvironmentManager.AddEntity();
                 Mesh m = e.AddComponent<Mesh>();
                 cube(m);
-                string[] wasd = { "W", "A", "S", "D" };
-                ApiProvider.Log(((KeyDigital)wasd).keyTest());
                 start = false;
             }
         }
