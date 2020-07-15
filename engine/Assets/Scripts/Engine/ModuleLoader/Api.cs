@@ -224,7 +224,7 @@ namespace Engine.ModuleLoader
 				_entityParent = new GameObject("Entities");
 				_gameObjects = new Dictionary<uint, GameObject>();
 				_builtins = new Dictionary<Type, Type>();
-				_builtins.Add(typeof(MeshAdapter), typeof(Mesh));
+				_builtins.Add(typeof(SynthesisAPI.EnvironmentManager.Components.Mesh),typeof(MeshAdapter));
 			}
 
 			public void Log(object o)
