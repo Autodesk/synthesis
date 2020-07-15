@@ -1,24 +1,26 @@
 ﻿using SynthesisAPI.Utilities;
-using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("CoreEngine")]
 
 namespace SynthesisAPI.Modules
 {
     public static class ModuleManager
     {
-        [ExposedApi] // TODO make internal somehow?
-        public static void AddToLoadedModuleList(string name)
+        internal static void AddToLoadedModuleList(string name)
         {
             if (IsModuleLoaded(name))
             {
-                // TODO
+                throw new System.Exception($"Adding already loaded module to list of loaded modules: {name}");
             }
             Instance.LoadedModules.Add(name);
         }
 
+        [ExposedApi]
         public static bool IsFinishedLoading { get => Instance.IsFinishedLoading; }
 
-        public static void MarkFinishedLoading()
+        internal static void MarkFinishedLoading()
         {
             Instance.IsFinishedLoading = true;
         }
@@ -42,8 +44,8 @@ namespace SynthesisAPI.Modules
                 LoadedModules = new List<string>();
             }
 
-            public List<string> LoadedModules; // TODO maybe include metadata too (and move that class to the API)?
-            public bool IsFinishedLoading { get; set; }
+            public List<string> LoadedModules;
+            public bool IsFinishedLoading { get; internal set; }
 
             public static readonly Inner Instance = new Inner();
         }

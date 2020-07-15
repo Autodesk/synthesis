@@ -6,11 +6,11 @@ namespace Engine.ModuleLoader
 	{
 		public LoadModuleEvent(string path)
 		{
-			_path = path;
+			Path = path;
 		}
 
-		private readonly string _path;
+		public readonly string Path;
 
-		public object[] GetArguments() => new object[]{_path};
+		public object[] GetArguments() => new object[]{Path};
 	}
 }
