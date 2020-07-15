@@ -12,7 +12,8 @@ namespace SynthesisAPI.EnvironmentManager
 
         public static IDictionary<int, Component> Components { get; set; }
         public Occurrence RootOccurence { get; set; }
-        public IList<Joint> Joints { get; set; }
+        // public IList<Joint> Joints { get; set; }
+        public static IDictionary<string, Joint> Joints { get; set; }
         public IList<Material> Materials { get; set; }
         public IList<Appearance> Appearances { get; set; }
 
@@ -21,10 +22,10 @@ namespace SynthesisAPI.EnvironmentManager
             DesignMeta metaData = new DesignMeta();
 
             MetaData = metaData;
-            //Components = new List<Component>();
             Components = new Dictionary<int, Component>();
             RootOccurence = new Occurrence();
-            Joints = new List<Joint>();
+            //Joints = new List<Joint>();
+            Joints = new Dictionary<string, Joint>();
             Materials = new List<Material>();
             Appearances = new List<Appearance>();
         }
@@ -38,6 +39,7 @@ namespace SynthesisAPI.EnvironmentManager
             public Matrix3D Transform { get; set; }
             public string ComponentUuid { get; set; }
             public Component AComponent { get; set; }
+            public Joint AJoint { get; set; }
             public IList<Occurrence> ChildOccurences { get; set; }
 
             public IDictionary<string, object> Attributes { get; set; }

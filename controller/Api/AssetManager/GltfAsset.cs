@@ -18,6 +18,8 @@ using static SynthesisAPI.EnvironmentManager.Design;
 using System.Linq;
 using SharpGLTF.Memory;
 using UnityEngine.Assertions.Must;
+using SharpGLTF.IO;
+using System.Reflection;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -61,11 +63,18 @@ namespace SynthesisAPI.AssetManager
         public Design ImportDesign(ModelRoot modelRoot)
         {
             Design design = new Design();
+            JsonDictionary extras = (JsonDictionary)modelRoot.Extras;
 
             // this is the root ---> modelRoot.DefaultScence.VisualChildren
             foreach (Node child in modelRoot.DefaultScene.VisualChildren)
             {
                 design.RootOccurence = ExportOccurrenceFromNode(child);
+            }
+
+            // joints are not attached to RootOccurrence directly but added to Joint dictionary
+            foreach (JsonDictionary joint in (JsonList)extras["joints"])
+            {
+                ExportJointsFromExtras(joint, design);
             }
 
             return design;
@@ -129,7 +138,7 @@ namespace SynthesisAPI.AssetManager
         {
             MeshBody meshBody = new MeshBody();
 
-            // check if primitive is NORMAL or POSITION or both
+            // checks for POSITION or NORMAL vertex as not all designs have both
             if (primitive.VertexAccessors.ContainsKey("POSITION"))
             {
                 meshBody.TriangleMesh.Vertices = primitive.GetVertices("POSITION").AsVector3Array();
@@ -148,11 +157,88 @@ namespace SynthesisAPI.AssetManager
             }
 
             // todo:
-            //Vertices = new List<double>();
-            //Normals = new List<double>();
             //Uvs = new List<double>();
 
             return meshBody;
+        }
+
+        private Design.Joint ExportJointsFromExtras(JsonDictionary jointDict, Design design)
+        {
+            Design.Joint joint = new Design.Joint();
+
+            // todo:
+            // JointHeader = new Header();
+            // Direction = new Vector3();
+            // Origin = new Vector3();
+            // Type = JointType.RigidJointType;
+            // Attributes = new Dictionary<string, object>();
+
+            RecursiveThingy(joint, jointDict);
+
+            foreach (KeyValuePair<string, object> data in jointDict)
+            {
+                RecursiveThingy(data, jointDict);
+
+                // get Vector3
+                switch (data.Key) // data.Keys
+                {
+                    case "header":
+                        var jointHeader = joint.JointHeader;
+                        //jointHeader.Name = (string)(data.Value as Dictionary<string, object>)["name"];
+                        jointHeader.Name = (string)(data.Value as Dictionary<string, object>)["name"];
+                        joint.JointHeader = jointHeader;
+                        break;
+                    default:
+                        break;
+                }
+
+                // add UUIDs in foreach loop
+
+                // JointHeader = data[0]
+                //if (data.Key == "origin")
+                //{
+                //    foreach (dynamic origin in jointDict)
+                //    {
+                //        joint.Origin = (Design.Vector3)origin.Value;
+                //    }
+                //}
+
+                //if (data.Key == "occurrenceOneUUID")
+                //{
+                //    joint.OccurenceOneUuid = (string)data.Value;
+                //}
+
+                //if (data.Key == "occurrenceTwoUUID")
+                //{
+                //    joint.OccurenceTwoUuid = (string)data.Value;
+                //}
+
+                Joints.Add(data.Key, joint);
+            }
+
+            return joint;
+        }
+
+        public dynamic RecursiveThingy(dynamic parentObject, Dictionary<string, object> dict)
+        {
+            foreach (KeyValuePair<string, object> childData in dict)
+            {
+                PropertyInfo[] props = parentObject.GetType().GetProperties();
+                PropertyInfo property = Array.Find(props, x => x.PropertyType.Name.ToLower().Equals(childData.Key.ToLower()));
+
+                object childObj = property.GetValue(parentObject);
+
+                if (childData.GetType() == typeof(Dictionary<string, object>))
+                {
+                    childObj = RecursiveThingy(childObj, (Dictionary<string, object>)childData.Value);
+                } else
+                {
+                    childObj = childData.Value;
+                }
+
+                property.SetValue(parentObject, childObj);
+            }
+            return parentObject;
         }
     }
 }
