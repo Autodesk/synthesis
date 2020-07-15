@@ -16,6 +16,8 @@ namespace SynthesisAPI.Utilities
 
         public Vector3(UnityEngine.Vector3 vector) => vector_instance = vector;
 
+        public static Vector3 zero { get { return new Vector3(UnityEngine.Vector3.zero); } } 
+
         public static implicit operator UnityEngine.Vector3(Vector3 vec) => vec.vector_instance;
         public static implicit operator Vector3(UnityEngine.Vector3 vec) => new Vector3(vec);
 

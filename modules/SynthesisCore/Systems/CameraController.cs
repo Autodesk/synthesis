@@ -1,15 +1,16 @@
-﻿using UnityEngine;
-using Synthesis.Simulator.Interaction;
-using SynthesisAPI.InputManager.Digital;
+﻿using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Axis;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.EventBus;
+using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Utilities;
+using System;
 
-namespace Synthesis.Simulator
+namespace SynthesisCore.Systems
 {
-
-    public class CameraController : MonoBehaviour // TODO make SystemBase ? 
+    /*
+    public class CameraController : SystemBase
     {
         public static float SensitivityX { get => 5; } // TODO: Setup some sort of class for storing preferences
         public static float SensitivityY { get => 3; }
@@ -26,12 +27,12 @@ namespace Synthesis.Simulator
         /// <summary>
         /// An optional target to focus on
         /// </summary>
-        public static ISelectable SelectedTarget = null;
+        // public static ISelectable SelectedTarget = null; // TODO recreate this using components
 
         public void Start()
         {
             // Bind controls
-            InputManager.AssignDigital("UseOrbit", (KeyDigital)KeyCode.Mouse0, UseOrbit);
+            InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", UseOrbit);
             InputManager.AssignAxis("ZoomCamera", (DualAxis)"Mouse ScrollWheel");
         }
 
@@ -63,28 +64,22 @@ namespace Synthesis.Simulator
             }
         }
 
-        public bool updatePrint = false;
-
         private float lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera orbit speed
-        public void Update()
+        public override void OnUpdate()
         {
-            if (!updatePrint)
-            {
-                Debug.Log(Time.realtimeSinceStartup);
-                updatePrint = true;
-            }
-
             // TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
 			float distMod = -InputManager.GetAxisValue("ZoomCamera");
 			if (distMod != 0) distMod += lastDistMod * 0.3f;
 			Distance += distMod;
 			lastDistMod = distMod;
-			Distance = Mathf.Clamp(Distance, 0.25f, 50);
+			Distance = Math.Clamp(Distance, 0.25f, 50f);
             Vector3 pos = Vector3.zero; // Default focus point
-            if (SelectedTarget != null)
-            { // Adjust defaults if a target is selected
-                pos = SelectedTarget.Position;
-            }
+
+            // if (SelectedTarget != null)
+            // { // Adjust defaults if a target is selected
+            //      pos = SelectedTarget.Position;
+            // }
+    
             if (OrbitActive)
             { // Adjust Camera Euler to reorientate the camera
               // use mouse axes to adjust orientation
@@ -98,11 +93,11 @@ namespace Synthesis.Simulator
                 lastYMod = yMod;
 
                 // Get new Camera Orientation
-                CameraEuler.x += xMod * SensitivityX;
-                CameraEuler.y += yMod * SensitivityY;
+                CameraEuler.X += xMod * SensitivityX;
+                CameraEuler.Y += yMod * SensitivityY;
 
                 // Clamp the x so shenanigans don't happen
-                CameraEuler.x = Mathf.Clamp(CameraEuler.x, -80, -2.5f);
+                CameraEuler.X = Math.Clamp(CameraEuler.X, -80, -2.5f);
             }
 
             // Smooth translation to targetPosition
@@ -114,6 +109,10 @@ namespace Synthesis.Simulator
             // This does cause some weird effects in some cases so we may want to make this a smooth rotation as well
             transform.LookAt(pos, new Vector3(0, 1, 0));
         }
+        public override void OnPhysicsUpdate()
+        {
+            throw new NotImplementedException();
+        }
     }
-
+    */
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SynthesisAPI.InputManager.Axis;
@@ -16,6 +15,7 @@ namespace SynthesisAPI.InputManager.Digital
         public static implicit operator KeyCode[](KeyDigital i) => i.keys;
         public static implicit operator KeyDigital(KeyCode[] ks) => new KeyDigital(ks);
         public static implicit operator KeyDigital(KeyCode k) => new KeyDigital(k);
+        public static implicit operator KeyDigital(string k) => new KeyDigital((KeyCode)Enum.Parse(typeof(KeyCode), k));
         public static implicit operator int[](KeyDigital i) => i.keys.ToIntArray();
 
         public static explicit operator KeyDigital(string[] keyStrings) => FromStringArray(keyStrings);
