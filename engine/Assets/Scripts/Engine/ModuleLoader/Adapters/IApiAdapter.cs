@@ -1,4 +1,4 @@
-﻿namespace Engine.ModuleLoader
+﻿namespace Engine.ModuleLoader.Adapters
 {
 	public interface IApiAdapter<in TBase>
 	{

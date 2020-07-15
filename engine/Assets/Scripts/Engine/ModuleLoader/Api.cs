@@ -19,8 +19,9 @@ using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 using Directory = System.IO.Directory;
 
+using Engine.ModuleLoader.Adapters;
+
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
-using Core.ModuleLoader;
 
 namespace Engine.ModuleLoader
 {
