@@ -16,11 +16,17 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Update()
 		{
-			if (instance.Changed)
+			if (instance.Changed) // TODO compare against float.Epsilon?
 			{
 				unityTransform.position = mapVector3D(instance.Position);
-				unityTransform.rotation = UnityEngine.Quaternion.identity;
-					unityTransform.localScale = mapVector3D(instance.Scale);
+				// unityTransform.rotation = mapQuaternion(instance.Rotation);
+				unityTransform.localScale = mapVector3D(instance.Scale);
+			}
+			if (instance.lookAtTarget != null) 
+			{
+				var target = instance.lookAtTarget.Value;
+				unityTransform.LookAt(new Vector3((float)target.X, (float)target.Y, (float)target.Z));
+				instance.finishLookAt();
 			}
 		}
 
@@ -29,11 +35,18 @@ namespace Engine.ModuleLoader.Adapters
 		private static Quaternion mapUnityQuaternion(UnityEngine.Quaternion q) => new Quaternion(q.w, q.x, q.y, q.z);
 		private static UnityEngine.Quaternion mapQuaternion(Quaternion q) =>
 			new UnityEngine.Quaternion((float) q.Real, (float) q.ImagX, (float) q.ImagY, (float) q.ImagZ);
+		
 		public void SetInstance(Transform transform)
 		{
 			instance = transform;
 		}
-	private Transform instance;
-	private UnityEngine.Transform unityTransform;
+
+		public static Transform NewInstance()
+        {
+			return new Transform();
+        }
+
+		private Transform instance;
+		private UnityEngine.Transform unityTransform;
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
+using System;
 
 namespace Utilities
 {
@@ -11,7 +13,7 @@ namespace Utilities
 
         public static T Max<T>(T a, T b) where T : IComparable
         {
-            return a.CompareTo(b) < 0 ? a : b;
+            return a.CompareTo(b) < 0 ? b : a;
         }
 
         public static T Clamp<T>(T value, T min, T max) where T : IComparable

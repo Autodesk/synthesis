@@ -14,16 +14,24 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
+        private Selectable selectable;
+
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
             Mesh m = e.AddComponent<Mesh>();
+            selectable = e.AddComponent<Selectable>();
             cube(m);
         }
 
-        public override void OnUpdate() { }
+        public override void OnUpdate() {
+            if (selectable.IsSelected)
+            {
+                ApiProvider.Log("Selected");
+            }
+        }
 
         private void cube(Mesh m)
         {

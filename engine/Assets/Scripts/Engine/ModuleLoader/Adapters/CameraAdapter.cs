@@ -1,5 +1,4 @@
 ﻿using SynthesisAPI.EnvironmentManager.Components;
-using System.Linq;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -26,8 +25,7 @@ namespace Engine.ModuleLoader.Adapters
 			{
                 if (defaultCamera == null)
                 {
-					defaultCamera = UnityEngine.Resources.FindObjectsOfTypeAll<UnityEngine.GameObject>().First(
-						o => o.name == "Main Camera").GetComponent<UnityEngine.Camera>();
+					defaultCamera = Util.Util.FindGameObject("Main Camera").GetComponent<UnityEngine.Camera>();
 					 // TODO rename and deactivate Main Camera
                 }
 				camera = gameObject.AddComponent<UnityEngine.Camera>();

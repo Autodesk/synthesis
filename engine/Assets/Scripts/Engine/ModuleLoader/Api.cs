@@ -290,7 +290,8 @@ namespace Engine.ModuleLoader
 				{
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
-					{typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter)}
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) }
 				};
 			}
 

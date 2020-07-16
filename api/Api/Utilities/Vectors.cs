@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace SynthesisAPI.Utilities
 {
@@ -14,12 +12,32 @@ namespace SynthesisAPI.Utilities
 
         public Vector3(float x, float y, float z) => vector_instance = new UnityEngine.Vector3(x, y, z);
 
-        public Vector3(UnityEngine.Vector3 vector) => vector_instance = vector;
+        public Vector3(UnityEngine.Vector3 vector) => vector_instance = vector; // TODO make all references to UnityEngine internal?
 
         public static Vector3 zero { get { return new Vector3(UnityEngine.Vector3.zero); } } 
 
         public static implicit operator UnityEngine.Vector3(Vector3 vec) => vec.vector_instance;
         public static implicit operator Vector3(UnityEngine.Vector3 vec) => new Vector3(vec);
+
+        public static Vector3 operator +(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public static Vector3 operator *(Vector3 vector, float scalar)
+        {
+            return new Vector3(vector.X * scalar, vector.Y * scalar, vector.Z * scalar);
+        }
+
+        public static Vector3 operator *(float scalar, Vector3 vector)
+        {
+            return vector * scalar;
+        }
 
         //public void Rotate(Vector3 vector)
         //{
@@ -28,7 +46,7 @@ namespace SynthesisAPI.Utilities
 
         public void Move(Vector3 vector)
         {
-            vector_instance += vector;
+            vector_instance += (UnityEngine.Vector3)vector;
         }
     }
 

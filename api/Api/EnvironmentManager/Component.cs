@@ -4,11 +4,11 @@ namespace SynthesisAPI.EnvironmentManager
 {
 	public class Component
 	{
-		protected Entity? entity { get; private set; } = null;
+		protected Entity? Entity { get; private set; } = null;
 
 		internal void SetEntity(Entity entity)
 		{
-			this.entity = entity;
+			Entity = entity;
 		}
 	}
 }
