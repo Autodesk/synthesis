@@ -74,7 +74,7 @@ namespace SynthesisAPI.AssetManager
             // joints are not attached to RootOccurrence directly but added to Joint dictionary
             foreach (JsonDictionary joint in (JsonList)extras["joints"])
             {
-                ExportJointsFromExtras(joint, design);
+                ExportJointsFromExtras(joint);
             }
 
             return design;
@@ -152,7 +152,7 @@ namespace SynthesisAPI.AssetManager
             var indices = primitive.GetIndices();
 
             for (int i = 0; i < indices.Count; i++)
-            {                
+            {
                 meshBody.TriangleMesh.Indices.Add((int)indices[i]);
             }
 
@@ -162,7 +162,7 @@ namespace SynthesisAPI.AssetManager
             return meshBody;
         }
 
-        private Design.Joint ExportJointsFromExtras(JsonDictionary jointDict, Design design)
+        private Design.Joint ExportJointsFromExtras(JsonDictionary jointDict)
         {
             Design.Joint joint = new Design.Joint();
 
@@ -173,47 +173,47 @@ namespace SynthesisAPI.AssetManager
             // Type = JointType.RigidJointType;
             // Attributes = new Dictionary<string, object>();
 
-            RecursiveThingy(joint, jointDict);
+            //RecursiveThingy(joint, jointDict);
 
             foreach (KeyValuePair<string, object> data in jointDict)
             {
-                RecursiveThingy(data, jointDict);
-
-                // get Vector3
-                switch (data.Key) // data.Keys
+                int i = 0;
+                //RecursiveThingy(data, jointDict);
+                foreach (KeyValuePair<string, object> childData in jointDict)
                 {
-                    case "header":
-                        var jointHeader = joint.JointHeader;
-                        //jointHeader.Name = (string)(data.Value as Dictionary<string, object>)["name"];
-                        jointHeader.Name = (string)(data.Value as Dictionary<string, object>)["name"];
-                        joint.JointHeader = jointHeader;
-                        break;
-                    default:
-                        break;
+                    switch (childData.Key)
+                    {
+                        case "header":
+                            var jointHeader = joint.JointHeader;
+                            jointHeader.Name = (string)(childData.Value as Dictionary<string, object>)["name"];
+                            joint.JointHeader = jointHeader;
+                            break;
+                        case "origin":
+                            var jointOrigin = joint.Origin;
+                            jointOrigin.X = (double)(decimal)(childData.Value as Dictionary<string, object>)["x"];
+                            jointOrigin.Y = (double)(decimal)(childData.Value as Dictionary<string, object>)["y"];
+                            jointOrigin.Z = (double)(decimal)(childData.Value as Dictionary<string, object>)["z"];
+                            joint.Origin = jointOrigin;
+                            break;
+                        case "revoluteJointMotion":
+                            var jointType = joint.Type;
+                            joint.Type = (Design.Joint.JointType)(int)(childData.Value as Dictionary<string, object>)["y"];
+                            joint.Type = jointType;
+                            break;
+                        case "occurrenceOneUUID":
+                            //joint.OccurenceOneUuid = (string)(childData.Value as Dictionary<string, object>)["occurrenceOneUUID"];
+                            joint.OccurenceOneUuid = (string)childData.Value;
+                            break;
+                        case "occurrenceTwoUUID":
+                            joint.OccurenceTwoUuid = (string)(childData.Value;
+                            break;
+                        default:
+                            break;
+                    }
+                    i++;
+
+                    //Joints.Add(data.Key, joint);
                 }
-
-                // add UUIDs in foreach loop
-
-                // JointHeader = data[0]
-                //if (data.Key == "origin")
-                //{
-                //    foreach (dynamic origin in jointDict)
-                //    {
-                //        joint.Origin = (Design.Vector3)origin.Value;
-                //    }
-                //}
-
-                //if (data.Key == "occurrenceOneUUID")
-                //{
-                //    joint.OccurenceOneUuid = (string)data.Value;
-                //}
-
-                //if (data.Key == "occurrenceTwoUUID")
-                //{
-                //    joint.OccurenceTwoUuid = (string)data.Value;
-                //}
-
-                Joints.Add(data.Key, joint);
             }
 
             return joint;
@@ -231,7 +231,8 @@ namespace SynthesisAPI.AssetManager
                 if (childData.GetType() == typeof(Dictionary<string, object>))
                 {
                     childObj = RecursiveThingy(childObj, (Dictionary<string, object>)childData.Value);
-                } else
+                }
+                else
                 {
                     childObj = childData.Value;
                 }
