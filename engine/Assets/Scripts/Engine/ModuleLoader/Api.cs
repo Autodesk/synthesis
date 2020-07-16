@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,6 +30,8 @@ namespace Engine.ModuleLoader
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
+
+		private static Dictionary<string, string> assemblyOwners = new Dictionary<string, string>();
 
 		public void Awake()
 		{
@@ -148,7 +151,7 @@ namespace Engine.ModuleLoader
 				var stream = entry.Open();
 				if (extension == ".dll")
 				{
-					if (!LoadModuleAssembly(stream))
+					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
@@ -199,7 +202,7 @@ namespace Engine.ModuleLoader
 			return true;
 		}
 
-        private bool LoadModuleAssembly(Stream stream)
+        private bool LoadModuleAssembly(Stream stream, string owningModule)
 		{
 			// Load module assembly
 		    var memStream = new MemoryStream();
@@ -231,6 +234,8 @@ namespace Engine.ModuleLoader
 					RegisterTagCallback(callback, exportedModuleClassInstance);
 				}
 			}
+
+			assemblyOwners.Add(assembly.GetName().Name, owningModule);
 			return true;
 		}
 
@@ -295,9 +300,11 @@ namespace Engine.ModuleLoader
 				};
 			}
 
-			public void Log(object o)
+
+			public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
-				Debug.Log(o);
+				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
+				Debug.Log($"{assemblyOwners[callSite ?? ""]}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
 			}
 
 			public void AddEntityToScene(uint entity)

@@ -91,7 +91,7 @@ namespace MockApi
                 {
                     m += ": {msg}";
                 }
-                Log(m);
+                Log(TODO, TODO, TODO, m);
             }
 
             public void AddEntityToScene(uint entity)
@@ -116,7 +116,7 @@ namespace MockApi
                 LogAction("Remove Component", $"Adding {t} to {entity}");
             }
 
-            public void Log(object o)
+            public void Log(string memberName, string filePath, string lineNumber, object o)
             {
                 Console.WriteLine(o);
             }
