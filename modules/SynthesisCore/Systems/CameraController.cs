@@ -4,12 +4,17 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
-using System;
+using Utilities;
+
+using Entity = System.UInt32;
+using SynthesisAPI.Runtime;
 
 namespace SynthesisCore.Systems
 {
-    /*
+    [ModuleExport]
     public class CameraController : SystemBase
     {
         public static float SensitivityX { get => 5; } // TODO: Setup some sort of class for storing preferences
@@ -24,13 +29,21 @@ namespace SynthesisCore.Systems
         private Vector3 CameraEuler = new Vector3(-15, 45, 0);
         private float Distance = 5;
 
+        private Entity? cameraEntity = null;
+
         /// <summary>
         /// An optional target to focus on
         /// </summary>
         // public static ISelectable SelectedTarget = null; // TODO recreate this using components
 
-        public void Start()
+        public override void Setup()
         {
+            if (cameraEntity == null)
+            {
+                cameraEntity = EnvironmentManager.AddEntity();
+                cameraEntity?.AddComponent<Camera>();
+            }
+
             // Bind controls
             InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", UseOrbit);
             InputManager.AssignAxis("ZoomCamera", (DualAxis)"Mouse ScrollWheel");
@@ -47,16 +60,17 @@ namespace SynthesisCore.Systems
                 if (de.KeyState == DigitalState.Down)
                 {
                     OrbitActive = true;
-                    // Debug.Log("Orbit Active");
-                    Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
-                    Cursor.visible = false;
+                    ApiProvider.Log("Orbit active");
+                    // TODO cursor stuff
+                    // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
+                    // Cursor.visible = false;
                 }
                 else if (de.KeyState == DigitalState.Up)
                 {
                     OrbitActive = false;
-                    // Debug.Log("Orbit Deactive");
-                    Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
-                    Cursor.visible = true;
+                    ApiProvider.Log("Orbit inactive");
+                    // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
+                    // Cursor.visible = true;
                 }
             } else
             {
@@ -101,6 +115,7 @@ namespace SynthesisCore.Systems
             }
 
             // Smooth translation to targetPosition
+            /* TODO
             Vector3 targetPosition = pos + (Quaternion.Euler(CameraEuler) * new Vector3(0, 0, Distance));
             Vector3 deltaPos = targetPosition - transform.position;
             transform.position += deltaPos * 0.4f;
@@ -108,11 +123,8 @@ namespace SynthesisCore.Systems
             // Have the camera look at the focus point
             // This does cause some weird effects in some cases so we may want to make this a smooth rotation as well
             transform.LookAt(pos, new Vector3(0, 1, 0));
+            */
         }
-        public override void OnPhysicsUpdate()
-        {
-            throw new NotImplementedException();
-        }
+        public override void OnPhysicsUpdate() { }
     }
-    */
 }

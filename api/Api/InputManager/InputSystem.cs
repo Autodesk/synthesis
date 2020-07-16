@@ -12,6 +12,8 @@ namespace SynthesisAPI.InputManager
     /// </summary>
     public class InputSystem : SystemBase
     {
+        public override void Setup() { }
+
         /// <summary>
         /// Updates all the key presses.
         /// </summary>

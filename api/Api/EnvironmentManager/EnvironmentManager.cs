@@ -115,6 +115,7 @@ namespace SynthesisAPI.EnvironmentManager
             if (IsComponent(componentType) && EntityExists(entity))
             {
                 Component? c = ApiProvider.AddComponentToScene(entity, componentType);
+                c?.SetEntity(entity);
                 components.Set(entity.GetIndex(), entity.GetGen(), c);
                 return c;
             }
