@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\wangl\AppData\Local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\wangl\AppData\Local\JetBrains\Rider2020.1\resharper-host\Local\Transient\ReSharperHost\v201\SolutionCaches\_SynthesisInventorGltfExporter.141093905.00" t="ExcludeRecursive" />
+    <e p="C:\Users\wangl\Repos\SynthesisInventorGltfExporter\synthesis\exporter\SynthesisInventorGltfExporter" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="SynthesisInventorGltfExporter" t="IncludeRecursive">
+        <e p="app.config" t="Include" />
+        <e p="Autodesk.SynthesisInventorGltfExporter.Inventor.addin" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="exporter" t="Include" />
+        <e p="GUI" t="Include">
+          <e p="Editors" t="Include">
+            <e p="ExporterSettingsForm.cs" t="Include" />
+            <e p="ExporterSettingsForm.Designer.cs" t="Include" />
+            <e p="ExporterSettingsForm.resx" t="Include" />
+            <e p="ExportForm.cs" t="Include" />
+            <e p="ExportForm.Designer.cs" t="Include" />
+            <e p="ExportForm.resx" t="Include" />
+          </e>
+          <e p="Guide" t="Include">
+            <e p="Guide.html" t="Include" />
+            <e p="GuideManager.cs" t="Include" />
+            <e p="GuidePanel.cs" t="Include" />
+            <e p="GuidePanel.Designer.cs" t="Include" />
+            <e p="GuidePanel.resx" t="Include" />
+          </e>
+          <e p="JointView" t="Include">
+            <e p="JointViewKey.html" t="Include" />
+            <e p="JointViewKeyManager.cs" t="Include" />
+            <e p="JointViewKeyPane.cs" t="Include" />
+            <e p="JointViewKeyPane.Designer.cs" t="Include" />
+            <e p="JointViewKeyPane.resx" t="Include" />
+          </e>
+          <e p="Loading" t="Include">
+            <e p="LoadingBar.cs" t="Include" />
+            <e p="LoadingBar.Designer.cs" t="Include" />
+            <e p="LoadingBar.resx" t="Include" />
+          </e>
+          <e p="Messages" t="Include">
+            <e p="AnalyticsSurvey.cs" t="Include" />
+            <e p="AnalyticsSurvey.Designer.cs" t="Include" />
+            <e p="AnalyticsSurvey.resx" t="Include" />
+            <e p="ExportSuccessfulForm.cs" t="Include" />
+            <e p="ExportSuccessfulForm.Designer.cs" t="Include" />
+            <e p="ExportSuccessfulForm.resx" t="Include" />
+          </e>
+        </e>
+        <e p="Managers" t="Include">
+          <e p="AddInSettingsManager.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+        <e p="Resources" t="Include">
+          <e p="Branding" t="Include">
+            <e p="SynthesisLogo16.bmp" t="Include" />
+            <e p="SynthesisLogo32.bmp" t="Include" />
+            <e p="SynthesisLogoIco.ico" t="Include" />
+          </e>
+          <e p="DrivetrainTypeIcons" t="Include">
+            <e p="HDriveIcon.png" t="Include" />
+            <e p="TankDriveIcon.png" t="Include" />
+          </e>
+          <e p="Guide" t="Include">
+            <e p="drivetrain.PNG" t="Include" />
+            <e p="joints.PNG" t="Include" />
+            <e p="weight.PNG" t="Include" />
+          </e>
+          <e p="LoadingAnimations" t="Include">
+            <e p="SynthesisLogoLoading.gif" t="Include" />
+          </e>
+          <e p="Other" t="Include">
+            <e p="ArrowLeft.png" t="Include" />
+            <e p="ArrowRight.png" t="Include" />
+          </e>
+          <e p="RibbonIcons" t="Include">
+            <e p="Book32.png" t="Include" />
+            <e p="Checklist32.png" t="Include" />
+            <e p="DrivetrainType32.png" t="Include" />
+            <e p="Gears16.png" t="Include" />
+            <e p="Gears32.png" t="Include" />
+            <e p="JointEditor32.png" t="Include" />
+            <e p="Weight32.png" t="Include" />
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="shader.frag" t="Include" />
+            <e p="shader.vert" t="Include" />
+          </e>
+          <e p="Temporary" t="Include">
+            <e p="stockjoint.PNG" t="Include" />
+          </e>
+        </e>
+        <e p="RobotExporterAddInServer.cs" t="Include" />
+        <e p="SingleEnvironmentAddInServer.cs" t="Include" />
+        <e p="SynthesisInventorGltfExporter.csproj" t="IncludeRecursive" />
+        <e p="Utilities" t="Include">
+          <e p="AnalyticsUtils.cs" t="Include" />
+          <e p="DockableWindowManagerBase.cs" t="Include" />
+          <e p="ImageConverters" t="Include">
+            <e p="AxHostConverter.cs" t="Include" />
+            <e p="PictureDispConverter.cs" t="Include" />
+          </e>
+          <e p="InventorDocumentIOUtils.cs" t="Include" />
+          <e p="InventorUtils.cs" t="Include" />
+          <e p="MathUtils.cs" t="Include" />
+          <e p="ProgressUpdate.cs" t="Include" />
+          <e p="StringUtils.cs" t="Include" />
+          <e p="synthesis" t="Include">
+            <e p="SynthesisUtils.cs" t="Include" />
+          </e>
+          <e p="WinFormsUtils.cs" t="Include" />
+        </e>
+      </e>
+      <e p="SynthesisInventorGltfExporter.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>

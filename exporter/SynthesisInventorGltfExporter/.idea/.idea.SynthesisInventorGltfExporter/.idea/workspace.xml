@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3bc3b178-3070-4b0b-a8b9-dfe36c25d0fe" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/PictureDispConverter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuidePanel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/AxHostConverter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/InventorUtils.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyPane.resx" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/nuget.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/AnalyticsSurvey.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/SingleEnvironmentAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.resx" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/UnsupportedComponentsForm.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1ekA596gzhZJP3pfZNYVlqfh8ff" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunManager">
+    <configuration name="SynthesisInventorGltfExporter" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="Console" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3bc3b178-3070-4b0b-a8b9-dfe36c25d0fe" name="Default Changelist" comment="" />
+      <created>1594855030634</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1594855030634</updated>
+      <workItem from="1594855036760" duration="5396000" />
+    </task>
+    <task id="LOCAL-00001" summary="Add gitignore">
+      <created>1594868517655</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1594868517655</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Delete old structure">
+      <created>1594868612506</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1594868612506</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Rename project and add sharpgltf">
+      <created>1594868776151</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1594868776151</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Rename project and add sharpgltf">
+      <created>1594868786859</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1594868786859</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Add gitignore" />
+    <MESSAGE value="Delete old structure" />
+    <MESSAGE value="Rename project and add sharpgltf" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rename project and add sharpgltf" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-6" y="0" width="1953" height="1089" key="CommitChangelistDialog2" timestamp="1594868786183">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="-6" y="0" width="1953" height="1089" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1594868786183" />
+    <state x="144" y="82" key="DiffContextDialog" timestamp="1594855200325">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="144" y="82" key="DiffContextDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1594855200325" />
+    <state x="703" y="180" width="814" height="534" key="find.popup" timestamp="1594855089442">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="703" y="180" width="814" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1594855089442" />
+  </component>
+</project>

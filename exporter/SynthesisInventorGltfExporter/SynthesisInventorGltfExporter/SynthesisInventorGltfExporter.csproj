@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="NUnit" Version="3.12.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="OpenTK" Version="2.0.0" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" Condition="'$(TargetFramework)' == 'net452'" />
+    <PackageReference Include="SharpGLTF.Toolkit">
+      <Version>1.0.0-alpha0018</Version>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3DC284CE-6572-439D-ADA3-E703FF8498B6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyOriginatorKeyFile>BxD.StrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SynthesisInventorGltfExporter</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;LITEMODE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>3</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>Bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;LITEMODE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>pdbonly</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>SynthesisInventorGltfExporter</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Benchmark|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Benchmark\</OutputPath>
+    <DefineConstants>TRACE;LITEMODE, BENCHMARK</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="autodesk.inventor.interop, Version=21.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_21.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic.Compatibility" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.InteropServices">
+      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Runtime.InteropServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.XML" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUI\JointView\JointViewKeyPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\JointView\JointViewKeyPane.Designer.cs">
+      <DependentUpon>JointViewKeyPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\JointView\JointViewKeyManager.cs" />
+    <Compile Include="GUI\Guide\GuideManager.cs" />
+    <Compile Include="GUI\Guide\GuidePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Guide\GuidePanel.Designer.cs">
+      <DependentUpon>GuidePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Loading\LoadingBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Loading\LoadingBar.Designer.cs">
+      <DependentUpon>LoadingBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Messages\AnalyticsSurvey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Messages\AnalyticsSurvey.Designer.cs">
+      <DependentUpon>AnalyticsSurvey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Messages\ExportSuccessfulForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Messages\ExportSuccessfulForm.Designer.cs">
+      <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Managers\AddInSettingsManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SingleEnvironmentAddInServer.cs" />
+    <Compile Include="RobotExporterAddInServer.cs" />
+    <Compile Include="GUI\Editors\ExporterSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ExporterSettingsForm.Designer.cs">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\AnalyticsUtils.cs" />
+    <Compile Include="Utilities\DockableWindowManagerBase.cs" />
+    <Compile Include="Utilities\ImageConverters\AxHostConverter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utilities\ImageConverters\PictureDispConverter.cs" />
+    <Compile Include="Utilities\InventorDocumentIOUtils.cs" />
+    <Compile Include="Utilities\InventorUtils.cs" />
+    <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\ProgressUpdate.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
+    <Compile Include="Utilities\Synthesis\SynthesisUtils.cs" />
+    <Compile Include="Utilities\WinFormsUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Resources\Branding\SynthesisLogo16.bmp" />
+    <None Include="Resources\Branding\SynthesisLogo32.bmp" />
+    <None Include="Resources\LoadingAnimations\SynthesisLogoLoading.gif" />
+    <None Include="Resources\RibbonIcons\Gears16.png" />
+    <None Include="Resources\RibbonIcons\Gears32.png" />
+    <None Include="Resources\Shaders\shader.frag" />
+    <None Include="Resources\Shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GUI\Guide\GuidePanel.resx">
+      <DependentUpon>GuidePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Loading\LoadingBar.resx">
+      <DependentUpon>LoadingBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Messages\AnalyticsSurvey.resx">
+      <DependentUpon>AnalyticsSurvey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Messages\ExportSuccessfulForm.resx">
+      <DependentUpon>ExportSuccessfulForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ExporterSettingsForm.resx">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Autodesk.SynthesisInventorGltfExporter.Inventor.addin">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="GUI\JointView\JointViewKey.html" />
+    <Content Include="GUI\JointView\JointViewKeyPane.resx" />
+    <Content Include="GUI\Guide\Guide.html" />
+    <None Include="Resources\Temporary\stockjoint.PNG" />
+    <None Include="Resources\Branding\SynthesisLogoIco.ico" />
+    <None Include="Resources\Other\ArrowLeft.png" />
+    <None Include="Resources\Other\ArrowRight.png" />
+    <None Include="Resources\Guide\drivetrain.PNG" />
+    <None Include="Resources\Guide\joints.PNG" />
+    <None Include="Resources\Guide\weight.PNG" />
+    <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
+    <Content Include="Resources\RibbonIcons\Book32.png" />
+    <Content Include="Resources\RibbonIcons\JointEditor32.png" />
+    <Content Include="Resources\RibbonIcons\Checklist32.png" />
+    <Content Include="Resources\RibbonIcons\Weight32.png" />
+    <None Include="Resources\DrivetrainTypeIcons\HDriveIcon.png" />
+    <None Include="Resources\DrivetrainTypeIcons\TankDriveIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exporter\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ProgramFiles64>$(ProgramW6432)</ProgramFiles64>
+    <ProgramFiles64 Condition="$(ProgramFiles64) == ''">$(ProgramFiles)</ProgramFiles64>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>XCopy "$(TargetDir)*" "$(ProgramFiles64)\Autodesk\Synthesis\Exporter\" /Y /R /S /I
+XCopy "$(ProjectDir)Autodesk.SynthesisInventorGltfExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>
