@@ -14,20 +14,16 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
-        bool start = true;
-
         public override void OnPhysicsUpdate() { }
 
-        public override void OnUpdate()
+        public override void Setup()
         {
-            if (start)
-            {
-                Entity e = EnvironmentManager.AddEntity();
-                Mesh m = e.AddComponent<Mesh>();
-                cube(m);
-                start = false;
-            }
+            Entity e = EnvironmentManager.AddEntity();
+            Mesh m = e.AddComponent<Mesh>();
+            cube(m);
         }
+
+        public override void OnUpdate() { }
 
         private void cube(Mesh m)
         {

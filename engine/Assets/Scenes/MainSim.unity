@@ -574,7 +574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &1687258582
 AudioListener:
   m_ObjectHideFlags: 0
@@ -595,7 +595,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f240ee69ddf8b95499610c974e3913f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updatePrint: 0
 --- !u!20 &1687258584
 Camera:
   m_ObjectHideFlags: 0
