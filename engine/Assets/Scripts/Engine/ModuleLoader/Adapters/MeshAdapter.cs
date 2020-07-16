@@ -6,7 +6,7 @@ namespace Engine.ModuleLoader.Adapters
 {
 	public sealed class MeshAdapter : MonoBehaviour, IApiAdapter<Mesh>
 	{
-		private void Awake()
+		public void Awake()
 		{
 			if ((filter = gameObject.GetComponent<MeshFilter>()) == null)
 				filter = gameObject.AddComponent<MeshFilter>();
@@ -14,9 +14,9 @@ namespace Engine.ModuleLoader.Adapters
 				gameObject.AddComponent<MeshRenderer>();
 		}
 
-		private void Update()
+		public void Update()
 		{
-			if (instance.DidChange)
+			if (instance.Changed)
 			{
 				filter.mesh.vertices = Convert(instance.Vertices);
 				filter.mesh.uv = Convert(instance.UVs);

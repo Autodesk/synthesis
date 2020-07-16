@@ -17,7 +17,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _vertices;
 			set {
 				_vertices = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
 		public List<Vector2> UVs
@@ -25,7 +25,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _uvs;
 			set {
 				_uvs = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
 
@@ -34,12 +34,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _triangles;
 			set {
 				_triangles = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
 
-		public void ProcessedChanges() => DidChange = false;
-
-		public bool DidChange { get; private set; }
+		public bool Changed { get; private set; }
+		public void ProcessedChanges() => Changed = false;
 	}
 }
