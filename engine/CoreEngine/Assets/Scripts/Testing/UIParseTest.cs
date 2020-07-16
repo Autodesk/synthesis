@@ -13,6 +13,7 @@ using System.Xml;
 using JetBrains.Annotations;
 using Synthesis.Util;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
 using UnityEngine;
@@ -33,7 +34,20 @@ public class UIParseTest : MonoBehaviour
     public TextureAsset asset;
     public Texture2D texture;
 
-    void Start()
+    private void Start()
+    {
+        renderer.postUxmlReload += () =>
+        {
+            Debug.Log("[][]]][][]][]]][][]");
+            return null;
+        };
+        
+        UIManager.AddTab(new TestTab());
+        ApiProvider.Log("=====");
+        UIManager.RecursivePrint(PanelRenderer.visualTree);
+    }
+
+    /*void Start()
     {
         asset = AssetManager.Import<TextureAsset>("image/texture", false, "/temp", "test.jpeg",
             Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
@@ -60,11 +74,24 @@ public class UIParseTest : MonoBehaviour
         renderer.postUxmlReload += () =>
         {
             // generated.
-            renderer.visualTree.Q<VisualElement>(name: "screen").Add((ListView)generated);
+            PanelRenderer.visualTree.Q<VisualElement>(name: "screen").Add((ListView)generated);
             ApiProvider.Log("PostUxmlLoad");
             generated.PostUxmlLoad();
             return null;
         };
-    }
+    }*/
 #endif
+}
+
+public class TestTab : Tab
+{
+    public TestTab(): base("TestTab", AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-entry.uxml",
+        Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test-entry.uxml"))
+    {
+    }
+
+    public override void Bind(SynVisualElement element)
+    {
+        return;
+    }
 }

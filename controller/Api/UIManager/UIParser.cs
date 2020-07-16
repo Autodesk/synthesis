@@ -290,6 +290,14 @@ namespace SynthesisAPI.UIManager
         public static StyleEnum<T> ToStyleEnum<T>(string str) where T : struct, IConvertible => new StyleEnum<T>
             {value = (T) Enum.Parse(typeof(T), MapCssName(str.Replace(" ", "")), true)};
 
+        /// <summary>
+        /// This is an extension method to properly convert a VisualElement type into a Synthesis analog.
+        /// The Synthesis analog essentially stores visual element objects and reveals layers of usability.
+        /// In order to properly parse they need to be converted to their child form then stored as their
+        /// analog.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public static SynVisualElement GetSynVisualElement(this VisualElement element)
         {
             Type t = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), t => t.Name == $"Syn{element.GetType().Name}") ??

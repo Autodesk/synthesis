@@ -145,7 +145,7 @@ namespace Synthesis.Simulator
             MeshFilter filter = gameObj.AddComponent<MeshFilter>();
             filter.mesh = m;
             MeshRenderer renderer = gameObj.AddComponent<MeshRenderer>();
-            renderer.material = ObjectLedger.Instance.spawnMat;
+            // renderer.material = ObjectLedger.Instance.spawnMat;
 
             // Collider
             gameObj.AddComponent<MeshCollider>().convex = true;

@@ -94,8 +94,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\ApiProvider.cs" />
     <Compile Include="Runtime\IApiProvider.cs" />
+    <Compile Include="UIManager\SelectTabEvent.cs" />
+    <Compile Include="UIManager\UIComponents\Panel.cs" />
+    <Compile Include="UIManager\UIComponents\Tab.cs" />
     <Compile Include="UIManager\UIParser.cs" />
-    <Compile Include="UIManager\Element.cs" />
     <Compile Include="UIManager\UIManager.cs" />
     <Compile Include="UIManager\VisualElements\ButtonClickableEvent.cs" />
     <Compile Include="UIManager\VisualElements\SynLabel.cs" />

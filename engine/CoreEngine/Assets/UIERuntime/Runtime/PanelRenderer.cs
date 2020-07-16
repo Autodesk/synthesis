@@ -44,7 +44,7 @@ namespace Unity.UIElements.Runtime
         /// <summary>
         /// The top level element.
         /// </summary>
-        public VisualElement visualTree { get; private set; }
+        public static VisualElement visualTree { get; private set; }
         
         /// <summary>
         /// The panel holding the visual tree instantiated from the UXML file.
@@ -146,6 +146,8 @@ namespace Unity.UIElements.Runtime
             OnValidate();
             
             InternalBridge.RegisterPanel(gameObject.GetInstanceID(), panel);
+            
+            RecreateUIFromUxml();
         }
 
         /// <summary>
@@ -220,6 +222,8 @@ namespace Unity.UIElements.Runtime
         /// </summary>
         public void RecreateUIFromUxml()
         {
+            // Basically this method only causes issues for us
+            
             if (enableLiveUpdates)
             {
                 trackedAssetSet.Clear();
@@ -288,7 +292,7 @@ namespace Unity.UIElements.Runtime
             if (panel == null)
                 return;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR_NEVER
             if (enableLiveUpdates && m_TrackedAssetList != null && m_TrackedAssetHashes != null)
             {
                 for (int i = 0; i < m_TrackedAssetList.Count; ++i)

@@ -12,6 +12,7 @@ using Debug = UnityEngine.Debug;
 
 using System.IO.Compression;
 using Assets.Scripts.Engine.Util;
+using JetBrains.Annotations;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
@@ -268,15 +269,21 @@ namespace Engine.ModuleLoader
 			public T CreateUnityType<T>(params object[] args) where T : class =>
 				(T)Activator.CreateInstance(typeof(T), args);
 
+			public VisualTreeAsset GetDefaultUIAsset(string assetName)
+			{
+				int index = Array.IndexOf(ResourceLedger.Instance.Keys, assetName);
+				if (index != -1)
+					return ResourceLedger.Instance.Values[index];
+				return null;
+			}
+
 			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
 				(TUnityType) Activator.CreateInstance(typeof(TUnityType));
 
 			public VisualElement GetRootVisualElement()
 			{
 				// TODO: Re-evaluate this
-				PanelRenderer prr = GameObject.FindGameObjectWithTag("UI_RENDERER").GetComponent<PanelRenderer>();
-				prr.RecreateUIFromUxml(); // Incase it hasn't loaded uxml data yet
-				return prr.visualTree;
+				return PanelRenderer.visualTree;
 			}
 		}
 	}

@@ -14,5 +14,6 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="bottom" class="bottom" />
+        <ui:VisualElement name="panel-center" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px;" />
     </ui:VisualElement>
 </ui:UXML>
