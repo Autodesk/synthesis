@@ -25,16 +25,23 @@ namespace SynthesisCore.Systems
 
         private bool orbitActive = false;
 
-        private Vector3D FocusPoint { get; } = new Vector3D(); // Default focus point
+        private Vector3D focusPoint = new Vector3D(); // Default focus point
+        private Vector3D offset = new Vector3D();
 
         private Entity? cameraEntity = null;
-        private Transform cameraTransform = null;
+        private Transform? cameraTransform = null;
 
         /// <summary>
         /// An optional target to focus on
         /// </summary>
         private static Selectable? SelectedTarget = null;
         private static Selectable? LastSelectedTarget = null;
+
+        private float lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera movement speed
+
+        private const double MinDistance = 0.25;
+        private const double MaxDistance = 50;
+        private const double MinHeight = 0.25;
 
         public override void Setup()
         {
@@ -43,7 +50,7 @@ namespace SynthesisCore.Systems
                 cameraEntity = EnvironmentManager.AddEntity();
                 cameraEntity?.AddComponent<Camera>();
                 cameraTransform = cameraEntity?.AddComponent<Transform>();
-                SetFocus(null);
+                SetNewFocus(new Vector3D());
             }
 
             // Bind controls
@@ -72,32 +79,31 @@ namespace SynthesisCore.Systems
                     // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
                     // Cursor.visible = true;
                 }
-            } else
+            }
+            else
             {
                 throw new System.Exception();
             }
         }
 
-        private float lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera movement speed
-
-        private const double MinDistance = 0.25;
-        private const double MaxDistance = 50;
-        private const double MinHeight = 0.25;
-
         private void ProcessZoom()
         {
             // TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
             float distMod = -InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
-            if (distMod != 0 && (distMod < 0) == (lastDistMod < 0)) // Check that distMod is not zero and taht lastDistMod is in the same direction
+            if (distMod != 0)
             {
-                distMod += lastDistMod * 0.5f; // Give some kind of intertial effect
+                if ((distMod < 0) == (lastDistMod < 0)) // Check that lastDistMod is in the same direction as distMod
+                {
+                    distMod += lastDistMod * 0.5f; // Give some kind of intertial effect
+                }
+
+                // Prevent from moving too close or too far away from focus
+                if ((offset.Length > MinDistance && distMod < 0) || (offset.Length < MaxDistance && distMod > 0))
+                {
+                    offset += offset.Normalize().ToVector3D().ScaleBy(distMod);
+                }
             }
             lastDistMod = distMod;
-            
-            if ((cameraTransform.Position.Length > MinDistance && distMod < 0) || (cameraTransform.Position.Length < MaxDistance && distMod > 0))
-            {
-                cameraTransform.Position += cameraTransform.Position.Normalize().ToVector3D().ScaleBy(distMod);
-            }
         }
 
         private void ProcessOrbit()
@@ -115,47 +121,68 @@ namespace SynthesisCore.Systems
                 lastYMod = yMod;
 
                 // Rotate horizontally (i.e. around y-axis)
-                var xDelta = cameraTransform.Position.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod * SensitivityX)) - cameraTransform.Position;
+                var xDelta = offset.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod * SensitivityX)) - offset;
 
                 // Rotate vertically
-                var verticalRotationAxis = cameraTransform.Position.CrossProduct(UnitVector3D.YAxis).Normalize();
-                Vector3D yDelta = cameraTransform.Position.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod * SensitivityY)) - cameraTransform.Position;
+                var verticalRotationAxis = offset.CrossProduct(UnitVector3D.YAxis).Normalize();
+                Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod * SensitivityY)) - offset;
 
                 // Stop from vertically rotating past directly above the focus point
-                var newPosition = cameraTransform.Position + yDelta;
+                var newPosition = offset + yDelta;
                 if (newPosition.AngleTo(UnitVector3D.YAxis) <= Angle.FromDegrees(2)) // TODO this doesn't catch cases where it jumps to the otherside and is more than 2 degrees away
                 {
                     yDelta = new Vector3D(0, 0, 0);
                 }
 
+                offset += xDelta + yDelta;
+
                 // Stop from vertically rotating below the floor 
+                var newPos = focusPoint + offset;
+                newPos = new Vector3D(newPos.X, Math.Max(newPos.Y, MinHeight), newPos.Z);
+                offset = newPos - focusPoint;
 
-                cameraTransform.Position += xDelta + yDelta;
-
-                cameraTransform.Position = new Vector3D(cameraTransform.Position.X, Math.Max(cameraTransform.Position.Y, MinHeight), cameraTransform.Position.Z);
-
-                cameraTransform.LookAt(cameraTransform.Parent != null ? cameraTransform.Parent.Position + FocusPoint : FocusPoint);
+                UpdateCameraPosition();
             }
         }
 
-        private void SetFocus(Transform? parent)
+        private void UpdateCameraPosition()
         {
-            cameraTransform.Parent = parent;
-            cameraTransform.Position = new Vector3D(0, 5, 5); // TODO make teleportation more fluid
-            cameraTransform.LookAt(cameraTransform.Parent != null ? cameraTransform.Parent.Position + FocusPoint : FocusPoint);
+            if (cameraTransform != null) {
+                cameraTransform.Position = focusPoint + offset;
+                cameraTransform.LookAt(focusPoint);
+            }
+        }
+
+        private void SetNewFocus(Vector3D newFocusPoint)
+        {
+            focusPoint = newFocusPoint;
+            offset = new Vector3D(0, 5, 5); // TODO make teleportation more fluid
+            UpdateCameraPosition();
         }
 
         public override void OnUpdate()
         {
             SelectedTarget = Selectable.Selected;
-            if (SelectedTarget != null && SelectedTarget != LastSelectedTarget)
+            if (SelectedTarget != null)
             {
-                LastSelectedTarget = SelectedTarget;
-                SetFocus(SelectedTarget?.Entity?.GetComponent<Transform>());
+                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.Position;
+                if (newFocusPoint.HasValue)
+                {
+                    if (SelectedTarget != LastSelectedTarget) // Set new focus point
+                    {
+                        LastSelectedTarget = SelectedTarget;
+                        SetNewFocus(newFocusPoint.Value);
+                    }
+                    else // Update possibly moving focus point
+                    {
+                        focusPoint = newFocusPoint.Value;
+                    }
+                }
             }
 
             ProcessZoom();
             ProcessOrbit();
+            UpdateCameraPosition();
         }
         public override void OnPhysicsUpdate() { }
     }

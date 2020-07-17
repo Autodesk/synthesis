@@ -26,7 +26,7 @@ namespace Engine.ModuleLoader.Adapters
 			{
                 if (defaultCamera == null)
                 {
-					defaultCamera = Util.Util.FindGameObject("Main Camera").GetComponent<UnityEngine.Camera>();
+					defaultCamera = Util.Utilities.FindGameObject("Main Camera").GetComponent<UnityEngine.Camera>();
 					 // TODO rename and deactivate Main Camera
                 }
 				camera = gameObject.AddComponent<UnityEngine.Camera>();

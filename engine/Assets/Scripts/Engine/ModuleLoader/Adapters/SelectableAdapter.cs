@@ -38,7 +38,7 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (eventSystem == null)
 			{
-				eventSystem = Util.Util.FindGameObject("EventSystem").GetComponent<EventSystem>();
+				eventSystem = Util.Utilities.FindGameObject("EventSystem").GetComponent<EventSystem>();
 				if (eventSystem == null)
 				{
 					throw new System.Exception();

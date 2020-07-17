@@ -11,7 +11,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 	public class Transform : Component
 	{
 		private Vector3D _position = new Vector3D();
-		private Quaternion _rotation = new Quaternion(0, 0, 0, 1);
+		private Quaternion _rotation = new Quaternion(0, 0, 0, 0);
 		private Vector3D _scale = new Vector3D(1, 1, 1);
 		private Transform _parent = null;
 
@@ -82,7 +82,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			lookAtTarget = target;
 		}
 
-		public bool Changed { get; private set; }
+		public bool Changed { get; private set; } = true;
 		public void ProcessedChanges() => Changed = false;
 	}
 }

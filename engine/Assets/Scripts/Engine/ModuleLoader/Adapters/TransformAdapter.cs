@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Quaternion = MathNet.Spatial.Euclidean.Quaternion;
 using Transform = SynthesisAPI.EnvironmentManager.Components.Transform;
+using Engine.Util;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -21,15 +22,16 @@ namespace Engine.ModuleLoader.Adapters
 			if (instance.Changed)
 			{
 				unityTransform.parent = mapParent(instance.Parent);
-				unityTransform.localPosition = mapVector3D(instance.Position);
-				unityTransform.rotation = mapQuaternion(instance.Rotation);
-				unityTransform.localScale = mapVector3D(instance.Scale);
+				unityTransform.localPosition = Utilities.MapVector3D(instance.Position);
+				unityTransform.localRotation = Utilities.MapQuaternion(instance.Rotation);
+				unityTransform.localScale = Utilities.MapVector3D(instance.Scale);
 				instance.ProcessedChanges();
 			}
 			if (instance.lookAtTarget != null) 
 			{
-				var target = instance.lookAtTarget.Value;
-				unityTransform.LookAt(new Vector3((float)target.X, (float)target.Y, (float)target.Z));
+				unityTransform.LookAt(Utilities.MapVector3D(instance.lookAtTarget.Value));
+				instance.Rotation = Utilities.MapUnityQuaternion(unityTransform.localRotation);
+				instance.ProcessedChanges();
 				instance.finishLookAt();
 			}
 		}
@@ -48,12 +50,6 @@ namespace Engine.ModuleLoader.Adapters
 			}
 			return null;
 		}
-
-		private static Vector3 mapVector3D(Vector3D vec) => new Vector3((float) vec.X, (float) vec.Y, (float) vec.Z);
-		private static Vector3D mapVector3(Vector3 vec) => new Vector3D(vec.x, vec.y, vec.z);
-		private static Quaternion mapUnityQuaternion(UnityEngine.Quaternion q) => new Quaternion(q.w, q.x, q.y, q.z);
-		private static UnityEngine.Quaternion mapQuaternion(Quaternion q) =>
-			new UnityEngine.Quaternion((float) q.Real, (float) q.ImagX, (float) q.ImagY, (float) q.ImagZ);
 		
 		public void SetInstance(Transform transform)
 		{
