@@ -1,4 +1,5 @@
 ﻿using MathNet.Spatial.Euclidean;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Quaternion = MathNet.Spatial.Euclidean.Quaternion;
@@ -8,6 +9,7 @@ namespace Engine.ModuleLoader.Adapters
 {
 	public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform>
 	{
+		private static List<TransformAdapter> transforms = new List<TransformAdapter>(); // TODO manage lifetimes
 
 		public void Awake()
 		{
@@ -16,11 +18,13 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Update()
 		{
-			if (instance.Changed) // TODO compare against float.Epsilon?
+			if (instance.Changed)
 			{
-				unityTransform.position = mapVector3D(instance.Position);
-				// unityTransform.rotation = mapQuaternion(instance.Rotation);
+				unityTransform.parent = mapParent(instance.Parent);
+				unityTransform.localPosition = mapVector3D(instance.Position);
+				unityTransform.rotation = mapQuaternion(instance.Rotation);
 				unityTransform.localScale = mapVector3D(instance.Scale);
+				instance.ProcessedChanges();
 			}
 			if (instance.lookAtTarget != null) 
 			{
@@ -28,6 +32,21 @@ namespace Engine.ModuleLoader.Adapters
 				unityTransform.LookAt(new Vector3((float)target.X, (float)target.Y, (float)target.Z));
 				instance.finishLookAt();
 			}
+		}
+
+		private static UnityEngine.Transform mapParent(Transform parent)
+		{
+			if (parent == null)
+				return null;
+
+			foreach (var transform in transforms)
+			{
+				if (transform.instance != null && transform.instance.Entity == parent.Entity)
+				{
+					return transform.unityTransform;
+				}
+			}
+			return null;
 		}
 
 		private static Vector3 mapVector3D(Vector3D vec) => new Vector3((float) vec.X, (float) vec.Y, (float) vec.Z);
@@ -39,6 +58,7 @@ namespace Engine.ModuleLoader.Adapters
 		public void SetInstance(Transform transform)
 		{
 			instance = transform;
+			transforms.Add(this);
 		}
 
 		public static Transform NewInstance()

@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.EnvironmentManager.Components;
+using UnityEngine.EventSystems;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -30,8 +31,9 @@ namespace Engine.ModuleLoader.Adapters
                 }
 				camera = gameObject.AddComponent<UnityEngine.Camera>();
 				camera.CopyFrom(defaultCamera);
+				gameObject.AddComponent<PhysicsRaycaster>();
 			}
-			//if(UnityEngine.Camera.allCameras)
+			// TODO manage which is main camera?
 		}
 	}
 }

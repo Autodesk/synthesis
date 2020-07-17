@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.InputManager.Digital;
+﻿using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
+using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Axis;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Events;
@@ -6,12 +8,11 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
 using Utilities;
 
+#nullable enable
+
 using Entity = System.UInt32;
-using MathNet.Spatial.Euclidean;
-using MathNet.Spatial.Units;
 
 namespace SynthesisCore.Systems
 {
@@ -24,15 +25,16 @@ namespace SynthesisCore.Systems
 
         private bool orbitActive = false;
 
-        private Vector3D focusPoint = new Vector3D(); // Default focus point
+        private Vector3D FocusPoint { get; } = new Vector3D(); // Default focus point
 
         private Entity? cameraEntity = null;
-        private Transform transform = null;
+        private Transform cameraTransform = null;
 
         /// <summary>
         /// An optional target to focus on
         /// </summary>
-        public static Selectable SelectedTarget = null;
+        private static Selectable? SelectedTarget = null;
+        private static Selectable? LastSelectedTarget = null;
 
         public override void Setup()
         {
@@ -40,9 +42,8 @@ namespace SynthesisCore.Systems
             {
                 cameraEntity = EnvironmentManager.AddEntity();
                 cameraEntity?.AddComponent<Camera>();
-                transform = cameraEntity?.AddComponent<Transform>();
-                transform.Position = focusPoint + new Vector3D(0, 5, 5);
-                transform.LookAt(focusPoint);
+                cameraTransform = cameraEntity?.AddComponent<Transform>();
+                SetFocus(null);
             }
 
             // Bind controls
@@ -61,7 +62,6 @@ namespace SynthesisCore.Systems
                 if (de.KeyState == DigitalState.Down)
                 {
                     orbitActive = true;
-                    ApiProvider.Log("Orbit active");
                     // TODO cursor stuff
                     // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
                     // Cursor.visible = false;
@@ -69,7 +69,6 @@ namespace SynthesisCore.Systems
                 else if (de.KeyState == DigitalState.Up)
                 {
                     orbitActive = false;
-                    ApiProvider.Log("Orbit inactive");
                     // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
                     // Cursor.visible = true;
                 }
@@ -85,7 +84,7 @@ namespace SynthesisCore.Systems
         private const double MaxDistance = 50;
         private const double MinHeight = 0.25;
 
-        private void ProcessZoom(Vector3D vectorToFocus, Vector3D unitVectorToFocus)
+        private void ProcessZoom()
         {
             // TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
             float distMod = -InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
@@ -95,13 +94,13 @@ namespace SynthesisCore.Systems
             }
             lastDistMod = distMod;
             
-            if ((vectorToFocus.Length > MinDistance && distMod < 0) || (vectorToFocus.Length < MaxDistance && distMod > 0))
+            if ((cameraTransform.Position.Length > MinDistance && distMod < 0) || (cameraTransform.Position.Length < MaxDistance && distMod > 0))
             {
-                transform.Position += unitVectorToFocus.ScaleBy(distMod);
+                cameraTransform.Position += cameraTransform.Position.Normalize().ToVector3D().ScaleBy(distMod);
             }
         }
 
-        private void ProcessOrbit(Vector3D vectorToFocus, Vector3D _)
+        private void ProcessOrbit()
         {
             if (orbitActive)
             {
@@ -115,32 +114,48 @@ namespace SynthesisCore.Systems
                 lastXMod = xMod;
                 lastYMod = yMod;
 
-                transform.Position = transform.Position.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod * SensitivityX));
+                // Rotate horizontally (i.e. around y-axis)
+                var xDelta = cameraTransform.Position.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod * SensitivityX)) - cameraTransform.Position;
 
-                var verticalRotationAxis = vectorToFocus.CrossProduct(UnitVector3D.YAxis).Normalize();
-                transform.Position = transform.Position.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod * SensitivityY));
+                // Rotate vertically
+                var verticalRotationAxis = cameraTransform.Position.CrossProduct(UnitVector3D.YAxis).Normalize();
+                Vector3D yDelta = cameraTransform.Position.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod * SensitivityY)) - cameraTransform.Position;
 
-                ApiProvider.Log(transform.Position.Y);
+                // Stop from vertically rotating past directly above the focus point
+                var newPosition = cameraTransform.Position + yDelta;
+                if (newPosition.AngleTo(UnitVector3D.YAxis) <= Angle.FromDegrees(2)) // TODO this doesn't catch cases where it jumps to the otherside and is more than 2 degrees away
+                {
+                    yDelta = new Vector3D(0, 0, 0);
+                }
 
-                transform.Position = new Vector3D(transform.Position.X, Math.Max(transform.Position.Y, MinHeight), transform.Position.Z);
+                // Stop from vertically rotating below the floor 
 
-                transform.LookAt(focusPoint);
+                cameraTransform.Position += xDelta + yDelta;
+
+                cameraTransform.Position = new Vector3D(cameraTransform.Position.X, Math.Max(cameraTransform.Position.Y, MinHeight), cameraTransform.Position.Z);
+
+                cameraTransform.LookAt(cameraTransform.Parent != null ? cameraTransform.Parent.Position + FocusPoint : FocusPoint);
             }
+        }
+
+        private void SetFocus(Transform? parent)
+        {
+            cameraTransform.Parent = parent;
+            cameraTransform.Position = new Vector3D(0, 5, 5); // TODO make teleportation more fluid
+            cameraTransform.LookAt(cameraTransform.Parent != null ? cameraTransform.Parent.Position + FocusPoint : FocusPoint);
         }
 
         public override void OnUpdate()
         {
-            if (SelectedTarget != null)
-            { // Adjust defaults if a target is selected
-              // focusPoint = SelectedTarget.Position; // TODO
+            SelectedTarget = Selectable.Selected;
+            if (SelectedTarget != null && SelectedTarget != LastSelectedTarget)
+            {
+                LastSelectedTarget = SelectedTarget;
+                SetFocus(SelectedTarget?.Entity?.GetComponent<Transform>());
             }
 
-            Vector3D vectorToFocus = transform.Position - focusPoint;
-            Vector3D unitVectorToFocus = vectorToFocus.Normalize().ToVector3D();
-
-            ProcessZoom(vectorToFocus, unitVectorToFocus);
-
-            ProcessOrbit(vectorToFocus, unitVectorToFocus);
+            ProcessZoom();
+            ProcessOrbit();
         }
         public override void OnPhysicsUpdate() { }
     }

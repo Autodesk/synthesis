@@ -4,7 +4,7 @@ namespace SynthesisAPI.EnvironmentManager
 {
 	public class Component
 	{
-		protected Entity? Entity { get; private set; } = null;
+		public Entity? Entity { get; private set; } = null;
 
 		internal void SetEntity(Entity entity)
 		{

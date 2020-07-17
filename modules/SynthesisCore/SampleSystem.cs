@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Digital;
 using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.Modules.Attributes;
@@ -15,15 +18,19 @@ namespace SynthesisCore
     public class SampleSystem : SystemBase
     {
         private Selectable selectable;
+        private Transform transform;
 
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
-            Mesh m = e.AddComponent<Mesh>();
+            transform = e.AddComponent<Transform>();
             selectable = e.AddComponent<Selectable>();
+            Mesh m = e.AddComponent<Mesh>();
             cube(m);
+
+            InputManager.AssignDigital("forwards", (KeyDigital)"W", Move);
         }
 
         public override void OnUpdate() {
@@ -63,9 +70,16 @@ namespace SynthesisCore
             };
         }
 
-        public void Move(DigitalStateEvent digitalStateEvent)
+        public void Move(IEvent e)
         {
-            
+            if(e is DigitalStateEvent digitalStateEvent)
+            {
+                if (digitalStateEvent.Name == "forwards" && digitalStateEvent.KeyState == DigitalState.Down)
+                {
+                    ApiProvider.Log("Moving");
+                    transform.Position += new Vector3D(0.1, 0, 0);
+                }
+            }
         }
     }
 }

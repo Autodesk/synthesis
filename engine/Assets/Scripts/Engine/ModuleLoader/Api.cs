@@ -351,8 +351,7 @@ namespace Engine.ModuleLoader
 					type = typeof(ComponentAdapter);
 				}
 
-				gameObject.AddComponent(type);
-				dynamic gameObjectComponent = gameObject.GetComponent(type);
+				dynamic gameObjectComponent = gameObject.AddComponent(type);
 				gameObjectComponent.SetInstance(component);
 
 				return component;

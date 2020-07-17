@@ -10,9 +10,21 @@ namespace SynthesisAPI.EnvironmentManager.Components
 	[BuiltinComponent]
 	public class Transform : Component
 	{
-		private Vector3D _position;
+		private Vector3D _position = new Vector3D();
 		private Quaternion _rotation = new Quaternion(0, 0, 0, 1);
-		private Vector3D _scale;
+		private Vector3D _scale = new Vector3D(1, 1, 1);
+		private Transform _parent = null;
+
+		public Transform Parent
+        {
+			get => _parent;
+			set
+			{
+				_parent = value;
+				Changed = true;
+			}
+
+		}
 
 		public Vector3D Position
 		{
