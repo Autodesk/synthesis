@@ -74,7 +74,8 @@ namespace SynthesisAPI.AssetManager
             // joints are not attached to RootOccurrence directly but added to Joint dictionary
             foreach (JsonDictionary joint in (JsonList)extras["joints"])
             {
-                ExportJointsFromExtras(joint);
+                Design.Joints.Add(ExportJointsFromExtras(joint));
+                Console.WriteLine("Debug");
             }
 
             return design;
@@ -195,24 +196,22 @@ namespace SynthesisAPI.AssetManager
                             jointOrigin.Z = (double)(decimal)(childData.Value as Dictionary<string, object>)["z"];
                             joint.Origin = jointOrigin;
                             break;
-                        case "revoluteJointMotion":
-                            var jointType = joint.Type;
-                            joint.Type = (Design.Joint.JointType)(int)(childData.Value as Dictionary<string, object>)["y"];
-                            joint.Type = jointType;
-                            break;
+                        //case "revoluteJointMotion":
+                        //    var jointType = joint.Type;
+                        //    joint.Type = (Design.Joint.JointType)(int)(childData.Value as Dictionary<string, object>)["y"];
+                        //    joint.Type = jointType;
+                        //    break;
                         case "occurrenceOneUUID":
                             //joint.OccurenceOneUuid = (string)(childData.Value as Dictionary<string, object>)["occurrenceOneUUID"];
                             joint.OccurenceOneUuid = (string)childData.Value;
                             break;
                         case "occurrenceTwoUUID":
-                            joint.OccurenceTwoUuid = (string)(childData.Value;
+                            joint.OccurenceTwoUuid = (string)childData.Value;
                             break;
                         default:
                             break;
                     }
                     i++;
-
-                    //Joints.Add(data.Key, joint);
                 }
             }
 

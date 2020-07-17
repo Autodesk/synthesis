@@ -1,4 +1,5 @@
-﻿using SharpGLTF.Memory;
+﻿using SharpGLTF.IO;
+using SharpGLTF.Memory;
 using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace SynthesisAPI.EnvironmentManager
 
         public static IDictionary<int, Component> Components { get; set; }
         public Occurrence RootOccurence { get; set; }
-        // public IList<Joint> Joints { get; set; }
-        public static IDictionary<string, Joint> Joints { get; set; }
+        public static IList<Joint> Joints { get; set; }
+        //public static IDictionary<string, Joint> Joints { get; set; }
         public IList<Material> Materials { get; set; }
         public IList<Appearance> Appearances { get; set; }
 
@@ -24,8 +25,8 @@ namespace SynthesisAPI.EnvironmentManager
             MetaData = metaData;
             Components = new Dictionary<int, Component>();
             RootOccurence = new Occurrence();
-            //Joints = new List<Joint>();
-            Joints = new Dictionary<string, Joint>();
+            Joints = new List<Joint>();
+            //Joints = new Dictionary<string, Joint>();
             Materials = new List<Material>();
             Appearances = new List<Appearance>();
         }
