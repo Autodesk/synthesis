@@ -23,7 +23,9 @@ namespace SynthesisCore.Systems
         public static float SensitivityY { get => 2; }
         public static float SensitivityZoom { get => 3; }
 
-        private bool orbitActive = false;
+        private bool inFreeRoamMode = true;
+
+        private bool isMouseDragging = false;
 
         private Vector3D focusPoint = new Vector3D(); // Default focus point
         private Vector3D offset = new Vector3D();
@@ -37,11 +39,12 @@ namespace SynthesisCore.Systems
         private static Selectable? SelectedTarget = null;
         private static Selectable? LastSelectedTarget = null;
 
-        private float lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera movement speed
+        private float xMod = 0, yMod = 0, lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera movement speed
 
         private const double MinDistance = 0.25;
         private const double MaxDistance = 50;
         private const double MinHeight = 0.25;
+        private const double FreeRoamCameraMoveDelta = 0.03;
 
         public override void Setup()
         {
@@ -52,30 +55,99 @@ namespace SynthesisCore.Systems
                 cameraTransform = cameraEntity?.AddComponent<Transform>();
                 SetNewFocus(new Vector3D());
             }
+            // Bind controls for free roam
+            InputManager.AssignDigital("CameraForward", (KeyDigital)"W", CameraForward);
+            InputManager.AssignDigital("CameraLeft", (KeyDigital)"A", CameraLeft);
+            InputManager.AssignDigital("CameraBackward", (KeyDigital)"S", CameraBackward);
+            InputManager.AssignDigital("CameraRight", (KeyDigital)"D", CameraRight);
 
-            // Bind controls
-            InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", UseOrbit);
+            // Bind controls for orbit
+            InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", StartMouseDrag); // TODO put control settings in preference manager
             InputManager.AssignAxis("ZoomCamera", (DualAxis)"Mouse ScrollWheel");
+        }
+
+        public void CameraForward(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null) // TODO allow free roam movement in orbit, but still LootAt focus?
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if (de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(0, 0, -FreeRoamCameraMoveDelta); // TODO make relative to forward not world
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
+        }
+
+        public void CameraBackward(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null)
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if(de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(0, 0, FreeRoamCameraMoveDelta);
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
+        }
+
+        public void CameraLeft(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null)
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if (de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(FreeRoamCameraMoveDelta, 0, 0);
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
+        }
+
+        public void CameraRight(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null)
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if (de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(-FreeRoamCameraMoveDelta, 0, 0);
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
         }
 
         /// <summary>
         /// Function used to switch orbit control on and off
         /// </summary>
         /// <param name="e"></param>
-        public void UseOrbit(IEvent e)
+        public void StartMouseDrag(IEvent e)
         {
             if (e is DigitalStateEvent de)
             {
                 if (de.KeyState == DigitalState.Down)
                 {
-                    orbitActive = true;
+                    isMouseDragging = true;
                     // TODO cursor stuff
                     // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
                     // Cursor.visible = false;
                 }
                 else if (de.KeyState == DigitalState.Up)
                 {
-                    orbitActive = false;
+                    isMouseDragging = false;
                     // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
                     // Cursor.visible = true;
                 }
@@ -88,7 +160,6 @@ namespace SynthesisCore.Systems
 
         private void ProcessZoom()
         {
-            // TODO: Accelerate the scroll wheel even after the user briefly stops scrolling
             float distMod = -InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
             if (distMod != 0)
             {
@@ -103,29 +174,19 @@ namespace SynthesisCore.Systems
                     offset += offset.Normalize().ToVector3D().ScaleBy(distMod);
                 }
             }
-            lastDistMod = distMod;
+            lastDistMod = distMod == 0 ? lastDistMod : distMod;
         }
 
         private void ProcessOrbit()
         {
-            if (orbitActive)
+            if (isMouseDragging)
             {
-                float xMod = InputManager.GetAxisValue("MouseX");
-                float yMod = -InputManager.GetAxisValue("MouseY");
-
-                if (xMod != 0 && (xMod < 0) == (lastXMod < 0))
-                    xMod += lastXMod * 0.3f;
-                if (yMod != 0 && (yMod < 0) == (lastYMod < 0))
-                    yMod += lastYMod * 0.3f;
-                lastXMod = xMod;
-                lastYMod = yMod;
-
                 // Rotate horizontally (i.e. around y-axis)
-                var xDelta = offset.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod * SensitivityX)) - offset;
+                var xDelta = offset.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod)) - offset;
 
                 // Rotate vertically
                 var verticalRotationAxis = offset.CrossProduct(UnitVector3D.YAxis).Normalize();
-                Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod * SensitivityY)) - offset;
+                Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod)) - offset;
 
                 // Stop from vertically rotating past directly above the focus point
                 var newPosition = offset + yDelta;
@@ -140,12 +201,10 @@ namespace SynthesisCore.Systems
                 var newPos = focusPoint + offset;
                 newPos = new Vector3D(newPos.X, Math.Max(newPos.Y, MinHeight), newPos.Z);
                 offset = newPos - focusPoint;
-
-                UpdateCameraPosition();
             }
         }
 
-        private void UpdateCameraPosition()
+        private void UpdateOrbitCameraPosition()
         {
             if (cameraTransform != null) {
                 cameraTransform.Position = focusPoint + offset;
@@ -153,17 +212,47 @@ namespace SynthesisCore.Systems
             }
         }
 
+        private void ProcessFreeRoamDrag()
+        {
+            if (isMouseDragging)
+            {
+                // Rotate horizontally (i.e. around y-axis)
+                if (cameraTransform != null) {
+                    // cameraTransform.Rotate(new Vector3D(xMod, 0, 0)); // TODO fix this
+                }
+            }
+        }
+
         private void SetNewFocus(Vector3D newFocusPoint)
         {
             focusPoint = newFocusPoint;
             offset = new Vector3D(0, 5, 5); // TODO make teleportation more fluid
-            UpdateCameraPosition();
+            UpdateOrbitCameraPosition();
         }
 
         public override void OnUpdate()
         {
+            if (isMouseDragging)
+            {
+                // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?)
+                xMod = InputManager.GetAxisValue("MouseX") * SensitivityX;
+                yMod = -InputManager.GetAxisValue("MouseY") * SensitivityY;
+
+                if (xMod != 0 && (xMod < 0) == (lastXMod < 0))
+                    xMod += lastXMod * 0.3f;
+                if (yMod != 0 && (yMod < 0) == (lastYMod < 0))
+                    yMod += lastYMod * 0.3f;
+                lastXMod = xMod == 0 ? lastXMod : xMod;
+                lastYMod = yMod == 0 ? lastYMod : yMod;
+            }
+
             SelectedTarget = Selectable.Selected;
-            if (SelectedTarget != null)
+            inFreeRoamMode = SelectedTarget == null;
+            if (inFreeRoamMode) // Free roam mode
+            {
+                ProcessFreeRoamDrag();
+            }
+            else // Orbit mode
             {
                 var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.Position;
                 if (newFocusPoint.HasValue)
@@ -178,11 +267,11 @@ namespace SynthesisCore.Systems
                         focusPoint = newFocusPoint.Value;
                     }
                 }
-            }
 
-            ProcessZoom();
-            ProcessOrbit();
-            UpdateCameraPosition();
+                ProcessZoom();
+                ProcessOrbit();
+                UpdateOrbitCameraPosition();
+            }
         }
         public override void OnPhysicsUpdate() { }
     }

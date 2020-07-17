@@ -19,5 +19,10 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 Selected = this;
             }
         }
+
+        internal static void ResetSelected()
+        {
+            Selected = null;
+        }
     }
 }

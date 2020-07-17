@@ -56,11 +56,15 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			}
 		}
 
-		public void Rotate(Vector3D angles)
+		public void Rotate(Vector3D eulerAngles)
 		{
-			angles = angles.Normalize().ToVector3D();
-			Rotate(MathUtil.FromEuler(new EulerAngles(Angle.FromDegrees(angles.X), Angle.FromDegrees(angles.Y),
-				Angle.FromDegrees(angles.Z))) - Rotation);
+			Rotate(new EulerAngles(Angle.FromDegrees(eulerAngles.X), Angle.FromDegrees(eulerAngles.Y),
+				Angle.FromDegrees(eulerAngles.Z)));
+		}
+
+		public void Rotate(EulerAngles eulerAngles)
+		{
+			Rotate(MathUtil.FromEuler(eulerAngles) - Rotation);
 		}
 
 		public void Rotate(Quaternion rotation)
