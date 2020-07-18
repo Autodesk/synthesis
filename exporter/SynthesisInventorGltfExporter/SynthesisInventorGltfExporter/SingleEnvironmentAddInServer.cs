@@ -1,9 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SynthesisInventorGltfExporter.GUI.Messages;
-using SynthesisInventorGltfExporter.Properties;
-using SynthesisInventorGltfExporter.Utilities;
 using Inventor;
 using Application = Inventor.Application;
 using Environment = Inventor.Environment;
@@ -50,7 +47,7 @@ namespace SynthesisInventorGltfExporter
                 {
                     environmentVisible = false;
                     OnEnvironmentClose();
-                    InventorUtils.ForceQuitExporter(OpenDocument);
+                    // InventorUtils.ForceQuitExporter(OpenDocument);
                     // Dispose of document
                     if (OpenDocument != null)
                         Marshal.ReleaseComObject(OpenDocument);
@@ -126,6 +123,7 @@ namespace SynthesisInventorGltfExporter
 
         public void Activate(ApplicationAddInSite addInSiteObject, bool firstTime)
         {
+            var exporter = new GLTFDesignExporter();
             Application = addInSiteObject.Application;
             environment = CreateEnvironment();
             SetupEnvironmentHandlers();
@@ -153,19 +151,24 @@ namespace SynthesisInventorGltfExporter
         {
             if (beforeOrAfter == EventTimingEnum.kBefore)
             {
-                if (IsNewExporterEnvironmentAllowed(documentObject))
-                    InventorUtils.EnableEnvironment(Application, environment);
-                else
-                    InventorUtils.DisableEnvironment(Application, environment);
+                // if (IsNewExporterEnvironmentAllowed(documentObject))
+                    // InventorUtils.EnableEnvironment(Application, environment);
+                // else
+                    // InventorUtils.DisableEnvironment(Application, environment);
                 
                 if (IsDocumentOpenInTheExporter(documentObject))
                     EnvironmentVisible = true;
             }
-            else if (beforeOrAfter == EventTimingEnum.kAfter && Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject))
+            else if (beforeOrAfter == EventTimingEnum.kAfter)
             {
-                MessageBox.Show("The Synthesis robot exporter add-in has been installed.\nTo access the exporter, select the \"Robot Export\" button under the \"Environments\" tab.", "Synthesis Add-In", MessageBoxButtons.OK);
-                Settings.Default.ShowFirstLaunchInfo = false;
-                Settings.Default.Save();
+                var exporter = new GLTFDesignExporter();
+                exporter.ExportDesign(Application.ActiveDocument as AssemblyDocument);
+                // if (Settings.Default.ShowFirstLaunchInfo && IsNewExporterEnvironmentAllowed(documentObject))
+                // {
+                    // MessageBox.Show("The Synthesis robot exporter add-in has been installed.\nTo access the exporter, select the \"Robot Export\" button under the \"Environments\" tab.", "Synthesis Add-In", MessageBoxButtons.OK);
+                    // Settings.Default.ShowFirstLaunchInfo = false;
+                    // Settings.Default.Save();
+                // }
             }
 
             handlingCode = HandlingCodeEnum.kEventNotHandled;
@@ -201,7 +204,7 @@ namespace SynthesisInventorGltfExporter
                     { // TODO: Make this text generic
                         MessageBox.Show("The Robot Exporter only supports assembly documents.", // or, the environment is already open, but the env button hiding seems to work in that case
                             "Unsupported Document Type", MessageBoxButtons.OK);
-                        InventorUtils.ForceQuitExporter(documentObject);
+                        // InventorUtils.ForceQuitExporter(documentObject);
                     }
                 }
                 // If the exporter environment is closing

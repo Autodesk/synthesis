@@ -1,8 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3bc3b178-3070-4b0b-a8b9-dfe36c25d0fe" name="Default Changelist" comment="">
+    <list default="true" id="f5e503bc-fad8-4e3e-8f36-1ba592ddc905" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/Microsoft.Bcl.AsyncInterfaces.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/Microsoft.Bcl.AsyncInterfaces.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SharpGLTF.Core.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SharpGLTF.Core.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SharpGLTF.Toolkit.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SharpGLTF.Toolkit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SynthesisInventorGLTFExporter.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SynthesisInventorGLTFExporter.dll.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/SynthesisInventorGLTFExporter.pdb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Buffers.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Buffers.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Memory.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Memory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Text.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Text.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Threading.Tasks.Extensions.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.Threading.Tasks.Extensions.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.ValueTuple.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/$(ProgramFiles64)/Autodesk/Synthesis/Exporter/System.ValueTuple.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/Microsoft.Bcl.AsyncInterfaces.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/Microsoft.Bcl.AsyncInterfaces.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SharpGLTF.Core.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SharpGLTF.Core.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SharpGLTF.Toolkit.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SharpGLTF.Toolkit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SynthesisInventorGLTFExporter.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SynthesisInventorGLTFExporter.dll.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/SynthesisInventorGLTFExporter.pdb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Buffers.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Buffers.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Memory.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Memory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Text.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Threading.Tasks.Extensions.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.Threading.Tasks.Extensions.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.ValueTuple.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/bin/Debug/System.ValueTuple.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/.NETFramework,Version=v4.8.AssemblyAttributes.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/DesignTimeResolveAssemblyReferences.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.Properties.Resources.resources" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.csproj.CopyComplete" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.csproj.GenerateResource.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.csprojAssemblyReference.cache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/obj/Debug/SynthesisInventorGLTFExporter.pdb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/LICENSE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/Newtonsoft.Json.12.0.3.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net20/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net20/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net35/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net35/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net40/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net40/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net45/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/net45/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard1.0/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard1.0/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard1.3/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard1.3/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard2.0/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/netstandard2.0/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/Newtonsoft.Json.12.0.3/packageIcon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Core.1.0.0-alpha0014/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Core.1.0.0-alpha0014/SharpGLTF.Core.1.0.0-alpha0014.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Core.1.0.0-alpha0014/glTF2Sharp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Core.1.0.0-alpha0014/lib/netstandard2.0/SharpGLTF.Core.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Core.1.0.0-alpha0014/lib/netstandard2.0/SharpGLTF.Core.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Toolkit.1.0.0-alpha0014/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Toolkit.1.0.0-alpha0014/SharpGLTF.Toolkit.1.0.0-alpha0014.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Toolkit.1.0.0-alpha0014/glTF2Sharp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Toolkit.1.0.0-alpha0014/lib/netstandard2.0/SharpGLTF.Toolkit.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/SharpGLTF.Toolkit.1.0.0-alpha0014/lib/netstandard2.0/SharpGLTF.Toolkit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/System.Memory.4.5.3.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/THIRD-PARTY-NOTICES.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/lib/netcoreapp2.1/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/lib/netstandard1.1/System.Memory.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/lib/netstandard1.1/System.Memory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/ref/netcoreapp2.1/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/useSharedDesignerContext.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Memory.4.5.3/version.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/System.Numerics.Vectors.4.4.0.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/THIRD-PARTY-NOTICES.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/MonoAndroid10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/MonoTouch10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/net46/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/net46/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/netcoreapp2.0/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/netstandard1.0/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/netstandard1.0/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/netstandard2.0/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/netstandard2.0/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/portable-net45+win8+wp8+wpa81/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/portable-net45+win8+wp8+wpa81/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/xamarinios10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/xamarinmac20/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/xamarintvos10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/lib/xamarinwatchos10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/MonoAndroid10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/MonoTouch10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/net46/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/net46/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/netcoreapp2.0/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/netstandard1.0/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/netstandard1.0/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/netstandard2.0/System.Numerics.Vectors.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/netstandard2.0/System.Numerics.Vectors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/xamarinios10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/xamarinmac20/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/xamarintvos10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/ref/xamarinwatchos10/_._" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/useSharedDesignerContext.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Numerics.Vectors.4.4.0/version.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/System.Runtime.CompilerServices.Unsafe.4.5.3.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/THIRD-PARTY-NOTICES.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/net461/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/net461/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/net461/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/net461/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/useSharedDesignerContext.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Runtime.CompilerServices.Unsafe.4.5.3/version.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/Icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/LICENSE.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/System.Text.Encodings.Web.5.0.0-preview.1.20120.5.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/THIRD-PARTY-NOTICES.TXT" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netcoreapp3.0/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netcoreapp3.0/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard1.0/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard1.0/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard2.0/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard2.0/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard2.1/System.Text.Encodings.Web.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/lib/netstandard2.1/System.Text.Encodings.Web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/useSharedDesignerContext.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Encodings.Web.5.0.0-preview.1.20120.5/version.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Json.2.0.0.11/.signature.p7s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Json.2.0.0.11/System.Text.Json.2.0.0.11.nupkg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/System.Text.Json.2.0.0.11/lib/net40/System.Text.Json.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/riderModule.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/riderModule.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter.sln" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter.sln.DotSettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/EditLimits32.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExporterSettingsForm.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExporterSettingsForm.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExporterSettingsForm.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/Guide.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuideManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuidePanel.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuidePanel.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuidePanel.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKey.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyPane.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyPane.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyPane.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Loading/LoadingBar.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Loading/LoadingBar.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Loading/LoadingBar.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/AnalyticsSurvey.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/AnalyticsSurvey.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/AnalyticsSurvey.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.resx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Managers/AddInSettingsManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.settings" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.settings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/Branding/SynthesisLogo16.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/Branding/SynthesisLogo32.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/Branding/SynthesisLogoIco.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/DrivetrainTypeIcons/HDriveIcon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/DrivetrainTypeIcons/TankDriveIcon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/LoadingAnimations/SynthesisLogoLoading.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/Book32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/Checklist32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/DrivetrainType32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/Gears16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/Gears32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/JointEditor32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/RibbonIcons/Weight32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/Shaders/shader.frag" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Resources/Shaders/shader.vert" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SingleEnvironmentAddInServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SingleEnvironmentAddInServer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj.DotSettings" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.manifest" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/AnalyticsUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/DockableWindowManagerBase.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/AxHostConverter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/PictureDispConverter.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/InventorDocumentIOUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/InventorUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/MathUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ProgressUpdate.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/StringUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/Synthesis/SynthesisUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/WinFormsUtils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nuget.config" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,35 +265,37 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.Designer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/PictureDispConverter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Guide/GuidePanel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/ImageConverters/AxHostConverter.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Utilities/InventorUtils.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/JointView/JointViewKeyPane.resx" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/nuget.config" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/AnalyticsSurvey.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/SingleEnvironmentAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.Designer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/ExportSuccessfulForm.resx" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/09/fa6a34f4/FloatingAccessor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/SingleEnvironmentAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Roaming/NuGet/NuGet.Config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/RobotExporterAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/ec/e443d7a1/RuntimeType.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///C# Console" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f0/939ff9b9/ApplicationAddInServer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/packages.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../Program Files (x86)/NuGet/Config/Microsoft.VisualStudio.Offline.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/GLTFDesignExporter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/App.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../SynthesisInventorGltfExporter/synthesis/exporter/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter/SingleEnvironmentAddInServer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGLTFExporter/Properties/Resources.resx" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Messages/UnsupportedComponentsForm.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/Editors/ExportForm.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/SingleEnvironmentAddInServer.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/RobotExporterAddInServer.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/Properties/AssemblyInfo.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/App.config" />
       </list>
     </option>
   </component>
-  <component name="ProjectId" id="1ekA596gzhZJP3pfZNYVlqfh8ff" />
+  <component name="ProjectId" id="1epfGEw5MdhZmmJbblosKrJP9qP" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
@@ -53,14 +307,18 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.49442756" />
+    <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.29989868" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="XThreadsFramesViewSplitterKey" value="0.35384616" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="SolutionBuilderGeneralOptionsPageId" />
   </component>
   <component name="RunManager">
-    <configuration name="SynthesisInventorGltfExporter" type="DotNetProject" factoryName=".NET Project">
+    <configuration name="SynthesisInventorGLTFExporter" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="" />
@@ -68,7 +326,7 @@
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
-      <option name="PROJECT_PATH" value="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/SynthesisInventorGLTFExporter/SynthesisInventorGLTFExporter.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
       <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
@@ -84,42 +342,13 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3bc3b178-3070-4b0b-a8b9-dfe36c25d0fe" name="Default Changelist" comment="" />
-      <created>1594855030634</created>
+      <changelist id="f5e503bc-fad8-4e3e-8f36-1ba592ddc905" name="Default Changelist" comment="" />
+      <created>1595023356475</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1594855030634</updated>
-      <workItem from="1594855036760" duration="5396000" />
+      <updated>1595023356475</updated>
+      <workItem from="1595023361329" duration="7923000" />
     </task>
-    <task id="LOCAL-00001" summary="Add gitignore">
-      <created>1594868517655</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1594868517655</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Delete old structure">
-      <created>1594868612506</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1594868612506</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Rename project and add sharpgltf">
-      <created>1594868776151</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1594868776151</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Rename project and add sharpgltf">
-      <created>1594868786859</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1594868786859</updated>
-    </task>
-    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -130,23 +359,119 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Add gitignore" />
-    <MESSAGE value="Delete old structure" />
-    <MESSAGE value="Rename project and add sharpgltf" />
-    <option name="LAST_COMMIT_MESSAGE" value="Rename project and add sharpgltf" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-6" y="0" width="1953" height="1089" key="CommitChangelistDialog2" timestamp="1594868786183">
+    <state x="780" y="260" key="#xdebugger.evaluate" timestamp="1595026460820">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="-6" y="0" width="1953" height="1089" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1594868786183" />
-    <state x="144" y="82" key="DiffContextDialog" timestamp="1594855200325">
+    <state x="780" y="260" key="#xdebugger.evaluate/0.0.2048.1112@0.0.2048.1112" timestamp="1595026460820" />
+    <state width="2005" height="307" key="GridCell.Tab.0.bottom" timestamp="1595035408311">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="144" y="82" key="DiffContextDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1594855200325" />
-    <state x="703" y="180" width="814" height="534" key="find.popup" timestamp="1594855089442">
+    <state width="2005" height="307" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408311" />
+    <state width="2005" height="307" key="GridCell.Tab.0.center" timestamp="1595035408311">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="703" y="180" width="814" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1594855089442" />
+    <state width="2005" height="307" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408311" />
+    <state width="2005" height="307" key="GridCell.Tab.0.left" timestamp="1595035408311">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408311" />
+    <state width="2005" height="307" key="GridCell.Tab.0.right" timestamp="1595035408311">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408311" />
+    <state width="2005" height="307" key="GridCell.Tab.1.bottom" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.1.center" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.1.left" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.1.right" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.2.bottom" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.2.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.2.center" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.2.center/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.2.left" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.2.left/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.2.right" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.2.right/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.3.bottom" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.3.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.3.center" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.3.center/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.3.left" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.3.left/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.3.right" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.3.right/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.4.bottom" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.4.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.4.center" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.4.center/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.4.left" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.4.left/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state width="2005" height="307" key="GridCell.Tab.4.right" timestamp="1595035408161">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="2005" height="307" key="GridCell.Tab.4.right/0.0.2048.1112@0.0.2048.1112" timestamp="1595035408161" />
+    <state x="533" y="201" key="SettingsEditor" timestamp="1595034954129">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="533" y="201" key="SettingsEditor/0.0.2048.1112@0.0.2048.1112" timestamp="1595034954129" />
+    <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595026562327">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="1031" height="563" key="XDebugger.FullValuePopup/0.0.2048.1112@0.0.2048.1112" timestamp="1595026562327" />
+    <state x="585" y="293" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1595026304729">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="585" y="293" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2048.1112@0.0.2048.1112" timestamp="1595026304729" />
+    <state x="681" y="259" key="run.anything.popup" timestamp="1595026815569">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="681" y="259" key="run.anything.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1595026815569" />
+    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup" timestamp="1595025607644">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1595025607644" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint enabled="true" type="DotNet Exception Breakpoints" />
+        <breakpoint enabled="true" type="javascript-exception" />
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
