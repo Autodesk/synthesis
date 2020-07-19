@@ -8,7 +8,7 @@ on:
 
 jobs:
   buildApiSolution:
-    name: Build API
+    name: Build ModuleAPI
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,25 +16,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Install Dependencies
+    - name: Install API Dependencies
       run: dotnet restore api/api.sln
-    - name: Build Solution
+    - name: Build API Solution
       run: dotnet build api/api.sln --configuration Release --no-restore
-    - name: Test Solution
+    - name: Test API Solution
       run: dotnet test api/api.sln --no-restore --verbosity normal
-      
-  buildModuleSolution:
-    name: Build Modules
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Install Dependencies
+    - name: Install Module Dependencies
       run: dotnet restore modules/modules.sln
-    - name: Build Solution
+    - name: Build Module Solution
       run: dotnet build modules/modules.sln --configuration Release --no-restore
-    - name: Test Solution
+    - name: Test Module Solution
       run: dotnet test modules/modules.sln --no-restore --verbosity normal
