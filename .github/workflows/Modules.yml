@@ -7,19 +7,34 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  buildApiSolution:
+    name: Build API
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Install Dependencies
+      run: dotnet restore api/api.sln
+    - name: Build Solution
+      run: dotnet build api/api.sln --configuration Release --no-restore
+    - name: Test Solution
+      run: dotnet test api/api.sln --no-restore --verbosity normal
+      
+  buildModuleSolution:
+    name: Build Modules
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install Dependencies
+      run: dotnet restore modules/modules.sln
+    - name: Build Solution
+      run: dotnet build modules/modules.sln --configuration Release --no-restore
+    - name: Test Solution
+      run: dotnet test modules/modules.sln --no-restore --verbosity normal
