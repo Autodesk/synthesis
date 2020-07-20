@@ -1,19 +1,20 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using System;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisAPI.UIManager.UIComponents
 {
-    public abstract class Panel
+    public struct Panel
     {
-        public string Name { get; protected set; }
-        public SynVisualElementAsset UI { get; protected set; }
+        public string Name { get; private set; }
+        public SynVisualElementAsset Ui { get; private set; }
+        public Action<SynVisualElement> BindFunc { get; set; }
 
-        public Panel(string name, SynVisualElementAsset ui)
+        public Panel(string name, SynVisualElementAsset ui, Action<SynVisualElement> bindFunc)
         {
             Name = name;
-            UI = ui;
+            Ui = ui;
+            BindFunc = bindFunc;
         }
-
-        public abstract void Bind(SynVisualElement element);
     }
 }

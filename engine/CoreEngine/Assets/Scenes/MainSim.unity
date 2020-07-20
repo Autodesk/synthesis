@@ -245,7 +245,7 @@ MonoBehaviour:
   Keys:
   - BlankTabAsset
   Values:
-  - {fileID: 9197481963319205126, guid: 8d529c0b9bddfb7449b3c74e2deb079b, type: 3}
+  - {fileID: 9197481963319205126, guid: aedc22dcb5541784ebf49eb64a4ba179, type: 3}
 --- !u!4 &734031875
 Transform:
   m_ObjectHideFlags: 0

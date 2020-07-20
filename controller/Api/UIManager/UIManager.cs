@@ -54,11 +54,11 @@ namespace SynthesisAPI.UIManager
 
         public static void SelectTab(string tabName)
         {
-            var toolbarContainer = Instance.RootElement.VisualElement.Q<VisualElement>(name: "tab-container").Q(name: "bottom");
+            var toolbarContainer = Instance.TabContainer;
 
             if (tabName.Equals("__"))
             {
-                var existingToolbar = toolbarContainer.Q(className: "custom-toolbar");
+                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
                 if (existingToolbar != null)
                     toolbarContainer.Remove(existingToolbar);
 
@@ -67,14 +67,14 @@ namespace SynthesisAPI.UIManager
             else
             {
                 // Remove Existing
-                var existingToolbar = toolbarContainer.Q(className: "custom-toolbar");
+                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
                 if (existingToolbar != null)
                     toolbarContainer.Remove(existingToolbar);
                 
                 // Add toolbar
-                var toolbar = LoadedTabs[tabName].UI.GetElement("Toolbar");
-                LoadedTabs[tabName].Bind(toolbar);
-                toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
+                var toolbar = LoadedTabs[tabName].Ui.GetElement("active-toolbar");
+                LoadedTabs[tabName].BindFunc(toolbar);
+                // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
                 toolbarContainer.Add((VisualElement)toolbar);
 
                 Instance.SelectedTab = tabName;
@@ -93,9 +93,9 @@ namespace SynthesisAPI.UIManager
             var existingPanel = Instance.PanelContainer.Q(name: $"panel-{panelName}");
             if (existingPanel == null)
             {
-                VisualElement elm = LoadedPanels[panelName].UI.GetElement($"panel-{panelName}").VisualElement;
+                VisualElement elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}").VisualElement;
                 Instance.PanelContainer.Add(elm);
-                LoadedPanels[panelName].Bind(elm.GetSynVisualElement());
+                LoadedPanels[panelName].BindFunc(elm.GetSynVisualElement());
             }
             
             // TODO: Maybe some event
@@ -139,6 +139,7 @@ namespace SynthesisAPI.UIManager
                 EventBus.EventBus.NewTagListener($"ui/select-tab", info =>
                 {
                     UIManager.SelectTab((info.GetArguments()[0] as string)!);
+                    ApiProvider.Log($"Selecting Tab: {info.GetArguments()[0] as string}");
                 });
             }
             

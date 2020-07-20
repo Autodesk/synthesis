@@ -36,13 +36,15 @@ public class UIParseTest : MonoBehaviour
 
     private void Start()
     {
-        renderer.postUxmlReload += () =>
-        {
-            Debug.Log("[][]]][][]][]]][][]");
-            return null;
-        };
-        
-        UIManager.AddTab(new TestTab());
+        ApiProvider.Log("Testing");
+
+        Panel testTab = new Panel("Test Panel",
+            AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-panel.uxml",
+                Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}Modules.uxml"),
+            sve => { });
+        UIManager.AddPanel(testTab);
+        UIManager.ShowPanel("Test Panel");
+
         ApiProvider.Log("=====");
         UIManager.RecursivePrint(PanelRenderer.visualTree);
     }
@@ -81,17 +83,4 @@ public class UIParseTest : MonoBehaviour
         };
     }*/
 #endif
-}
-
-public class TestTab : Tab
-{
-    public TestTab(): base("TestTab", AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-entry.uxml",
-        Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test-entry.uxml"))
-    {
-    }
-
-    public override void Bind(SynVisualElement element)
-    {
-        return;
-    }
 }

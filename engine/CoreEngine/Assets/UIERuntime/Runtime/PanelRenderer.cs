@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using SynthesisAPI.Runtime;
 using Object = UnityEngine.Object;
 
 namespace Unity.UIElements.Runtime
@@ -214,7 +215,7 @@ namespace Unity.UIElements.Runtime
         /// </summary>
         public void Start()
         {
-            RecreateUIFromUxml();
+            // RecreateUIFromUxml();
         }
 
         /// <summary>
@@ -223,6 +224,8 @@ namespace Unity.UIElements.Runtime
         public void RecreateUIFromUxml()
         {
             // Basically this method only causes issues for us
+            
+            ApiProvider.Log("Recreate Called");
             
             if (enableLiveUpdates)
             {
@@ -292,7 +295,7 @@ namespace Unity.UIElements.Runtime
             if (panel == null)
                 return;
 
-#if UNITY_EDITOR_NEVER
+#if UNITY_EDITOR
             if (enableLiveUpdates && m_TrackedAssetList != null && m_TrackedAssetHashes != null)
             {
                 for (int i = 0; i < m_TrackedAssetList.Count; ++i)
@@ -304,7 +307,7 @@ namespace Unity.UIElements.Runtime
                     if (hash == cachedHash)
                         continue;
 
-                    RecreateUIFromUxml();
+                    // RecreateUIFromUxml();
                     return;
                 }
             }

@@ -47,6 +47,11 @@ namespace SynthesisAPI.UIManager
 
             // ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
+            if (elementType == null)
+            {
+                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...");
+                return null;
+            }
             dynamic element = typeof(ApiProvider).GetMethod("InstantiateFocusable").MakeGenericMethod(elementType).Invoke(null, null);
 
             if (element != null)
@@ -58,7 +63,12 @@ namespace SynthesisAPI.UIManager
                     // ApiProvider.Log("Parsing Attribute");
 
                     var property = elementType.GetProperty(MapCssName(attr.Name));
-                    if (property == null) throw new Exception($"No property found with name \"{attr.Name}\"");
+                    if (property == null)
+                    {
+                        // throw new Exception($"No property found with name \"{attr.Name}\"");
+                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"");
+                        continue;
+                    }
 
                     if (property.PropertyType.IsEnum)
                     {
@@ -97,7 +107,9 @@ namespace SynthesisAPI.UIManager
             foreach (XmlNode child in node.ChildNodes)
             {
                 // ApiProvider.Log($"Adding child: {child.Name}");
-                resultElement.Add((UnityVisualElement)CreateVisualElement(child));
+                var parsedChild = CreateVisualElement(child);
+                if (parsedChild != null)
+                    resultElement.Add((UnityVisualElement)parsedChild);
                 // ApiProvider.Log($"Finished adding child: {child.Name}");
             }
 
