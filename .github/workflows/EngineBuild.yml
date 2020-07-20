@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - engine/CoreEngine
+          - engine
         unityVersion:
           - 2019.4.0f1
         targetPlatform:

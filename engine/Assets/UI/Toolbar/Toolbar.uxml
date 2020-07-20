@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="flex-grow: 1;">
+        <Style src="USS/Toolbar.uss" />
+        <ui:VisualElement name="toolbar">
+            <ui:VisualElement name="top" class="top">
+                <ui:VisualElement name="left-buttons" style="flex-direction: row;">
+                    <ui:Button name="add-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;);" />
+                    <ui:Button name="environments-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-container" class="tab-container" />
+                <ui:VisualElement name="right-buttons" style="flex-direction: row;">
+                    <ui:Button name="modules-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                    <ui:Button name="settings-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+                    <ui:Button name="help-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="bottom" class="bottom" style="height: auto;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="panel-center" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px; height: auto;" />
+    </ui:VisualElement>
+</ui:UXML>
