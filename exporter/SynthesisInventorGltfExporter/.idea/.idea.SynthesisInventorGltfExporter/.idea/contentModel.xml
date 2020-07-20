@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Users\wangl\AppData\Local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\wangl\AppData\Local\JetBrains\Rider2020.1\resharper-host\Local\Transient\ReSharperHost\v201\SolutionCaches\_SynthesisInventorGLTFExporter.72439099.00" t="ExcludeRecursive" />
+    <e p="C:\Users\wangl\AppData\Local\JetBrains\Rider2020.1\resharper-host\Local\Transient\ReSharperHost\v201\SolutionCaches\_SynthesisInventorGltfExporter.72439099.00" t="ExcludeRecursive" />
     <e p="C:\Users\wangl\Repos\SynthesisInventorGltfExporterNew\synthesis\exporter\SynthesisInventorGLTFExporter" t="IncludeFlat">
       <e p="packages" t="ExcludeRecursive" />
       <e p="SynthesisInventorGLTFExporter" t="IncludeRecursive">
@@ -21,9 +21,9 @@
         </e>
         <e p="RobotExporterAddInServer.cs" t="Include" />
         <e p="SingleEnvironmentAddInServer.cs" t="Include" />
-        <e p="SynthesisInventorGLTFExporter.csproj" t="IncludeRecursive" />
+        <e p="SynthesisInventorGltfExporter.csproj" t="IncludeRecursive" />
       </e>
-      <e p="SynthesisInventorGLTFExporter.sln" t="IncludeFlat" />
+      <e p="SynthesisInventorGltfExporter.sln" t="IncludeFlat" />
     </e>
   </component>
 </project>

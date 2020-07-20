@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SynthesisInventorGLTFExporter.Properties
+namespace SynthesisInventorGltfExporter.Properties
 {
 
 
