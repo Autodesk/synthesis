@@ -19,7 +19,7 @@ namespace MockApi
                  a.GetTypes()).Where(e => e.IsSubclassOf(typeof(SystemBase))))
             {
                 var entity = EnvironmentManager.AddEntity();
-                EnvironmentManager.AddComponent(entity,type);
+                entity.AddComponent(type);
             }
             foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
                 a.GetTypes()).Where(e => e.GetMethods().Any(
@@ -108,7 +108,7 @@ namespace MockApi
             public Component? AddComponentToScene(uint entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
-                return null;
+                return (Component?) Activator.CreateInstance(t);
             }
 
             public void RemoveComponentFromScene(uint entity, Type t)
