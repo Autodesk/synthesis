@@ -20,6 +20,7 @@ using SharpGLTF.Memory;
 using UnityEngine.Assertions.Must;
 using SharpGLTF.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -69,6 +70,7 @@ namespace SynthesisAPI.AssetManager
             foreach (Node child in modelRoot.DefaultScene.VisualChildren)
             {
                 design.RootOccurence = ExportOccurrenceFromNode(child);
+                design.RootOccurence.Transform = ExportMatrix(child.LocalMatrix);
             }
 
             // joints are not attached to RootOccurrence directly but added to Joint dictionary
@@ -83,13 +85,11 @@ namespace SynthesisAPI.AssetManager
 
         public Occurrence ExportOccurrenceFromNode(Node node)
         {
-            // if node is in the Components maps, return it
-            //if (Components[node.LogicalIndex].Equals(node.LogicalIndex))
+            // if node is already in the Components maps, return it
+            //if (Components[node.LogicalIndex].Equals(occurrence.AComponent))
             //{
             //    // return map component
-            //} // else export the node
-
-            Occurrence occurrence = new Occurrence();
+            //}
 
             // todo:
             // OccurenceHeader
@@ -98,15 +98,23 @@ namespace SynthesisAPI.AssetManager
             // ComponentUuid
             // Attributes
 
-            //occurrence.AComponent = ExportComponentsFromMesh(node.Mesh);
+            Occurrence occurrence = new Occurrence();
 
             foreach (Node child in node.VisualChildren)
             {
                 occurrence.AComponent = ExportComponentsFromMesh(child.Mesh);
+                occurrence.Transform = ExportMatrix(child.LocalMatrix);
                 occurrence.ChildOccurences.Add(ExportOccurrenceFromNode(child));
             }
 
             return occurrence;
+        }
+
+        private Design.Matrix3D ExportMatrix (System.Numerics.Matrix4x4 matrix4x4)
+        {
+            Matrix3D matrix3D = new Matrix3D(matrix4x4.M11, matrix4x4.M12, matrix4x4.M13, matrix4x4.M14, matrix4x4.M21, matrix4x4.M22, matrix4x4.M23, matrix4x4.M24, matrix4x4.M31, matrix4x4.M32, matrix4x4.M33, matrix4x4.M34, matrix4x4.M41, matrix4x4.M42, matrix4x4.M43, matrix4x4.M44);
+            
+            return matrix3D;
         }
 
         private Design.Component ExportComponentsFromMesh(SharpGLTF.Schema2.Mesh mesh)
@@ -197,10 +205,12 @@ namespace SynthesisAPI.AssetManager
                             joint.Origin = jointOrigin;
                             break;
                         //case "revoluteJointMotion":
-                        //    var jointType = joint.Type;
-                        //    joint.Type = (Design.Joint.JointType)(int)(childData.Value as Dictionary<string, object>)["y"];
-                        //    joint.Type = jointType;
-                        //    break;
+                            //var jointType = joint.Type;
+                            //Debug.Log((decimal)(childData.Value as Dictionary<string, object>)["rotationAxisVector"]);
+                            //Debug.Log((decimal)(childData.Value as Dictionary<string, object>)["y"]);
+                            //joint.Type = (Design.Joint.JointType)(decimal)(childData.Value as Dictionary<string, object>)["rotationAxisVector"];
+                            //joint.Type = jointType;
+                            //break;
                         case "occurrenceOneUUID":
                             //joint.OccurenceOneUuid = (string)(childData.Value as Dictionary<string, object>)["occurrenceOneUUID"];
                             joint.OccurenceOneUuid = (string)childData.Value;

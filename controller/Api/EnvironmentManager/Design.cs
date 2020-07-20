@@ -14,7 +14,6 @@ namespace SynthesisAPI.EnvironmentManager
         public static IDictionary<int, Component> Components { get; set; }
         public Occurrence RootOccurence { get; set; }
         public static IList<Joint> Joints { get; set; }
-        //public static IDictionary<string, Joint> Joints { get; set; }
         public IList<Material> Materials { get; set; }
         public IList<Appearance> Appearances { get; set; }
 
@@ -26,7 +25,6 @@ namespace SynthesisAPI.EnvironmentManager
             Components = new Dictionary<int, Component>();
             RootOccurence = new Occurrence();
             Joints = new List<Joint>();
-            //Joints = new Dictionary<string, Joint>();
             Materials = new List<Material>();
             Appearances = new List<Appearance>();
         }
@@ -129,7 +127,7 @@ namespace SynthesisAPI.EnvironmentManager
             public BoundingBox3D BoundingBox { get; set; }
             public TriangleMesh TriangleMesh { get; set; }
 
-            private Dictionary<string, object> Attributes { get; set; }
+            public Dictionary<string, object> Attributes { get; set; }
 
             /// <summary>
             /// Default constructor to auto assign non-nullable types
@@ -361,12 +359,57 @@ namespace SynthesisAPI.EnvironmentManager
 
         public class Matrix3D
         {
-            private double[] _cells = new double[16];
-            public double[] Cells
+            //private double[] _cells = new double[16];
+            //public double[] Cells
+            //{
+            //    get => _cells;
+            //}
+
+            private float M11;
+            private float M12;
+            private float M13;
+            private float M14;
+            private float M21;
+            private float M22;
+            private float M23;
+            private float M24;
+            private float M31;
+            private float M32;
+            private float M33;
+            private float M34;
+            private float M41;
+            private float M42;
+            private float M43;
+            private float M44;
+
+            public IList<float> Cells { get; set; }
+            public Matrix3D()
             {
-                get => _cells;
+                Cells = new List<float>();
+            }
+
+            public Matrix3D(float M11, float M12, float M13, float M14, float M21, float M22, float M23, float M24, float M31, float M32, float M33, float M34, float M41, float M42, float M43, float M44)
+            {
+                this.M11 = M11;
+                this.M12 = M12;
+                this.M13 = M13;
+                this.M14 = M14;
+                this.M21 = M21;
+                this.M22 = M22;
+                this.M23 = M23;
+                this.M24 = M24;
+                this.M31 = M31;
+                this.M32 = M32;
+                this.M33 = M33;
+                this.M34 = M34;
+                this.M41 = M41;
+                this.M42 = M42;
+                this.M43 = M43;
+                this.M44 = M44;
             }
         }
+
+        //public float[] Cells { get; set; }
 
         public struct Vector3
         {
