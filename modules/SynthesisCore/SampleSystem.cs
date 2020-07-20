@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.EventBus;
@@ -77,7 +77,9 @@ namespace SynthesisCore
                 if (digitalStateEvent.Name == "forwards" && digitalStateEvent.KeyState == DigitalState.Down)
                 {
                     ApiProvider.Log("Moving");
-                    transform.Position += new Vector3D(0.1, 0, 0);
+                    //transform.Position += new Vector3D(0.1, 0, 0);
+                    //transform.Rotate(Angle.FromDegrees(30), new Vector3D(1, 0, 0));
+                    transform.Rotate(new Vector3D(30, 0, 0));
                 }
             }
         }
