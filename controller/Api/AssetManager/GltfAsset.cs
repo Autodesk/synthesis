@@ -80,6 +80,11 @@ namespace SynthesisAPI.AssetManager
                 Console.WriteLine("Debug");
             }
 
+            foreach (SharpGLTF.Schema2.Material material in modelRoot.LogicalMaterials)
+            {
+                Design.Materials.Add(ExportMaterial(material));
+            }
+
             return design;
         }
 
@@ -151,6 +156,7 @@ namespace SynthesisAPI.AssetManager
             if (primitive.VertexAccessors.ContainsKey("POSITION"))
             {
                 meshBody.TriangleMesh.Vertices = primitive.GetVertices("POSITION").AsVector3Array();
+                meshBody.Attributes.Add("POSITION", meshBody.TriangleMesh.Vertices);
             }
 
             if (primitive.VertexAccessors.ContainsKey("NORMAL"))
@@ -178,7 +184,6 @@ namespace SynthesisAPI.AssetManager
             // todo:
             // JointHeader = new Header();
             // Direction = new Vector3();
-            // Origin = new Vector3();
             // Type = JointType.RigidJointType;
             // Attributes = new Dictionary<string, object>();
 
@@ -212,7 +217,6 @@ namespace SynthesisAPI.AssetManager
                             //joint.Type = jointType;
                             //break;
                         case "occurrenceOneUUID":
-                            //joint.OccurenceOneUuid = (string)(childData.Value as Dictionary<string, object>)["occurrenceOneUUID"];
                             joint.OccurenceOneUuid = (string)childData.Value;
                             break;
                         case "occurrenceTwoUUID":
@@ -226,6 +230,19 @@ namespace SynthesisAPI.AssetManager
             }
 
             return joint;
+        }
+
+        private Design.Material ExportMaterial(SharpGLTF.Schema2.Material gltfMaterial)
+        {
+            Design.Material SynthesisMaterial = new Design.Material();
+
+            // string Id
+            // string AppearanceId
+            // MaterialProperties Properties
+
+            SynthesisMaterial.Name = gltfMaterial.Name;
+
+            return SynthesisMaterial;
         }
 
         public dynamic RecursiveThingy(dynamic parentObject, Dictionary<string, object> dict)
