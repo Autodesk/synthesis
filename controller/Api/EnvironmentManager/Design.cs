@@ -15,7 +15,7 @@ namespace SynthesisAPI.EnvironmentManager
         public Occurrence RootOccurence { get; set; }
         public static IList<Joint> Joints { get; set; }
         public static IList<Material> Materials { get; set; }
-        public IList<Appearance> Appearances { get; set; }
+        public static IList<Appearance> Appearances { get; set; }
 
         public Design()
         {

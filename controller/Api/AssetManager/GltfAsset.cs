@@ -83,6 +83,7 @@ namespace SynthesisAPI.AssetManager
             foreach (SharpGLTF.Schema2.Material material in modelRoot.LogicalMaterials)
             {
                 Design.Materials.Add(ExportMaterial(material));
+                Design.Appearances.Add(ExportAppearance(material));
             }
 
             return design;
@@ -243,6 +244,51 @@ namespace SynthesisAPI.AssetManager
             SynthesisMaterial.Name = gltfMaterial.Name;
 
             return SynthesisMaterial;
+        }
+
+        private Design.Appearance ExportAppearance(SharpGLTF.Schema2.Material gltfAppearance)
+        {
+            Design.Appearance synthesisAppearance = new Design.Appearance();
+
+            // todo:
+            // string Id
+            // string Name
+            // bool HasTexture
+            // AppearanceProperties Properties
+
+            foreach (SharpGLTF.Schema2.MaterialChannel materialProp in gltfAppearance.Channels)
+            {
+                synthesisAppearance.Properties = ExportAppearanceProperties(materialProp);
+            }
+
+            return synthesisAppearance;
+        }
+
+        private Design.AppearanceProperties ExportAppearanceProperties(MaterialChannel gltfAppearanceProp)
+        {
+            Design.AppearanceProperties synthesisAppearanceProps = new Design.AppearanceProperties();
+
+            // todo:
+            // Color Albedo
+            // int Glossiness
+            // HighlightsMode Highlights
+            // int ReflectivityDirect
+            // int ReflectivityOblique
+            // int Transparency
+            // int Translucency
+            // int RefractiveIndex
+            // Color SelfIlluminationColor
+            // int SelfIlluminationLuminance
+            // Attributes
+
+            Design.Color albedo = synthesisAppearanceProps.Albedo;
+            albedo.Red = (int)gltfAppearanceProp.Parameter.X;
+            albedo.Green = (int)gltfAppearanceProp.Parameter.Y;
+            albedo.Red = (int)gltfAppearanceProp.Parameter.Z;
+            albedo.Alpha = (int)gltfAppearanceProp.Parameter.W;
+            synthesisAppearanceProps.Albedo = albedo;
+
+            return synthesisAppearanceProps;
         }
 
         public dynamic RecursiveThingy(dynamic parentObject, Dictionary<string, object> dict)
