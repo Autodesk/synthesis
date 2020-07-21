@@ -1,8 +1,7 @@
-﻿using Core.ModuleLoader;
-using SynthesisAPI.EnvironmentManager;
+﻿using SynthesisAPI.EnvironmentManager;
 using UnityEngine;
 
-namespace Engine.ModuleLoader
+namespace Engine.ModuleLoader.Adapters
 {
 	public class SystemMonoBehavior : MonoBehaviour, IApiAdapter<SystemBase>
 	{

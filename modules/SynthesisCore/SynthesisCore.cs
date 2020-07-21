@@ -1,4 +1,4 @@
-﻿namespace SynthesisCore
+namespace SynthesisCore
 {
     public class SynthesisCore 
     {

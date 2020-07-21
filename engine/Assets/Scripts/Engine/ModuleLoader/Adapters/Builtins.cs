@@ -2,7 +2,7 @@
 using Engine.ModuleLoader;
 using UnityEngine;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
-namespace Core.ModuleLoader
+namespace Engine.ModuleLoader.Adapters
 {
 	public sealed class MeshAdapter : MonoBehaviour, IApiAdapter<Mesh>
 	{

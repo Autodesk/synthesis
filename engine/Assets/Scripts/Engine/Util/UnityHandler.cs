@@ -23,7 +23,6 @@ namespace Synthesis.Util
 
         void Start()
         {
-            _ = SimulatorHandler.Instance;
             DontDestroyOnLoad(gameObject);
 
             string CurrentVersion = "5.0.0";

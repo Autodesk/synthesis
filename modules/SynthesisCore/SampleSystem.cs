@@ -15,7 +15,6 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
-        Entity e;
         bool start = true;
 
         public override void OnPhysicsUpdate() { }
@@ -24,13 +23,16 @@ namespace SynthesisCore
         {
             if (start)
             {
-                e = EnvironmentManager.AddEntity();
+                Entity e = EnvironmentManager.AddEntity();
                 Mesh m = e.AddComponent<Mesh>();
                 cube(m);
+
                 Input[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
                 InputManager.AssignInputsToEvent("move",test);
+
                 Input[] test2 = { new Analog("Mouse X"), new Analog("Mouse Y") };
                 InputManager.AssignInputsToEvent("mouse", test2);
+
                 start = false;
             }
         }
