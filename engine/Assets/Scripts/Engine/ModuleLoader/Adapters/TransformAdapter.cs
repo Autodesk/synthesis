@@ -1,16 +1,10 @@
-﻿using MathNet.Spatial.Euclidean;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using SynthesisAPI.EnvironmentManager;
+﻿using UnityEngine;
 using Transform = SynthesisAPI.EnvironmentManager.Components.Transform;
 using Engine.Util;
 
-using Entity = System.UInt32;
-
 namespace Engine.ModuleLoader.Adapters
 {
-	public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform>
+    public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform>
 	{
 		public void Awake()
 		{

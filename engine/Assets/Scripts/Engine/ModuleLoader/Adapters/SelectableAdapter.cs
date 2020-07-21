@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-using Entity = System.UInt32;
-
 namespace Engine.ModuleLoader.Adapters
 {
-	public class SelectableAdapter : MonoBehaviour, IPointerClickHandler, IApiAdapter<Selectable>
+	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
 		private static List<Selectable> selectables = new List<Selectable>(); // TODO manage lifetime
-		private static EventSystem eventSystem = null;
 		private new MeshCollider collider;
-		private bool isPointerOnThis = false;
+		// private bool isPointerOnThis = false;
 
 		public void SetInstance(Selectable obj)
 		{
@@ -41,61 +38,36 @@ namespace Engine.ModuleLoader.Adapters
 			instance.SetSelected(true);
 		}
 
-		public void OnPointerClick(PointerEventData eventData)
-		{
-			foreach (var selectable in selectables)
-			{
-				selectable.SetSelected(false);
-			}
-			instance.SetSelected(true);
-		}
-
-		private EventTrigger.Entry MakeOnPointerClickEntry()
+		private EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
 		{
 			EventTrigger.Entry entry = new EventTrigger.Entry();
-			entry.eventID = EventTriggerType.PointerClick;
-			entry.callback.AddListener(data => Select());
-			return entry;
-		}
-
-		private EventTrigger.Entry MakeOnPointerEnterEntry()
-		{
-			EventTrigger.Entry entry = new EventTrigger.Entry();
-			entry.eventID = EventTriggerType.PointerEnter;
-			entry.callback.AddListener(data => isPointerOnThis = true);
-			return entry;
-		}
-
-		private EventTrigger.Entry MakeOnPointerExitEntry()
-		{
-			EventTrigger.Entry entry = new EventTrigger.Entry();
-			entry.eventID = EventTriggerType.PointerExit;
-			entry.callback.AddListener(data => isPointerOnThis = false);
+			entry.eventID = type;
+			entry.callback.AddListener(action);
 			return entry;
 		}
 
 		public void Awake()
 		{
-			if (eventSystem == null)
-			{
-				eventSystem = Util.Utilities.FindGameObject("EventSystem").GetComponent<EventSystem>();
-				if (eventSystem == null)
-				{
-					throw new System.Exception();
-				}
-			}
 			if (gameObject.GetComponent<EventTrigger>() == null)
 			{
 				var eventTrigger = gameObject.AddComponent<EventTrigger>();
-				eventTrigger.triggers.Add(MakeOnPointerClickEntry());
-				eventTrigger.triggers.Add(MakeOnPointerEnterEntry());
-				eventTrigger.triggers.Add(MakeOnPointerExitEntry());
+				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data => {
+					if (((PointerEventData)data).button == PointerEventData.InputButton.Left)
+						Select();
+				}));
+				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
+				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerExit,  data => isPointerOnThis = false));
 			}
 			if (gameObject.GetComponent<MeshCollider>() == null)
 			{
 				collider = gameObject.AddComponent<MeshCollider>();
 				collider.convex = true; // Mesh collider wont have any holes
 			}
+		}
+
+		public void Start()
+		{
+			gameObject.transform.position = gameObject.transform.position + new Vector3(0, float.Epsilon, 0); // Enable Unity collider by moving transform slightly
 		}
 
 		public void Update()
@@ -108,7 +80,13 @@ namespace Engine.ModuleLoader.Adapters
 					throw new System.Exception("Selectable entity does not have a mesh");
 				}
 			}
-			if (Input.GetMouseButtonDown(1) && !isPointerOnThis) // Right click to deselect all -- TODO add to preference manager?
+			/*
+			if (Input.GetMouseButtonDown(0) && isPointerOnThis)
+			{
+				Select();
+			}
+			*/
+			if (Input.GetMouseButtonDown(1))
 			{
 				Deselect();
 			}

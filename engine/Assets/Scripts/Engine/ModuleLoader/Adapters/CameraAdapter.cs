@@ -32,8 +32,8 @@ namespace Engine.ModuleLoader.Adapters
 				camera = gameObject.AddComponent<UnityEngine.Camera>();
 				camera.CopyFrom(defaultCamera);
 				gameObject.AddComponent<PhysicsRaycaster>();
+				camera.tag = "MainCamera"; // TODO manage which is main camera?
 			}
-			// TODO manage which is main camera?
 		}
 	}
 }
