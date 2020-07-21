@@ -84,15 +84,15 @@ namespace SynthesisCore
                 }
                 else if (digitalStateEvent.Name == "x")
                 {
-                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.XAxis);
+                    transform.Rotate(UnitVector3D.XAxis, Angle.FromDegrees(30));
                 }
                 else if (digitalStateEvent.Name == "y")
                 {
-                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.YAxis);
+                    transform.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(30));
                 }
                 else if (digitalStateEvent.Name == "z")
                 {
-                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.ZAxis);
+                    transform.Rotate(UnitVector3D.ZAxis, Angle.FromDegrees(30));
                 }
 
             }

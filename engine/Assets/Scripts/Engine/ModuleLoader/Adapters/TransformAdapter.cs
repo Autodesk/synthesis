@@ -21,8 +21,8 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (instance.Changed)
 			{
-				unityTransform.localPosition = Utilities.MapVector3D(instance.Position);
-				unityTransform.localRotation = Utilities.MapQuaternion(instance.Rotation);
+				unityTransform.position = Utilities.MapVector3D(instance.Position);
+				unityTransform.rotation = Utilities.MapQuaternion(instance.Rotation);
 				unityTransform.localScale = Utilities.MapVector3D(instance.Scale);
 				instance._forward = Utilities.MapVector3(unityTransform.forward).Normalize();
 				instance.ProcessedChanges();

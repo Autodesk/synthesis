@@ -19,7 +19,7 @@ namespace SynthesisCore.Systems
     [ModuleExport]
     public class CameraController : SystemBase
     {
-        public static float SensitivityX { get => 5; } // TODO: integrate with preference manager
+        public static float SensitivityX { get => 2; } // TODO: integrate with preference manager
         public static float SensitivityY { get => 2; }
         public static float SensitivityZoom { get => 3; }
 
@@ -245,8 +245,8 @@ namespace SynthesisCore.Systems
             {
                 if (isMouseDragging)
                 {
-                    cameraTransform.Rotate(xMod, UnitVector3D.YAxis);
-                    cameraTransform.Rotate(yMod, UnitVector3D.XAxis);
+                    cameraTransform.Rotate(cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis), yMod);
+                    cameraTransform.Rotate(UnitVector3D.YAxis, xMod, true);
                 }
                 cameraTransform.Position += zMod * cameraTransform.Forward;
             }

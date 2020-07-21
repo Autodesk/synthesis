@@ -50,13 +50,18 @@ namespace SynthesisAPI.EnvironmentManager.Components
 				Changed = true;
 			}
 		}
-		public void Rotate(double angle, UnitVector3D axis)
+		public void Rotate(UnitVector3D axis, double angle, bool useWorldAxis = false)
 		{
-			Rotate(Angle.FromDegrees(angle), axis);
+			Rotate(axis, Angle.FromDegrees(angle), useWorldAxis);
 		}
 
-		public void Rotate(Angle angle, UnitVector3D axis)
+		public void Rotate(UnitVector3D axis, Angle angle, bool useWorldAxis = false)
 		{
+			if (useWorldAxis)
+			{
+				axis = MathUtil.ToWorldVector(axis, Rotation);
+			}
+
 			// Math from https://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
 			var real = Math.Cos(angle.Radians / 2d);
 
@@ -111,7 +116,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			lookAtTarget = target;
 		}
 
-		public bool Changed { get; private set; } = true;
-		public void ProcessedChanges() => Changed = false;
+		internal bool Changed { get; private set; } = true;
+		internal void ProcessedChanges() => Changed = false;
 	}
 }

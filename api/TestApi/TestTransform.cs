@@ -22,14 +22,14 @@ namespace TestApi
         {
             var a = new Transform();
             var rotation = Angle.FromDegrees(30);
-            a.Rotate(rotation, UnitVector3D.XAxis);
+            a.Rotate(UnitVector3D.XAxis, rotation);
             Assert.AreEqual(rotation, a.Rotation.ToEulerAngles().Alpha);
 
             var b = new Transform();
             var rotation2 = Angle.FromDegrees(30);
             for (var i = 1; i < 13; i++)
             {
-                b.Rotate(rotation2, UnitVector3D.XAxis);
+                b.Rotate(UnitVector3D.XAxis, rotation2);
                 TestMathUtil.AssertApproxEquals(rotation2 * i, b.Rotation.ToEulerAngles().Alpha);
             }
         }

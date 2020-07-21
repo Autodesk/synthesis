@@ -37,5 +37,24 @@ namespace SynthesisAPI.Utilities
 		{
 			return new Vector3D(eulerAngles.Alpha.Degrees, eulerAngles.Beta.Degrees, eulerAngles.Gamma.Degrees);
 		}
+
+		public static UnitVector3D ToWorldVector(UnitVector3D vector, Quaternion rotation)
+		{
+			return ToWorldVector(vector.ToVector3D(), rotation).Normalize();
+		}
+
+		public static Vector3D ToWorldVector(Vector3D vector, Quaternion rotation)
+		{
+			var rot = rotation.Inversed.Normalized;
+
+			// Math from https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
+
+			Vector3D u = new Vector3D(rot.ImagX, rot.ImagY, rot.ImagZ);
+			double s = rot.Real;
+
+			return 2d * u.DotProduct(vector) * u
+				+ (s * s - u.DotProduct(u)) * vector
+				+ 2d * s * u.CrossProduct(vector);
+		}
 	}
 }
