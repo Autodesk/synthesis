@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.InputManager.Digital;
-using SynthesisAPI.InputManager.Events;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
@@ -14,6 +15,7 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
+        Entity e;
         bool start = true;
 
         public override void OnPhysicsUpdate() { }
@@ -22,9 +24,13 @@ namespace SynthesisCore
         {
             if (start)
             {
-                Entity e = EnvironmentManager.AddEntity();
+                e = EnvironmentManager.AddEntity();
                 Mesh m = e.AddComponent<Mesh>();
                 cube(m);
+                Input[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+                InputManager.AssignInputsToEvent("move",test);
+                Input[] test2 = { new Analog("Mouse X"), new Analog("Mouse Y") };
+                InputManager.AssignInputsToEvent("mouse", test2);
                 start = false;
             }
         }
@@ -59,9 +65,45 @@ namespace SynthesisCore
             };
         }
 
-        public void Move(DigitalStateEvent digitalStateEvent)
+        [TaggedCallback("input/move")]
+        public void Move(DigitalEvent digitalEvent)
         {
-            
+            if(digitalEvent.State == DigitalState.Held)
+            {
+                switch (digitalEvent.Name)
+                {
+                    case "w":
+                        ApiProvider.Log("w");
+                        break;
+                    case "a":
+                        ApiProvider.Log("a");
+                        break;
+                    case "s":
+                        ApiProvider.Log("s");
+                        break;
+                    case "d":
+                        ApiProvider.Log("d");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        [TaggedCallback("input/mouse")]
+        public void Mouse(AnalogEvent analogEvent)
+        {
+            switch (analogEvent.Name)
+            {
+                case "Mouse X":
+                    ApiProvider.Log(analogEvent.Value);
+                    break;
+                case "Mouse Y":
+                    ApiProvider.Log(analogEvent.Value);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
