@@ -39,7 +39,7 @@ namespace SynthesisCore.Systems
         private static Selectable? SelectedTarget = null;
         private static Selectable? LastSelectedTarget = null;
 
-        private float xMod = 0, yMod = 0, lastXMod = 0, lastYMod = 0, lastDistMod = 0; // Used for accelerating the camera movement speed
+        private float xMod = 0, yMod = 0, zMod = 0, lastXMod = 0, lastYMod = 0, lastZMod = 0; // Used for accelerating the camera movement speed
 
         private const double MinDistance = 0.25;
         private const double MaxDistance = 50;
@@ -60,6 +60,8 @@ namespace SynthesisCore.Systems
             InputManager.AssignDigital("CameraLeft", (KeyDigital)"A", CameraLeft);
             InputManager.AssignDigital("CameraBackward", (KeyDigital)"S", CameraBackward);
             InputManager.AssignDigital("CameraRight", (KeyDigital)"D", CameraRight);
+            InputManager.AssignDigital("CameraUp", (KeyDigital)"Space", CameraUp);
+            InputManager.AssignDigital("CameraDown", (KeyDigital)"LeftShift", CameraDown);
 
             // Bind controls for orbit
             InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", StartMouseDrag); // TODO put control settings in preference manager
@@ -130,6 +132,38 @@ namespace SynthesisCore.Systems
             }
         }
 
+        public void CameraUp(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null)
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if (de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(0, FreeRoamCameraMoveDelta, 0);
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
+        }
+
+        public void CameraDown(IEvent e)
+        {
+            if (inFreeRoamMode && cameraTransform != null)
+            {
+                if (e is DigitalStateEvent de)
+                {
+                    if (de.KeyState == DigitalState.Held)
+                        cameraTransform.Position += new Vector3D(0, -FreeRoamCameraMoveDelta, 0);
+                }
+                else
+                {
+                    throw new System.Exception();
+                }
+            }
+        }
+
         /// <summary>
         /// Function used to switch orbit control on and off
         /// </summary>
@@ -160,21 +194,14 @@ namespace SynthesisCore.Systems
 
         private void ProcessZoom()
         {
-            float distMod = -InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
-            if (distMod != 0)
+            if (zMod != 0)
             {
-                if ((distMod < 0) == (lastDistMod < 0)) // Check that lastDistMod is in the same direction as distMod
-                {
-                    distMod += lastDistMod * 0.5f; // Give some kind of intertial effect
-                }
-
                 // Prevent from moving too close or too far away from focus
-                if ((offset.Length > MinDistance && distMod < 0) || (offset.Length < MaxDistance && distMod > 0))
+                if ((offset.Length > MinDistance && zMod < 0) || (offset.Length < MaxDistance && zMod > 0))
                 {
-                    offset += offset.Normalize().ToVector3D().ScaleBy(distMod);
+                    offset += offset.Normalize().ToVector3D().ScaleBy(-zMod);
                 }
             }
-            lastDistMod = distMod == 0 ? lastDistMod : distMod;
         }
 
         private void ProcessOrbit()
@@ -182,11 +209,11 @@ namespace SynthesisCore.Systems
             if (isMouseDragging)
             {
                 // Rotate horizontally (i.e. around y-axis)
-                var xDelta = offset.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(xMod)) - offset;
+                var xDelta = offset.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(-xMod)) - offset;
 
                 // Rotate vertically
                 var verticalRotationAxis = offset.CrossProduct(UnitVector3D.YAxis).Normalize();
-                Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(yMod)) - offset;
+                Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(-yMod)) - offset;
 
                 // Stop from vertically rotating past directly above the focus point
                 var newPosition = offset + yDelta;
@@ -212,14 +239,16 @@ namespace SynthesisCore.Systems
             }
         }
 
-        private void ProcessFreeRoamDrag()
+        private void ProcessFreeRoam()
         {
-            if (isMouseDragging)
+            if (cameraTransform != null)
             {
-                // Rotate horizontally (i.e. around y-axis)
-                if (cameraTransform != null) {
-                    // cameraTransform.Rotate(new Vector3D(xMod, 0, 0)); // TODO fix this
+                if (isMouseDragging)
+                {
+                    cameraTransform.Rotate(xMod, UnitVector3D.YAxis);
+                    cameraTransform.Rotate(yMod, UnitVector3D.XAxis);
                 }
+                cameraTransform.Position += zMod * cameraTransform.Forward;
             }
         }
 
@@ -230,27 +259,40 @@ namespace SynthesisCore.Systems
             UpdateOrbitCameraPosition();
         }
 
-        public override void OnUpdate()
+        private void UpdateMouseInput()
         {
+            zMod = InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
+
+            if (zMod != 0 && (zMod < 0) == (lastZMod < 0))
+                zMod += lastZMod * 0.5f;
+
+            lastZMod = zMod == 0 ? lastZMod : zMod;
+
             if (isMouseDragging)
             {
                 // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?)
-                xMod = InputManager.GetAxisValue("MouseX") * SensitivityX;
-                yMod = -InputManager.GetAxisValue("MouseY") * SensitivityY;
+                xMod = -InputManager.GetAxisValue("MouseX") * SensitivityX;
+                yMod = InputManager.GetAxisValue("MouseY") * SensitivityY;
 
                 if (xMod != 0 && (xMod < 0) == (lastXMod < 0))
                     xMod += lastXMod * 0.3f;
                 if (yMod != 0 && (yMod < 0) == (lastYMod < 0))
                     yMod += lastYMod * 0.3f;
+
                 lastXMod = xMod == 0 ? lastXMod : xMod;
                 lastYMod = yMod == 0 ? lastYMod : yMod;
             }
+        }
+
+        public override void OnUpdate()
+        {
+            UpdateMouseInput();
 
             SelectedTarget = Selectable.Selected;
             inFreeRoamMode = SelectedTarget == null;
             if (inFreeRoamMode) // Free roam mode
             {
-                ProcessFreeRoamDrag();
+                ProcessFreeRoam();
             }
             else // Orbit mode
             {

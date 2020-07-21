@@ -12,17 +12,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		private Vector3D _position = new Vector3D();
 		private Quaternion _rotation = Quaternion.One;
 		private Vector3D _scale = new Vector3D(1, 1, 1);
-		private Transform _parent = null;
+		internal UnitVector3D _forward = UnitVector3D.ZAxis;
 
-		public Transform Parent
+		public UnitVector3D Forward
 		{
-			get => _parent;
-			set
-			{
-				_parent = value;
-				Changed = true;
-			}
-
+			get => _forward;
 		}
 
 		public Vector3D Position
@@ -40,6 +34,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _rotation;
 			set
 			{
+				if (!value.IsUnitQuaternion)
+					Runtime.ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}"); // TODO warning log level
 				_rotation = value;
 				Changed = true;
 			}
@@ -54,8 +50,12 @@ namespace SynthesisAPI.EnvironmentManager.Components
 				Changed = true;
 			}
 		}
+		public void Rotate(double angle, UnitVector3D axis)
+		{
+			Rotate(Angle.FromDegrees(angle), axis);
+		}
 
-		public void Rotate(Angle angle, Vector3D axis)
+		public void Rotate(Angle angle, UnitVector3D axis)
 		{
 			// Math from https://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
 			var real = Math.Cos(angle.Radians / 2d);
@@ -70,7 +70,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			}
 			catch (Exception e)
 			{
-				throw new Exception($"Transform: Rotation failed: angle: {angle} around axis {axis}", e);
+				throw new Exception($"Transform: Rotation failed: {angle} around axis {axis}, currently at {Rotation}", e);
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			}
 			catch (Exception e)
 			{
-				throw new Exception($"Transform: rotation failed with quaternion {rotation}", e);
+				throw new Exception($"Transform: rotation failed with provided quaternion {rotation}, currently at {Rotation}", e);
 			}
 		}
 

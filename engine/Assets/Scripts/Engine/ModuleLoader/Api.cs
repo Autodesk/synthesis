@@ -199,6 +199,7 @@ namespace Engine.ModuleLoader
 					RegisterTagCallback(callback, instance);
 				}
 			}
+			assemblyOwners.Add(apiAssembly.GetName().Name, "Api");
 			return true;
 		}
 

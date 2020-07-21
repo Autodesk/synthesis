@@ -31,6 +31,9 @@ namespace SynthesisCore
             cube(m);
 
             InputManager.AssignDigital("forwards", (KeyDigital)"W", Move);
+            InputManager.AssignDigital("x", (KeyDigital)"X", Move);
+            InputManager.AssignDigital("y", (KeyDigital)"Y", Move);
+            InputManager.AssignDigital("z", (KeyDigital)"Z", Move);
         }
 
         public override void OnUpdate() {
@@ -72,15 +75,26 @@ namespace SynthesisCore
 
         public void Move(IEvent e)
         {
-            if(e is DigitalStateEvent digitalStateEvent)
+            if(e is DigitalStateEvent digitalStateEvent && digitalStateEvent.KeyState == DigitalState.Down)
             {
-                if (digitalStateEvent.Name == "forwards" && digitalStateEvent.KeyState == DigitalState.Down)
+                if (digitalStateEvent.Name == "forwards")
                 {
-                    ApiProvider.Log("Moving");
                     //transform.Position += new Vector3D(0.1, 0, 0);
-                    //transform.Rotate(Angle.FromDegrees(30), new Vector3D(1, 0, 0));
-                    transform.Rotate(new Vector3D(30, 0, 0));
+                    // transform.Rotate(new Vector3D(30, 0, 0));
                 }
+                else if (digitalStateEvent.Name == "x")
+                {
+                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.XAxis);
+                }
+                else if (digitalStateEvent.Name == "y")
+                {
+                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.YAxis);
+                }
+                else if (digitalStateEvent.Name == "z")
+                {
+                    transform.Rotate(Angle.FromDegrees(30), UnitVector3D.ZAxis);
+                }
+
             }
         }
     }
