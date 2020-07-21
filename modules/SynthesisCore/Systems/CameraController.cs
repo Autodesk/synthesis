@@ -13,6 +13,7 @@ using Utilities;
 #nullable enable
 
 using Entity = System.UInt32;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.Systems
 {
@@ -245,7 +246,7 @@ namespace SynthesisCore.Systems
             {
                 if (isMouseDragging)
                 {
-                    cameraTransform.Rotate(cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis), yMod);
+                    cameraTransform.Rotate(UnitVector3D.XAxis, yMod);
                     cameraTransform.Rotate(UnitVector3D.YAxis, xMod, true);
                 }
                 cameraTransform.Position += zMod * cameraTransform.Forward;
