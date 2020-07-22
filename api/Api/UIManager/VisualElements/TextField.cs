@@ -1,19 +1,20 @@
 ﻿using System;
 using SynthesisAPI.Runtime;
 using UnityEngine.UIElements;
+using UnityTextField = UnityEngine.UIElements.TextField;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class SynTextField: SynVisualElement
+    public class TextField: VisualElement
     {
-        public TextField Element
+        public UnityTextField Element
         {
-            get => (_visualElement as TextField)!;
+            get => (_visualElement as UnityTextField)!;
             set => _visualElement = value;
         }
 
-        public static explicit operator TextField(SynTextField element) => (element._visualElement as TextField)!;
-        public static explicit operator SynTextField(TextField element) => new SynTextField(element);
+        public static explicit operator UnityTextField(TextField element) => (element._visualElement as UnityTextField)!;
+        public static explicit operator TextField(UnityTextField element) => new TextField(element);
 
         public string Label
         {
@@ -27,14 +28,14 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => Element.value = value;
         }
 
-        public SynTextField()
+        public TextField()
         {
-            Element = ApiProvider.InstantiateFocusable<TextField>()!;
+            Element = ApiProvider.CreateUnityType<UnityTextField>()!;
             if (Element == null)
                 throw new Exception();
         }
 
-        public SynTextField(TextField element)
+        public TextField(UnityTextField element)
         {
             Element = element;
         }
@@ -42,7 +43,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is TextField ? value : Element;
+            set => Element = value is UnityTextField ? value : Element;
         }
     }
 }

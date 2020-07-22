@@ -10,7 +10,7 @@ using UnityButton = UnityEngine.UIElements.Button;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class SynButton : SynVisualElement
+    public class Button : VisualElement
     {
         private EventBus.EventBus.EventCallback _callback;
         
@@ -25,28 +25,28 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => $"button/{Element.name}";
         }
         
-        public static explicit operator UnityButton(SynButton element) => element.Element;
-        public static explicit operator SynButton(UnityButton element) => new SynButton(element);
+        public static explicit operator UnityButton(Button element) => element.Element;
+        public static explicit operator Button(UnityButton element) => new Button(element);
 
         public string Text {
             get => Element.text;
             set => Element.text = value;
         }
 
-        public SynButton()
+        public Button()
         {
-            _visualElement = ApiProvider.InstantiateFocusable<UnityButton>()!;
+            _visualElement = ApiProvider.CreateUnityType<UnityButton>()!;
             if (_visualElement == null)
                 throw new Exception();
         }
 
-        public SynButton(UnityButton element)
+        public Button(UnityButton element)
         {
             Element = element;
         }
 
         // Unsure if this is needed
-        ~SynButton()
+        ~Button()
         {
             /*if (EventBus.EventBus.HasTagSubscriber(EventTag))
                 EventBus.EventBus.RemoveTagListener(EventTag, _callback);*/

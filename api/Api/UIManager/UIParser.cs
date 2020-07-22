@@ -9,6 +9,7 @@ using SynthesisAPI.UIManager.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
+using SynVisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
 
 namespace SynthesisAPI.UIManager
@@ -46,14 +47,15 @@ namespace SynthesisAPI.UIManager
                 throw new Exception("Node is null");
 
             // ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
-            Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x => x.Name.Equals(node.Name.Replace("ui:", "")));
+            Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x =>
+                x.Name.Equals(node.Name.Replace("ui:", "")));
             if (elementType == null)
             {
                 ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...");
                 return null;
             }
-            dynamic element = typeof(ApiProvider).GetMethod("InstantiateFocusable").MakeGenericMethod(elementType).Invoke(null, null);
-
+            dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
+                .Invoke(null, new object[] { new object[] {} });
             if (element != null)
             {
                 // ApiProvider.Log("Creating element..");
@@ -97,7 +99,7 @@ namespace SynthesisAPI.UIManager
                 }
             } else
             {
-                element = ApiProvider.InstantiateFocusable<UnityVisualElement>();
+                element = ApiProvider.CreateUnityType<UnityVisualElement>();
             }
 
             // ApiProvider.Log("Finished Creating Element");
@@ -230,13 +232,11 @@ namespace SynthesisAPI.UIManager
 
         public static StyleBackground ToStyleBackground(string str)
         {
-            ApiProvider.Log($"\"{str}\"");
             string path = str.Replace(" ", "").Substring(5, str.Length - 8);
-            ApiProvider.Log($"\"{path}\"");
             
             try
             {
-                TextureAsset? asset = AssetManager.AssetManager.GetAsset<TextureAsset>(path);
+                SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
                     ApiProvider.Log("Can't find asset");
@@ -244,7 +244,7 @@ namespace SynthesisAPI.UIManager
                 }
                 else
                 {
-                    return new StyleBackground(asset.TextureData);
+                    return new StyleBackground(asset.Sprite.texture);
                 }
             }
             catch (Exception e)
@@ -310,11 +310,11 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static SynVisualElement GetSynVisualElement(this VisualElement element)
+        public static SynVisualElement GetSynVisualElement(this UnityVisualElement element)
         {
-            Type t = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), t => t.Name == $"Syn{element.GetType().Name}") ??
-                typeof(SynVisualElement);
-            ApiProvider.Log($"Type: {t.FullName}");
+            Type t = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), t => 
+                t.Name == element.GetType().Name && t.FullName != element.GetType().FullName
+                ) ?? typeof(SynVisualElement);
             return (SynVisualElement)Activator.CreateInstance(t, new object[] {element});
         }
 

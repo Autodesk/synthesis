@@ -9,25 +9,26 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.UIElements;
+using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
 [assembly: InternalsVisibleTo("Synthesis.Core")]
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class SynVisualElement
+    public class VisualElement
     {
-        protected VisualElement _visualElement;
+        protected UnityVisualElement _visualElement;
 
-        public static explicit operator VisualElement(SynVisualElement element) => element._visualElement;
-        public static explicit operator SynVisualElement(VisualElement element) => new SynVisualElement(element);
+        public static explicit operator UnityVisualElement(VisualElement element) => element._visualElement;
+        public static explicit operator VisualElement(UnityVisualElement element) => new VisualElement(element);
 
-        public SynVisualElement()
+        public VisualElement()
         {
-            _visualElement = ApiProvider.InstantiateFocusable<VisualElement>()!;
+            _visualElement = ApiProvider.CreateUnityType<UnityVisualElement>()!;
             if (_visualElement == null)
                 throw new Exception("Failed to instantiate VisualElement");
         }
 
-        public SynVisualElement(VisualElement visualElement)
+        public VisualElement(UnityVisualElement visualElement)
         {
             _visualElement = visualElement;
         }
@@ -41,7 +42,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => _visualElement.style;
         }
 
-        internal VisualElement VisualElement {
+        internal UnityVisualElement UnityVisualElement {
             get => _visualElement;
         }
 
@@ -54,8 +55,8 @@ namespace SynthesisAPI.UIManager.VisualElements
             return null;
         }
 
-        public SynVisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetSynVisualElement();
-        public void Add(SynVisualElement element) => _visualElement.Add(element.VisualElement);
+        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetSynVisualElement();
+        public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
 
         public void SetStyleProperty(string name, string value)
         {

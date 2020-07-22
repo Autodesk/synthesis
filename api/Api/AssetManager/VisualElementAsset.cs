@@ -7,21 +7,16 @@ using SynthesisAPI.VirtualFileSystem;
 
 namespace SynthesisAPI.AssetManager
 {
-    public class SynVisualElementAsset: Asset
+    public class VisualElementAsset: Asset
     {
         private XmlDocument? _document;
 
-        public SynVisualElementAsset(string name, Permissions perms, string sourcePath)
+        public VisualElementAsset(string name, Permissions perms, string sourcePath)
         {
             Init(name, perms, sourcePath);
         }
 
-        public SynVisualElement GetElement(string name)
-        {
-            if (_document == null)
-                Load(File.ReadAllBytes(FileSystem.BasePath + SourcePath));
-            return UIParser.CreateVisualElement(name, _document);
-        }
+        public VisualElement GetElement(string name) => UIParser.CreateVisualElement(name, _document);
 
         public override IEntry Load(byte[] data)
         {

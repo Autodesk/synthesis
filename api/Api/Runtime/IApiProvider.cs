@@ -26,7 +26,7 @@ namespace SynthesisAPI.Runtime
 
         #region UI
 
-        TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
+        // TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
 		UnityEngine.UIElements.VisualElement GetRootVisualElement();
 
         #endregion

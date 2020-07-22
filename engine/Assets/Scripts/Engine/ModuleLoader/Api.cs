@@ -354,8 +354,14 @@ namespace Engine.ModuleLoader
 				entity.GetComponent<TComponent>();
 
 			public List<Component> GetComponents(uint entity) => entity.GetComponents();
-			public T CreateUnityType<T>(params object[] args) where T : class =>
-				(T)Activator.CreateInstance(typeof(T), args);
+
+			public T CreateUnityType<T>(params object[] args) where T : class
+			{
+				if (args.Length > 0)
+					return (T) Activator.CreateInstance(typeof(T), args);
+				else
+					return (T) Activator.CreateInstance(typeof(T));
+			}
 
 			public VisualTreeAsset GetDefaultUIAsset(string assetName)
 			{

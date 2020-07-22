@@ -8,7 +8,7 @@ using UnityLabel = UnityEngine.UIElements.Label;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class SynLabel : SynVisualElement
+    public class Label : VisualElement
     {
         private UnityLabel Element
         {
@@ -16,22 +16,22 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement = value;
         }
 
-        public static explicit operator UnityLabel(SynLabel element) => element.Element;
-        public static implicit operator SynLabel(UnityLabel element) => new SynLabel(element);
+        public static explicit operator UnityLabel(Label element) => element.Element;
+        public static implicit operator Label(UnityLabel element) => new Label(element);
 
         public string Text {
             get => Element.text;
             set => Element.text = value;
         }
 
-        public SynLabel()
+        public Label()
         {
-            Element = ApiProvider.InstantiateFocusable<UnityLabel>()!;
+            Element = ApiProvider.CreateUnityType<UnityLabel>()!;
             if (Element == null)
                 throw new Exception();
         }
 
-        public SynLabel(UnityLabel element)
+        public Label(UnityLabel element)
         {
             Element = element;
         }

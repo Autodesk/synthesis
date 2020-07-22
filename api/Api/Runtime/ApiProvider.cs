@@ -57,9 +57,9 @@ namespace SynthesisAPI.Runtime
 
 		public static VisualTreeAsset? GetDefaultUIAsset(string assetName) => Instance?.GetDefaultUIAsset(assetName);
 
-		public static TUnityType? InstantiateFocusable<TUnityType>()
-			where TUnityType : UnityEngine.UIElements.Focusable =>
-			Instance?.InstantiateFocusable<TUnityType>();
+		// public static TUnityType? InstantiateFocusable<TUnityType>()
+		// 	where TUnityType : UnityEngine.UIElements.Focusable =>
+		// 	Instance?.InstantiateFocusable<TUnityType>();
 
 		public static UnityEngine.UIElements.VisualElement? GetRootVisualElement() =>
 			Instance?.GetRootVisualElement();

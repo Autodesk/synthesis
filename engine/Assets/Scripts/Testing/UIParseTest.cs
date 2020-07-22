@@ -20,7 +20,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using Directory = SynthesisAPI.VirtualFileSystem.Directory;
-
+using SynVisualElementAsset = SynthesisAPI.AssetManager.VisualElementAsset;
+using SynListView = SynthesisAPI.UIManager.VisualElements.ListView;
 
 public class UIParseTest : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class UIParseTest : MonoBehaviour
 
     public UnityWebRequest request;
 
-    public TextureAsset asset;
+    public SpriteAsset asset;
     public Texture2D texture;
 
     private void Start()

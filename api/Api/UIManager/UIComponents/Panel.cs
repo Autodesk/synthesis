@@ -7,10 +7,10 @@ namespace SynthesisAPI.UIManager.UIComponents
     public struct Panel
     {
         public string Name { get; private set; }
-        public SynVisualElementAsset Ui { get; private set; }
-        public Action<SynVisualElement> BindFunc { get; set; }
+        public VisualElementAsset Ui { get; private set; }
+        public Action<VisualElement> BindFunc { get; set; }
 
-        public Panel(string name, SynVisualElementAsset ui, Action<SynVisualElement> bindFunc)
+        public Panel(string name, VisualElementAsset ui, Action<VisualElement> bindFunc)
         {
             Name = name;
             Ui = ui;

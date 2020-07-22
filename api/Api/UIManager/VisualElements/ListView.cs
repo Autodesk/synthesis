@@ -5,48 +5,50 @@ using System.Data.Common;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
 using UnityEngine.UIElements;
+using UnityListView = UnityEngine.UIElements.ListView;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
-    public class SynListView: SynVisualElement
+    public class ListView: VisualElement
     {
         private EventBus.EventBus.EventCallback _callback;
         
-        public ListView Element
+        public UnityListView Element
         {
-            get => (_visualElement as ListView)!;
+            get => (_visualElement as UnityListView)!;
             set => _visualElement = value;
         }
         
-        public static explicit operator ListView(SynListView e) => e.Element;
-        public static explicit operator SynListView(ListView e) => new SynListView(e);
-        public static explicit operator SynListView(VisualElement e) => new SynListView((e as ListView)!);
+        public static explicit operator UnityListView(ListView e) => e.Element;
+        public static explicit operator ListView(UnityListView e) => new ListView(e);
+        // public static explicit operator SynListView(VisualElement e) => new SynListView((e as UnityListView)!);
 
-        private (IList Source, Func<SynVisualElement> MakeItem, Action<SynVisualElement, int> BindItem) PopulateParams =
+        private (IList Source, Func<VisualElement> MakeItem, Action<VisualElement, int> BindItem) PopulateParams =
             (new List<object>(), () => null!, (element, i) => { });
 
-        public SynListView()
+        public ListView()
         {
-            Element = ApiProvider.InstantiateFocusable<ListView>()!;
+            // Element = ApiProvider.InstantiateFocusable<UnityListView>()!;
+            Element = ApiProvider.CreateUnityType<UnityListView>()!;
             if (Element == null)
                 throw new Exception();
             Element.selectionType = SelectionType.Single;
         }
 
-        public SynListView(ListView element)
+        public ListView(UnityListView element)
         {
             Element = element;
             Element.selectionType = SelectionType.Single;
         }
         
         // Unsure if this is needed
-        ~SynListView()
+        ~ListView()
         {
             /*if (EventBus.EventBus.HasTagSubscriber(EventTag))
                 EventBus.EventBus.RemoveTagListener(EventTag, _callback);*/
         }
 
-        public void Populate(IList source, Func<SynVisualElement> makeItem, Action<SynVisualElement, int> bindItem)
+        public void Populate(IList source, Func<VisualElement> makeItem, Action<VisualElement, int> bindItem)
         {
             PopulateParams = (source, makeItem, bindItem);
             PostUxmlLoad();
@@ -71,7 +73,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             ApiProvider.Log("Didn't return");
             if (Element == null)
                 throw new Exception("This should be impossible");
-            Element.makeItem = () => PopulateParams.MakeItem().VisualElement;
+            Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
             Element.bindItem = (element, index) => PopulateParams.BindItem(element.GetSynVisualElement(), index);
             Element.itemsSource = PopulateParams.Source;
             for (int i = 0; i < Element.itemsSource.Count; i++)
@@ -88,7 +90,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is ListView ? value : Element;
+            set => Element = value is UnityListView ? value : Element;
         }
     }
 }
