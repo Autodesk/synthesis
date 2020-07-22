@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.ModuleLoader;
+using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 namespace Engine.ModuleLoader.Adapters
@@ -38,18 +40,18 @@ namespace Engine.ModuleLoader.Adapters
 		private Mesh instance;
 		private MeshFilter filter;
 
-		private Vector3[] Convert(List<SynthesisAPI.Utilities.Vector3> vec)
+		private Vector3[] Convert(List<Vector3D> vec)
         {
 			Vector3[] vectors = new Vector3[vec.Count];
 			for(int i = 0; i < vec.Count; i++)
-				vectors[i] = vec[i];
+				vectors[i] = MathUtil.MapVector3D(vec[i]);
 			return vectors;
         }
-		private Vector2[] Convert(List<SynthesisAPI.Utilities.Vector2> vec)
+		private Vector2[] Convert(List<Vector2D> vec)
 		{
 			Vector2[] vectors = new Vector2[vec.Count];
 			for (int i = 0; i < vec.Count; i++)
-				vectors[i] = vec[i];
+				vectors[i] = MathUtil.MapVector2D(vec[i]);
 			return vectors;
 		}
 	}

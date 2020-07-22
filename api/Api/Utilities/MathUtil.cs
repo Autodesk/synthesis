@@ -95,6 +95,10 @@ namespace SynthesisAPI.Utilities
 			return MapUnityQuaternion(UnityEngine.Quaternion.RotateTowards(MapQuaternion(from), MapQuaternion(to), maxDegreesDelta));
 		}
 
+		internal static UnityEngine.Vector2 MapVector2D(Vector2D vec) =>
+			new UnityEngine.Vector2((float)vec.X, (float)vec.Y);
+		internal static Vector2D MapVector3(UnityEngine.Vector2 vec) =>
+			new Vector2D(vec.x, vec.y);
 		internal static UnityEngine.Vector3 MapVector3D(Vector3D vec) =>
 			new UnityEngine.Vector3((float)vec.X, (float)vec.Y, (float)vec.Z);
 		internal static Vector3D MapVector3(UnityEngine.Vector3 vec) =>

@@ -40,16 +40,16 @@ namespace SynthesisCore
 
         private void cube(Mesh m)
         {
-            m.Vertices = new List<Vector3>()
+            m.Vertices = new List<Vector3D>()
             {
-                new Vector3(0,0,0),
-                new Vector3(1,0,0),
-                new Vector3(1,1,0),
-                new Vector3(0,1,0),
-                new Vector3(0,1,1),
-                new Vector3(1,1,1),
-                new Vector3(1,0,1),
-                new Vector3(0,0,1)
+                new Vector3D(0,0,0),
+                new Vector3D(1,0,0),
+                new Vector3D(1,1,0),
+                new Vector3D(0,1,0),
+                new Vector3D(0,1,1),
+                new Vector3D(1,1,1),
+                new Vector3D(1,0,1),
+                new Vector3D(0,0,1)
             };
             m.Triangles = new List<int>()
             {
