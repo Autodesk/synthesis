@@ -74,7 +74,7 @@ namespace SynthesisAPI.EnvironmentManager
                 JointHeader = new Header();
                 Direction = new Vector3();
                 Origin = new Vector3();
-                Type = JointType.RigidJointType;
+                Type = JointType.RigidJointMotion;
                 Attributes = new Dictionary<string, object>();
             }
 
