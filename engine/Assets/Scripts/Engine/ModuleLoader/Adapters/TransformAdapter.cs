@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Transform = SynthesisAPI.EnvironmentManager.Components.Transform;
 using Engine.Util;
+using SynthesisAPI.Utilities;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -15,17 +16,17 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (instance.Changed)
 			{
-				unityTransform.position = Utilities.MapVector3D(instance.Position);
-				unityTransform.rotation = Utilities.MapQuaternion(instance.Rotation);
-				unityTransform.localScale = Utilities.MapVector3D(instance.Scale);
-				instance._forward = Utilities.MapVector3(unityTransform.forward).Normalize();
+				unityTransform.position = MathUtil.MapVector3D(instance.Position);
+				unityTransform.rotation = MathUtil.MapQuaternion(instance.Rotation);
+				unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
+				instance._forward = MathUtil.MapVector3(unityTransform.forward).Normalize();
 				instance.ProcessedChanges();
 			}
 			if (instance.lookAtTarget != null) 
 			{
-				unityTransform.LookAt(Utilities.MapVector3D(instance.lookAtTarget.Value));
-				instance.Rotation = Utilities.MapUnityQuaternion(unityTransform.localRotation).Normalized;
-				instance._forward = Utilities.MapVector3(unityTransform.forward).Normalize();
+				unityTransform.LookAt(MathUtil.MapVector3D(instance.lookAtTarget.Value));
+				instance.Rotation = MathUtil.MapUnityQuaternion(unityTransform.localRotation).Normalized;
+				instance._forward = MathUtil.MapVector3(unityTransform.forward).Normalize();
 				instance.ProcessedChanges();
 				instance.finishLookAt();
 			}

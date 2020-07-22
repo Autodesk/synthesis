@@ -56,5 +56,52 @@ namespace SynthesisAPI.Utilities
 				+ (s * s - u.DotProduct(u)) * vector
 				+ 2d * s * u.CrossProduct(vector);
 		}
+
+		/// <summary>
+		/// Linear interpolation
+		/// </summary>
+		public static double Lerp(double a, double b, double by)
+		{
+			return a * (1 - by) + b * by;
+		}
+
+		/// <summary>
+		/// Linear interpolation
+		/// </summary>
+		public static Vector3D Lerp(Vector3D a, Vector3D b, double by)
+		{
+			return new Vector3D(Lerp(a.X, b.X, by), Lerp(a.Y, b.Y, by), Lerp(a.Z, b.Z, by));
+		}
+
+		public static Quaternion Lerp(Quaternion a, Quaternion b, double by)
+		{
+			return new Quaternion(Lerp(a.Real, b.Real, by), Lerp(a.ImagX, b.ImagX, by), Lerp(a.ImagY, b.ImagY, by), Lerp(a.ImagZ, b.ImagZ, by));
+		}
+
+		public static Quaternion LookAt(UnitVector3D forward)
+		{
+			return LookAt(forward, UnitVector3D.YAxis);
+		}
+
+		public static Quaternion LookAt(UnitVector3D forward, UnitVector3D upward)
+		{
+			return MapUnityQuaternion(UnityEngine.Quaternion.LookRotation(
+				MapVector3D(forward.ToVector3D()),
+				MapVector3D(upward.ToVector3D())));
+		}
+
+		public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegreesDelta)
+		{
+			return MapUnityQuaternion(UnityEngine.Quaternion.RotateTowards(MapQuaternion(from), MapQuaternion(to), maxDegreesDelta));
+		}
+
+		internal static UnityEngine.Vector3 MapVector3D(Vector3D vec) =>
+			new UnityEngine.Vector3((float)vec.X, (float)vec.Y, (float)vec.Z);
+		internal static Vector3D MapVector3(UnityEngine.Vector3 vec) =>
+			new Vector3D(vec.x, vec.y, vec.z);
+		internal static Quaternion MapUnityQuaternion(UnityEngine.Quaternion q) =>
+			new Quaternion(q.w, q.x, q.y, q.z);
+		internal static UnityEngine.Quaternion MapQuaternion(Quaternion q) =>
+			new UnityEngine.Quaternion((float)q.ImagX, (float)q.ImagY, (float)q.ImagZ, (float)q.Real);
 	}
 }

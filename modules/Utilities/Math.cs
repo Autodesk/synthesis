@@ -20,5 +20,18 @@ namespace Utilities
         {
             return Min(Max(value, max), min);
         }
+
+        public static bool ApproxEquals(double a, double b)
+        {
+            return System.Math.Abs(a - b) < 0.001;
+        }
+
+        public static bool ApproxEquals(Quaternion a, Quaternion b)
+        {
+            return ApproxEquals(a.Real, b.Real) &&
+                ApproxEquals(a.ImagX, b.ImagX) &&
+                ApproxEquals(a.ImagY, b.ImagY) &&
+                ApproxEquals(a.ImagZ, b.ImagZ);
+        }
     }
 }

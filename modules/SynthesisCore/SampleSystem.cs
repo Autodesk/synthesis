@@ -36,12 +36,7 @@ namespace SynthesisCore
             InputManager.AssignDigital("z", (KeyDigital)"Z", Move);
         }
 
-        public override void OnUpdate() {
-            if (selectable.IsSelected)
-            {
-                ApiProvider.Log("Selected");
-            }
-        }
+        public override void OnUpdate() { }
 
         private void cube(Mesh m)
         {
