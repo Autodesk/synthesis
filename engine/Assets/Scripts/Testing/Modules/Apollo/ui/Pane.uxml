@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement style="height: 70px; background-color: rgba(173, 53, 53, 255);">
+        <Style src="Pane.uss" />
+        <ui:Label text="Apollo test pane" />
+        <ui:Button text="Custom button that does nothing" style="height: 24.5px; width: 189px;" />
+        <ui:Button text="Button with custom styling" class="test-button-styling" />
+    </ui:VisualElement>
+</ui:UXML>

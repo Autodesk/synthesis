@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="pane" style="height: 70px; background-color: rgb(242, 242, 242); flex-direction: row;">
+        <Style src="Pane.uss" />
+        <ui:Button name="ruler-button" class="engine-button" style="background-image: url(&apos;/Assets/Scripts/Testing/Modules/Engine/ui/icons/ruler-icon.png&apos;);" />
+        <ui:Button name="stopwatch-button" class="engine-button" style="background-image: url(&apos;/Assets/Scripts/Testing/Modules/Engine/ui/icons/stopwatch-icon.png&apos;);" />
+    </ui:VisualElement>
+</ui:UXML>
