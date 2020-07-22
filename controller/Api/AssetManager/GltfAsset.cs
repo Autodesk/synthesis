@@ -190,43 +190,36 @@ namespace SynthesisAPI.AssetManager
 
             //RecursiveThingy(joint, jointDict);
 
-            foreach (KeyValuePair<string, object> data in jointDict)
+            foreach (dynamic data in jointDict)
             {
-                int i = 0;
-                //RecursiveThingy(data, jointDict);
-                foreach (KeyValuePair<string, object> childData in jointDict)
+                switch (data.Key)
                 {
-                    switch (childData.Key)
-                    {
-                        case "header":
-                            var jointHeader = joint.JointHeader;
-                            jointHeader.Name = (string)(childData.Value as Dictionary<string, object>)["name"];
-                            joint.JointHeader = jointHeader;
-                            break;
-                        case "origin":
-                            var jointOrigin = joint.Origin;
-                            jointOrigin.X = (double)(decimal)(childData.Value as Dictionary<string, object>)["x"];
-                            jointOrigin.Y = (double)(decimal)(childData.Value as Dictionary<string, object>)["y"];
-                            jointOrigin.Z = (double)(decimal)(childData.Value as Dictionary<string, object>)["z"];
-                            joint.Origin = jointOrigin;
-                            break;
-                        //case "revoluteJointMotion":
-                            //var jointType = joint.Type;
-                            //Debug.Log((decimal)(childData.Value as Dictionary<string, object>)["rotationAxisVector"]);
-                            //Debug.Log((decimal)(childData.Value as Dictionary<string, object>)["y"]);
-                            //joint.Type = (Design.Joint.JointType)(decimal)(childData.Value as Dictionary<string, object>)["rotationAxisVector"];
-                            //joint.Type = jointType;
-                            //break;
-                        case "occurrenceOneUUID":
-                            joint.OccurenceOneUuid = (string)childData.Value;
-                            break;
-                        case "occurrenceTwoUUID":
-                            joint.OccurenceTwoUuid = (string)childData.Value;
-                            break;
-                        default:
-                            break;
-                    }
-                    i++;
+                    case "header":
+                        var jointHeader = joint.JointHeader;
+                        jointHeader.Name = data.Value["name"];
+                        joint.JointHeader = jointHeader;
+                        break;
+                    case "origin":
+                        var jointOrigin = joint.Origin;
+                        jointOrigin.X = (double)data.Value["x"];
+                        jointOrigin.Y = (double)data.Value["y"];
+                        jointOrigin.Z = (double)data.Value["z"];
+                        joint.Origin = jointOrigin;
+                        break;
+                    case "revoluteJointMotion":
+                        var jointType = joint.Type;
+                        var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
+                        jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
+                        joint.Type = jointType;
+                        break;
+                    case "occurrenceOneUUID":
+                        joint.OccurenceOneUuid = data.Value;
+                        break;
+                    case "occurrenceTwoUUID":
+                        joint.OccurenceTwoUuid = data.Value;
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -255,6 +248,8 @@ namespace SynthesisAPI.AssetManager
             // string Name
             // bool HasTexture
             // AppearanceProperties Properties
+
+            synthesisAppearance.Name = gltfAppearance.Name;
 
             foreach (SharpGLTF.Schema2.MaterialChannel materialProp in gltfAppearance.Channels)
             {
