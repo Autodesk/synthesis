@@ -80,13 +80,13 @@ namespace SynthesisAPI.EnvironmentManager
 
             public enum JointType
             {
-                RigidJointType = 0,
+                RigidJointMotion = 0,
                 RevoluteJointMotion = 1,
-                SliderJointType = 2,
-                CylindricalJointType = 3,
-                PinSlotJointType = 4,
-                PlanarJointType = 5,
-                BallJointType = 6
+                SliderJointMotion = 2,
+                CylindricalJointMotion = 3,
+                PinSlotJointMotion = 4,
+                PlanarJointMotion = 5,
+                BallJointMotion = 6
             }
         }
 
