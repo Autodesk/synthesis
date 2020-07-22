@@ -92,8 +92,11 @@ namespace SynthesisCore.Systems
             {
                 if (e is DigitalStateEvent de)
                 {
-                    if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(0, 0, -FreeRoamCameraMoveDelta); // TODO make relative to forward not world
+                    if (de.KeyState == DigitalState.Held) {
+                        var forward = cameraTransform.Forward.ToVector3D();
+                        forward = new Vector3D(forward.X, 0, forward.Z);
+                        cameraTransform.Position += forward.Normalize().ScaleBy(FreeRoamCameraMoveDelta); // TODO make relative to forward not world
+                    }
                 }
                 else
                 {
@@ -108,8 +111,12 @@ namespace SynthesisCore.Systems
             {
                 if (e is DigitalStateEvent de)
                 {
-                    if(de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(0, 0, FreeRoamCameraMoveDelta);
+                    if (de.KeyState == DigitalState.Held)
+                    {
+                        var forward = cameraTransform.Forward.ToVector3D();
+                        forward = new Vector3D(forward.X, 0, forward.Z);
+                        cameraTransform.Position += forward.ScaleBy(-FreeRoamCameraMoveDelta);
+                    }
                 }
                 else
                 {
@@ -125,7 +132,7 @@ namespace SynthesisCore.Systems
                 if (e is DigitalStateEvent de)
                 {
                     if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(FreeRoamCameraMoveDelta, 0, 0);
+                        cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(FreeRoamCameraMoveDelta);
                 }
                 else
                 {
@@ -141,7 +148,7 @@ namespace SynthesisCore.Systems
                 if (e is DigitalStateEvent de)
                 {
                     if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(-FreeRoamCameraMoveDelta, 0, 0);
+                        cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(-FreeRoamCameraMoveDelta);
                 }
                 else
                 {
