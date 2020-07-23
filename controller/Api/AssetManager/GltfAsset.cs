@@ -191,43 +191,33 @@ namespace SynthesisAPI.AssetManager
             var jointHeader = joint.JointHeader;
             jointHeader.Name = jointDict.Get<JsonDictionary>("header").Get<string>("name");
             joint.JointHeader = jointHeader;
-            
+
             // ORIGIN
+            var jointOrigin = joint.Origin;
+            jointOrigin.X = (double)jointDict.Get<JsonDictionary>("origin").Get<decimal>("x");
+            jointOrigin.Y = (double)jointDict.Get<JsonDictionary>("origin").Get<decimal>("y");
+            jointOrigin.Z = (double)jointDict.Get<JsonDictionary>("origin").Get<decimal>("z");
+            joint.Origin = jointOrigin;
 
-            // Direction = new Vector3();
-            // Type = JointType.RigidJointType;
-            // Attributes = new Dictionary<string, object>();
-
-            //foreach (dynamic data in jointDict)
-            //{
-            // joint header
-            
-
-                // joint origin
-                //jointOrigin.X = (double)data.Value["x"];
-                //jointOrigin.Y = (double)data.Value["y"];
-                //jointOrigin.Z = (double)data.Value["z"];
-                //joint.Origin = jointOrigin;
-
-                //// occurrence IDs
-                //joint.OccurenceOneUuid = data.Value["occurrenceOneUUID"];
-                //joint.OccurenceOneUuid = data.Value["occurrenceTwoUUID"];
+            // IDs
+            joint.OccurenceOneUuid = (string)jointDict["occurrenceOneUUID"];
+            joint.OccurenceTwoUuid = (string)jointDict["occurrenceTwoUUID"];
 
 
-                //    //case "revoluteJointMotion":
-                //    //var jointType = joint.Type;
+            //    //case "revoluteJointMotion":
+            //    //var jointType = joint.Type;
 
-                //    //var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
+            //    //var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
 
-                //    //if (data.Value.ContainsKey("rotationValue"))
-                //    //{
-                //    //    var rotationValue = data.Value["rotationValue"];
-                //    //}
+            //    //if (data.Value.ContainsKey("rotationValue"))
+            //    //{
+            //    //    var rotationValue = data.Value["rotationValue"];
+            //    //}
 
-                //    //jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
-                //    //joint.Type = jointType;
-                //    //break;
-                
+            //    //jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
+            //    //joint.Type = jointType;
+            //    //break;
+
             //}
             return joint;
         }
@@ -318,6 +308,6 @@ namespace SynthesisAPI.AssetManager
 
     public static class JsonDictionaryExtensions
     {
-        public static T Get<T>(this JsonDictionary dict, string k) where T : class => (dict[k] as T)!;
+        public static T Get<T>(this JsonDictionary dict, string k) => (T)dict[k];
     }
 }
