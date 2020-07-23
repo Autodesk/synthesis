@@ -36,6 +36,7 @@
     <Compile Include="SynthesisCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleSystem.cs" />
+    <Compile Include="InputSystem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
