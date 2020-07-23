@@ -60,7 +60,7 @@ namespace Engine.ModuleLoader.Adapters
 
 			yield return new WaitForSeconds(FlashSelectedTime);
 
-			for(var i = 0; i < materials.Length; i++)
+			for (var i = 0; i < materials.Length; i++)
 			{
 				materials[i].color = backupColors[i];
 			}
@@ -81,7 +81,7 @@ namespace Engine.ModuleLoader.Adapters
 				var eventTrigger = gameObject.AddComponent<EventTrigger>();
 				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
 				{
-					if (((PointerEventData)data).button == PointerEventData.InputButton.Left)
+					if (((PointerEventData)data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
 						Select();
 				}));
 				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
@@ -116,7 +116,7 @@ namespace Engine.ModuleLoader.Adapters
 				Select();
 			}
 			*/
-			if (Input.GetMouseButtonDown(1))
+			if (Input.GetMouseButtonDown(1)) // TODO use preference manager for this
 			{
 				Deselect();
 			}

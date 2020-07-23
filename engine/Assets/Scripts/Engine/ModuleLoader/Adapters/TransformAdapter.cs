@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using Transform = SynthesisAPI.EnvironmentManager.Components.Transform;
-using Engine.Util;
 using SynthesisAPI.Utilities;
 
 namespace Engine.ModuleLoader.Adapters
 {
-    public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform>
+	public class TransformAdapter : MonoBehaviour, IApiAdapter<Transform>
 	{
 		public void Awake()
 		{
@@ -29,9 +28,9 @@ namespace Engine.ModuleLoader.Adapters
 		}
 
 		public static Transform NewInstance()
-        {
+		{
 			return new Transform();
-        }
+		}
 
 		private Transform instance;
 		private UnityEngine.Transform unityTransform;

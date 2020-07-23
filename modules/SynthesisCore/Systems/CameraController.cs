@@ -8,13 +8,13 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using Utilities;
 
 #nullable enable
 
 using Entity = System.UInt32;
-using SynthesisAPI.Runtime;
 
 namespace SynthesisCore.Systems
 {
@@ -88,14 +88,14 @@ namespace SynthesisCore.Systems
 
         public void CameraForward(IEvent e)
         {
-            if (inFreeRoamMode && cameraTransform != null) // TODO allow free roam movement in orbit, but still LootAt focus?
+            if (inFreeRoamMode && cameraTransform != null)
             {
                 if (e is DigitalStateEvent de)
                 {
                     if (de.KeyState == DigitalState.Held) {
-                        var forward = cameraTransform.Forward.ToVector3D();
-                        forward = new Vector3D(forward.X, 0, forward.Z);
-                        cameraTransform.Position += forward.Normalize().ScaleBy(FreeRoamCameraMoveDelta); // TODO make relative to forward not world
+                        var forward = cameraTransform.Forward;
+                        forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
+                        cameraTransform.Position += forward.ScaleBy(FreeRoamCameraMoveDelta);
                     }
                 }
                 else
@@ -113,8 +113,8 @@ namespace SynthesisCore.Systems
                 {
                     if (de.KeyState == DigitalState.Held)
                     {
-                        var forward = cameraTransform.Forward.ToVector3D();
-                        forward = new Vector3D(forward.X, 0, forward.Z);
+                        var forward = cameraTransform.Forward;
+                        forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
                         cameraTransform.Position += forward.ScaleBy(-FreeRoamCameraMoveDelta);
                     }
                 }
@@ -164,7 +164,7 @@ namespace SynthesisCore.Systems
                 if (e is DigitalStateEvent de)
                 {
                     if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(0, FreeRoamCameraMoveDelta, 0);
+                        cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(FreeRoamCameraMoveDelta);
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace SynthesisCore.Systems
                 if (e is DigitalStateEvent de)
                 {
                     if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += new Vector3D(0, -FreeRoamCameraMoveDelta, 0);
+                        cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(-FreeRoamCameraMoveDelta);
                 }
                 else
                 {
@@ -197,16 +197,15 @@ namespace SynthesisCore.Systems
         {
             if (e is DigitalStateEvent de)
             {
+                isMouseDragging = de.KeyState == DigitalState.Held;
                 if (de.KeyState == DigitalState.Down)
                 {
-                    isMouseDragging = true;
                     // TODO cursor stuff
                     // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
                     // Cursor.visible = false;
                 }
                 else if (de.KeyState == DigitalState.Up)
                 {
-                    isMouseDragging = false;
                     // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
                     // Cursor.visible = true;
                 }
@@ -214,18 +213,6 @@ namespace SynthesisCore.Systems
             else
             {
                 throw new System.Exception();
-            }
-        }
-
-        private void ProcessZoom()
-        {
-            if (zMod != 0)
-            {
-                // Prevent from moving too close or too far away from focus
-                if ((offset.Length > MinDistance && zMod < 0) || (offset.Length < MaxDistance && zMod > 0))
-                {
-                    offset += offset.Normalize().ToVector3D().ScaleBy(-zMod);
-                }
             }
         }
 
@@ -248,11 +235,15 @@ namespace SynthesisCore.Systems
                 }
 
                 offset += xDelta + yDelta;
-
-                // Stop from vertically rotating below the floor 
-                var newPos = focusPoint + offset;
-                newPos = new Vector3D(newPos.X, Math.Max(newPos.Y, MinHeight), newPos.Z);
-                offset = newPos - focusPoint;
+            }
+            if (zMod != 0)
+            {
+                var mod = -zMod;
+                // Prevent from moving too close or too far away from focus
+                if ((offset.Length > MinDistance && mod < 0) || (offset.Length < MaxDistance && mod > 0))
+                {
+                    offset += offset.Normalize().ScaleBy(mod);
+                }
             }
         }
 
@@ -282,12 +273,6 @@ namespace SynthesisCore.Systems
                     cameraTransform.Rotate(UnitVector3D.YAxis, xMod, true);
                 }
                 cameraTransform.Position += zMod * cameraTransform.Forward;
-
-                // Stop from vertically moving below the floor 
-                if (cameraTransform.Position.Y < MinHeight)
-                {
-                    cameraTransform.Position = new Vector3D(cameraTransform.Position.X, MinHeight, cameraTransform.Position.Z);
-                }
             }
         }
 
@@ -320,7 +305,7 @@ namespace SynthesisCore.Systems
 
             if (isMouseDragging)
             {
-                // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?)
+                // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?), and add an option to enable this to preference manager
                 xMod = -InputManager.GetAxisValue("MouseX") * SensitivityX;
                 yMod = InputManager.GetAxisValue("MouseY") * SensitivityY;
 
@@ -376,10 +361,15 @@ namespace SynthesisCore.Systems
                 }
                 else
                 {
-                    ProcessZoom();
+                    offset = cameraTransform.Position - focusPoint;
                     ProcessOrbit();
                     UpdateOrbitCameraPosition();
                 }
+            }
+
+            if (cameraTransform.Position.Y < MinHeight)
+            {
+                cameraTransform.Position = new Vector3D(cameraTransform.Position.X, MinHeight, cameraTransform.Position.Z);
             }
 
             LastSelectedTarget = SelectedTarget;
