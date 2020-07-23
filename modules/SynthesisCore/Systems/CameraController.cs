@@ -241,8 +241,8 @@ namespace SynthesisCore.Systems
                 Vector3D yDelta = offset.Rotate(verticalRotationAxis, Angle.FromDegrees(-yMod)) - offset;
 
                 // Stop from vertically rotating past directly above the focus point
-                var newPosition = offset + yDelta;
-                if (newPosition.AngleTo(UnitVector3D.YAxis) <= Angle.FromDegrees(2)) // TODO this doesn't catch cases where it jumps to the otherside and is more than 2 degrees away
+                var newOffset = offset + yDelta;
+                if (!Math.SameSign(newOffset.X, offset.X) || !Math.SameSign(newOffset.Z, offset.Z))
                 {
                     yDelta = new Vector3D(0, 0, 0);
                 }
@@ -258,7 +258,8 @@ namespace SynthesisCore.Systems
 
         private void UpdateOrbitCameraPosition()
         {
-            if (cameraTransform != null) {
+            if (cameraTransform != null)
+            {
                 cameraTransform.Position = focusPoint + offset;
                 cameraTransform.LookAt(focusPoint);
             }
@@ -270,10 +271,23 @@ namespace SynthesisCore.Systems
             {
                 if (isMouseDragging)
                 {
-                    cameraTransform.Rotate(UnitVector3D.XAxis, yMod);
+                    var newRotation = MathUtil.Rotate(cameraTransform.Rotation, UnitVector3D.XAxis, yMod);
+                    var newForward = MathUtil.QuaternionToForwardVector(newRotation);
+
+                    // Stop from vertically rotating past looking directly up/down
+                    if (Math.SameSign(newForward.X, cameraTransform.Forward.X) && Math.SameSign(newForward.Z, cameraTransform.Forward.Z))
+                    {
+                        cameraTransform.Rotation = newRotation;
+                    }
                     cameraTransform.Rotate(UnitVector3D.YAxis, xMod, true);
                 }
                 cameraTransform.Position += zMod * cameraTransform.Forward;
+
+                // Stop from vertically moving below the floor 
+                if (cameraTransform.Position.Y < MinHeight)
+                {
+                    cameraTransform.Position = new Vector3D(cameraTransform.Position.X, MinHeight, cameraTransform.Position.Z);
+                }
             }
         }
 
@@ -284,10 +298,11 @@ namespace SynthesisCore.Systems
             isCameraMovingToNewFocus = true;
             moveTime = 0;
             cameraMoveStartPosition = cameraTransform.Position;
+
             //startRotation = cameraTransform.Rotation;
-            
-            offset = cameraMoveStartPosition - focusPoint;
             //targetRotation = MathUtil.LookAt((-offset).Normalize()).Normalized;
+
+            offset = cameraMoveStartPosition - focusPoint;
 
             timeToReachNewFocus = Math.Min(MoveCameraToFocusTime, offset.Length / MoveToFocusCameraMinSpeed);
 
@@ -298,7 +313,7 @@ namespace SynthesisCore.Systems
         {
             zMod = InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
 
-            if (zMod != 0 && (zMod < 0) == (lastZMod < 0))
+            if (zMod != 0 && Math.SameSign(zMod, lastZMod))
                 zMod += lastZMod * 0.5f;
 
             lastZMod = zMod == 0 ? lastZMod : zMod;
@@ -309,9 +324,9 @@ namespace SynthesisCore.Systems
                 xMod = -InputManager.GetAxisValue("MouseX") * SensitivityX;
                 yMod = InputManager.GetAxisValue("MouseY") * SensitivityY;
 
-                if (xMod != 0 && (xMod < 0) == (lastXMod < 0))
+                if (xMod != 0 && Math.SameSign(xMod, lastXMod))
                     xMod += lastXMod * 0.3f;
-                if (yMod != 0 && (yMod < 0) == (lastYMod < 0))
+                if (yMod != 0 && Math.SameSign(yMod, lastYMod))
                     yMod += lastYMod * 0.3f;
 
                 lastXMod = xMod == 0 ? lastXMod : xMod;
@@ -366,6 +381,7 @@ namespace SynthesisCore.Systems
                     UpdateOrbitCameraPosition();
                 }
             }
+
             LastSelectedTarget = SelectedTarget;
         }
         public override void OnPhysicsUpdate() { }

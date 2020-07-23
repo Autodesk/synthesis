@@ -33,5 +33,10 @@ namespace Utilities
                 ApproxEquals(a.ImagY, b.ImagY) &&
                 ApproxEquals(a.ImagZ, b.ImagZ);
         }
+
+        public static bool SameSign(double a, double b)
+        {
+            return (a < 0) == (b < 0);
+        }
     }
 }
