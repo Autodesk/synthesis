@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Reference Include="Api">
         <HintPath>..\..\api\Api\bin\Debug\netstandard2.0\Api.dll</HintPath>
       </Reference>
     </ItemGroup>

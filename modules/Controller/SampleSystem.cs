@@ -18,9 +18,9 @@ namespace Controller
 		{
 			if (_doOnce)
 			{
-				_doOnce = false;
 				var asset = AssetManager.GetAsset<JsonAsset>("/modules/controller/test.json");
 				ApiProvider.Log(asset.Name + " " + asset.ReadToEnd());
+				_doOnce = false;
 			}
 
 			_counter++;

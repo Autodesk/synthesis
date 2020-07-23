@@ -21,11 +21,13 @@ using Unity.UIElements.Runtime;
 using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
 
+using Engine.ModuleLoader.Adapters;
+
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
 
 namespace Engine.ModuleLoader
 {
-    public class Api : MonoBehaviour
+	public class Api : MonoBehaviour
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
@@ -38,7 +40,7 @@ namespace Engine.ModuleLoader
 		}
 
 		private void LoadModules()
-        {
+		{
 			if (!Directory.Exists(ModulesSourcePath))
 			{
 				Directory.CreateDirectory(ModulesSourcePath);
@@ -58,7 +60,7 @@ namespace Engine.ModuleLoader
 		}
 
 		private List<PreloadedModule> PreloadModules()
-        {
+		{
 			var modules = new List<PreloadedModule>();
 
 			// Discover and preload all modules
@@ -83,18 +85,18 @@ namespace Engine.ModuleLoader
 			return modules;
 		}
 
-        private PreloadedModule? PreloadModule(string filePath)
-        {
+		private PreloadedModule? PreloadModule(string filePath)
+		{
 			var fullPath = $"{ModulesSourcePath}{Path.DirectorySeparatorChar}{filePath}";
 
 			var module = ZipFile.Open(fullPath, ZipArchiveMode.Read);
 
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
-            {
+			{
 				Debug.LogWarning($"Potential module missing is metadata file: {filePath}");
 				return null;
-            }
+			}
 
 			// Parse module metadata
 			try
@@ -107,35 +109,35 @@ namespace Engine.ModuleLoader
 			{
 				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
 			}
-        }
+		}
 
-        private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
-        {
+		private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
+		{
 			// Use Kahns algorithm to resolve module dependencies, ordering modules in list
 			// in the order they should be loaded
 
 			// TODO check for cyclic dependencies and throw
 			var resolvedEntries = moduleList.Where(t => !t.metadata.Dependencies.Any()).ToList();
-            var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
-            while (resolvedEntries.Count > 0)
-            {
-                var element = resolvedEntries.PopAt(0);
-                solutionSet.Enqueue(element);
-                foreach (var dep in moduleList.Where(t =>
-	                t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
-                {
-	                dep.metadata.Dependencies.Remove(element.metadata.Name);
-					if(dep.metadata.Dependencies.Count == 0)
+			var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
+			while (resolvedEntries.Count > 0)
+			{
+				var element = resolvedEntries.PopAt(0);
+				solutionSet.Enqueue(element);
+				foreach (var dep in moduleList.Where(t =>
+					t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
+				{
+					dep.metadata.Dependencies.Remove(element.metadata.Name);
+					if (dep.metadata.Dependencies.Count == 0)
 						resolvedEntries.Add(dep);
-                }
-            }
+				}
+			}
 
-            moduleList.Clear();
+			moduleList.Clear();
 			moduleList.AddRange(solutionSet.ToList());
-        }
+		}
 
-        private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
-        {
+		private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
+		{
 			var fileManifest = new List<string>();
 			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
 
@@ -165,23 +167,21 @@ namespace Engine.ModuleLoader
 				}
 				// Debug.Log("Loaded " + entry.Name);
 			}
-			foreach(var file in fileManifest)
-            {
+			foreach (var file in fileManifest)
+			{
 				Debug.LogWarning($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}");
-            }
+			}
 			moduleInfo.archive.Dispose();
 		}
 
 		private bool LoadApi()
-        {
+		{
 			// Set up Api
 			var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
 			foreach (var type in apiAssembly.GetTypes().Where(e => e.IsSubclassOf(typeof(SystemBase))))
 			{
-				var entity = SynthesisAPI.Runtime.ApiProvider.AddEntity();
-				if (entity == null)
-					throw new Exception("Entity is null"); 
-				SynthesisAPI.Runtime.ApiProvider.AddComponent(type, entity.Value);
+				var entity = EnvironmentManager.AddEntity();
+				entity.AddComponent(type);
 			}
 			foreach (var type in apiAssembly.GetTypes().Where(e => e.GetMethods().Any(
 					m => m.GetCustomAttribute<CallbackAttribute>() != null || m.GetCustomAttribute<TaggedCallbackAttribute>() != null)))
@@ -201,10 +201,10 @@ namespace Engine.ModuleLoader
 			return true;
 		}
 
-        private bool LoadModuleAssembly(Stream stream)
+		private bool LoadModuleAssembly(Stream stream)
 		{
 			// Load module assembly
-		    var memStream = new MemoryStream();
+			var memStream = new MemoryStream();
 			stream.CopyTo(memStream);
 			stream.Close();
 			var assembly = Assembly.Load(memStream.ToArray());
@@ -217,10 +217,8 @@ namespace Engine.ModuleLoader
 
 				if (exportedModuleClass.IsSubclassOf(typeof(SystemBase)))
 				{
-					var entity = SynthesisAPI.Runtime.ApiProvider.AddEntity();
-					if (entity == null)
-						throw new Exception("Entity is null");
-					SynthesisAPI.Runtime.ApiProvider.AddComponent(exportedModuleClass, entity.Value);
+					var entity = EnvironmentManager.AddEntity();
+					entity.AddComponent(exportedModuleClass);
 				}
 
 				foreach (var callback in exportedModuleClass.GetMethods()
@@ -255,30 +253,30 @@ namespace Engine.ModuleLoader
 		}
 
 		private void RegisterTypeCallback(MethodInfo callback, object instance)
-        {
-	        if (instance.GetType() != callback.DeclaringType) // Sanity check
+		{
+			if (instance.GetType() != callback.DeclaringType) // Sanity check
 			{
 				throw new LoadModuleException(
 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
-	        }
-	        var eventType = callback.GetParameters().First().ParameterType;
+			}
+			var eventType = callback.GetParameters().First().ParameterType;
 			typeof(EventBus).GetMethod("NewTypeListener")
 				?.MakeGenericMethod(eventType).Invoke(null, new object[]
 				{
 					CreateEventCallback(callback, instance, eventType)
 				});
-        }
+		}
 
-        EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
-        {
-	        return (e) => m.Invoke(instance,
-		        new []
-		        {
-			        typeof(ReflectHelper).GetMethod("CastObject")
-				        ?.MakeGenericMethod(eventType)
-				        .Invoke(null, new object[] {e})
-		        });
-        }
+		EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
+		{
+			return (e) => m.Invoke(instance,
+				new[]
+				{
+					typeof(ReflectHelper).GetMethod("CastObject")
+						?.MakeGenericMethod(eventType)
+						.Invoke(null, new object[] {e})
+				});
+		}
 
 		private class ApiProvider : IApiProvider
 		{
@@ -291,6 +289,7 @@ namespace Engine.ModuleLoader
 				_entityParent = new GameObject("Entities");
 				_gameObjects = new Dictionary<uint, GameObject>();
 				_builtins = new Dictionary<Type, Type>();
+				_builtins.Add(typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter));
 			}
 
 			public void Log(object o)
@@ -298,22 +297,28 @@ namespace Engine.ModuleLoader
 				Debug.Log(o);
 			}
 
-			public uint AddEntity()
+			public void AddEntityToScene(uint entity)
 			{
-				var entity = EnvironmentManager.AddEntity();
+				if (_gameObjects.ContainsKey(entity))
+					throw new Exception($"Entity \"{entity}\" already exists");
 				var gameObject = new GameObject($"Entity {entity >> 16}"); // TODO replace with entity.GetId()
 				gameObject.transform.SetParent(_entityParent.transform);
 				_gameObjects.Add(entity, gameObject);
-				return entity;
 			}
 
-			public Component AddComponent(Type t, uint entity)
+			public void RemoveEntityFromScene(uint entity)
 			{
-				var gameObject = _gameObjects[entity];
-				if (gameObject == null)
-				{
-					throw new Exception($"No GameObject exists with id \"{entity >> 16}\"");
-				}
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Destroy(gameObject);
+			}
+
+			public Component AddComponentToScene(uint entity, Type t)
+			{
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
 				dynamic component;
 				Type type;
 				if (_builtins.ContainsKey(t))
@@ -327,16 +332,14 @@ namespace Engine.ModuleLoader
 				}
 				else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
-					component = (SystemBase) Activator.CreateInstance(t);
+					component = (SystemBase)Activator.CreateInstance(t);
 					type = typeof(SystemMonoBehavior);
 				}
 				else
 				{
-					component = (Component) Activator.CreateInstance(t);
+					component = (Component)Activator.CreateInstance(t);
 					type = typeof(ComponentAdapter);
 				}
-
-				EnvironmentManager.AddComponent(entity, component);
 
 				gameObject.AddComponent(type);
 				dynamic gameObjectComponent = gameObject.GetComponent(type);
@@ -345,15 +348,26 @@ namespace Engine.ModuleLoader
 				return component;
 			}
 
-			public TComponent AddComponent<TComponent>(uint entity) where TComponent : Component =>
-				(TComponent) AddComponent(typeof(TComponent), entity);
-
-			public Component GetComponent(Type t, uint entity) => entity.GetComponent(t);
-
-			public TComponent GetComponent<TComponent>(uint entity) where TComponent : Component =>
-				entity.GetComponent<TComponent>();
-
-			public List<Component> GetComponents(uint entity) => entity.GetComponents();
+			public void RemoveComponentFromScene(uint entity, Type t)
+			{
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Type type;
+				if (_builtins.ContainsKey(t))
+				{
+					type = _builtins[t];
+				}
+				else if (t.IsSubclassOf(typeof(SystemBase)))
+				{
+					type = typeof(SystemMonoBehavior);
+				}
+				else
+				{
+					type = typeof(ComponentAdapter);
+				}
+				Destroy(gameObject.GetComponent(type));
+			}
 
 			public T CreateUnityType<T>(params object[] args) where T : class
 			{

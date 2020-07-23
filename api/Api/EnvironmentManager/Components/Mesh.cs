@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SynthesisAPI.Modules.Attributes;
-using UnityEngine;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
