@@ -116,10 +116,10 @@ namespace SynthesisAPI.AssetManager
             return occurrence;
         }
 
-        private Design.Matrix3D ExportMatrix (System.Numerics.Matrix4x4 matrix4x4)
+        private Design.Matrix3D ExportMatrix(System.Numerics.Matrix4x4 matrix4x4)
         {
             Matrix3D matrix3D = new Matrix3D(matrix4x4.M11, matrix4x4.M12, matrix4x4.M13, matrix4x4.M14, matrix4x4.M21, matrix4x4.M22, matrix4x4.M23, matrix4x4.M24, matrix4x4.M31, matrix4x4.M32, matrix4x4.M33, matrix4x4.M34, matrix4x4.M41, matrix4x4.M42, matrix4x4.M43, matrix4x4.M44);
-            
+
             return matrix3D;
         }
 
@@ -182,47 +182,45 @@ namespace SynthesisAPI.AssetManager
         {
             Design.Joint joint = new Design.Joint();
 
-            // todo:
-            // JointHeader = new Header();
+            var jointHeader = joint.JointHeader;
+            var jointOrigin = joint.Origin;
+
             // Direction = new Vector3();
             // Type = JointType.RigidJointType;
             // Attributes = new Dictionary<string, object>();
 
-            //RecursiveThingy(joint, jointDict);
+            //foreach (dynamic data in jointDict)
+            //{
+            // joint header
+            jointHeader.Name = (string)jointDict["header"];
+            joint.JointHeader = jointHeader;
 
-            foreach (dynamic data in jointDict)
-            {
-                switch (data.Key)
-                {
-                    case "header":
-                        var jointHeader = joint.JointHeader;
-                        jointHeader.Name = data.Value["name"];
-                        joint.JointHeader = jointHeader;
-                        break;
-                    case "origin":
-                        var jointOrigin = joint.Origin;
-                        jointOrigin.X = (double)data.Value["x"];
-                        jointOrigin.Y = (double)data.Value["y"];
-                        jointOrigin.Z = (double)data.Value["z"];
-                        joint.Origin = jointOrigin;
-                        break;
-                    case "revoluteJointMotion":
-                        var jointType = joint.Type;
-                        var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
-                        jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
-                        joint.Type = jointType;
-                        break;
-                    case "occurrenceOneUUID":
-                        joint.OccurenceOneUuid = data.Value;
-                        break;
-                    case "occurrenceTwoUUID":
-                        joint.OccurenceTwoUuid = data.Value;
-                        break;
-                    default:
-                        break;
-                }
-            }
+                // joint origin
+                //jointOrigin.X = (double)data.Value["x"];
+                //jointOrigin.Y = (double)data.Value["y"];
+                //jointOrigin.Z = (double)data.Value["z"];
+                //joint.Origin = jointOrigin;
 
+                //// occurrence IDs
+                //joint.OccurenceOneUuid = data.Value["occurrenceOneUUID"];
+                //joint.OccurenceOneUuid = data.Value["occurrenceTwoUUID"];
+
+
+                //    //case "revoluteJointMotion":
+                //    //var jointType = joint.Type;
+
+                //    //var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
+
+                //    //if (data.Value.ContainsKey("rotationValue"))
+                //    //{
+                //    //    var rotationValue = data.Value["rotationValue"];
+                //    //}
+
+                //    //jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
+                //    //joint.Type = jointType;
+                //    //break;
+                
+            //}
             return joint;
         }
 

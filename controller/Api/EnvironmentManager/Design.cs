@@ -55,14 +55,14 @@ namespace SynthesisAPI.EnvironmentManager
         public class Joint
         {
             public Header JointHeader { get; set; }
-            public Vector3 Direction { get; set; }
             public Vector3 Origin { get; set; }
-            public JointType Type { get; set; }
             public bool IsLocked { get; set; }
-            public bool IsFlipped { get; set; }
+            public bool IsSuppressed { get; set; }
 
             public string OccurenceOneUuid { get; set; }
             public string OccurenceTwoUuid { get; set; }
+
+            public JointType Type { get; set; }
 
             public IDictionary<string, object> Attributes { get; set; }
 
@@ -72,11 +72,21 @@ namespace SynthesisAPI.EnvironmentManager
             public Joint()
             {
                 JointHeader = new Header();
-                Direction = new Vector3();
                 Origin = new Vector3();
                 Type = JointType.RigidJointMotion;
                 Attributes = new Dictionary<string, object>();
             }
+
+            //public JointType()
+            //{
+            //    //RigidJointMotion rigidJointMotion;
+            //    //RevoluteJointMotion revoluteJointMotion;
+            //    //SliderJointMotion sliderJointMotion;
+            //    //CylindricalJointMotion cylindricalJointMotion;
+            //    //PinSlotJointMotion pinSlotJointMotion;
+            //    //PlanarJointMotion planarJointMotion;
+            //    //BallJointMotion ballJointMotion;
+            //}
 
             public enum JointType
             {
