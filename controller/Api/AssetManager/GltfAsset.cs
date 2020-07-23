@@ -178,12 +178,21 @@ namespace SynthesisAPI.AssetManager
             return meshBody;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jointDict">Type of <see cref="JsonDictionary"/></param>
+        /// <returns></returns>
         private Design.Joint ExportJointsFromExtras(JsonDictionary jointDict)
         {
             Design.Joint joint = new Design.Joint();
 
+            // HEADER
             var jointHeader = joint.JointHeader;
-            var jointOrigin = joint.Origin;
+            jointHeader.Name = jointDict.Get<JsonDictionary>("header").Get<string>("name");
+            joint.JointHeader = jointHeader;
+            
+            // ORIGIN
 
             // Direction = new Vector3();
             // Type = JointType.RigidJointType;
@@ -192,8 +201,7 @@ namespace SynthesisAPI.AssetManager
             //foreach (dynamic data in jointDict)
             //{
             // joint header
-            jointHeader.Name = (string)jointDict["header"];
-            joint.JointHeader = jointHeader;
+            
 
                 // joint origin
                 //jointOrigin.X = (double)data.Value["x"];
@@ -306,5 +314,10 @@ namespace SynthesisAPI.AssetManager
             }
             return parentObject;
         }
+    }
+
+    public static class JsonDictionaryExtensions
+    {
+        public static T Get<T>(this JsonDictionary dict, string k) where T : class => (dict[k] as T)!;
     }
 }
