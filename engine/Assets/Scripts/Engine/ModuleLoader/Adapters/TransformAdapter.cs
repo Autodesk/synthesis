@@ -19,16 +19,7 @@ namespace Engine.ModuleLoader.Adapters
 				unityTransform.position = MathUtil.MapVector3D(instance.Position);
 				unityTransform.rotation = MathUtil.MapQuaternion(instance.Rotation);
 				unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
-				instance._forward = MathUtil.MapVector3(unityTransform.forward).Normalize();
 				instance.ProcessedChanges();
-			}
-			if (instance.lookAtTarget != null) 
-			{
-				unityTransform.LookAt(MathUtil.MapVector3D(instance.lookAtTarget.Value));
-				instance.Rotation = MathUtil.MapUnityQuaternion(unityTransform.localRotation).Normalized;
-				instance._forward = MathUtil.MapVector3(unityTransform.forward).Normalize();
-				instance.ProcessedChanges();
-				instance.finishLookAt();
 			}
 		}
 

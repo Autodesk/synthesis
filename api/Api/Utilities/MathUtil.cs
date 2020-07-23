@@ -1,5 +1,6 @@
 ﻿using System;
 using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
 
 namespace SynthesisAPI.Utilities
 {
@@ -87,12 +88,12 @@ namespace SynthesisAPI.Utilities
 		{
 			return MapUnityQuaternion(UnityEngine.Quaternion.LookRotation(
 				MapVector3D(forward.ToVector3D()),
-				MapVector3D(upward.ToVector3D())));
+				MapVector3D(upward.ToVector3D()))).Normalized;
 		}
 
 		public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegreesDelta)
 		{
-			return MapUnityQuaternion(UnityEngine.Quaternion.RotateTowards(MapQuaternion(from), MapQuaternion(to), maxDegreesDelta));
+			return MapUnityQuaternion(UnityEngine.Quaternion.RotateTowards(MapQuaternion(from), MapQuaternion(to), maxDegreesDelta)).Normalized;
 		}
 
 		internal static UnityEngine.Vector2 MapVector2D(Vector2D vec) =>
@@ -107,5 +108,65 @@ namespace SynthesisAPI.Utilities
 			new Quaternion(q.w, q.x, q.y, q.z);
 		internal static UnityEngine.Quaternion MapQuaternion(Quaternion q) =>
 			new UnityEngine.Quaternion((float)q.ImagX, (float)q.ImagY, (float)q.ImagZ, (float)q.Real);
+
+		public static UnitVector3D QuaternionToForwardVector(Quaternion rotation)
+		{
+			var q = MapQuaternion(rotation);
+			return MapVector3(q * UnityEngine.Vector3.forward).Normalize();
+		}
+
+		public static Quaternion Rotate(Quaternion start, UnitVector3D axis, double angle, bool useWorldAxis = false)
+		{
+			return Rotate(start, axis, Angle.FromDegrees(angle), useWorldAxis);
+		}
+
+		public static Quaternion Rotate(Quaternion start, UnitVector3D axis, Angle angle, bool useWorldAxis = false)
+		{
+			if (useWorldAxis)
+			{
+				axis = MathUtil.ToWorldVector(axis, start);
+			}
+
+			// Math from https://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+			var real = Math.Cos(angle.Radians / 2d);
+
+			var factor = Math.Sin(angle.Radians / 2d);
+			var imagX = axis.X * factor;
+			var imagY = axis.Y * factor;
+			var imagZ = axis.Z * factor;
+			try
+			{
+				start = new Quaternion(real, imagX, imagY, imagZ).Normalized.RotateRotationQuaternion(start).Normalized;
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Rotation of {start} failed: {angle} around axis {axis}", e);
+			}
+			return start;
+		}
+
+		public static Quaternion Rotate(Quaternion start, Vector3D eulerAngles)
+		{
+			return Rotate(start, new EulerAngles(Angle.FromDegrees(eulerAngles.X), Angle.FromDegrees(eulerAngles.Y),
+				Angle.FromDegrees(eulerAngles.Z)));
+		}
+
+		public static Quaternion Rotate(Quaternion start, EulerAngles eulerAngles)
+		{
+			return Rotate(start, MathUtil.FromEuler(eulerAngles));
+		}
+
+		public static Quaternion Rotate(Quaternion start, Quaternion rotation)
+		{
+			try
+			{
+				start = rotation.Normalized.RotateRotationQuaternion(start).Normalized;
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Rotation of {start} failed with provided quaternion {rotation}", e);
+			}
+			return start;
+		}
 	}
 }

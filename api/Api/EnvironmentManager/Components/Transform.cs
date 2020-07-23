@@ -12,12 +12,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		private Vector3D _position = new Vector3D();
 		private Quaternion _rotation = Quaternion.One;
 		private Vector3D _scale = new Vector3D(1, 1, 1);
-		internal UnitVector3D _forward = UnitVector3D.ZAxis;
 
-		public UnitVector3D Forward
-		{
-			get => _forward;
-		}
+		public UnitVector3D Forward => MathUtil.QuaternionToForwardVector(Rotation);
 
 		public Vector3D Position
 		{
@@ -52,54 +48,27 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		}
 		public void Rotate(UnitVector3D axis, double angle, bool useWorldAxis = false)
 		{
-			Rotate(axis, Angle.FromDegrees(angle), useWorldAxis);
+			Rotation = MathUtil.Rotate(Rotation, axis, angle, useWorldAxis);
 		}
 
 		public void Rotate(UnitVector3D axis, Angle angle, bool useWorldAxis = false)
 		{
-			if (useWorldAxis)
-			{
-				axis = MathUtil.ToWorldVector(axis, Rotation);
-			}
-
-			// Math from https://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-			var real = Math.Cos(angle.Radians / 2d);
-
-			var factor = Math.Sin(angle.Radians / 2d);
-			var imagX = axis.X * factor;
-			var imagY = axis.Y * factor;
-			var imagZ = axis.Z * factor;
-			try
-			{
-				Rotation = new Quaternion(real, imagX, imagY, imagZ).Normalized.RotateRotationQuaternion(Rotation).Normalized;
-			}
-			catch (Exception e)
-			{
-				throw new Exception($"Transform: Rotation failed: {angle} around axis {axis}, currently at {Rotation}", e);
-			}
+			Rotation = MathUtil.Rotate(Rotation, axis, angle, useWorldAxis);
 		}
 
 		public void Rotate(Vector3D eulerAngles)
 		{
-			Rotate(new EulerAngles(Angle.FromDegrees(eulerAngles.X), Angle.FromDegrees(eulerAngles.Y),
-				Angle.FromDegrees(eulerAngles.Z)));
+			Rotation = MathUtil.Rotate(Rotation, eulerAngles);
 		}
 
 		public void Rotate(EulerAngles eulerAngles)
 		{
-			Rotate(MathUtil.FromEuler(eulerAngles));
+			Rotation = MathUtil.Rotate(Rotation, eulerAngles);
 		}
 
 		public void Rotate(Quaternion rotation)
 		{
-			try
-			{
-				Rotation = rotation.Normalized.RotateRotationQuaternion(Rotation).Normalized;
-			}
-			catch (Exception e)
-			{
-				throw new Exception($"Transform: rotation failed with provided quaternion {rotation}, currently at {Rotation}", e);
-			}
+			Rotation = MathUtil.Rotate(Rotation, rotation);
 		}
 
 		public void Translate(Vector3D v)
@@ -107,13 +76,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			Position += v;
 		}
 
-		internal Vector3D? lookAtTarget { get; private set; } = null;
-
-		internal void finishLookAt() => lookAtTarget = null;
-
 		public void LookAt(Vector3D target)
 		{
-			lookAtTarget = target;
+			Rotation = MathUtil.LookAt((target - Position).Normalize());
 		}
 
 		internal bool Changed { get; private set; } = true;
