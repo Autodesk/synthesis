@@ -89,7 +89,7 @@ namespace MockApi
                 var m = $"MockApiProvider.{function}";
                 if (msg != "")
                 {
-                    m += ": {msg}";
+                    m += $": {msg}";
                 }
                 Log(m);
             }
@@ -108,7 +108,7 @@ namespace MockApi
             public Component? AddComponentToScene(uint entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
-                return null;
+                return (Component?)Activator.CreateInstance(t);
             }
 
             public void RemoveComponentFromScene(uint entity, Type t)
