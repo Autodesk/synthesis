@@ -46,3 +46,6 @@ sysinfo.txt
 Assets/Scripts/.DS_Store
 
 .DS_Store
+
+# JetBrains
+.idea/

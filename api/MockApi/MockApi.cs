@@ -7,6 +7,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using UnityEngine.UIElements;
 
 namespace MockApi
 {
@@ -114,6 +115,26 @@ namespace MockApi
             public void RemoveComponentFromScene(uint entity, Type t)
             {
                 LogAction("Remove Component", $"Adding {t} to {entity}");
+            }
+
+            public T CreateUnityType<T>(params object[] args) where T : class
+            {
+                throw new NotImplementedException();
+            }
+
+            public VisualTreeAsset GetDefaultUIAsset(string assetName)
+            {
+                throw new NotImplementedException();
+            }
+
+            // public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable
+            // {
+            //     throw new NotImplementedException();
+            // }
+
+            public VisualElement GetRootVisualElement()
+            {
+                throw new NotImplementedException();
             }
 
             public void Log(object o)
