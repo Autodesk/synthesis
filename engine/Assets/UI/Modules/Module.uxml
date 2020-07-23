@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="module" class="module-container">
+        <Style src="USS/Module.uss" />
+        <ui:VisualElement name="icon" class="icon" style="margin-top: 5px;" />
+        <ui:VisualElement name="details" class="details-label">
+            <ui:Label text="Engine v1.0" name="name" class="module-label" />
+            <ui:Label text="by Synthesis" name="author" />
+        </ui:VisualElement>
+        <ui:VisualElement name="description" class="description-container">
+            <ui:Label text="Implements basic simulator behaviors and functionality" name="description" class="description" />
+        </ui:VisualElement>
+        <ui:Button name="information-button" class="information-button" style="background-image: url(&apos;/Assets/UI/Modules/Icons/arrow-out.png&apos;);" />
+    </ui:VisualElement>
+</ui:UXML>

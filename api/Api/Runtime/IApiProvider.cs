@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using SynthesisAPI.Modules;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
 	public interface IApiProvider
 	{
-
 		void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
 
 		void AddEntityToScene(uint entity);
@@ -20,5 +21,15 @@ namespace SynthesisAPI.Runtime
 		Component? AddComponentToScene(uint entity, Type t);
 
 		void RemoveComponentFromScene(uint entity, Type t);
+
+		T CreateUnityType<T>(params object[] args) where T : class;
+		VisualTreeAsset GetDefaultUIAsset(string assetName);
+
+        #region UI
+
+        // TUnityType InstantiateFocusable<TUnityType>() where TUnityType : UnityEngine.UIElements.Focusable;
+		UnityEngine.UIElements.VisualElement GetRootVisualElement();
+
+        #endregion
 	}
 }

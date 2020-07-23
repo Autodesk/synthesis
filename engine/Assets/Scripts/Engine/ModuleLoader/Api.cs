@@ -18,6 +18,8 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
+using Unity.UIElements.Runtime;
+using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
 
 using Engine.ModuleLoader.Adapters;
@@ -36,6 +38,7 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			LoadApi();
 			LoadModules();
 		}
@@ -305,7 +308,7 @@ namespace Engine.ModuleLoader
 			public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
 				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
-				Debug.Log($"{assemblyOwners[callSite ?? ""]}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
+				Debug.Log($"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
 			}
 
 			public void AddEntityToScene(uint entity)
@@ -359,7 +362,7 @@ namespace Engine.ModuleLoader
 			}
 
 			public void RemoveComponentFromScene(uint entity, Type t)
-            {
+			{
 				GameObject gameObject;
 				if (!_gameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
@@ -377,6 +380,31 @@ namespace Engine.ModuleLoader
 					type = typeof(ComponentAdapter);
 				}
 				Destroy(gameObject.GetComponent(type));
+			}
+
+			public T CreateUnityType<T>(params object[] args) where T : class
+			{
+				if (args.Length > 0)
+					return (T) Activator.CreateInstance(typeof(T), args);
+				else
+					return (T) Activator.CreateInstance(typeof(T));
+			}
+
+			public VisualTreeAsset GetDefaultUIAsset(string assetName)
+			{
+				int index = Array.IndexOf(ResourceLedger.Instance.Keys, assetName);
+				if (index != -1)
+					return ResourceLedger.Instance.Values[index];
+				return null;
+			}
+
+			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
+				(TUnityType) Activator.CreateInstance(typeof(TUnityType));
+
+			public VisualElement GetRootVisualElement()
+			{
+				// TODO: Re-evaluate this
+				return PanelRenderer.visualTree;
 			}
 		}
 	}

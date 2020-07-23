@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="flex-grow: 1;">
+        <ui:ListView focusable="True" name="test-list-view" style="width: 416px; height: 291px;" />
+    </ui:VisualElement>
+</ui:UXML>

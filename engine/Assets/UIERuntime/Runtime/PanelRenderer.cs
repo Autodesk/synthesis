@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using SynthesisAPI.Runtime;
 using Object = UnityEngine.Object;
 
 namespace Unity.UIElements.Runtime
@@ -44,7 +45,7 @@ namespace Unity.UIElements.Runtime
         /// <summary>
         /// The top level element.
         /// </summary>
-        public VisualElement visualTree { get; private set; }
+        public static VisualElement visualTree { get; private set; }
         
         /// <summary>
         /// The panel holding the visual tree instantiated from the UXML file.
@@ -146,6 +147,8 @@ namespace Unity.UIElements.Runtime
             OnValidate();
             
             InternalBridge.RegisterPanel(gameObject.GetInstanceID(), panel);
+            
+            RecreateUIFromUxml();
         }
 
         /// <summary>
@@ -212,7 +215,7 @@ namespace Unity.UIElements.Runtime
         /// </summary>
         public void Start()
         {
-            RecreateUIFromUxml();
+            // RecreateUIFromUxml();
         }
 
         /// <summary>
@@ -220,6 +223,10 @@ namespace Unity.UIElements.Runtime
         /// </summary>
         public void RecreateUIFromUxml()
         {
+            // Basically this method only causes issues for us
+            
+            ApiProvider.Log("Recreate Called");
+            
             if (enableLiveUpdates)
             {
                 trackedAssetSet.Clear();
@@ -300,7 +307,7 @@ namespace Unity.UIElements.Runtime
                     if (hash == cachedHash)
                         continue;
 
-                    RecreateUIFromUxml();
+                    // RecreateUIFromUxml();
                     return;
                 }
             }

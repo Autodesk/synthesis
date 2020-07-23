@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using SynthesisAPI.Modules.Attributes;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
 #nullable enable
@@ -43,5 +45,16 @@ namespace SynthesisAPI.Runtime
 		public static Component? AddComponentToScene(uint entity, Type t) => Instance?.AddComponentToScene(entity,t);
 
 		public static void RemoveComponentFromScene(uint entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
+		
+		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
+
+		public static VisualTreeAsset? GetDefaultUIAsset(string assetName) => Instance?.GetDefaultUIAsset(assetName);
+
+		// public static TUnityType? InstantiateFocusable<TUnityType>()
+		// 	where TUnityType : UnityEngine.UIElements.Focusable =>
+		// 	Instance?.InstantiateFocusable<TUnityType>();
+
+		public static UnityEngine.UIElements.VisualElement? GetRootVisualElement() =>
+			Instance?.GetRootVisualElement();
 	}
 }

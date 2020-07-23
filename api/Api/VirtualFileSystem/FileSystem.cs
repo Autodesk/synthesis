@@ -290,6 +290,9 @@ namespace SynthesisAPI.VirtualFileSystem
             }
             foreach (var e in parent.Entries)
             {
+                if (e.Key == "." || e.Key == "..")
+                    continue;
+                
                 if (e.Value is Directory directory)
                 {
                     var result = SearchInner<TEntry>(directory, name);
@@ -343,6 +346,9 @@ namespace SynthesisAPI.VirtualFileSystem
             }
             foreach (var e in parent.Entries)
             {
+                if (e.Key == "." || e.Key == "..")
+                    continue;
+                
                 if (e.Value is Directory directory)
                 {
                     var result = SearchInner(directory, name);
