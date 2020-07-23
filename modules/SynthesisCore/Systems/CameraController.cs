@@ -70,6 +70,14 @@ namespace SynthesisCore.Systems
                 cameraEntity.Value.AddComponent<Camera>();
                 var trans = cameraEntity.Value.AddComponent<Transform>();
                 cameraTransform = trans ?? throw new System.Exception();
+                cameraTransform.PositionValidator = (Vector3D position) =>
+                {
+                    if (position.Y < MinHeight)
+                    {
+                        position = new Vector3D(position.X, MinHeight, position.Z);
+                    }
+                    return position;
+                };
                 cameraTransform.Position = StartPosition;
                 cameraTransform.LookAt(new Vector3D());
             }
@@ -365,11 +373,6 @@ namespace SynthesisCore.Systems
                     ProcessOrbit();
                     UpdateOrbitCameraPosition();
                 }
-            }
-
-            if (cameraTransform.Position.Y < MinHeight)
-            {
-                cameraTransform.Position = new Vector3D(cameraTransform.Position.X, MinHeight, cameraTransform.Position.Z);
             }
 
             LastSelectedTarget = SelectedTarget;

@@ -15,12 +15,20 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
 		public UnitVector3D Forward => MathUtil.QuaternionToForwardVector(Rotation);
 
+		public delegate Vector3D PositionValidatorDelegate(Vector3D position);
+		public delegate Quaternion RotationValidatorDelegate(Quaternion rotation);
+		public delegate Vector3D ScaleValidatorDelegate(Vector3D scale);
+
+		public PositionValidatorDelegate PositionValidator = (Vector3D position) => position;
+		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation;
+		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
+
 		public Vector3D Position
 		{
 			get => _position;
 			set
 			{
-				_position = value;
+				_position = PositionValidator(value);
 				Changed = true;
 			}
 		}
@@ -32,7 +40,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			{
 				if (!value.IsUnitQuaternion)
 					Runtime.ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}"); // TODO warning log level
-				_rotation = value;
+				_rotation = RotationValidator(value);
 				Changed = true;
 			}
 		}
@@ -42,7 +50,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _scale;
 			set
 			{
-				_scale = value;
+				_scale = ScaleValidator(value);
 				Changed = true;
 			}
 		}
