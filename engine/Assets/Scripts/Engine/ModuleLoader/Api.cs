@@ -123,7 +123,7 @@ namespace Engine.ModuleLoader
 				{
 					if (!moduleList.Any(m => m.metadata.Name == dependency))
 					{
-						throw new Exception($"Module {metadata.Name} is missing dependency module {dependency}");
+						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency}");
 					}
 				}
 			}
@@ -373,7 +373,7 @@ namespace Engine.ModuleLoader
 					component = type.GetMethod("NewInstance")?.Invoke(null, null);
 					if (component == null)
 					{
-						throw new Exception($"Builtin {type.FullName} type lacked way to create new instance of type {t.FullName}");
+						throw new LoadModuleException($"Builtin {type.FullName} type lacked way to create new instance of type {t.FullName}");
 					}
 				}
 				else if (t.IsSubclassOf(typeof(SystemBase)))
@@ -385,7 +385,7 @@ namespace Engine.ModuleLoader
 					}
 					catch (Exception e)
 					{
-						throw new Exception($"Failed to create instance of SystemBase with type {t.FullName}", e);
+						throw new LoadModuleException($"Failed to create instance of SystemBase with type {t.FullName}", e);
 					}
 				}
 				else
@@ -397,7 +397,7 @@ namespace Engine.ModuleLoader
 					}
 					catch (Exception e)
 					{
-						throw new Exception($"Failed to create instance of component with type {t.FullName}", e);
+						throw new LoadModuleException($"Failed to create instance of component with type {t.FullName}", e);
 					}
 				}
 
