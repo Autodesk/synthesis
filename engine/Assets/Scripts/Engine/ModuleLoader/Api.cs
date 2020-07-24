@@ -58,7 +58,6 @@ namespace Engine.ModuleLoader
 				LoadModule((arhive, metadata));
 				EventBus.Push(new LoadModuleEvent(metadata.Name));
 				ModuleManager.AddToLoadedModuleList(metadata.Name);
-				// Debug.Log("Loaded " + metadata.Name);
 			}
 			ModuleManager.MarkFinishedLoading();
 		}
@@ -98,7 +97,7 @@ namespace Engine.ModuleLoader
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
 			{
-				Debug.LogWarning($"Potential module missing is metadata file: {filePath}");
+				SynthesisAPI.Runtime.ApiProvider.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
 				return null;
 			}
 
@@ -184,7 +183,7 @@ namespace Engine.ModuleLoader
 			}
 			foreach (var file in fileManifest)
 			{
-				Debug.LogWarning($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}");
+				SynthesisAPI.Runtime.ApiProvider.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
 			}
 			moduleInfo.archive.Dispose();
 		}
@@ -336,11 +335,31 @@ namespace Engine.ModuleLoader
 				};
 			}
 
-
-			public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0)
+			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
 				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
-				Debug.Log($"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
+				var msg = $"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}";
+				switch (logLevel)
+				{
+					case LogLevel.Info:
+					case LogLevel.Debug:
+						{
+							Debug.Log(msg);
+							break;
+						}
+					case LogLevel.Warning:
+						{
+							Debug.LogWarning(msg);
+							break;
+						}
+					case LogLevel.Error:
+						{
+							Debug.LogError(msg);
+							break;
+						}
+					default:
+						throw new SynthesisExpection("Unhandled log level");
+				}
 			}
 
 			public void AddEntityToScene(Entity entity)

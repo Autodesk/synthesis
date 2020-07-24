@@ -7,6 +7,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using UnityEngine.UIElements;
 
 namespace MockApi
@@ -117,8 +118,21 @@ namespace MockApi
                 LogAction("Remove Component", $"Adding {t} to {entity}");
             }
 
-            public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0){
-                Console.WriteLine(o);
+            public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
+            {
+                switch (logLevel)
+                {
+                    case LogLevel.Warning:
+                    case LogLevel.Error:
+                    case LogLevel.Debug:
+                    case LogLevel.Info:
+                        {
+                            Console.WriteLine(o);
+                            break;
+                        }
+                    default:
+                        throw new SynthesisExpection("Unhandled log level");
+                }
 			}
             
             public T CreateUnityType<T>(params object[] args) where T : class

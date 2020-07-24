@@ -82,7 +82,7 @@ namespace SynthesisAPI.UIManager.VisualElements
                 Element.bindItem(elem, i);
                 Element.Add(elem);
             }
-            ApiProvider.Log("Calling children");
+            ApiProvider.Log("Calling children", LogLevel.Warning);
             base.PostUxmlLoad();
             return null!;
         }

@@ -30,9 +30,9 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
+		public static void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
 		{
-			Instance?.Log(o, memberName, filePath, lineNumber);
+			Instance?.Log(o, logLevel, memberName, filePath, lineNumber);
 		}
 
 		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);

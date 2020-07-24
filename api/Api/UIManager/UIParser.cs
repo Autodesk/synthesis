@@ -48,7 +48,7 @@ namespace SynthesisAPI.UIManager
                 x.Name.Equals(node.Name.Replace("ui:", "")));
             if (elementType == null)
             {
-                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...");
+                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
                 return null;
             }
             dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
@@ -65,7 +65,7 @@ namespace SynthesisAPI.UIManager
                     if (property == null)
                     {
                         // throw new Exception($"No property found with name \"{attr.Name}\"");
-                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"");
+                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
                         continue;
                     }
 
@@ -150,7 +150,7 @@ namespace SynthesisAPI.UIManager
             var property = typeof(IStyle).GetProperty(propertyName);
             if (property == null)
             {
-                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"");
+                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
@@ -195,7 +195,7 @@ namespace SynthesisAPI.UIManager
             }
             catch (Exception e)
             {
-                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"");
+                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
             }
 
             return element;
@@ -236,7 +236,7 @@ namespace SynthesisAPI.UIManager
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    ApiProvider.Log("Can't find asset");
+                    ApiProvider.Log("Can't find asset", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -247,7 +247,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                ApiProvider.Log("Exception when parsing background texture");
+                ApiProvider.Log("Exception when parsing background texture", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
