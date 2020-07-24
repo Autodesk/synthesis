@@ -225,7 +225,7 @@ namespace Engine.ModuleLoader
 			return true;
 		}
 
-        private bool LoadModuleAssembly(Stream stream, string owningModule)
+		private bool LoadModuleAssembly(Stream stream, string owningModule)
 		{
 			// Load module assembly
 			var memStream = new MemoryStream();
@@ -234,29 +234,40 @@ namespace Engine.ModuleLoader
 			var assembly = Assembly.Load(memStream.ToArray());
 
 			// Set up module
+
 			foreach (var exportedModuleClass in assembly.GetTypes()
 				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
 			{
-				object exportedModuleClassInstance = null;
-				if (exportedModuleClass.IsSubclassOf(typeof(SystemBase)))
+				try
 				{
-					var entity = EnvironmentManager.AddEntity();
-					exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
+					object exportedModuleClassInstance = null;
+
+					if (exportedModuleClass.IsSubclassOf(typeof(SystemBase)))
+					{
+						var entity = EnvironmentManager.AddEntity();
+						exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
+					}
+
+					if (exportedModuleClassInstance == null)
+						exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
+
+					foreach (var callback in exportedModuleClass.GetMethods()
+						.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
+					{
+						RegisterTypeCallback(callback, exportedModuleClassInstance);
+					}
+
+					foreach (var callback in exportedModuleClass.GetMethods()
+						.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+					{
+						RegisterTagCallback(callback, exportedModuleClassInstance);
+					}
 				}
-
-                if (exportedModuleClassInstance == null)
-					exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
-
-				foreach (var callback in exportedModuleClass.GetMethods()
-					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
+				catch (Exception)
 				{
-					RegisterTypeCallback(callback, exportedModuleClassInstance);
-				}
-
-				foreach (var callback in exportedModuleClass.GetMethods()
-					.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
-				{
-					RegisterTagCallback(callback, exportedModuleClassInstance);
+					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
+					// TODO unload assembly? return false?
+					continue;
 				}
 			}
 
@@ -362,18 +373,32 @@ namespace Engine.ModuleLoader
 					component = type.GetMethod("NewInstance")?.Invoke(null, null);
 					if (component == null)
 					{
-						throw new Exception("Builtin type lacked way to create new instance");
+						throw new Exception($"Builtin {type.FullName} type lacked way to create new instance of type {t.FullName}");
 					}
 				}
 				else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
-					component = (SystemBase)Activator.CreateInstance(t);
-					type = typeof(SystemAdapter);
+					try
+					{
+						component = (SystemBase)Activator.CreateInstance(t);
+						type = typeof(SystemAdapter);
+					}
+					catch (Exception e)
+					{
+						throw new Exception($"Failed to create instance of SystemBase with type {t.FullName}", e);
+					}
 				}
 				else
 				{
-					component = (Component)Activator.CreateInstance(t);
-					type = typeof(ComponentAdapter);
+					try
+					{
+						component = (Component)Activator.CreateInstance(t);
+						type = typeof(ComponentAdapter);
+					}
+					catch (Exception e)
+					{
+						throw new Exception($"Failed to create instance of component with type {t.FullName}", e);
+					}
 				}
 
 				dynamic gameObjectComponent = gameObject.AddComponent(type);
