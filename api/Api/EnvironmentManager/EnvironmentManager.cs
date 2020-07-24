@@ -10,11 +10,6 @@ using UnityEngine.PlayerLoop;
 
 namespace SynthesisAPI.EnvironmentManager
 {
-    //Entity is a 32 bit generational index
-    // 1st 16 bits represent index
-    // 2nd 16 bits represent generation
-    using Entity = System.UInt32;
-
     /// <summary>
     /// ECS System
     /// </summary>
@@ -24,8 +19,8 @@ namespace SynthesisAPI.EnvironmentManager
         static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
         static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
 
-        const Entity NULL_ENTITY = 0;
-        const ushort BASE_GEN = 1; //no entity should have a generation of 0
+        private static readonly Entity NULL_ENTITY = 0;
+        private const ushort BASE_GEN = 1; //no entity should have a generation of 0
 
 
         #region EntityManagement
