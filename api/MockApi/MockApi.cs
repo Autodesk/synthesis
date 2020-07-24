@@ -20,7 +20,7 @@ namespace MockApi
                  a.GetTypes()).Where(e => e.IsSubclassOf(typeof(SystemBase))))
             {
                 var entity = EnvironmentManager.AddEntity();
-                EnvironmentManager.AddComponent(entity,type);
+                entity.AddComponent(type);
             }
             foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
                 a.GetTypes()).Where(e => e.GetMethods().Any(
@@ -109,7 +109,7 @@ namespace MockApi
             public Component? AddComponentToScene(uint entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
-                return (Component?)Activator.CreateInstance(t);
+                return (Component?) Activator.CreateInstance(t);
             }
 
             public void RemoveComponentFromScene(uint entity, Type t)
@@ -117,6 +117,10 @@ namespace MockApi
                 LogAction("Remove Component", $"Adding {t} to {entity}");
             }
 
+            public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0){
+                Console.WriteLine(o);
+			}
+            
             public T CreateUnityType<T>(params object[] args) where T : class
             {
                 throw new NotImplementedException();
@@ -135,11 +139,6 @@ namespace MockApi
             public VisualElement GetRootVisualElement()
             {
                 throw new NotImplementedException();
-            }
-
-            public void Log(object o)
-            {
-                Console.WriteLine(o);
             }
         }
     }

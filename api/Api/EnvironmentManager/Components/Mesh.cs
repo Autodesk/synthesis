@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 
@@ -7,25 +8,25 @@ namespace SynthesisAPI.EnvironmentManager.Components
 	[BuiltinComponent]
 	public class Mesh : Component
 	{
-		private List<Vector3> _vertices = new List<Vector3>();
-		private List<Vector2> _uvs = new List<Vector2>();
+		private List<Vector3D> _vertices = new List<Vector3D>();
+		private List<Vector2D> _uvs = new List<Vector2D>();
 		private List<int> _triangles = new List<int>();
 
 
-		public List<Vector3> Vertices
+		public List<Vector3D> Vertices
 		{
 			get => _vertices;
 			set {
 				_vertices = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
-		public List<Vector2> UVs
+		public List<Vector2D> UVs
 		{
 			get => _uvs;
 			set {
 				_uvs = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
 
@@ -34,12 +35,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			get => _triangles;
 			set {
 				_triangles = value;
-			    DidChange = true;
+			    Changed = true;
 			}
 		}
 
-		public void ProcessedChanges() => DidChange = false;
-
-		public bool DidChange { get; private set; }
+		public bool Changed { get; private set; }
+		public void ProcessedChanges() => Changed = false;
 	}
 }

@@ -4,11 +4,12 @@ using SynthesisAPI.EventBus;
 
 namespace SynthesisAPI.InputManager.InputEvents
 {
-    public interface InputEvent : IEvent
+    public interface IInputEvent : IEvent
     {
         string Name { get; }
     }
-    public class AnalogEvent : InputEvent
+    /*
+    public class AnalogEvent : IInputEvent // TODO make an event stream type instead
     {
         public string Name { get; private set; }
         public float Value { get; private set; }
@@ -18,7 +19,8 @@ namespace SynthesisAPI.InputManager.InputEvents
             Value = value;
         }
     }
-    public class DigitalEvent : InputEvent
+    */
+    public class DigitalEvent : IInputEvent
     {
         public string Name { get; private set; }
         public DigitalState State { get; private set; }

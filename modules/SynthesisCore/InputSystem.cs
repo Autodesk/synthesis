@@ -8,9 +8,9 @@ namespace SynthesisCore
     [ModuleExport]
     public class InputSystem : SystemBase
     {
-        public InputSystem()
-        {
-        }
+        public InputSystem() { }
+
+        public override void Setup() { }
 
         public override void OnPhysicsUpdate() { }
 

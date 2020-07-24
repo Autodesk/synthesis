@@ -15,7 +15,8 @@
         "nunit.framework.dll",
         "Api.dll",
         "System.IO.Compression.dll",
-        "System.IO.Compression.ZipFile.dll"
+        "System.IO.Compression.ZipFile.dll",
+        "MathNet.Spatial.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

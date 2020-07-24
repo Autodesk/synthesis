@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SynthesisAPI.Modules.Attributes;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,9 +33,9 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void Log(object o)
+		public static void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
 		{
-			Instance?.Log(o);
+			Instance?.Log(o, memberName, filePath, lineNumber);
 		}
 
 		public static void AddEntityToScene(uint entity) => Instance?.AddEntityToScene(entity);

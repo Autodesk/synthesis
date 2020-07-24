@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -7,7 +7,6 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 using Entity = System.UInt32;
 
 namespace SynthesisCore
@@ -15,40 +14,37 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
-        bool start = true;
+        private Selectable selectable;
+        private Transform transform;
 
         public override void OnPhysicsUpdate() { }
 
-        public override void OnUpdate()
+        public override void Setup()
         {
-            if (start)
-            {
-                Entity e = EnvironmentManager.AddEntity();
-                Mesh m = e.AddComponent<Mesh>();
-                cube(m);
+            Entity e = EnvironmentManager.AddEntity();
+            transform = e.AddComponent<Transform>();
+            selectable = e.AddComponent<Selectable>();
+            Mesh m = e.AddComponent<Mesh>();
+            cube(m);
 
-                Input[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
-                InputManager.AssignInputsToEvent("move",test);
-
-                Input[] test2 = { new Analog("Mouse X"), new Analog("Mouse Y") };
-                InputManager.AssignInputsToEvent("mouse", test2);
-
-                start = false;
-            }
+            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+            InputManager.AssignDigitalInputs("move", test);
         }
+
+        public override void OnUpdate() { }
 
         private void cube(Mesh m)
         {
-            m.Vertices = new List<Vector3>()
+            m.Vertices = new List<Vector3D>()
             {
-                new Vector3(0,0,0),
-                new Vector3(1,0,0),
-                new Vector3(1,1,0),
-                new Vector3(0,1,0),
-                new Vector3(0,1,1),
-                new Vector3(1,1,1),
-                new Vector3(1,0,1),
-                new Vector3(0,0,1)
+                new Vector3D(0,0,0),
+                new Vector3D(1,0,0),
+                new Vector3D(1,1,0),
+                new Vector3D(0,1,0),
+                new Vector3D(0,1,1),
+                new Vector3D(1,1,1),
+                new Vector3D(1,0,1),
+                new Vector3D(0,0,1)
             };
             m.Triangles = new List<int>()
             {
@@ -67,6 +63,7 @@ namespace SynthesisCore
             };
         }
 
+        /*
         [TaggedCallback("input/move")]
         public void Move(DigitalEvent digitalEvent)
         {
@@ -91,21 +88,6 @@ namespace SynthesisCore
                 }
             }
         }
-
-        [TaggedCallback("input/mouse")]
-        public void Mouse(AnalogEvent analogEvent)
-        {
-            switch (analogEvent.Name)
-            {
-                case "Mouse X":
-                    ApiProvider.Log(analogEvent.Value);
-                    break;
-                case "Mouse Y":
-                    ApiProvider.Log(analogEvent.Value);
-                    break;
-                default:
-                    break;
-            }
-        }
+        */
     }
 }

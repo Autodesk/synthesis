@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,9 +33,12 @@ namespace Engine.ModuleLoader
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
 
+		private static Dictionary<string, string> assemblyOwners = new Dictionary<string, string>();
+
 		public void Awake()
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			LoadApi();
 			LoadModules();
 		}
@@ -150,7 +154,7 @@ namespace Engine.ModuleLoader
 				var stream = entry.Open();
 				if (extension == ".dll")
 				{
-					if (!LoadModuleAssembly(stream))
+					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
@@ -178,15 +182,23 @@ namespace Engine.ModuleLoader
 		{
 			// Set up Api
 			var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
-			foreach (var type in apiAssembly.GetTypes().Where(e => e.IsSubclassOf(typeof(SystemBase))))
+			foreach (var type in apiAssembly.GetTypes())
 			{
-				var entity = EnvironmentManager.AddEntity();
-				entity.AddComponent(type);
-			}
-			foreach (var type in apiAssembly.GetTypes().Where(e => e.GetMethods().Any(
-					m => m.GetCustomAttribute<CallbackAttribute>() != null || m.GetCustomAttribute<TaggedCallbackAttribute>() != null)))
-			{
-				var instance = Activator.CreateInstance(type);
+				object instance = null;
+
+				if (type.IsSubclassOf(typeof(SystemBase)))
+				{
+					var entity = EnvironmentManager.AddEntity();
+					instance = entity.AddComponent(type);
+				}
+
+				if (instance == null && type.GetMethods().Any(m =>
+					m.GetCustomAttribute<CallbackAttribute>() != null ||
+					m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+				{
+					instance = Activator.CreateInstance(type);
+				}
+
 				foreach (var callback in type.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
 				{
@@ -198,10 +210,11 @@ namespace Engine.ModuleLoader
 					RegisterTagCallback(callback, instance);
 				}
 			}
+			assemblyOwners.Add(apiAssembly.GetName().Name, "Api");
 			return true;
 		}
 
-		private bool LoadModuleAssembly(Stream stream)
+        private bool LoadModuleAssembly(Stream stream, string owningModule)
 		{
 			// Load module assembly
 			var memStream = new MemoryStream();
@@ -213,13 +226,15 @@ namespace Engine.ModuleLoader
 			foreach (var exportedModuleClass in assembly.GetTypes()
 				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
 			{
-				var exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
-
+				object exportedModuleClassInstance = null;
 				if (exportedModuleClass.IsSubclassOf(typeof(SystemBase)))
 				{
 					var entity = EnvironmentManager.AddEntity();
-					entity.AddComponent(exportedModuleClass);
+					exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
 				}
+
+                if (exportedModuleClassInstance == null)
+					exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
 
 				foreach (var callback in exportedModuleClass.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
@@ -233,6 +248,8 @@ namespace Engine.ModuleLoader
 					RegisterTagCallback(callback, exportedModuleClassInstance);
 				}
 			}
+
+			assemblyOwners.Add(assembly.GetName().Name, owningModule);
 			return true;
 		}
 
@@ -288,13 +305,20 @@ namespace Engine.ModuleLoader
 			{
 				_entityParent = new GameObject("Entities");
 				_gameObjects = new Dictionary<uint, GameObject>();
-				_builtins = new Dictionary<Type, Type>();
-				_builtins.Add(typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter));
+				_builtins = new Dictionary<Type, Type>
+				{
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) }
+				};
 			}
 
-			public void Log(object o)
+
+			public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
-				Debug.Log(o);
+				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
+				Debug.Log($"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
 			}
 
 			public void AddEntityToScene(uint entity)
@@ -341,8 +365,7 @@ namespace Engine.ModuleLoader
 					type = typeof(ComponentAdapter);
 				}
 
-				gameObject.AddComponent(type);
-				dynamic gameObjectComponent = gameObject.GetComponent(type);
+				dynamic gameObjectComponent = gameObject.AddComponent(type);
 				gameObjectComponent.SetInstance(component);
 
 				return component;
