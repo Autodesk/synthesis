@@ -46,3 +46,30 @@ jobs:
         with:
           name: Synthesis
           path: build
+
+  testRunnerInAllModes:
+    name: Test all modes on ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
+      # Configure test runner
+      - uses: webbertakken/unity-test-runner@v1.3
+        id: testRunner
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          testMode: all
+
+      # Upload artifacts
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Test Results (all modes)
+          path: ${{ steps.testRunner.outputs.artifactsPath }}
