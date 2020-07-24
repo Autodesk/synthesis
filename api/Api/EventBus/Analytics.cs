@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,11 +9,11 @@ namespace SynthesisAPI.EventBus
     public static class Analytics
     {
    
-        public const string URL_COLLECT = "https://www.google-analytics.com/collect";
-        public const string URL_BATCH = "https://www.google-analytics.com/batch";
-        public const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
-        public static string GUID = "not-set";
-        public static bool dataCollection = true;
+        private const string URL_COLLECT = "https://www.google-analytics.com/collect";
+        private const string URL_BATCH = "https://www.google-analytics.com/batch";
+        private const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
+        public static string GUID { get; private set; } = "not-set";
+        public static bool DataCollection { get; private set; } = true;
 
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace SynthesisAPI.EventBus
         public static void SetUnityPrefs(String unityGuid, bool dataPref)
         {
             GUID = unityGuid;
-            dataCollection = dataPref;
+            DataCollection = dataPref;
         }
 
         /// <summary>
@@ -138,7 +136,7 @@ namespace SynthesisAPI.EventBus
         /// </summary>
         public static void UploadDump()
         {
-            if (LoggedData.Count < 1 || !dataCollection)
+            if (LoggedData.Count < 1 || !DataCollection)
             {
                 Console.WriteLine("Clearing log");
                 LoggedData.Clear();
@@ -302,7 +300,7 @@ namespace SynthesisAPI.EventBus
             return Task.Factory.StartNew(() =>
             {
                 mutex.WaitOne();
-                if (LoggedData.Count < 1 || !dataCollection)
+                if (LoggedData.Count < 1 || !DataCollection)
                 {
                     Console.WriteLine("Clearing log");
                     LoggedData.Clear();

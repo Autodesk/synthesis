@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SynthesisAPI.EnvironmentManager;
+using System;
 using System.Runtime.CompilerServices;
-using SynthesisAPI.Modules;
-using UnityEngine;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
-	public interface IApiProvider
+    public interface IApiProvider
 	{
-		void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
+		void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
 
-		void AddEntityToScene(uint entity);
+		void AddEntityToScene(Entity entity);
 
-		void RemoveEntityFromScene(uint entity);
+		void RemoveEntityFromScene(Entity entity);
 
 		#nullable enable
-		Component? AddComponentToScene(uint entity, Type t);
+		Component? AddComponentToScene(Entity entity, Type t);
 
-		void RemoveComponentFromScene(uint entity, Type t);
+		void RemoveComponentFromScene(Entity entity, Type t);
 
 		T CreateUnityType<T>(params object[] args) where T : class;
 		VisualTreeAsset GetDefaultUIAsset(string assetName);

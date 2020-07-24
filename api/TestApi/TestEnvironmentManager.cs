@@ -1,6 +1,5 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using NUnit.Framework;
-using Entity = System.UInt32;
 
 namespace TestApi
 {
@@ -15,12 +14,31 @@ namespace TestApi
         }
 
         [Test]
+        public static void TestEntity()
+        {
+            uint aActual = 5;
+            uint bActual = 6;
+            Entity a = aActual;
+            Entity b = bActual;
+
+            Assert.True(aActual == a);
+            Assert.True(a.Equals(aActual));
+            Assert.True(aActual.Equals(a));
+
+            Assert.AreNotEqual(a, b);
+
+            b = aActual;
+            Assert.AreEqual(a, b);
+            Assert.AreEqual(aActual.ToString(), a.ToString());
+        }
+
+        [Test]
         public static void TestAddEntity()
         {
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(EnvironmentManager.EntityExists(e1));
             Assert.True(e1.EntityExists());
-            Assert.AreEqual(e1, 1);
+            Assert.AreEqual(e1, (Entity)1);
             Entity e2 = EnvironmentManager.AddEntity();
             Assert.True(EnvironmentManager.EntityExists(e2));
             Assert.True(e2.EntityExists());

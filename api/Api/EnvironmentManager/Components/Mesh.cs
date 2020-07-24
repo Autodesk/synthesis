@@ -40,6 +40,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		}
 
 		public bool Changed { get; private set; }
-		public void ProcessedChanges() => Changed = false;
+		internal void ProcessedChanges() => Changed = false;
 	}
 }

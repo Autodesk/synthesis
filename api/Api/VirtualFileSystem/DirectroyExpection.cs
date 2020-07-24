@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SynthesisAPI.VirtualFileSystem
 {
-    public class DirectroyExpection : Exception {
+    public class DirectroyExpection : SynthesisExpection
+    {
         public DirectroyExpection() { }
         public DirectroyExpection(string message) : base(message) { }
         public DirectroyExpection(string message, Exception inner) : base(message, inner) { }

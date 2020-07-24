@@ -18,10 +18,10 @@ namespace TestApi
         {
             Analytics.SetUnityPrefs("testGUID", false);
             Assert.AreEqual("testGUID", Analytics.GUID);
-            Assert.AreEqual(false, Analytics.dataCollection);
+            Assert.AreEqual(false, Analytics.DataCollection);
             Analytics.SetUnityPrefs("testGUID", true);
             Assert.AreEqual("testGUID", Analytics.GUID);
-            Assert.AreEqual(true, Analytics.dataCollection);
+            Assert.AreEqual(true, Analytics.DataCollection);
         }
 
         [Test]

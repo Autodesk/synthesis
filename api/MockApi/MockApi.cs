@@ -7,6 +7,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using SynthesisAPI.VirtualFileSystem;
 using UnityEngine.UIElements;
 
 namespace MockApi
@@ -95,30 +96,43 @@ namespace MockApi
                 Log(m);
             }
 
-            public void AddEntityToScene(uint entity)
+            public void AddEntityToScene(Entity entity)
             {
                 LogAction($"Add Entity {entity}");
             }
 
-            public void RemoveEntityFromScene(uint entity)
+            public void RemoveEntityFromScene(Entity entity)
             {
                 LogAction($"Remove Entity {entity}");
             }
 
             #nullable enable
-            public Component? AddComponentToScene(uint entity, Type t)
+            public Component? AddComponentToScene(Entity entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
                 return (Component?) Activator.CreateInstance(t);
             }
 
-            public void RemoveComponentFromScene(uint entity, Type t)
+            public void RemoveComponentFromScene(Entity entity, Type t)
             {
                 LogAction("Remove Component", $"Adding {t} to {entity}");
             }
 
-            public void Log(object o, string memberName = "", string filePath = "", int lineNumber = 0){
-                Console.WriteLine(o);
+            public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
+            {
+                switch (logLevel)
+                {
+                    case LogLevel.Warning:
+                    case LogLevel.Error:
+                    case LogLevel.Debug:
+                    case LogLevel.Info:
+                        {
+                            Console.WriteLine(o);
+                            break;
+                        }
+                    default:
+                        throw new SynthesisExpection("Unhandled log level");
+                }
 			}
             
             public T CreateUnityType<T>(params object[] args) where T : class

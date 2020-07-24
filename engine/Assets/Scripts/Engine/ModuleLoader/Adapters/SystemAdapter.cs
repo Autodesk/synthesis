@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Engine.ModuleLoader.Adapters
 {
-	public class SystemMonoBehavior : MonoBehaviour, IApiAdapter<SystemBase>
+	public class SystemAdapter : MonoBehaviour, IApiAdapter<SystemBase>
 	{
 		public string Name;
 

@@ -1,6 +1,4 @@
-﻿using Entity = System.UInt32;
-
-namespace SynthesisAPI.EnvironmentManager
+﻿namespace SynthesisAPI.EnvironmentManager
 {
 	public class Component
 	{

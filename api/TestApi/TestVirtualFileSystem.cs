@@ -147,5 +147,14 @@ namespace TestApi
 
             Assert.NotNull(FileSystem.AddEntry(path, dir));
         }
+
+        [Test]
+        public static void TestSearch()
+        {
+            var result = FileSystem.Search("THIS FILE DOES NOT EXIST");
+            Assert.Null(result);
+            result = FileSystem.Search("temp");
+            Assert.NotNull(result);
+        }
     }
 }
