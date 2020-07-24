@@ -368,7 +368,7 @@ namespace Engine.ModuleLoader
 				else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
 					component = (SystemBase)Activator.CreateInstance(t);
-					type = typeof(SystemMonoBehavior);
+					type = typeof(SystemAdapter);
 				}
 				else
 				{
@@ -394,7 +394,7 @@ namespace Engine.ModuleLoader
 				}
 				else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
-					type = typeof(SystemMonoBehavior);
+					type = typeof(SystemAdapter);
 				}
 				else
 				{
