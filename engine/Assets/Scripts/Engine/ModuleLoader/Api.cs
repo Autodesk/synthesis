@@ -117,6 +117,17 @@ namespace Engine.ModuleLoader
 
 		private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
 		{
+			foreach (var (_, metadata) in moduleList)
+			{
+				foreach (var dependency in metadata.Dependencies)
+				{
+					if (!moduleList.Any(m => m.metadata.Name == dependency))
+					{
+						throw new Exception($"Module {metadata.Name} is missing dependency module {dependency}");
+					}
+				}
+			}
+
 			// Use Kahns algorithm to resolve module dependencies, ordering modules in list
 			// in the order they should be loaded
 
