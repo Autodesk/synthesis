@@ -15,9 +15,9 @@ namespace SynthesisAPI.EnvironmentManager
     /// </summary>
     public static class EnvironmentManager
     {
-        static AnyMap<Component> components = new AnyMap<Component>(); //dynamic mapping of components to Entity by index
-        static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
-        static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
+        private static AnyMap<Component> components = new AnyMap<Component>(); //dynamic mapping of components to Entity by index
+        private static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
+        private static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
 
         private static readonly Entity NULL_ENTITY = 0;
         private const ushort BASE_GEN = 1; //no entity should have a generation of 0
@@ -145,6 +145,28 @@ namespace SynthesisAPI.EnvironmentManager
         private static bool IsComponent(Type type)
         {
             return type.IsSubclassOf(typeof(Component)) || type == typeof(Component);
+        }
+
+        public static IEnumerable<Entity> GetEntitiesWhere(Func<Entity, bool> predicate)
+        {
+            return entities.Where(predicate);
+        }
+
+        public static IEnumerable<TComponent> GetComponentsWhere<TComponent>(Func<TComponent, bool> predicate) where TComponent : Component
+        {
+            List<TComponent> result = new List<TComponent>();
+            foreach (var e in entities)
+            {
+                foreach (var c in components.GetAll(e.GetIndex(), e.GetGen()) ?? new List<Component>())
+                {
+                    if (c is TComponent tc && predicate(tc))
+                    {
+                        result.Add(tc);
+                    }
+                }
+
+            }
+            return result;
         }
 
         #endregion
