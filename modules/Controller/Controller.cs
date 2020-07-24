@@ -1,13 +1,9 @@
-﻿
-using System;
-using SynthesisAPI.EventBus;
-using SynthesisAPI.Modules.Attributes;
+﻿using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 
 namespace Controller
 {
-	[ModuleExport]
+    [ModuleExport]
 	public class Controller
 	{
 		[Callback]

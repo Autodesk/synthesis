@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SynthesisAPI.Modules;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,17 +11,17 @@ namespace SynthesisAPI.Runtime
 {
 	public interface IApiProvider
 	{
-		
-		void Log(object o);
+		void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
 
-		uint AddEntity();
+		void AddEntityToScene(uint entity);
 
-		Component AddComponent(Type t, uint entity);
-		TComponent AddComponent<TComponent>(uint entity) where TComponent : Component;
+		void RemoveEntityFromScene(uint entity);
 
-		Component GetComponent(Type t, uint entity);
-		TComponent GetComponent<TComponent>(uint entity) where TComponent : Component;
-		List<Component> GetComponents(uint entity);
+		#nullable enable
+		Component? AddComponentToScene(uint entity, Type t);
+
+		void RemoveComponentFromScene(uint entity, Type t);
+
 		T CreateUnityType<T>(params object[] args) where T : class;
 		VisualTreeAsset GetDefaultUIAsset(string assetName);
 

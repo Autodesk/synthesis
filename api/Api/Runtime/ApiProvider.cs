@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SynthesisAPI.Modules.Attributes;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,26 +33,18 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void Log(object o)
+		public static void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
 		{
-			Instance?.Log(o);
+			Instance?.Log(o, memberName, filePath, lineNumber);
 		}
 
-		public static uint? AddEntity() => Instance?.AddEntity();
+		public static void AddEntityToScene(uint entity) => Instance?.AddEntityToScene(entity);
 
-		public static Component? GetComponent(Type t, uint id) => Instance?.GetComponent(t, id);
-		public static TComponent? GetComponent<TComponent>(uint id) where TComponent : Component =>
-			Instance?.GetComponent<TComponent>(id);
+		public static void RemoveEntityFromScene(uint entity) => Instance?.RemoveEntityFromScene(entity);
 
-		public static List<Component> GetComponents(uint entity)
-		{
-			if (Instance != null)
-				return Instance.GetComponents(entity);
+		public static Component? AddComponentToScene(uint entity, Type t) => Instance?.AddComponentToScene(entity,t);
 
-			throw new Exception("No Api instance defined");
-		}
-
-		public static Component? AddComponent(Type t, uint entity) => Instance?.AddComponent(t, entity);
+		public static void RemoveComponentFromScene(uint entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
 
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
 

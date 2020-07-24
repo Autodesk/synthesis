@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SynthesisAPI.Modules;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using UnityEngine.PlayerLoop;
 
@@ -42,11 +43,13 @@ namespace SynthesisAPI.EnvironmentManager
                 ushort oldEntityIndex = oldEntity.GetIndex();
                 ushort oldEntityGen = oldEntity.GetGen();
                 newEntity = oldEntity.SetGen((ushort)(oldEntityGen + 1));
+                ApiProvider.AddEntityToScene(newEntity);
                 entities[oldEntityIndex] = newEntity;
             }
             else //adds entity by increasing entity list size
             {
                 newEntity = CreateEntity((ushort)entities.Count, BASE_GEN);
+                ApiProvider.AddEntityToScene(newEntity);
                 entities.Add(newEntity);
             }
             return newEntity;
@@ -61,6 +64,7 @@ namespace SynthesisAPI.EnvironmentManager
         {
             if (!EntityExists(entity))
                 return false;
+            ApiProvider.RemoveEntityFromScene(entity);
             removed.Push(entity); //deallocate entity
             entities[entity.GetIndex()] = NULL_ENTITY; //invalidate components
             return true;
@@ -95,21 +99,34 @@ namespace SynthesisAPI.EnvironmentManager
         public static Component? GetComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
-                return components.Get(entity.GetIndex(), entity.GetGen() ,componentType);
+                return components.Get(entity.GetIndex(), entity.GetGen(), componentType);
             return null;
         }
 
         public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity.GetIndex(), entity.GetGen());
+
         /// <summary>
         /// Set component of type, TComponent, to the given entity
         /// </summary>
         /// <param name="entity">given entity</param>
         /// <param name="component">instance of component to be set</param>
-        public static void AddComponent(this Entity entity, Component component)
+        public static Component? AddComponent(this Entity entity, Type componentType)
         {
-            if (EntityExists(entity))
-                components.Set(entity.GetIndex(), entity.GetGen(), component);
+            if (IsComponent(componentType) && EntityExists(entity))
+            {
+                Component? c = ApiProvider.AddComponentToScene(entity, componentType);
+                c?.SetEntity(entity);
+                components.Set(entity.GetIndex(), entity.GetGen(), c);
+                return c;
+            }
+            return null;
         }
+
+        public static TComponent? AddComponent<TComponent>(this Entity entity) where TComponent : Component
+        {
+            return (TComponent?) AddComponent(entity, typeof(TComponent));
+        }
+        
 
         /// <summary>
         /// Remove component (sets component to null) of type, TComponent, from given entity
@@ -124,8 +141,10 @@ namespace SynthesisAPI.EnvironmentManager
         public static void RemoveComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
+            {
+                ApiProvider.RemoveComponentFromScene(entity, componentType);
                 components.Remove(entity.GetIndex(), entity.GetGen(), componentType);
-
+            }
         }
 
         private static bool IsComponent(Type type)

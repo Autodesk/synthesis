@@ -19,7 +19,7 @@ namespace SynthesisAPI.VirtualFileSystem
         /// <summary>
         /// Base path for files on disk
         /// </summary>
-        public static readonly string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}", // TODO make const
+        public static readonly string BasePath = string.Format("{0}{1}Autodesk{1}Synthesis{1}",
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 Path.DirectorySeparatorChar);
 

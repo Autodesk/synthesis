@@ -26,7 +26,7 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
+            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new UnityEngine.Vector2(.5f, .5f));
 
             return this;
         }
