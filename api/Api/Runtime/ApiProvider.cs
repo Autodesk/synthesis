@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using SynthesisAPI.Modules.Attributes;
-using UnityEngine;
+using SynthesisAPI.EnvironmentManager;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
@@ -11,7 +8,7 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
-	public static class ApiProvider
+    public static class ApiProvider
 	{
 		private static IApiProvider? Instance => Inner.Instance;
 
@@ -38,13 +35,13 @@ namespace SynthesisAPI.Runtime
 			Instance?.Log(o, memberName, filePath, lineNumber);
 		}
 
-		public static void AddEntityToScene(uint entity) => Instance?.AddEntityToScene(entity);
+		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);
 
-		public static void RemoveEntityFromScene(uint entity) => Instance?.RemoveEntityFromScene(entity);
+		public static void RemoveEntityFromScene(Entity entity) => Instance?.RemoveEntityFromScene(entity);
 
-		public static Component? AddComponentToScene(uint entity, Type t) => Instance?.AddComponentToScene(entity,t);
+		public static Component? AddComponentToScene(Entity entity, Type t) => Instance?.AddComponentToScene(entity,t);
 
-		public static void RemoveComponentFromScene(uint entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
+		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
 
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.EnvironmentManager;
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
@@ -9,14 +10,14 @@ namespace SynthesisAPI.Runtime
 	{
 		void Log(object o, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
 
-		void AddEntityToScene(uint entity);
+		void AddEntityToScene(Entity entity);
 
-		void RemoveEntityFromScene(uint entity);
+		void RemoveEntityFromScene(Entity entity);
 
 		#nullable enable
-		Component? AddComponentToScene(uint entity, Type t);
+		Component? AddComponentToScene(Entity entity, Type t);
 
-		void RemoveComponentFromScene(uint entity, Type t);
+		void RemoveComponentFromScene(Entity entity, Type t);
 
 		T CreateUnityType<T>(params object[] args) where T : class;
 		VisualTreeAsset GetDefaultUIAsset(string assetName);

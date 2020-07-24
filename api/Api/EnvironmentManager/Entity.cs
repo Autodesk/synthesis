@@ -13,7 +13,36 @@ namespace SynthesisAPI.EnvironmentManager
 
         public static implicit operator Entity(UInt32 value) => new Entity{ _value = value };
 
+        public static implicit operator Entity(Int32 value) => new Entity { _value = (UInt32)value };
+
         public static implicit operator UInt32(Entity e) => e._value;
+
+
+        #region EntityBitModifier
+
+        public ushort GetIndex()
+        {
+            return (ushort)(_value >> 16);
+        }
+        //last 16 bits
+        public ushort GetGen()
+        {
+            return (ushort)(_value & 65535);
+        }
+        public static Entity Create(ushort index, ushort gen)
+        {
+            return ((uint)index << 16) + gen;
+        }
+        public Entity SetIndex(ushort index)
+        {
+            return ((uint)index << 16) + (_value & 65535);
+        }
+        public Entity SetGen(ushort gen)
+        {
+            return (_value & 4294901760) + gen;
+        }
+
+        #endregion
 
         public override string ToString() => _value.ToString();
 

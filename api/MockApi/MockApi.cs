@@ -95,24 +95,24 @@ namespace MockApi
                 Log(m);
             }
 
-            public void AddEntityToScene(uint entity)
+            public void AddEntityToScene(Entity entity)
             {
                 LogAction($"Add Entity {entity}");
             }
 
-            public void RemoveEntityFromScene(uint entity)
+            public void RemoveEntityFromScene(Entity entity)
             {
                 LogAction($"Remove Entity {entity}");
             }
 
             #nullable enable
-            public Component? AddComponentToScene(uint entity, Type t)
+            public Component? AddComponentToScene(Entity entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
                 return (Component?) Activator.CreateInstance(t);
             }
 
-            public void RemoveComponentFromScene(uint entity, Type t)
+            public void RemoveComponentFromScene(Entity entity, Type t)
             {
                 LogAction("Remove Component", $"Adding {t} to {entity}");
             }

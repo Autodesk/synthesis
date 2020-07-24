@@ -38,7 +38,7 @@ namespace TestApi
             Entity e1 = EnvironmentManager.AddEntity();
             Assert.True(EnvironmentManager.EntityExists(e1));
             Assert.True(e1.EntityExists());
-            Assert.AreEqual(e1, 1);
+            Assert.AreEqual(e1, (Entity)1);
             Entity e2 = EnvironmentManager.AddEntity();
             Assert.True(EnvironmentManager.EntityExists(e2));
             Assert.True(e2.EntityExists());

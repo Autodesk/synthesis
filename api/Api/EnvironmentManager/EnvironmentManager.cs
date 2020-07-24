@@ -43,7 +43,7 @@ namespace SynthesisAPI.EnvironmentManager
             }
             else //adds entity by increasing entity list size
             {
-                newEntity = CreateEntity((ushort)entities.Count, BASE_GEN);
+                newEntity = Entity.Create((ushort)entities.Count, BASE_GEN);
                 ApiProvider.AddEntityToScene(newEntity);
                 entities.Add(newEntity);
             }
@@ -145,32 +145,6 @@ namespace SynthesisAPI.EnvironmentManager
         private static bool IsComponent(Type type)
         {
             return type.IsSubclassOf(typeof(Component)) || type == typeof(Component);
-        }
-
-        #endregion
-
-        #region EntityBitModifier
-
-        private static ushort GetIndex(this Entity entity)
-        {
-            return (ushort)(entity >> 16);
-        }
-        //last 16 bits
-        private static ushort GetGen(this Entity entity)
-        {
-            return (ushort)(entity & 65535);
-        }
-        private static Entity CreateEntity(ushort index, ushort gen)
-        {
-            return ((uint)index << 16) + gen;
-        }
-        private static Entity SetIndex(this Entity entity, ushort index)
-        {
-            return ((uint)index << 16) + (entity & 65535);
-        }
-        private static Entity SetGen(this Entity entity, ushort gen)
-        {
-            return (entity & 4294901760) + gen;
         }
 
         #endregion

@@ -298,13 +298,13 @@ namespace Engine.ModuleLoader
 		private class ApiProvider : IApiProvider
 		{
 			private GameObject _entityParent;
-			private Dictionary<uint, GameObject> _gameObjects;
+			private Dictionary<Entity, GameObject> _gameObjects;
 			private readonly Dictionary<Type, Type> _builtins;
 
 			public ApiProvider()
 			{
 				_entityParent = new GameObject("Entities");
-				_gameObjects = new Dictionary<uint, GameObject>();
+				_gameObjects = new Dictionary<Entity, GameObject>();
 				_builtins = new Dictionary<Type, Type>
 				{
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
@@ -321,16 +321,16 @@ namespace Engine.ModuleLoader
 				Debug.Log($"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}");
 			}
 
-			public void AddEntityToScene(uint entity)
+			public void AddEntityToScene(Entity entity)
 			{
 				if (_gameObjects.ContainsKey(entity))
 					throw new Exception($"Entity \"{entity}\" already exists");
-				var gameObject = new GameObject($"Entity {entity >> 16}"); // TODO replace with entity.GetId()
+				var gameObject = new GameObject($"Entity {entity.GetIndex()}");
 				gameObject.transform.SetParent(_entityParent.transform);
 				_gameObjects.Add(entity, gameObject);
 			}
 
-			public void RemoveEntityFromScene(uint entity)
+			public void RemoveEntityFromScene(Entity entity)
 			{
 				GameObject gameObject;
 				if (!_gameObjects.TryGetValue(entity, out gameObject))
@@ -338,7 +338,7 @@ namespace Engine.ModuleLoader
 				Destroy(gameObject);
 			}
 
-			public Component AddComponentToScene(uint entity, Type t)
+			public Component AddComponentToScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
 				if (!_gameObjects.TryGetValue(entity, out gameObject))
@@ -371,7 +371,7 @@ namespace Engine.ModuleLoader
 				return component;
 			}
 
-			public void RemoveComponentFromScene(uint entity, Type t)
+			public void RemoveComponentFromScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
 				if (!_gameObjects.TryGetValue(entity, out gameObject))
