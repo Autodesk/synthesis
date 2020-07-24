@@ -1,17 +1,9 @@
 ﻿using SynthesisAPI.Runtime;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
-[assembly: InternalsVisibleTo("Synthesis.Core")]
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
@@ -50,12 +42,12 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             foreach (var child in _visualElement.Children())
             {
-                child.GetSynVisualElement().PostUxmlLoad();
+                child.GetVisualElement().PostUxmlLoad();
             }
             return null;
         }
 
-        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetSynVisualElement();
+        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
 
         public void SetStyleProperty(string name, string value)

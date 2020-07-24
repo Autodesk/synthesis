@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.UIManager.UIComponents;
-using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using UnityButton = UnityEngine.UIElements.Button;
-using SynVisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
+using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 
 // TODO for Nicolas: Move all panels (modules, settings, etc.) into Engine Module
 namespace SynthesisAPI.UIManager
@@ -97,7 +91,7 @@ namespace SynthesisAPI.UIManager
             {
                 UnityVisualElement elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}").UnityVisualElement;
                 Instance.PanelContainer.Add(elm);
-                LoadedPanels[panelName].BindFunc(elm.GetSynVisualElement());
+                LoadedPanels[panelName].BindFunc(elm.GetVisualElement());
             }
             
             // TODO: Maybe some event
@@ -112,9 +106,9 @@ namespace SynthesisAPI.UIManager
 
         private class Inner
         {
-            public SynVisualElement RootElement
+            public VisualElement RootElement
             {
-                get => ApiProvider.GetRootVisualElement()!.GetSynVisualElement();
+                get => ApiProvider.GetRootVisualElement()!.GetVisualElement();
             }
 
             public UnityVisualElement PanelContainer

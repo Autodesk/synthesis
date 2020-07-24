@@ -74,7 +74,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             if (Element == null)
                 throw new Exception("This should be impossible");
             Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
-            Element.bindItem = (element, index) => PopulateParams.BindItem(element.GetSynVisualElement(), index);
+            Element.bindItem = (element, index) => PopulateParams.BindItem(element.GetVisualElement(), index);
             Element.itemsSource = PopulateParams.Source;
             for (int i = 0; i < Element.itemsSource.Count; i++)
             {
