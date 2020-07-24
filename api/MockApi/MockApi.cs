@@ -90,7 +90,7 @@ namespace MockApi
                 var m = $"MockApiProvider.{function}";
                 if (msg != "")
                 {
-                    m += ": {msg}";
+                    m += $": {msg}";
                 }
                 Log(m);
             }

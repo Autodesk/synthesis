@@ -45,7 +45,7 @@ namespace SynthesisAPI.Runtime
 		public static Component? AddComponentToScene(uint entity, Type t) => Instance?.AddComponentToScene(entity,t);
 
 		public static void RemoveComponentFromScene(uint entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
-		
+
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
 
 		public static VisualTreeAsset? GetDefaultUIAsset(string assetName) => Instance?.GetDefaultUIAsset(assetName);

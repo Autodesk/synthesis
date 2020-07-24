@@ -1,9 +1,6 @@
 ﻿using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
-using SynthesisAPI.InputManager.Digital;
-using SynthesisAPI.InputManager.Axis;
 using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.Events;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
@@ -15,6 +12,8 @@ using Utilities;
 #nullable enable
 
 using Entity = System.UInt32;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 
 namespace SynthesisCore.Systems
 {
@@ -82,118 +81,75 @@ namespace SynthesisCore.Systems
                 cameraTransform.LookAt(new Vector3D());
             }
             // Bind controls for free roam
-            InputManager.AssignDigital("CameraForward", (KeyDigital)"W", CameraForward);
-            InputManager.AssignDigital("CameraLeft", (KeyDigital)"A", CameraLeft);
-            InputManager.AssignDigital("CameraBackward", (KeyDigital)"S", CameraBackward);
-            InputManager.AssignDigital("CameraRight", (KeyDigital)"D", CameraRight);
-            InputManager.AssignDigital("CameraUp", (KeyDigital)"Space", CameraUp);
-            InputManager.AssignDigital("CameraDown", (KeyDigital)"LeftShift", CameraDown);
+            InputManager.AssignDigitalInput("camera_forward", new Digital("w"));
+            InputManager.AssignDigitalInput("camera_left", new Digital("a"));
+            InputManager.AssignDigitalInput("camera_backward", new Digital("s"));
+            InputManager.AssignDigitalInput("camera_right", new Digital("d"));
+            InputManager.AssignDigitalInput("camera_up", new Digital("space"));
+            InputManager.AssignDigitalInput("camera_down", new Digital("left shift"));
 
             // Bind controls for orbit
-            InputManager.AssignDigital("UseOrbit", (KeyDigital)"Mouse0", StartMouseDrag); // TODO put control settings in preference manager
-            InputManager.AssignAxis("ZoomCamera", (DualAxis)"Mouse ScrollWheel");
+            InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0")); // TODO put control settings in preference manager
+            InputManager.AssignAxis("ZoomCamera", new Analog("Mouse ScrollWheel"));
+            InputManager.AssignAxis("Mouse X", new Analog("Mouse X"));
+            InputManager.AssignAxis("Mouse Y", new Analog("Mouse Y"));
         }
 
-        public void CameraForward(IEvent e)
+        [TaggedCallback("input/camera_forward")]
+        public void CameraForward(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held) {
-                        var forward = cameraTransform.Forward;
-                        forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
-                        cameraTransform.Position += forward.ScaleBy(FreeRoamCameraMoveDelta);
-                    }
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                var forward = cameraTransform.Forward;
+                forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
+                cameraTransform.Position += forward.ScaleBy(FreeRoamCameraMoveDelta);
             }
         }
 
-        public void CameraBackward(IEvent e)
+        [TaggedCallback("input/camera_backward")]
+        public void CameraBackward(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held)
-                    {
-                        var forward = cameraTransform.Forward;
-                        forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
-                        cameraTransform.Position += forward.ScaleBy(-FreeRoamCameraMoveDelta);
-                    }
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                var forward = cameraTransform.Forward;
+                forward = new Vector3D(forward.X, 0, forward.Z).Normalize();
+                cameraTransform.Position += forward.ScaleBy(-FreeRoamCameraMoveDelta);
             }
         }
 
-        public void CameraLeft(IEvent e)
+        [TaggedCallback("input/camera_left")]
+        public void CameraLeft(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(FreeRoamCameraMoveDelta);
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(FreeRoamCameraMoveDelta);
             }
         }
 
-        public void CameraRight(IEvent e)
+        [TaggedCallback("input/camera_right")]
+        public void CameraRight(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(-FreeRoamCameraMoveDelta);
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                cameraTransform.Position += cameraTransform.Forward.CrossProduct(UnitVector3D.YAxis).ScaleBy(-FreeRoamCameraMoveDelta);
             }
         }
 
-        public void CameraUp(IEvent e)
+        [TaggedCallback("input/camera_up")]
+        public void CameraUp(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(FreeRoamCameraMoveDelta);
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(FreeRoamCameraMoveDelta);
             }
         }
 
-        public void CameraDown(IEvent e)
+        [TaggedCallback("input/camera_down")]
+        public void CameraDown(DigitalEvent digitalEvent)
         {
-            if (inFreeRoamMode && cameraTransform != null)
+            if (inFreeRoamMode && cameraTransform != null && digitalEvent.State == DigitalState.Held)
             {
-                if (e is DigitalStateEvent de)
-                {
-                    if (de.KeyState == DigitalState.Held)
-                        cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(-FreeRoamCameraMoveDelta);
-                }
-                else
-                {
-                    throw new System.Exception();
-                }
+                cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(-FreeRoamCameraMoveDelta);
             }
         }
 
@@ -201,26 +157,20 @@ namespace SynthesisCore.Systems
         /// Function used to switch orbit control on and off
         /// </summary>
         /// <param name="e"></param>
-        public void StartMouseDrag(IEvent e)
+        [TaggedCallback("input/camera_drag")]
+        public void StartMouseDrag(DigitalEvent digitalEvent)
         {
-            if (e is DigitalStateEvent de)
+            isMouseDragging = digitalEvent.State == DigitalState.Held;
+            if (digitalEvent.State == DigitalState.Down)
             {
-                isMouseDragging = de.KeyState == DigitalState.Held;
-                if (de.KeyState == DigitalState.Down)
-                {
-                    // TODO cursor stuff
-                    // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
-                    // Cursor.visible = false;
-                }
-                else if (de.KeyState == DigitalState.Up)
-                {
-                    // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
-                    // Cursor.visible = true;
-                }
+                // TODO cursor stuff
+                // Cursor.lockState = CursorLockMode.Locked; // Hide and lock cursor so the mouse doesn't leave the screen
+                // Cursor.visible = false;
             }
-            else
+            else if (digitalEvent.State == DigitalState.Up)
             {
-                throw new System.Exception();
+                // Cursor.lockState = CursorLockMode.None; // Show and unlock cursor when done
+                // Cursor.visible = true;
             }
         }
 
@@ -314,8 +264,8 @@ namespace SynthesisCore.Systems
             if (isMouseDragging)
             {
                 // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?), and add an option to enable this to preference manager
-                xMod = -InputManager.GetAxisValue("MouseX") * SensitivityX;
-                yMod = InputManager.GetAxisValue("MouseY") * SensitivityY;
+                xMod = -InputManager.GetAxisValue("Mouse X") * SensitivityX;
+                yMod = InputManager.GetAxisValue("Mouse Y") * SensitivityY;
 
                 if (xMod != 0 && Math.SameSign(xMod, lastXMod))
                     xMod += lastXMod * 0.3f;

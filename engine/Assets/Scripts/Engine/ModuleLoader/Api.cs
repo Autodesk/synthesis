@@ -28,7 +28,7 @@ using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engi
 
 namespace Engine.ModuleLoader
 {
-    public class Api : MonoBehaviour
+	public class Api : MonoBehaviour
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
@@ -44,7 +44,7 @@ namespace Engine.ModuleLoader
 		}
 
 		private void LoadModules()
-        {
+		{
 			if (!Directory.Exists(ModulesSourcePath))
 			{
 				Directory.CreateDirectory(ModulesSourcePath);
@@ -64,7 +64,7 @@ namespace Engine.ModuleLoader
 		}
 
 		private List<PreloadedModule> PreloadModules()
-        {
+		{
 			var modules = new List<PreloadedModule>();
 
 			// Discover and preload all modules
@@ -89,18 +89,18 @@ namespace Engine.ModuleLoader
 			return modules;
 		}
 
-        private PreloadedModule? PreloadModule(string filePath)
-        {
+		private PreloadedModule? PreloadModule(string filePath)
+		{
 			var fullPath = $"{ModulesSourcePath}{Path.DirectorySeparatorChar}{filePath}";
 
 			var module = ZipFile.Open(fullPath, ZipArchiveMode.Read);
 
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
-            {
+			{
 				Debug.LogWarning($"Potential module missing is metadata file: {filePath}");
 				return null;
-            }
+			}
 
 			// Parse module metadata
 			try
@@ -113,35 +113,35 @@ namespace Engine.ModuleLoader
 			{
 				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
 			}
-        }
+		}
 
-        private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
-        {
+		private void ResolveDependencies(List<(ZipArchive archive, ModuleMetadata metadata)> moduleList)
+		{
 			// Use Kahns algorithm to resolve module dependencies, ordering modules in list
 			// in the order they should be loaded
 
 			// TODO check for cyclic dependencies and throw
 			var resolvedEntries = moduleList.Where(t => !t.metadata.Dependencies.Any()).ToList();
-            var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
-            while (resolvedEntries.Count > 0)
-            {
-                var element = resolvedEntries.PopAt(0);
-                solutionSet.Enqueue(element);
-                foreach (var dep in moduleList.Where(t =>
-	                t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
-                {
-	                dep.metadata.Dependencies.Remove(element.metadata.Name);
-					if(dep.metadata.Dependencies.Count == 0)
+			var solutionSet = new Queue<(ZipArchive archive, ModuleMetadata metadata)>();
+			while (resolvedEntries.Count > 0)
+			{
+				var element = resolvedEntries.PopAt(0);
+				solutionSet.Enqueue(element);
+				foreach (var dep in moduleList.Where(t =>
+					t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
+				{
+					dep.metadata.Dependencies.Remove(element.metadata.Name);
+					if (dep.metadata.Dependencies.Count == 0)
 						resolvedEntries.Add(dep);
-                }
-            }
+				}
+			}
 
-            moduleList.Clear();
+			moduleList.Clear();
 			moduleList.AddRange(solutionSet.ToList());
-        }
+		}
 
-        private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
-        {
+		private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
+		{
 			var fileManifest = new List<string>();
 			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
 
@@ -171,26 +171,34 @@ namespace Engine.ModuleLoader
 				}
 				// Debug.Log("Loaded " + entry.Name);
 			}
-			foreach(var file in fileManifest)
-            {
+			foreach (var file in fileManifest)
+			{
 				Debug.LogWarning($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}");
-            }
+			}
 			moduleInfo.archive.Dispose();
 		}
 
 		private bool LoadApi()
-        {
+		{
 			// Set up Api
 			var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
-			foreach (var type in apiAssembly.GetTypes().Where(e => e.IsSubclassOf(typeof(SystemBase))))
+			foreach (var type in apiAssembly.GetTypes())
 			{
-				var entity = EnvironmentManager.AddEntity();
-				entity.AddComponent(type);
-			}
-			foreach (var type in apiAssembly.GetTypes().Where(e => e.GetMethods().Any(
-					m => m.GetCustomAttribute<CallbackAttribute>() != null || m.GetCustomAttribute<TaggedCallbackAttribute>() != null)))
-			{
-				var instance = Activator.CreateInstance(type);
+				object instance = null;
+
+				if (type.IsSubclassOf(typeof(SystemBase)))
+				{
+					var entity = EnvironmentManager.AddEntity();
+					instance = entity.AddComponent(type);
+				}
+
+				if (instance == null && type.GetMethods().Any(m =>
+					m.GetCustomAttribute<CallbackAttribute>() != null ||
+					m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+				{
+					instance = Activator.CreateInstance(type);
+				}
+
 				foreach (var callback in type.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
 				{
@@ -209,7 +217,7 @@ namespace Engine.ModuleLoader
         private bool LoadModuleAssembly(Stream stream, string owningModule)
 		{
 			// Load module assembly
-		    var memStream = new MemoryStream();
+			var memStream = new MemoryStream();
 			stream.CopyTo(memStream);
 			stream.Close();
 			var assembly = Assembly.Load(memStream.ToArray());
@@ -218,13 +226,15 @@ namespace Engine.ModuleLoader
 			foreach (var exportedModuleClass in assembly.GetTypes()
 				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
 			{
-				var exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
-
+				object exportedModuleClassInstance = null;
 				if (exportedModuleClass.IsSubclassOf(typeof(SystemBase)))
 				{
 					var entity = EnvironmentManager.AddEntity();
-					entity.AddComponent(exportedModuleClass);
+					exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
 				}
+
+                if (exportedModuleClassInstance == null)
+					exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
 
 				foreach (var callback in exportedModuleClass.GetMethods()
 					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
@@ -260,30 +270,30 @@ namespace Engine.ModuleLoader
 		}
 
 		private void RegisterTypeCallback(MethodInfo callback, object instance)
-        {
-	        if (instance.GetType() != callback.DeclaringType) // Sanity check
+		{
+			if (instance.GetType() != callback.DeclaringType) // Sanity check
 			{
 				throw new LoadModuleException(
 					$"Type of instance variable \"{instance.GetType()}\" does not match declaring type of callback \"{callback.Name}\" (expected \"{callback.DeclaringType}\"");
-	        }
-	        var eventType = callback.GetParameters().First().ParameterType;
+			}
+			var eventType = callback.GetParameters().First().ParameterType;
 			typeof(EventBus).GetMethod("NewTypeListener")
 				?.MakeGenericMethod(eventType).Invoke(null, new object[]
 				{
 					CreateEventCallback(callback, instance, eventType)
 				});
-        }
+		}
 
-        EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
-        {
-	        return (e) => m.Invoke(instance,
-		        new []
-		        {
-			        typeof(ReflectHelper).GetMethod("CastObject")
-				        ?.MakeGenericMethod(eventType)
-				        .Invoke(null, new object[] {e})
-		        });
-        }
+		EventBus.EventCallback CreateEventCallback(MethodInfo m, object instance, Type eventType)
+		{
+			return (e) => m.Invoke(instance,
+				new[]
+				{
+					typeof(ReflectHelper).GetMethod("CastObject")
+						?.MakeGenericMethod(eventType)
+						.Invoke(null, new object[] {e})
+				});
+		}
 
 		private class ApiProvider : IApiProvider
 		{
@@ -346,12 +356,12 @@ namespace Engine.ModuleLoader
 				}
 				else if (t.IsSubclassOf(typeof(SystemBase)))
 				{
-					component = (SystemBase) Activator.CreateInstance(t);
+					component = (SystemBase)Activator.CreateInstance(t);
 					type = typeof(SystemMonoBehavior);
 				}
 				else
 				{
-					component = (Component) Activator.CreateInstance(t);
+					component = (Component)Activator.CreateInstance(t);
 					type = typeof(ComponentAdapter);
 				}
 

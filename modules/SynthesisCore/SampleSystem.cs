@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
-using MathNet.Spatial.Units;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.Digital;
-using SynthesisAPI.InputManager.Events;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 using Entity = System.UInt32;
 
 namespace SynthesisCore
@@ -30,10 +27,8 @@ namespace SynthesisCore
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
 
-            InputManager.AssignDigital("forwards", (KeyDigital)"W", Move);
-            InputManager.AssignDigital("x", (KeyDigital)"X", Move);
-            InputManager.AssignDigital("y", (KeyDigital)"Y", Move);
-            InputManager.AssignDigital("z", (KeyDigital)"Z", Move);
+            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+            InputManager.AssignDigitalInputs("move", test);
         }
 
         public override void OnUpdate() { }
@@ -68,29 +63,31 @@ namespace SynthesisCore
             };
         }
 
-        public void Move(IEvent e)
+        /*
+        [TaggedCallback("input/move")]
+        public void Move(DigitalEvent digitalEvent)
         {
-            if(e is DigitalStateEvent digitalStateEvent && digitalStateEvent.KeyState == DigitalState.Down)
+            if(digitalEvent.State == DigitalState.Held)
             {
-                if (digitalStateEvent.Name == "forwards")
+                switch (digitalEvent.Name)
                 {
-                    //transform.Position += new Vector3D(0.1, 0, 0);
-                    // transform.Rotate(new Vector3D(30, 0, 0));
+                    case "w":
+                        ApiProvider.Log("w");
+                        break;
+                    case "a":
+                        ApiProvider.Log("a");
+                        break;
+                    case "s":
+                        ApiProvider.Log("s");
+                        break;
+                    case "d":
+                        ApiProvider.Log("d");
+                        break;
+                    default:
+                        break;
                 }
-                else if (digitalStateEvent.Name == "x")
-                {
-                    transform.Rotate(UnitVector3D.XAxis, Angle.FromDegrees(30));
-                }
-                else if (digitalStateEvent.Name == "y")
-                {
-                    transform.Rotate(UnitVector3D.YAxis, Angle.FromDegrees(30));
-                }
-                else if (digitalStateEvent.Name == "z")
-                {
-                    transform.Rotate(UnitVector3D.ZAxis, Angle.FromDegrees(30));
-                }
-
             }
         }
+        */
     }
 }
