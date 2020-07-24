@@ -48,8 +48,13 @@ jobs:
           path: build
 
   testRunnerInAllModes:
-    name: Test all modes on ${{ matrix.unityVersion }}
+    name: Test Runner for All Modes
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - engine
     steps:
       - uses: actions/checkout@v2
         with:
