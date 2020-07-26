@@ -120,7 +120,18 @@ namespace SynthesisAPI.EnvironmentManager
             }
         }
 
+        public class SliderJointMotion : JointMotion
+        {
+            public Vector3 SlideDirectionVector { get; set; }
+            public double SlideValue { get; set; }
+            // JointLimits rotationLimits;
 
+            public SliderJointMotion(Vector3 vec3, double doubleNum)
+            {
+                SlideDirectionVector = vec3;
+                SlideValue = doubleNum;
+            }
+        }
 
 
         #endregion
