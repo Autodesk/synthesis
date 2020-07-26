@@ -203,23 +203,46 @@ namespace SynthesisAPI.AssetManager
             joint.OccurenceOneUuid = (string)jointDict["occurrenceOneUUID"];
             joint.OccurenceTwoUuid = (string)jointDict["occurrenceTwoUUID"];
 
+            // JOINT MOTION
+            object result;
+            object rotationValue;
+            var jointType = joint.Type;
+            var jointMotion = joint.JointMotion;
+            var jointVector = jointMotion.JointVector;
 
-            //    //case "revoluteJointMotion":
-            //    //var jointType = joint.Type;
+            if (jointDict.ContainsKey("revoluteJointMotion"));
+            {
+                jointVector.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+            }
 
-            //    //var rotationAxisVector = data.Value["rotationAxisVector"]["y"];
+            jointMotion.JointMotionValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
 
-            //    //if (data.Value.ContainsKey("rotationValue"))
-            //    //{
-            //    //    var rotationValue = data.Value["rotationValue"];
-            //    //}
+            jointMotion.JointVector = jointVector;
+            joint.JointMotion = jointMotion;
+            joint.Type = jointType;
 
-            //    //jointType = (Design.Joint.JointType)Enum.Parse(typeof(Design.Joint.JointType), data.Key, true);
-            //    //joint.Type = jointType;
-            //    //break;
-
-            //}
             return joint;
+        }
+
+        private double HasJointDetails(JsonDictionary dict)
+        {
+            // if this is in the dictionary
+            // return it's double values
+            // else return default values of 0
+            object value;
+
+            if (dict.ContainsKey("rotationValue"))
+            {
+                dict.TryGetValue("rotationValue", out value);
+                return (double)(decimal)value;
+            }
+            else return 0;
+        }
+
+        private double GetJointVectorValue(JsonDictionary dict, string key, double value)
+        {
+
+            return value;
         }
 
         private Design.Material ExportMaterial(SharpGLTF.Schema2.Material gltfMaterial)

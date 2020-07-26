@@ -4,6 +4,8 @@ using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using UnityEngine;
 
 namespace SynthesisAPI.EnvironmentManager
 {
@@ -64,6 +66,8 @@ namespace SynthesisAPI.EnvironmentManager
 
             public JointType Type { get; set; }
 
+            public JointMotion JointMotion { get; set; }
+
             public IDictionary<string, object> Attributes { get; set; }
 
             /// <summary>
@@ -74,19 +78,9 @@ namespace SynthesisAPI.EnvironmentManager
                 JointHeader = new Header();
                 Origin = new Vector3();
                 Type = JointType.RigidJointMotion;
+                JointMotion = new JointMotion();
                 Attributes = new Dictionary<string, object>();
             }
-
-            //public JointType()
-            //{
-            //    //RigidJointMotion rigidJointMotion;
-            //    //RevoluteJointMotion revoluteJointMotion;
-            //    //SliderJointMotion sliderJointMotion;
-            //    //CylindricalJointMotion cylindricalJointMotion;
-            //    //PinSlotJointMotion pinSlotJointMotion;
-            //    //PlanarJointMotion planarJointMotion;
-            //    //BallJointMotion ballJointMotion;
-            //}
 
             public enum JointType
             {
@@ -99,6 +93,36 @@ namespace SynthesisAPI.EnvironmentManager
                 BallJointMotion = 6
             }
         }
+
+        public class JointMotion
+        {
+            public string JointType { get; set; }
+            public Vector3 JointVector { get; set; }
+            public double JointMotionValue { get; set; }
+
+
+            public JointMotion()
+            {
+                JointVector = new Vector3();
+            }
+        }
+
+        //public class RevoluteJointMotion
+        //{
+        //    public Vector3 RotationAxisVector { get; set; }
+        //    public double RotationValue { get; set; }
+        //    // JointLimits rotationLimits;
+
+        //    //public RevoluteJointMotion(Vector3 vec3, double doubleNum)
+        //    //{
+        //    //    RotationAxisVector = vec3;
+        //    //    RotationValue = doubleNum;
+        //    //}
+
+        //}
+
+
+
 
         #endregion
 
