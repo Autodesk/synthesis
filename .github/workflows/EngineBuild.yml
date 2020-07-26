@@ -48,7 +48,7 @@ jobs:
           path: build
 
   testAllModes:
-    name: Test All Modes
+    name: Test for ${{ matrix.testMode }} modes on version ${{ matrix.unityVersion }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -57,6 +57,8 @@ jobs:
           - engine
         unityVersion:
           - 2019.4.0f1
+        testMode:
+          - all
     steps:
       - uses: actions/checkout@v2
         with:
@@ -72,6 +74,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
       - uses: actions/upload-artifact@v1
         with:
