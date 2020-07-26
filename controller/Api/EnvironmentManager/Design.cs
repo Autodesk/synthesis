@@ -107,19 +107,18 @@ namespace SynthesisAPI.EnvironmentManager
             }
         }
 
-        //public class RevoluteJointMotion
-        //{
-        //    public Vector3 RotationAxisVector { get; set; }
-        //    public double RotationValue { get; set; }
-        //    // JointLimits rotationLimits;
+        public class RevoluteJointMotion : JointMotion
+        {
+            public Vector3 RotationAxisVector { get; set; }
+            public double RotationValue { get; set; }
+            // JointLimits rotationLimits;
 
-        //    //public RevoluteJointMotion(Vector3 vec3, double doubleNum)
-        //    //{
-        //    //    RotationAxisVector = vec3;
-        //    //    RotationValue = doubleNum;
-        //    //}
-
-        //}
+            public RevoluteJointMotion(Vector3 vec3, double doubleNum)
+            {
+                RotationAxisVector = vec3;
+                RotationValue = doubleNum;
+            }
+        }
 
 
 

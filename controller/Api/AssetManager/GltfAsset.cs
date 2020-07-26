@@ -213,11 +213,11 @@ namespace SynthesisAPI.AssetManager
             if (jointDict.ContainsKey("revoluteJointMotion"));
             {
                 jointVector.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                jointMotion.JointMotionValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
+                jointMotion = new RevoluteJointMotion(jointVector, jointMotion.JointMotionValue);
             }
 
-            jointMotion.JointMotionValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
-
-            jointMotion.JointVector = jointVector;
+            //jointMotion.JointVector = jointVector;
             joint.JointMotion = jointMotion;
             joint.Type = jointType;
 
