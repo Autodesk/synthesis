@@ -1,0 +1,12 @@
+﻿using SynthesisAPI.VirtualFileSystem;
+using System;
+
+namespace Engine.ModuleLoader
+{
+    public class LoadModuleException : SynthesisExpection
+    {
+        public LoadModuleException() { }
+        public LoadModuleException(string message) : base(message) { }
+        public LoadModuleException(string message, Exception inner) : base(message, inner) { }
+    }
+}
