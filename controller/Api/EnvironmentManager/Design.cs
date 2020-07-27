@@ -197,6 +197,28 @@ namespace SynthesisAPI.EnvironmentManager
             }
         }
 
+        public class BallJointMotion : JointMotion
+        {
+            public Vector3 RollDirectionVector { get; set; }
+            public Vector3 PitchDirectionVector { get; set; }
+            public Vector3 YawDirectionValue { get; set; }
+            public double RollValue { get; set; }
+            public double PitchValue { get; set; }
+            public double YawValue { get; set; }
+            // JointLimits rotationLimits;
+            // JointLimits slideLimits;
+
+            public BallJointMotion(Vector3 rollVec3, Vector3 pitchVec3, Vector3 yawVec3, double rollValue, double pitchValue, double yawValue)
+            {
+                RollDirectionVector = rollVec3;
+                PitchDirectionVector = pitchVec3;
+                YawDirectionValue = yawVec3;
+                RollValue = rollValue;
+                PitchValue = pitchValue;
+                YawValue = yawValue;
+            }
+        }
+
 
         #endregion
 
