@@ -2,6 +2,7 @@
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using SynthesisAPI.Modules.Attributes;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EnvironmentManager.Components
@@ -39,7 +40,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			set
 			{
 				if (!value.IsUnitQuaternion)
-					Runtime.ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}"); // TODO warning log level
+					ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
 				_rotation = RotationValidator(value);
 				Changed = true;
 			}

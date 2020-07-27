@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Reflection;
 using SynthesisAPI.AssetManager;
-using SynthesisAPI.UIManager.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
-using SynVisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
+using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
 
 namespace SynthesisAPI.UIManager
@@ -17,14 +14,14 @@ namespace SynthesisAPI.UIManager
     // ReSharper disable once InconsistentNaming
     public static class UIParser
     {
-        public static SynVisualElement CreateVisualElement(string name, XmlDocument doc)
+        public static VisualElement CreateVisualElement(string name, XmlDocument doc)
         {
             return doc.FirstChild.Name.Replace("ui:", "") == "UXML" ?
                 CreateVisualElements(name, doc.FirstChild.ChildNodes) :
                 CreateVisualElements(name, doc.ChildNodes);
         }
 
-        public static SynVisualElement CreateVisualElements(string name, XmlNodeList nodes)
+        public static VisualElement CreateVisualElements(string name, XmlNodeList nodes)
         {
             UnityVisualElement root = new UnityVisualElement() { name = name };
             foreach (XmlNode node in nodes)
@@ -32,7 +29,7 @@ namespace SynthesisAPI.UIManager
                 if (node.Name.Replace("ui:", "") != "Style")
                     root.Add((UnityVisualElement)CreateVisualElement(node));
             }
-            return (SynVisualElement)root;
+            return (VisualElement)root;
         }
 
         /// <summary>
@@ -41,7 +38,7 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static SynVisualElement CreateVisualElement(XmlNode node)
+        public static VisualElement CreateVisualElement(XmlNode node)
         {
             if (node == null)
                 throw new Exception("Node is null");
@@ -51,7 +48,7 @@ namespace SynthesisAPI.UIManager
                 x.Name.Equals(node.Name.Replace("ui:", "")));
             if (elementType == null)
             {
-                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...");
+                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
                 return null;
             }
             dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
@@ -68,7 +65,7 @@ namespace SynthesisAPI.UIManager
                     if (property == null)
                     {
                         // throw new Exception($"No property found with name \"{attr.Name}\"");
-                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"");
+                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
                         continue;
                     }
 
@@ -116,7 +113,7 @@ namespace SynthesisAPI.UIManager
             }
 
             // ApiProvider.Log("Returning Result");
-            return (SynVisualElement)resultElement!;
+            return (VisualElement)resultElement!;
         }
 
         /// <summary>
@@ -153,7 +150,7 @@ namespace SynthesisAPI.UIManager
             var property = typeof(IStyle).GetProperty(propertyName);
             if (property == null)
             {
-                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"");
+                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
@@ -198,7 +195,7 @@ namespace SynthesisAPI.UIManager
             }
             catch (Exception e)
             {
-                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"");
+                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
             }
 
             return element;
@@ -239,7 +236,7 @@ namespace SynthesisAPI.UIManager
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    ApiProvider.Log("Can't find asset");
+                    ApiProvider.Log("Can't find asset", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -250,7 +247,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                ApiProvider.Log("Exception when parsing background texture");
+                ApiProvider.Log("Exception when parsing background texture", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
@@ -310,12 +307,12 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static SynVisualElement GetSynVisualElement(this UnityVisualElement element)
+        public static VisualElement GetVisualElement(this UnityVisualElement element)
         {
-            Type t = Array.Find(typeof(SynVisualElement).Assembly.GetTypes(), t => 
+            Type t = Array.Find(typeof(VisualElement).Assembly.GetTypes(), t => 
                 t.Name == element.GetType().Name && t.FullName != element.GetType().FullName
-                ) ?? typeof(SynVisualElement);
-            return (SynVisualElement)Activator.CreateInstance(t, new object[] {element});
+                ) ?? typeof(VisualElement);
+            return (VisualElement)Activator.CreateInstance(t, new object[] {element});
         }
 
     }

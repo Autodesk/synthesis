@@ -20,7 +20,7 @@ namespace SynthesisAPI.VirtualFileSystem
         Write
     }
 
-    public class PermissionsExpcetion : Exception
+    public class PermissionsExpcetion : SynthesisExpection
     {
         public PermissionsExpcetion() { }
 
@@ -29,7 +29,7 @@ namespace SynthesisAPI.VirtualFileSystem
         public PermissionsExpcetion(string message, Exception inner) : base(message, inner) { }
     }
 
-    public static class ApiCallSource
+    internal static class ApiCallSource
     {
         internal class ExternalCallLifetimeClass : IDisposable
         {

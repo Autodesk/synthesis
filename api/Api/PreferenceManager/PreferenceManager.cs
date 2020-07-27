@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
-using System.Threading;
 using System.Threading.Tasks;
 using SynthesisAPI.Utilities;
 
@@ -22,6 +21,7 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="moduleName">name of the owner module</param>
         /// <param name="key">Identifier for preference</param>
         /// <param name="value">Preference value</param>
+        [ExposedApi]
         public static void SetPreference<TValueType>(string moduleName, string key, TValueType value)
         {
             if (!Instance.Preferences.ContainsKey(moduleName))
@@ -37,6 +37,7 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="moduleName">name of the owner module</param>
         /// <param name="key">Identifier for preference</param>
         /// <returns>Preference</returns>
+        [ExposedApi]
         public static object GetPreference(string moduleName, string key)
         {
             if (Instance.Preferences.ContainsKey(moduleName))
@@ -59,6 +60,7 @@ namespace SynthesisAPI.PreferenceManager
         /// <param name="useJsonDeserialization">Set this to true if you are trying to retrieve an object of a custom type. Be sure
         /// to label everything inside the type with the Attributes Newtonsoft provides</param>
         /// <returns>Preference</returns>
+        [ExposedApi]
         public static TValueType GetPreference<TValueType>(string moduleName, string key, bool useJsonDeserialization = false)
         {
             if (Instance.Preferences.ContainsKey(moduleName))
@@ -84,6 +86,7 @@ namespace SynthesisAPI.PreferenceManager
         /// Clear your dictionary of preferences
         /// </summary>
         /// <param name="owner">Your module name</param>
+        [ExposedApi]
         public static void ClearPreferences(string moduleName)
         {
             Instance.Preferences[moduleName] = new Dictionary<string, object>();
@@ -99,6 +102,7 @@ namespace SynthesisAPI.PreferenceManager
         /// </summary>
         /// <param name="overrideChanges">Load regardless of unsaved data</param>
         /// <returns>Whether or not the load executed successfully</returns>
+        [ExposedApi]
         public static Task<bool> LoadAsync(bool overrideChanges = false) => Task<bool>.Factory.StartNew(() => Load(overrideChanges));
 
         private static void ImportPreferencesAsset()
@@ -141,6 +145,7 @@ namespace SynthesisAPI.PreferenceManager
         /// Saves a JSON file with preference data asynchronously
         /// </summary>
         /// <returns>Whether or not the save executed successfully</returns>
+        [ExposedApi]
         public static Task<bool> SaveAsync() => Task<bool>.Factory.StartNew(Save);
 
         /// <summary>
@@ -154,7 +159,7 @@ namespace SynthesisAPI.PreferenceManager
             return SaveInner();
         }
 
-        public static bool SaveInner()
+        internal static bool SaveInner()
         {
             ImportPreferencesAsset();
             

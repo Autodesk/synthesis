@@ -17,5 +17,5 @@ namespace SynthesisAPI.Utilities
     /// }
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
-    public class ExposedApiAttribute : Attribute { }
+    internal class ExposedApiAttribute : Attribute { }
 }

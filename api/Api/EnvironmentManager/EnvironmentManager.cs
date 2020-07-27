@@ -10,22 +10,17 @@ using UnityEngine.PlayerLoop;
 
 namespace SynthesisAPI.EnvironmentManager
 {
-    //Entity is a 32 bit generational index
-    // 1st 16 bits represent index
-    // 2nd 16 bits represent generation
-    using Entity = System.UInt32;
-
     /// <summary>
     /// ECS System
     /// </summary>
     public static class EnvironmentManager
     {
-        static AnyMap<Component> components = new AnyMap<Component>(); //dynamic mapping of components to Entity by index
-        static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
-        static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
+        private static AnyMap<Component> components = new AnyMap<Component>(); //dynamic mapping of components to Entity by index
+        private static List<Entity> entities = new List<Entity>(); //Entities that are in environment 
+        private static Stack<Entity> removed = new Stack<Entity>(); //deallocated Entities that still exist in entities null Entities
 
-        const Entity NULL_ENTITY = 0;
-        const ushort BASE_GEN = 1; //no entity should have a generation of 0
+        private static readonly Entity NULL_ENTITY = 0;
+        private const ushort BASE_GEN = 1; //no entity should have a generation of 0
 
 
         #region EntityManagement
@@ -48,7 +43,7 @@ namespace SynthesisAPI.EnvironmentManager
             }
             else //adds entity by increasing entity list size
             {
-                newEntity = CreateEntity((ushort)entities.Count, BASE_GEN);
+                newEntity = Entity.Create((ushort)entities.Count, BASE_GEN);
                 ApiProvider.AddEntityToScene(newEntity);
                 entities.Add(newEntity);
             }
@@ -152,30 +147,26 @@ namespace SynthesisAPI.EnvironmentManager
             return type.IsSubclassOf(typeof(Component)) || type == typeof(Component);
         }
 
-        #endregion
+        public static IEnumerable<Entity> GetEntitiesWhere(Func<Entity, bool> predicate)
+        {
+            return entities.Where(predicate);
+        }
 
-        #region EntityBitModifier
+        public static IEnumerable<TComponent> GetComponentsWhere<TComponent>(Func<TComponent, bool> predicate) where TComponent : Component
+        {
+            List<TComponent> result = new List<TComponent>();
+            foreach (var e in entities)
+            {
+                foreach (var c in components.GetAll(e.GetIndex(), e.GetGen()) ?? new List<Component>())
+                {
+                    if (c is TComponent tc && predicate(tc))
+                    {
+                        result.Add(tc);
+                    }
+                }
 
-        private static ushort GetIndex(this Entity entity)
-        {
-            return (ushort)(entity >> 16);
-        }
-        //last 16 bits
-        private static ushort GetGen(this Entity entity)
-        {
-            return (ushort)(entity & 65535);
-        }
-        private static Entity CreateEntity(ushort index, ushort gen)
-        {
-            return ((uint)index << 16) + gen;
-        }
-        private static Entity SetIndex(this Entity entity, ushort index)
-        {
-            return ((uint)index << 16) + (entity & 65535);
-        }
-        private static Entity SetGen(this Entity entity, ushort gen)
-        {
-            return (entity & 4294901760) + gen;
+            }
+            return result;
         }
 
         #endregion

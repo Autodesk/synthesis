@@ -1,6 +1,8 @@
 ﻿using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
@@ -10,10 +12,6 @@ using SynthesisAPI.Utilities;
 using Utilities;
 
 #nullable enable
-
-using Entity = System.UInt32;
-using SynthesisAPI.InputManager.InputEvents;
-using SynthesisAPI.InputManager.Inputs;
 
 namespace SynthesisCore.Systems
 {

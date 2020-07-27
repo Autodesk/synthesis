@@ -410,6 +410,10 @@ namespace SynthesisAPI.AssetManager
 
                 foreach (var fileExtension in fileExtensions)
                 {
+                    if (FileExtensionAssetTypes.ContainsKey(fileExtension))
+                    {
+                        throw new Exception($"Registering duplicate handler for asset type with file extension {fileExtension}");
+                    }
                     FileExtensionAssetTypes[fileExtension] = type + "/" + subtype;
                 }
 
