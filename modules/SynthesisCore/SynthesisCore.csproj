@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <Folder Include="Components\" />
+    <Folder Include="Resources" />
+    <Folder Include="UI" />
   </ItemGroup>
 
 </Project>
