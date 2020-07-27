@@ -326,6 +326,7 @@ namespace Engine.ModuleLoader
 			private GameObject _entityParent;
 			private Dictionary<Entity, GameObject> _gameObjects;
 			private readonly Dictionary<Type, Type> _builtins;
+			private bool debugLogsEnabled = true;
 
 			public ApiProvider()
 			{
@@ -347,9 +348,17 @@ namespace Engine.ModuleLoader
 				switch (logLevel)
 				{
 					case LogLevel.Info:
-					case LogLevel.Debug:
 						{
-							Debug.Log(msg);
+							Debug.Log(o);
+							break;
+						}
+					case LogLevel.Debug:
+						if (!debugLogsEnabled)
+						{
+							return;
+						}
+						{
+							Debug.Log(o);
 							break;
 						}
 					case LogLevel.Warning:
@@ -365,6 +374,11 @@ namespace Engine.ModuleLoader
 					default:
 						throw new SynthesisExpection("Unhandled log level");
 				}
+			}
+
+			public void SetEnableDebugLogs(bool enable)
+			{
+				debugLogsEnabled = enable;
 			}
 
 			public void AddEntityToScene(Entity entity)
@@ -455,9 +469,9 @@ namespace Engine.ModuleLoader
 			public T CreateUnityType<T>(params object[] args) where T : class
 			{
 				if (args.Length > 0)
-					return (T) Activator.CreateInstance(typeof(T), args);
+					return (T)Activator.CreateInstance(typeof(T), args);
 				else
-					return (T) Activator.CreateInstance(typeof(T));
+					return (T)Activator.CreateInstance(typeof(T));
 			}
 
 			public VisualTreeAsset GetDefaultUIAsset(string assetName)
@@ -469,7 +483,7 @@ namespace Engine.ModuleLoader
 			}
 
 			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
-				(TUnityType) Activator.CreateInstance(typeof(TUnityType));
+				(TUnityType)Activator.CreateInstance(typeof(TUnityType));
 
 			public VisualElement GetRootVisualElement()
 			{

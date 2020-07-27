@@ -35,6 +35,8 @@ namespace SynthesisAPI.Runtime
 			Instance?.Log(o, logLevel, memberName, filePath, lineNumber);
 		}
 
+		public static void SetEnableDebugLogs(bool enable) => Instance?.SetEnableDebugLogs(enable);
+
 		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);
 
 		public static void RemoveEntityFromScene(Entity entity) => Instance?.RemoveEntityFromScene(entity);
