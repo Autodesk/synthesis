@@ -99,12 +99,14 @@ namespace SynthesisAPI.EnvironmentManager
             public string JointType { get; set; }
             public Vector3 RotationVector { get; set; }
             public Vector3 SlideVector { get; set; }
+            public Vector3 SecondarySlideVector { get; set; }
             public double JointValue { get; set; }
 
             public JointMotion()
             {
                 RotationVector = new Vector3();
                 SlideVector = new Vector3();
+                SecondarySlideVector = new Vector3();
             }
         }
 
@@ -170,6 +172,28 @@ namespace SynthesisAPI.EnvironmentManager
                 SlideDirectionVector = slideVector;
                 RotationValue = rotation;
                 SlideValue = slide;
+            }
+        }
+
+        public class PlanarJointMotion : JointMotion
+        {
+            public Vector3 NormalDirectionVector { get; set; }
+            public Vector3 PrimarySlideDirectionVector { get; set; }
+            public Vector3 SecondarySlideDirectionVector { get; set; }
+            public double PrimarySlideValue { get; set; }
+            public double SecondarySlideValue { get; set; }
+            public double RotationValue { get; set; }
+            // JointLimits rotationLimits;
+            // JointLimits slideLimits;
+
+            public PlanarJointMotion(Vector3 normalVector, Vector3 primarySlideVec3, Vector3 secondarySlideVec3, double primarySlidevalue, double secondarySlideValue, double rotation)
+            {
+                NormalDirectionVector = normalVector;
+                PrimarySlideDirectionVector = primarySlideVec3;
+                SecondarySlideDirectionVector = secondarySlideVec3;
+                PrimarySlideValue = primarySlidevalue;
+                SecondarySlideValue = secondarySlideValue;
+                RotationValue = rotation;
             }
         }
 

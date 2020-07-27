@@ -208,6 +208,7 @@ namespace SynthesisAPI.AssetManager
             var jointMotion = joint.JointMotion;
             var jointRotationVector = jointMotion.RotationVector;
             var jointSlideVector = jointMotion.SlideVector;
+            var jointSecondaryVector = jointMotion.SecondarySlideVector;
 
             if (jointDict.ContainsKey("revoluteJointMotion"))
             {
@@ -246,11 +247,27 @@ namespace SynthesisAPI.AssetManager
                 double slideValue;
 
                 jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
-                jointSlideVector.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                jointSlideVector.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("slideDirectionVector").Get<decimal>("y");
                 rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "rotationValue");
                 slideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "slideValue");
 
                 jointMotion = new PinSlotJointMotion(jointRotationVector, jointSlideVector, rotationValue, slideValue);
+            }
+
+            if (jointDict.ContainsKey("planarJointMotion"))
+            {
+                double primarySlideValue;
+                double secondarySlideValue;
+                double rotationValue;
+
+                jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("normalDirectionVector").Get<decimal>("y");
+                jointSlideVector.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("primarySlideDirectionVector").Get<decimal>("y");
+                jointSecondaryVector.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("secondarySlideDirectionVector").Get<decimal>("y");
+                primarySlideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "primarySlideValue");
+                secondarySlideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "secondarySlideValue");
+                rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "rotationValue");
+
+                jointMotion = new PlanarJointMotion(jointRotationVector, jointSlideVector, jointSecondaryVector, primarySlideValue, secondarySlideValue, rotationValue);
             }
 
             //jointMotion.JointVector = jointRotationVector;
