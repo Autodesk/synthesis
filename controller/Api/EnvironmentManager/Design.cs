@@ -97,13 +97,14 @@ namespace SynthesisAPI.EnvironmentManager
         public class JointMotion
         {
             public string JointType { get; set; }
-            public Vector3 JointVector { get; set; }
-            public double JointMotionValue { get; set; }
-
+            public Vector3 RotationVector { get; set; }
+            public Vector3 SlideVector { get; set; }
+            public double JointValue { get; set; }
 
             public JointMotion()
             {
-                JointVector = new Vector3();
+                RotationVector = new Vector3();
+                SlideVector = new Vector3();
             }
         }
 
@@ -112,6 +113,11 @@ namespace SynthesisAPI.EnvironmentManager
             public Vector3 RotationAxisVector { get; set; }
             public double RotationValue { get; set; }
             // JointLimits rotationLimits;
+
+            public RevoluteJointMotion()
+            {
+                RotationAxisVector = new Vector3();
+            }
 
             public RevoluteJointMotion(Vector3 vec3, double doubleNum)
             {
@@ -130,6 +136,40 @@ namespace SynthesisAPI.EnvironmentManager
             {
                 SlideDirectionVector = vec3;
                 SlideValue = doubleNum;
+            }
+        }
+
+        public class CylindricalJointMotion : JointMotion
+        {
+            public Vector3 RotationAxisVector { get; set; }
+            public double RotationValue { get; set; }
+            public double SlideValue { get; set; }
+            // JointLimits rotationLimits;
+            // JointLimits slideLimits;
+
+            public CylindricalJointMotion(Vector3 vec3, double doubleRotation, double doubleSlide)
+            {
+                RotationAxisVector = vec3;
+                RotationValue = doubleRotation;
+                SlideValue = doubleSlide;
+            }
+        }
+
+        public class PinSlotJointMotion : JointMotion
+        {
+            public Vector3 RotationAxisVector { get; set; }
+            public Vector3 SlideDirectionVector { get; set; }
+            public double RotationValue { get; set; }
+            public double SlideValue { get; set; }
+            // JointLimits rotationLimits;
+            // JointLimits slideLimits;
+
+            public PinSlotJointMotion(Vector3 rotationVector, Vector3 slideVector, double rotation, double slide)
+            {
+                RotationAxisVector = rotationVector;
+                SlideDirectionVector = slideVector;
+                RotationValue = rotation;
+                SlideValue = slide;
             }
         }
 

@@ -204,43 +204,72 @@ namespace SynthesisAPI.AssetManager
             joint.OccurenceTwoUuid = (string)jointDict["occurrenceTwoUUID"];
 
             // JOINT MOTION
-            object result;
-            object rotationValue;
             var jointType = joint.Type;
             var jointMotion = joint.JointMotion;
-            var jointVector = jointMotion.JointVector;
+            var jointRotationVector = jointMotion.RotationVector;
+            var jointSlideVector = jointMotion.SlideVector;
 
             if (jointDict.ContainsKey("revoluteJointMotion"))
             {
-                jointVector.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
-                jointMotion.JointMotionValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
-                jointMotion = new RevoluteJointMotion(jointVector, jointMotion.JointMotionValue);
+                double rotationValue;
+
+                jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"), "rotationValue");
+
+                jointMotion = new RevoluteJointMotion(jointRotationVector, rotationValue);
             }
 
             if (jointDict.ContainsKey("sliderJointMotion"))
             {
-                jointVector.Y = (double)jointDict.Get<JsonDictionary>("sliderJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
-                jointMotion.JointMotionValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("sliderJointMotion"));
-                jointMotion = new RevoluteJointMotion(jointVector, jointMotion.JointMotionValue);
+                double slideValue;
+
+                // CHECK vectors x, y, z if they exist; current test models don't have x, y, z
+                jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("sliderJointMotion").Get<JsonDictionary>("slideDirectionVector").Get<decimal>("y");
+                slideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("sliderJointMotion"), "slideValue");
+                jointMotion = new SliderJointMotion(jointRotationVector, slideValue);
             }
 
-            //jointMotion.JointVector = jointVector;
+            if (jointDict.ContainsKey("cylindricalJointMotion"))
+            {
+                double rotationValue;
+                double slideValue;
+
+                jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("cylindricalJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "rotationValue");
+                slideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "slideValue");
+                jointMotion = new CylindricalJointMotion(jointRotationVector, rotationValue, slideValue);
+            }
+
+            if (jointDict.ContainsKey("pinSlotJointMotion"))
+            {
+                double rotationValue;
+                double slideValue;
+
+                jointRotationVector.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                jointSlideVector.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
+                rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "rotationValue");
+                slideValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "slideValue");
+
+                jointMotion = new PinSlotJointMotion(jointRotationVector, jointSlideVector, rotationValue, slideValue);
+            }
+
+            //jointMotion.JointVector = jointRotationVector;
             joint.JointMotion = jointMotion;
             joint.Type = jointType;
 
             return joint;
         }
 
-        private double HasJointDetails(JsonDictionary dict)
+        private double HasJointDetails(JsonDictionary dict, string key)
         {
             // if this is in the dictionary
             // return it's double values
             // else return default values of 0
             object value;
 
-            if (dict.ContainsKey("rotationValue"))
+            if (dict.ContainsKey(key))
             {
-                dict.TryGetValue("rotationValue", out value);
+                dict.TryGetValue(key, out value);
                 return (double)(decimal)value;
             }
             else return 0;
