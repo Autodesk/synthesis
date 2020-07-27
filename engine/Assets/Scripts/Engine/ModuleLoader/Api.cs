@@ -25,6 +25,7 @@ using Directory = System.IO.Directory;
 using Engine.ModuleLoader.Adapters;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
+using System.Threading.Tasks;
 
 namespace Engine.ModuleLoader
 {
@@ -35,12 +36,16 @@ namespace Engine.ModuleLoader
 
 		private static Dictionary<string, string> assemblyOwners = new Dictionary<string, string>();
 
+		private static MemoryStream newConsoleStream = new MemoryStream();
+		private static long lastConsoleStreamPos = 0;
+
 		public void Awake()
 		{
+			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
-			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			LoadApi();
 			LoadModules();
+			RerouteConsoleOutput();
 		}
 
 		private void LoadModules()
@@ -171,6 +176,7 @@ namespace Engine.ModuleLoader
 				{
 					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
+						moduleInfo.archive.Dispose();
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
 				}
@@ -239,7 +245,29 @@ namespace Engine.ModuleLoader
 
 			// Set up module
 
-			foreach (var exportedModuleClass in assembly.GetTypes()
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				if (e is ReflectionTypeLoadException reflectionTypeLoadException)
+				{
+					foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
+					{
+						SynthesisAPI.Runtime.ApiProvider.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+					}
+				}
+				return false;
+			}
+			catch (Exception e)
+			{
+				SynthesisAPI.Runtime.ApiProvider.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
+				return false;
+			}
+
+			foreach (var exportedModuleClass in types
 				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
 			{
 				try
@@ -269,7 +297,7 @@ namespace Engine.ModuleLoader
 				}
 				catch (Exception)
 				{
-					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
+					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}", LogLevel.Error);
 					// TODO unload assembly? return false?
 					continue;
 				}
@@ -319,6 +347,37 @@ namespace Engine.ModuleLoader
 						?.MakeGenericMethod(eventType)
 						.Invoke(null, new object[] {e})
 				});
+		}
+
+		private void RerouteConsoleOutput()
+		{
+			var writer = new StreamWriter(newConsoleStream);
+			Console.SetOut(writer);
+
+			var reader = new StreamReader(newConsoleStream);
+			bool firstUse = true;
+			Task.Run(() =>
+			{
+				while (true)
+				{
+					if (firstUse)
+					{
+						SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
+						firstUse = false;
+					}
+					if (newConsoleStream.Position != lastConsoleStreamPos)
+					{
+						writer.Flush();
+						var pos = newConsoleStream.Position;
+						newConsoleStream.Position = lastConsoleStreamPos;
+
+						SynthesisAPI.Runtime.ApiProvider.Log(reader.ReadToEnd());
+
+						lastConsoleStreamPos = pos;
+						newConsoleStream.Position = pos;
+					}
+				}
+			});
 		}
 
 		private class ApiProvider : IApiProvider
