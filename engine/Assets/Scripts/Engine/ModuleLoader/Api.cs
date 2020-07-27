@@ -120,9 +120,14 @@ namespace Engine.ModuleLoader
 			{
 				foreach (var dependency in metadata.Dependencies)
 				{
-					if (!moduleList.Any(m => m.metadata.Name == dependency))
+					if (!moduleList.Any(m => m.metadata.Name == dependency.Name))
 					{
-						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency}");
+						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
+					}
+					var present_dep = moduleList.First(m => m.metadata.Name == dependency.Name);
+					if (present_dep.metadata.Version != dependency.Version)
+					{
+						throw new LoadModuleException($"Module {metadata.Name} requires dependency module {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
 					}
 				}
 			}
@@ -138,9 +143,9 @@ namespace Engine.ModuleLoader
 				var element = resolvedEntries.PopAt(0);
 				solutionSet.Enqueue(element);
 				foreach (var dep in moduleList.Where(t =>
-					t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
+					t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version)).ToList())
 				{
-					dep.metadata.Dependencies.Remove(element.metadata.Name);
+					dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version);
 					if (dep.metadata.Dependencies.Count == 0)
 						resolvedEntries.Add(dep);
 				}
