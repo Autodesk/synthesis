@@ -360,13 +360,13 @@ namespace Engine.ModuleLoader
 			{
 				while (true)
 				{
-					if (firstUse)
-					{
-						SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
-						firstUse = false;
-					}
 					if (newConsoleStream.Position != lastConsoleStreamPos)
 					{
+						if (firstUse)
+						{
+							SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
+							firstUse = false;
+						}
 						writer.Flush();
 						var pos = newConsoleStream.Position;
 						newConsoleStream.Position = lastConsoleStreamPos;
