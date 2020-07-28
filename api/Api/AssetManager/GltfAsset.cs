@@ -203,13 +203,13 @@ namespace SynthesisAPI.AssetManager
             joint.OccurenceTwoUuid = (string)jointDict["occurrenceTwoUUID"];
 
             // JOINT MOTION
-            var jointType = joint.Type;
+            //var jointType = joint.Type;
             var jointMotion = joint.JointMotion;
 
             jointMotion = GetJointMotion(jointDict, jointMotion);
 
             joint.JointMotion = jointMotion;
-            joint.Type = jointType;
+            //joint.Type = jointType;
 
             return joint;
         }
@@ -231,7 +231,6 @@ namespace SynthesisAPI.AssetManager
 
         private Design.JointLimits CheckJointLimits(JsonDictionary dict)
         {
-            object value;
             Design.JointLimits jointLimits = new Design.JointLimits();
 
             if (dict.ContainsKey("rotationLimits"))
@@ -260,12 +259,13 @@ namespace SynthesisAPI.AssetManager
 
             if (jointDict.ContainsKey("revoluteJointMotion"))
             {
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "revoluteJointMotion", true);
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("revoluteJointMotion"), "rotationValue");
 
                 jointLimits = CheckJointLimits(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
 
-                jointMotion = new RevoluteJointMotion(rotationVec, rotationValue, jointLimits);
+                jointMotion = new RevoluteJointMotion(jointMotion.Type, rotationVec, rotationValue, jointLimits);
             }
 
             if (jointDict.ContainsKey("sliderJointMotion"))

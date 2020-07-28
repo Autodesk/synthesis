@@ -64,10 +64,7 @@ namespace SynthesisAPI.EnvironmentManager
             public string OccurenceOneUuid { get; set; }
             public string OccurenceTwoUuid { get; set; }
 
-            public JointType Type { get; set; }
-
             public JointMotion JointMotion { get; set; }
-            public JointLimits JointLimits { get; set; }
 
             public IDictionary<string, object> Attributes { get; set; }
 
@@ -78,9 +75,17 @@ namespace SynthesisAPI.EnvironmentManager
             {
                 JointHeader = new Header();
                 Origin = new Vector3();
-                Type = JointType.RigidJointMotion;
                 JointMotion = new JointMotion();
                 Attributes = new Dictionary<string, object>();
+            }
+        }
+
+        public class JointMotion
+        {
+            public JointType Type { get; set; }
+            public JointMotion()
+            { 
+                Type = JointType.RigidJointMotion; 
             }
 
             public enum JointType
@@ -95,13 +100,6 @@ namespace SynthesisAPI.EnvironmentManager
             }
         }
 
-        public class JointMotion
-        {
-            public string JointType { get; set; }
-
-            public JointMotion() { }
-        }
-
         // todo: add rigid joint here
 
         public class RevoluteJointMotion : JointMotion
@@ -110,8 +108,9 @@ namespace SynthesisAPI.EnvironmentManager
             public double RotationValue { get; set; }
             public JointLimits RotationLimits { get; set; }
 
-            public RevoluteJointMotion(Vector3 vec3, double doubleNum, JointLimits limit)
+            public RevoluteJointMotion(JointType type, Vector3 vec3, double doubleNum, JointLimits limit)
             {
+                Type = type;
                 RotationAxisVector = vec3;
                 RotationValue = doubleNum;
                 RotationLimits = limit;
