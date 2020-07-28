@@ -14,12 +14,6 @@ namespace Controller
             ApiProvider.Log(o, logLevel);
         }
 
-        [RpcMethod]
-        public static string ReturnString(string value)
-        {
-            return value;
-        }
-
         #region Transform movement
 
         [RpcMethod]
@@ -89,6 +83,16 @@ namespace Controller
                 e => e.GetComponent<Moveable>()?.Channel == channel))
             {
                 e.GetComponent<Transform>().Position = position;
+            }
+        }
+
+        [RpcMethod]
+        public static void RotateEulerAngles(uint channel, Vector3D rotation)
+        {
+            foreach (var e in EnvironmentManager.GetEntitiesWhere(
+                e => e.GetComponent<Moveable>()?.Channel == channel))
+            {
+                e.GetComponent<Transform>().Rotate(rotation);
             }
         }
 
