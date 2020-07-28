@@ -140,8 +140,9 @@ namespace SynthesisAPI.EnvironmentManager
             public JointLimits RotationLimits { get; set; }
             public JointLimits SlideLimits { get; set; }
 
-            public CylindricalJointMotion(Vector3 vec3, double doubleRotation, double doubleSlide, JointLimits limit1, JointLimits limit2)
+            public CylindricalJointMotion(JointType type, Vector3 vec3, double doubleRotation, double doubleSlide, JointLimits limit1, JointLimits limit2)
             {
+                Type = type;
                 RotationAxisVector = vec3;
                 RotationValue = doubleRotation;
                 SlideValue = doubleSlide;
@@ -159,12 +160,16 @@ namespace SynthesisAPI.EnvironmentManager
             public JointLimits RotationLimits { get; set; }
             public JointLimits SlideLimits { get; set; }
 
-            public PinSlotJointMotion(Vector3 rotationVector, Vector3 slideVector, double rotation, double slide, JointLimits limit1, JointLimits limit2)
+            public PinSlotJointMotion(JointType type, Vector3 rotationVector, Vector3 slideVector, double rotation, double slide, JointLimits limit1, JointLimits limit2)
             {
+                Type = type;
+
                 RotationAxisVector = rotationVector;
                 SlideDirectionVector = slideVector;
+
                 RotationValue = rotation;
                 SlideValue = slide;
+
                 RotationLimits = limit1;
                 SlideLimits = limit2;
             }
@@ -182,14 +187,18 @@ namespace SynthesisAPI.EnvironmentManager
             public JointLimits SecondarySlideLimits { get; set; }
             public JointLimits RotationLimits { get; set; }
 
-            public PlanarJointMotion(Vector3 normalVector, Vector3 primarySlideVec3, Vector3 secondarySlideVec3, double primarySlidevalue, double secondarySlideValue, double rotation, JointLimits limit1, JointLimits limit2, JointLimits limit3)
+            public PlanarJointMotion(JointType type, Vector3 normalVector, Vector3 primarySlideVec3, Vector3 secondarySlideVec3, double primarySlidevalue, double secondarySlideValue, double rotation, JointLimits limit1, JointLimits limit2, JointLimits limit3)
             {
+                Type = type;
+
                 NormalDirectionVector = normalVector;
                 PrimarySlideDirectionVector = primarySlideVec3;
                 SecondarySlideDirectionVector = secondarySlideVec3;
+
                 PrimarySlideValue = primarySlidevalue;
                 SecondarySlideValue = secondarySlideValue;
                 RotationValue = rotation;
+
                 PrimarySlideLimits = limit1;
                 SecondarySlideLimits = limit2;
                 RotationLimits = limit3;
@@ -208,14 +217,18 @@ namespace SynthesisAPI.EnvironmentManager
             public JointLimits PitchLimits { get; set; }
             public JointLimits YawLimits { get; set; }
 
-            public BallJointMotion(Vector3 rollVec3, Vector3 pitchVec3, Vector3 yawVec3, double rollValue, double pitchValue, double yawValue, JointLimits limit1, JointLimits limit2, JointLimits limit3)
+            public BallJointMotion(JointType type, Vector3 rollVec3, Vector3 pitchVec3, Vector3 yawVec3, double rollValue, double pitchValue, double yawValue, JointLimits limit1, JointLimits limit2, JointLimits limit3)
             {
+                Type = type;
+
                 RollDirectionVector = rollVec3;
                 PitchDirectionVector = pitchVec3;
                 YawDirectionValue = yawVec3;
+
                 RollValue = rollValue;
                 PitchValue = pitchValue;
                 YawValue = yawValue;
+
                 RollLimits = limit1;
                 PitchLimits = limit2;
                 YawLimits = limit3;
@@ -231,7 +244,6 @@ namespace SynthesisAPI.EnvironmentManager
             public double MinimumValue { get; set; }
             public double RestValue { get; set; }
         }
-
 
     #endregion
 

@@ -288,6 +288,8 @@ namespace SynthesisAPI.AssetManager
 
             if (jointDict.ContainsKey("cylindricalJointMotion"))
             {
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "cylindricalJointMotion", true);
+
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("cylindricalJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "rotationValue");
                 slideValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "slideValue");
@@ -295,11 +297,13 @@ namespace SynthesisAPI.AssetManager
                 primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("cylindricalJointMotion"));
                 secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("cylindricalJointMotion"));
 
-                jointMotion = new CylindricalJointMotion(rotationVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
+                jointMotion = new CylindricalJointMotion(jointMotion.Type, rotationVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
             }
 
             if (jointDict.ContainsKey("pinSlotJointMotion"))
             {
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "pinSlotJointMotion", true);
+
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 slideVec.Y = (double)jointDict.Get<JsonDictionary>("pinSlotJointMotion").Get<JsonDictionary>("slideDirectionVector").Get<decimal>("y");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "rotationValue");
@@ -308,11 +312,13 @@ namespace SynthesisAPI.AssetManager
                 primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("pinSlotJointMotion"));
                 secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("pinSlotJointMotion"));
 
-                jointMotion = new PinSlotJointMotion(rotationVec, slideVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
+                jointMotion = new PinSlotJointMotion(jointMotion.Type, rotationVec, slideVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
             }
 
             if (jointDict.ContainsKey("planarJointMotion"))
             {
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "planarJointMotion", true);
+
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("normalDirectionVector").Get<decimal>("y");
                 slideVec.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("primarySlideDirectionVector").Get<decimal>("y");
                 secondaryVec.Y = (double)jointDict.Get<JsonDictionary>("planarJointMotion").Get<JsonDictionary>("secondarySlideDirectionVector").Get<decimal>("y");
@@ -324,7 +330,7 @@ namespace SynthesisAPI.AssetManager
                 secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("planarJointMotion"));
                 tertiaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("planarJointMotion"));
 
-                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, slideValue, secondarySlideValue, rotationValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
+                jointMotion = new PlanarJointMotion(jointMotion.Type, rotationVec, slideVec, secondaryVec, slideValue, secondarySlideValue, rotationValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
             }
 
             if (jointDict.ContainsKey("ballJointMotion"))
@@ -332,6 +338,8 @@ namespace SynthesisAPI.AssetManager
                 double rollValue;
                 double pitchValue;
                 double yawValue;
+
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "ballJointMotion", true);
 
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("ballJointMotion").Get<JsonDictionary>("rollDirectionVector").Get<decimal>("y");
                 slideVec.Y = (double)jointDict.Get<JsonDictionary>("ballJointMotion").Get<JsonDictionary>("pitchDirectionVector").Get<decimal>("y");
@@ -344,7 +352,7 @@ namespace SynthesisAPI.AssetManager
                 secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("ballJointMotion"));
                 tertiaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("ballJointMotion"));
 
-                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, rollValue, pitchValue, yawValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
+                jointMotion = new PlanarJointMotion(jointMotion.Type, rotationVec, slideVec, secondaryVec, rollValue, pitchValue, yawValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
             }
 
             return jointMotion;
