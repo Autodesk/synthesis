@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Controller.Jrpc
+namespace Controller.Rpc
 {
     public class MethodCallContext
     {

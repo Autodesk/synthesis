@@ -1,4 +1,4 @@
-﻿using Controller.Jrpc;
+﻿using Controller.Rpc;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
@@ -70,13 +70,13 @@ namespace Controller
             throw new Exception($"HTTP response status code {response.StatusCode}");
         }
 
-        private static async Task<JrpcResponse> MakeRequestAsync(string methodName, params object[] args)
+        private static async Task<RpcResponse> MakeRequestAsync(string methodName, params object[] args)
         {
             var response = await client.PostAsync("", new StringContent(MethodCallContext.ToJson(MyVersion, methodName, args)));
-            var result = JrpcResponse.FromJson(await ReadContent(response));
+            var result = RpcResponse.FromJson(await ReadContent(response));
             if(result.Version != MyVersion)
             {
-                throw new Exception($"Incompatible Jrpc versions result {result.Version} vs current {MyVersion}");
+                throw new Exception($"Incompatible RPC versions result {result.Version} vs current {MyVersion}");
             }
             if (result.Error != null)
             {

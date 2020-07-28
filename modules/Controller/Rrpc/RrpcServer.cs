@@ -4,10 +4,10 @@ using SynthesisAPI.Utilities;
 using System.IO;
 using System.Net;
 
-namespace Controller.Jrpc
+namespace Controller.Rpc
 {
     [ModuleExport]
-    public class JrpcServer : SystemBase
+    public class RrpcServer : SystemBase
     {
         private static HttpListener listener = new HttpListener();
         public override void Setup()
@@ -30,17 +30,17 @@ namespace Controller.Jrpc
 
                 Result<object, System.Exception> result;
 
-                if (call.Version != JrpcManager.Version)
+                if (call.Version != RpcManager.Version)
                 {
                     result = new Result<object, System.Exception>(
-                        new System.Exception($"Incompatible Jrpc versions call {call.Version} vs current {JrpcManager.Version}"));
+                        new System.Exception($"Incompatible RPC versions call {call.Version} vs current {RpcManager.Version}"));
                 }
                 else
                 {
-                    result = JrpcManager.Invoke(call.MethodName, call.Params.ToArray());
+                    result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
                 }
 
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(JrpcResponse.ToJson(JrpcManager.Version, result));
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(RpcResponse.ToJson(RpcManager.Version, result));
 
                 context.Response.ContentLength64 = buffer.Length;
                 context.Response.OutputStream.Write(buffer, 0, buffer.Length);

@@ -3,16 +3,16 @@
 using Newtonsoft.Json;
 using System;
 
-namespace Controller.Jrpc
+namespace Controller.Rpc
 {
-    public class JrpcResponse
+    public class RpcResponse
     {
         public object? Result;
         public bool HasResult;
         public Exception? Error;
         public string Version;
 
-        public JrpcResponse()
+        public RpcResponse()
         {
             Result = null;
             HasResult = false;
@@ -20,7 +20,7 @@ namespace Controller.Jrpc
             Version = "";
         }
 
-        public JrpcResponse(string version, object result, bool hasResult, Exception error) // TODO make internal?
+        public RpcResponse(string version, object result, bool hasResult, Exception error) // TODO make internal?
         {
             Result = result;
             HasResult = hasResult;
@@ -28,7 +28,7 @@ namespace Controller.Jrpc
             Version = version;
         }
 
-        public JrpcResponse(string version, SynthesisAPI.Utilities.Result<object, Exception> result)
+        public RpcResponse(string version, SynthesisAPI.Utilities.Result<object, Exception> result)
         {
             if (result.isError)
             {
@@ -44,7 +44,7 @@ namespace Controller.Jrpc
 
         public static string ToJson(string version, SynthesisAPI.Utilities.Result<object, Exception> result)
         {
-            return new JrpcResponse(version, result).ToJson();
+            return new RpcResponse(version, result).ToJson();
         }
 
         public string ToJson()
@@ -52,9 +52,9 @@ namespace Controller.Jrpc
             return JsonConvert.SerializeObject(this);
         }
 
-        public static JrpcResponse FromJson(string json)
+        public static RpcResponse FromJson(string json)
         {
-            return JsonConvert.DeserializeObject<JrpcResponse>(json);
+            return JsonConvert.DeserializeObject<RpcResponse>(json);
         }
     }
 }

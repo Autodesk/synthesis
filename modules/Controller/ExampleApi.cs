@@ -1,26 +1,26 @@
-﻿namespace Controller.Jrpc
+﻿namespace Controller.Rpc
 {
     public static class ExampleApi
     {
-        [JrpcMethod]
+        [RpcMethod]
         public static long Add(long a, long b)
         {
             return a + b;
         }
 
-        [JrpcMethod]
+        [RpcMethod]
         public static void PrintMessage(string msg)
         {
             SynthesisAPI.Runtime.ApiProvider.Log(msg);
         }
 
-        [JrpcMethod]
+        [RpcMethod]
         public static string ReturnString(string msg)
         {
             return msg;
         }
 
-        [JrpcMethod]
+        [RpcMethod]
         public static void ThrowException(string msg)
         {
             throw new System.Exception(msg);

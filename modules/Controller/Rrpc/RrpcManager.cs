@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Controller.Jrpc
+namespace Controller.Rpc
 {
-    public static class JrpcManager
+    public static class RpcManager
     {
         public static string Version = "1.0.0";
 
@@ -14,7 +14,7 @@ namespace Controller.Jrpc
 
         private static Dictionary<string, MethodInfo> handlers = new Dictionary<string, MethodInfo>();
 
-        static JrpcManager()
+        static RpcManager()
         {
             Init();
         }
@@ -31,9 +31,9 @@ namespace Controller.Jrpc
         {
             foreach (var type in assembly.GetTypes())
             {
-                foreach (var method in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttribute<JrpcMethodAttribute>() != null))
+                foreach (var method in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttribute<RpcMethodAttribute>() != null))
                 {
-                    Register(method.GetCustomAttribute<JrpcMethodAttribute>()?.JrpcMessageMethodName ?? method.Name, method);
+                    Register(method.GetCustomAttribute<RpcMethodAttribute>()?.RpcMessageMethodName ?? method.Name, method);
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿namespace Controller.Jrpc
+﻿namespace Controller.Rpc
 {
     internal class Void { }
 }
