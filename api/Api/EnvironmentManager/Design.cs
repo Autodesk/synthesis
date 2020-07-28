@@ -64,8 +64,6 @@ namespace SynthesisAPI.EnvironmentManager
             public string OccurenceOneUuid { get; set; }
             public string OccurenceTwoUuid { get; set; }
 
-            public JointType Type { get; set; }
-
             public JointMotion JointMotion { get; set; }
 
             public IDictionary<string, object> Attributes { get; set; }
@@ -77,9 +75,17 @@ namespace SynthesisAPI.EnvironmentManager
             {
                 JointHeader = new Header();
                 Origin = new Vector3();
-                Type = JointType.RigidJointMotion;
                 JointMotion = new JointMotion();
                 Attributes = new Dictionary<string, object>();
+            }
+        }
+
+        public class JointMotion
+        {
+            public JointType Type { get; set; }
+            public JointMotion()
+            { 
+                Type = JointType.RigidJointMotion; 
             }
 
             public enum JointType
@@ -94,37 +100,20 @@ namespace SynthesisAPI.EnvironmentManager
             }
         }
 
-        public class JointMotion
-        {
-            public string JointType { get; set; }
-            public Vector3 RotationVector { get; set; }
-            public Vector3 SlideVector { get; set; }
-            public Vector3 SecondarySlideVector { get; set; }
-            public double JointValue { get; set; }
-
-            public JointMotion()
-            {
-                RotationVector = new Vector3();
-                SlideVector = new Vector3();
-                SecondarySlideVector = new Vector3();
-            }
-        }
+        // todo: add rigid joint here
 
         public class RevoluteJointMotion : JointMotion
         {
             public Vector3 RotationAxisVector { get; set; }
             public double RotationValue { get; set; }
-            // JointLimits rotationLimits;
+            public JointLimits RotationLimits { get; set; }
 
-            public RevoluteJointMotion()
+            public RevoluteJointMotion(JointType type, Vector3 vec3, double doubleNum, JointLimits limit)
             {
-                RotationAxisVector = new Vector3();
-            }
-
-            public RevoluteJointMotion(Vector3 vec3, double doubleNum)
-            {
+                Type = type;
                 RotationAxisVector = vec3;
                 RotationValue = doubleNum;
+                RotationLimits = limit;
             }
         }
 
@@ -132,12 +121,14 @@ namespace SynthesisAPI.EnvironmentManager
         {
             public Vector3 SlideDirectionVector { get; set; }
             public double SlideValue { get; set; }
-            // JointLimits rotationLimits;
+            public JointLimits SlideLimits { get; set; }
 
-            public SliderJointMotion(Vector3 vec3, double doubleNum)
+            public SliderJointMotion(JointType type, Vector3 vec3, double doubleNum, JointLimits limit)
             {
+                Type = type;
                 SlideDirectionVector = vec3;
                 SlideValue = doubleNum;
+                SlideLimits = limit;
             }
         }
 
@@ -146,14 +137,17 @@ namespace SynthesisAPI.EnvironmentManager
             public Vector3 RotationAxisVector { get; set; }
             public double RotationValue { get; set; }
             public double SlideValue { get; set; }
-            // JointLimits rotationLimits;
-            // JointLimits slideLimits;
+            public JointLimits RotationLimits { get; set; }
+            public JointLimits SlideLimits { get; set; }
 
-            public CylindricalJointMotion(Vector3 vec3, double doubleRotation, double doubleSlide)
+            public CylindricalJointMotion(JointType type, Vector3 vec3, double doubleRotation, double doubleSlide, JointLimits limit1, JointLimits limit2)
             {
+                Type = type;
                 RotationAxisVector = vec3;
                 RotationValue = doubleRotation;
                 SlideValue = doubleSlide;
+                RotationLimits = limit1;
+                SlideLimits = limit2;
             }
         }
 
@@ -163,15 +157,21 @@ namespace SynthesisAPI.EnvironmentManager
             public Vector3 SlideDirectionVector { get; set; }
             public double RotationValue { get; set; }
             public double SlideValue { get; set; }
-            // JointLimits rotationLimits;
-            // JointLimits slideLimits;
+            public JointLimits RotationLimits { get; set; }
+            public JointLimits SlideLimits { get; set; }
 
-            public PinSlotJointMotion(Vector3 rotationVector, Vector3 slideVector, double rotation, double slide)
+            public PinSlotJointMotion(JointType type, Vector3 rotationVector, Vector3 slideVector, double rotation, double slide, JointLimits limit1, JointLimits limit2)
             {
+                Type = type;
+
                 RotationAxisVector = rotationVector;
                 SlideDirectionVector = slideVector;
+
                 RotationValue = rotation;
                 SlideValue = slide;
+
+                RotationLimits = limit1;
+                SlideLimits = limit2;
             }
         }
 
@@ -183,17 +183,25 @@ namespace SynthesisAPI.EnvironmentManager
             public double PrimarySlideValue { get; set; }
             public double SecondarySlideValue { get; set; }
             public double RotationValue { get; set; }
-            // JointLimits rotationLimits;
-            // JointLimits slideLimits;
+            public JointLimits PrimarySlideLimits { get; set; }
+            public JointLimits SecondarySlideLimits { get; set; }
+            public JointLimits RotationLimits { get; set; }
 
-            public PlanarJointMotion(Vector3 normalVector, Vector3 primarySlideVec3, Vector3 secondarySlideVec3, double primarySlidevalue, double secondarySlideValue, double rotation)
+            public PlanarJointMotion(JointType type, Vector3 normalVector, Vector3 primarySlideVec3, Vector3 secondarySlideVec3, double primarySlidevalue, double secondarySlideValue, double rotation, JointLimits limit1, JointLimits limit2, JointLimits limit3)
             {
+                Type = type;
+
                 NormalDirectionVector = normalVector;
                 PrimarySlideDirectionVector = primarySlideVec3;
                 SecondarySlideDirectionVector = secondarySlideVec3;
+
                 PrimarySlideValue = primarySlidevalue;
                 SecondarySlideValue = secondarySlideValue;
                 RotationValue = rotation;
+
+                PrimarySlideLimits = limit1;
+                SecondarySlideLimits = limit2;
+                RotationLimits = limit3;
             }
         }
 
@@ -205,26 +213,43 @@ namespace SynthesisAPI.EnvironmentManager
             public double RollValue { get; set; }
             public double PitchValue { get; set; }
             public double YawValue { get; set; }
-            // JointLimits rotationLimits;
-            // JointLimits slideLimits;
+            public JointLimits RollLimits { get; set; }
+            public JointLimits PitchLimits { get; set; }
+            public JointLimits YawLimits { get; set; }
 
-            public BallJointMotion(Vector3 rollVec3, Vector3 pitchVec3, Vector3 yawVec3, double rollValue, double pitchValue, double yawValue)
+            public BallJointMotion(JointType type, Vector3 rollVec3, Vector3 pitchVec3, Vector3 yawVec3, double rollValue, double pitchValue, double yawValue, JointLimits limit1, JointLimits limit2, JointLimits limit3)
             {
+                Type = type;
+
                 RollDirectionVector = rollVec3;
                 PitchDirectionVector = pitchVec3;
                 YawDirectionValue = yawVec3;
+
                 RollValue = rollValue;
                 PitchValue = pitchValue;
                 YawValue = yawValue;
+
+                RollLimits = limit1;
+                PitchLimits = limit2;
+                YawLimits = limit3;
             }
         }
 
+        public struct JointLimits
+        {
+            public bool IsMaximumValueEnabled { get; set; }
+            public bool IsMinimumValueEnabled { get; set; }
+            public bool IsRestValueEnabled { get; set; }
+            public double MaximumValue { get; set; }
+            public double MinimumValue { get; set; }
+            public double RestValue { get; set; }
+        }
 
-        #endregion
+    #endregion
 
-        #region Core Data
+    #region Core Data
 
-        public class Component
+    public class Component
         {
             public Header ComponentHeader { get; set; }
             public string PartNumber { get; set; }
