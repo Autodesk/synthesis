@@ -1,4 +1,5 @@
-﻿using Controller.Rpc;
+﻿#if ENABLE_EXAMPLE_API
+using Controller.Rpc;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
@@ -13,7 +14,7 @@ namespace Controller
     public class ExampleClient : SystemBase
     {
         private static HttpClient client = new HttpClient();
-        private static string MyVersion = "1.0.0";
+        private static string MyVersion = RpcManager.JsonRpcVersion;
         public override void Setup()
         {
             client.BaseAddress = new Uri("http://localhost:5000/");
@@ -37,7 +38,14 @@ namespace Controller
             var c = await InvokeAsync<string>("ReturnString", "");
             ApiProvider.Log($"Client: result = {c}");
 
-            await InvokeAsync("ThrowException", "Test error");
+            try
+            {
+                await InvokeAsync("ThrowException", "Test error");
+            }
+            catch(Exception e)
+            {
+                ApiProvider.Log($"Client: error = {e}");
+            }
         }
 
         public static async Task<T> InvokeAsync<T>(string methodName, params object[] args)
@@ -86,3 +94,4 @@ namespace Controller
         }
     }
 }
+#endif

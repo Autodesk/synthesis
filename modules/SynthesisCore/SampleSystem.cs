@@ -23,6 +23,7 @@ namespace SynthesisCore
             Entity e = EnvironmentManager.AddEntity();
             transform = e.AddComponent<Transform>();
             selectable = e.AddComponent<Selectable>();
+            e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
 

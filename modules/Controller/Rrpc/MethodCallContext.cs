@@ -6,8 +6,11 @@ namespace Controller.Rpc
 {
     public class MethodCallContext
     {
+        [JsonProperty("jsonrpc")]
         public string Version;
+        [JsonProperty("method")]
         public string MethodName;
+        [JsonProperty("params")]
         public List<object> Params;
 
         public MethodCallContext()

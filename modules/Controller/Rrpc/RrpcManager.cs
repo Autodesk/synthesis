@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.Utilities;
+﻿using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Controller.Rpc
 {
     public static class RpcManager
     {
-        public static string Version = "1.0.0";
+        public static string JsonRpcVersion = "2.0";
 
         public delegate object HandlerFunc(params object[] args);
 
@@ -29,9 +30,16 @@ namespace Controller.Rpc
         {
             foreach (var type in assembly.GetTypes())
             {
-                foreach (var method in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttribute<RpcMethodAttribute>() != null))
+                foreach (var method in type.GetMethods().Where(m => m.GetCustomAttribute<RpcMethodAttribute>() != null))
                 {
-                    Register(method.GetCustomAttribute<RpcMethodAttribute>()?.RpcMessageMethodName ?? method.Name, method);
+                    if (method.IsStatic)
+                    {
+                        Register(method.GetCustomAttribute<RpcMethodAttribute>()?.RpcMessageMethodName ?? method.Name, method);
+                    }
+                    else
+                    {
+                        throw new Exception("Non-static RPC method");
+                    }
                 }
             }
         }
@@ -65,27 +73,47 @@ namespace Controller.Rpc
             return Invoke(methodName, args).MapResult<T>((res) => (T)res);
         }
 
+        private static Type[] IntegerTypes = new[] { typeof(int), typeof(uint) };
+
+        private static object[] FixArguments(MethodInfo method, params object[] args)
+        {
+            var args_i = 0;
+            foreach (var param in method.GetParameters())
+            {
+                if (param.HasDefaultValue && args_i >= args.Length)
+                {
+                    args = args.Concat(new[] { Type.Missing }).ToArray();
+                }
+                if (param.ParameterType.IsEnum && args[args_i] is long)
+                {
+                    args[args_i] = Enum.ToObject(param.ParameterType, args[args_i]);
+                }
+                else if (args[args_i] is long && param.ParameterType.IsPrimitive && IntegerTypes.Contains(param.ParameterType))
+                {
+                    args[args_i] = Convert.ChangeType(args[args_i], param.ParameterType);
+                }
+                args_i++;
+            }
+            return args;
+        }
+
         public static Result<object, Exception> Invoke(string methodName, params object[] args)
         {
-            if (!handlers.ContainsKey(methodName))
-            {
-                return new Result<object, Exception>(new Exception($"Missing function: {methodName}"));
-            }
-            if(handlers[methodName].ReturnType == typeof(void))
-            {
-                try
-                {
-                    handlers[methodName].Invoke(null, args);
-                    return new Result<object, Exception>(new Void());
-                }
-                catch(Exception e)
-                {
-                    return new Result<object, Exception>(e);
-                }
-            }
             try
             {
-                return new Result<object, Exception>(handlers[methodName].Invoke(null, args));
+                if (!handlers.ContainsKey(methodName))
+                {
+                    throw new Exception($"Missing function: {methodName}");
+                }
+                var handler = handlers[methodName];
+                args = FixArguments(handler, args);
+
+                if (handler.ReturnType == typeof(void))
+                {
+                    handler.Invoke(null, args);
+                    return new Result<object, Exception>(new Void());
+                }
+                return new Result<object, Exception>(handler.Invoke(null, args));
             }
             catch (Exception e)
             {

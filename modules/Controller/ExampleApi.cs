@@ -1,4 +1,5 @@
-﻿namespace Controller.Rpc
+﻿#if ENABLE_EXAMPLE_API
+namespace Controller.Rpc
 {
     public static class ExampleApi
     {
@@ -27,3 +28,4 @@
         }
     }
 }
+#endif

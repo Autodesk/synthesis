@@ -1,16 +1,19 @@
-﻿#nullable enable
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+
+#nullable enable
 
 namespace Controller.Rpc
 {
     public class RpcResponse
     {
+        [JsonProperty("jsonrpc")]
+        public string Version;
+        [JsonProperty("result")]
         public object? Result;
         public bool HasResult;
+        [JsonProperty("error")]
         public Exception? Error;
-        public string Version;
 
         public RpcResponse()
         {
