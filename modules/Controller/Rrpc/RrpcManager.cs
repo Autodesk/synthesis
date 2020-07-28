@@ -21,10 +21,8 @@ namespace Controller.Rpc
 
         public static void Init()
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                RegisterAll(assembly);
-            }
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Controller");
+            RegisterAll(assembly);
         }
 
         public static void RegisterAll(Assembly assembly)
