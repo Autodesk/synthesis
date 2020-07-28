@@ -101,21 +101,25 @@ namespace SynthesisAPI.EnvironmentManager
             public JointMotion() { }
         }
 
+        // todo: add rigid joint here
+
         public class RevoluteJointMotion : JointMotion
         {
             public Vector3 RotationAxisVector { get; set; }
             public double RotationValue { get; set; }
-            // JointLimits rotationLimits;
+            JointLimits RotationLimits { get; set; }
 
             public RevoluteJointMotion()
             {
                 RotationAxisVector = new Vector3();
+                RotationLimits = new JointLimits();
             }
 
-            public RevoluteJointMotion(Vector3 vec3, double doubleNum)
+            public RevoluteJointMotion(Vector3 vec3, double doubleNum, JointLimits limit)
             {
                 RotationAxisVector = vec3;
                 RotationValue = doubleNum;
+                RotationLimits = limit;
             }
         }
 
@@ -208,8 +212,17 @@ namespace SynthesisAPI.EnvironmentManager
                 PitchValue = pitchValue;
                 YawValue = yawValue;
             }
+        }
 
-    }
+        public struct JointLimits
+        {
+            public bool IsMaximumValueEnabled { get; set; }
+            public bool IsMinimumValueEnabled { get; set; }
+            public bool IsRestValueEnabled { get; set; }
+            public double MaximumValue { get; set; }
+            public double MinimumValue { get; set; }
+            public double RestValue { get; set; }
+        }
 
 
     #endregion

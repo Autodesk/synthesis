@@ -232,6 +232,8 @@ namespace SynthesisAPI.AssetManager
 
         Design.JointMotion GetJointMotion(JsonDictionary jointDict, JointMotion jointMotion)
         {
+            Design.JointLimits jointLimits = new Design.JointLimits();
+
             Design.Vector3 rotationVec = new Design.Vector3();
             Design.Vector3 slideVec = new Design.Vector3();
             Design.Vector3 secondaryVec = new Design.Vector3();
@@ -244,8 +246,9 @@ namespace SynthesisAPI.AssetManager
             {
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 rotationValue = (double)HasJointDetails(jointDict.Get<JsonDictionary>("revoluteJointMotion"), "rotationValue");
+                jointLimits.IsMaximumValueEnabled = true;
 
-                jointMotion = new RevoluteJointMotion(rotationVec, rotationValue);
+                jointMotion = new RevoluteJointMotion(rotationVec, rotationValue, jointLimits);
             }
 
             if (jointDict.ContainsKey("sliderJointMotion"))
