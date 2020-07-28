@@ -80,7 +80,6 @@ namespace SynthesisAPI.EnvironmentManager
                 Origin = new Vector3();
                 Type = JointType.RigidJointMotion;
                 JointMotion = new JointMotion();
-                JointLimits = new JointLimits();
                 Attributes = new Dictionary<string, object>();
             }
 
@@ -109,7 +108,7 @@ namespace SynthesisAPI.EnvironmentManager
         {
             public Vector3 RotationAxisVector { get; set; }
             public double RotationValue { get; set; }
-            JointLimits RotationLimits { get; set; }
+            public JointLimits RotationLimits { get; set; }
 
             public RevoluteJointMotion(Vector3 vec3, double doubleNum, JointLimits limit)
             {
