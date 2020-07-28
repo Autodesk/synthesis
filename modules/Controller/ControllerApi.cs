@@ -14,12 +14,17 @@ namespace Controller
             ApiProvider.Log(o, logLevel);
         }
 
+        [RpcMethod]
+        public static string ReturnString(string value)
+        {
+            return value;
+        }
+
         #region Transform movement
 
         [RpcMethod]
         public static void Forward(uint channel, double distance)
         {
-            ApiProvider.Log("Forward");
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
                 e => e.GetComponent<Moveable>()?.Channel == channel))
             {

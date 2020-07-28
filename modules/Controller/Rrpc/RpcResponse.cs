@@ -8,30 +8,25 @@ namespace Controller.Rpc
     public class RpcResponse
     {
         [JsonProperty("jsonrpc")]
-        public string Version;
+        public string JsonRpcVersion;
         [JsonProperty("result")]
         public object? Result;
+        [JsonProperty("has-value")]
         public bool HasResult;
         [JsonProperty("error")]
         public Exception? Error;
+        [JsonProperty("id")]
+        public int Id;
 
         public RpcResponse()
         {
             Result = null;
             HasResult = false;
             Error = null;
-            Version = "";
+            JsonRpcVersion = "";
         }
 
-        public RpcResponse(string version, object result, bool hasResult, Exception error) // TODO make internal?
-        {
-            Result = result;
-            HasResult = hasResult;
-            Error = error;
-            Version = version;
-        }
-
-        public RpcResponse(string version, SynthesisAPI.Utilities.Result<object, Exception> result)
+        public RpcResponse(string version, SynthesisAPI.Utilities.Result<object, Exception> result, int id)
         {
             if (result.isError)
             {
@@ -42,12 +37,13 @@ namespace Controller.Rpc
                 Result = result.GetResult();
                 HasResult = true;
             }
-            Version = version;
+            JsonRpcVersion = version;
+            Id = id;
         }
 
-        public static string ToJson(string version, SynthesisAPI.Utilities.Result<object, Exception> result)
+        public static string ToJson(string version, SynthesisAPI.Utilities.Result<object, Exception> result, int id)
         {
-            return new RpcResponse(version, result).ToJson();
+            return new RpcResponse(version, result, id).ToJson();
         }
 
         public string ToJson()

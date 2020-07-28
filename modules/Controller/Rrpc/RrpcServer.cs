@@ -27,22 +27,21 @@ namespace Controller.Rpc
                 HttpListenerContext context = await listener.GetContextAsync();
 
                 var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
-                ApiProvider.Log(requestContent);
                 MethodCallContext call = MethodCallContext.FromJson(requestContent);
 
                 Result<object, System.Exception> result;
 
-                if (call.Version != RpcManager.JsonRpcVersion)
+                if (call.JsonRpcVersion != RpcManager.JsonRpcVersion)
                 {
                     result = new Result<object, System.Exception>(
-                        new System.Exception($"Incompatible RPC versions call {call.Version} vs current {RpcManager.JsonRpcVersion}"));
+                        new System.Exception($"Incompatible RPC versions call {call.JsonRpcVersion} vs current {RpcManager.JsonRpcVersion}"));
                 }
                 else
                 {
                     result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
                 }
 
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(RpcResponse.ToJson(RpcManager.JsonRpcVersion, result));
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(RpcResponse.ToJson(RpcManager.JsonRpcVersion, result, call.Id));
 
                 context.Response.ContentLength64 = buffer.Length;
                 context.Response.OutputStream.Write(buffer, 0, buffer.Length);

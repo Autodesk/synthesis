@@ -7,11 +7,13 @@ namespace Controller.Rpc
     public class MethodCallContext
     {
         [JsonProperty("jsonrpc")]
-        public string Version;
+        public string JsonRpcVersion;
         [JsonProperty("method")]
         public string MethodName;
         [JsonProperty("params")]
         public List<object> Params;
+        [JsonProperty("id")]
+        public int Id;
 
         public MethodCallContext()
         {
@@ -20,7 +22,7 @@ namespace Controller.Rpc
 
         public MethodCallContext(string version, string methodName, IEnumerable<object> args = null)
         {
-            Version = version;
+            JsonRpcVersion = version;
             MethodName = methodName;
             Params = args?.ToList() ?? new List<object>();
         }
