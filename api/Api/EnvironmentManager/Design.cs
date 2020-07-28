@@ -97,17 +97,8 @@ namespace SynthesisAPI.EnvironmentManager
         public class JointMotion
         {
             public string JointType { get; set; }
-            public Vector3 RotationVector { get; set; }
-            public Vector3 SlideVector { get; set; }
-            public Vector3 SecondarySlideVector { get; set; }
-            public double JointValue { get; set; }
 
-            public JointMotion()
-            {
-                RotationVector = new Vector3();
-                SlideVector = new Vector3();
-                SecondarySlideVector = new Vector3();
-            }
+            public JointMotion() { }
         }
 
         public class RevoluteJointMotion : JointMotion
@@ -217,14 +208,15 @@ namespace SynthesisAPI.EnvironmentManager
                 PitchValue = pitchValue;
                 YawValue = yawValue;
             }
-        }
+
+    }
 
 
-        #endregion
+    #endregion
 
-        #region Core Data
+    #region Core Data
 
-        public class Component
+    public class Component
         {
             public Header ComponentHeader { get; set; }
             public string PartNumber { get; set; }
