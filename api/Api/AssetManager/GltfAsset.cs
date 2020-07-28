@@ -231,8 +231,7 @@ namespace SynthesisAPI.AssetManager
 
         private Design.JointLimits CheckJointLimits(JsonDictionary dict)
         {
-            string currentJoint;
-            List<string> jointLimitTypes = new List<string>() { "rotationLimits", "slideLimits" };
+            List<string> jointLimitTypes = new List<string>() { "rotationLimits", "slideLimits", "primarySlideLimits", "primarySlideLimits", "rollLimits", "pitchLimits", "yawLimits" };
 
             Design.JointLimits jointLimits = new Design.JointLimits();
 
@@ -248,39 +247,14 @@ namespace SynthesisAPI.AssetManager
                 }
             }
 
-            //if (dict.)
-            //{
-            //jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMaximumValueEnabled");
-            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMinimumValueEnabled");
-            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("maximumValue");
-            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("minimumValue");
-            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("restValue");
-            //}
-
-            //if (dict.ContainsKey("slideLimits"))
-            //{
-            //    jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("slideLimits").Get<bool>("isMaximumValueEnabled");
-            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("slideLimits").Get<bool>("isMinimumValueEnabled");
-            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("maximumValue");
-            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("minimumValue");
-            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("restValue");
-            //}
-
-            //if (dict.ContainsKey("primarySlideLimits"))
-            //{
-            //    jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("primarySlideLimits").Get<bool>("isMaximumValueEnabled");
-            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("primarySlideLimits").Get<bool>("isMinimumValueEnabled");
-            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("maximumValue");
-            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("minimumValue");
-            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("restValue");
-            //}
-
             return jointLimits;
         }
 
         Design.JointMotion GetJointMotion(JsonDictionary jointDict, JointMotion jointMotion)
         {
-            Design.JointLimits jointLimits = new Design.JointLimits();
+            Design.JointLimits primaryJointLimit = new Design.JointLimits();
+            Design.JointLimits secondaryJointLimit = new Design.JointLimits();
+            Design.JointLimits tertiaryJointLimit = new Design.JointLimits();
 
             Design.Vector3 rotationVec = new Design.Vector3();
             Design.Vector3 slideVec = new Design.Vector3();
@@ -296,17 +270,20 @@ namespace SynthesisAPI.AssetManager
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("revoluteJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("revoluteJointMotion"), "rotationValue");
 
-                jointLimits = CheckJointLimits(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("revoluteJointMotion"));
 
-                jointMotion = new RevoluteJointMotion(jointMotion.Type, rotationVec, rotationValue, jointLimits);
+                jointMotion = new RevoluteJointMotion(jointMotion.Type, rotationVec, rotationValue, primaryJointLimit);
             }
 
             if (jointDict.ContainsKey("sliderJointMotion"))
             {
                 // CHECK vectors x, y, z if they exist; current test models don't have x, y, z
+                jointMotion.Type = (Design.JointMotion.JointType)Enum.Parse(typeof(Design.JointMotion.JointType), "sliderJointMotion", true);
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("sliderJointMotion").Get<JsonDictionary>("slideDirectionVector").Get<decimal>("y");
                 slideValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("sliderJointMotion"), "slideValue");
-                jointMotion = new SliderJointMotion(rotationVec, slideValue);
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("sliderJointMotion"));
+
+                jointMotion = new SliderJointMotion(jointMotion.Type, rotationVec, slideValue, primaryJointLimit);
             }
 
             if (jointDict.ContainsKey("cylindricalJointMotion"))
@@ -314,7 +291,11 @@ namespace SynthesisAPI.AssetManager
                 rotationVec.Y = (double)jointDict.Get<JsonDictionary>("cylindricalJointMotion").Get<JsonDictionary>("rotationAxisVector").Get<decimal>("y");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "rotationValue");
                 slideValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("cylindricalJointMotion"), "slideValue");
-                jointMotion = new CylindricalJointMotion(rotationVec, rotationValue, slideValue);
+
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("cylindricalJointMotion"));
+                secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("cylindricalJointMotion"));
+
+                jointMotion = new CylindricalJointMotion(rotationVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
             }
 
             if (jointDict.ContainsKey("pinSlotJointMotion"))
@@ -324,7 +305,10 @@ namespace SynthesisAPI.AssetManager
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "rotationValue");
                 slideValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("pinSlotJointMotion"), "slideValue");
 
-                jointMotion = new PinSlotJointMotion(rotationVec, slideVec, rotationValue, slideValue);
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("pinSlotJointMotion"));
+                secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("pinSlotJointMotion"));
+
+                jointMotion = new PinSlotJointMotion(rotationVec, slideVec, rotationValue, slideValue, primaryJointLimit, secondaryJointLimit);
             }
 
             if (jointDict.ContainsKey("planarJointMotion"))
@@ -336,7 +320,11 @@ namespace SynthesisAPI.AssetManager
                 secondarySlideValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("planarJointMotion"), "secondarySlideValue");
                 rotationValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("planarJointMotion"), "rotationValue");
 
-                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, slideValue, secondarySlideValue, rotationValue);
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("planarJointMotion"));
+                secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("planarJointMotion"));
+                tertiaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("planarJointMotion"));
+
+                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, slideValue, secondarySlideValue, rotationValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
             }
 
             if (jointDict.ContainsKey("ballJointMotion"))
@@ -352,7 +340,11 @@ namespace SynthesisAPI.AssetManager
                 pitchValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("ballJointMotion"), "pitchValue");
                 yawValue = (double)CheckJointMotionValues(jointDict.Get<JsonDictionary>("ballJointMotion"), "yawValue");
 
-                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, rollValue, pitchValue, yawValue);
+                primaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("ballJointMotion"));
+                secondaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("ballJointMotion"));
+                tertiaryJointLimit = CheckJointLimits(jointDict.Get<JsonDictionary>("ballJointMotion"));
+
+                jointMotion = new PlanarJointMotion(rotationVec, slideVec, secondaryVec, rollValue, pitchValue, yawValue, primaryJointLimit, secondaryJointLimit, tertiaryJointLimit);
             }
 
             return jointMotion;
