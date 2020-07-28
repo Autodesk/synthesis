@@ -231,16 +231,49 @@ namespace SynthesisAPI.AssetManager
 
         private Design.JointLimits CheckJointLimits(JsonDictionary dict)
         {
+            string currentJoint;
+            List<string> jointLimitTypes = new List<string>() { "rotationLimits", "slideLimits" };
+
             Design.JointLimits jointLimits = new Design.JointLimits();
 
-            if (dict.ContainsKey("rotationLimits"))
+            foreach (string s in jointLimitTypes)
             {
-                jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMaximumValueEnabled");
-                jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMinimumValueEnabled");
-                jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("maximumValue");
-                jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("minimumValue");
-                jointLimits.RestValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("restValue");
+                if (dict.ContainsKey(s))
+                {
+                    jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>(s).Get<bool>("isMaximumValueEnabled");
+                    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>(s).Get<bool>("isMinimumValueEnabled");
+                    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>(s).Get<decimal>("maximumValue");
+                    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>(s).Get<decimal>("minimumValue");
+                    jointLimits.RestValue = (double)dict.Get<JsonDictionary>(s).Get<decimal>("restValue");
+                }
             }
+
+            //if (dict.)
+            //{
+            //jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMaximumValueEnabled");
+            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("rotationLimits").Get<bool>("isMinimumValueEnabled");
+            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("maximumValue");
+            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("minimumValue");
+            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("rotationLimits").Get<decimal>("restValue");
+            //}
+
+            //if (dict.ContainsKey("slideLimits"))
+            //{
+            //    jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("slideLimits").Get<bool>("isMaximumValueEnabled");
+            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("slideLimits").Get<bool>("isMinimumValueEnabled");
+            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("maximumValue");
+            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("minimumValue");
+            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("slideLimits").Get<decimal>("restValue");
+            //}
+
+            //if (dict.ContainsKey("primarySlideLimits"))
+            //{
+            //    jointLimits.IsMaximumValueEnabled = dict.Get<JsonDictionary>("primarySlideLimits").Get<bool>("isMaximumValueEnabled");
+            //    jointLimits.IsMinimumValueEnabled = dict.Get<JsonDictionary>("primarySlideLimits").Get<bool>("isMinimumValueEnabled");
+            //    jointLimits.MaximumValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("maximumValue");
+            //    jointLimits.MinimumValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("minimumValue");
+            //    jointLimits.RestValue = (double)dict.Get<JsonDictionary>("primarySlideLimits").Get<decimal>("restValue");
+            //}
 
             return jointLimits;
         }
