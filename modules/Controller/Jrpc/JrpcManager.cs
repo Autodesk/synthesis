@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,8 @@ namespace Controller.Jrpc
 {
     public static class JrpcManager
     {
+        public static string Version = "1.0.0";
+
         public delegate object HandlerFunc(params object[] args);
 
         private static Dictionary<string, MethodInfo> handlers = new Dictionary<string, MethodInfo>();
@@ -26,8 +29,7 @@ namespace Controller.Jrpc
 
         public static void RegisterAll(Assembly assembly)
         {
-            foreach (var type in assembly.GetTypes().Where(t => t.GetMethods().Any(
-                m => m.GetCustomAttribute<JrpcMethodAttribute>() != null)))
+            foreach (var type in assembly.GetTypes())
             {
                 foreach (var method in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttribute<JrpcMethodAttribute>() != null))
                 {
@@ -55,23 +57,42 @@ namespace Controller.Jrpc
         {
             if (handlers.ContainsKey(methodName))
             {
-                throw new Exception();
+                throw new Exception("Registering existing method name");
             }
             handlers[methodName] = handler;
         }
 
-        public static T Invoke<T>(string methodName, params object[] args)
+        public static Result<T, Exception> Invoke<T>(string methodName, params object[] args)
         {
-            return (T)Invoke(methodName, args);
+            return Invoke(methodName, args).MapResult<T>((res) => (T)res);
         }
 
-        public static object Invoke(string methodName, params object[] args)
+        public static Result<object, Exception> Invoke(string methodName, params object[] args)
         {
             if (!handlers.ContainsKey(methodName))
             {
-                throw new Exception();
+                return new Result<object, Exception>(new Exception($"Missing function: {methodName}"));
             }
-            return handlers[methodName].Invoke(null, args);
+            if(handlers[methodName].ReturnType == typeof(void))
+            {
+                try
+                {
+                    handlers[methodName].Invoke(null, args);
+                    return new Result<object, Exception>(new Void());
+                }
+                catch(Exception e)
+                {
+                    return new Result<object, Exception>(e);
+                }
+            }
+            try
+            {
+                return new Result<object, Exception>(handlers[methodName].Invoke(null, args));
+            }
+            catch (Exception e)
+            {
+                return new Result<object, Exception>(e);
+            }
         }
 
         public static bool IsRegistered(string methodName)

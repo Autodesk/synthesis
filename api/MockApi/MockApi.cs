@@ -141,7 +141,7 @@ namespace MockApi
                             break;
                         }
                     default:
-                        throw new SynthesisExpection("Unhandled log level");
+                        throw new SynthesisException("Unhandled log level");
                 }
             }
 

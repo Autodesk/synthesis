@@ -2,7 +2,7 @@
 
 namespace SynthesisAPI.VirtualFileSystem
 {
-    public class DirectroyExpection : SynthesisExpection
+    public class DirectroyExpection : SynthesisException
     {
         public DirectroyExpection() { }
         public DirectroyExpection(string message) : base(message) { }

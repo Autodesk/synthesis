@@ -6,8 +6,8 @@ namespace Controller.Jrpc
 {
     public class MethodCallContext
     {
+        public string Version;
         public string MethodName;
-
         public List<object> Params;
 
         public MethodCallContext()
@@ -15,15 +15,16 @@ namespace Controller.Jrpc
             Params = new List<object>();
         }
 
-        public MethodCallContext(string methodName, IEnumerable<object> args = null)
+        public MethodCallContext(string version, string methodName, IEnumerable<object> args = null)
         {
+            Version = version;
             MethodName = methodName;
             Params = args?.ToList() ?? new List<object>();
         }
 
-        public static string ToJson(string methodName, params object[] args)
+        public static string ToJson(string version, string methodName, params object[] args)
         {
-            return new MethodCallContext(methodName, args).ToJson();
+            return new MethodCallContext(version, methodName, args).ToJson();
         }
 
         public string ToJson()

@@ -408,7 +408,7 @@ namespace Engine.ModuleLoader
 				{
 					case LogLevel.Info:
 						{
-							Debug.Log(o);
+							Debug.Log(msg);
 							break;
 						}
 					case LogLevel.Debug:
@@ -417,7 +417,7 @@ namespace Engine.ModuleLoader
 							return;
 						}
 						{
-							Debug.Log(o);
+							Debug.Log(msg);
 							break;
 						}
 					case LogLevel.Warning:
@@ -431,7 +431,7 @@ namespace Engine.ModuleLoader
 							break;
 						}
 					default:
-						throw new SynthesisExpection("Unhandled log level");
+						throw new SynthesisException("Unhandled log level");
 				}
 			}
 
