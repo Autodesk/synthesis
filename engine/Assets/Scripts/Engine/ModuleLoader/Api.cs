@@ -426,6 +426,30 @@ namespace Engine.ModuleLoader
 				return component;
 			}
 
+			public void AddComponentToScene(Entity entity, Component component)
+			{
+				GameObject gameObject;
+				if (!_gameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Type componentType = component.GetType();
+				Type type;
+				if (_builtins.ContainsKey(componentType))
+				{
+					type = _builtins[componentType];
+				}
+				else if (componentType.IsSubclassOf(typeof(SystemBase)))
+				{
+					type = typeof(SystemAdapter);
+				}
+				else
+				{
+					type = typeof(ComponentAdapter);
+				}
+
+				dynamic gameObjectComponent = gameObject.AddComponent(type);
+				gameObjectComponent.SetInstance(component);
+			}
+
 			public void RemoveComponentFromScene(Entity entity, Type t)
 			{
 				GameObject gameObject;

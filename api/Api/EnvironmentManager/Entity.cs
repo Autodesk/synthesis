@@ -20,15 +20,12 @@ namespace SynthesisAPI.EnvironmentManager
 
         #region EntityBitModifier
 
-        public ushort GetIndex()
-        {
-            return (ushort)(_value >> 16);
-        }
+        //first 16 bits
+        public ushort Index { get => (ushort)(_value >> 16); }
+
         //last 16 bits
-        public ushort GetGen()
-        {
-            return (ushort)(_value & 65535);
-        }
+        public ushort Gen { get => (ushort)(_value & 65535); }
+
         public static Entity Create(ushort index, ushort gen)
         {
             return ((uint)index << 16) + gen;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SynthesisAPI.EnvironmentManager.Bundles;
 using SynthesisAPI.Modules;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
@@ -35,8 +36,8 @@ namespace SynthesisAPI.EnvironmentManager
             if (removed.Count > 0) //allocates empty/deallocated spaces in entities
             {
                 Entity oldEntity = removed.Pop();
-                ushort oldEntityIndex = oldEntity.GetIndex();
-                ushort oldEntityGen = oldEntity.GetGen();
+                ushort oldEntityIndex = oldEntity.Index;
+                ushort oldEntityGen = oldEntity.Gen;
                 newEntity = oldEntity.SetGen((ushort)(oldEntityGen + 1));
                 ApiProvider.AddEntityToScene(newEntity);
                 entities[oldEntityIndex] = newEntity;
@@ -61,7 +62,7 @@ namespace SynthesisAPI.EnvironmentManager
                 return false;
             ApiProvider.RemoveEntityFromScene(entity);
             removed.Push(entity); //deallocate entity
-            entities[entity.GetIndex()] = NULL_ENTITY; //invalidate components
+            entities[entity.Index] = NULL_ENTITY; //invalidate components
             return true;
         }
 
@@ -72,8 +73,14 @@ namespace SynthesisAPI.EnvironmentManager
         /// <returns>if entity equals the entity in its given index</returns>
         public static bool EntityExists(this Entity entity)
         {
-            ushort entityIndex = entity.GetIndex();
+            ushort entityIndex = entity.Index;
             return entityIndex < entities.Count && entities[entityIndex] == entity;
+        }
+
+
+        public static IEnumerable<Entity> GetEntitiesWhere(Func<Entity, bool> predicate)
+        {
+            return entities.Where(predicate);
         }
 
         #endregion
@@ -94,11 +101,11 @@ namespace SynthesisAPI.EnvironmentManager
         public static Component? GetComponent(this Entity entity, Type componentType)
         {
             if (IsComponent(componentType) && EntityExists(entity))
-                return components.Get(entity.GetIndex(), entity.GetGen(), componentType);
+                return components.Get(entity.Index, entity.Gen, componentType);
             return null;
         }
 
-        public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity.GetIndex(), entity.GetGen());
+        public static List<Component>? GetComponents(this Entity entity) => components.GetAll(entity.Index, entity.Gen);
 
         /// <summary>
         /// Set component of type, TComponent, to the given entity
@@ -111,7 +118,7 @@ namespace SynthesisAPI.EnvironmentManager
             {
                 Component? c = ApiProvider.AddComponentToScene(entity, componentType);
                 c?.SetEntity(entity);
-                components.Set(entity.GetIndex(), entity.GetGen(), c);
+                components.Set(entity.Index, entity.Gen, c);
                 return c;
             }
             return null;
@@ -120,6 +127,13 @@ namespace SynthesisAPI.EnvironmentManager
         public static TComponent? AddComponent<TComponent>(this Entity entity) where TComponent : Component
         {
             return (TComponent?) AddComponent(entity, typeof(TComponent));
+        }
+
+        private static void AddComponent<TComponent>(this Entity entity, TComponent component) where TComponent : Component
+        {
+            ApiProvider.AddComponentToScene(entity, component);
+            component.SetEntity(entity);
+            components.Set(entity.Index, entity.Gen, component);
         }
         
 
@@ -138,7 +152,7 @@ namespace SynthesisAPI.EnvironmentManager
             if (IsComponent(componentType) && EntityExists(entity))
             {
                 ApiProvider.RemoveComponentFromScene(entity, componentType);
-                components.Remove(entity.GetIndex(), entity.GetGen(), componentType);
+                components.Remove(entity.Index, entity.Gen, componentType);
             }
         }
 
@@ -147,17 +161,12 @@ namespace SynthesisAPI.EnvironmentManager
             return type.IsSubclassOf(typeof(Component)) || type == typeof(Component);
         }
 
-        public static IEnumerable<Entity> GetEntitiesWhere(Func<Entity, bool> predicate)
-        {
-            return entities.Where(predicate);
-        }
-
         public static IEnumerable<TComponent> GetComponentsWhere<TComponent>(Func<TComponent, bool> predicate) where TComponent : Component
         {
             List<TComponent> result = new List<TComponent>();
             foreach (var e in entities)
             {
-                foreach (var c in components.GetAll(e.GetIndex(), e.GetGen()) ?? new List<Component>())
+                foreach (var c in components.GetAll(e.Index, e.Gen) ?? new List<Component>())
                 {
                     if (c is TComponent tc && predicate(tc))
                     {
@@ -167,6 +176,12 @@ namespace SynthesisAPI.EnvironmentManager
 
             }
             return result;
+        }
+
+        public static void AddBundle(this Entity entity, IBundle bundle)
+        {
+            foreach(Component c in bundle.Components)
+                entity.AddComponent(c);
         }
 
         #endregion

@@ -113,6 +113,12 @@ namespace MockApi
                 return (Component?) Activator.CreateInstance(t);
             }
 
+            public void AddComponentToScene(Entity entity, Component component)
+            {
+                LogAction("Add Component", $"Adding instance of {component.GetType()} to {entity}");
+            }
+
+
             public void RemoveComponentFromScene(Entity entity, Type t)
             {
                 LogAction("Remove Component", $"Adding {t} to {entity}");

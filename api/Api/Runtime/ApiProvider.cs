@@ -41,6 +41,8 @@ namespace SynthesisAPI.Runtime
 
 		public static Component? AddComponentToScene(Entity entity, Type t) => Instance?.AddComponentToScene(entity,t);
 
+		public static void AddComponentToScene(Entity entity, Component component) => Instance?.AddComponentToScene(entity, component);
+
 		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
 
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);

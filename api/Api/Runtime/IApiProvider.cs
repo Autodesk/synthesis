@@ -17,6 +17,8 @@ namespace SynthesisAPI.Runtime
 		#nullable enable
 		Component? AddComponentToScene(Entity entity, Type t);
 
+		void AddComponentToScene(Entity entity, Component component);
+
 		void RemoveComponentFromScene(Entity entity, Type t);
 
 		T CreateUnityType<T>(params object[] args) where T : class;
