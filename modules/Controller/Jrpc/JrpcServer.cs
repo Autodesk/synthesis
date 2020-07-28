@@ -1,12 +1,13 @@
-﻿using SynthesisAPI.EnvironmentManager;
+﻿using Newtonsoft.Json;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
+using System.IO;
 using System.Net;
 
-namespace Controller
+namespace Controller.Jrpc
 {
     [ModuleExport]
-    public class Server : SystemBase
+    public class JrpcServer : SystemBase
     {
         HttpListener listener = new HttpListener();
         public override void Setup()
@@ -20,14 +21,19 @@ namespace Controller
 
         private async void Test()
         {
-            ApiProvider.Log("Server: Waiting for connection");
             HttpListenerContext context = await listener.GetContextAsync();
-            // HttpListenerRequest request = context.Request;
+
+            var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
+            MethodCallContext call = MethodCallContext.FromJson(requestContent);
+
+            var responseContent = JsonConvert.SerializeObject(JrpcManager.Invoke(call.MethodName, call.Params.ToArray()));
+            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseContent);
+
             HttpListenerResponse response = context.Response;
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes("Hello world!");
             response.ContentLength64 = buffer.Length;
             response.OutputStream.Write(buffer, 0, buffer.Length);
             response.OutputStream.Close(); // Must close output stream
+
             listener.Stop();
         }
     }

@@ -1,16 +1,19 @@
-﻿using SynthesisAPI.EnvironmentManager;
+﻿using Controller.Jrpc;
+using Newtonsoft.Json;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace Controller
 {
     [ModuleExport]
     public class ExampleClient : SystemBase
     {
-        private HttpClient client = new HttpClient();
+        private static HttpClient client = new HttpClient();
         public override void Setup()
         {
             client.BaseAddress = new Uri("http://localhost:5000/");
@@ -23,16 +26,20 @@ namespace Controller
 
         private async void Test()
         {
-            ApiProvider.Log("Client: sending get request");
-            HttpResponseMessage response = await client.GetAsync("");
+            var a = await InvokeAsync<long>("Add", 1, 5);
+
+            ApiProvider.Log($"Client: result = {a}");
+        }
+
+        public static async Task<T> InvokeAsync<T>(string methodName, params object[] args)
+        {
+            var s = MethodCallContext.ToJson(methodName, args);
+            HttpResponseMessage response = await client.PostAsync("", new StringContent(s));
             if (response.IsSuccessStatusCode)
             {
-                ApiProvider.Log(await response.Content.ReadAsStringAsync());
+                return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
             }
-            else
-            {
-                ApiProvider.Log("Client: bad response");
-            }
+            throw new Exception();
         }
     }
 }

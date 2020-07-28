@@ -2,7 +2,6 @@
 
 namespace Controller
 {
-    [ModuleExport]
 	public class Controller
 	{
 
