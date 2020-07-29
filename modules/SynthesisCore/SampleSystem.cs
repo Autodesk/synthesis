@@ -15,6 +15,7 @@ namespace SynthesisCore
     {
         private Selectable selectable;
         private Transform transform;
+        private Rigidbody rigidbody;
 
         public override void OnPhysicsUpdate() { }
 
@@ -22,12 +23,19 @@ namespace SynthesisCore
         {
             Entity e = EnvironmentManager.AddEntity();
             transform = e.AddComponent<Transform>();
-            selectable = e.AddComponent<Selectable>();
+            transform.Position = new Vector3D(0, 4, 0);
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
+            e.AddComponent<MeshCollider>();
+            selectable = e.AddComponent<Selectable>();
+
+            rigidbody = e.AddComponent<Rigidbody>();
+            // rigidbody.Velocity = new Vector3D(10, 0, 0);
+            rigidbody.CollisionDetectionMode = CollisionDetectionMode.Continuous;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
+            InputManager.AssignDigitalInput("test_move", new Digital("f"));
         }
 
         public override void OnUpdate() { }
@@ -60,6 +68,18 @@ namespace SynthesisCore
                 0, 6, 7, //face bottom
 			    0, 1, 6
             };
+        }
+
+        [TaggedCallback("input/test_move")]
+        public void TestMove(DigitalEvent de)
+        {
+            if (de.State == DigitalState.Down)
+            {
+                ApiProvider.Log("Key Pressed");
+                // rigidbody.AddForce(new Vector3D(50, 50, 0));
+                rigidbody.AddTorque(new Vector3D(0, 0, 50));
+                rigidbody.CollisionDetectionMode = CollisionDetectionMode.Discrete;
+            }
         }
 
         /*

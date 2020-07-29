@@ -12,8 +12,8 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if ((filter = gameObject.GetComponent<MeshFilter>()) == null)
 				filter = gameObject.AddComponent<MeshFilter>();
-			if (gameObject.GetComponent<MeshRenderer>() == null)
-				gameObject.AddComponent<MeshRenderer>();
+			if ((renderer = gameObject.GetComponent<MeshRenderer>()) == null)
+				renderer = gameObject.AddComponent<MeshRenderer>();
 		}
 
 		public void Update()
@@ -37,8 +37,9 @@ namespace Engine.ModuleLoader.Adapters
 			return new Mesh();
 		}
 
-		private Mesh instance;
-		private MeshFilter filter;
+		internal Mesh instance;
+		internal MeshFilter filter;
+		internal MeshRenderer renderer;
 
 		private Vector3[] Convert(List<Vector3D> vec)
 		{

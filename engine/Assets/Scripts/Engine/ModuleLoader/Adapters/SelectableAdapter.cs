@@ -1,8 +1,12 @@
-﻿using SynthesisAPI.EnvironmentManager.Components;
+﻿using System;
+using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
+using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -10,7 +14,7 @@ namespace Engine.ModuleLoader.Adapters
 	{
 		private Selectable instance;
 		private static List<Selectable> selectables = new List<Selectable>(); // TODO manage lifetime
-		private new MeshCollider collider;
+		private new MeshColliderAdapter collider;
 		private Material[] materials;
 		public const float FlashSelectedTime = 0.1f; // sec
 		// private bool isPointerOnThis = false;
@@ -19,6 +23,7 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			instance = obj;
 			selectables.Add(instance);
+			gameObject.SetActive(true);
 		}
 
 		public static Selectable NewInstance()
@@ -74,8 +79,14 @@ namespace Engine.ModuleLoader.Adapters
 			return entry;
 		}
 
-		public void Awake()
+		public void OnEnable()
 		{
+			if (instance == null)
+			{
+				gameObject.SetActive(false);
+				return;
+			}
+
 			if (gameObject.GetComponent<EventTrigger>() == null)
 			{
 				var eventTrigger = gameObject.AddComponent<EventTrigger>();
@@ -87,11 +98,10 @@ namespace Engine.ModuleLoader.Adapters
 				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
 				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerExit,  data => isPointerOnThis = false));
 			}
-			if (gameObject.GetComponent<MeshCollider>() == null)
-			{
-				collider = gameObject.AddComponent<MeshCollider>();
-				collider.convex = true; // Mesh collider wont have any holes
-			}
+			if ((collider = gameObject.GetComponent<MeshColliderAdapter>()) == null)
+				throw new Exception("Entity must have a mesh collider component");
+
+			materials = collider.mesh.renderer.materials;
 		}
 
 		public void Start()
@@ -101,6 +111,7 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Update()
 		{
+			/*
 			if (collider.sharedMesh == null)
 			{
 				collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
@@ -109,7 +120,8 @@ namespace Engine.ModuleLoader.Adapters
 				{
 					throw new System.Exception("Selectable entity does not have a mesh");
 				}
-			}
+			}*/
+
 			/*
 			if (Input.GetMouseButtonDown(0) && isPointerOnThis)
 			{
@@ -121,5 +133,7 @@ namespace Engine.ModuleLoader.Adapters
 				Deselect();
 			}
 		}
+
+		private Entity Entity => instance.Entity ?? EnvironmentManager.NULL_ENTITY;
 	}
 }

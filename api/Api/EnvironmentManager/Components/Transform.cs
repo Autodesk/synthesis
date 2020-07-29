@@ -10,9 +10,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
 	[BuiltinComponent]
 	public class Transform : Component
 	{
+		/*
 		private Vector3D _position = new Vector3D();
 		private Quaternion _rotation = Quaternion.One;
 		private Vector3D _scale = new Vector3D(1, 1, 1);
+		*/
 
 		public UnitVector3D Forward => MathUtil.QuaternionToForwardVector(Rotation);
 
@@ -24,37 +26,36 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation;
 		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
 
+		internal delegate void SetValue(string variableName, object o);
+		internal delegate object GetValue(string variableName);
+
+		// These delegates will be setup by the Adapter
+		internal SetValue LinkedSetter = (n, o) => { };
+		internal GetValue LinkedGetter = n => null!;
+
 		public Vector3D Position
 		{
-			get => _position;
-			set
-			{
-				_position = PositionValidator(value);
-				Changed = true;
-			}
+			get => (Vector3D)LinkedGetter("position");
+			set => LinkedSetter("position", PositionValidator(value));
 		}
 
 		public Quaternion Rotation
 		{
-			get => _rotation;
+			get => (Quaternion)LinkedGetter("rotation");
 			set
 			{
 				if (!value.IsUnitQuaternion)
 					ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
-				_rotation = RotationValidator(value);
-				Changed = true;
+				LinkedSetter("rotation", RotationValidator(value));
 			}
 		}
 
 		public Vector3D Scale
 		{
-			get => _scale;
-			set
-			{
-				_scale = ScaleValidator(value);
-				Changed = true;
-			}
+			get => (Vector3D)LinkedGetter("localScale");
+			set => LinkedSetter("localScale", ScaleValidator(value));
 		}
+
 		public void Rotate(UnitVector3D axis, double angle, bool useWorldAxis = false)
 		{
 			Rotation = MathUtil.Rotate(Rotation, axis, angle, useWorldAxis);

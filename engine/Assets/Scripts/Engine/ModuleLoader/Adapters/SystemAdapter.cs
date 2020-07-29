@@ -9,7 +9,7 @@ namespace Engine.ModuleLoader.Adapters
 
 		public SystemBase _system;
 
-		public void Awake()
+		public void OnEnable()
 		{
 			if (_system == null)
 			{
