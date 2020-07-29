@@ -3,6 +3,9 @@ using Rigidbody = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
 using UnityEngine;
 using SynthesisAPI.Utilities;
 using MathNet.Spatial.Euclidean;
+using Engine.Util;
+
+using CollisionDetectionMode = SynthesisAPI.EnvironmentManager.Components.CollisionDetectionMode;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -23,54 +26,82 @@ namespace Engine.ModuleLoader.Adapters
                 unityRigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
 
             // Setup linked getter and setter;
-            instance.LinkedGetter = n => ParseFromUnity(typeof(UnityEngine.Rigidbody).GetProperty(n).GetGetMethod().Invoke(unityRigidbody, null));
-            instance.LinkedSetter = (n, o) => typeof(UnityEngine.Rigidbody).GetProperty(n).GetSetMethod().Invoke(unityRigidbody, new object[] { ParseToUnity(o) });
+            instance.LinkedGetter = Getter;
+            instance.LinkedSetter = Setter;
         }
 
-        private object ParseFromUnity(object obj)
+        private object Getter(string n)
         {
-            Type type = obj.GetType();
-            if (type.IsEnum)
+            switch (n.ToLower())
             {
-                return typeof(RigidbodyAdapter).GetMethod("ConvertEnum").MakeGenericMethod(Array.Find(typeof(Rigidbody).Assembly.GetTypes(),
-                    x => x.Name == type.Name && x.FullName != type.FullName)).Invoke(this, new object[] { obj }); // Eh?
+                case "usegravity":
+                    return unityRigidbody.useGravity;
+                case "iskinematic":
+                    return unityRigidbody.isKinematic;
+                case "mass":
+                    return unityRigidbody.mass;
+                case "velocity":
+                    return unityRigidbody.velocity.Map();
+                case "drag":
+                    return unityRigidbody.drag;
+                case "angularvelocity":
+                    return unityRigidbody.angularVelocity.Map();
+                case "angulardrag":
+                    return unityRigidbody.angularDrag;
+                case "maxangularvelocity":
+                    return unityRigidbody.maxAngularVelocity;
+                case "maxdepenetrationvelocity":
+                    return unityRigidbody.maxDepenetrationVelocity;
+                case "collisiondetectionmode":
+                    return ConvertEnum<CollisionDetectionMode>(unityRigidbody.collisionDetectionMode);
+                default:
+                    throw new Exception($"Property {n} is not setup");
             }
-            switch (type.Name)
-            {
-                case "Vector3":
-                    return ((Vector3)obj).Map();
-            }
-            return obj;
         }
 
-        private object ParseToUnity(object obj)
+        private void Setter(string n, object o)
         {
-            Type type = obj.GetType();
-            if (type.IsEnum)
+            switch (n.ToLower())
             {
-                return typeof(RigidbodyAdapter).GetMethod("ConvertEnum").MakeGenericMethod(Array.Find(typeof(UnityEngine.Rigidbody).Assembly.GetTypes(),
-                    x => x.Name == type.Name && x.FullName != type.FullName)).Invoke(this, new object[] { obj });
+                case "usegravity":
+                    unityRigidbody.useGravity = (bool)o;
+                    break;
+                case "iskinematic":
+                    unityRigidbody.isKinematic = (bool)o;
+                    break;
+                case "mass":
+                    unityRigidbody.mass = (float)o;
+                    break;
+                case "velocity":
+                    unityRigidbody.velocity = ((Vector3D)o).Map();
+                    break;
+                case "drag":
+                    unityRigidbody.drag = (float)o;
+                    break;
+                case "angularvelocity":
+                    unityRigidbody.angularVelocity = ((Vector3D)o).Map();
+                    break;
+                case "angulardrag":
+                    unityRigidbody.angularDrag = (float)o;
+                    break;
+                case "maxangularvelocity":
+                    unityRigidbody.maxAngularVelocity = (float)o;
+                    break;
+                case "maxdepenetrationvelocity":
+                    unityRigidbody.maxDepenetrationVelocity = (float)o;
+                    break;
+                case "collisiondetectionmode":
+                    unityRigidbody.collisionDetectionMode = ConvertEnum<UnityEngine.CollisionDetectionMode>(o);
+                    break;
+                default:
+                    throw new Exception($"Property {n} is not setup");
             }
-            switch (type.Name)
-            {
-                case "Vector3D":
-                    return ((Vector3D)obj).Map();
-            }
-            return obj;
         }
 
         public void Update()
         {
             if (instance.Changed)
             {
-                /*unityRigidbody.isKinematic = instance.IsKinematic;
-                unityRigidbody.mass = instance.Mass;
-                unityRigidbody.velocity = instance.Velocity.Map();
-                unityRigidbody.drag = instance.Drag;
-                unityRigidbody.angularVelocity = instance.AngularVelocity.Map();
-                unityRigidbody.angularDrag = instance.AngularDrag;
-                unityRigidbody.collisionDetectionMode = ConvertEnum<CollisionDetectionMode>(instance.CollisionDetectionMode);*/
-                
                 foreach (var force in instance.AdditionalForces)
                 {
                     if (force.Position != Vector3D.NaN)

@@ -133,7 +133,5 @@ namespace Engine.ModuleLoader.Adapters
 				Deselect();
 			}
 		}
-
-		private Entity Entity => instance.Entity ?? EnvironmentManager.NULL_ENTITY;
 	}
 }

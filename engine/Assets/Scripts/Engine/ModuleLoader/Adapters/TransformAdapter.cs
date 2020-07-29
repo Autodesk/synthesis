@@ -6,6 +6,7 @@ using System;
 using Quaternion = UnityEngine.Quaternion;
 using SynQuaternion = MathNet.Spatial.Euclidean.Quaternion;
 using MathNet.Spatial.Euclidean;
+using Engine.Util;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -21,34 +22,41 @@ namespace Engine.ModuleLoader.Adapters
 
 			unityTransform = gameObject.transform;
 
-			instance.LinkedGetter = n => ParseFromUnity(typeof(UnityEngine.Transform).GetProperty(n).GetGetMethod().Invoke(unityTransform, null));
-			instance.LinkedSetter = (n, o) => typeof(UnityEngine.Transform).GetProperty(n).GetSetMethod().Invoke(unityTransform, new object[] { ParseToUnity(o) });
+			instance.LinkedGetter = Getter;
+			instance.LinkedSetter = Setter;
 		}
 
-		private object ParseFromUnity(object obj)
+		private object Getter(string n)
 		{
-			Type type = obj.GetType();
-			switch (type.Name)
+			switch (n.ToLower())
 			{
-				case "Vector3":
-					return ((Vector3)obj).Map();
-				case "Quaternion":
-					return ((Quaternion)obj).Map();
+				case "position":
+					return unityTransform.position.Map();
+				case "rotation":
+					return unityTransform.rotation.Map().Normalized;
+				case "localscale":
+					return unityTransform.localScale.Map();
+				default:
+					throw new Exception($"Property {n} is not setup");
 			}
-			return obj;
 		}
 
-		private object ParseToUnity(object obj) // TODO: fix the lazy dynamic
+		private void Setter(string n, object o)
 		{
-			Type type = obj.GetType();
-			switch (type.Name)
+			switch (n.ToLower())
 			{
-				case "Vector3D":
-					return ((Vector3D)obj).Map();
-				case "Quaternion":
-					return ((SynQuaternion)obj).Map();
+				case "position":
+					unityTransform.position = ((Vector3D)o).Map();
+					break;
+				case "rotation":
+					unityTransform.rotation = ((SynQuaternion)o).Map();
+					break;
+				case "localscale":
+					unityTransform.localScale = ((Vector3D)o).Map();
+					break;
+				default:
+					throw new Exception($"Property {n} is not setup");
 			}
-			return obj; // If we don't need to parse (int, double, long, float, etc.)
 		}
 
 		public void Update()

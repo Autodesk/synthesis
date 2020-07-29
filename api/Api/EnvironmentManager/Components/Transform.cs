@@ -10,12 +10,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 	[BuiltinComponent]
 	public class Transform : Component
 	{
-		/*
-		private Vector3D _position = new Vector3D();
-		private Quaternion _rotation = Quaternion.One;
-		private Vector3D _scale = new Vector3D(1, 1, 1);
-		*/
-
 		public UnitVector3D Forward => MathUtil.QuaternionToForwardVector(Rotation);
 
 		public delegate Vector3D PositionValidatorDelegate(Vector3D position);
@@ -26,12 +20,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation;
 		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
 
-		internal delegate void SetValue(string variableName, object o);
-		internal delegate object GetValue(string variableName);
-
 		// These delegates will be setup by the Adapter
-		internal SetValue LinkedSetter = (n, o) => { };
-		internal GetValue LinkedGetter = n => null!;
+		internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
+		internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not assigned");
 
 		public Vector3D Position
 		{

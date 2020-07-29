@@ -1,5 +1,9 @@
 ﻿using MathNet.Spatial.Euclidean;
+using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Engine.Util

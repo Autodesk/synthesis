@@ -31,7 +31,9 @@ namespace SynthesisCore
 
             rigidbody = e.AddComponent<Rigidbody>();
             // rigidbody.Velocity = new Vector3D(10, 0, 0);
-            rigidbody.CollisionDetectionMode = CollisionDetectionMode.Continuous;
+            rigidbody.useGravity = true;
+            rigidbody.Mass = 500.0f;
+            rigidbody.MaxAngularVelocity = 1080.0f;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
@@ -44,14 +46,14 @@ namespace SynthesisCore
         {
             m.Vertices = new List<Vector3D>()
             {
-                new Vector3D(0,0,0),
-                new Vector3D(1,0,0),
-                new Vector3D(1,1,0),
-                new Vector3D(0,1,0),
-                new Vector3D(0,1,1),
-                new Vector3D(1,1,1),
-                new Vector3D(1,0,1),
-                new Vector3D(0,0,1)
+                new Vector3D(-0.5,-0.5,-0.5),
+                new Vector3D(0.5,-0.5,-0.5),
+                new Vector3D(0.5,0.5,-0.5),
+                new Vector3D(-0.5,0.5,-0.5),
+                new Vector3D(-0.5,0.5,0.5),
+                new Vector3D(0.5,0.5,0.5),
+                new Vector3D(0.5,-0.5,0.5),
+                new Vector3D(-0.5,-0.5,0.5)
             };
             m.Triangles = new List<int>()
             {
@@ -76,9 +78,7 @@ namespace SynthesisCore
             if (de.State == DigitalState.Down)
             {
                 ApiProvider.Log("Key Pressed");
-                // rigidbody.AddForce(new Vector3D(50, 50, 0));
-                rigidbody.AddTorque(new Vector3D(0, 0, 50));
-                rigidbody.CollisionDetectionMode = CollisionDetectionMode.Discrete;
+                rigidbody.AddTorque(new Vector3D(0, 0, 150));
             }
         }
 

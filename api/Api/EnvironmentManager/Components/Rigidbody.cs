@@ -13,64 +13,73 @@ namespace SynthesisAPI.EnvironmentManager.Components
     {
         #region Properties
 
-        /*private bool _isKinematic = false;
-        private float _mass = 1.0f;
-        private float _drag = 0.0f;
-        private float _angularDrag = 0.05f;
-        private CollisionDetectionMode _collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;*/
-
-        internal delegate void SetValue(string variableName, object o);
-        internal delegate object GetValue(string variableName);
-
         // These delegates will be setup by the Adapter
-        internal SetValue LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
-        internal GetValue LinkedGetter = n => throw new Exception("Getter not assigned");
+        internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
+        internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not assigned");
 
+        private void Set(string name, object obj) => LinkedSetter(name, obj);
+        private T Get<T>(string name) => (T)LinkedGetter(name);
+
+        public bool useGravity {
+            get => Get<bool>("useGravity");
+            set => Set("useGravity", value);
+        }
         /// <summary>
-        /// Essentially toggle for physics
+        /// Essentially toggle for physics. When Kinematic physical forces won't apply to this body
         /// </summary>
         public bool IsKinematic {
-            get => (bool)LinkedGetter("isKinematic");
-            set => LinkedSetter("isKinematic", value);
+            get => Get<bool>("isKinematic");
+            set => Set("isKinematic", value);
         }
         /// <summary>
         /// Mass of body in kilograms
         /// </summary>
         public float Mass {
-            get => (float)LinkedGetter("mass");
-            set => LinkedSetter("mass", value < 0.001f ? 0.001f : value);
+            get => Get<float>("mass");
+            set => Set("mass", value < 0.001f ? 0.001f : value);
         }
         /// <summary>
         /// Velocity of body in meters/second
         /// </summary>
         public Vector3D Velocity {
-            get => (Vector3D)LinkedGetter("velocity");
-            set => LinkedSetter("velocity", value);
+            get => Get<Vector3D>("velocity");
+            set => Set("velocity", value);
         }
         /// <summary>
         /// Linear drag coefficent of the body
         /// </summary>
         public float Drag {
-            get => (float)LinkedGetter("drag");
-            set => LinkedSetter("drag", value);
+            get => Get<float>("drag");
+            set => Set("drag", value);
         }
         /// <summary>
         /// Angular velocity of the body in radians/second
         /// </summary>
         public Vector3D AngularVelocity {
-            get => (Vector3D)LinkedGetter("angularVelocity");
-            set => LinkedSetter("angularVelocity", value);
+            get => Get<Vector3D>("angularVelocity");
+            set => Set("angularVelocity", value);
         }
         /// <summary>
         /// Angular drag coefficent of the body
         /// </summary>
         public float AngularDrag {
-            get => (float)LinkedGetter("angularDrag");
-            set => LinkedSetter("angularDrag", value);
+            get => Get<float>("angularDrag");
+            set => Set("angularDrag", value);
         }
+        public float MaxAngularVelocity {
+            get => Get<float>("maxangularvelocity");
+            set => Set("maxangularvelocity", value);
+        }
+        public float MaxDepenetrationVelocity {
+            get => Get<float>("maxdepenetrationvelocity");
+            set => Set("maxdepenetrationvelocity", value);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public CollisionDetectionMode CollisionDetectionMode {
-            get => (CollisionDetectionMode)LinkedGetter("collisionDetectionMode");
-            set => LinkedSetter("collisionDetectionMode", value);
+            get => Get<CollisionDetectionMode>("collisionDetectionMode");
+            set => Set("collisionDetectionMode", value);
         }
 
         #endregion
@@ -80,6 +89,12 @@ namespace SynthesisAPI.EnvironmentManager.Components
         internal List<(Vector3D Torque, bool Relative, ForceMode Mode)> AdditionalTorques
             { get; private set; } = new List<(Vector3D Torque, bool Relative, ForceMode Mode)>();
 
+        /// <summary>
+        /// Add force to body
+        /// </summary>
+        /// <param name="force">Force in Newtons * DeltaT</param>
+        /// <param name="relative"></param>
+        /// <param name="mode"></param>
         public void AddForce(Vector3D force, bool relative = false, ForceMode mode = ForceMode.Force)
         {
             AdditionalForces.Add((force, Vector3D.NaN, relative, mode));
