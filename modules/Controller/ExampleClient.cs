@@ -1,4 +1,4 @@
-﻿#if true
+﻿#if false
 using Controller.Rpc;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;

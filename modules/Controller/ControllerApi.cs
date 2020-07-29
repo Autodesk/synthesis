@@ -3,6 +3,7 @@ using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Runtime;
+using SynthesisCore.Components;
 
 namespace Controller
 {

@@ -7,6 +7,7 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
+using SynthesisCore.Components;
 
 namespace SynthesisCore
 {

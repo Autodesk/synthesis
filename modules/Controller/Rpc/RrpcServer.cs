@@ -27,7 +27,6 @@ namespace Controller.Rpc
                 HttpListenerContext context = await listener.GetContextAsync();
 
                 var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
-                ApiProvider.Log($"Server: requestContent: {requestContent}");
                 MethodCallContext call = MethodCallContext.FromJson(requestContent);
 
                 Result<object, System.Exception> result;
