@@ -160,16 +160,39 @@ namespace Engine.ModuleLoader
 			moduleList.AddRange(solutionSet.ToList());
 		}
 
+		private static string GetPath(string fullName)
+		{
+			var i = fullName.LastIndexOf(SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar, fullName.Length - 1, fullName.Length - 2);
+			if (i == -1 || i == (fullName.Length - 1))
+			{
+				return "";
+			}
+			return fullName.Substring(0, i + 1);
+		}
+
+		private static string RemovePath(string metadataPath, string fullName)
+		{
+			if (fullName.StartsWith(metadataPath))
+			{
+				return fullName.Substring(metadataPath.Length);
+			}
+			return fullName;
+		}
+
 		private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
 		{
 			var fileManifest = new List<string>();
 			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
 
-			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
-				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name)))
-			{
+			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.Name == ModuleMetadata.MetadataFilename).FullName);
 
-				fileManifest.Remove(entry.Name);
+			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
+			{
+				var name = RemovePath(metadataPath, e.FullName);
+				return name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(name);
+			}))
+			{
+				fileManifest.Remove(RemovePath(metadataPath, entry.FullName));
 				var extension = Path.GetExtension(entry.Name);
 				var stream = entry.Open();
 				if (extension == ".dll")
@@ -182,7 +205,9 @@ namespace Engine.ModuleLoader
 				}
 				else
 				{
-					var targetPath = BaseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + moduleInfo.metadata.TargetPath;
+					var targetPath = BaseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						GetPath(RemovePath(metadataPath, entry.FullName));
 					var perm = Permissions.PublicReadWrite;
 					if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension),
 						new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)

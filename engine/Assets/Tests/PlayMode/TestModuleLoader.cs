@@ -17,9 +17,11 @@ namespace Tests
         private static readonly string zipPath = sourcePath + "test_module.zip";
 
         private static readonly string TestTextFileName = "test.txt";
+        private static readonly string TestTextFileFolder = "test_dir";
         private static readonly string TestTextFileContents = "Hello world!";
 
-        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module", manifest: new[] { TestTextFileName });
+        private static readonly ModuleMetadata TestModuleMetadata = new ModuleMetadata("Test Module", "0.1.0", "test_module",
+            manifest: new[] { TestTextFileFolder + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + TestTextFileName });
 
         private static void CreateTestModule()
         {
@@ -33,14 +35,16 @@ namespace Tests
                 }
             }
 
-            string sourceFolderPath = sourcePath + "test_module";
+            string sourceFolderPath = sourcePath + TestModuleMetadata.TargetPath;
             Directory.CreateDirectory(sourceFolderPath);
+            string textFileLoc = sourceFolderPath + Path.DirectorySeparatorChar + TestTextFileFolder;
+            Directory.CreateDirectory(textFileLoc);
 
             Stream metadataFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + ModuleMetadata.MetadataFilename, FileMode.OpenOrCreate);
             TestModuleMetadata.Serialize(metadataFile);
             metadataFile.Close();
 
-            Stream textFile = File.Open(sourceFolderPath + Path.DirectorySeparatorChar + TestTextFileName, FileMode.OpenOrCreate);
+            Stream textFile = File.Open(textFileLoc + Path.DirectorySeparatorChar + TestTextFileName, FileMode.OpenOrCreate);
             var writer = new StreamWriter(textFile);
             writer.Write(TestTextFileContents);
             writer.Flush();
@@ -94,7 +98,8 @@ namespace Tests
                 if (SynthesisAPI.Modules.ModuleManager.IsFinishedLoading)
                 {
                     var hasTestModule = SynthesisAPI.Modules.ModuleManager.GetLoadedModules().Contains(TestModuleMetadata.Name);
-                    var textAsset = AssetManager.GetAsset<SynthesisAPI.AssetManager.TextAsset>($"/modules/{TestModuleMetadata.TargetPath}/{TestTextFileName}");
+                    var textAsset = AssetManager.GetAsset<SynthesisAPI.AssetManager.TextAsset>(
+                        $"/modules/{TestModuleMetadata.TargetPath}/{TestTextFileFolder}/{TestTextFileName}");
                     var hasTextContents = textAsset != null && textAsset.ReadToEnd() == TestTextFileContents;
 
                     IsTestFinished = hasTestModule && hasTextContents;
