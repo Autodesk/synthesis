@@ -9,9 +9,9 @@ namespace Controller
     public static class ControllerApi
     {
         [RpcMethod]
-        public static void Log(object o, LogLevel logLevel = LogLevel.Info)
+        public static void Log(string msg, LogLevel logLevel = LogLevel.Info)
         {
-            ApiProvider.Log(o, logLevel);
+            ApiProvider.Log(msg, logLevel);
         }
 
         #region Transform movement
@@ -77,22 +77,22 @@ namespace Controller
         }
 
         [RpcMethod]
-        public static void SetPosition(uint channel, Vector3D position)
+        public static void SetPosition(uint channel, double x, double y, double z)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
                 e => e.GetComponent<Moveable>()?.Channel == channel))
             {
-                e.GetComponent<Transform>().Position = position;
+                e.GetComponent<Transform>().Position = new Vector3D(x, y, z);
             }
         }
 
         [RpcMethod]
-        public static void RotateEulerAngles(uint channel, Vector3D rotation)
+        public static void RotateEulerAngles(uint channel, double x, double y, double z)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
                 e => e.GetComponent<Moveable>()?.Channel == channel))
             {
-                e.GetComponent<Transform>().Rotate(rotation);
+                e.GetComponent<Transform>().Rotate(new Vector3D(x, y, z));
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿#if true
 using Controller.Rpc;
-using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
@@ -21,8 +20,6 @@ namespace Controller
             client.BaseAddress = new Uri("http://localhost:5000/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            CompoundTypeConverter.Register<Vector3D>(args =>
-                new Vector3D(Convert.ToDouble(args[0]), Convert.ToDouble(args[1]), Convert.ToDouble(args[2])));
             Test();
         }
         public override void OnUpdate() { }
@@ -36,6 +33,7 @@ namespace Controller
             await InvokeAsync("PrintMessage", "Hello world!");
             await InvokeAsync("PrintMessage", "Warning 1", LogLevel.Warning);
             await InvokeAsync("PrintMessage", "Warning 2", LogLevel.Warning.ToString());
+            await InvokeAsync("PrintArray", new[] { new string[] { "Hello 1", "Hello 2" } });
 
             var b = await InvokeAsync<string>("ReturnString", "Hello world!");
             ApiProvider.Log($"Client: result = {b}");
@@ -51,11 +49,6 @@ namespace Controller
             {
                 ApiProvider.Log($"Client: error = {e}");
             }
-
-            await InvokeAsync("PrintCompound", CompoundTypeConverter.Create<Vector3D>(1, 3, 5));
-            var vec = await InvokeAsync<Vector3D>("ReturnCompound", CompoundTypeConverter.Create<Vector3D>(1, 3, 5));
-            ApiProvider.Log($"Client: result = {vec}");
-
         }
 
         public static async Task<T> InvokeAsync<T>(string methodName, params object[] args)

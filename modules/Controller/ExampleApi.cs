@@ -19,6 +19,15 @@ namespace Controller.Rpc
         }
 
         [RpcMethod]
+        public static void PrintArray(string[] msg)
+        {
+            foreach (var m in msg)
+            {
+                ApiProvider.Log(m);
+            }
+        }
+
+        [RpcMethod]
         public static string ReturnString(string msg)
         {
             return msg;
@@ -28,18 +37,6 @@ namespace Controller.Rpc
         public static void ThrowException(string msg)
         {
             throw new System.Exception(msg);
-        }
-
-        [RpcMethod]
-        public static void PrintCompound(Vector3D vec)
-        {
-            ApiProvider.Log(vec.ToString());
-        }
-
-        [RpcMethod]
-        public static Vector3D ReturnCompound(Vector3D vec)
-        {
-            return vec;
         }
     }
 }

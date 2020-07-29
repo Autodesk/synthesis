@@ -66,11 +66,24 @@ namespace Controller.Rpc
             Register(handler.Name, handler);
         }
 
+        private static bool IsPrimitive(Type type)
+        {
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+                return true;
+            if (type.IsArray)
+                return IsPrimitive(type.GetElementType());
+            return false;
+        }
+
         public static void Register(string methodName, MethodInfo handler)
         {
             if (handlers.ContainsKey(methodName))
             {
                 throw new Exception("Registering existing method name");
+            }
+            foreach(var p in handler.GetParameters().Where(p => !IsPrimitive(p.ParameterType)))
+            {
+                throw new Exception($"Registering method {methodName} parameter {p.Name} with non-primitive type {p.ParameterType.Name}");
             }
             handlers[methodName] = handler;
         }
@@ -120,7 +133,11 @@ namespace Controller.Rpc
         {
             if (value is JObject jObject)
             {
-                value = type.IsPrimitive ? jObject.ToObject(type) : CompoundTypeConverter.FromJObject(jObject);
+                value = jObject.ToObject(type);
+            }
+            if (value is JArray jArray && type.IsArray)
+            {
+                value = jArray.ToObject(type);
             }
             if (type.IsEnum)
             {

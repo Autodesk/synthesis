@@ -295,9 +295,9 @@ namespace Engine.ModuleLoader
 						RegisterTagCallback(callback, exportedModuleClassInstance);
 					}
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}", LogLevel.Error);
+					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
 					// TODO unload assembly? return false?
 					continue;
 				}
