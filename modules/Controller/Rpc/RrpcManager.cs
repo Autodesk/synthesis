@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.Runtime;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,11 @@ namespace Controller.Rpc
         public delegate object HandlerFunc(params object[] args);
 
         private static Dictionary<string, MethodInfo> handlers = new Dictionary<string, MethodInfo>();
+
+        internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
 
         static RpcManager()
         {
@@ -38,7 +45,7 @@ namespace Controller.Rpc
                     }
                     else
                     {
-                        throw new Exception("Non-static RPC method");
+                        throw new Exception($"Non-static RPC method {method.Name}");
                     }
                 }
             }
@@ -73,28 +80,64 @@ namespace Controller.Rpc
             return Invoke(methodName, args).MapResult<T>((res) => (T)res);
         }
 
-        private static Type[] IntegerTypes = new[] { typeof(int), typeof(uint) };
+        private static readonly Type[] IntegerTypes = new[] {
+            typeof(ulong),
+            typeof(uint),
+            typeof(ushort),
+            typeof(sbyte),
+            typeof(long),
+            typeof(int),
+            typeof(byte),
+            typeof(short)
+        };
 
         private static object[] FixArguments(MethodInfo method, params object[] args)
         {
             var args_i = 0;
             foreach (var param in method.GetParameters())
             {
-                if (param.HasDefaultValue && args_i >= args.Length)
+                if (args_i >= args.Length)
                 {
-                    args = args.Concat(new[] { Type.Missing }).ToArray();
+                    if (param.HasDefaultValue)
+                    {
+                        args = args.Concat(new[] { Type.Missing }).ToArray();
+                    }
+                    else
+                    {
+                        throw new Exception("RPC method call missing arguments");
+                    }
                 }
-                if (param.ParameterType.IsEnum && args[args_i] is long)
+                else if (param.ParameterType != args[args_i].GetType())
                 {
-                    args[args_i] = Enum.ToObject(param.ParameterType, args[args_i]);
-                }
-                else if (args[args_i] is long && param.ParameterType.IsPrimitive && IntegerTypes.Contains(param.ParameterType))
-                {
-                    args[args_i] = Convert.ChangeType(args[args_i], param.ParameterType);
+                    args[args_i] = FixType(param.ParameterType, args[args_i]);
                 }
                 args_i++;
             }
             return args;
+        }
+
+        internal static object FixType(Type type, object value)
+        {
+            if (value is JObject jObject)
+            {
+                value = type.IsPrimitive ? jObject.ToObject(type) : CompoundTypeConverter.FromJObject(jObject);
+            }
+            if (type.IsEnum)
+            {
+                if (value is long)
+                {
+                    value = Enum.ToObject(type, value);
+                }
+                else if (value is string)
+                {
+                    value = Enum.Parse(type, (string)value);
+                }
+            }
+            else if (value is long && type.IsPrimitive && IntegerTypes.Contains(type))
+            {
+                value = Convert.ChangeType(value, type);
+            }
+            return value;
         }
 
         public static Result<object, Exception> Invoke(string methodName, params object[] args)
@@ -103,7 +146,7 @@ namespace Controller.Rpc
             {
                 if (!handlers.ContainsKey(methodName))
                 {
-                    throw new Exception($"Missing function: {methodName}");
+                    throw new Exception($"Missing RPC function: {methodName}");
                 }
                 var handler = handlers[methodName];
                 args = FixArguments(handler, args);
@@ -117,7 +160,7 @@ namespace Controller.Rpc
             }
             catch (Exception e)
             {
-                return new Result<object, Exception>(e);
+                return new Result<object, Exception>(new Exception($"RPC server failed to invoke {methodName}", e));
             }
         }
 

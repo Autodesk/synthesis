@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SynthesisAPI.Runtime;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,12 +35,12 @@ namespace Controller.Rpc
 
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this, RpcManager.JsonSettings);
         }
 
         public static MethodCallContext FromJson(string json)
         {
-            return JsonConvert.DeserializeObject<MethodCallContext>(json);
+            return JsonConvert.DeserializeObject<MethodCallContext>(json, RpcManager.JsonSettings);
         }
     }
 }

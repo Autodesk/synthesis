@@ -48,12 +48,12 @@ namespace Controller.Rpc
 
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this, RpcManager.JsonSettings);
         }
 
         public static RpcResponse FromJson(string json)
         {
-            return JsonConvert.DeserializeObject<RpcResponse>(json);
+            return JsonConvert.DeserializeObject<RpcResponse>(json, RpcManager.JsonSettings);
         }
     }
 }

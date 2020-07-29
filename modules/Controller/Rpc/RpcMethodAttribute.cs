@@ -3,7 +3,7 @@
 namespace Controller.Rpc
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class RpcMethodAttribute : Attribute
+    internal class RpcMethodAttribute : Attribute
     {
         internal string RpcMessageMethodName { get; private set; }
 

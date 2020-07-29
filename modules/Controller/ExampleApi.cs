@@ -1,4 +1,7 @@
-﻿#if ENABLE_EXAMPLE_API
+﻿#if true
+using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Runtime;
+
 namespace Controller.Rpc
 {
     public static class ExampleApi
@@ -10,9 +13,9 @@ namespace Controller.Rpc
         }
 
         [RpcMethod]
-        public static void PrintMessage(string msg)
+        public static void PrintMessage(string msg, LogLevel logLevel = LogLevel.Info)
         {
-            SynthesisAPI.Runtime.ApiProvider.Log(msg);
+            ApiProvider.Log(msg, logLevel);
         }
 
         [RpcMethod]
@@ -25,6 +28,18 @@ namespace Controller.Rpc
         public static void ThrowException(string msg)
         {
             throw new System.Exception(msg);
+        }
+
+        [RpcMethod]
+        public static void PrintCompound(Vector3D vec)
+        {
+            ApiProvider.Log(vec.ToString());
+        }
+
+        [RpcMethod]
+        public static Vector3D ReturnCompound(Vector3D vec)
+        {
+            return vec;
         }
     }
 }

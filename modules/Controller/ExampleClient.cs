@@ -1,5 +1,6 @@
-﻿#if ENABLE_EXAMPLE_API
+﻿#if true
 using Controller.Rpc;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
@@ -13,13 +14,15 @@ namespace Controller
     [ModuleExport]
     public class ExampleClient : SystemBase
     {
-        private static HttpClient client = new HttpClient();
-        private static string MyVersion = RpcManager.JsonRpcVersion;
+        private static readonly HttpClient client = new HttpClient();
+        private static readonly string MyVersion = RpcManager.JsonRpcVersion;
         public override void Setup()
         {
             client.BaseAddress = new Uri("http://localhost:5000/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            CompoundTypeConverter.Register<Vector3D>(args =>
+                new Vector3D(Convert.ToDouble(args[0]), Convert.ToDouble(args[1]), Convert.ToDouble(args[2])));
             Test();
         }
         public override void OnUpdate() { }
@@ -31,6 +34,8 @@ namespace Controller
             ApiProvider.Log($"Client: result = {a}");
 
             await InvokeAsync("PrintMessage", "Hello world!");
+            await InvokeAsync("PrintMessage", "Warning 1", LogLevel.Warning);
+            await InvokeAsync("PrintMessage", "Warning 2", LogLevel.Warning.ToString());
 
             var b = await InvokeAsync<string>("ReturnString", "Hello world!");
             ApiProvider.Log($"Client: result = {b}");
@@ -46,6 +51,11 @@ namespace Controller
             {
                 ApiProvider.Log($"Client: error = {e}");
             }
+
+            await InvokeAsync("PrintCompound", CompoundTypeConverter.Create<Vector3D>(1, 3, 5));
+            var vec = await InvokeAsync<Vector3D>("ReturnCompound", CompoundTypeConverter.Create<Vector3D>(1, 3, 5));
+            ApiProvider.Log($"Client: result = {vec}");
+
         }
 
         public static async Task<T> InvokeAsync<T>(string methodName, params object[] args)
@@ -55,7 +65,12 @@ namespace Controller
             {
                 throw new Exception($"Method {methodName} did not return result");
             }
-            return (T)result.Result;
+            object value = result.Result;
+            if(value.GetType() != typeof(T))
+            {
+                value = RpcManager.FixType(typeof(T), value);
+            }
+            return (T)value;
         }
 
         public static async Task InvokeAsync(string methodName, params object[] args)
@@ -82,9 +97,9 @@ namespace Controller
         {
             var response = await client.PostAsync("", new StringContent(MethodCallContext.ToJson(MyVersion, methodName, args)));
             var result = RpcResponse.FromJson(await ReadContent(response));
-            if(result.Version != MyVersion)
+            if(result.JsonRpcVersion != MyVersion)
             {
-                throw new Exception($"Incompatible RPC versions result {result.Version} vs current {MyVersion}");
+                throw new Exception($"Incompatible RPC versions result {result.JsonRpcVersion} vs current {MyVersion}");
             }
             if (result.Error != null)
             {

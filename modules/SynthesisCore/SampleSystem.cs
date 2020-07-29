@@ -13,16 +13,13 @@ namespace SynthesisCore
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
-        private Selectable selectable;
-        private Transform transform;
-
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
-            transform = e.AddComponent<Transform>();
-            selectable = e.AddComponent<Selectable>();
+            e.AddComponent<Transform>();
+            e.AddComponent<Selectable>();
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
