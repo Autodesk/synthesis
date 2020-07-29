@@ -21,11 +21,14 @@ using SharpGLTF.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using SynthesisAPI.EnvironmentManager.Bundles;
+using MathNet.Spatial.Euclidean;
 
 namespace SynthesisAPI.AssetManager
 {
     public class GltfAsset : Asset
     {
+        public Transform Transform { get; private set; }
+
         public GltfAsset(string name, Permissions perm, string sourcePath)
         {
             Init(name, perm, sourcePath);
@@ -62,6 +65,11 @@ namespace SynthesisAPI.AssetManager
             return model;
         }
 
+        /// <summary>
+        /// Parses the elements of a gltf model from a root node and traverses through the model tree graph.
+        /// </summary>
+        /// <param name="modelRoot"></param>
+        /// <returns></returns>
         public Design ImportDesign(ModelRoot modelRoot)
         {
             Design design = new Design();
@@ -90,14 +98,24 @@ namespace SynthesisAPI.AssetManager
             return design;
         }
 
+        /// <summary>
+        /// Parses the individual elements of a gltf model.
+        /// </summary>
+        /// <param name="modelRoot"></param>
+        /// <returns></returns>
         public ObjectBundle ImportObject(ModelRoot modelRoot)
         {
             ObjectBundle objectBundle = new ObjectBundle();
 
-            // this is the root ---> modelRoot.DefaultScence.VisualChildren
             foreach (SharpGLTF.Schema2.Mesh childMesh in modelRoot.LogicalMeshes)
             {
                 objectBundle.Mesh = ExportMesh(childMesh);
+            }
+
+            // this is the root ---> modelRoot.DefaultScence.VisualChildren
+            foreach (Node child in modelRoot.DefaultScene.VisualChildren)
+            {
+                ExportModelRoot(child);
             }
 
             return objectBundle;
@@ -128,6 +146,35 @@ namespace SynthesisAPI.AssetManager
             }
 
             return occurrence;
+        }
+
+        public EnvironmentManager.Components.Transform ExportModelRoot(Node node)
+        {
+            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
+            ObjectBundle objectBundle = new ObjectBundle();
+
+            foreach (Node child in node.VisualChildren)
+            {
+                objectBundle.Transform = ExportTransform(child.LocalTransform);
+            }
+
+            return synthesisTransform;
+        }
+
+        private EnvironmentManager.Components.Transform ExportTransform(SharpGLTF.Transforms.AffineTransform transform)
+        {
+            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
+
+            // ROTATION
+            MathNet.Spatial.Euclidean.Quaternion quaternion;
+            quaternion = new MathNet.Spatial.Euclidean.Quaternion(transform.Rotation.W, transform.Rotation.X, transform.Rotation.Y, transform.Rotation.Z);
+
+            // SCALE
+            MathNet.Spatial.Euclidean.Vector3D vector3D;
+            vector3D = new MathNet.Spatial.Euclidean.Vector3D(transform.Scale.X, transform.Scale.Y, transform.Scale.Z);
+            synthesisTransform.Scale = vector3D;
+
+            return synthesisTransform;
         }
 
         //private Design.Matrix3D ExportMatrix(System.Numerics.Matrix4x4 matrix4x4)
