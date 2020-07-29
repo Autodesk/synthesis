@@ -20,6 +20,7 @@ using UnityEngine.Assertions.Must;
 using SharpGLTF.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using SynthesisAPI.EnvironmentManager.Bundles;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -51,6 +52,7 @@ namespace SynthesisAPI.AssetManager
 
                 model = ModelRoot.ReadGLB(stream, settings);
                 ImportDesign(model);
+                ImportObject(model);
             }
             catch (Exception ex)
             {
@@ -69,7 +71,7 @@ namespace SynthesisAPI.AssetManager
             foreach (Node child in modelRoot.DefaultScene.VisualChildren)
             {
                 design.RootOccurence = ExportOccurrenceFromNode(child);
-                design.RootOccurence.Transform = ExportMatrix(child.LocalMatrix);
+                //design.RootOccurence.Transform = ExportMatrix(child.LocalMatrix);
             }
 
             // joints are not attached to RootOccurrence directly but added to Joint dictionary
@@ -86,6 +88,19 @@ namespace SynthesisAPI.AssetManager
             }
 
             return design;
+        }
+
+        public ObjectBundle ImportObject(ModelRoot modelRoot)
+        {
+            ObjectBundle objectBundle = new ObjectBundle();
+
+            // this is the root ---> modelRoot.DefaultScence.VisualChildren
+            foreach (SharpGLTF.Schema2.Mesh childMesh in modelRoot.LogicalMeshes)
+            {
+                objectBundle.Mesh = ExportMesh(childMesh);
+            }
+
+            return objectBundle;
         }
 
         public Occurrence ExportOccurrenceFromNode(Node node)
@@ -108,18 +123,49 @@ namespace SynthesisAPI.AssetManager
             foreach (Node child in node.VisualChildren)
             {
                 occurrence.AComponent = ExportComponentsFromMesh(child.Mesh);
-                occurrence.Transform = ExportMatrix(child.LocalMatrix);
+                //occurrence.Transform = ExportMatrix(child.LocalMatrix);
                 occurrence.ChildOccurences.Add(ExportOccurrenceFromNode(child));
             }
 
             return occurrence;
         }
 
-        private Design.Matrix3D ExportMatrix(System.Numerics.Matrix4x4 matrix4x4)
-        {
-            Matrix3D matrix3D = new Matrix3D(matrix4x4.M11, matrix4x4.M12, matrix4x4.M13, matrix4x4.M14, matrix4x4.M21, matrix4x4.M22, matrix4x4.M23, matrix4x4.M24, matrix4x4.M31, matrix4x4.M32, matrix4x4.M33, matrix4x4.M34, matrix4x4.M41, matrix4x4.M42, matrix4x4.M43, matrix4x4.M44);
+        //private Design.Matrix3D ExportMatrix(System.Numerics.Matrix4x4 matrix4x4)
+        //{
+        //    Matrix3D matrix3D = new Matrix3D(matrix4x4.M11, matrix4x4.M12, matrix4x4.M13, matrix4x4.M14, matrix4x4.M21, matrix4x4.M22, matrix4x4.M23, matrix4x4.M24, matrix4x4.M31, matrix4x4.M32, matrix4x4.M33, matrix4x4.M34, matrix4x4.M41, matrix4x4.M42, matrix4x4.M43, matrix4x4.M44);
 
-            return matrix3D;
+        //    return matrix3D;
+        //}
+
+        private EnvironmentManager.Components.Mesh ExportMesh(SharpGLTF.Schema2.Mesh mesh)
+        {
+            EnvironmentManager.Components.Mesh synthesisMesh = new EnvironmentManager.Components.Mesh();
+            
+            foreach (SharpGLTF.Schema2.MeshPrimitive primitive in mesh.Primitives)
+            {
+                // checks for POSITION or NORMAL vertex as not all designs have both
+                if (primitive.VertexAccessors.ContainsKey("POSITION"))
+                {
+                    Vector3Array vertices;
+                    vertices = primitive.GetVertices("POSITION").AsVector3Array();
+
+                    foreach (System.Numerics.Vector3 vertex in vertices)
+                    {
+                        MathNet.Spatial.Euclidean.Vector3D vector3D;
+                        vector3D = new MathNet.Spatial.Euclidean.Vector3D(vertex.X, vertex.Y, vertex.Z);
+                        synthesisMesh.Vertices.Add(vector3D);
+                    }
+                }
+
+                var indices = primitive.GetIndices();
+
+                for (int i = 0; i < indices.Count; i++)
+                {
+                    synthesisMesh.Triangles.Add((int)indices[i]);
+                }
+            }
+
+            return synthesisMesh;
         }
 
         private Design.Component ExportComponentsFromMesh(SharpGLTF.Schema2.Mesh mesh)
