@@ -8,12 +8,15 @@ using System.Net;
 namespace Controller.Rpc
 {
     [ModuleExport]
-    public class RrpcServer : SystemBase
+    public class RpcServer : SystemBase
     {
         private static HttpListener listener = new HttpListener();
+        public const string Host = "localhost";
+        public const string Port = "5000";
+        public const string Prefix = "http://" + Host + ":" + Port + "/";
         public override void Setup()
         {
-            listener.Prefixes.Add("http://localhost:5000/"); // Must add prefixes
+            listener.Prefixes.Add(Prefix); // Must add prefixes
             listener.Start();
             Start();
         }

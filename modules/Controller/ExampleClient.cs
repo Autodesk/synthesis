@@ -17,7 +17,7 @@ namespace Controller
         private static readonly string MyVersion = RpcManager.JsonRpcVersion;
         public override void Setup()
         {
-            client.BaseAddress = new Uri("http://localhost:5000/");
+            client.BaseAddress = new Uri(RpcServer.Prefix);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             Test();
