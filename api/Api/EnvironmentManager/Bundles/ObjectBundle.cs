@@ -1,4 +1,5 @@
 ﻿using System;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Utilities;
 
@@ -16,14 +17,14 @@ namespace SynthesisAPI.EnvironmentManager.Bundles
             Transform = new Transform();
         }
 
-        public void AddMesh()
+        public void AddMesh(Mesh mesh)
         {
-            // parse mesh
+            Components.Add(mesh);
         }
 
-        public void ParseMesh()
+        public Mesh ParseMesh(Mesh mesh)
         {
-
+            return mesh;
         }
 
     }

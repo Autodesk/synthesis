@@ -54,8 +54,8 @@ namespace SynthesisAPI.AssetManager
                 var settings = tryFix ? SharpGLTF.Validation.ValidationMode.TryFix : SharpGLTF.Validation.ValidationMode.Strict;
 
                 model = ModelRoot.ReadGLB(stream, settings);
-                ImportDesign(model);
-                ImportObject(model);
+                //ImportDesign(model); // this is for the Design Object
+                ImportObject(model); // this is for the Object Bundle
             }
             catch (Exception ex)
             {
@@ -65,6 +65,91 @@ namespace SynthesisAPI.AssetManager
             return model;
         }
 
+        #region Object Bundle
+
+        /// <summary>
+        /// Parses the individual elements of a gltf model.
+        /// </summary>
+        /// <param name="modelRoot"></param>
+        /// <returns></returns>
+        public ObjectBundle ImportObject(ModelRoot modelRoot)
+        {
+            ObjectBundle objectBundle = new ObjectBundle();
+
+            //foreach (SharpGLTF.Schema2.Mesh childMesh in modelRoot.LogicalMeshes)
+            //{
+            //    objectBundle.ParseMesh(ExportMesh(childMesh));
+            //}
+
+            // this is the root ---> modelRoot.DefaultScence.VisualChildren
+            foreach (Node child in modelRoot.DefaultScene.VisualChildren)
+            {
+                ExportModelRoot(child);
+            }
+
+            return objectBundle;
+        }
+
+        public ObjectBundle ExportModelRoot(Node node)
+        {
+            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
+            ObjectBundle objectBundle = new ObjectBundle();
+
+            foreach (Node child in node.VisualChildren)
+            {
+                ExportMesh(child.Mesh, objectBundle.Mesh);
+            }
+
+            objectBundle.Transform = ExportTransform(node.LocalTransform);
+
+            return objectBundle;
+        }
+
+        private void ExportMesh(SharpGLTF.Schema2.Mesh mesh, EnvironmentManager.Components.Mesh objectMesh)
+        {
+            foreach (SharpGLTF.Schema2.MeshPrimitive primitive in mesh.Primitives)
+            {
+                // checks for POSITION or NORMAL vertex as not all designs have both
+                if (primitive.VertexAccessors.ContainsKey("POSITION"))
+                {
+                    Vector3Array vertices;
+                    vertices = primitive.GetVertices("POSITION").AsVector3Array();
+
+                    foreach (System.Numerics.Vector3 vertex in vertices)
+                    {
+                        MathNet.Spatial.Euclidean.Vector3D vector3D;
+                        vector3D = new MathNet.Spatial.Euclidean.Vector3D(vertex.X, vertex.Y, vertex.Z);
+                        objectMesh.Vertices.Add(vector3D);
+                    }
+                }
+
+                var indices = primitive.GetIndices();
+
+                for (int i = 0; i < indices.Count; i++)
+                {
+                    objectMesh.Triangles.Add((int)indices[i]);
+                }
+            }
+        }
+
+        private EnvironmentManager.Components.Transform ExportTransform(SharpGLTF.Transforms.AffineTransform transform)
+        {
+            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
+
+            // ROTATION
+            MathNet.Spatial.Euclidean.Quaternion quaternion;
+            quaternion = new MathNet.Spatial.Euclidean.Quaternion(transform.Rotation.W, transform.Rotation.X, transform.Rotation.Y, transform.Rotation.Z);
+
+            // SCALE
+            MathNet.Spatial.Euclidean.Vector3D vector3D;
+            vector3D = new MathNet.Spatial.Euclidean.Vector3D(transform.Scale.X, transform.Scale.Y, transform.Scale.Z);
+            synthesisTransform.Scale = vector3D;
+
+            return synthesisTransform;
+        }
+        #endregion
+
+        #region Design Object
         /// <summary>
         /// Parses the elements of a gltf model from a root node and traverses through the model tree graph.
         /// </summary>
@@ -98,29 +183,6 @@ namespace SynthesisAPI.AssetManager
             return design;
         }
 
-        /// <summary>
-        /// Parses the individual elements of a gltf model.
-        /// </summary>
-        /// <param name="modelRoot"></param>
-        /// <returns></returns>
-        public ObjectBundle ImportObject(ModelRoot modelRoot)
-        {
-            ObjectBundle objectBundle = new ObjectBundle();
-
-            foreach (SharpGLTF.Schema2.Mesh childMesh in modelRoot.LogicalMeshes)
-            {
-                objectBundle.Mesh = ExportMesh(childMesh);
-            }
-
-            // this is the root ---> modelRoot.DefaultScence.VisualChildren
-            foreach (Node child in modelRoot.DefaultScene.VisualChildren)
-            {
-                ExportModelRoot(child);
-            }
-
-            return objectBundle;
-        }
-
         public Occurrence ExportOccurrenceFromNode(Node node)
         {
             // if node is already in the Components maps, return it
@@ -146,73 +208,6 @@ namespace SynthesisAPI.AssetManager
             }
 
             return occurrence;
-        }
-
-        public EnvironmentManager.Components.Transform ExportModelRoot(Node node)
-        {
-            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
-            ObjectBundle objectBundle = new ObjectBundle();
-
-            foreach (Node child in node.VisualChildren)
-            {
-                objectBundle.Transform = ExportTransform(child.LocalTransform);
-            }
-
-            return synthesisTransform;
-        }
-
-        private EnvironmentManager.Components.Transform ExportTransform(SharpGLTF.Transforms.AffineTransform transform)
-        {
-            EnvironmentManager.Components.Transform synthesisTransform = new EnvironmentManager.Components.Transform();
-
-            // ROTATION
-            MathNet.Spatial.Euclidean.Quaternion quaternion;
-            quaternion = new MathNet.Spatial.Euclidean.Quaternion(transform.Rotation.W, transform.Rotation.X, transform.Rotation.Y, transform.Rotation.Z);
-
-            // SCALE
-            MathNet.Spatial.Euclidean.Vector3D vector3D;
-            vector3D = new MathNet.Spatial.Euclidean.Vector3D(transform.Scale.X, transform.Scale.Y, transform.Scale.Z);
-            synthesisTransform.Scale = vector3D;
-
-            return synthesisTransform;
-        }
-
-        //private Design.Matrix3D ExportMatrix(System.Numerics.Matrix4x4 matrix4x4)
-        //{
-        //    Matrix3D matrix3D = new Matrix3D(matrix4x4.M11, matrix4x4.M12, matrix4x4.M13, matrix4x4.M14, matrix4x4.M21, matrix4x4.M22, matrix4x4.M23, matrix4x4.M24, matrix4x4.M31, matrix4x4.M32, matrix4x4.M33, matrix4x4.M34, matrix4x4.M41, matrix4x4.M42, matrix4x4.M43, matrix4x4.M44);
-
-        //    return matrix3D;
-        //}
-
-        private EnvironmentManager.Components.Mesh ExportMesh(SharpGLTF.Schema2.Mesh mesh)
-        {
-            EnvironmentManager.Components.Mesh synthesisMesh = new EnvironmentManager.Components.Mesh();
-            
-            foreach (SharpGLTF.Schema2.MeshPrimitive primitive in mesh.Primitives)
-            {
-                // checks for POSITION or NORMAL vertex as not all designs have both
-                if (primitive.VertexAccessors.ContainsKey("POSITION"))
-                {
-                    Vector3Array vertices;
-                    vertices = primitive.GetVertices("POSITION").AsVector3Array();
-
-                    foreach (System.Numerics.Vector3 vertex in vertices)
-                    {
-                        MathNet.Spatial.Euclidean.Vector3D vector3D;
-                        vector3D = new MathNet.Spatial.Euclidean.Vector3D(vertex.X, vertex.Y, vertex.Z);
-                        synthesisMesh.Vertices.Add(vector3D);
-                    }
-                }
-
-                var indices = primitive.GetIndices();
-
-                for (int i = 0; i < indices.Count; i++)
-                {
-                    synthesisMesh.Triangles.Add((int)indices[i]);
-                }
-            }
-
-            return synthesisMesh;
         }
 
         private Design.Component ExportComponentsFromMesh(SharpGLTF.Schema2.Mesh mesh)
@@ -535,6 +530,7 @@ namespace SynthesisAPI.AssetManager
             return parentObject;
         }
     }
+    #endregion
 
     public static class JsonDictionaryExtensions
     {
