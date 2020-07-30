@@ -5,14 +5,15 @@ using SynthesisAPI.Utilities;
 using MathNet.Spatial.Euclidean;
 using Engine.Util;
 
+using RigidbodyConstraints = SynthesisAPI.EnvironmentManager.Components.RigidbodyConstraints;
 using CollisionDetectionMode = SynthesisAPI.EnvironmentManager.Components.CollisionDetectionMode;
 
 namespace Engine.ModuleLoader.Adapters
 {
     public class RigidbodyAdapter : MonoBehaviour, IApiAdapter<Rigidbody>
     {
-        private Rigidbody instance;
-        private UnityEngine.Rigidbody unityRigidbody;
+        internal Rigidbody instance;
+        internal UnityEngine.Rigidbody unityRigidbody;
 
         public void OnEnable()
         {
@@ -21,6 +22,8 @@ namespace Engine.ModuleLoader.Adapters
                 gameObject.SetActive(false);
                 return;
             }
+
+            instance.Adapter = this;
 
             if ((unityRigidbody = GetComponent<UnityEngine.Rigidbody>()) == null)
                 unityRigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
@@ -54,6 +57,8 @@ namespace Engine.ModuleLoader.Adapters
                     return unityRigidbody.maxDepenetrationVelocity;
                 case "collisiondetectionmode":
                     return ConvertEnum<CollisionDetectionMode>(unityRigidbody.collisionDetectionMode);
+                case "constraints":
+                    return ConvertEnum<RigidbodyConstraints>(unityRigidbody.constraints);
                 default:
                     throw new Exception($"Property {n} is not setup");
             }
@@ -92,6 +97,9 @@ namespace Engine.ModuleLoader.Adapters
                     break;
                 case "collisiondetectionmode":
                     unityRigidbody.collisionDetectionMode = ConvertEnum<UnityEngine.CollisionDetectionMode>(o);
+                    break;
+                case "constraints":
+                    unityRigidbody.constraints = ConvertEnum<UnityEngine.RigidbodyConstraints>(o);
                     break;
                 default:
                     throw new Exception($"Property {n} is not setup");

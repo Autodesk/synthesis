@@ -17,27 +17,56 @@ namespace SynthesisCore
         private Transform transform;
         private Rigidbody rigidbody;
 
+        private Entity A, B, C;
+
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
-            Entity e = EnvironmentManager.AddEntity();
-            transform = e.AddComponent<Transform>();
-            transform.Position = new Vector3D(0, 4, 0);
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
-            e.AddComponent<MeshCollider>();
-            selectable = e.AddComponent<Selectable>();
+            A = CreateTestEntity(new Vector3D(0, 2, 0));
+            B = CreateTestEntity(new Vector3D(1.1f, 2, 0));
+            C = CreateTestEntity(new Vector3D(1.1f, 3.1f, 0));
 
-            rigidbody = e.AddComponent<Rigidbody>();
-            // rigidbody.Velocity = new Vector3D(10, 0, 0);
-            rigidbody.useGravity = true;
-            rigidbody.Mass = 500.0f;
-            rigidbody.MaxAngularVelocity = 1080.0f;
+            var hingeJoint = B.AddComponent<HingeJoint>();
+            hingeJoint.ConnectedBody = A.GetComponent<Rigidbody>();
+            hingeJoint.Anchor = new Vector3D(0.55f, 0, 0);
+            hingeJoint.Axis = new Vector3D(1, 0, 0);
+            hingeJoint.BreakForce = 200;
+
+            var hinge2 = C.AddComponent<HingeJoint>();
+            hinge2.ConnectedBody = B.GetComponent<Rigidbody>();
+            hinge2.Anchor = new Vector3D(0, -0.55f, 0);
+            hinge2.Axis = new Vector3D(0, 1, 0);
+            hinge2.BreakForce = 200;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
             InputManager.AssignDigitalInput("test_move", new Digital("f"));
+        }
+
+        private Entity CreateTestEntity(Vector3D pos)
+        {
+            var physMat = new PhysicsMaterial();
+            physMat.Bounciness = 1.0f;
+            physMat.DynamicFriction = 1.0f;
+            physMat.BounceCombine = PhysicMaterialCombine.Maximum;
+
+            Entity e = EnvironmentManager.AddEntity();
+            transform = e.AddComponent<Transform>();
+            transform.Position = pos;
+            Mesh m = e.AddComponent<Mesh>();
+            cube(m);
+            var collider = e.AddComponent<MeshCollider>();
+            collider.Material = physMat;
+            selectable = e.AddComponent<Selectable>();
+
+            rigidbody = e.AddComponent<Rigidbody>();
+            // rigidbody.Velocity = new Vector3D(10, 0, 0);
+            // rigidbody.useGravity = false;
+            rigidbody.Mass = 1.0f;
+            rigidbody.MaxAngularVelocity = 1080.0f;
+
+            return e;
         }
 
         public override void OnUpdate() { }
@@ -78,7 +107,7 @@ namespace SynthesisCore
             if (de.State == DigitalState.Down)
             {
                 ApiProvider.Log("Key Pressed");
-                rigidbody.AddTorque(new Vector3D(0, 0, 150));
+                B.GetComponent<Rigidbody>().AddForce(new Vector3D(0, 190, 0));
             }
         }
 
