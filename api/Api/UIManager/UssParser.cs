@@ -9,7 +9,7 @@ namespace SynthesisAPI.UIManager
         {
             List<UssClass> classes = new List<UssClass>();
 
-            UssClass currentClass;
+            UssClass currentClass = null;
             
             foreach (string line in lines)
             {

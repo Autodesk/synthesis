@@ -16,5 +16,6 @@ namespace SynthesisAPI.UIManager.UIComponents
             Ui = ui;
             BindFunc = bindFunc;
         }
+
     }
 }
