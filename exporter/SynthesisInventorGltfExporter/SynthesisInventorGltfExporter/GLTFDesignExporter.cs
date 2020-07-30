@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Inventor;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SharpGLTF.Geometry;
 using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
 using SharpGLTF.Transforms;
+using Asset = Inventor.Asset;
+using File = System.IO.File;
 
 namespace SynthesisInventorGltfExporter
 {
@@ -28,7 +35,71 @@ namespace SynthesisInventorGltfExporter
             {
                 filename = filename.Replace(c, '_');
             }
-            sceneBuilder.ToSchema2().SaveGLB("C:/temp/" + filename + ".glb");
+
+            // TODO: This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. Figure out a more elegant solution.
+            var modelRoot = sceneBuilder.ToSchema2();
+            var dictionary = modelRoot.WriteToDictionary("temp");
+            var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
+            var parsedJToken = (JObject) JToken.ReadFrom(new JsonTextReader(new StringReader(jsonString)));
+            var extras = new JObject();
+            extras.Add("joints", ExportJoints(assemblyDocument));
+            parsedJToken.Add("extras", extras);
+            
+            var readSettings = new ReadSettings();
+            readSettings.FileReader = assetFileName => dictionary[assetFileName];
+            var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
+            modifiedGltf.SaveGLB("C:/temp/" + filename + ".glb");
+            modifiedGltf.SaveGLTF("C:/temp/" + filename + ".debug.gltf");
+        }
+        
+        
+        private JArray ExportJoints(AssemblyDocument assemblyDocument)
+        {
+            var jointArray = new JArray();
+            
+            foreach (AssemblyJoint joint in assemblyDocument.ComponentDefinition.Joints)
+            {
+                jointArray.Add(ExportJoint(joint));
+            }
+        
+            return jointArray;
+        }
+        
+        private JObject ExportJoint(AssemblyJoint invJoint)
+        {
+            // TODO: This should be done with protobuf, but adding protobuf as a dep wasn't possible because of the dep version resolving bug
+            var protoJoint = new JObject();
+            
+            var header = new JObject();
+            header.Add("name", invJoint.Name);
+            protoJoint.Add("header", header);
+            protoJoint.Add("origin", GetVector3D(GetJointOrigin(invJoint)));
+            
+            protoJoint.Add("isLocked", invJoint.Locked);
+            protoJoint.Add("isSuppresed", invJoint.Suppressed);
+            
+            protoJoint.Add("occurrenceOneUUID", GetJointedOccurrenceUUID(invJoint.OccurrenceOne));
+            protoJoint.Add("occurrenceTwoUUID", GetJointedOccurrenceUUID(invJoint.OccurrenceTwo));
+            return protoJoint;
+        }
+        
+        private string GetJointedOccurrenceUUID(ComponentOccurrence occurrence)
+        {
+            return string.Join("+", new List<ComponentOccurrence>(occurrence.OccurrencePath.Cast<ComponentOccurrence>()).Select(o => o.Name));
+        }
+        
+        private static Point GetJointOrigin(AssemblyJoint invJoint)
+        {
+            return invJoint.Definition.OriginOne.Point;
+        }
+        
+        private static JObject GetVector3D(Point getJointOrigin)
+        {
+            var protoJointOrigin = new JObject();
+            protoJointOrigin.Add("x", getJointOrigin.X);
+            protoJointOrigin.Add("y", getJointOrigin.Y);
+            protoJointOrigin.Add("z", getJointOrigin.Z);
+            return protoJointOrigin;
         }
 
         private SceneBuilder ExportScene(AssemblyDocument assemblyDocument)
