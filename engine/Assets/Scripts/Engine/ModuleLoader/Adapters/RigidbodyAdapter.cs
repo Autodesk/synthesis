@@ -33,6 +33,8 @@ namespace Engine.ModuleLoader.Adapters
             instance.LinkedSetter = Setter;
         }
 
+        private void OnCollisionEnter(Collision collision) => instance.OnEnterCollision(collision.impulse.magnitude);
+
         private object Getter(string n)
         {
             switch (n.ToLower())

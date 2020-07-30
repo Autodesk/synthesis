@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -106,6 +107,11 @@ namespace SynthesisCore
             transform.Position = pos;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
+
+            var audio = e.AddComponent<AudioSource>();
+            audio.AudioClip = AssetManager.GetAsset<AudioClipAsset>("/modules/synthesis_core/hit-sound-effect.wav");
+            audio.IsPlaying = false;
+
             var collider = e.AddComponent<MeshCollider>();
             collider.Material = physMat;
             selectable = e.AddComponent<Selectable>();
@@ -118,6 +124,11 @@ namespace SynthesisCore
             rigidbody.Mass = 1.0f;
             rigidbody.MaxAngularVelocity = 400.0f;
             rigidbody.Drag = 0.1f;
+
+            rigidbody.OnEnterCollision += magnitude =>
+            {
+                audio.IsPlaying = true;
+            };
 
             return e;
         }

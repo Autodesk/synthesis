@@ -22,6 +22,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
         private void Set(string name, object obj) => LinkedSetter(name, obj);
         private T Get<T>(string name) => (T)LinkedGetter(name);
 
+        public delegate void CollisionFeedback(float magn);
+        public CollisionFeedback OnEnterCollision = m => { };
+
         public bool useGravity {
             get => Get<bool>("useGravity");
             set => Set("useGravity", value);
