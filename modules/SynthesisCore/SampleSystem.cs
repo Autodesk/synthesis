@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -24,6 +25,9 @@ namespace SynthesisCore
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
+            var audio = e.AddComponent<AudioSource>();
+            audio.AudioClip = AssetManager.GetAsset<AudioClipAsset>("/modules/synthesis_core/oreo.wav");
+            audio.IsPlaying = true;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);

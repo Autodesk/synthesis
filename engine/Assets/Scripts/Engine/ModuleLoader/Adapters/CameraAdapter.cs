@@ -30,6 +30,7 @@ namespace Engine.ModuleLoader.Adapters
 					// TODO rename Main Camera in scene to something like Default Camera Settings
 				}
 				camera = gameObject.AddComponent<UnityEngine.Camera>();
+				gameObject.AddComponent<UnityEngine.AudioListener>();
 				camera.CopyFrom(defaultCamera);
 				gameObject.AddComponent<PhysicsRaycaster>();
 				camera.tag = "MainCamera"; // TODO manage which is main camera?
