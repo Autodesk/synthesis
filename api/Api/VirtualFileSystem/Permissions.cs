@@ -20,7 +20,7 @@ namespace SynthesisAPI.VirtualFileSystem
         Write
     }
 
-    public class PermissionsExpcetion : SynthesisExpection
+    public class PermissionsExpcetion : SynthesisException
     {
         public PermissionsExpcetion() { }
 

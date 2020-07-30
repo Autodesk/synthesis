@@ -7,6 +7,7 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
+using SynthesisCore.Components;
 
 namespace SynthesisCore
 {
@@ -31,25 +32,26 @@ namespace SynthesisCore
             hingeJoint.ConnectedBody = A.GetComponent<Rigidbody>();
             hingeJoint.Anchor = new Vector3D(0.55f, 0, 0);
             hingeJoint.Axis = new Vector3D(1, 0, 0);
-            hingeJoint.BreakForce = 200;
+            hingeJoint.BreakForce = 250;
 
             var hinge2 = C.AddComponent<HingeJoint>();
             hinge2.ConnectedBody = B.GetComponent<Rigidbody>();
             hinge2.Anchor = new Vector3D(0, -0.55f, 0);
             hinge2.Axis = new Vector3D(0, 1, 0);
-            hinge2.BreakForce = 200;
+            hinge2.BreakForce = 250;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
             InputManager.AssignDigitalInput("test_move", new Digital("f"));
         }
 
+        private static uint nextChannel = 5;
         private Entity CreateTestEntity(Vector3D pos)
         {
             var physMat = new PhysicsMaterial();
-            physMat.Bounciness = 1.0f;
-            physMat.DynamicFriction = 1.0f;
-            physMat.BounceCombine = PhysicMaterialCombine.Maximum;
+            // physMat.Bounciness = 1.0f;
+            physMat.DynamicFriction = 0.05f;
+            // physMat.BounceCombine = PhysicMaterialCombine.Maximum;
 
             Entity e = EnvironmentManager.AddEntity();
             transform = e.AddComponent<Transform>();
@@ -59,6 +61,8 @@ namespace SynthesisCore
             var collider = e.AddComponent<MeshCollider>();
             collider.Material = physMat;
             selectable = e.AddComponent<Selectable>();
+            e.AddComponent<Moveable>().Channel = nextChannel;
+            nextChannel++;
 
             rigidbody = e.AddComponent<Rigidbody>();
             // rigidbody.Velocity = new Vector3D(10, 0, 0);
@@ -107,7 +111,7 @@ namespace SynthesisCore
             if (de.State == DigitalState.Down)
             {
                 ApiProvider.Log("Key Pressed");
-                B.GetComponent<Rigidbody>().AddForce(new Vector3D(0, 190, 0));
+                B.GetComponent<Rigidbody>().AddForce(new Vector3D(100, 200, 100));
             }
         }
 

@@ -7,7 +7,7 @@ namespace Engine.ModuleLoader.Adapters
 	{
 		public string Name;
 
-		public SystemBase _system;
+		private SystemBase _system;
 
 		public void OnEnable()
 		{
