@@ -11,16 +11,20 @@ namespace SynthesisCore.Systems
     {
         public override void Setup()
         {
-            var tabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/Tab.uxml");
+            var tabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Tab.uxml");
+            var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Environments.uxml");
+            var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Modules.uxml");
+            var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Settings.uxml");
+            
             Tab engineTab = new Tab("Engine", tabAsset, null);
-
-            var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/Environments.uxml");
             Panel environmentsWindow = new Panel("Environments", environmentsAsset, null);
+            Panel modulesWindow = new Panel("Modules", modulesAsset, null);
+            Panel settingsWindow = new Panel("Settings", settingsAsset, null);
             
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);
-            
-            UIManager.ShowPanel("Environments");
+            UIManager.AddPanel(modulesWindow);
+            UIManager.AddPanel(settingsWindow);
         }
 
         public override void OnPhysicsUpdate() { }
