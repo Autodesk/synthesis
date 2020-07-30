@@ -18,31 +18,71 @@ namespace SynthesisCore
         private Transform transform;
         private Rigidbody rigidbody;
 
-        private Entity A, B, C;
+        private Entity A, B, C, D, E;
 
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
-            A = CreateTestEntity(new Vector3D(0, 2, 0));
-            B = CreateTestEntity(new Vector3D(1.1f, 2, 0));
-            C = CreateTestEntity(new Vector3D(1.1f, 3.1f, 0));
+            A = CreateTestEntity(new Vector3D(0, 2f, 0));
+            B = CreateTestEntity(new Vector3D(1f, 1f, 0));
+            C = CreateTestEntity(new Vector3D(0, 2f, 1f));
+            D = CreateTestEntity(new Vector3D(-1f, 2f, 0));
+            E = CreateTestEntity(new Vector3D(0, 2f, -1f));
 
             var hingeJoint = B.AddComponent<HingeJoint>();
             hingeJoint.ConnectedBody = A.GetComponent<Rigidbody>();
-            hingeJoint.Anchor = new Vector3D(0.55f, 0, 0);
-            hingeJoint.Axis = new Vector3D(1, 0, 0);
-            hingeJoint.BreakForce = 250;
+            hingeJoint.Anchor = new Vector3D(-0.5f, 0.5f, 0);
+            hingeJoint.Axis = new Vector3D(0, 0, 1);
+            hingeJoint.BreakForce = 500;
+            hingeJoint.UseLimits = true;
+            hingeJoint.Limits = new JointLimits()
+            {
+                Max = 90,
+                Min = -90
+            };
 
-            var hinge2 = C.AddComponent<HingeJoint>();
-            hinge2.ConnectedBody = B.GetComponent<Rigidbody>();
-            hinge2.Anchor = new Vector3D(0, -0.55f, 0);
-            hinge2.Axis = new Vector3D(0, 1, 0);
-            hinge2.BreakForce = 250;
+            var h2 = C.AddComponent<HingeJoint>();
+            h2.ConnectedBody = A.GetComponent<Rigidbody>();
+            h2.Anchor = new Vector3D(0, -0.5f, -0.5f);
+            h2.Axis = new Vector3D(1, 0, 0);
+            h2.BreakForce = 500;
+            h2.UseLimits = true;
+            h2.Limits = new JointLimits()
+            {
+                Max = 180,
+                Min = 0 // Might need to switch
+            };
+
+            var h3 = D.AddComponent<HingeJoint>();
+            h3.ConnectedBody = A.GetComponent<Rigidbody>();
+            h3.Anchor = new Vector3D(0.5f, -0.5f, 0);
+            h3.Axis = new Vector3D(0, 0, 1);
+            h3.BreakForce = 500;
+            h3.UseLimits = true;
+            h3.Limits = new JointLimits()
+            {
+                Max = 180,
+                Min = 0 // Might need to switch
+            };
+
+            var h4 = E.AddComponent<HingeJoint>();
+            h4.ConnectedBody = A.GetComponent<Rigidbody>();
+            h4.Anchor = new Vector3D(0, -0.5f, 0.5f);
+            h4.Axis = new Vector3D(1, 0, 0);
+            h4.BreakForce = 500;
+            h4.UseLimits = true;
+            h4.Limits = new JointLimits()
+            {
+                Max = 0,
+                Min = -180 // Might need to switch
+            };
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
-            InputManager.AssignDigitalInput("test_move", new Digital("f"));
+            InputManager.AssignDigitalInput("fly", new Digital("f"));
+            InputManager.AssignDigitalInput("spin", new Digital("r"));
+            InputManager.AssignDigitalInput("break", new Digital("x"));
         }
 
         private static uint nextChannel = 5;
@@ -50,7 +90,7 @@ namespace SynthesisCore
         {
             var physMat = new PhysicsMaterial();
             // physMat.Bounciness = 1.0f;
-            physMat.DynamicFriction = 0.05f;
+            // physMat.DynamicFriction = 0.05f;
             // physMat.BounceCombine = PhysicMaterialCombine.Maximum;
 
             Entity e = EnvironmentManager.AddEntity();
@@ -68,7 +108,8 @@ namespace SynthesisCore
             // rigidbody.Velocity = new Vector3D(10, 0, 0);
             // rigidbody.useGravity = false;
             rigidbody.Mass = 1.0f;
-            rigidbody.MaxAngularVelocity = 1080.0f;
+            rigidbody.MaxAngularVelocity = 400.0f;
+            rigidbody.Drag = 0.1f;
 
             return e;
         }
@@ -105,13 +146,36 @@ namespace SynthesisCore
             };
         }
 
-        [TaggedCallback("input/test_move")]
-        public void TestMove(DigitalEvent de)
+        [TaggedCallback("input/fly")]
+        public void Fly(DigitalEvent de)
         {
             if (de.State == DigitalState.Down)
             {
-                ApiProvider.Log("Key Pressed");
-                B.GetComponent<Rigidbody>().AddForce(new Vector3D(100, 200, 100));
+                // ApiProvider.Log("Key Pressed");
+                Selectable.Selected?.Entity?.GetComponent<Rigidbody>().AddForce(new Vector3D(0, 475, 0));
+            }
+        }
+
+        [TaggedCallback("input/spin")]
+        public void Spin(DigitalEvent de)
+        {
+            if (de.State == DigitalState.Down)
+            {
+                // ApiProvider.Log("Key Pressed");
+                Selectable.Selected?.Entity?.GetComponent<Rigidbody>().AddTorque(new Vector3D(350, 0, 0));
+            }
+        }
+
+        [TaggedCallback("input/break")]
+        public void Break(DigitalEvent de)
+        {
+            if (de.State == DigitalState.Down)
+            {
+                // ApiProvider.Log("Key Pressed");
+                B.GetComponent<HingeJoint>().BreakForce = 0f;
+                C.GetComponent<HingeJoint>().BreakForce = 0f;
+                D.GetComponent<HingeJoint>().BreakForce = 0f;
+                E.GetComponent<HingeJoint>().BreakForce = 0f;
             }
         }
 
