@@ -102,7 +102,7 @@ namespace Controller.Rpc
             handlers[methodName] = handler;
         }
 
-        public static Result<T, Exception> Invoke<T>(string methodName, params object[] args)
+        public static Result<T, RpcError> Invoke<T>(string methodName, params object[] args)
         {
             return Invoke(methodName, args).MapResult<T>((res) => (T)res);
         }
@@ -131,7 +131,7 @@ namespace Controller.Rpc
                     }
                     else
                     {
-                        throw new Exception("RPC method call missing arguments");
+                        throw new InvalidParams("RPC method call missing arguments");
                     }
                 }
                 else if (param.ParameterType != args[args_i].GetType())
@@ -171,13 +171,13 @@ namespace Controller.Rpc
             return value;
         }
 
-        public static Result<object, Exception> Invoke(string methodName, params object[] args)
+        public static Result<object, RpcError> Invoke(string methodName, params object[] args)
         {
             try
             {
                 if (!handlers.ContainsKey(methodName))
                 {
-                    throw new Exception($"Missing RPC function: {methodName}");
+                    return new Result<object, RpcError>(new MethodNotFound($"Missing RPC function: {methodName}"));
                 }
                 var handler = handlers[methodName];
                 args = FixArguments(handler, args);
@@ -185,13 +185,17 @@ namespace Controller.Rpc
                 if (handler.ReturnType == typeof(void))
                 {
                     handler.Invoke(null, args);
-                    return new Result<object, Exception>(new Void());
+                    return new Result<object, RpcError>(new Void());
                 }
-                return new Result<object, Exception>(handler.Invoke(null, args));
+                return new Result<object, RpcError>(handler.Invoke(null, args));
+            }
+            catch (TargetInvocationException e)
+            {
+                return new Result<object, RpcError>(new InternalError($"Error while calling method {methodName}", e.InnerException));
             }
             catch (Exception e)
             {
-                return new Result<object, Exception>(new Exception($"RPC server failed to invoke {methodName}", e));
+                return new Result<object, RpcError>(new InternalError($"Failed to invoke method {methodName}", e));
             }
         }
 

@@ -2,6 +2,7 @@
 
 #[macro_use] extern crate jsonrpc_client_http;
 
+
 use jsonrpc_client_http::HttpTransport;
 
 jsonrpc_client!(pub struct ControllerRpc {

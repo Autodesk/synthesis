@@ -2,8 +2,11 @@
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using System;
 using System.IO;
 using System.Net;
+
+#nullable enable
 
 namespace Controller.Rpc
 {
@@ -31,21 +34,32 @@ namespace Controller.Rpc
                 HttpListenerContext context = await listener.GetContextAsync();
 
                 var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
-                MethodCallContext call = MethodCallContext.FromJson(requestContent);
 
-                Result<object, System.Exception> result;
+                Result<object, RpcError> result;
+                MethodCallContext? call = null;
 
-                if (call.JsonRpcVersion != RpcManager.JsonRpcVersion)
+                try
                 {
-                    result = new Result<object, System.Exception>(
-                        new System.Exception($"Incompatible RPC versions call {call.JsonRpcVersion} vs current {RpcManager.JsonRpcVersion}"));
+                    call = MethodCallContext.FromJson(requestContent);
+
+                    if (call.JsonRpcVersion != RpcManager.JsonRpcVersion)
+                    {
+                        result = new Result<object, RpcError>(
+                            new InvalidRequest($"Incompatible RPC versions call {call.JsonRpcVersion} vs current {RpcManager.JsonRpcVersion}"));
+                    }
+                    else
+                    {
+                        result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
+                    }
                 }
-                else
+                catch(Exception e)
                 {
-                    result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
+                    result = new Result<object, RpcError>((ParseError)e);
                 }
 
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(RpcResponse.ToJson(RpcManager.JsonRpcVersion, result, call.Id));
+                var response = RpcResponse.ToJson(RpcManager.JsonRpcVersion, result, call == null ? 0 : call.Id);
+
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(response);
 
                 context.Response.ContentLength64 = buffer.Length;
                 context.Response.OutputStream.Write(buffer, 0, buffer.Length);
