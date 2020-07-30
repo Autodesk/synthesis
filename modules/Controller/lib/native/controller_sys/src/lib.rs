@@ -6,9 +6,8 @@ use jsonrpc_client_http::HttpTransport;
 
 jsonrpc_client!(pub struct ControllerRpc {
     pub fn Forward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn Back(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn Backward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
     pub fn Left(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
     pub fn Right(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn ReturnString(&mut self, string: String) -> RpcRequest<String>;
 });
 

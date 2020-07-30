@@ -22,6 +22,8 @@ namespace Controller.Rpc
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
+        private static bool Initialized = false;
+
         static RpcManager()
         {
             Init();
@@ -29,8 +31,12 @@ namespace Controller.Rpc
 
         public static void Init()
         {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Controller");
-            RegisterAll(assembly);
+            if (!Initialized)
+            {
+                Initialized = true;
+                var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Controller");
+                RegisterAll(assembly);
+            }
         }
 
         public static void RegisterAll(Assembly assembly)
@@ -68,7 +74,7 @@ namespace Controller.Rpc
 
         private static bool IsPrimitive(Type type)
         {
-            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(void))
                 return true;
             if (type.IsArray)
                 return IsPrimitive(type.GetElementType());
@@ -79,11 +85,19 @@ namespace Controller.Rpc
         {
             if (handlers.ContainsKey(methodName))
             {
-                throw new Exception("Registering existing method name");
+                throw new Exception($"Registering method with existing name {methodName}");
             }
-            foreach(var p in handler.GetParameters().Where(p => !IsPrimitive(p.ParameterType)))
+            if (handler.IsGenericMethod)
             {
-                throw new Exception($"Registering method {methodName} parameter {p.Name} with non-primitive type {p.ParameterType.Name}");
+                throw new Exception($"Registering generic method {methodName}");
+            }
+            foreach (var p in handler.GetParameters().Where(p => !IsPrimitive(p.ParameterType)))
+            {
+                throw new Exception($"Registering method {methodName} that has parameter {p.Name} with non-primitive type {p.ParameterType.Name}");
+            }
+            if(!IsPrimitive(handler.ReturnType))
+            {
+                throw new Exception($"Registering method {methodName} that returns non-primitive type {handler.ReturnType.Name}");
             }
             handlers[methodName] = handler;
         }

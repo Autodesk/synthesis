@@ -16,6 +16,7 @@ namespace Controller.Rpc
         public const string Prefix = "http://" + Host + ":" + Port + "/";
         public override void Setup()
         {
+            RpcManager.Init();
             listener.Prefixes.Add(Prefix); // Must add prefixes
             listener.Start();
             Start();

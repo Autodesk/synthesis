@@ -15,12 +15,10 @@ fn main() {
     println!("left");
     let _ = client.Left(5, 10.0);
     sleep(Duration::from_secs(3));
+    println!("back");
+    let _ = client.Backward(5, 10.0);
+    sleep(Duration::from_secs(3));
     println!("right");
     let _ = client.Right(5, 10.0);
-    sleep(Duration::from_secs(3));
-    println!("back");
-    let _ = client.Back(5, 10.0);
-    let res = client.ReturnString("ayyyy lmao".to_string()).call().unwrap();
-    println!("{}", res);
     sleep(Duration::from_secs(3));
 }
