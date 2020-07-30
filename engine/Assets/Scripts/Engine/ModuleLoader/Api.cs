@@ -424,7 +424,8 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider), typeof(MeshColliderAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.HingeJoint), typeof(HingeJointAdapter) }
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.HingeJoint), typeof(HingeJointAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.FixedJoint), typeof(FixedJointAdapter) }
 				};
 			}
 

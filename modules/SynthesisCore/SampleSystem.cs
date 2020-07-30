@@ -30,7 +30,9 @@ namespace SynthesisCore
             D = CreateTestEntity(new Vector3D(-1f, 2f, 0));
             E = CreateTestEntity(new Vector3D(0, 2f, -1f));
 
-            var hingeJoint = B.AddComponent<HingeJoint>();
+            #region Hard-coded joints for demonstration
+
+            /*var hingeJoint = B.AddComponent<HingeJoint>();
             hingeJoint.ConnectedBody = A.GetComponent<Rigidbody>();
             hingeJoint.Anchor = new Vector3D(-0.5f, 0.5f, 0);
             hingeJoint.Axis = new Vector3D(0, 0, 1);
@@ -40,7 +42,11 @@ namespace SynthesisCore
             {
                 Max = 90,
                 Min = -90
-            };
+            };*/
+
+            var h1 = B.AddComponent<FixedJoint>();
+            h1.ConnectedBody = A.GetComponent<Rigidbody>();
+            h1.BreakForce = 500;
 
             var h2 = C.AddComponent<HingeJoint>();
             h2.ConnectedBody = A.GetComponent<Rigidbody>();
@@ -77,6 +83,8 @@ namespace SynthesisCore
                 Max = 0,
                 Min = -180 // Might need to switch
             };
+
+            #endregion
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
             InputManager.AssignDigitalInputs("move", test);
@@ -172,7 +180,7 @@ namespace SynthesisCore
             if (de.State == DigitalState.Down)
             {
                 // ApiProvider.Log("Key Pressed");
-                B.GetComponent<HingeJoint>().BreakForce = 0f;
+                B.GetComponent<FixedJoint>().BreakForce = 0f;
                 C.GetComponent<HingeJoint>().BreakForce = 0f;
                 D.GetComponent<HingeJoint>().BreakForce = 0f;
                 E.GetComponent<HingeJoint>().BreakForce = 0f;
