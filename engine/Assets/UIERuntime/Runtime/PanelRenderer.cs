@@ -225,7 +225,7 @@ namespace Unity.UIElements.Runtime
         {
             // Basically this method only causes issues for us
             
-            ApiProvider.Log("Recreate Called");
+            ApiProvider.Log("Recreate Called", LogLevel.Debug);
             
             if (enableLiveUpdates)
             {
@@ -377,7 +377,7 @@ namespace Unity.UIElements.Runtime
                 if (m_ShouldWarnWorldTransformMissing)
                 {
                     m_ShouldWarnWorldTransformMissing = false;
-                    Debug.LogError("PanelRenderer needs an IWorldTransform implementation for world-space rendering");
+                    ApiProvider.Log("PanelRenderer needs an IWorldTransform implementation for world-space rendering", LogLevel.Error);
                 }
                 panelPosition = Vector2.zero;
                 return false;

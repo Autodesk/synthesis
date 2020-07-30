@@ -2,10 +2,10 @@
 
 namespace SynthesisAPI.VirtualFileSystem
 {
-    public class SynthesisExpection : Exception
+    public class SynthesisException : Exception
     {
-        public SynthesisExpection() { }
-        public SynthesisExpection(string message) : base(message) { }
-        public SynthesisExpection(string message, Exception inner) : base(message, inner) { }
+        public SynthesisException() { }
+        public SynthesisException(string message) : base(message) { }
+        public SynthesisException(string message, Exception inner) : base(message, inner) { }
     }
 }
