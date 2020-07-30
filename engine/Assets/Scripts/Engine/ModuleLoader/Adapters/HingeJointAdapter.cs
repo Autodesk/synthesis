@@ -8,6 +8,7 @@ using HingeJoint = SynthesisAPI.EnvironmentManager.Components.HingeJoint;
 using Rigidbody = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
 using ConfigurableJointMotion = SynthesisAPI.EnvironmentManager.Components.ConfigurableJointMotion;
 using JointLimits = SynthesisAPI.EnvironmentManager.Components.JointLimits;
+using SynthesisAPI.Runtime;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -38,6 +39,11 @@ namespace Engine.ModuleLoader.Adapters
 
         public object Getter(string n)
         {
+            if (unityJoint == null)
+            {
+                ApiProvider.Log("Joint is broken, cannot get", LogLevel.Debug);
+            }
+
             switch (n.ToLower())
             {
                 case "anchor":
@@ -71,6 +77,11 @@ namespace Engine.ModuleLoader.Adapters
 
         public void Setter(string n, object o)
         {
+            if (unityJoint == null)
+            {
+                ApiProvider.Log("Joint is broken, cannot set", LogLevel.Debug);
+            }
+
             switch (n.ToLower())
             {
                 case "anchor":

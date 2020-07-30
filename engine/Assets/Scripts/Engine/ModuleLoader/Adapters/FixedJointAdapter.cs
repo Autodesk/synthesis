@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.Runtime;
+using System;
 using UnityEngine;
 
 using FixedJoint = SynthesisAPI.EnvironmentManager.Components.FixedJoint;
@@ -30,6 +31,11 @@ namespace Engine.ModuleLoader.Adapters
 
         private object Getter(string n)
         {
+            if (unityJoint == null)
+            {
+                ApiProvider.Log("Joint is broken, cannot get", LogLevel.Debug);
+            }
+
             switch (n.ToLower())
             {
                 case "connectedbody":
@@ -49,6 +55,11 @@ namespace Engine.ModuleLoader.Adapters
         }
         private void Setter(string n, object o)
         {
+            if (unityJoint == null)
+            {
+                ApiProvider.Log("Joint is broken, cannot set", LogLevel.Debug);
+            }
+
             switch (n.ToLower())
             {
                 case "connectedbody":
