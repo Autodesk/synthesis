@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SynthesisAPI.EnvironmentManager.Bundles;
+using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
@@ -48,6 +48,7 @@ namespace SynthesisAPI.EnvironmentManager
                 ApiProvider.AddEntityToScene(newEntity);
                 entities.Add(newEntity);
             }
+            newEntity.AddComponent<Parent>();
             return newEntity;
         }
 
@@ -131,9 +132,12 @@ namespace SynthesisAPI.EnvironmentManager
 
         private static void AddComponent<TComponent>(this Entity entity, TComponent component) where TComponent : Component
         {
-            ApiProvider.AddComponentToScene(entity, component);
-            component.SetEntity(entity);
-            components.Set(entity.Index, entity.Gen, component);
+            if (EntityExists(entity))
+            {
+                ApiProvider.AddComponentToScene(entity, component);
+                component.SetEntity(entity);
+                components.Set(entity.Index, entity.Gen, component);
+            }
         }
         
 
@@ -178,10 +182,18 @@ namespace SynthesisAPI.EnvironmentManager
             return result;
         }
 
-        public static void AddBundle(this Entity entity, IBundle bundle)
+        public static void AddBundle(this Entity entity, Bundle bundle)
         {
-            foreach(Component c in bundle.Components)
-                entity.AddComponent(c);
+            if (EntityExists(entity)){
+                foreach (Component c in bundle.Components)
+                    entity.AddComponent(c);
+                foreach (Bundle b in bundle.ChildBundles)
+                {
+                    Entity e = AddEntity();
+                    e.GetComponent<Parent>()!.Set(entity);
+                    e.AddBundle(b);
+                }
+            }
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -20,16 +21,10 @@ namespace SynthesisCore
 
         public override void Setup()
         {
-            Entity e = EnvironmentManager.AddEntity();
-            transform = e.AddComponent<Transform>();
-            selectable = e.AddComponent<Selectable>();
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
-
-            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
-            InputManager.AssignDigitalInputs("move", test);
+            //Entity e = EnvironmentManager.AddEntity();
+            //e.AddBundle(AssetManager.GetAsset<GltfAsset>("/modules/SynthesisCore/Test.glb"));
         }
-
+        
         public override void OnUpdate() { }
 
         private void cube(Mesh m)

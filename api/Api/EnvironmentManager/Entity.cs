@@ -1,4 +1,5 @@
 ﻿using System;
+using SynthesisAPI.EnvironmentManager.Components;
 
 namespace SynthesisAPI.EnvironmentManager
 {
@@ -16,7 +17,6 @@ namespace SynthesisAPI.EnvironmentManager
         public static implicit operator Entity(Int32 value) => new Entity { _value = (UInt32)value };
 
         public static implicit operator UInt32(Entity e) => e._value;
-
 
         #region EntityBitModifier
 

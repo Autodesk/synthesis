@@ -15,7 +15,7 @@ namespace Controller
 		public override void Setup()
         {
 			var asset = AssetManager.GetAsset<JsonAsset>("/modules/controller/test.json");
-			ApiProvider.Log(asset.Name + " " + asset.ReadToEnd());
+			SynthesisAPI.Utilities.Logger.Log(asset.Name + " " + asset.ReadToEnd());
 		}
 
 		public override void OnUpdate()

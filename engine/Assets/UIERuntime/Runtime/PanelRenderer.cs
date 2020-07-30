@@ -225,7 +225,7 @@ namespace Unity.UIElements.Runtime
         {
             // Basically this method only causes issues for us
             
-            ApiProvider.Log("Recreate Called");
+            SynthesisAPI.Utilities.Logger.Log("Recreate Called");
             
             if (enableLiveUpdates)
             {

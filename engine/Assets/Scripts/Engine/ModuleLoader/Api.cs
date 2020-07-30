@@ -28,6 +28,7 @@ using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engi
 
 namespace Engine.ModuleLoader
 {
+
 	public class Api : MonoBehaviour
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
@@ -262,10 +263,10 @@ namespace Engine.ModuleLoader
 						RegisterTagCallback(callback, exportedModuleClassInstance);
 					}
 				}
-				catch (Exception)
-				{
-					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
-					// TODO unload assembly? return false?
+				catch (Exception e)
+				{ 
+					SynthesisAPI.Runtime.ApiProvider.Log($"{e}: Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
+																															// TODO unload assembly? return false?
 					continue;
 				}
 			}
@@ -316,22 +317,26 @@ namespace Engine.ModuleLoader
 				});
 		}
 
+		public static class ApiProviderData {
+			public static GameObject EntityParent { get; set; }
+			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+		}
+
 		private class ApiProvider : IApiProvider
 		{
-			private GameObject _entityParent;
-			private Dictionary<Entity, GameObject> _gameObjects;
 			private readonly Dictionary<Type, Type> _builtins;
 
 			public ApiProvider()
 			{
-				_entityParent = new GameObject("Entities");
-				_gameObjects = new Dictionary<Entity, GameObject>();
+				ApiProviderData.EntityParent = new GameObject("Entities");
+				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
 				_builtins = new Dictionary<Type, Type>
 				{
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) }
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
 				};
 			}
 
@@ -364,17 +369,17 @@ namespace Engine.ModuleLoader
 
 			public void AddEntityToScene(Entity entity)
 			{
-				if (_gameObjects.ContainsKey(entity))
+				if (ApiProviderData.GameObjects.ContainsKey(entity))
 					throw new Exception($"Entity \"{entity}\" already exists");
-				var gameObject = new GameObject($"Entity {entity.GetIndex()}");
-				gameObject.transform.SetParent(_entityParent.transform);
-				_gameObjects.Add(entity, gameObject);
+				var gameObject = new GameObject($"Entity {entity.Index}");
+				gameObject.transform.SetParent(ApiProviderData.EntityParent.transform);
+				ApiProviderData.GameObjects.Add(entity, gameObject);
 			}
 
 			public void RemoveEntityFromScene(Entity entity)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				Destroy(gameObject);
 			}
@@ -382,7 +387,7 @@ namespace Engine.ModuleLoader
 			public Component AddComponentToScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				dynamic component;
 				Type type;
@@ -429,7 +434,7 @@ namespace Engine.ModuleLoader
 			public void AddComponentToScene(Entity entity, Component component)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				Type componentType = component.GetType();
 				Type type;
@@ -453,7 +458,7 @@ namespace Engine.ModuleLoader
 			public void RemoveComponentFromScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				Type type;
 				if (_builtins.ContainsKey(t))

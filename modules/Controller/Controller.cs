@@ -9,8 +9,8 @@ namespace Controller
 		[Callback]
 		public void SampleListenCallback(SampleEvent s)
 		{
-			ApiProvider.Log(s.A);
-			ApiProvider.Log(s.B);
+			SynthesisAPI.Utilities.Logger.Log(s.A);
+			SynthesisAPI.Utilities.Logger.Log(s.B);
 		}
 	}
 }

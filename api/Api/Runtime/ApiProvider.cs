@@ -8,7 +8,7 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
-    public static class ApiProvider
+	internal static class ApiProvider
 	{
 		private static IApiProvider? Instance => Inner.Instance;
 

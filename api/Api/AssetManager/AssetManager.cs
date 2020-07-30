@@ -369,7 +369,7 @@ namespace SynthesisAPI.AssetManager
                         return new VisualElementAsset(name, perm, sourcePath);
                     });
 
-                RegisterAssetType("text/gltf", new[] { ".gltf" },
+                RegisterAssetType("text/gltf", new[] { ".gltf", ".glb" },
                      (name, perm, sourcePath, args) =>
                      {
                        if (args.Length != 0)

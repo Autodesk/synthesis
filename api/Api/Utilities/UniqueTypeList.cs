@@ -11,6 +11,12 @@ namespace SynthesisAPI.Utilities
         {
             entries = new Dictionary<Type, T>();
         }
+        public U Get<U>() where U : T
+        {
+            if (entries.ContainsKey(typeof(U)))
+                return (U) entries[typeof(U)];
+            return default;
+        }
         public bool Add<U>(U val) where U : T
         {
             if (entries.ContainsKey(typeof(U)))
