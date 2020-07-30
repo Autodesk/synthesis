@@ -3,6 +3,22 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
+        <ApplicationIcon>W16_SYN_launch.ico</ApplicationIcon>
+        <PackageId>Autodesk.Synthesis.Api</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>Synthesis Team</Authors>
+        <Company>Autodesk</Company>
+        <Product>Synthesis</Product>
+        <Description>An API for developing modules for the Synthesis™ platform</Description>
+        <Copyright>© 2020 Autodesk Inc.</Copyright>
+        <PackageLicenseFile>Apache2.txt</PackageLicenseFile>
+        <PackageProjectUrl>https://synthesis.autodesk.com/</PackageProjectUrl>
+        <PackageIcon>synthesis.png</PackageIcon>
+        <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/api/Api</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <PackageTags>Autodesk, Synthesis, FRC, Robotics</PackageTags>
+        <PackageReleaseNotes>A pre-release of the Synthesis API NuGet package.</PackageReleaseNotes>
+        <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +33,17 @@
       <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
       <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\installer\Linux\synthesis.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+      <None Include="..\..\installer\Windows\Apache2.txt">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
