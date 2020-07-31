@@ -1,3 +1,4 @@
+/*
 extern crate controller_sys;
 
 use controller_sys::*;
@@ -7,9 +8,7 @@ use std::thread::sleep;
 use std::time::Duration;
 
 fn main() {
-    let transport = HttpTransport::new().standalone().unwrap();
-    let transport_handle = transport.handle("http://localhost:5000").unwrap();
-    let mut client = ControllerRpc::new(transport_handle);
+    Test();
     /*
     println!("forward");
     let _ = client.Forward(5, 10.0);
@@ -23,14 +22,7 @@ fn main() {
     println!("right");
     let _ = client.Right(5, 10.0);
     */
-    sleep(Duration::from_secs(3));
-    match client.Test().call() {
-        Ok(_) => println!("Ok"),
-        Err(e) => match *e.kind() { 
-            ErrorKind::Msg(ref s) => println!("Error {}", s),
-            ErrorKind::JsonRpcError(ref je) => println!("Error {:?}", je.data),
-            _ => println!("Error")
-        }
-    }
+
     sleep(Duration::from_secs(30));
 }
+*/

@@ -97,6 +97,14 @@ namespace Controller
             }
         }
 
+        [RpcMethod]
+        public static int Test(int test)
+        {
+            ApiProvider.Log(test);
+            throw new System.Exception("Test exception");
+            return test;
+        }
+
         #endregion
     }
 }
