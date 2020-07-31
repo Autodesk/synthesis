@@ -127,6 +127,12 @@ namespace SynthesisCore
 
             rigidbody.OnEnterCollision += magnitude =>
             {
+                ApiProvider.Log(magnitude, LogLevel.Info);
+                var volume = (magnitude - 2.0) / 22.0;
+                volume += 0.2;
+                if (volume < 0) volume = 0;
+                if (volume > 1) volume = 1;
+                audio.Volume = (float)volume;
                 audio.IsPlaying = true;
             };
 

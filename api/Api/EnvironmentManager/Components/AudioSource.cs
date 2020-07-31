@@ -23,5 +23,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
             set => Set("clip", value);
             get => Get<AudioClipAsset>("clip");
         }
+        public float Volume {
+            set => Set("volume", value);
+            get => Get<float>("volume");
+        }
     }
 }

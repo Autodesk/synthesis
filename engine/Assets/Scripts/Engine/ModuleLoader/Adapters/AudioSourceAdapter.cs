@@ -36,6 +36,8 @@ namespace Engine.ModuleLoader.Adapters
                     return unitySource.isPlaying;
                 case "clip":
                     return currentClip;
+                case "volume":
+                    return unitySource.volume;
                 default:
                     throw new Exception();
             }
@@ -54,6 +56,9 @@ namespace Engine.ModuleLoader.Adapters
                 case "clip":
                     currentClip = (AudioClipAsset)o;
                     unitySource.clip = currentClip.GetClip();
+                    break;
+                case "volume":
+                    unitySource.volume = (float)o;
                     break;
                 default:
                     throw new Exception();
