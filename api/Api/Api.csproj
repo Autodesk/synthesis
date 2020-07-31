@@ -11,14 +11,15 @@
         <Product>Synthesis</Product>
         <Description>An API for developing modules for the Synthesis™ platform</Description>
         <Copyright>© 2020 Autodesk Inc.</Copyright>
-        <PackageLicenseFile>Apache2.txt</PackageLicenseFile>
+        <PackageLicenseFile></PackageLicenseFile>
         <PackageProjectUrl>https://synthesis.autodesk.com/</PackageProjectUrl>
         <PackageIcon>synthesis.png</PackageIcon>
-        <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/api/Api</RepositoryUrl>
+        <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/api</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
-        <PackageTags>Autodesk, Synthesis, FRC, Robotics</PackageTags>
-        <PackageReleaseNotes>A pre-release of the Synthesis API NuGet package.</PackageReleaseNotes>
+        <PackageTags>Autodesk, Synthesis, FRC, Robotics, Simulator</PackageTags>
+        <PackageReleaseNotes>A pre-release of the Synthesis API NuGet package</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,10 +38,6 @@
 
     <ItemGroup>
       <None Include="..\..\installer\Linux\synthesis.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
-      <None Include="..\..\installer\Windows\Apache2.txt">
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
