@@ -4,14 +4,13 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
         <ApplicationIcon>W16_SYN_launch.ico</ApplicationIcon>
-        <PackageId>Autodesk.Synthesis.Api</PackageId>
+        <PackageId>Autodesk.Synthesis.API</PackageId>
         <Version>0.0.1</Version>
         <Authors>Synthesis Team</Authors>
         <Company>Autodesk</Company>
         <Product>Synthesis</Product>
         <Description>An API for developing modules for the Synthesis™ platform</Description>
         <Copyright>© 2020 Autodesk Inc.</Copyright>
-        <PackageLicenseFile></PackageLicenseFile>
         <PackageProjectUrl>https://synthesis.autodesk.com/</PackageProjectUrl>
         <PackageIcon>synthesis.png</PackageIcon>
         <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/api</RepositoryUrl>
@@ -20,6 +19,7 @@
         <PackageReleaseNotes>A pre-release of the Synthesis API NuGet package</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <ItemGroup>
