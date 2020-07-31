@@ -101,7 +101,10 @@ namespace Controller
         public static int Test(int test)
         {
             ApiProvider.Log(test);
-            throw new System.Exception("Test exception");
+            if (test == 25)
+            {
+                throw new System.Exception("Test exception");
+            }
             return test;
         }
 

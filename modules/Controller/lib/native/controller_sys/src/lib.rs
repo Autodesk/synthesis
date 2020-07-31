@@ -26,6 +26,7 @@ lazy_static! {
     };
 }
 
+// TODO create a macro to make these functions for us
 #[no_mangle]
 pub extern "C" fn Test(val: i32, error_code: *mut i64, error_message: *mut *const c_char, error_data: *mut *const c_char) -> i32 {
     match CLIENT.lock().unwrap().Test(val).call() {
@@ -41,7 +42,7 @@ pub extern "C" fn Test(val: i32, error_code: *mut i64, error_message: *mut *cons
                     unsafe { *error_code = json_rpc_error.code.code(); }
                 }
                 if error_message != null_mut() {
-                    unsafe { *error_message = json_rpc_error.message.as_bytes().as_ptr() as *const i8; }
+                    unsafe { *error_message = json_rpc_error.message.as_bytes().as_ptr() as *const i8; } // TODO null-terminate strings
                 }
                 if error_data != null_mut() {
                     match &json_rpc_error.data {

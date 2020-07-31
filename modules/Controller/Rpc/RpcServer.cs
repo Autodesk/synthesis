@@ -65,7 +65,7 @@ namespace Controller.Rpc
                 context.Response.OutputStream.Write(buffer, 0, buffer.Length);
                 context.Response.OutputStream.Close(); // Must close output stream
             }
-            // listener.Stop();
+            // listener.Stop(); // TODO close server when Synthesis closes
         }
     }
 }
