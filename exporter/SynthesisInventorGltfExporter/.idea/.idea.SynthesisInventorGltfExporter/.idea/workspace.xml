@@ -20,12 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc3157bf-e94d-4c03-92f6-3a814f98fb0e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/packages.config" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/packages.config" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/GltfExtras.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/GltfExtras.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VisualStudio.gitignore" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +58,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/ed/06959432/Face.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/dc/3991ee87/Guard.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/12/a3eda2c4/KnownChannel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///GltfExtras.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/42/6dcda8f0/ChannelBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/d9/2af9e9c0/MaterialBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/4e/1168f540/WriteSettings.cs" root0="SKIP_HIGHLIGHTING" />
@@ -177,7 +174,7 @@
       <workItem from="1595282775021" duration="13286000" />
       <workItem from="1595440990746" duration="26680000" />
       <workItem from="1595627794141" duration="2374000" />
-      <workItem from="1595630234249" duration="22292000" />
+      <workItem from="1595630234249" duration="22645000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -214,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596144450694</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Export joint motion and limits">
+      <created>1596165245972</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1596165245972</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -240,7 +244,8 @@
     <MESSAGE value="Dll hell" />
     <MESSAGE value="Add gitignore" />
     <MESSAGE value="Add basic joint data export" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add basic joint data export" />
+    <MESSAGE value="Export joint motion and limits" />
+    <option name="LAST_COMMIT_MESSAGE" value="Export joint motion and limits" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595637002844">
@@ -251,10 +256,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="675" y="194" width="488" height="482" key="#xdebugger.evaluate/0.0.2048.1112@0.0.2048.1112" timestamp="1596158378964" />
-    <state x="517" y="151" key="CommitChangelistDialog2" timestamp="1596144449999">
+    <state x="517" y="151" key="CommitChangelistDialog2" timestamp="1596165245339">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="517" y="151" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1596144449999" />
+    <state x="517" y="151" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1596165245339" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596145360311">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -355,6 +360,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1595558967876" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1596165341078">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1596165341078" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
