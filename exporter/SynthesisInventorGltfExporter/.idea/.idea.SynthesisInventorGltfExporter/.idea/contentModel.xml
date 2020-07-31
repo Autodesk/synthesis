@@ -20,6 +20,11 @@
           <e p="Settings.Designer.cs" t="Include" />
           <e p="Settings.settings" t="Include" />
         </e>
+        <e p="proto" t="Include">
+          <e p="compile.bat" t="Include" />
+          <e p="gltf_extras.proto" t="Include" />
+          <e p="GltfExtras.cs" t="Include" />
+        </e>
         <e p="RobotExporterAddInServer.cs" t="Include" />
         <e p="SingleEnvironmentAddInServer.cs" t="Include" />
         <e p="SynthesisInventorGltfExporter.csproj" t="IncludeRecursive" />

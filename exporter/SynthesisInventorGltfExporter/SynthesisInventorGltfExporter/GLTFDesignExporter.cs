@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using Google.Protobuf;
 using Inventor;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,7 +15,9 @@ using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 using SharpGLTF.Transforms;
+using Synthesis.Gltfextras;
 using Asset = Inventor.Asset;
+using Color = Inventor.Color;
 using File = System.IO.File;
 
 namespace SynthesisInventorGltfExporter
@@ -25,10 +28,17 @@ namespace SynthesisInventorGltfExporter
             .WithMetallicRoughnessShader()
             .WithChannelParam("BaseColor", Vector4.One);
 
-        private Dictionary<string, MaterialBuilder> materialCache = new Dictionary<string, MaterialBuilder>();
+        private Dictionary<string, MaterialBuilder> materialCache;
+        private List<AssemblyJoint> allDocumentJoints;
+        
+        private List<string> warnings;
         
         public void ExportDesign(AssemblyDocument assemblyDocument)
         {
+            materialCache = new Dictionary<string, MaterialBuilder>();
+            allDocumentJoints = new List<AssemblyJoint>();
+            warnings = new List<string>();
+            
             var sceneBuilder = ExportScene(assemblyDocument);
             var filename = assemblyDocument.DisplayName;
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
@@ -50,6 +60,13 @@ namespace SynthesisInventorGltfExporter
             var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
             modifiedGltf.SaveGLB("C:/temp/" + filename + ".glb");
             modifiedGltf.SaveGLTF("C:/temp/" + filename + ".debug.gltf");
+
+            Debug.WriteLine("-----gltf export warnings-----");
+            foreach (var warning in warnings)
+            {
+                Debug.WriteLine(warning);
+            }
+            Debug.WriteLine("----------");
         }
         
         
@@ -57,32 +74,185 @@ namespace SynthesisInventorGltfExporter
         {
             var jointArray = new JArray();
             
-            foreach (AssemblyJoint joint in assemblyDocument.ComponentDefinition.Joints)
+            foreach (AssemblyJoint joint in allDocumentJoints)
             {
-                jointArray.Add(ExportJoint(joint));
+                jointArray.Add(JObject.Parse(JsonFormatter.Default.Format(ExportJoint(joint))));
             }
         
             return jointArray;
         }
         
-        private JObject ExportJoint(AssemblyJoint invJoint)
+        private Joint ExportJoint(AssemblyJoint invJoint)
         {
-            // TODO: This should be done with protobuf, but adding protobuf as a dep wasn't possible because of the dep version resolving bug
-            var protoJoint = new JObject();
+            var protoJoint = new Joint();
             
-            var header = new JObject();
-            header.Add("name", invJoint.Name);
-            protoJoint.Add("header", header);
-            protoJoint.Add("origin", GetVector3D(GetJointOrigin(invJoint)));
+            var header = new Header();
+            header.Name = invJoint.Name;
+            protoJoint.Header = header;
             
-            protoJoint.Add("isLocked", invJoint.Locked);
-            protoJoint.Add("isSuppresed", invJoint.Suppressed);
+            protoJoint.Origin = GetVector3DFromPoint(GetJointOrigin(invJoint));
             
-            protoJoint.Add("occurrenceOneUUID", GetJointedOccurrenceUUID(invJoint.OccurrenceOne));
-            protoJoint.Add("occurrenceTwoUUID", GetJointedOccurrenceUUID(invJoint.OccurrenceTwo));
+            protoJoint.IsLocked = invJoint.Locked;
+            protoJoint.IsSuppressed = invJoint.Suppressed;
+        
+            protoJoint.OccurrenceOneUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceOne);
+            protoJoint.OccurrenceTwoUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceTwo);
+            
+            var assemblyJointDefinition = invJoint.Definition;
+            
+            switch (assemblyJointDefinition.JointType)
+            {
+                case AssemblyJointTypeEnum.kRigidJointType:
+                    protoJoint.RigidJointMotion = GetRigidJointMotion(assemblyJointDefinition);
+                    break;
+                case AssemblyJointTypeEnum.kRotationalJointType:
+                    protoJoint.RevoluteJointMotion = GetRevoluteJointMotion(assemblyJointDefinition);
+                    break;
+                case AssemblyJointTypeEnum.kSlideJointType:
+                    protoJoint.SliderJointMotion = GetSliderJointMotion(assemblyJointDefinition);
+                    break;
+                case AssemblyJointTypeEnum.kCylindricalJointType:
+                    protoJoint.CylindricalJointMotion = GetCylindricalJointMotion(assemblyJointDefinition);
+                    break;
+                // case AssemblyJointTypeEnum.k: // pinSlot
+                    // protoJoint.RigidJointMotion = GetRigidJointMotion(assemblyJointDefinition);
+                // break;
+                case AssemblyJointTypeEnum.kPlanarJointType:
+                    protoJoint.PinSlotJointMotion = GetPinSlotJointMotion(assemblyJointDefinition);
+                    break;
+                case AssemblyJointTypeEnum.kBallJointType:
+                    protoJoint.PlanarJointMotion = GetPlanarJointMotion(assemblyJointDefinition);
+                    break;
+            }
+            
             return protoJoint;
         }
-        
+
+        private Vector3D GetNormalOrDirection(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            try { return GetVector3D(GetNormDirFromGeometry(assemblyJointDefinition.OriginOne)); } catch {}
+            try { return GetVector3D(GetNormDirFromGeometry(assemblyJointDefinition.OriginTwo)); } catch {}
+            warnings.Add("No joint axis found for joint "+assemblyJointDefinition.Parent.Name);
+            return new Vector3D();
+        }
+
+        private dynamic GetNormDirFromGeometry(GeometryIntent intent)
+        {
+            try { return GetNormDir(intent.Geometry); } catch {}
+            try { return GetNormDir(intent.Geometry.Geometry); } catch {}
+            throw new Exception();
+        }
+
+        private dynamic GetNormDir(dynamic var)
+        {
+            try { return var.Normal; } catch {}
+            try { return var.Direction; } catch {}
+            throw new Exception();
+        }
+
+        private JointLimits GetAngularLimits(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var limits = new JointLimits();
+            limits.IsMaximumValueEnabled = assemblyJointDefinition.HasAngularPositionLimits;
+            limits.IsMinimumValueEnabled = assemblyJointDefinition.HasAngularPositionLimits;
+            limits.IsRestValueEnabled = false;
+            if (limits.IsMaximumValueEnabled)
+                limits.MaximumValue = assemblyJointDefinition.AngularPositionEndLimit.Value;
+            if (limits.IsMinimumValueEnabled)
+                limits.MinimumValue = assemblyJointDefinition.AngularPositionStartLimit.Value;
+            // limits.RestValue = assemblyJointDefinition.AngularPosition;
+            return limits;
+        }
+
+        private JointLimits GetLinearLimits(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var limits = new JointLimits();
+            limits.IsMaximumValueEnabled = assemblyJointDefinition.HasLinearPositionEndLimit;
+            limits.IsMinimumValueEnabled = assemblyJointDefinition.HasLinearPositionStartLimit;
+            limits.IsRestValueEnabled = false;
+            if (limits.IsMaximumValueEnabled)
+                limits.MaximumValue = assemblyJointDefinition.LinearPositionEndLimit.Value;
+            if (limits.IsMinimumValueEnabled)
+                limits.MinimumValue = assemblyJointDefinition.LinearPositionStartLimit.Value;
+            // limits.RestValue = assemblyJointDefinition.LinearPosition;
+            return limits;
+        }
+
+        private double GetAngularPosition(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            if (assemblyJointDefinition.AngularPosition != null)
+                return assemblyJointDefinition.AngularPosition.Value;
+            return 0;
+        }
+
+        private double GetLinearPosition(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            if (assemblyJointDefinition.LinearPosition != null)
+                return assemblyJointDefinition.LinearPosition.Value;
+            return 0;
+        }
+
+        private RigidJointMotion GetRigidJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new RigidJointMotion();
+            return protoJointMotion;
+        }
+
+        private RevoluteJointMotion GetRevoluteJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new RevoluteJointMotion();
+            protoJointMotion.RotationAxisVector = GetNormalOrDirection(assemblyJointDefinition);
+            protoJointMotion.RotationValue = GetAngularPosition(assemblyJointDefinition);
+            protoJointMotion.RotationLimits = GetAngularLimits(assemblyJointDefinition);
+            return protoJointMotion;
+        }
+
+        private SliderJointMotion GetSliderJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new SliderJointMotion();
+            protoJointMotion.SlideDirectionVector = GetNormalOrDirection(assemblyJointDefinition);
+            protoJointMotion.SlideValue = GetLinearPosition(assemblyJointDefinition);
+            protoJointMotion.SlideLimits = GetLinearLimits(assemblyJointDefinition);
+            return protoJointMotion;
+        }
+        private CylindricalJointMotion GetCylindricalJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new CylindricalJointMotion();
+            protoJointMotion.RotationAxisVector = GetNormalOrDirection(assemblyJointDefinition);
+            protoJointMotion.RotationValue = GetAngularPosition(assemblyJointDefinition);
+            protoJointMotion.RotationLimits = GetAngularLimits(assemblyJointDefinition);
+            
+            protoJointMotion.SlideValue = GetLinearPosition(assemblyJointDefinition);
+            protoJointMotion.SlideLimits = GetLinearLimits(assemblyJointDefinition);
+            return protoJointMotion;
+        }
+        private PinSlotJointMotion GetPinSlotJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new PinSlotJointMotion();
+            protoJointMotion.RotationAxisVector = GetNormalOrDirection(assemblyJointDefinition);
+            protoJointMotion.RotationValue = GetAngularPosition(assemblyJointDefinition);
+            protoJointMotion.RotationLimits = GetAngularLimits(assemblyJointDefinition);
+            
+            protoJointMotion.SlideDirectionVector = GetNormalOrDirection(assemblyJointDefinition);
+            protoJointMotion.SlideValue = GetLinearPosition(assemblyJointDefinition);
+            protoJointMotion.SlideLimits = GetLinearLimits(assemblyJointDefinition);
+            return protoJointMotion;
+        }
+        private PlanarJointMotion GetPlanarJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new PlanarJointMotion();
+            warnings.Add("Limits not implemented for planar joints! Joint: "+assemblyJointDefinition.Parent.Name);
+            // TODO
+            return protoJointMotion;
+        }
+        private BallJointMotion GetBallJointMotion(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            var protoJointMotion = new BallJointMotion();
+            warnings.Add("Limits not implemented for ball joints! Joint: "+assemblyJointDefinition.Parent.Name);
+            // TODO
+            return protoJointMotion;
+        }
+
         private string GetJointedOccurrenceUUID(ComponentOccurrence occurrence)
         {
             return string.Join("+", new List<ComponentOccurrence>(occurrence.OccurrencePath.Cast<ComponentOccurrence>()).Select(o => o.Name));
@@ -93,15 +263,20 @@ namespace SynthesisInventorGltfExporter
             return invJoint.Definition.OriginOne.Point;
         }
         
-        private static JObject GetVector3D(Point getJointOrigin)
+        private static Vector3D GetVector3DFromPoint(Point getJointOrigin)
         {
-            var protoJointOrigin = new JObject();
-            protoJointOrigin.Add("x", getJointOrigin.X);
-            protoJointOrigin.Add("y", getJointOrigin.Y);
-            protoJointOrigin.Add("z", getJointOrigin.Z);
+            return GetVector3D(getJointOrigin);
+        }
+        
+        private static Vector3D GetVector3D(dynamic hasXYZ)
+        {
+            var protoJointOrigin = new Vector3D();
+            protoJointOrigin.X = hasXYZ.X;
+            protoJointOrigin.Y = hasXYZ.Y;
+            protoJointOrigin.Z = hasXYZ.Z;
             return protoJointOrigin;
         }
-
+        
         private SceneBuilder ExportScene(AssemblyDocument assemblyDocument)
         {
             var scene = new SceneBuilder();
@@ -112,7 +287,9 @@ namespace SynthesisInventorGltfExporter
         private void ExportNodeRootAssembly(AssemblyDocument assemblyDocument, SceneBuilder scene)
         {
             var root = new NodeBuilder(assemblyDocument.DisplayName);
-            ExportNodes(assemblyDocument.ComponentDefinition.Occurrences.Cast<ComponentOccurrence>(), scene, root);
+            var assemblyComponentDefinition = assemblyDocument.ComponentDefinition;
+            allDocumentJoints.AddRange(assemblyComponentDefinition.Joints.Cast<AssemblyJoint>());
+            ExportNodes(assemblyComponentDefinition.Occurrences.Cast<ComponentOccurrence>(), scene, root);
         }
 
         private void ExportNodes(IEnumerable<ComponentOccurrence> occurrences, SceneBuilder scene, NodeBuilder parent)
@@ -143,7 +320,8 @@ namespace SynthesisInventorGltfExporter
         private void ExportNodeAssembly(ComponentOccurrence componentOccurrence, SceneBuilder scene, NodeBuilder node)
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
-            // var assemblyComponentDefinition = (AssemblyComponentDefinition)componentOccurrence.Definition;
+            var assemblyComponentDefinition = (AssemblyComponentDefinition)componentOccurrence.Definition;
+            allDocumentJoints.AddRange(assemblyComponentDefinition.Joints.Cast<AssemblyJoint>());
             ExportNodes(componentOccurrence.SubOccurrences.Cast<ComponentOccurrence>(), scene, node);
         }
 
