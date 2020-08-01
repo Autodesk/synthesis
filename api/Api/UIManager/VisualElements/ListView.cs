@@ -56,6 +56,11 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public int SelectedIndex => Element.selectedIndex;
         public object SelectedItem => Element.selectedItem;
+
+        public int ItemHeight {
+            get => Element.itemHeight;
+            set => Element.itemHeight = value;
+        }
         
         public string EventTag => $"button/{Element.name}";
 
