@@ -116,7 +116,7 @@ namespace SynthesisInventorGltfExporter
             try { header.Name = invJoint.Name; } catch {}
             protoJoint.Header = header;
             
-            protoJoint.Origin = GetVector3DFromPoint(GetJointOrigin(invJoint));
+            protoJoint.Origin = GetCenterOrRoot(invJoint.Definition);
             
             try { protoJoint.IsLocked = invJoint.Locked; } catch {}
             try { protoJoint.IsSuppressed = invJoint.Suppressed; } catch {}
@@ -173,6 +173,34 @@ namespace SynthesisInventorGltfExporter
         {
             try { return var.Normal; } catch {}
             try { return var.Direction; } catch {}
+            throw new Exception();
+        }
+        private Vector3D GetCenterOrRoot(AssemblyJointDefinition assemblyJointDefinition)
+        {
+            // TODO: The point returned from getCenter is very often wrong...
+            try { return GetVector3DConvertUnits(GetCenterFromGeometry(assemblyJointDefinition.OriginTwo)); } catch {}
+            try { return GetVector3DConvertUnits(GetCenterFromGeometry(assemblyJointDefinition.OriginOne)); } catch {}
+            warnings.Add("No joint center found for joint "+assemblyJointDefinition.Parent.Name);
+            throw new Exception();
+        }
+
+        private dynamic GetCenterFromGeometry(GeometryIntent intent)
+        {
+            try { return GetCenter(intent.Geometry.Geometry); } catch {}
+            try { return GetCenter(intent.Geometry); } catch {}
+            try
+            {
+                if (intent.Point != null)
+                    return intent.Point; // This seems to always be wrong. hmm...
+            } catch {}
+            throw new Exception();
+        }
+
+        private dynamic GetCenter(dynamic var)
+        {
+            try { return var.RootPoint; } catch {}
+            try { return var.Center; } catch {}
+            try { return var.MidPoint; } catch {}
             throw new Exception();
         }
 
@@ -283,18 +311,13 @@ namespace SynthesisInventorGltfExporter
         {
             return string.Join("+", new List<ComponentOccurrence>(occurrence.OccurrencePath.Cast<ComponentOccurrence>()).Select(o => o.Name));
         }
-        
-        private static Point GetJointOrigin(AssemblyJoint invJoint)
-        {
-            return invJoint.Definition.OriginOne.Point;
-        }
-        
-        private static Vector3D GetVector3DFromPoint(Point getJointOrigin)
+
+        private static Vector3D GetVector3DConvertUnits(dynamic getJointCenter)
         {
             var protoJointOrigin = new Vector3D();
-            protoJointOrigin.X = getJointOrigin.X/100;
-            protoJointOrigin.Y = getJointOrigin.Y/100;
-            protoJointOrigin.Z = getJointOrigin.Z/100;
+            protoJointOrigin.X = getJointCenter.X/100;
+            protoJointOrigin.Y = getJointCenter.Y/100;
+            protoJointOrigin.Z = getJointCenter.Z/100;
             return protoJointOrigin;
         }
         
