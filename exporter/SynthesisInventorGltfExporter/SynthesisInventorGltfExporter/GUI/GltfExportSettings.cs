@@ -11,6 +11,7 @@ using Google.Protobuf;
 using Inventor;
 using SynthesisInventorGltfExporter.Properties;
 using Application = Inventor.Application;
+using FileDialog = Inventor.FileDialog;
 
 namespace SynthesisInventorGltfExporter.GUI
 {
@@ -23,9 +24,28 @@ namespace SynthesisInventorGltfExporter.GUI
             
             okButton.Click += (sender, args) =>
             {
+                var assemblyDocument = application.ActiveDocument as AssemblyDocument;
                 SaveSettings();
+                FileDialog dialog;
+                application.CreateFileDialog(out dialog);
+                dialog.DialogTitle = "Export assembly as .gltf or .glb";
+                dialog.Filter = "glTF Binary (*.glb)|*.glb|glTF JSON (*.gltf)|*.gltf";
+                dialog.FilterIndex = 1;
+                dialog.InitialDirectory = Settings.Default.ExportFolder;
+                var filename = assemblyDocument.DisplayName;
+                foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+                {
+                    filename = filename.Replace(c, '_');
+                }
+                dialog.FileName = filename;
+                dialog.InsertMode = true;
+                dialog.OptionsEnabled = false;
+                dialog.MultiSelectEnabled = false;
+
+                dialog.ShowSave();
+                
                 var exporter = new GLTFDesignExporter();
-                exporter.ExportDesign(application.ActiveDocument as AssemblyDocument, checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value);
+                exporter.ExportDesign(application, assemblyDocument, checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value);
                 Close();
             };
             cancelButton.Click += (sender, args) =>

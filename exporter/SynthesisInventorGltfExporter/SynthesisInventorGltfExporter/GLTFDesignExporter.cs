@@ -32,13 +32,30 @@ namespace SynthesisInventorGltfExporter
         private List<AssemblyJoint> allDocumentJoints;
         
         private List<string> warnings;
-        
-        public void ExportDesign(AssemblyDocument assemblyDocument, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
+
+        private HashSet<string> visitedDocuments = new HashSet<string>();
+        private ProgressBar progressBar;
+        private int progressTotal;
+        private bool exportMaterials;
+        private bool exportFaceMaterials;
+        private bool exportHidden;
+        private decimal exportTolerance;
+
+        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
         {
+            exportTolerance = numericToleranceValue;
+            exportHidden = checkHiddenChecked;
+            exportFaceMaterials = checkFaceMaterials;
+            exportMaterials = checkMaterialsChecked;
             materialCache = new Dictionary<string, MaterialBuilder>();
             allDocumentJoints = new List<AssemblyJoint>();
             warnings = new List<string>();
-            
+
+            progressTotal = 2 + assemblyDocument.AllReferencedDocuments.Count;
+            progressBar = application.CreateProgressBar(false, progressTotal, "Exporting " + assemblyDocument.DisplayName + " to glTF");
+
+            progressBar.Message = "Preparing for export...";
+
             var sceneBuilder = ExportScene(assemblyDocument);
             var filename = assemblyDocument.DisplayName;
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
@@ -46,6 +63,8 @@ namespace SynthesisInventorGltfExporter
                 filename = filename.Replace(c, '_');
             }
 
+            progressBar.Message = "Exporting joints...";
+            progressBar.UpdateProgress();
             // TODO: This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. Figure out a more elegant solution.
             var modelRoot = sceneBuilder.ToSchema2();
             var dictionary = modelRoot.WriteToDictionary("temp");
@@ -58,6 +77,9 @@ namespace SynthesisInventorGltfExporter
             var readSettings = new ReadSettings();
             readSettings.FileReader = assetFileName => dictionary[assetFileName];
             var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
+            
+            progressBar.Message = "Saving file...";
+            progressBar.UpdateProgress();
             modifiedGltf.SaveGLB("C:/temp/" + filename + ".glb");
             modifiedGltf.SaveGLTF("C:/temp/" + filename + ".debug.gltf");
 
@@ -67,6 +89,7 @@ namespace SynthesisInventorGltfExporter
                 Debug.WriteLine(warning);
             }
             Debug.WriteLine("----------");
+            progressBar.Close();
         }
         
         
@@ -321,6 +344,16 @@ namespace SynthesisInventorGltfExporter
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
             var assemblyComponentDefinition = (AssemblyComponentDefinition)componentOccurrence.Definition;
+            try
+            {
+                if (visitedDocuments.Add(assemblyComponentDefinition.Document.InternalName()))
+                {
+                    progressBar.Message = "Exporting mesh " + visitedDocuments.Count + " of " + progressTotal + "...";
+                    progressBar.UpdateProgress();
+                }
+            }
+            catch { }
+
             allDocumentJoints.AddRange(assemblyComponentDefinition.Joints.Cast<AssemblyJoint>());
             ExportNodes(componentOccurrence.SubOccurrences.Cast<ComponentOccurrence>(), scene, node);
         }
@@ -328,8 +361,21 @@ namespace SynthesisInventorGltfExporter
         private void ExportNodePart(ComponentOccurrence componentOccurrence, SceneBuilder scene, NodeBuilder node)
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
-            // var partComponentDefinition = (PartComponentDefinition)componentOccurrence.Definition;
-            scene.AddMesh(ExportMesh(componentOccurrence), node);
+            var partComponentDefinition = (PartComponentDefinition)componentOccurrence.Definition;
+            try
+            {
+                if (visitedDocuments.Add(partComponentDefinition.Document.InternalName()))
+                {
+                    progressBar.Message = "Exporting mesh " + visitedDocuments.Count + " of " + progressTotal + "...";
+                    progressBar.UpdateProgress();
+                }
+            }
+            catch { }
+
+            if (exportHidden || componentOccurrence.Visible)
+            {
+                scene.AddMesh(ExportMesh(componentOccurrence), node);
+            }
         }
 
         private MeshBuilder<VertexPosition> ExportMesh(ComponentOccurrence componentOccurrence)
@@ -337,10 +383,17 @@ namespace SynthesisInventorGltfExporter
             var mesh = new MeshBuilder<VertexPosition>("mesh");
             foreach (SurfaceBody surfaceBody in componentOccurrence.SurfaceBodies)
             {
-                var surfaceBodyFaces = surfaceBody.Faces;
-                foreach (Face face in surfaceBodyFaces)
+                if (exportMaterials && exportFaceMaterials)
                 {
-                    ExportPrimitive(face, mesh.UsePrimitive(ExportAppearanceCached(face.Appearance)));
+                    var surfaceBodyFaces = surfaceBody.Faces;
+                    foreach (Face face in surfaceBodyFaces)
+                    {
+                        ExportPrimitive(face, mesh.UsePrimitive(ExportAppearanceCached(face.Appearance)));
+                    }
+                }
+                else
+                {
+                    ExportPrimitive(surfaceBody, mesh.UsePrimitive(ExportAppearanceCached(componentOccurrence.Appearance)));
                 }
             }
 
@@ -349,7 +402,7 @@ namespace SynthesisInventorGltfExporter
 
         private MaterialBuilder ExportAppearanceCached(Asset appearance)
         {
-            if (appearance == null)
+            if (!exportMaterials || appearance == null)
                 return defaultMaterial;
             if (materialCache.ContainsKey(appearance.Name))
                 return materialCache[appearance.Name];
@@ -386,9 +439,9 @@ namespace SynthesisInventorGltfExporter
             var norms = new double[]{};
             var indices = new int[]{};
             if (surfaceBody != null) 
-                surfaceBody.CalculateFacets(1, out vertCount, out facetCount, out coords, out norms, out indices);
+                surfaceBody.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
             else
-                surfaceFace.CalculateFacets(1, out vertCount, out facetCount, out coords, out norms, out indices);
+                surfaceFace.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
             for (var c = 0; c < indices.Length; c += 3)
             {
                 var indexA = indices[c];

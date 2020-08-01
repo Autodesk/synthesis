@@ -46,7 +46,7 @@
             this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainLayout.ColumnCount = 2;
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 205F));
-            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 8F));
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 129F));
             this.MainLayout.Controls.Add(this.checkMaterials, 0, 0);
             this.MainLayout.Controls.Add(this.checkFace, 0, 1);
             this.MainLayout.Controls.Add(this.checkHidden, 0, 2);
@@ -119,13 +119,15 @@
             // numericTolerance
             // 
             this.numericTolerance.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericTolerance.DecimalPlaces = 1;
+            this.numericTolerance.DecimalPlaces = 2;
             this.numericTolerance.Increment = new decimal(new int[] {1, 0, 0, 65536});
             this.numericTolerance.Location = new System.Drawing.Point(223, 99);
             this.numericTolerance.Maximum = new decimal(new int[] {1000, 0, 0, 0});
+            this.numericTolerance.Minimum = new decimal(new int[] {1, 0, 0, 131072});
             this.numericTolerance.Name = "numericTolerance";
             this.numericTolerance.Size = new System.Drawing.Size(92, 22);
             this.numericTolerance.TabIndex = 17;
+            this.numericTolerance.Value = new decimal(new int[] {1, 0, 0, 0});
             // 
             // cancelButton
             // 
@@ -161,7 +163,6 @@
             this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.Name = "GltfExportSettings";
             this.Text = "glTF Export Settings";
-            this.TopMost = true;
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize) (this.numericTolerance)).EndInit();

@@ -37,7 +37,7 @@ namespace SynthesisInventorGltfExporter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ExportMaterials {
             get {
                 return ((bool)(this["ExportMaterials"]));
@@ -49,7 +49,7 @@ namespace SynthesisInventorGltfExporter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ExportFaceMaterials {
             get {
                 return ((bool)(this["ExportFaceMaterials"]));
@@ -80,6 +80,18 @@ namespace SynthesisInventorGltfExporter.Properties {
             }
             set {
                 this["MeshTolerance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:/")]
+        public string ExportFolder {
+            get {
+                return ((string)(this["ExportFolder"]));
+            }
+            set {
+                this["ExportFolder"] = value;
             }
         }
     }

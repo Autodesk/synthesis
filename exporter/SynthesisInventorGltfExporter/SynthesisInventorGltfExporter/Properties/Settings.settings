@@ -8,16 +8,19 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ExportMaterials" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ExportFaceMaterials" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ExportHidden" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MeshTolerance" Type="System.Decimal" Scope="User">
       <Value Profile="(Default)">1.0</Value>
+    </Setting>
+    <Setting Name="ExportFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:/</Value>
     </Setting>
   </Settings>
 </SettingsFile>
