@@ -22,6 +22,11 @@ using File = System.IO.File;
 
 namespace SynthesisInventorGltfExporter
 {
+    /*
+     * TODO: Avoid exporting duplicate meshes using occurrences (materials didn't work when I tried to do this)
+     * TODO: Figure out a more elegant method to add extras to the gltf object
+     * TODO: Figure out how to use dependency redirects in an inventor addin (was not working for some reason) so we can use an updated version of sharpgltf
+     */
     public class GLTFDesignExporter
     {
         private MaterialBuilder defaultMaterial = new MaterialBuilder()
@@ -41,7 +46,7 @@ namespace SynthesisInventorGltfExporter
         private bool exportHidden;
         private decimal exportTolerance;
 
-        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
+        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
         {
             exportTolerance = numericToleranceValue;
             exportHidden = checkHiddenChecked;
@@ -57,15 +62,10 @@ namespace SynthesisInventorGltfExporter
             progressBar.Message = "Preparing for export...";
 
             var sceneBuilder = ExportScene(assemblyDocument);
-            var filename = assemblyDocument.DisplayName;
-            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
-            {
-                filename = filename.Replace(c, '_');
-            }
 
             progressBar.Message = "Exporting joints...";
             progressBar.UpdateProgress();
-            // TODO: This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. Figure out a more elegant solution.
+            // TODO: Figure out a more elegant solution for extras. This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. 
             var modelRoot = sceneBuilder.ToSchema2();
             var dictionary = modelRoot.WriteToDictionary("temp");
             var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
@@ -80,8 +80,11 @@ namespace SynthesisInventorGltfExporter
             
             progressBar.Message = "Saving file...";
             progressBar.UpdateProgress();
-            modifiedGltf.SaveGLB("C:/temp/" + filename + ".glb");
-            modifiedGltf.SaveGLTF("C:/temp/" + filename + ".debug.gltf");
+
+            if (glb)
+                modifiedGltf.SaveGLB(filePath);
+            else
+                modifiedGltf.SaveGLTF(filePath);
 
             Debug.WriteLine("-----gltf export warnings-----");
             foreach (var warning in warnings)
@@ -288,7 +291,11 @@ namespace SynthesisInventorGltfExporter
         
         private static Vector3D GetVector3DFromPoint(Point getJointOrigin)
         {
-            return GetVector3D(getJointOrigin);
+            var protoJointOrigin = new Vector3D();
+            protoJointOrigin.X = getJointOrigin.X/100;
+            protoJointOrigin.Y = getJointOrigin.Y/100;
+            protoJointOrigin.Z = getJointOrigin.Z/100;
+            return protoJointOrigin;
         }
         
         private static Vector3D GetVector3D(dynamic hasXYZ)

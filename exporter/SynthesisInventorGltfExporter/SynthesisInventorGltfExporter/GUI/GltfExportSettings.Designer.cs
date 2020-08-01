@@ -30,10 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GltfExportSettings));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
             this.checkMaterials = new System.Windows.Forms.CheckBox();
             this.checkFace = new System.Windows.Forms.CheckBox();
             this.checkHidden = new System.Windows.Forms.CheckBox();
             this.ChildLabel = new System.Windows.Forms.Label();
+            this.comboFileType = new System.Windows.Forms.ComboBox();
             this.numericTolerance = new System.Windows.Forms.NumericUpDown();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
@@ -45,23 +47,39 @@
             // 
             this.MainLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainLayout.ColumnCount = 2;
-            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 205F));
-            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 129F));
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 183F));
+            this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 151F));
+            this.MainLayout.Controls.Add(this.label1, 0, 4);
             this.MainLayout.Controls.Add(this.checkMaterials, 0, 0);
             this.MainLayout.Controls.Add(this.checkFace, 0, 1);
             this.MainLayout.Controls.Add(this.checkHidden, 0, 2);
             this.MainLayout.Controls.Add(this.ChildLabel, 0, 3);
+            this.MainLayout.Controls.Add(this.comboFileType, 1, 4);
             this.MainLayout.Controls.Add(this.numericTolerance, 1, 3);
             this.MainLayout.Location = new System.Drawing.Point(5, 7);
             this.MainLayout.Margin = new System.Windows.Forms.Padding(4);
             this.MainLayout.Name = "MainLayout";
-            this.MainLayout.RowCount = 4;
+            this.MainLayout.RowCount = 5;
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 11F));
-            this.MainLayout.Size = new System.Drawing.Size(334, 137);
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 49F));
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
+            this.MainLayout.Size = new System.Drawing.Size(334, 164);
             this.MainLayout.TabIndex = 14;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(4, 137);
+            this.label1.Margin = new System.Windows.Forms.Padding(4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(102, 23);
+            this.label1.TabIndex = 19;
+            this.label1.Text = "glTF File Type:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // checkMaterials
             // 
@@ -111,17 +129,27 @@
             this.ChildLabel.Location = new System.Drawing.Point(4, 88);
             this.ChildLabel.Margin = new System.Windows.Forms.Padding(4);
             this.ChildLabel.Name = "ChildLabel";
-            this.ChildLabel.Size = new System.Drawing.Size(157, 45);
+            this.ChildLabel.Size = new System.Drawing.Size(157, 41);
             this.ChildLabel.TabIndex = 6;
             this.ChildLabel.Text = "Mesh Tolerance (cm):\r\n(lower -> higher quality)\r\n";
             this.ChildLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // comboFileType
+            // 
+            this.comboFileType.FormattingEnabled = true;
+            this.comboFileType.Items.AddRange(new object[] {"Binary (.glb)", "JSON (.gltf)"});
+            this.comboFileType.Location = new System.Drawing.Point(186, 136);
+            this.comboFileType.Name = "comboFileType";
+            this.comboFileType.Size = new System.Drawing.Size(145, 24);
+            this.comboFileType.TabIndex = 18;
+            // 
             // numericTolerance
             // 
-            this.numericTolerance.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.numericTolerance.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.numericTolerance.DecimalPlaces = 2;
             this.numericTolerance.Increment = new decimal(new int[] {1, 0, 0, 65536});
-            this.numericTolerance.Location = new System.Drawing.Point(223, 99);
+            this.numericTolerance.Location = new System.Drawing.Point(222, 97);
+            this.numericTolerance.Margin = new System.Windows.Forms.Padding(3, 3, 20, 3);
             this.numericTolerance.Maximum = new decimal(new int[] {1000, 0, 0, 0});
             this.numericTolerance.Minimum = new decimal(new int[] {1, 0, 0, 131072});
             this.numericTolerance.Name = "numericTolerance";
@@ -133,7 +161,7 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(218, 149);
+            this.cancelButton.Location = new System.Drawing.Point(218, 183);
             this.cancelButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(121, 27);
@@ -144,7 +172,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(91, 150);
+            this.okButton.Location = new System.Drawing.Point(91, 184);
             this.okButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(121, 27);
@@ -156,11 +184,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(347, 188);
+            this.ClientSize = new System.Drawing.Size(347, 222);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.MainLayout);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "GltfExportSettings";
             this.Text = "glTF Export Settings";
             this.MainLayout.ResumeLayout(false);
@@ -174,6 +205,8 @@
         private System.Windows.Forms.CheckBox checkHidden;
         private System.Windows.Forms.CheckBox checkMaterials;
         private System.Windows.Forms.Label ChildLabel;
+        private System.Windows.Forms.ComboBox comboFileType;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel MainLayout;
         private System.Windows.Forms.NumericUpDown numericTolerance;
         private System.Windows.Forms.Button okButton;

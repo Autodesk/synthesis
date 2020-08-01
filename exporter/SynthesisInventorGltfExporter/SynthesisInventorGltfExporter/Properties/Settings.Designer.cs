@@ -94,5 +94,17 @@ namespace SynthesisInventorGltfExporter.Properties {
                 this["ExportFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExportGLB {
+            get {
+                return ((bool)(this["ExportGLB"]));
+            }
+            set {
+                this["ExportGLB"] = value;
+            }
+        }
     }
 }

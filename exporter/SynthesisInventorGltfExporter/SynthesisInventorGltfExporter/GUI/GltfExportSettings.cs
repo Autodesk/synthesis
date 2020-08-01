@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Inventor;
 using SynthesisInventorGltfExporter.Properties;
 using Application = Inventor.Application;
 using FileDialog = Inventor.FileDialog;
+using Path = Inventor.Path;
 
 namespace SynthesisInventorGltfExporter.GUI
 {
@@ -28,8 +30,8 @@ namespace SynthesisInventorGltfExporter.GUI
                 SaveSettings();
                 FileDialog dialog;
                 application.CreateFileDialog(out dialog);
-                dialog.DialogTitle = "Export assembly as .gltf or .glb";
-                dialog.Filter = "glTF Binary (*.glb)|*.glb|glTF JSON (*.gltf)|*.gltf";
+                dialog.DialogTitle = "Export assembly as glTF";
+                dialog.Filter = Settings.Default.ExportGLB ? "glTF Binary (*.glb)|*.glb" : "glTF JSON (*.gltf)|*.gltf";
                 dialog.FilterIndex = 1;
                 dialog.InitialDirectory = Settings.Default.ExportFolder;
                 var filename = assemblyDocument.DisplayName;
@@ -37,15 +39,23 @@ namespace SynthesisInventorGltfExporter.GUI
                 {
                     filename = filename.Replace(c, '_');
                 }
-                dialog.FileName = filename;
+                dialog.FileName = System.IO.Path.GetFileNameWithoutExtension(filename);
                 dialog.InsertMode = true;
                 dialog.OptionsEnabled = false;
                 dialog.MultiSelectEnabled = false;
+                dialog.CancelError = true;
 
-                dialog.ShowSave();
-                
+                try
+                {
+                    dialog.ShowSave();
+                }
+                catch
+                {
+                    return; // Cancel button pressed
+                }
+
                 var exporter = new GLTFDesignExporter();
-                exporter.ExportDesign(application, assemblyDocument, checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value);
+                exporter.ExportDesign(application, assemblyDocument, dialog.FileName, Settings.Default.ExportGLB,checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value);
                 Close();
             };
             cancelButton.Click += (sender, args) =>
@@ -60,6 +70,7 @@ namespace SynthesisInventorGltfExporter.GUI
             checkFace.Checked = Settings.Default.ExportFaceMaterials;
             checkHidden.Checked = Settings.Default.ExportHidden;
             numericTolerance.Value = Settings.Default.MeshTolerance;
+            comboFileType.SelectedIndex = Settings.Default.ExportGLB ? 0 : 1;
             checkMaterials_CheckedChanged(null, null);
         }
 
@@ -69,6 +80,7 @@ namespace SynthesisInventorGltfExporter.GUI
             Settings.Default.ExportFaceMaterials = checkFace.Checked;
             Settings.Default.ExportHidden = checkHidden.Checked;
             Settings.Default.MeshTolerance = numericTolerance.Value;
+            Settings.Default.ExportGLB = comboFileType.SelectedIndex == 0;
             Settings.Default.Save();
         }
 
@@ -83,6 +95,11 @@ namespace SynthesisInventorGltfExporter.GUI
                 checkFace.Enabled = false;
                 checkFace.Checked = false;
             }
+        }
+
+        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
