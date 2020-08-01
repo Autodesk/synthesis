@@ -27,7 +27,7 @@ def fillJoint(fusionJoint):
     protoJoint = Joint()
     # protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
     protoJoint.header.name = fusionJoint.name
-    fillVector3D(getJointOrigin(fusionJoint), protoJoint.origin)
+    fillPoint3DConvertUnits(getJointOrigin(fusionJoint), protoJoint.origin)
     protoJoint.isLocked = fusionJoint.isLocked
     protoJoint.isSuppressed = fusionJoint.isSuppressed
 
@@ -149,3 +149,8 @@ def fillVector3D(fusionVector3D, protoVector3D):
     protoVector3D.x = fusionVector3D.x
     protoVector3D.y = fusionVector3D.y
     protoVector3D.z = fusionVector3D.z
+
+def fillPoint3DConvertUnits(fusionVector3D, protoVector3D):
+    protoVector3D.x = fusionVector3D.x/100
+    protoVector3D.y = fusionVector3D.y/100
+    protoVector3D.z = fusionVector3D.z/100
