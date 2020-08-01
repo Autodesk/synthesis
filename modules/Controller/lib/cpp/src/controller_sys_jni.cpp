@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass, jint value, jobject obj){
+	/*
 	int error_code = 0;
 	const char* error_message = NULL;
 	const char* error_data = NULL;
@@ -27,8 +28,8 @@ JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass, jint value, 
 		fid = env->GetFieldID(myclass,"error_data","Ljava/lang/String;");
 		env->SetObjectField(obj ,fid, env->NewStringUTF(error_data));
 	}
-
-	return ret;
+	*/
+	return 5;//ret;
 }
 
 #ifdef __cplusplus

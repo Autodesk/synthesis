@@ -1,5 +1,6 @@
 #include <iostream>
 #include "controller_sys.hpp"
+#include <cstring>
 
 int main(){
 	int error_code = 0;

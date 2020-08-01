@@ -9,6 +9,8 @@ use jsonrpc_client_http::HttpHandle;
 use std::os::raw::c_char;
 use serde_json::value::Value;
 use std::ptr::{null, null_mut};
+use std::mem::ManuallyDrop;
+use std::ffi::CString;
 
 jsonrpc_client!(pub struct ControllerRpc {
     pub fn Forward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
@@ -29,6 +31,11 @@ lazy_static! {
 // TODO create a macro to make these functions for us
 #[no_mangle]
 pub extern "C" fn Test(val: i32, error_code: *mut i64, error_message: *mut *const c_char, error_data: *mut *const c_char) -> i32 {
+    let pass_ownership= |s: String| unsafe {
+        ManuallyDrop::take(
+            &mut ManuallyDrop::new(CString::new(s.as_bytes()).unwrap()))
+        .into_raw()
+    };
     match CLIENT.lock().unwrap().Test(val).call() {
         Ok(v) => {
             if error_code != null_mut() {
@@ -42,15 +49,15 @@ pub extern "C" fn Test(val: i32, error_code: *mut i64, error_message: *mut *cons
                     unsafe { *error_code = json_rpc_error.code.code(); }
                 }
                 if error_message != null_mut() {
-                    unsafe { *error_message = json_rpc_error.message.as_bytes().as_ptr() as *const i8; } // TODO null-terminate strings
+                    unsafe {
+                        *error_message = pass_ownership(json_rpc_error.message.clone());
+                    }
                 }
                 if error_data != null_mut() {
-                    match &json_rpc_error.data {
-                        Some(value) => match value {
-                            Value::String(data_str) => unsafe { *error_data = data_str.as_bytes().as_ptr() as *const i8 },
-                            _ => ()
-                        },
-                        None => ()
+                    if let Some(value) = &json_rpc_error.data {
+                        if let Value::String(data_str) = value {
+                            unsafe { *error_data = pass_ownership(data_str.clone()); }
+                        }
                     }
                 }
             },
