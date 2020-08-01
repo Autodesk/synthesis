@@ -33,7 +33,7 @@ namespace SynthesisInventorGltfExporter
         
         private List<string> warnings;
         
-        public void ExportDesign(AssemblyDocument assemblyDocument)
+        public void ExportDesign(AssemblyDocument assemblyDocument, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
         {
             materialCache = new Dictionary<string, MaterialBuilder>();
             allDocumentJoints = new List<AssemblyJoint>();
@@ -76,7 +76,7 @@ namespace SynthesisInventorGltfExporter
             
             foreach (AssemblyJoint joint in allDocumentJoints)
             {
-                jointArray.Add(JObject.Parse(JsonFormatter.Default.Format(ExportJoint(joint))));
+                try { jointArray.Add(JObject.Parse(JsonFormatter.Default.Format(ExportJoint(joint)))); } catch {}
             }
         
             return jointArray;
@@ -87,13 +87,13 @@ namespace SynthesisInventorGltfExporter
             var protoJoint = new Joint();
             
             var header = new Header();
-            header.Name = invJoint.Name;
+            try { header.Name = invJoint.Name; } catch {}
             protoJoint.Header = header;
             
             protoJoint.Origin = GetVector3DFromPoint(GetJointOrigin(invJoint));
             
-            protoJoint.IsLocked = invJoint.Locked;
-            protoJoint.IsSuppressed = invJoint.Suppressed;
+            try { protoJoint.IsLocked = invJoint.Locked; } catch {}
+            try { protoJoint.IsSuppressed = invJoint.Suppressed; } catch {}
         
             protoJoint.OccurrenceOneUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceOne);
             protoJoint.OccurrenceTwoUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceTwo);

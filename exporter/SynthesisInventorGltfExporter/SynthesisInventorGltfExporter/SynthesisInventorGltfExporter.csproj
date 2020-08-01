@@ -61,6 +61,10 @@
       <HintPath>..\packages\SharpGLTF.Toolkit.1.0.0-alpha0014\lib\netstandard2.0\SharpGLTF.Toolkit.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\stdole.7.0.3303\lib\net10\stdole.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -105,10 +109,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GLTFDesignExporter.cs" />
+    <Compile Include="GUI\GltfExportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\GltfExportSettings.Designer.cs">
+      <DependentUpon>GltfExportSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PictureDispConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="proto\GltfExtras.cs" />
     <Compile Include="RobotExporterAddInServer.cs" />
-    <Compile Include="SingleEnvironmentAddInServer.cs" />
+    <Compile Include="RibbonAddInServer.cs" />
+    <EmbeddedResource Include="GUI\GltfExportSettings.resx">
+      <DependentUpon>GltfExportSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -117,6 +131,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -136,6 +151,16 @@
     <Content Include="Autodesk.SynthesisInventorGltfExporter.Inventor.addin" />
     <Content Include="proto\compile.bat" />
     <Content Include="proto\gltf_extras.proto" />
+    <Content Include="Resources\Branding\SynthesisLogo16.bmp" />
+    <Content Include="Resources\Branding\SynthesisLogo32.bmp" />
+    <Content Include="Resources\Branding\SynthesisLogoIco.ico" />
+    <Content Include="Resources\RibbonIcons\Book32.png" />
+    <Content Include="Resources\RibbonIcons\Checklist32.png" />
+    <Content Include="Resources\RibbonIcons\DrivetrainType32.png" />
+    <Content Include="Resources\RibbonIcons\Gears16.png" />
+    <Content Include="Resources\RibbonIcons\Gears32.png" />
+    <Content Include="Resources\RibbonIcons\JointEditor32.png" />
+    <Content Include="Resources\RibbonIcons\Weight32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -143,4 +168,11 @@
 XCopy "$(ProjectDir)Autodesk.SynthesisInventorGltfExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets'))" />
+  </Target>
 </Project>
