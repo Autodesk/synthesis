@@ -3,6 +3,22 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
+        <PackageId>Autodesk.Synthesis.Controller.API</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>Autodesk Inc</Authors>
+        <Company>Autodesk</Company>
+        <Product>Synthesis</Product>
+        <Description>An API for writing code for robots and systems in the Synthesis™ simulator.</Description>
+        <Copyright>© 2020 Autodesk Inc.</Copyright>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageProjectUrl>https://synthesis.autodesk.com</PackageProjectUrl>
+        <PackageIcon>synthesis.png</PackageIcon>
+        <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/modules/Controller</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Autodesk, Synthesis, FRC, Robotics, Simulator</PackageTags>
+        <PackageReleaseNotes>An inital release of the controller API for robot code development</PackageReleaseNotes>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +35,13 @@
       <Reference Include="Api">
         <HintPath>..\..\api\Api\bin\Debug\netstandard2.0\Api.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\installer\Linux\synthesis.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>

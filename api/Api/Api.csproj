@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
-        <PackageId>Autodesk.Synthesis.API</PackageId>
+        <PackageId>Autodesk.Synthesis.Module.API</PackageId>
         <Version>0.0.1</Version>
         <Authors>Autodesk Inc</Authors>
         <Company>Autodesk</Company>
