@@ -3,12 +3,13 @@ using Engine.Util;
 using UnityEngine;
 using SynthesisAPI.Utilities;
 using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Runtime;
 
 using HingeJoint = SynthesisAPI.EnvironmentManager.Components.HingeJoint;
 using Rigidbody = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
 using ConfigurableJointMotion = SynthesisAPI.EnvironmentManager.Components.ConfigurableJointMotion;
 using JointLimits = SynthesisAPI.EnvironmentManager.Components.JointLimits;
-using SynthesisAPI.Runtime;
+using JointMotor = SynthesisAPI.EnvironmentManager.Components.JointMotor;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -70,6 +71,10 @@ namespace Engine.ModuleLoader.Adapters
                     return unityJoint.velocity;
                 case "angle":
                     return unityJoint.angle;
+                case "usemotor":
+                    return unityJoint.useMotor;
+                case "motor":
+                    return new JointMotor(unityJoint.motor);
                 default:
                     throw new Exception($"Property {n} not supported");
             }
@@ -108,6 +113,12 @@ namespace Engine.ModuleLoader.Adapters
                     break;
                 case "limits":
                     unityJoint.limits = ((JointLimits)o).GetUnity();
+                    break;
+                case "usemotor":
+                    unityJoint.useMotor = (bool)o;
+                    break;
+                case "motor":
+                    unityJoint.motor = ((JointMotor)o).GetUnity();
                     break;
                 default:
                     throw new Exception($"Property {n} not supported");

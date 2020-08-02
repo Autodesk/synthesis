@@ -1,4 +1,5 @@
-﻿using MathNet.Spatial.Euclidean;
+﻿using Api.EnvironmentManager;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Modules.Attributes;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     [BuiltinComponent]
-    public class HingeJoint : Component
+    public class HingeJoint : Component, IControllable
     {
         internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not setup");
         internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not setup");
@@ -54,6 +55,14 @@ namespace SynthesisAPI.EnvironmentManager.Components
         }
         public float Angle {
             get => Get<float>("angle");
+        }
+        public bool UseMotor {
+            get => Get<bool>("usemotor");
+            set => Set("usemotor", value);
+        }
+        public JointMotor Motor {
+            get => Get<JointMotor>("motor");
+            set => Set("motor", value);
         }
 
         #endregion
@@ -106,5 +115,27 @@ namespace SynthesisAPI.EnvironmentManager.Components
         }
 
         internal UnityEngine.JointLimits GetUnity() => _container;
+    }
+
+    public class JointMotor
+    {
+        private UnityEngine.JointMotor _container;
+
+        public float TargetVelocity {
+            get => _container.targetVelocity;
+            set => _container.targetVelocity = value;
+        }
+        public float Force {
+            get => _container.force;
+            set => _container.force = value;
+        }
+        public bool FreeSpin {
+            get => _container.freeSpin;
+            set => _container.freeSpin = value;
+        }
+
+        public JointMotor() { _container = new UnityEngine.JointMotor(); }
+        internal JointMotor(UnityEngine.JointMotor container) { _container = container; }
+        internal UnityEngine.JointMotor GetUnity() => _container;
     }
 }

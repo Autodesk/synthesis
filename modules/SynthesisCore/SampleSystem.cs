@@ -19,70 +19,29 @@ namespace SynthesisCore
         private Transform transform;
         private Rigidbody rigidbody;
 
-        private Entity A, B, C, D, E;
+        private Entity A, B;
 
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
             A = CreateTestEntity(new Vector3D(0, 2f, 0));
-            B = CreateTestEntity(new Vector3D(1f, 1f, 0));
-            C = CreateTestEntity(new Vector3D(0, 2f, 1f));
-            D = CreateTestEntity(new Vector3D(-1f, 2f, 0));
-            E = CreateTestEntity(new Vector3D(0, 2f, -1f));
+            B = CreateTestEntity(new Vector3D(0, 3.1f, 0));
+
+            var rb = A.GetComponent<Rigidbody>();
+            rb.Mass = 5;
 
             #region Hard-coded joints for demonstration
 
-            /*var hingeJoint = B.AddComponent<HingeJoint>();
+            var hingeJoint = B.AddComponent<HingeJoint>();
             hingeJoint.ConnectedBody = A.GetComponent<Rigidbody>();
-            hingeJoint.Anchor = new Vector3D(-0.5f, 0.5f, 0);
-            hingeJoint.Axis = new Vector3D(0, 0, 1);
-            hingeJoint.BreakForce = 500;
-            hingeJoint.UseLimits = true;
-            hingeJoint.Limits = new JointLimits()
+            hingeJoint.Anchor = new Vector3D(0, -0.55f, 0);
+            hingeJoint.Axis = new Vector3D(0, 1, 0);
+            hingeJoint.UseMotor = true;
+            hingeJoint.Motor = new JointMotor()
             {
-                Max = 90,
-                Min = -90
-            };*/
-
-            var h1 = B.AddComponent<FixedJoint>();
-            h1.ConnectedBody = A.GetComponent<Rigidbody>();
-            h1.BreakForce = 500;
-
-            var h2 = C.AddComponent<HingeJoint>();
-            h2.ConnectedBody = A.GetComponent<Rigidbody>();
-            h2.Anchor = new Vector3D(0, -0.5f, -0.5f);
-            h2.Axis = new Vector3D(1, 0, 0);
-            h2.BreakForce = 500;
-            h2.UseLimits = true;
-            h2.Limits = new JointLimits()
-            {
-                Max = 180,
-                Min = 0 // Might need to switch
-            };
-
-            var h3 = D.AddComponent<HingeJoint>();
-            h3.ConnectedBody = A.GetComponent<Rigidbody>();
-            h3.Anchor = new Vector3D(0.5f, -0.5f, 0);
-            h3.Axis = new Vector3D(0, 0, 1);
-            h3.BreakForce = 500;
-            h3.UseLimits = true;
-            h3.Limits = new JointLimits()
-            {
-                Max = 180,
-                Min = 0 // Might need to switch
-            };
-
-            var h4 = E.AddComponent<HingeJoint>();
-            h4.ConnectedBody = A.GetComponent<Rigidbody>();
-            h4.Anchor = new Vector3D(0, -0.5f, 0.5f);
-            h4.Axis = new Vector3D(1, 0, 0);
-            h4.BreakForce = 500;
-            h4.UseLimits = true;
-            h4.Limits = new JointLimits()
-            {
-                Max = 0,
-                Min = -180 // Might need to switch
+                Force = 500,
+                FreeSpin = false
             };
 
             #endregion
@@ -92,6 +51,8 @@ namespace SynthesisCore
             InputManager.AssignDigitalInput("fly", new Digital("f"));
             InputManager.AssignDigitalInput("spin", new Digital("r"));
             InputManager.AssignDigitalInput("break", new Digital("x"));
+            InputManager.AssignDigitalInput("power_fwd", new Digital("i"));
+            InputManager.AssignDigitalInput("power_rwd", new Digital("k"));
         }
 
         private static uint nextChannel = 5;
@@ -107,6 +68,11 @@ namespace SynthesisCore
             transform.Position = pos;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);
+
+            var audio = new AudioSource();
+            audio.AudioClip = AssetManager.GetAsset<AudioClipAsset>("/modules/synthesis_core/hit-sound-effect.wav");
+            audio.IsPlaying = false;
+            e.AddComponent(audio);
 
             var audio = e.AddComponent<AudioSource>();
             audio.AudioClip = AssetManager.GetAsset<AudioClipAsset>("/modules/synthesis_core/hit-sound-effect.wav");
@@ -177,7 +143,8 @@ namespace SynthesisCore
             if (de.State == DigitalState.Down)
             {
                 // ApiProvider.Log("Key Pressed");
-                Selectable.Selected?.Entity?.GetComponent<Rigidbody>().AddForce(new Vector3D(0, 475, 0));
+                var rb = Selectable.Selected?.Entity?.GetComponent<Rigidbody>();
+                rb.Velocity = new Vector3D(0, 5, 0);
             }
         }
 
@@ -198,9 +165,63 @@ namespace SynthesisCore
             {
                 // ApiProvider.Log("Key Pressed");
                 B.GetComponent<FixedJoint>().BreakForce = 0f;
-                C.GetComponent<HingeJoint>().BreakForce = 0f;
-                D.GetComponent<HingeJoint>().BreakForce = 0f;
-                E.GetComponent<HingeJoint>().BreakForce = 0f;
+            }
+        }
+
+        [TaggedCallback("input/power_fwd")]
+        public void SpinFwd(DigitalEvent de)
+        {
+            if (de.State == DigitalState.Down)
+            {
+                ApiProvider.Log("Spin?", LogLevel.Debug);
+                var j = Selectable.Selected?.Entity?.GetComponent<HingeJoint>();
+                if (j != null)
+                {
+                    j.UseMotor = true;
+                    var m = j.Motor;
+                    m.TargetVelocity = 100;
+                    j.Motor = m;
+                    ApiProvider.Log("SPIN", LogLevel.Debug);
+                }
+            }
+            else if (de.State == DigitalState.Up)
+            {
+                var j = Selectable.Selected?.Entity?.GetComponent<HingeJoint>();
+                if (j != null)
+                {
+                    j.UseMotor = false;
+                    var m = j.Motor;
+                    m.TargetVelocity = 0;
+                    j.Motor = m;
+                    ApiProvider.Log("Awwww", LogLevel.Debug);
+                }
+            }
+        }
+
+        [TaggedCallback("input/power_rwd")]
+        public void SpinRwd(DigitalEvent de)
+        {
+            if (de.State == DigitalState.Down)
+            {
+                var j = Selectable.Selected?.Entity?.GetComponent<HingeJoint>();
+                if (j != null)
+                {
+                    j.UseMotor = true;
+                    var m = j.Motor;
+                    m.TargetVelocity = -100;
+                    j.Motor = m;
+                }
+            }
+            else if (de.State == DigitalState.Up)
+            {
+                var j = Selectable.Selected?.Entity?.GetComponent<HingeJoint>();
+                if (j != null)
+                {
+                    j.UseMotor = false;
+                    var m = j.Motor;
+                    m.TargetVelocity = 0;
+                    j.Motor = m;
+                }
             }
         }
 
