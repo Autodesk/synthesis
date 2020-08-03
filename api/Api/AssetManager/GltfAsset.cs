@@ -85,11 +85,12 @@ namespace SynthesisAPI.AssetManager
 
         private void AddComponents(Bundle bundle, Node node)
         {
-            bundle.Components.Add(ParseMesh(node.Mesh));
-            bundle.Components.Add(ParseTransform(node.LocalTransform));
+            EnvironmentManager.Components.Transform t = ParseTransform(node.LocalTransform);
+            if(node.Mesh != null) bundle.Components.Add(ParseMesh(node.Mesh, t.Position));
+            bundle.Components.Add(t);
         }
 
-        private EnvironmentManager.Components.Mesh ParseMesh(SharpGLTF.Schema2.Mesh nodeMesh)
+        private EnvironmentManager.Components.Mesh ParseMesh(SharpGLTF.Schema2.Mesh nodeMesh, Vector3D pos)
         {
             EnvironmentManager.Components.Mesh m = new EnvironmentManager.Components.Mesh();
             foreach (SharpGLTF.Schema2.MeshPrimitive primitive in nodeMesh.Primitives)
@@ -99,7 +100,11 @@ namespace SynthesisAPI.AssetManager
                 {
                     Vector3Array vertices = primitive.GetVertices("POSITION").AsVector3Array();
                     foreach (System.Numerics.Vector3 vertex in vertices)
-                        m.Vertices.Add(new MathNet.Spatial.Euclidean.Vector3D(vertex.X, vertex.Y, vertex.Z)); //convert to MathNet Vector3D and add to Vertices
+                    {
+                        Vector3D v = new Vector3D(vertex.X, vertex.Y, vertex.Z);
+                        v -= pos;
+                        m.Vertices.Add(v);
+                    }
                 }
 
                 var triangles = primitive.GetIndices();
@@ -112,8 +117,8 @@ namespace SynthesisAPI.AssetManager
         {
             EnvironmentManager.Components.Transform t = new EnvironmentManager.Components.Transform();
 
-            t.Rotation = new MathNet.Spatial.Euclidean.Quaternion(nodeTransform.Rotation.W, nodeTransform.Rotation.X, nodeTransform.Rotation.Y, nodeTransform.Rotation.Z);
-            t.Scale = new MathNet.Spatial.Euclidean.Vector3D(nodeTransform.Scale.X, nodeTransform.Scale.Y, nodeTransform.Scale.Z);
+            //t.Rotation = new MathNet.Spatial.Euclidean.Quaternion(nodeTransform.Rotation.W, nodeTransform.Rotation.X, nodeTransform.Rotation.Y, nodeTransform.Rotation.Z);
+            //t.Scale = new MathNet.Spatial.Euclidean.Vector3D(nodeTransform.Scale.X, nodeTransform.Scale.Y, nodeTransform.Scale.Z);
             t.Position = new MathNet.Spatial.Euclidean.Vector3D(nodeTransform.Translation.X, nodeTransform.Translation.Y, nodeTransform.Translation.Z);
 
             return t;
