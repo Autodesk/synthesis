@@ -21,14 +21,17 @@ namespace SynthesisCore
 
         public override void Setup()
         {
-            //Entity e = EnvironmentManager.AddEntity();
-            //e.AddBundle(AssetManager.GetAsset<GltfAsset>("/modules/SynthesisCore/Test.glb"));
+            Entity e = EnvironmentManager.AddEntity();
+            GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
+            Bundle o = g.Parse();
+            e.AddBundle(o);
         }
-        
+
         public override void OnUpdate() { }
 
-        private void cube(Mesh m)
+        private Mesh cube()
         {
+            Mesh m = new Mesh();
             m.Vertices = new List<Vector3D>()
             {
                 new Vector3D(0,0,0),
@@ -55,6 +58,7 @@ namespace SynthesisCore
                 0, 6, 7, //face bottom
 			    0, 1, 6
             };
+            return m;
         }
 
         /*

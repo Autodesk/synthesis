@@ -185,14 +185,14 @@ namespace SynthesisAPI.EnvironmentManager
         public static void AddBundle(this Entity entity, Bundle bundle)
         {
             if (EntityExists(entity)){
-                foreach (Component c in bundle.Components)
-                    entity.AddComponent(c);
                 foreach (Bundle b in bundle.ChildBundles)
                 {
                     Entity e = AddEntity();
                     e.GetComponent<Parent>()!.Set(entity);
                     e.AddBundle(b);
                 }
+                foreach (Component c in bundle.Components)
+                    entity.AddComponent(c);
             }
         }
 
