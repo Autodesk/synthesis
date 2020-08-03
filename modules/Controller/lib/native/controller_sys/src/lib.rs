@@ -28,45 +28,65 @@ lazy_static! {
     };
 }
 
-// TODO create a macro to make these functions for us
-#[no_mangle]
-pub extern "C" fn Test(val: i32, error_code: *mut i64, error_message: *mut *const c_char, error_data: *mut *const c_char) -> i32 {
-    let pass_ownership= |s: String| unsafe {
-        ManuallyDrop::take(
-            &mut ManuallyDrop::new(CString::new(s.as_bytes()).unwrap()))
-        .into_raw()
-    };
-    match CLIENT.lock().unwrap().Test(val).call() {
-        Ok(v) => {
-            if error_code != null_mut() {
-                unsafe { *error_code = 0; }
-            }
-            return v;
-        },
-        Err(e) => match *e.kind() {
-            ErrorKind::JsonRpcError(ref json_rpc_error) => {
-                if error_code != null_mut() {
-                    unsafe { *error_code = json_rpc_error.code.code(); }
-                }
-                if error_message != null_mut() {
-                    unsafe {
-                        *error_message = pass_ownership(json_rpc_error.message.clone());
+macro_rules! rpc_method {
+    ($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty) => {
+        #[no_mangle]
+        pub extern "C" fn $name(
+            $($arg_name: $ty),*,
+            error_code: *mut i64,
+            error_message: *mut *const c_char,
+            error_data: *mut *const c_char
+        ) -> $ret_type {
+            let pass_ownership= |s: String| unsafe {
+                ManuallyDrop::take(
+                    &mut ManuallyDrop::new(CString::new(s.as_bytes()).unwrap()))
+                .into_raw()
+            };
+            match CLIENT.lock().unwrap().$name($($arg_name),*).call() {
+                Ok(v) => {
+                    if error_code != null_mut() {
+                        unsafe { *error_code = 0; }
                     }
-                }
-                if error_data != null_mut() {
-                    if let Some(value) = &json_rpc_error.data {
-                        if let Value::String(data_str) = value {
-                            unsafe { *error_data = pass_ownership(data_str.clone()); }
+                    return v;
+                },
+                Err(e) => match *e.kind() {
+                    ErrorKind::JsonRpcError(ref json_rpc_error) => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = json_rpc_error.code.code(); }
+                        }
+                        if error_message != null_mut() {
+                            unsafe {
+                                *error_message = pass_ownership(json_rpc_error.message.clone());
+                            }
+                        }
+                        if error_data != null_mut() {
+                            if let Some(value) = &json_rpc_error.data {
+                                if let Value::String(data_str) = value {
+                                    unsafe { *error_data = pass_ownership(data_str.clone()); }
+                                }
+                            }
+                        }
+                    },
+                    _ => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = -1; }
                         }
                     }
                 }
-            },
-            _ => {
-                if error_code != null_mut() {
-                    unsafe { *error_code = -1; }
-                }
-            }
+            };
+            return Default::default();
         }
-    };
-    return -1;
+    }
+}
+
+macro_rules! rpc_methods {
+    {
+        $($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty)*
+    } => {
+        $(rpc_method!($name($(arg_name: $ty),*) -> $ret_type);)*
+    }
+}
+
+rpc_methods!{
+    Test(val: i32) -> i32
 }

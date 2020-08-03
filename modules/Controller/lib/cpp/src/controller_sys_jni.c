@@ -1,13 +1,9 @@
 #include <stdio.h>
 #include <jni.h>
 
-#include "controller_sys.hpp"
+#include "controller_sys.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass, jint value, jobject obj){
+JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass _, jint value, jobject obj){
 	/*
 	int error_code = 0;
 	const char* error_message = NULL;
@@ -31,7 +27,3 @@ JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass, jint value, 
 	*/
 	return 5;//ret;
 }
-
-#ifdef __cplusplus
-}
-#endif
