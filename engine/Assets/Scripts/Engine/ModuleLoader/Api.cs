@@ -452,7 +452,8 @@ namespace Engine.ModuleLoader
 				}
 
 				dynamic gameObjectComponent = gameObject.AddComponent(type);
-				gameObjectComponent.SetInstance(component);
+				dynamic c = component; //runtime cast
+				gameObjectComponent.SetInstance(c);
 			}
 
 			public void RemoveComponentFromScene(Entity entity, Type t)

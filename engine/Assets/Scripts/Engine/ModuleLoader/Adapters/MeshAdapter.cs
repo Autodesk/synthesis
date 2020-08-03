@@ -20,16 +20,22 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (instance.Changed)
 			{
-				filter.mesh.vertices = Convert(instance.Vertices);
-				filter.mesh.uv = Convert(instance.UVs);
-				filter.mesh.triangles = instance.Triangles.ToArray();
+				ToUnity();
 				instance.ProcessedChanges();
 			}
+		}
+
+		private void ToUnity()
+        {
+			filter.mesh.vertices = Convert(instance.Vertices);
+			filter.mesh.uv = Convert(instance.UVs);
+			filter.mesh.triangles = instance.Triangles.ToArray();
 		}
 
 		public void SetInstance(Mesh mesh)
 		{
 			instance = mesh;
+			ToUnity();
 		}
 
 		public static Mesh NewInstance()
