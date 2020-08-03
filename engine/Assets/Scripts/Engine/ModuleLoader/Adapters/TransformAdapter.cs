@@ -22,8 +22,8 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void ToUnity()
         {
-			unityTransform.position = MathUtil.MapVector3D(instance.Position);
-			unityTransform.rotation = MathUtil.MapQuaternion(instance.Rotation);
+			unityTransform.localPosition = MathUtil.MapVector3D(instance.Position);
+			unityTransform.localRotation = MathUtil.MapQuaternion(instance.Rotation);
 			unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
 		}
 
