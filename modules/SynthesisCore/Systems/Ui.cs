@@ -18,9 +18,12 @@ namespace SynthesisCore.Systems
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Settings.uxml");
             
             Tab engineTab = new Tab("Engine", tabAsset, null);
-            Panel environmentsWindow = new Panel("Environments", environmentsAsset, null);
-            Panel modulesWindow = new Panel("Modules", modulesAsset, null);
-            Panel settingsWindow = new Panel("Settings", settingsAsset, null);
+            Panel environmentsWindow = new Panel("Environments", environmentsAsset,
+                element => RegisterOKCloseButtons(element, "Environments"));
+            Panel modulesWindow = new Panel("Modules", modulesAsset, 
+                element => RegisterOKCloseButtons(element, "Modules"));
+            Panel settingsWindow = new Panel("Settings", settingsAsset, 
+                element => RegisterOKCloseButtons(element, "Settings"));
             
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);
@@ -43,6 +46,21 @@ namespace SynthesisCore.Systems
             settingsButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Settings");
+            });
+        }
+
+        private void RegisterOKCloseButtons(VisualElement visualElement, string panelName)
+        {
+            Button okButton = (Button) visualElement.Get("ok-button");
+            okButton?.Subscribe(x =>
+            {
+                UIManager.ClosePanel(panelName);
+            });
+            
+            Button closeButton = (Button) visualElement.Get("close-button");
+            closeButton?.Subscribe(x =>
+            {
+                UIManager.ClosePanel(panelName);
             });
         }
 
