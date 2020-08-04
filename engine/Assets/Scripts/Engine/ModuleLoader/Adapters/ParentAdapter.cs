@@ -24,8 +24,6 @@ namespace Engine.ModuleLoader.Adapters
             else if (instance.Changed)
             {
                 GameObject parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
-                // SynthesisAPI.Utilities.Logger.Log(parent.name);
-                // SynthesisAPI.Utilities.Logger.Log(gameObject.name);
                 gameObject.transform.SetParent(parent.transform);
                 instance.ProcessedChanges();
             }
