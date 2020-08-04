@@ -23,8 +23,8 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				var s = Shader.Find("Universal Render Pipeline/Lit");
 				_defaultMaterial = new Material(s);
-				_defaultMaterial.color = new Color(1, 0.2f, 0.2f);
-				_defaultMaterial.SetFloat("_Smoothness", 0f);
+				_defaultMaterial.color = new Color(0.2f, 0.2f, 0.2f);
+				_defaultMaterial.SetFloat("_Smoothness", 0.2f);
 			}
 			renderer.material = _defaultMaterial;
 		}
