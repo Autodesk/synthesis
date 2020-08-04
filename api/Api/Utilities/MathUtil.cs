@@ -168,5 +168,7 @@ namespace SynthesisAPI.Utilities
 			}
 			return start;
 		}
+
+		public static Vector3D ToMathNet(this System.Numerics.Vector3 vec) => new Vector3D(vec.X, vec.Y, vec.Z);
 	}
 }

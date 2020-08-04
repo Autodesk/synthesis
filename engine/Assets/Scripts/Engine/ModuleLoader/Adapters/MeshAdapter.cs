@@ -14,6 +14,13 @@ namespace Engine.ModuleLoader.Adapters
 				filter = gameObject.AddComponent<MeshFilter>();
 			if (gameObject.GetComponent<MeshRenderer>() == null)
 				gameObject.AddComponent<MeshRenderer>();
+
+			var s = Shader.Find("Universal Render Pipeline/Lit");
+			Material m = new Material(s);
+			m.color = new Color(1, 0.2f, 0.2f);
+			m.SetFloat("_Smoothness", 0f);
+
+			gameObject.GetComponent<MeshRenderer>().material = m;
 		}
 
 		public void Update()
