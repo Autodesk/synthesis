@@ -50,7 +50,8 @@ namespace SynthesisAPI.UIManager
             if (node.Name.Replace("ui:", "").Equals("Style"))
             {
                 ApiProvider.Log("Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
-                //StyleSheetManager.AttemptRegistryOfNewStyleSheet(node.Attributes["src"].Value);
+                var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
+                StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
             }
             if (elementType == null)
             {
@@ -71,8 +72,8 @@ namespace SynthesisAPI.UIManager
 
                     if (attr.Name.Equals("class"))
                     {
-                        ApiProvider.Log("Class found with value: " + attr.Value);
-                        // StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, visualElement);
+                        //ApiProvider.Log("Class found with value: " + attr.Value);
+                        element = StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, element);
                     }
 
                     if (property == null)

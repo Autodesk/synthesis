@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisAPI.UIManager
@@ -7,18 +8,19 @@ namespace SynthesisAPI.UIManager
     {
         private Dictionary<string, UssClass> classes = new Dictionary<string, UssClass>();
 
-        public StyleSheet(string path)
+        public StyleSheet(string[] contents)
         {
-            string[] lines = System.IO.File.ReadAllLines(path);
-            ParseLines(lines);
+            ParseLines(contents);
         }
 
         private void ParseLines(string[] lines)
         {
             UssClass currentClass = null;
             
-            foreach (string line in lines)
+            foreach (string rawLine in lines)
             {
+                string line = rawLine.Trim();
+                
                 if (line.StartsWith("."))
                 {
                     string[] lineContents = line.Split('.');
@@ -36,13 +38,7 @@ namespace SynthesisAPI.UIManager
                 {
                     if (currentClass != null && line.Length > 2)
                     {
-                        string[] lineContents = line.Split(':');
-                        string propertyName = lineContents[0];
-                        string propertyValue = lineContents[1].Substring(1, lineContents[1].Length - 1);
-
-                        // use parseentry somewhere here?
-                        
-                        currentClass.AddProperty(propertyName, propertyValue);
+                        currentClass.AddLine(line);
                     }
                 }
             }
@@ -53,14 +49,18 @@ namespace SynthesisAPI.UIManager
             return classes.ContainsKey(className);
         }
 
-        public void ApplyClassToVisualElement(string className, VisualElement visualElement)
+        internal UnityEngine.UIElements.VisualElement ApplyClassToVisualElement(string className, UnityEngine.UIElements.VisualElement visualElement)
         {
+            ApiProvider.Log("Attempting to apply [" + className + "] to " + visualElement.name);
+            
             UssClass ussClass = classes[className];
 
-            foreach (string propertyName in ussClass.GetProperties())
+            foreach (string line in ussClass.Lines)
             {
-                visualElement.SetStyleProperty(propertyName, ussClass.GetPropertyValue(propertyName));
+                visualElement = UIParser.ParseEntry(line, visualElement);
             }
+
+            return visualElement;
         }
 
     }

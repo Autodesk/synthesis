@@ -1,33 +1,34 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.Runtime;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisAPI.UIManager
 {
-    // TODO: Pathing to Stylesheets
-    // TODO: Use ParseEntry method in StyleSheet ParseLines method
-    // TODO: Determine where to put ApplyClassFromStyleSheets in UIParser
-    
     public class StyleSheetManager
     {
         private static Dictionary<string, StyleSheet> styleSheets = new Dictionary<string,StyleSheet>();
 
-        public static void AttemptRegistryOfNewStyleSheet(string path)
+        public static void AttemptRegistryOfNewStyleSheet(UssAsset asset)
         {
-            if (!styleSheets.ContainsKey(path))
+            if (!styleSheets.ContainsKey(asset.Name))
             {
-                styleSheets.Add(path, new StyleSheet(path));
+                styleSheets.Add(asset.Name, asset._styleSheet);
             }
         }
 
-        public static void ApplyClassFromStyleSheets(string className, VisualElement visualElement)
+        internal static UnityEngine.UIElements.VisualElement ApplyClassFromStyleSheets(string className, UnityEngine.UIElements.VisualElement visualElement)
         {
             foreach (StyleSheet styleSheet in styleSheets.Values)
             {
                 if (styleSheet.HasClass(className))
                 {
-                    styleSheet.ApplyClassToVisualElement(className, visualElement);
+                    return styleSheet.ApplyClassToVisualElement(className, visualElement);
                 }
             }
+
+            return visualElement;
         }
     }
 }

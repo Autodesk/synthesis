@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace SynthesisAPI.UIManager
 {
     public class UssClass
     {
-        private Dictionary<string, string> values = new Dictionary<string,string>();
+        private List<string> lines = new List<string>();
+        public ReadOnlyCollection<string> Lines { get => lines.AsReadOnly(); }
         public string ClassName { get; }
         
         public UssClass(string className)
@@ -12,19 +14,9 @@ namespace SynthesisAPI.UIManager
             this.ClassName = className;
         }
 
-        public void AddProperty(string propertyName, string value)
+        public void AddLine(string line)
         {
-            values.Add(propertyName, value);
-        }
-
-        public Dictionary<string, string>.KeyCollection GetProperties()
-        {
-            return values.Keys;
-        }
-
-        public string GetPropertyValue(string propertyName)
-        {
-            return values[propertyName];
+            lines.Add(line);
         }
         
     }

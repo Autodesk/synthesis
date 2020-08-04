@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="window" class="window" style="height: 400px; width: 500px;">
-        <Style src="../uss/Window.uss" />
-        <Style src="../uss/Modules.uss" />
+        <Style src="modules/SynthesisCore/UI/uss/Window.uss" />
+        <Style src="modules/SynthesisCore/UI/uss/Modules.uss" />
         <ui:VisualElement name="header" class="window-header-container">
             <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;../images/modules-icon.png&apos;);" />
             <ui:Label text="Modules" name="title" class="panel-heading window-header-title" />

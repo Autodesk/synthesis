@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="window" class="window" style="width: 500px; height: 400px;">
-        <Style src="../uss/Window.uss" />
+        <Style src="/modules/SynthesisCore/UI/uss/Window.uss" />
         <ui:VisualElement name="header" class="window-header-container">
             <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;../images/environments-icon.png&apos;);" />
             <ui:Label text="Environments" name="title" class="window-header-title" />

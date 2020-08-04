@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="toolbar">
-        <Style src="../uss/Toolbar.uss" />
+        <Style src="modules/SynthesisCore/UI/uss/Toolbar.uss" />
         <ui:VisualElement name="top" class="top">
             <ui:VisualElement name="left-buttons" style="flex-direction: row;">
                 <ui:Button name="add-button" class="toolbar-button" style="background-image: url(&apos;../images/add-icon.png&apos;);" />
