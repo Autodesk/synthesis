@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
 using Logger = SynthesisAPI.Utilities.Logger;
+using SynthesisAPI.DevelopmentTools;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -81,6 +82,7 @@ namespace SynthesisAPI.AssetManager
             AddComponents(bundle, root);
             foreach (Node child in root.VisualChildren)
                 bundle.ChildBundles.Add(CreateBundle(child));
+
             return bundle;
         }
 
@@ -98,7 +100,7 @@ namespace SynthesisAPI.AssetManager
             foreach (SharpGLTF.Schema2.MeshPrimitive primitive in nodeMesh.Primitives)
             {
                 int c = m.Vertices.Count();
-                // checks for POSITION or NORMAL vertex as not all designs have both
+                // checks for POSITION or NORMAL vertex as not all designs have both (TODO: This doesn't trip, if it did would we screw up the triangles?)
                 if (primitive.VertexAccessors.ContainsKey("POSITION"))
                 {
                     Vector3Array vertices = primitive.GetVertices("POSITION").AsVector3Array();
@@ -112,6 +114,7 @@ namespace SynthesisAPI.AssetManager
             }
             return m;
         }
+
         private EnvironmentManager.Components.Transform ParseTransform(SharpGLTF.Transforms.AffineTransform nodeTransform)
         {
             EnvironmentManager.Components.Transform t = new EnvironmentManager.Components.Transform();

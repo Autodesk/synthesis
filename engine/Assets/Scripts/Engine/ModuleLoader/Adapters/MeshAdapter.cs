@@ -8,19 +8,25 @@ namespace Engine.ModuleLoader.Adapters
 {
 	public sealed class MeshAdapter : MonoBehaviour, IApiAdapter<Mesh>
 	{
+		private static Material _defaultMaterial = null;
+
 		public void Awake()
 		{
+			MeshRenderer renderer;
+
 			if ((filter = gameObject.GetComponent<MeshFilter>()) == null)
 				filter = gameObject.AddComponent<MeshFilter>();
-			if (gameObject.GetComponent<MeshRenderer>() == null)
-				gameObject.AddComponent<MeshRenderer>();
+			if ((renderer = gameObject.GetComponent<MeshRenderer>()) == null)
+				renderer = gameObject.AddComponent<MeshRenderer>();
 
-			var s = Shader.Find("Universal Render Pipeline/Lit");
-			Material m = new Material(s);
-			m.color = new Color(1, 0.2f, 0.2f);
-			m.SetFloat("_Smoothness", 0f);
-
-			gameObject.GetComponent<MeshRenderer>().material = m;
+			if (_defaultMaterial == null)
+			{
+				var s = Shader.Find("Universal Render Pipeline/Lit");
+				_defaultMaterial = new Material(s);
+				_defaultMaterial.color = new Color(1, 0.2f, 0.2f);
+				_defaultMaterial.SetFloat("_Smoothness", 0f);
+			}
+			renderer.material = _defaultMaterial;
 		}
 
 		public void Update()

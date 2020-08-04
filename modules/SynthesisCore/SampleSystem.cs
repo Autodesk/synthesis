@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.DevelopmentTools;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -8,6 +9,7 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore
 {
@@ -23,8 +25,12 @@ namespace SynthesisCore
         {
             Entity e = EnvironmentManager.AddEntity();
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
+            var _m1 = new ProfilerMarker();
             Bundle o = g.Parse();
+            Logger.Log($"Parse Time: {_m1.TimeSinceCreation.TotalMilliseconds}");
+            var _m2 = new ProfilerMarker();
             e.AddBundle(o);
+            Logger.Log($"Spawn Time: {_m2.TimeSinceCreation.TotalMilliseconds}");
         }
 
         public override void OnUpdate() { }
