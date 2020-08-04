@@ -30,11 +30,6 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
-		{
-			Instance?.Log(o, logLevel, memberName, filePath, lineNumber);
-		}
-
 		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);
 
 		public static void RemoveEntityFromScene(Entity entity) => Instance?.RemoveEntityFromScene(entity);

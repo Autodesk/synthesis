@@ -15,7 +15,7 @@ namespace SynthesisAPI.Utilities
         {
             if (entries.ContainsKey(typeof(U)))
                 return (U) entries[typeof(U)];
-            return default;
+            return default; // TODO indicate error of some kind
         }
         public bool Add<U>(U val) where U : T
         {

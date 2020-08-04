@@ -25,6 +25,7 @@ using Directory = System.IO.Directory;
 using Engine.ModuleLoader.Adapters;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Engine.ModuleLoader
 {
@@ -39,6 +40,7 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+			SynthesisAPI.Utilities.Logger.RegisterLogger(new LoggerImpl());
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			LoadApi();
 			LoadModules();
@@ -98,7 +100,7 @@ namespace Engine.ModuleLoader
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
+				Logger.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
 				return null;
 			}
 
@@ -184,7 +186,7 @@ namespace Engine.ModuleLoader
 			}
 			foreach (var file in fileManifest)
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
+				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
 			}
 			moduleInfo.archive.Dispose();
 		}
@@ -264,9 +266,9 @@ namespace Engine.ModuleLoader
 					}
 				}
 				catch (Exception e)
-				{ 
-					SynthesisAPI.Runtime.ApiProvider.Log($"{e}: Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
-																															// TODO unload assembly? return false?
+				{
+					Logger.Log($"{e}: Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
+																															   // TODO unload assembly? return false?
 					continue;
 				}
 			}
@@ -317,29 +319,8 @@ namespace Engine.ModuleLoader
 				});
 		}
 
-		public static class ApiProviderData {
-			public static GameObject EntityParent { get; set; }
-			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
-		}
-
-		private class ApiProvider : IApiProvider
+		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
-			private readonly Dictionary<Type, Type> _builtins;
-
-			public ApiProvider()
-			{
-				ApiProviderData.EntityParent = new GameObject("Entities");
-				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
-				_builtins = new Dictionary<Type, Type>
-				{
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
-				};
-			}
-
 			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
 				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
@@ -365,6 +346,31 @@ namespace Engine.ModuleLoader
 					default:
 						throw new SynthesisExpection("Unhandled log level");
 				}
+			}
+		}
+
+		public static class ApiProviderData
+		{
+			public static GameObject EntityParent { get; set; }
+			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+		}
+
+		private class ApiProvider : IApiProvider
+		{
+			private readonly Dictionary<Type, Type> _builtins;
+
+			public ApiProvider()
+			{
+				ApiProviderData.EntityParent = new GameObject("Entities");
+				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
+				_builtins = new Dictionary<Type, Type>
+				{
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
+				};
 			}
 
 			public void AddEntityToScene(Entity entity)
@@ -480,9 +486,9 @@ namespace Engine.ModuleLoader
 			public T CreateUnityType<T>(params object[] args) where T : class
 			{
 				if (args.Length > 0)
-					return (T) Activator.CreateInstance(typeof(T), args);
+					return (T)Activator.CreateInstance(typeof(T), args);
 				else
-					return (T) Activator.CreateInstance(typeof(T));
+					return (T)Activator.CreateInstance(typeof(T));
 			}
 
 			public VisualTreeAsset GetDefaultUIAsset(string assetName)
@@ -494,7 +500,7 @@ namespace Engine.ModuleLoader
 			}
 
 			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
-				(TUnityType) Activator.CreateInstance(typeof(TUnityType));
+				(TUnityType)Activator.CreateInstance(typeof(TUnityType));
 
 			public VisualElement GetRootVisualElement()
 			{

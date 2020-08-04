@@ -6,7 +6,7 @@ namespace SynthesisAPI.DevelopmentTools
 {
     public class ProfilerMarker
     {
-        public DateTime _startTimestamp { get; private set; }
+        private DateTime _startTimestamp { get; set; }
 
         public ProfilerMarker()
         {

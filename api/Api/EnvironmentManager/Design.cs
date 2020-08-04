@@ -1,11 +1,7 @@
-﻿using SharpGLTF.IO;
-using SharpGLTF.Memory;
-using SharpGLTF.Schema2;
+﻿using SharpGLTF.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using UnityEngine;
 
 namespace SynthesisAPI.EnvironmentManager
 {

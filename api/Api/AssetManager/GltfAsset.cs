@@ -1,29 +1,13 @@
 ﻿using System;
-using System.Dynamic;
 using System.IO;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using UnityEngine;
 using SynthesisAPI.VirtualFileSystem;
-using SharpGLTF;
 using SharpGLTF.Schema2;
-using System.Threading;
 using SynthesisAPI.Utilities;
-using System.Xml.Serialization;
 using SynthesisAPI.EnvironmentManager;
-using static SynthesisAPI.EnvironmentManager.Design;
 using System.Linq;
 using SharpGLTF.Memory;
-using UnityEngine.Assertions.Must;
-using SharpGLTF.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
-using Logger = SynthesisAPI.Utilities.Logger;
-using SynthesisAPI.DevelopmentTools;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -55,9 +39,9 @@ namespace SynthesisAPI.AssetManager
 
                 model = ModelRoot.ReadGLB(stream, settings);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ApiProvider.Log("GLTF file cannot be read");
+                Logger.Log("GLTF file cannot be read", LogLevel.Warning);
             }
         }
 
@@ -97,10 +81,10 @@ namespace SynthesisAPI.AssetManager
             if (node.Mesh != null) bundle.Components.Add(ParseMesh(node.Mesh, node.LocalTransform.Scale.ToMathNet()));
         }
 
-        private EnvironmentManager.Components.Mesh ParseMesh(SharpGLTF.Schema2.Mesh nodeMesh, Vector3D scaleFactor)
+        private EnvironmentManager.Components.Mesh ParseMesh(Mesh nodeMesh, Vector3D scaleFactor)
         {
             EnvironmentManager.Components.Mesh m = new EnvironmentManager.Components.Mesh();
-            foreach (SharpGLTF.Schema2.MeshPrimitive primitive in nodeMesh.Primitives)
+            foreach (MeshPrimitive primitive in nodeMesh.Primitives)
             {
                 int c = m.Vertices.Count();
                 // checks for POSITION or NORMAL vertex as not all designs have both (TODO: This doesn't trip, if it did would we screw up the triangles?)
@@ -122,9 +106,9 @@ namespace SynthesisAPI.AssetManager
         {
             EnvironmentManager.Components.Transform t = new EnvironmentManager.Components.Transform();
 
-            t.Rotation = new MathNet.Spatial.Euclidean.Quaternion(nodeTransform.Rotation.W, nodeTransform.Rotation.X,
+            t.Rotation = new Quaternion(nodeTransform.Rotation.W, nodeTransform.Rotation.X,
                 nodeTransform.Rotation.Y, nodeTransform.Rotation.Z);
-            t.Position = new MathNet.Spatial.Euclidean.Vector3D(nodeTransform.Translation.X * nodeTransform.Scale.X,
+            t.Position = new Vector3D(nodeTransform.Translation.X * nodeTransform.Scale.X,
                 nodeTransform.Translation.Y * nodeTransform.Scale.Y, nodeTransform.Translation.Z * nodeTransform.Scale.Z);
             //scale is applied directly to vertices -> default 1x
 

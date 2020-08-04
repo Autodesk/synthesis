@@ -1,27 +1,13 @@
-﻿using SynthesisAPI.Modules;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.UIManager;
-using SynthesisAPI.UIManager.VisualElements;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Xml;
-using JetBrains.Annotations;
-using Synthesis.Util;
+﻿using SynthesisAPI.UIManager;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.UIComponents;
-using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
-using Directory = SynthesisAPI.VirtualFileSystem.Directory;
 using SynVisualElementAsset = SynthesisAPI.AssetManager.VisualElementAsset;
 using SynListView = SynthesisAPI.UIManager.VisualElements.ListView;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class UIParseTest : MonoBehaviour
 {
@@ -38,7 +24,7 @@ public class UIParseTest : MonoBehaviour
 
     private void Start()
     {
-        ApiProvider.Log("Testing");
+        Logger.Log("Testing");
 
         // AssetManager.Import<TextureAsset>("image/texture", false, "/temp", "blank.png",
             // Permissions.PublicReadOnly, $"test{Path.DirectorySeparatorChar}Blank.png");
@@ -53,12 +39,12 @@ public class UIParseTest : MonoBehaviour
         
         Tab testTab = new Tab("Test Toolbar",
             AssetManager.GetAsset<SynVisualElementAsset>("/modules/synthesis_core/ToolbarTest.uxml"),
-            sve => ApiProvider.Log("Running Tab Binding"));
+            sve => Logger.Log("Running Tab Binding"));
         
         UIManager.AddTab(testTab);
         // UIManager.ShowPanel("Test Panel");
 
-        ApiProvider.Log("=====");
+        Logger.Log("=====");
         // UIManager.RecursivePrint(PanelRenderer.visualTree);
     }
 
