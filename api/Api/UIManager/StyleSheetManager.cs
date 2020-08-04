@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.Runtime;
 
 namespace SynthesisAPI.UIManager
 {
@@ -27,6 +28,8 @@ namespace SynthesisAPI.UIManager
                     return styleSheet.ApplyClassToVisualElement(className, visualElement);
                 }
             }
+            
+            ApiProvider.Log("Could not apply class [" + className + "] to [" + visualElement.name + "] with [" + styleSheets.Count + "] stylesheets currently loaded", LogLevel.Warning);
 
             return visualElement;
         }

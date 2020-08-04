@@ -27,6 +27,8 @@ namespace SynthesisCore.Systems
             UIManager.AddPanel(settingsWindow);
             
             UIManager.ShowPanel("Environments");
+            //UIManager.ShowPanel("Modules");
+            //UIManager.ShowPanel("Settings");
         }
 
         public override void OnPhysicsUpdate() { }
