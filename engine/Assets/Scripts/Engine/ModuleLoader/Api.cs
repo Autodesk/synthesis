@@ -25,7 +25,11 @@ using Directory = System.IO.Directory;
 using Engine.ModuleLoader.Adapters;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
+<<<<<<< HEAD
 using Logger = SynthesisAPI.Utilities.Logger;
+=======
+using System.Threading.Tasks;
+>>>>>>> master
 
 namespace Engine.ModuleLoader
 {
@@ -37,13 +41,21 @@ namespace Engine.ModuleLoader
 
 		private static Dictionary<string, string> assemblyOwners = new Dictionary<string, string>();
 
+		private static MemoryStream newConsoleStream = new MemoryStream();
+		private static long lastConsoleStreamPos = 0;
+
 		public void Awake()
 		{
+			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
 			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+<<<<<<< HEAD
 			SynthesisAPI.Utilities.Logger.RegisterLogger(new LoggerImpl());
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
+=======
+>>>>>>> master
 			LoadApi();
 			LoadModules();
+			RerouteConsoleOutput();
 		}
 
 		private void LoadModules()
@@ -123,9 +135,14 @@ namespace Engine.ModuleLoader
 			{
 				foreach (var dependency in metadata.Dependencies)
 				{
-					if (!moduleList.Any(m => m.metadata.Name == dependency))
+					if (!moduleList.Any(m => m.metadata.Name == dependency.Name))
 					{
-						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency}");
+						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
+					}
+					var present_dep = moduleList.First(m => m.metadata.Name == dependency.Name);
+					if (present_dep.metadata.Version != dependency.Version)
+					{
+						throw new LoadModuleException($"Module {metadata.Name} requires dependency module {dependency.Name} version {dependency.Version} but its version is {present_dep.metadata.Version}");
 					}
 				}
 			}
@@ -141,9 +158,9 @@ namespace Engine.ModuleLoader
 				var element = resolvedEntries.PopAt(0);
 				solutionSet.Enqueue(element);
 				foreach (var dep in moduleList.Where(t =>
-					t.metadata.Dependencies.Contains(element.metadata.Name)).ToList())
+					t.metadata.Dependencies.Any(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version)).ToList())
 				{
-					dep.metadata.Dependencies.Remove(element.metadata.Name);
+					dep.metadata.Dependencies.RemoveAll(d => d.Name == element.metadata.Name && d.Version == element.metadata.Version);
 					if (dep.metadata.Dependencies.Count == 0)
 						resolvedEntries.Add(dep);
 				}
@@ -153,28 +170,54 @@ namespace Engine.ModuleLoader
 			moduleList.AddRange(solutionSet.ToList());
 		}
 
+		private static string GetPath(string fullName)
+		{
+			var i = fullName.LastIndexOf(SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar, fullName.Length - 1, fullName.Length - 2);
+			if (i == -1 || i == (fullName.Length - 1))
+			{
+				return "";
+			}
+			return fullName.Substring(0, i + 1);
+		}
+
+		private static string RemovePath(string metadataPath, string fullName)
+		{
+			if (fullName.StartsWith(metadataPath))
+			{
+				return fullName.Substring(metadataPath.Length);
+			}
+			return fullName;
+		}
+
 		private void LoadModule((ZipArchive archive, ModuleMetadata metadata) moduleInfo)
 		{
 			var fileManifest = new List<string>();
 			fileManifest.AddRange(moduleInfo.metadata.FileManifest);
 
-			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
-				e.Name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(e.Name)))
-			{
+			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.Name == ModuleMetadata.MetadataFilename).FullName);
 
-				fileManifest.Remove(entry.Name);
+			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
+			{
+				var name = RemovePath(metadataPath, e.FullName);
+				return name != ModuleMetadata.MetadataFilename && moduleInfo.metadata.FileManifest.Contains(name);
+			}))
+			{
+				fileManifest.Remove(RemovePath(metadataPath, entry.FullName));
 				var extension = Path.GetExtension(entry.Name);
 				var stream = entry.Open();
 				if (extension == ".dll")
 				{
 					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
+						moduleInfo.archive.Dispose();
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
 				}
 				else
 				{
-					var targetPath = BaseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + moduleInfo.metadata.TargetPath;
+					var targetPath = BaseModuleTargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
+						GetPath(RemovePath(metadataPath, entry.FullName));
 					var perm = Permissions.PublicReadWrite;
 					if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension),
 						new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
@@ -237,7 +280,29 @@ namespace Engine.ModuleLoader
 
 			// Set up module
 
-			foreach (var exportedModuleClass in assembly.GetTypes()
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				if (e is ReflectionTypeLoadException reflectionTypeLoadException)
+				{
+					foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
+					{
+						SynthesisAPI.Runtime.ApiProvider.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+					}
+				}
+				return false;
+			}
+			catch (Exception e)
+			{
+				SynthesisAPI.Runtime.ApiProvider.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
+				return false;
+			}
+
+			foreach (var exportedModuleClass in types
 				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
 			{
 				try
@@ -267,8 +332,13 @@ namespace Engine.ModuleLoader
 				}
 				catch (Exception e)
 				{
+<<<<<<< HEAD
 					Logger.Log($"{e}: Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
 																															   // TODO unload assembly? return false?
+=======
+					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
+					// TODO unload assembly? return false?
+>>>>>>> master
 					continue;
 				}
 			}
@@ -319,8 +389,62 @@ namespace Engine.ModuleLoader
 				});
 		}
 
+<<<<<<< HEAD
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
+=======
+		private void RerouteConsoleOutput()
+		{
+			var writer = new StreamWriter(newConsoleStream);
+			Console.SetOut(writer);
+
+			var reader = new StreamReader(newConsoleStream);
+			bool firstUse = true;
+			Task.Run(() =>
+			{
+				while (true)
+				{
+					if (newConsoleStream.Position != lastConsoleStreamPos)
+					{
+						if (firstUse)
+						{
+							SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
+							firstUse = false;
+						}
+						writer.Flush();
+						var pos = newConsoleStream.Position;
+						newConsoleStream.Position = lastConsoleStreamPos;
+
+						SynthesisAPI.Runtime.ApiProvider.Log(reader.ReadToEnd());
+
+						lastConsoleStreamPos = pos;
+						newConsoleStream.Position = pos;
+					}
+				}
+			});
+		}
+
+		private class ApiProvider : IApiProvider
+		{
+			private GameObject _entityParent;
+			private Dictionary<Entity, GameObject> _gameObjects;
+			private readonly Dictionary<Type, Type> _builtins;
+			private bool debugLogsEnabled = true;
+
+			public ApiProvider()
+			{
+				_entityParent = new GameObject("Entities");
+				_gameObjects = new Dictionary<Entity, GameObject>();
+				_builtins = new Dictionary<Type, Type>
+				{
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) }
+				};
+			}
+
+>>>>>>> master
 			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
 				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
@@ -328,7 +452,15 @@ namespace Engine.ModuleLoader
 				switch (logLevel)
 				{
 					case LogLevel.Info:
+						{
+							Debug.Log(msg);
+							break;
+						}
 					case LogLevel.Debug:
+						if (!debugLogsEnabled)
+						{
+							return;
+						}
 						{
 							Debug.Log(msg);
 							break;
@@ -344,7 +476,7 @@ namespace Engine.ModuleLoader
 							break;
 						}
 					default:
-						throw new SynthesisExpection("Unhandled log level");
+						throw new SynthesisException("Unhandled log level");
 				}
 			}
 		}
@@ -371,6 +503,11 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
 				};
+			}
+
+			public void SetEnableDebugLogs(bool enable)
+			{
+				debugLogsEnabled = enable;
 			}
 
 			public void AddEntityToScene(Entity entity)

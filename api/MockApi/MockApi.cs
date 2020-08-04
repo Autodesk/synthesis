@@ -86,6 +86,8 @@ namespace MockApi
 
         private class MockApiProvider : IApiProvider
         {
+            private bool debugLogsEnabled = false;
+
             private void LogAction(string function, string msg = "")
             {
                 var m = $"MockApiProvider.{function}";
@@ -106,11 +108,11 @@ namespace MockApi
                 LogAction($"Remove Entity {entity}");
             }
 
-            #nullable enable
+#nullable enable
             public Component? AddComponentToScene(Entity entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
-                return (Component?) Activator.CreateInstance(t);
+                return (Component?)Activator.CreateInstance(t);
             }
 
             public void AddComponentToScene(Entity entity, Component component)
@@ -128,19 +130,33 @@ namespace MockApi
             {
                 switch (logLevel)
                 {
+                    case LogLevel.Debug:
+                        if (!debugLogsEnabled)
+                        {
+                            return;
+                        }
+                        {
+                            Console.WriteLine(o);
+                            break;
+                        }
                     case LogLevel.Warning:
                     case LogLevel.Error:
-                    case LogLevel.Debug:
                     case LogLevel.Info:
                         {
                             Console.WriteLine(o);
                             break;
                         }
                     default:
-                        throw new SynthesisExpection("Unhandled log level");
+                        throw new SynthesisException("Unhandled log level");
                 }
-			}
-            
+            }
+
+            public void SetEnableDebugLogs(bool enable)
+            {
+                debugLogsEnabled = enable;
+            }
+
+
             public T CreateUnityType<T>(params object[] args) where T : class
             {
                 throw new NotImplementedException();

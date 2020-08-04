@@ -267,12 +267,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734031873}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 662e4cc3425a80349b155c1f2bc65873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  styleSheet: {fileID: 11400000, guid: d610daef742b54fdda82fd41508f7f2e, type: 2}
   renderer: {fileID: 1571522219}
   texture: {fileID: 0}
 --- !u!1 &907356237

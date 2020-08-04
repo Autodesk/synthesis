@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.VirtualFileSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,18 +23,28 @@ namespace SynthesisAPI.Utilities
             isError = true;
         }
 
+        public TValue GetResult()
+        {
+            if (!isError)
+                return value;
+            throw error;
+        }
+
+        public TError GetError()
+        {
+            if (!isError)
+                throw new SynthesisException("Result is not an error type");
+            return error;
+        }
+
         public static implicit operator TValue(Result<TValue, TError> res)
         {
-            if (!res.isError)
-                return res.value;
-            throw res.error;
+            return res.GetResult();
         }
 
         public static implicit operator TError(Result<TValue, TError> res)
         {
-            if (!res.isError)
-                throw new Exception("Result is not an error type");
-            return res.error;
+            return res.GetError();
         }
 
         public Result<TNewValue, TError> MapResult<TNewValue>(Func<TValue, TNewValue> f)
@@ -58,7 +69,7 @@ namespace SynthesisAPI.Utilities
             Func<TError, TNewError> g) where TNewError : Exception =>
             MapResult(f).MapError(g);
 
-        private readonly bool isError;
+        public readonly bool isError;
         private readonly TValue value = default!;
         private readonly TError error = default!;
     }
