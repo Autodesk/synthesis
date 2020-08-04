@@ -1,4 +1,7 @@
 # Exporter
 
-### How to use
-Load Add-In into Fusion and you should be good to go. It will try to export once you start it and will need to be restarted if you want to try again. Currently there is no UI.
+### SynthesisFusionGltfExporter
+A Fusion 360 add-in to export assemblies into the glTF file format, with joint hints for Synthesis.
+
+### SynthesisInventorGltfExporter
+An Inventor add-in to export assemblies into the glTF file format, with joint hints for Synthesis.
