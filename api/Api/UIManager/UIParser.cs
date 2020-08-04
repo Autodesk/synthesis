@@ -49,13 +49,16 @@ namespace SynthesisAPI.UIManager
                 x.Name.Equals(node.Name.Replace("ui:", "")));
             if (node.Name.Replace("ui:", "").Equals("Style"))
             {
-                ApiProvider.Log("Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
+                // ApiProvider.Log("[UI] Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
                 var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
                 StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
             }
             if (elementType == null)
             {
-                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
+                if (!node.Name.Replace("ui:", "").Equals("Style"))
+                {
+                    ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
+                }
                 return null;
             }
             dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
@@ -78,8 +81,11 @@ namespace SynthesisAPI.UIManager
 
                     if (property == null)
                     {
+                        if (!attr.Name.Equals("class"))
+                        {
+                            ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
+                        }
                         // throw new Exception($"No property found with name \"{attr.Name}\"");
-                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
                         continue;
                     }
 
@@ -204,8 +210,12 @@ namespace SynthesisAPI.UIManager
                         property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
                         break;
                     default:
-                        throw new Exception("Unhandled type in USS parser");
+                        ApiProvider.Log("Default");
+                        break;
+                        //throw new Exception("Unhandled type in USS parser");
                 }
+                // ApiProvider.Log("Successfully set styling for " + propertyName);
+                
             }
             catch (Exception e)
             {

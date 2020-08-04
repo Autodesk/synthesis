@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisAPI.UIManager
 {
@@ -19,14 +17,15 @@ namespace SynthesisAPI.UIManager
             
             foreach (string rawLine in lines)
             {
-                string line = rawLine.Trim();
+                string line = rawLine.Trim(); // removes indentation spaces on left 
                 
                 if (line.StartsWith("."))
                 {
                     string[] lineContents = line.Split('.');
-                    string className = lineContents[1];
+                    string className = lineContents[1].Substring(0, lineContents[1].Length - 2); // substring to remove " {" from line
 
                     currentClass = new UssClass(className);
+                    //ApiProvider.Log("[UI] New class found with name [" + className + "]");
                 } else if (line.StartsWith("}"))
                 {
                     if (currentClass != null)
@@ -38,7 +37,7 @@ namespace SynthesisAPI.UIManager
                 {
                     if (currentClass != null && line.Length > 2)
                     {
-                        currentClass.AddLine(line);
+                        currentClass.AddLine(line.Substring(0, line.Length - 1)); // substring to remove semicolon
                     }
                 }
             }
@@ -51,8 +50,7 @@ namespace SynthesisAPI.UIManager
 
         internal UnityEngine.UIElements.VisualElement ApplyClassToVisualElement(string className, UnityEngine.UIElements.VisualElement visualElement)
         {
-            ApiProvider.Log("Attempting to apply [" + className + "] to " + visualElement.name);
-            
+            //ApiProvider.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
             UssClass ussClass = classes[className];
 
             foreach (string line in ussClass.Lines)
