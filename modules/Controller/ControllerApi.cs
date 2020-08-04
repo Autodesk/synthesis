@@ -9,15 +9,15 @@ namespace Controller
 {
     public static class ControllerApi
     {
-        [RpcMethod]
-        public static void Log(string msg, LogLevel logLevel = LogLevel.Info)
+        [RpcMethod("log_str")]
+        public static void LogStr(string msg, LogLevel logLevel = LogLevel.Info)
         {
             Logger.Log(msg, logLevel);
         }
 
         #region Transform movement
 
-        [RpcMethod]
+        [RpcMethod("forward")]
         public static void Forward(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -27,7 +27,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("backward")]
         public static void Backward(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -37,7 +37,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("left")]
         public static void Left(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -47,7 +47,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("right")]
         public static void Right(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -57,7 +57,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("up")]
         public static void Up(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -67,7 +67,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("down")]
         public static void Down(uint channel, double distance)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -77,7 +77,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("set_position")]
         public static void SetPosition(uint channel, double x, double y, double z)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -87,7 +87,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("rotate_euler_angles")]
         public static void RotateEulerAngles(uint channel, double x, double y, double z)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
@@ -97,7 +97,7 @@ namespace Controller
             }
         }
 
-        [RpcMethod]
+        [RpcMethod("test")]
         public static int Test(int test)
         {
             ApiProvider.Log(test);

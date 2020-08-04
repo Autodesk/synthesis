@@ -9,7 +9,7 @@ JNIEXPORT jint JNICALL Java_ControllerSys_Test(JNIEnv *env, jclass _, jint value
 	const char* error_message = NULL;
 	const char* error_data = NULL;
 
-	int ret = Test(value, &error_code, &error_message, &error_data);
+	int ret = test(value, &error_code, &error_message, &error_data);
 
 	jclass myclass = env->FindClass("ControllerError");
 

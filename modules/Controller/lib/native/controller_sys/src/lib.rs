@@ -1,5 +1,4 @@
 #[macro_use] extern crate jsonrpc_client_core;
-#[macro_use] extern crate jsonrpc_client_http;
 #[macro_use] extern crate lazy_static;
 
 use std::sync::Mutex;
@@ -8,16 +7,30 @@ use jsonrpc_client_http::HttpTransport;
 use jsonrpc_client_http::HttpHandle;
 use std::os::raw::c_char;
 use serde_json::value::Value;
-use std::ptr::{null, null_mut};
+use serde;
+use serde::{Serialize, Deserialize};
+use std::ptr::null_mut;
 use std::mem::ManuallyDrop;
 use std::ffi::CString;
 
+#[repr(u64)]
+#[derive(Serialize, Deserialize)]
+pub enum LogLevel {
+    Info = 0,
+    Debug = 1,
+    Warning = 2,
+    Error = 3
+}
+
 jsonrpc_client!(pub struct ControllerRpc {
-    pub fn Forward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn Backward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn Left(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn Right(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
-    pub fn Test(&mut self, test: i32) -> RpcRequest<i32>;
+    pub fn log_str(&mut self, message: NativeString, log_level: LogLevel) -> RpcRequest<()>;
+    pub fn forward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn backward(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn left(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn right(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn up(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn down(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
+    pub fn test(&mut self, val: i32) -> RpcRequest<i32>;
 });
 
 lazy_static! {
@@ -28,10 +41,10 @@ lazy_static! {
     };
 }
 
-macro_rules! rpc_method {
+macro_rules! rpc_method_impl {
     ($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty) => {
         #[no_mangle]
-        pub extern "C" fn $name(
+        pub extern "C" fn $name (
             $($arg_name: $ty),*,
             error_code: *mut i64,
             error_message: *mut *const c_char,
@@ -50,6 +63,51 @@ macro_rules! rpc_method {
                     return v;
                 },
                 Err(e) => match *e.kind() {
+                    ErrorKind::Msg(ref message) => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = -1; }
+                        }
+                        if error_message != null_mut() {
+                            unsafe {
+                                *error_message = pass_ownership(message.clone());
+                            }
+                        }
+                    },
+                    ErrorKind::TransportError => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = -1; }
+                        }
+                        if error_message != null_mut() {
+                            unsafe {
+                                *error_message = pass_ownership("Error in the underlying transport layer".to_string());
+                            }
+                        }
+                    },
+                    ErrorKind:: SerializeError => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = -1; }
+                        }
+                        if error_message != null_mut() {
+                            unsafe {
+                                *error_message = pass_ownership("Error while serializing method parameters".to_string());
+                            }
+                        }
+                    },
+                    ErrorKind::ResponseError(ref message) => {
+                        if error_code != null_mut() {
+                            unsafe { *error_code = -1; }
+                        }
+                        if error_message != null_mut() {
+                            unsafe {
+                                *error_message = pass_ownership("Error while deserializing or parsing the response data".to_string());
+                            }
+                        }
+                        if error_data != null_mut() {
+                            unsafe {
+                                *error_data = pass_ownership(message.to_string().clone());
+                            }
+                        }
+                    },
                     ErrorKind::JsonRpcError(ref json_rpc_error) => {
                         if error_code != null_mut() {
                             unsafe { *error_code = json_rpc_error.code.code(); }
@@ -79,14 +137,40 @@ macro_rules! rpc_method {
     }
 }
 
+macro_rules! rpc_method {
+    ($name:ident($($arg_name:ident: $ty:ty),*)) => {
+        rpc_method_impl!($name($($arg_name: $ty),*) -> $ret_type);
+    };
+    ($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty) => {
+        rpc_method_impl!($name($($arg_name: $ty),*) -> $ret_type);
+    };
+}
+
 macro_rules! rpc_methods {
     {
         $($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty)*
     } => {
-        $(rpc_method!($name($(arg_name: $ty),*) -> $ret_type);)*
+        $(rpc_method!($name($($arg_name: $ty),*) -> $ret_type);)*
+    }
+}
+
+#[repr(transparent)]
+pub struct NativeString(*const c_char);
+
+impl serde::Serialize for NativeString {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
+        let c_str = unsafe { CString::from_raw(*(self.0 as *mut _)) };
+        serializer.serialize_bytes(c_str.to_bytes())
     }
 }
 
 rpc_methods!{
-    Test(val: i32) -> i32
+    log_str(message: NativeString, log_level: LogLevel) -> ()
+    forward(channel: u32, distance: f64) -> ()
+    backward(channel: u32, distance: f64) -> ()
+    left(channel: u32, distance: f64) -> ()
+    right(channel: u32, distance: f64) -> ()
+    up(channel: u32, distance: f64) -> ()
+    down(channel: u32, distance: f64) -> ()
+    test(val: i32) -> i32
 }

@@ -1,37 +1,148 @@
 from ctypes import *
-import os
-
-_path = os.path.abspath("../../native/controller_sys/target/debug/controller_sys.dll")
-_controller_sys = CDLL(_path)
+import os, time
 
 
-def Test(value):
-    error_code = c_int()
-    error_message = c_char_p()
-    error_data = c_char_p()
+class RpcError(Exception):
+    def __init__(self, code, message, data):
+        super().__init__(message + "\n" + data)
+        self.code = code
+        self.message = message
+        self.data = data
 
-    ret: int = _controller_sys.Test(value, byref(error_code), byref(error_message), byref(error_data))
 
-    error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-    error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+class ControllerSys:
+    def __init__(self):
+        _path = os.path.abspath("../../native/controller_sys/target/debug/controller_sys.dll")
+        self._controller_sys = CDLL(_path)
 
-    return ret, error_code.value, error_message, error_data
+    def log_str(self, message, log_level):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.log_str(message.rstrip('\x00'), log_level, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def forward(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def backward(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def left(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def right(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def up(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def down(self, channel, distance):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+    def test(self, value):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+
+        ret: int = self._controller_sys.test(value, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+        return ret
 
 
 def main():
+    controller_sys = ControllerSys()
+    controller_sys.log_str("Hello World!", 2);
+
+    while True:
+        controller_sys.forward(5, 1);
+        time.sleep(1)
+
     print("No errors:\n")
-    val, error_code, error_message, error_data = Test(5)
+    val = controller_sys.test(5)
     print(val)
-    print(error_code)
-    print(error_message)
-    print(error_data)
 
     print("\nErrors:\n")
-    val, error_code, error_message, error_data = Test(25)
-    print(val)
-    print(error_code)
-    print(error_message)
-    print(error_data)
+    try:
+        val = controller_sys.test(25)
+        print(val)
+    except RpcError as error:
+        print(error.code)
+        print(error.message)
+        print(error.data)
+        raise error
 
 
 main()
