@@ -19,14 +19,17 @@ namespace Engine.ModuleLoader.Adapters
         // Update is called once per frame
         void Update()
         {
-            if (!((Entity)instance).EntityExists() && (Entity)instance != 0)
-                SynthesisAPI.Runtime.ApiProvider.RemoveEntityFromScene(instance.Entity.Value);
-            else if (instance.Changed)
+            if (instance.Changed)
             {
                 GameObject parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
                 gameObject.transform.SetParent(parent.transform);
                 instance.ProcessedChanges();
             }
+        }
+
+        void OnDestroy()
+        {
+            instance.Entity.Value.RemoveEntity();
         }
 
         public void SetInstance(Parent parent)
