@@ -167,10 +167,12 @@ namespace TestApi
             EventBus.ResetAllListeners();
         }
 
+        /*
         [Test]
         public static void TestGltf()
         {
             // TODO test GLTFAsset
         }
+        */
     }
 }
