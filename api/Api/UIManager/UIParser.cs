@@ -26,8 +26,9 @@ namespace SynthesisAPI.UIManager
             UnityVisualElement root = new UnityVisualElement() { name = name };
             foreach (XmlNode node in nodes)
             {
-                if (node.Name.Replace("ui:", "") != "Style")
+                if (node.Name.Replace("ui:", "") != "Style") {
                     root.Add((UnityVisualElement)CreateVisualElement(node));
+                }
             }
             return (VisualElement)root;
         }
@@ -46,6 +47,11 @@ namespace SynthesisAPI.UIManager
             // ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x =>
                 x.Name.Equals(node.Name.Replace("ui:", "")));
+            if (node.Name.Replace("ui:", "").Equals("Style"))
+            {
+                ApiProvider.Log("Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
+                //StyleSheetManager.AttemptRegistryOfNewStyleSheet(node.Attributes["src"].Value);
+            }
             if (elementType == null)
             {
                 ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
@@ -62,6 +68,13 @@ namespace SynthesisAPI.UIManager
                     // ApiProvider.Log("Parsing Attribute");
 
                     var property = elementType.GetProperty(MapCssName(attr.Name));
+
+                    if (attr.Name.Equals("class"))
+                    {
+                        ApiProvider.Log("Class found with value: " + attr.Value);
+                        // StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, visualElement);
+                    }
+
                     if (property == null)
                     {
                         // throw new Exception($"No property found with name \"{attr.Name}\"");

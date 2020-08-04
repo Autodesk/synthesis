@@ -5,11 +5,11 @@ namespace SynthesisAPI.UIManager
     public class UssClass
     {
         private Dictionary<string, string> values = new Dictionary<string,string>();
-        private string className { get; }
+        public string ClassName { get; }
         
         public UssClass(string className)
         {
-            this.className = className;
+            this.ClassName = className;
         }
 
         public void AddProperty(string propertyName, string value)

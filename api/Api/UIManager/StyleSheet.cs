@@ -3,12 +3,18 @@ using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisAPI.UIManager
 {
-    public class UssParser
+    public class StyleSheet
     {
-        private void ApplyStylesFromUss(VisualElement visualElement, List<string> lines)
-        {
-            List<UssClass> classes = new List<UssClass>();
+        private Dictionary<string, UssClass> classes = new Dictionary<string, UssClass>();
 
+        public StyleSheet(string path)
+        {
+            string[] lines = System.IO.File.ReadAllLines(path);
+            ParseLines(lines);
+        }
+
+        private void ParseLines(string[] lines)
+        {
             UssClass currentClass = null;
             
             foreach (string line in lines)
@@ -23,7 +29,7 @@ namespace SynthesisAPI.UIManager
                 {
                     if (currentClass != null)
                     {
-                        classes.Add(currentClass);
+                        classes.Add(currentClass.ClassName, currentClass);
                     }
                 }
                 else
@@ -32,21 +38,30 @@ namespace SynthesisAPI.UIManager
                     {
                         string[] lineContents = line.Split(':');
                         string propertyName = lineContents[0];
-                        string propertyValue = lineContents[1].Substring(1);
+                        string propertyValue = lineContents[1].Substring(1, lineContents[1].Length - 1);
 
+                        // use parseentry somewhere here?
+                        
                         currentClass.AddProperty(propertyName, propertyValue);
                     }
                 }
-                
-            }
-
-            foreach (UssClass ussClass in classes)
-            {
-                foreach (string propertyName in ussClass.GetProperties())
-                {
-                    visualElement.SetStyleProperty(propertyName, ussClass.GetPropertyValue(propertyName));
-                }
             }
         }
+
+        public bool HasClass(string className)
+        {
+            return classes.ContainsKey(className);
+        }
+
+        public void ApplyClassToVisualElement(string className, VisualElement visualElement)
+        {
+            UssClass ussClass = classes[className];
+
+            foreach (string propertyName in ussClass.GetProperties())
+            {
+                visualElement.SetStyleProperty(propertyName, ussClass.GetPropertyValue(propertyName));
+            }
+        }
+
     }
 }
