@@ -25,8 +25,8 @@ namespace SynthesisCore.Systems
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
-            
-            UIManager.ShowPanel("Environments");
+
+            //UIManager.ShowPanel("Environments");
             //UIManager.ShowPanel("Modules");
             //UIManager.ShowPanel("Settings");
         }
