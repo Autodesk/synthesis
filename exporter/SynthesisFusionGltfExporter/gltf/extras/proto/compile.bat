@@ -1,0 +1,1 @@
+protoc --python_out=. .\gltf_extras.proto

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package synthesis.importbuf;
+package synthesis.gltfextras;
 
 import "google/protobuf/any.proto";
 
