@@ -21,15 +21,11 @@ using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
 using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
-
 using Engine.ModuleLoader.Adapters;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
-<<<<<<< HEAD
-using Logger = SynthesisAPI.Utilities.Logger;
-=======
 using System.Threading.Tasks;
->>>>>>> master
 
 namespace Engine.ModuleLoader
 {
@@ -47,12 +43,8 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
-			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
-<<<<<<< HEAD
-			SynthesisAPI.Utilities.Logger.RegisterLogger(new LoggerImpl());
-			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
-=======
->>>>>>> master
+            ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+			Logger.RegisterLogger(new LoggerImpl());
 			LoadApi();
 			LoadModules();
 			RerouteConsoleOutput();
@@ -291,14 +283,14 @@ namespace Engine.ModuleLoader
 				{
 					foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
 					{
-						SynthesisAPI.Runtime.ApiProvider.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+						Logger.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
 					}
 				}
 				return false;
 			}
 			catch (Exception e)
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
+				Logger.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
 				return false;
 			}
 
@@ -332,13 +324,8 @@ namespace Engine.ModuleLoader
 				}
 				catch (Exception e)
 				{
-<<<<<<< HEAD
-					Logger.Log($"{e}: Module loader failed to process type {exportedModuleClass} from module {owningModule}"); // TODO log levels
-																															   // TODO unload assembly? return false?
-=======
-					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
+					Logger.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
 					// TODO unload assembly? return false?
->>>>>>> master
 					continue;
 				}
 			}
@@ -389,62 +376,10 @@ namespace Engine.ModuleLoader
 				});
 		}
 
-<<<<<<< HEAD
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
-=======
-		private void RerouteConsoleOutput()
-		{
-			var writer = new StreamWriter(newConsoleStream);
-			Console.SetOut(writer);
-
-			var reader = new StreamReader(newConsoleStream);
-			bool firstUse = true;
-			Task.Run(() =>
-			{
-				while (true)
-				{
-					if (newConsoleStream.Position != lastConsoleStreamPos)
-					{
-						if (firstUse)
-						{
-							SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
-							firstUse = false;
-						}
-						writer.Flush();
-						var pos = newConsoleStream.Position;
-						newConsoleStream.Position = lastConsoleStreamPos;
-
-						SynthesisAPI.Runtime.ApiProvider.Log(reader.ReadToEnd());
-
-						lastConsoleStreamPos = pos;
-						newConsoleStream.Position = pos;
-					}
-				}
-			});
-		}
-
-		private class ApiProvider : IApiProvider
-		{
-			private GameObject _entityParent;
-			private Dictionary<Entity, GameObject> _gameObjects;
-			private readonly Dictionary<Type, Type> _builtins;
 			private bool debugLogsEnabled = true;
 
-			public ApiProvider()
-			{
-				_entityParent = new GameObject("Entities");
-				_gameObjects = new Dictionary<Entity, GameObject>();
-				_builtins = new Dictionary<Type, Type>
-				{
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) }
-				};
-			}
-
->>>>>>> master
 			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
 				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
@@ -479,19 +414,54 @@ namespace Engine.ModuleLoader
 						throw new SynthesisException("Unhandled log level");
 				}
 			}
-		}
 
+			public void SetEnableDebugLogs(bool enable)
+			{
+				debugLogsEnabled = enable;
+			}
+		}
+		private void RerouteConsoleOutput()
+		{
+			var writer = new StreamWriter(newConsoleStream);
+			Console.SetOut(writer);
+
+			var reader = new StreamReader(newConsoleStream);
+			bool firstUse = true;
+			Task.Run(() =>
+			{
+				while (true)
+				{
+					if (newConsoleStream.Position != lastConsoleStreamPos)
+					{
+						if (firstUse)
+						{
+							Logger.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
+							firstUse = false;
+						}
+						writer.Flush();
+						var pos = newConsoleStream.Position;
+						newConsoleStream.Position = lastConsoleStreamPos;
+
+						Logger.Log(reader.ReadToEnd());
+
+						lastConsoleStreamPos = pos;
+						newConsoleStream.Position = pos;
+					}
+				}
+			});
+		}
+			
 		public static class ApiProviderData
 		{
 			public static GameObject EntityParent { get; set; }
 			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
 		}
 
-		private class ApiProvider : IApiProvider
+		private class ApiProviderImpl : IApiProvider
 		{
 			private readonly Dictionary<Type, Type> _builtins;
 
-			public ApiProvider()
+			public ApiProviderImpl()
 			{
 				ApiProviderData.EntityParent = new GameObject("Entities");
 				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
@@ -503,11 +473,6 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
 				};
-			}
-
-			public void SetEnableDebugLogs(bool enable)
-			{
-				debugLogsEnabled = enable;
 			}
 
 			public void AddEntityToScene(Entity entity)

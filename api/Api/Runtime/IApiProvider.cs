@@ -9,10 +9,6 @@ namespace SynthesisAPI.Runtime
 {
 	internal interface IApiProvider
 	{
-		void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
-
-		void SetEnableDebugLogs(bool enable);
-
 		void AddEntityToScene(Entity entity);
 
 		void RemoveEntityFromScene(Entity entity);

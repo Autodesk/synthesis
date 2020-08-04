@@ -9,11 +9,8 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
-<<<<<<< HEAD
 using SynthesisAPI.Utilities;
-=======
 using SynthesisCore.Components;
->>>>>>> master
 
 namespace SynthesisCore
 {
@@ -25,7 +22,7 @@ namespace SynthesisCore
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
-<<<<<<< HEAD
+
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             var _m1 = new ProfilerMarker();
             Bundle o = g.Parse();
@@ -33,16 +30,6 @@ namespace SynthesisCore
             var _m2 = new ProfilerMarker();
             e.AddBundle(o);
             Logger.Log($"Spawn Time: {_m2.TimeSinceCreation.TotalMilliseconds}");
-=======
-            e.AddComponent<Transform>();
-            e.AddComponent<Selectable>();
-            e.AddComponent<Moveable>().Channel = 5;
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
-
-            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
-            InputManager.AssignDigitalInputs("move", test);
->>>>>>> master
         }
 
         public override void OnUpdate() { }

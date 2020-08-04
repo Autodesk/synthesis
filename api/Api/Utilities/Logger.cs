@@ -24,6 +24,8 @@ namespace SynthesisAPI.Utilities
             Instance?.Log(o, logLevel, memberName, filePath, lineNumber);
         }
 
+        public static void SetEnableDebugLogs(bool enable) => Instance?.SetEnableDebugLogs(enable);
+
         private static class Inner
         {
             static Inner() { }

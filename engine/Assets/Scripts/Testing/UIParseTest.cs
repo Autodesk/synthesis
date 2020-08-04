@@ -1,15 +1,14 @@
-﻿using SynthesisAPI.UIManager;
+﻿using SynthesisAPI.Runtime;
+using SynthesisAPI.UIManager;
+using SynthesisAPI.UIManager.VisualElements;
+using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.UIComponents;
+using SynthesisAPI.Utilities;
 using Unity.UIElements.Runtime;
 using UnityEngine;
 using UnityEngine.Networking;
-<<<<<<< HEAD
-using UnityEngine.UIElements;
-=======
 // using UnityEngine.UIElements;
-using Directory = SynthesisAPI.VirtualFileSystem.Directory;
->>>>>>> master
 using SynVisualElementAsset = SynthesisAPI.AssetManager.VisualElementAsset;
 using SynListView = SynthesisAPI.UIManager.VisualElements.ListView;
 using Logger = SynthesisAPI.Utilities.Logger;
@@ -17,7 +16,7 @@ using Logger = SynthesisAPI.Utilities.Logger;
 public class UIParseTest : MonoBehaviour
 {
 #if UNITY_EDITOR
-    public PanelRenderer renderer;
+    public new PanelRenderer renderer;
     public SynListView generated;
     public SynVisualElementAsset entry;
 
@@ -28,9 +27,6 @@ public class UIParseTest : MonoBehaviour
 
     private void Start()
     {
-<<<<<<< HEAD
-        Logger.Log("Testing");
-=======
         var selectionPanel = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/SelectionList.uxml");
         Panel p = new Panel("SelectionPanel", selectionPanel, (ve) =>
         {
@@ -59,13 +55,12 @@ public class UIParseTest : MonoBehaviour
                         // element.SetStyleProperty("width", "30px");
                     }
                 );
->>>>>>> master
 
                 var selectButton = ve.Get(name: "select-button") as Button;
                 if (selectButton != null)
                 {
                     selectButton.Subscribe(
-                        e => ApiProvider.Log($"You've selected team \"{teamNames[list.SelectedIndex]}\"")
+                        e => Logger.Log($"You've selected team \"{teamNames[list.SelectedIndex]}\"")
                     );
                 }
             }
@@ -80,17 +75,10 @@ public class UIParseTest : MonoBehaviour
         
         Tab testTab = new Tab("Test Toolbar",
             AssetManager.GetAsset<SynVisualElementAsset>("/modules/synthesis_core/ToolbarTest.uxml"),
-            sve => Logger.Log("Running Tab Binding"));
+            sve => ApiProvider.Log("Running Tab Binding"));
         
         UIManager.AddTab(testTab);
-<<<<<<< HEAD
-        // UIManager.ShowPanel("Test Panel");
-
-        Logger.Log("=====");
-        // UIManager.RecursivePrint(PanelRenderer.visualTree);
-=======
         */
->>>>>>> master
     }
 #endif
 }

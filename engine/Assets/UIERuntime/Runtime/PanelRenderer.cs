@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 using System.Collections.Generic;
 using SynthesisAPI.Runtime;
 using Object = UnityEngine.Object;
+using SynthesisAPI.Utilities;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace Unity.UIElements.Runtime
 {
@@ -225,11 +227,7 @@ namespace Unity.UIElements.Runtime
         {
             // Basically this method only causes issues for us
             
-<<<<<<< HEAD
-            SynthesisAPI.Utilities.Logger.Log("Recreate Called");
-=======
-            ApiProvider.Log("Recreate Called", LogLevel.Debug);
->>>>>>> master
+            Logger.Log("Recreate Called", LogLevel.Debug);
             
             if (enableLiveUpdates)
             {
@@ -381,7 +379,7 @@ namespace Unity.UIElements.Runtime
                 if (m_ShouldWarnWorldTransformMissing)
                 {
                     m_ShouldWarnWorldTransformMissing = false;
-                    ApiProvider.Log("PanelRenderer needs an IWorldTransform implementation for world-space rendering", LogLevel.Error);
+                    Logger.Log("PanelRenderer needs an IWorldTransform implementation for world-space rendering", LogLevel.Error);
                 }
                 panelPosition = Vector2.zero;
                 return false;
