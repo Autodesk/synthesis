@@ -5,7 +5,7 @@ using SynthesisAPI.VirtualFileSystem;
 namespace SynthesisAPI.AssetManager
 {
     /// <summary>
-    /// Representation of a CSS asset
+    /// Representation of a USS asset
     /// </summary>
     public class UssAsset : Asset
     {

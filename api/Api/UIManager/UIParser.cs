@@ -224,7 +224,8 @@ namespace SynthesisAPI.UIManager
             }
             catch (Exception e)
             {
-                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
+                //ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
+                ApiProvider.Log("failed to set property. Skipping " + propertyName, LogLevel.Warning);
             }
 
             return element;

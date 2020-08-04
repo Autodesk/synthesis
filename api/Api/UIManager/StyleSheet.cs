@@ -37,7 +37,14 @@ namespace SynthesisAPI.UIManager
                 {
                     if (currentClass != null && line.Length > 2)
                     {
-                        currentClass.AddLine(line.Substring(0, line.Length - 1)); // substring to remove semicolon
+                        if (line.StartsWith("border-") && line.EndsWith("px;"))
+                        {
+                            currentClass.AddLine(line.Substring(0, line.Length - 3)); // substring to remove px and semicolon
+                        }
+                        else
+                        {
+                            currentClass.AddLine(line.Substring(0, line.Length - 1)); // substring to remove semicolon
+                        }
                     }
                 }
             }
