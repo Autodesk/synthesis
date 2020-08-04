@@ -170,8 +170,7 @@ namespace TestApi
         [Test]
         public static void TestGltf()
         {
-            // todo
-            // Add a test, good SE practices
+            // TODO test GLTFAsset
         }
     }
 }
