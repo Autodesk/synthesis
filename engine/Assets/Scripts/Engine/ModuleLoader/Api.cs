@@ -211,7 +211,12 @@ namespace Engine.ModuleLoader
 						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
 						GetPath(RemovePath(metadataPath, entry.FullName));
 					var perm = Permissions.PublicReadWrite;
-					if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension),
+					var type = AssetManager.GetTypeFromFileExtension(extension);
+					if (type == null)
+					{
+						throw new LoadModuleException($"Failed to determine asset type from file extension of asset: {entry.Name}");
+					}
+					else if (AssetManager.Import(type,
 						new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
 					{
 						throw new LoadModuleException($"Failed to import asset: {entry.Name}");
