@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="/modules/SynthesisCore/UI/uss/Window.uss" />
+    <Style src="/modules/SynthesisCore/UI/uss/Modules.uss" />
     <ui:VisualElement name="window" class="window" style="height: 400px; width: 500px;">
-        <Style src="modules/SynthesisCore/UI/uss/Window.uss" />
-        <Style src="modules/SynthesisCore/UI/uss/Modules.uss" />
         <ui:VisualElement name="header" class="window-header-container">
-            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;../images/modules-icon.png&apos;);" />
-            <ui:Label text="Modules" name="title" class="panel-heading window-header-title" />
+            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/SynthesisCore/UI/images/modules-icon.png&apos;);" />
+            <ui:Label text="Modules" name="title" class="window-header-title" />
         </ui:VisualElement>
         <ui:VisualElement name="module-list" class="window-content" />
         <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">

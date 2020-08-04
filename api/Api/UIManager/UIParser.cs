@@ -29,6 +29,11 @@ namespace SynthesisAPI.UIManager
                 if (node.Name.Replace("ui:", "") != "Style") {
                     root.Add((UnityVisualElement)CreateVisualElement(node));
                 }
+                else
+                {
+                    var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
+                    StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
+                }
             }
             return (VisualElement)root;
         }
