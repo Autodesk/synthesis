@@ -1,7 +1,3 @@
-
-import time
-from collections import OrderedDict
-
 class EventCounter(object):
   def __init__(self):
     self._active_counts = dict()

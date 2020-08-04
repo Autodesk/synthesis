@@ -13,8 +13,8 @@ from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Ac
 from apper import AppObjects
 from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
 from .utils.GLTFUtils import isEmptyLeafNode
-from ..pyutils.counters import EventCounter
-from ..pyutils.timers import SegmentedStopwatch
+from .utils.pyutils.counters import EventCounter
+from .utils.pyutils.timers import SegmentedStopwatch
 from .GLTFConstants import ComponentType, DataType
 from .utils.ByteUtils import *
 from .utils.MathUtils import isIdentityMatrix3D
@@ -22,7 +22,7 @@ from .extras.ExportJoints import exportJoints
 
 
 
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True):
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, useGlb = True):
     ao = AppObjects()
 
     if ao.document.dataFile is None:
@@ -35,10 +35,10 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
     exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly)
     if showFileDialog:
         dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
-        dialog.filter = "glTF Binary (*.glb)"
+        dialog.filter = "glTF Binary (*.glb)" if useGlb else "glTF JSON (*.gltf)"
         dialog.isMultiSelectEnabled = False
         dialog.title = "Select glTF Export Location"
-        dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.glb'
+        dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{"glb" if useGlb else "gltf"}'
         results = dialog.showSave()
         if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
             ao.ui.messageBox(f"The glTF export was cancelled.")
@@ -47,7 +47,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
 
     else:
         filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
-    exportResults = exporter.saveGLB(filePath)
+    exportResults = exporter.saveGltf(filePath, useGlb)
     if exportResults is None:
         ao.ui.messageBox(f"The glTF export was cancelled.")
         return
@@ -55,7 +55,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
 
     end = time.perf_counter()
     endRealtime = time.time()
-    finishedMessage = (f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n"
+    finishedMessageDebug = (f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n"
                        f"File saved to {filePath}\n\n"
                        f"==== Export Performance Results ====\n"
                        f"{perfResults}\n"
@@ -68,7 +68,9 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
                        f"==== Warnings ====\n"
                        f"{warnings}\n"
                        )
-    ao.ui.messageBox(finishedMessage)
+    print(finishedMessageDebug)
+    finishedMessage = f"glTF export completed successfully in {round(end - start, 4)} seconds.\nFile saved to: {filePath}"
+    ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
 
 
 class GLTFDesignExporter(object):
@@ -167,7 +169,7 @@ class GLTFDesignExporter(object):
         self.componentRevIdToMatOverrideDict = {}
         self.materialNameToGltfIndex = {}
 
-    def saveGLB(self, filepath: str):
+    def saveGltf(self, filepath: str, useGlb: bool):
         """
         Exports the current fusion document into a glb file.
 
@@ -227,8 +229,8 @@ class GLTFDesignExporter(object):
 
         # ==== do NOT make changes to the glTF object beyond this point ====
         json = self.gltf.gltf_to_json()
-        with open(filepath+".debug.json", "wt") as jsonFile:
-            jsonFile.write(json)
+        # with open(filepath+".debug.json", "wt") as jsonFile:
+        #     jsonFile.write(json)
         jsonBytes = bytearray(json.encode("utf-8"))  # type: bytearray
 
         # add padding bytes to the end of each chunk data
@@ -238,30 +240,34 @@ class GLTFDesignExporter(object):
         # get the memoryView of the primary buffer stream
         primaryBufferData = self.primaryBufferStream.getbuffer()
 
-        glbLength = self.GLB_HEADER_SIZE + \
-                    self.GLB_CHUNK_SIZE + len(jsonBytes) + \
-                    self.GLB_CHUNK_SIZE + len(primaryBufferData)
+        if (useGlb):
+            glbLength = self.GLB_HEADER_SIZE + \
+                        self.GLB_CHUNK_SIZE + len(jsonBytes) + \
+                        self.GLB_CHUNK_SIZE + len(primaryBufferData)
 
-        with open(filepath, 'wb') as stream:
-            # header
-            stream.write(b'glTF')  # magic
-            stream.write(struct.pack('<I', self.GLTF_VERSION))  # version
-            stream.write(struct.pack('<I', glbLength))  # length
+            with open(filepath, 'wb') as stream:
+                # header
+                stream.write(b'glTF')  # magic
+                stream.write(struct.pack('<I', self.GLTF_VERSION))  # version
+                stream.write(struct.pack('<I', glbLength))  # length
 
-            # json chunk
-            stream.write(struct.pack('<I', len(jsonBytes)))  # chunk length
-            stream.write(bytes("JSON", 'utf-8'))  # chunk type
-            stream.write(jsonBytes)  # chunk data
+                # json chunk
+                stream.write(struct.pack('<I', len(jsonBytes)))  # chunk length
+                stream.write(bytes("JSON", 'utf-8'))  # chunk type
+                stream.write(jsonBytes)  # chunk data
 
-            # buffer chunk
-            stream.write(struct.pack('<I', len(primaryBufferData)))  # chunk length
-            stream.write(bytes("BIN\x00", 'utf-8'))  # chunk type
-            # noinspection PyTypeChecker
-            stream.write(primaryBufferData)  # chunk data
+                # buffer chunk
+                stream.write(struct.pack('<I', len(primaryBufferData)))  # chunk length
+                stream.write(bytes("BIN\x00", 'utf-8'))  # chunk type
+                # noinspection PyTypeChecker
+                stream.write(primaryBufferData)  # chunk data
 
-            stream.flush()  # flush to file
+                stream.flush()  # flush to file
+        else:
+            self.gltf._glb_data = primaryBufferData.tobytes()
+            self.gltf.save(filepath)
 
-            self.perfWatch.stop()
+        self.perfWatch.stop()
 
         self.progressBar.hide()
 
@@ -365,30 +371,6 @@ class GLTFDesignExporter(object):
             return
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
-
-    def exportMeshes(self, fusionComponents: List[adsk.fusion.Component]) -> None:
-        """Exports a list of fusion components to glTF meshes.
-
-        Args:
-            fusionComponents: The list of all unique fusion components in the open document.
-
-        Returns: A mapping from unique ids of fusion components to their index in the glTF mesh list.
-        """
-        # self.componentRevIdToMeshTemplate = {}
-        # self.componentRevIdToMatOverrideDict = {}
-        # self.materialNameToGltfIndex = {}
-
-        # self.perfWatch.switch_segment("reading list of fusion components")
-        # self.progressBar.message = "Reading list of fusion components..."
-        # fusionComponents = list(fusionComponents)
-        # numComponents = len(fusionComponents)
-        # self.progressBar.maximumValue = numComponents + 2
-        # self.perfWatch.stop()
-        #
-        # for index, fusionComponent in enumerate(fusionComponents):  # accessing the list of components is slow, ~1sec/500 components
-        #     self.progressBar.message = f"Calculating meshes for component {index} of {numComponents}..."
-        #     self.progressBar.progressValue = index
-        #     self.exportMesh(fusionComponent)
 
     def exportMesh(self, fusionComponent: adsk.fusion.Component) -> Optional[Mesh]:
         """Exports a fusion component to a glTF mesh.

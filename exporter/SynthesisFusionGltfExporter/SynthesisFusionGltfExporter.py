@@ -46,21 +46,21 @@ try:
             if ui:
                 ui.messageBox('Fatal Error: Unable to import libraries {}'.format(traceback.format_exc()))
 
-    from .gltf.GLTFDesignExporter import exportDesign
-
-    from .commands.ExportCommand import ExportCommand
+    # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
 
     my_addin = apper.FusionApp(config.app_name, config.company_name, False)
 
     # my_addin.add_command(
-    #     'Export Assembly',
+    #     'Quick export to glTF',
     #     ExportCommand,
     #     {
-    #         'cmd_description': 'Export your assembly to Synthesis.',
-    #         'cmd_id': 'sample_cmd_1',
+    #         'cmd_description': 'Exports the open design to a glTF file with default settings.',
+    #         'cmd_id': 'quick_export_gltf',
     #         'workspace': 'FusionSolidEnvironment',
-    #         'toolbar_panel_id': 'Commands',
+    #         'toolbar_panel_id': 'Export to glTF',
+    #         'toolbar_tab_id': 'export_gltf_tab',
+    #         'toolbar_tab_name': 'Synthesis glTF Exporter',
     #         'cmd_resources': 'command_icons',
     #         'command_visible': True,
     #         'command_promoted': True,

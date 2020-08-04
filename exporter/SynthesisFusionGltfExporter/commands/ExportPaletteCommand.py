@@ -20,9 +20,9 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
         if palette.dockingState == adsk.core.PaletteDockingStates.PaletteDockStateFloating:
             palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
-        palette.setMaximumSize(250, 250)
-        palette.setMinimumSize(250, 250)
-        palette.setSize(250, 250)
+        palette.setMaximumSize(300, 250)
+        palette.setMinimumSize(300, 250)
+        palette.setSize(300, 250)
 
     # Run when ever a fusion event is fired from the corresponding web page
     def on_html_event(self, html_args: adsk.core.HTMLEventArgs):
@@ -35,7 +35,8 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             materials = settings['materials']
             faceMaterials = settings['faceMaterials']
             exportHidden = not settings['exportHidden']
-            exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden)
+            useGlb = settings['useGlb']
+            exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, useGlb=useGlb)
 
 
     # Handle any extra cleanup when user closes palette here
