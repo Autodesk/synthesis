@@ -3,6 +3,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
+using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.Systems
 {
@@ -25,10 +26,24 @@ namespace SynthesisCore.Systems
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
-            
-            //UIManager.ShowPanel("Environments");
-            //UIManager.ShowPanel("Modules");
-            //UIManager.ShowPanel("Settings");
+
+            Button environmentsButton = (Button) UIManager.RootElement.Get("environments-button");
+            environmentsButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Environments");
+            });
+
+            Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
+            modulesButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Modules");
+            });
+
+            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
+            settingsButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Settings");
+            });
         }
 
         public override void OnPhysicsUpdate() { }

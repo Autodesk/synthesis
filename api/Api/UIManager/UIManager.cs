@@ -7,11 +7,14 @@ using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using UnityButton = UnityEngine.UIElements.Button;
 using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 
-// TODO for Nicolas: Move all panels (modules, settings, etc.) into Engine Module
 namespace SynthesisAPI.UIManager
 {
     public static class UIManager
     {
+    
+        public static VisualElement RootElement {
+            get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
+        }
         private static UnityVisualElement CreateTab() =>
             ApiProvider.GetDefaultUIAsset("BlankTabAsset").CloneTree();
         
@@ -31,7 +34,7 @@ namespace SynthesisAPI.UIManager
         {
             if (LoadedTabs.Remove(tabName))
             {
-                var container = Instance.RootElement.UnityVisualElement.Q<UnityVisualElement>(name: "tab-container");
+                var container = RootElement.UnityVisualElement.Q<UnityVisualElement>(name: "tab-container");
                 container.Remove(container.Q<UnityVisualElement>(name: $"tab-{tabName}"));
 
                 if (tabName == SelectedTabName)
@@ -107,13 +110,21 @@ namespace SynthesisAPI.UIManager
                 Instance.PanelContainer.Remove(existingPanel);
         }
 
+        public static void TogglePanel(string panelName)
+        {
+            var panelToToggle = Instance.PanelContainer.Q(name: $"panel-{panelName}");
+            if (panelToToggle == null)
+            {
+                ShowPanel(panelName);
+            }
+            else
+            {
+                ClosePanel(panelName);
+            }
+        }
+
         private class Inner
         {
-            public VisualElement RootElement
-            {
-                get => ApiProvider.GetRootVisualElement()!.GetVisualElement();
-            }
-
             public UnityVisualElement PanelContainer
             {
                 get => RootElement.UnityVisualElement.Q(name: "panel-center");
