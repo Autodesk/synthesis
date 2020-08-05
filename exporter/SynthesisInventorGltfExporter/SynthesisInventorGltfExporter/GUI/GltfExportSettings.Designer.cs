@@ -91,7 +91,7 @@
             this.checkMaterials.Name = "checkMaterials";
             this.checkMaterials.Size = new System.Drawing.Size(311, 18);
             this.checkMaterials.TabIndex = 16;
-            this.checkMaterials.Text = "Export Materials:";
+            this.checkMaterials.Text = "Export Appearances:";
             this.checkMaterials.UseVisualStyleBackColor = true;
             this.checkMaterials.CheckedChanged += new System.EventHandler(this.checkMaterials_CheckedChanged);
             // 
@@ -105,7 +105,7 @@
             this.checkFace.Name = "checkFace";
             this.checkFace.Size = new System.Drawing.Size(311, 20);
             this.checkFace.TabIndex = 15;
-            this.checkFace.Text = "Export Face Materials:";
+            this.checkFace.Text = "Export Face Appearances:";
             this.checkFace.UseVisualStyleBackColor = true;
             // 
             // checkHidden
@@ -118,7 +118,7 @@
             this.checkHidden.Name = "checkHidden";
             this.checkHidden.Size = new System.Drawing.Size(311, 22);
             this.checkHidden.TabIndex = 14;
-            this.checkHidden.Text = "Export Hidden Bodies:";
+            this.checkHidden.Text = "Export Hidden Components:";
             this.checkHidden.UseVisualStyleBackColor = true;
             // 
             // ChildLabel

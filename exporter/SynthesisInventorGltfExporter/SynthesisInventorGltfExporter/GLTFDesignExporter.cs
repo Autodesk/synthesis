@@ -339,7 +339,7 @@ namespace SynthesisInventorGltfExporter
 
         private void ExportNodeRootAssembly(AssemblyDocument assemblyDocument, SceneBuilder scene)
         {
-            var root = new NodeBuilder(assemblyDocument.DisplayName);
+            var root = new NodeBuilder(assemblyDocument.DisplayName).WithLocalScale(Vector3.Multiply(Vector3.One, 0.01f));
             var assemblyComponentDefinition = assemblyDocument.ComponentDefinition;
             allDocumentJoints.AddRange(assemblyComponentDefinition.Joints.Cast<AssemblyJoint>());
             ExportNodes(assemblyComponentDefinition.Occurrences.Cast<ComponentOccurrence>(), scene, root);
