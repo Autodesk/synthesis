@@ -2,4 +2,5 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\wangl\.nuget\packages\sharpgltf.toolkit\1.0.0-alpha0018\lib\netstandard2.0\SharpGLTF.Toolkit.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
+	
 	</wpf:ResourceDictionary>

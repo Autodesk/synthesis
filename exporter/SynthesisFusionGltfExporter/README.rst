@@ -1,8 +1,7 @@
 SynthesisFusionGltfExporter
 =======================
 
-
-A Fusion 360 add-in to export assemblies into Synthesis
+A Fusion 360 add-in to export assemblies into the glTF file format, with joint hints for Synthesis.
 
 Usage
 -----
