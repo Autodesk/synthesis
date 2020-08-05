@@ -15,7 +15,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]
-crate-type =["cdylib"]
+crate-type = ["cdylib"]
 name = "controller_sys"
 path = "src/lib.rs"
 

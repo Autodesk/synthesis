@@ -11,7 +11,8 @@ use serde;
 use serde::{Serialize, Deserialize};
 use std::ptr::null_mut;
 use std::mem::ManuallyDrop;
-use std::ffi::CString;
+use std::ffi::{CString, CStr};
+use serde::export::Formatter;
 
 #[repr(u64)]
 #[derive(Serialize, Deserialize)]
@@ -20,6 +21,17 @@ pub enum LogLevel {
     Debug = 1,
     Warning = 2,
     Error = 3
+}
+
+impl std::fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            LogLevel::Info => write!(f, "Info"),
+            LogLevel::Debug => write!(f, "Debug"),
+            LogLevel::Warning => write!(f, "Warning"),
+            LogLevel::Error => write!(f, "Error"),
+        }
+    }
 }
 
 jsonrpc_client!(pub struct ControllerRpc {
@@ -41,6 +53,14 @@ lazy_static! {
     };
 }
 
+/*
+macro_rules! print_all {
+    ($($args:expr),*) => {
+        $(println!("\"{}\"", $args); )*
+    }
+}
+*/
+
 macro_rules! rpc_method_impl {
     ($name:ident($($arg_name:ident: $ty:ty),*) -> $ret_type:ty) => {
         #[no_mangle]
@@ -50,7 +70,7 @@ macro_rules! rpc_method_impl {
             error_message: *mut *const c_char,
             error_data: *mut *const c_char
         ) -> $ret_type {
-            let pass_ownership= |s: String| unsafe {
+            let pass_ownership = |s: String| unsafe {
                 ManuallyDrop::take(
                     &mut ManuallyDrop::new(CString::new(s.as_bytes()).unwrap()))
                 .into_raw()
@@ -157,10 +177,20 @@ macro_rules! rpc_methods {
 #[repr(transparent)]
 pub struct NativeString(*const c_char);
 
+impl std::fmt::Display for NativeString {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if !self.0.is_null() {
+            let c_str = unsafe { CStr::from_ptr(self.0) };
+            return write!(f, "{}", c_str.to_str().unwrap());
+        }
+        Err(std::fmt::Error)
+    }
+}
+
 impl serde::Serialize for NativeString {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
-        let c_str = unsafe { CString::from_raw(*(self.0 as *mut _)) };
-        serializer.serialize_bytes(c_str.to_bytes())
+        let c_str = unsafe { CStr::from_ptr(self.0) };
+        serializer.serialize_str(c_str.to_str().unwrap())
     }
 }
 

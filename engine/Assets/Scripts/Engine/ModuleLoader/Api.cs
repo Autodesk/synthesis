@@ -60,9 +60,17 @@ namespace Engine.ModuleLoader
 			var modules = PreloadModules();
 			ResolveDependencies(modules);
 
-			foreach (var (arhive, metadata) in modules)
+			foreach (var (archive, metadata) in modules)
 			{
-				LoadModule((arhive, metadata));
+				try
+				{
+					LoadModule((archive, metadata));
+				}
+				catch (Exception e)
+				{
+					archive.Dispose();
+					throw e; // TODO should we stop loading all modules? Error screen?
+				}
 				EventBus.Push(new LoadModuleEvent(metadata.Name));
 				ModuleManager.AddToLoadedModuleList(metadata.Name);
 			}
@@ -201,7 +209,6 @@ namespace Engine.ModuleLoader
 				{
 					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
-						moduleInfo.archive.Dispose();
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
 				}

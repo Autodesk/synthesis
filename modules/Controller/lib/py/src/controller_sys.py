@@ -20,7 +20,8 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.log_str(message.rstrip('\x00'), log_level, byref(error_code), byref(error_message), byref(error_data))
+        message = message.encode('utf-8')
+        self._controller_sys.log_str(message, log_level, byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -33,7 +34,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.forward(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -46,7 +47,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.backward(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -59,7 +60,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.left(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -72,7 +73,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.right(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -85,7 +86,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.up(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -98,7 +99,7 @@ class ControllerSys:
         error_message = c_char_p()
         error_data = c_char_p()
 
-        self._controller_sys.forward(channel, distance, byref(error_code), byref(error_message), byref(error_data))
+        self._controller_sys.down(channel, c_double(distance), byref(error_code), byref(error_message), byref(error_data))
 
         error_code = error_code.value
         if error_code != 0:
@@ -122,14 +123,7 @@ class ControllerSys:
         return ret
 
 
-def main():
-    controller_sys = ControllerSys()
-    controller_sys.log_str("Hello World!", 2);
-
-    while True:
-        controller_sys.forward(5, 1);
-        time.sleep(1)
-
+def test(controller_sys):
     print("No errors:\n")
     val = controller_sys.test(5)
     print(val)
@@ -142,7 +136,28 @@ def main():
         print(error.code)
         print(error.message)
         print(error.data)
-        raise error
+
+
+def box(controller_sys):
+    while True:
+        controller_sys.forward(5, 1);
+        time.sleep(1)
+        controller_sys.left(5, 1);
+        time.sleep(1)
+        controller_sys.backward(5, 1);
+        time.sleep(1)
+        controller_sys.right(5, 1);
+        time.sleep(1)
+
+
+def main():
+    controller_sys = ControllerSys()
+
+    test(controller_sys)
+
+    controller_sys.log_str("Hello World!", 2);
+
+    box(controller_sys)
 
 
 main()

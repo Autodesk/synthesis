@@ -7,8 +7,9 @@ int main(){
 	const char* error_message = NULL;
 	const char* error_data = NULL;
 	
-	log_str("Hello World!\0", 2, &error_code, &error_message, &error_data);
-		if(error_code != 0){
+	log_str("Hello World!", LOG_LEVEL_INFO, &error_code, &error_message, &error_data);
+	
+	if(error_code != 0){
 		printf("%d\n", error_code);
 	}
 	if(error_message != NULL){

@@ -47,19 +47,23 @@ namespace Controller.Rpc
 
         [JsonProperty("jsonrpc")]
         public string JsonRpcVersion;
+        
         [JsonProperty("result")]
         public object? Result;
-        [JsonIgnore]
-        public bool HasResult { get; }
+        
+        //[JsonIgnore]
+        //public bool HasResult { get; } // TODO consider adding this back in somehow
+        
         [JsonProperty("error")]
         public ErrorObject? Error;
+        
         [JsonProperty("id")]
         public int Id;
 
         public RpcResponse()
         {
             Result = null;
-            HasResult = false;
+            //HasResult = false;
             Error = null;
             JsonRpcVersion = "";
         }
@@ -73,7 +77,7 @@ namespace Controller.Rpc
             else if(!(result.GetResult() is Void))
             {
                 Result = result.GetResult();
-                HasResult = true;
+                // HasResult = true;
             }
             JsonRpcVersion = version;
             Id = id;
