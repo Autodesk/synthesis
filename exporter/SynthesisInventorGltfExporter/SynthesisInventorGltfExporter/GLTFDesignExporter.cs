@@ -455,7 +455,7 @@ namespace SynthesisInventorGltfExporter
         }
 
         private Color AttemptGetColor(Asset appearance)
-        {
+        { // TODO: Figure out how to identify appearance types so this isn't neccecary
             try {return ((ColorAssetValue) appearance["generic_diffuse"]).Value;} catch {}
             try {return ((ColorAssetValue) appearance["masonrycmu_color"]).Value;} catch {}
             try {return ((ColorAssetValue) appearance["solidglass_transmittance_custom_color"]).Value;} catch {}
@@ -472,7 +472,7 @@ namespace SynthesisInventorGltfExporter
         }
 
         private void PrintAssetLibrary(Application application)
-        {
+        { // TODO: Move debugging methods to separate class
             using (StreamWriter file = new StreamWriter(@"C:\temp\InvAppearances.csv"))
             {
                 file.Write("Appearance,");
