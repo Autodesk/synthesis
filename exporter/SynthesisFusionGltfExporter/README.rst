@@ -24,7 +24,6 @@ Requirements
 Installation
 ^^^^^^^^^^^^
 - git clone https://github.com/Autodesk/synthesis
-- Run the compile.bat script in the .../synthesis/exporter/SynthesisFusionGltfExporter/gltf/extras/proto folder to generate the protobuf format
 - Open Fusion 360
 - Navigate to the Tools Tab > Add-ins > Scripts and Add-ins...
 - Click the Add-ins tab and click on the green plus
