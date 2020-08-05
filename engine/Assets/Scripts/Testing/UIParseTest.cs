@@ -1,32 +1,22 @@
-﻿using SynthesisAPI.Modules;
-using SynthesisAPI.Runtime;
+﻿using SynthesisAPI.Runtime;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Xml;
-using JetBrains.Annotations;
-using Synthesis.Util;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.UIComponents;
-using SynthesisAPI.VirtualFileSystem;
+using SynthesisAPI.Utilities;
 using Unity.UIElements.Runtime;
 using UnityEngine;
 using UnityEngine.Networking;
 // using UnityEngine.UIElements;
-using Directory = SynthesisAPI.VirtualFileSystem.Directory;
 using SynVisualElementAsset = SynthesisAPI.AssetManager.VisualElementAsset;
 using SynListView = SynthesisAPI.UIManager.VisualElements.ListView;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class UIParseTest : MonoBehaviour
 {
 #if UNITY_EDITOR
-    public PanelRenderer renderer;
+    public new PanelRenderer renderer;
     public SynListView generated;
     public SynVisualElementAsset entry;
 
@@ -70,7 +60,7 @@ public class UIParseTest : MonoBehaviour
                 if (selectButton != null)
                 {
                     selectButton.Subscribe(
-                        e => ApiProvider.Log($"You've selected team \"{teamNames[list.SelectedIndex]}\"")
+                        e => Logger.Log($"You've selected team \"{teamNames[list.SelectedIndex]}\"")
                     );
                 }
             }

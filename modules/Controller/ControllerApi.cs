@@ -2,7 +2,7 @@
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
 
 namespace Controller
@@ -12,7 +12,7 @@ namespace Controller
         [RpcMethod]
         public static void Log(string msg, LogLevel logLevel = LogLevel.Info)
         {
-            ApiProvider.Log(msg, logLevel);
+            Logger.Log(msg, logLevel);
         }
 
         #region Transform movement

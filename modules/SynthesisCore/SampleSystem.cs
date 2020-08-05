@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.DevelopmentTools;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
@@ -7,6 +9,7 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
 
 namespace SynthesisCore
@@ -19,20 +22,21 @@ namespace SynthesisCore
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
-            e.AddComponent<Transform>();
-            e.AddComponent<Selectable>();
-            e.AddComponent<Moveable>().Channel = 5;
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
 
-            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
-            InputManager.AssignDigitalInputs("move", test);
+            GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
+            var _m1 = new ProfilerMarker();
+            Bundle o = g.Parse();
+            Logger.Log($"Parse Time: {_m1.TimeSinceCreation.TotalMilliseconds}");
+            var _m2 = new ProfilerMarker();
+            e.AddBundle(o);
+            Logger.Log($"Spawn Time: {_m2.TimeSinceCreation.TotalMilliseconds}");
         }
 
         public override void OnUpdate() { }
 
-        private void cube(Mesh m)
+        private Mesh cube()
         {
+            Mesh m = new Mesh();
             m.Vertices = new List<Vector3D>()
             {
                 new Vector3D(0,0,0),
@@ -59,6 +63,7 @@ namespace SynthesisCore
                 0, 6, 7, //face bottom
 			    0, 1, 6
             };
+            return m;
         }
 
         /*

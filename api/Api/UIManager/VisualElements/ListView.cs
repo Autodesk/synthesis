@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
 using UnityListView = UnityEngine.UIElements.ListView;
 
@@ -70,7 +71,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             if (PopulateParams.Source.Count < 1)
                 return null!;
-            ApiProvider.Log("Didn't return");
+            Logger.Log("Didn't return");
             if (Element == null)
                 throw new Exception("This should be impossible");
             Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
@@ -82,7 +83,7 @@ namespace SynthesisAPI.UIManager.VisualElements
                 Element.bindItem(elem, i);
                 Element.Add(elem);
             }
-            ApiProvider.Log("Calling children", LogLevel.Warning);
+            Logger.Log("Calling children", LogLevel.Warning);
             base.PostUxmlLoad();
             return null!;
         }

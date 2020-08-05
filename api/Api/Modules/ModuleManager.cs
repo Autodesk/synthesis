@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("CoreEngine")]
+[assembly: InternalsVisibleTo("MockApi")]
 
 namespace SynthesisAPI.Modules
 {
