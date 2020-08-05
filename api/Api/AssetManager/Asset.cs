@@ -65,6 +65,11 @@ namespace SynthesisAPI.AssetManager
             DeleteInner();
         }
 
-        public abstract IEntry Load(byte[] data); // TODO make internal?
+        /// <summary>
+        /// This function should not be called manually. It is called automatically during the asset important process.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>This loaded asset</returns>
+        public abstract IEntry Load(byte[] data);
     }
 }

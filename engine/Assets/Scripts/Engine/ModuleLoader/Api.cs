@@ -71,8 +71,8 @@ namespace Engine.ModuleLoader
 					archive.Dispose();
 					throw e; // TODO should we stop loading all modules? Error screen?
 				}
-				EventBus.Push(new LoadModuleEvent(metadata.Name));
-				ModuleManager.AddToLoadedModuleList(metadata.Name);
+				EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
+				ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
 			}
 			ModuleManager.MarkFinishedLoading();
 		}
