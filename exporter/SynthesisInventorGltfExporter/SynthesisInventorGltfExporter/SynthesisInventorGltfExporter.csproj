@@ -120,6 +120,7 @@
     <Compile Include="proto\GltfExtras.cs" />
     <Compile Include="RobotExporterAddInServer.cs" />
     <Compile Include="RibbonAddInServer.cs" />
+    <Compile Include="Unused\AppearanceDebugging.cs" />
     <EmbeddedResource Include="GUI\GltfExportSettings.resx">
       <DependentUpon>GltfExportSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -161,7 +162,7 @@
     <Content Include="Resources\RibbonIcons\Gears32.png" />
     <Content Include="Resources\RibbonIcons\JointEditor32.png" />
     <Content Include="Resources\RibbonIcons\Weight32.png" />
-    <Content Include="unused\InvAppearances.csv" />
+    <Content Include="Unused\InvAppearances.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

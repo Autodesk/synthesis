@@ -51,6 +51,7 @@
         <e p="RobotExporterAddInServer.cs" t="Include" />
         <e p="SynthesisInventorGltfExporter.csproj" t="IncludeRecursive" />
         <e p="unused" t="Include">
+          <e p="AppearanceDebugging.cs" t="Include" />
           <e p="InvAppearances.csv" t="Include" />
         </e>
       </e>

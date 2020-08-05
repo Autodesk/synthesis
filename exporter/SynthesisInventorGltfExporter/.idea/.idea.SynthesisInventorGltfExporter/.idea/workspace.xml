@@ -20,9 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dc3157bf-e94d-4c03-92f6-3a814f98fb0e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/AppearanceDebugging.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/unused/InvAppearances.csv" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/InvAppearances.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,8 +72,11 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c1/564b2df0/JsonList.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/42/39f569b3/AssemblyJointTypeEnum.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7F/JRaw.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/b1/6ace38d9/MeshBuilder`4.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f6/cc89fc94/GeometryIntent.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/9a/1ce488c8/NodeBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/8a/308e086f/MeshBuilder`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/AppearanceDebugging.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/6e/be45c5ee/AssemblyJointDefinition.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f0/939ff9b9/ApplicationAddInServer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/dc/3991ee87/Guard.cs" root0="SKIP_HIGHLIGHTING" />
@@ -87,7 +93,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/27/c175b7bf/HashSet`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/12/a3eda2c4/KnownChannel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/GltfExtras.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/ec/e443d7a1/RuntimeType.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/ec/e443d7a1/RuntimeType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/df/82c76b1d/FileDialog.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/89/d7d27ff5/FileInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/87/753483da/Matrix4x4.cs" root0="SKIP_HIGHLIGHTING" />
@@ -142,12 +148,13 @@
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_4.json" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/buffer1.txt" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.json" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/AppearanceDebugging.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
@@ -218,7 +225,8 @@
       <workItem from="1596507563187" duration="164000" />
       <workItem from="1596507775337" duration="189000" />
       <workItem from="1596583487742" duration="11273000" />
-      <workItem from="1596653781295" duration="917000" />
+      <workItem from="1596653781295" duration="2366000" />
+      <workItem from="1596661382294" duration="430000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -332,7 +340,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596601699486</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Fix model scaling and update settings labels">
+      <created>1596654725735</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1596654725735</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -368,7 +383,8 @@
     <MESSAGE value="Remove ignored files" />
     <MESSAGE value="Add support for colors of all appearance types" />
     <MESSAGE value="Add todos" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add todos" />
+    <MESSAGE value="Fix model scaling and update settings labels" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix model scaling and update settings labels" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595637002844">
@@ -379,10 +395,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="675" y="194" width="488" height="482" key="#xdebugger.evaluate/0.0.2048.1112@0.0.2048.1112" timestamp="1596587208646" />
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1596601698794">
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1596654724903">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1596601698794" />
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1596654724903" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596145360311">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -391,22 +407,22 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1596175004049" />
-    <state width="2005" height="303" key="GridCell.Tab.0.bottom" timestamp="1596654339145">
+    <state width="2005" height="303" key="GridCell.Tab.0.bottom" timestamp="1596655647396">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="303" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1596654339145" />
-    <state width="2005" height="303" key="GridCell.Tab.0.center" timestamp="1596654339144">
+    <state width="2005" height="303" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1596655647396" />
+    <state width="2005" height="303" key="GridCell.Tab.0.center" timestamp="1596655647396">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="303" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1596654339144" />
-    <state width="2005" height="303" key="GridCell.Tab.0.left" timestamp="1596654339144">
+    <state width="2005" height="303" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1596655647396" />
+    <state width="2005" height="303" key="GridCell.Tab.0.left" timestamp="1596655647396">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="303" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1596654339144" />
-    <state width="2005" height="303" key="GridCell.Tab.0.right" timestamp="1596654339145">
+    <state width="2005" height="303" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1596655647396" />
+    <state width="2005" height="303" key="GridCell.Tab.0.right" timestamp="1596655647396">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="303" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1596654339145" />
+    <state width="2005" height="303" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1596655647396" />
     <state width="2005" height="636" key="GridCell.Tab.1.bottom" timestamp="1596602202854">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -483,10 +499,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1596260345718" />
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1596601701574">
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1596655638940">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1596601701574" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1596655638940" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -499,10 +515,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="578" y="293" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2048.1112@0.0.2048.1112" timestamp="1596264908155" />
-    <state x="683" y="289" width="682" height="534" key="find.popup" timestamp="1596175033390">
+    <state x="683" y="289" width="682" height="534" key="find.popup" timestamp="1596661696328">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="683" y="289" width="682" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1596175033390" />
+    <state x="683" y="289" width="682" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1596661696328" />
     <state x="681" y="259" key="run.anything.popup" timestamp="1596159014582">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
