@@ -100,7 +100,6 @@ namespace Controller
         [RpcMethod("test")]
         public static int Test(int test)
         {
-            ApiProvider.Log(test);
             if (test == 25)
             {
                 throw new System.Exception("Test exception");
