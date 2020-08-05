@@ -15,16 +15,22 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (instance.Changed)
 			{
-				unityTransform.position = MathUtil.MapVector3D(instance.Position);
-				unityTransform.rotation = MathUtil.MapQuaternion(instance.Rotation);
-				unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
+				ToUnity();
 				instance.ProcessedChanges();
 			}
+		}
+
+		private void ToUnity()
+        {
+			unityTransform.localPosition = MathUtil.MapVector3D(instance.Position);
+			unityTransform.localRotation = MathUtil.MapQuaternion(instance.Rotation);
+			unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
 		}
 
 		public void SetInstance(Transform transform)
 		{
 			instance = transform;
+			ToUnity();
 		}
 
 		public static Transform NewInstance()
