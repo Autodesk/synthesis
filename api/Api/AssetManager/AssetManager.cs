@@ -345,12 +345,12 @@ namespace SynthesisAPI.AssetManager
                         return new JsonAsset(name, perm, sourcePath);
                     });
 
-                RegisterAssetType("text/css", new[] { ".css" },
+                RegisterAssetType("text/uss", new[] { ".uss" },
                    (name, perm, sourcePath, args) =>
                    {
                        if (args.Length != 0)
-                           throw new Exception("Import of text/css asset: wrong number of arguments");
-                       return new CssAsset(name, perm, sourcePath);
+                           throw new Exception("Import of text/uss asset: wrong number of arguments");
+                       return new UssAsset(name, perm, sourcePath);
                    });
 
                 RegisterAssetType("image/sprite", new[] { ".png", ".jpeg" },
