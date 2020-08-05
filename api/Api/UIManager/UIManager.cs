@@ -155,7 +155,7 @@ namespace SynthesisAPI.UIManager
                 {
                     string tabName = (info as SelectTabEvent)!.TabName;
                     UIManager.SelectTab(tabName);
-                    // ApiProvider.Log($"Selecting Tab: {tabName}");
+                    // Logger.Log($"Selecting Tab: {tabName}");
                 });
             }
             

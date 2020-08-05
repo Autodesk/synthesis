@@ -25,7 +25,7 @@ namespace SynthesisAPI.UIManager
                     string className = lineContents[1].Substring(0, lineContents[1].Length - 2); // substring to remove " {" from line
 
                     currentClass = new UssClass(className);
-                    //ApiProvider.Log("[UI] New class found with name [" + className + "]");
+                    //Logger.Log("[UI] New class found with name [" + className + "]");
                 } else if (line.StartsWith("}"))
                 {
                     if (currentClass != null)
@@ -57,7 +57,7 @@ namespace SynthesisAPI.UIManager
 
         internal UnityEngine.UIElements.VisualElement ApplyClassToVisualElement(string className, UnityEngine.UIElements.VisualElement visualElement)
         {
-            //ApiProvider.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
+            //Logger.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
             UssClass ussClass = classes[className];
 
             foreach (string line in ussClass.Lines)

@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace SynthesisAPI.UIManager
 {
@@ -49,12 +51,12 @@ namespace SynthesisAPI.UIManager
             if (node == null)
                 throw new Exception("Node is null");
 
-            // ApiProvider.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
+            // Logger.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
             Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x =>
                 x.Name.Equals(node.Name.Replace("ui:", "")));
             if (node.Name.Replace("ui:", "").Equals("Style"))
             {
-                // ApiProvider.Log("[UI] Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
+                // Logger.Log("[UI] Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
                 var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
                 StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
             }
@@ -62,7 +64,7 @@ namespace SynthesisAPI.UIManager
             {
                 if (!node.Name.Replace("ui:", "").Equals("Style"))
                 {
-                    ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
+                    Logger.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
                 }
                 return null;
             }
@@ -70,17 +72,17 @@ namespace SynthesisAPI.UIManager
                 .Invoke(null, new object[] { new object[] {} });
             if (element != null)
             {
-                // ApiProvider.Log("Creating element..");
+                // Logger.Log("Creating element..");
 
                 foreach (XmlAttribute attr in node.Attributes)
                 {
-                    // ApiProvider.Log("Parsing Attribute");
+                    // Logger.Log("Parsing Attribute");
 
                     var property = elementType.GetProperty(MapCssName(attr.Name));
 
                     if (attr.Name.Equals("class"))
                     {
-                        //ApiProvider.Log("Class found with value: " + attr.Value);
+                        //Logger.Log("Class found with value: " + attr.Value);
                         element = StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, element);
                     }
 
@@ -88,7 +90,7 @@ namespace SynthesisAPI.UIManager
                     {
                         if (!attr.Name.Equals("class"))
                         {
-                            ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
+                            Logger.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
                         }
                         // throw new Exception($"No property found with name \"{attr.Name}\"");
                         continue;
@@ -102,42 +104,42 @@ namespace SynthesisAPI.UIManager
                     switch (property.PropertyType.Name)
                     {
                         case "Boolean":
-                            // ApiProvider.Log($"Parsing Boolean: {attr.Value}");
+                            // Logger.Log($"Parsing Boolean: {attr.Value}");
                             property.SetValue(element, bool.Parse(attr.Value));
                             break;
                         case "String":
-                            // ApiProvider.Log($"Parsing String: {attr.Value}");
+                            // Logger.Log($"Parsing String: {attr.Value}");
                             property.SetValue(element, attr.Value);
                             break;
                         case "IStyle":
-                            // ApiProvider.Log("Parsing IStyle");
+                            // Logger.Log("Parsing IStyle");
                             element = ParseStyle(attr.Value, element);
                             break;
                         default:
                             throw new Exception($"Found no matching type to {property.PropertyType.FullName}");
                     }
 
-                    // ApiProvider.Log($"Finished Parsing Attribute: {attr.Name}");
+                    // Logger.Log($"Finished Parsing Attribute: {attr.Name}");
                 }
             } else
             {
                 element = ApiProvider.CreateUnityType<UnityVisualElement>();
             }
 
-            // ApiProvider.Log("Finished Creating Element");
+            // Logger.Log("Finished Creating Element");
 
             UnityVisualElement resultElement = (UnityVisualElement)element;
 
             foreach (XmlNode child in node.ChildNodes)
             {
-                // ApiProvider.Log($"Adding child: {child.Name}");
+                // Logger.Log($"Adding child: {child.Name}");
                 var parsedChild = CreateVisualElement(child);
                 if (parsedChild != null)
                     resultElement.Add((UnityVisualElement)parsedChild);
-                // ApiProvider.Log($"Finished adding child: {child.Name}");
+                // Logger.Log($"Finished adding child: {child.Name}");
             }
 
-            // ApiProvider.Log("Returning Result");
+            // Logger.Log("Returning Result");
             return (VisualElement)resultElement!;
         }
 
@@ -175,7 +177,7 @@ namespace SynthesisAPI.UIManager
             var property = typeof(IStyle).GetProperty(propertyName);
             if (property == null)
             {
-                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
+                Logger.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
@@ -215,17 +217,17 @@ namespace SynthesisAPI.UIManager
                         property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
                         break;
                     default:
-                        ApiProvider.Log("Default");
+                        Logger.Log("Default");
                         break;
                         //throw new Exception("Unhandled type in USS parser");
                 }
-                // ApiProvider.Log("Successfully set styling for " + propertyName);
+                // Logger.Log("Successfully set styling for " + propertyName);
                 
             }
             catch (Exception e)
             {
-                //ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
-                ApiProvider.Log("failed to set property. Skipping " + propertyName, LogLevel.Warning);
+                //Logger.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
+                Logger.Log("failed to set property. Skipping " + propertyName, LogLevel.Warning);
             }
 
             return element;
@@ -266,7 +268,7 @@ namespace SynthesisAPI.UIManager
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    ApiProvider.Log("Can't find asset", LogLevel.Warning);
+                    Logger.Log("Can't find asset", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -277,7 +279,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                ApiProvider.Log("Exception when parsing background texture", LogLevel.Warning);
+                Logger.Log("Exception when parsing background texture", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
