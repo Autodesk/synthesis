@@ -434,22 +434,193 @@ namespace SynthesisInventorGltfExporter
         {
             if (!exportMaterials || appearance == null)
                 return defaultMaterial;
-            if (materialCache.ContainsKey(appearance.Name))
-                return materialCache[appearance.Name];
+
+            var appearanceName = appearance.Name;
+            if (materialCache.ContainsKey(appearanceName))
+                return materialCache[appearanceName];
+            
             var colorVector = Vector4.One;
             try
             {
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                Color tempColor = ((ColorAssetValue)appearance["generic_diffuse"]).Value;
-                colorVector = new Vector4(tempColor.Red/255f, tempColor.Green/255f, tempColor.Blue/255f, (float) tempColor.Opacity);
+                Color tempColor = AttemptGetColor(appearance);
+                colorVector = new Vector4(tempColor.Red / 255f, tempColor.Green / 255f, tempColor.Blue / 255f, (float) tempColor.Opacity);
             }
-            catch (ArgumentException) {}
+            catch { }
             var material = new MaterialBuilder()
                 .WithMetallicRoughnessShader()
                 .WithChannelParam("BaseColor", colorVector )
                 .WithChannelParam("MetallicRoughness", new Vector4(1,1,0,0) ); // TODO: metallic roughness
-            materialCache[appearance.Name] = material;
+            materialCache[appearanceName] = material;
             return material;
+        }
+
+        private Color AttemptGetColor(Asset appearance)
+        {
+            try {return ((ColorAssetValue) appearance["generic_diffuse"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["masonrycmu_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["solidglass_transmittance_custom_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["hardwood_tint_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["water_tint_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["concrete_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["plasticvinyl_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["metallicpaint_base_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["wallpaint_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["metal_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["ceramic_color"]).Value;} catch {}
+            try {return ((ColorAssetValue) appearance["glazing_transmittance_map"]).Value;} catch {}
+            throw new Exception("Could not get color!");
+        }
+
+        private void PrintAssetLibrary(Application application)
+        {
+            using (StreamWriter file = new StreamWriter(@"C:\temp\InvAppearances.csv"))
+            {
+                file.Write("Appearance,");
+                file.Write("DisplayName,");
+                file.Write("HasTexture,");
+                file.Write("IsReadOnly,");
+                file.Write("Name,");
+                file.WriteLine();
+
+                foreach (AssetLibrary assetLib in application.AssetLibraries)
+                {
+                    // file.Write("Library" + assetLib.DisplayName);
+                    // file.Write("  DisplayName: " + assetLib.DisplayName);
+                    // file.Write("  FullFileName: " + assetLib.FullFileName);
+                    // file.Write("  InternalName: " + assetLib.InternalName);
+                    // file.Write("  IsReadOnly: " + assetLib.IsReadOnly);
+
+                    foreach (Asset appearance in assetLib.AppearanceAssets)
+                    {
+                        file.Write(appearance.DisplayName + ",");
+                        file.Write(appearance.HasTexture + ",");
+                        file.Write(appearance.IsReadOnly + ",");
+                        file.Write(appearance.Name + ",");
+                        file.WriteLine();
+                        PrintAsset(appearance, file);
+                    }
+                }
+            }
+        }
+
+        private void PrintAsset(Asset appearance, StreamWriter file)
+        {
+            // file.Write("Appearance,");
+            // file.Write("DisplayName,");
+            // file.Write("Name,");
+            file.Write(appearance.DisplayName+",");
+            // file.Write("      HasTexture: " + appearance.HasTexture);
+            // file.Write("      IsReadOnly: " + appearance.IsReadOnly);
+            file.Write(appearance.Name+",");
+            file.WriteLine();
+            foreach (AssetValue o in appearance)
+            {
+                PrintAssetValue(o, file);
+            }
+            file.WriteLine();
+            file.WriteLine();
+        }
+
+        private void PrintAssetValue(AssetValue InValue, StreamWriter file)
+        {
+            
+            file.Write(InValue.Name+",");
+            file.Write(InValue.IsReadOnly+",");
+
+            switch (InValue.ValueType)
+            {
+                case AssetValueTypeEnum.kAssetValueTypeBoolean:
+                    file.Write("Boolean,");
+
+                    var booleanValue = InValue as BooleanAssetValue;
+
+                    file.Write(booleanValue.Value+",");
+                    break;
+                case AssetValueTypeEnum.kAssetValueTypeChoice:
+                    file.Write("Choice,");
+
+                    var choiceValue = InValue as ChoiceAssetValue;
+
+                    file.Write(choiceValue.Value + ",");
+
+                    string[] names = new string[]{};
+                    string[] choices = new string[]{};
+                    choiceValue.GetChoices(out names, out choices);
+                    for (int i = 0; i < names.Length; i++)
+                    {
+                        file.Write(" " + names[i] + ":" + choices[i] + ",");
+                    }
+                    break;
+                case AssetValueTypeEnum.kAssetValueTypeColor:
+                    file.Write("Color,");
+
+                    var colorValue = InValue as ColorAssetValue;
+
+                    file.Write(colorValue.HasConnectedTexture + ",");
+                    file.Write(colorValue.HasMultipleValues + ",");
+
+                    if (!colorValue.HasMultipleValues)
+                    {
+                        file.Write(ColorString(colorValue.Value, file));
+                    }
+                    else
+                    {
+                        file.Write("Colors,");
+
+                        var colors = colorValue.get_Values();
+
+                        foreach (var color in colors)
+                        {
+                            file.Write(ColorString(color, file));
+                        }
+                    }
+                    break;
+
+                case AssetValueTypeEnum.kAssetValueTypeFilename:
+                    file.Write("Filename,");
+
+                    var filenameValue = InValue as FilenameAssetValue;
+
+                    file.Write(filenameValue.Value + ",");
+                    break;
+
+                case AssetValueTypeEnum.kAssetValueTypeFloat:
+                    file.Write("Float,");
+
+                    var floatValue = InValue as FloatAssetValue;
+
+                    file.Write(floatValue.Value + ",");
+                    break;
+
+                case AssetValueTypeEnum.kAssetValueTypeInteger:
+                    file.Write("Integer,");
+
+                    var integerValue = InValue as IntegerAssetValue;
+
+                    file.Write(integerValue.Value + ",");
+                    break;
+
+                case AssetValueTypeEnum.kAssetValueTypeReference:
+                    file.Write("Reference,");
+
+                    var refType = InValue as ReferenceAssetValue;
+                    break;
+
+                case AssetValueTypeEnum.kAssetValueTypeString:
+                    file.Write("String,");
+
+                    var stringValue = InValue as StringAssetValue;
+
+                    file.Write(stringValue.Value + ",");
+                    break;
+
+            }
+            file.WriteLine();
+        }
+
+        private string ColorString(Color color, StreamWriter file)
+        {
+            return "("+color.Red + " " + color.Green + " " + color.Blue + " " + color.Opacity+"),";
         }
 
         private void ExportPrimitive(SurfaceBody surfaceBody, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
