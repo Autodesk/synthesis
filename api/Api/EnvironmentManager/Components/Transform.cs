@@ -40,7 +40,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			set
 			{
 				if (!value.IsUnitQuaternion)
-					ApiProvider.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
+					Logger.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
 				_rotation = RotationValidator(value);
 				Changed = true;
 			}

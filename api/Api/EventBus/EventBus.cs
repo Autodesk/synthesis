@@ -17,7 +17,7 @@ namespace SynthesisAPI.EventBus
         /// <returns>True if message was pushed to subscribers, false if no subscribers were found</returns>
         public static bool Push<TEvent>(TEvent eventInfo) where TEvent : IEvent
         {
-            string type = eventInfo.Name();
+            var type = eventInfo.Name();
             if (Instance.TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
             {
                 Instance.TypeSubscribers[type](eventInfo);

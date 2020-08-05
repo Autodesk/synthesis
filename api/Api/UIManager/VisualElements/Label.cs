@@ -24,6 +24,11 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => Element.text = value;
         }
 
+        public (float r, float g, float b, float a) Color {
+            get => (style.color.value.r, style.color.value.g, style.color.value.b, style.color.value.a);
+            set => style.color = new UnityEngine.UIElements.StyleColor(new UnityEngine.Color(value.r, value.g, value.b, value.a));
+        }
+
         public Label()
         {
             Element = ApiProvider.CreateUnityType<UnityLabel>()!;

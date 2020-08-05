@@ -1,33 +1,22 @@
-﻿using SynthesisAPI.Modules;
-using SynthesisAPI.Runtime;
+﻿using SynthesisAPI.Runtime;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Xml;
-using JetBrains.Annotations;
-using Synthesis.Util;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.UIComponents;
-using SynthesisAPI.VirtualFileSystem;
+using SynthesisAPI.Utilities;
 using Unity.UIElements.Runtime;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UIElements;
-using Directory = SynthesisAPI.VirtualFileSystem.Directory;
+// using UnityEngine.UIElements;
 using SynVisualElementAsset = SynthesisAPI.AssetManager.VisualElementAsset;
 using SynListView = SynthesisAPI.UIManager.VisualElements.ListView;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 public class UIParseTest : MonoBehaviour
 {
 #if UNITY_EDITOR
-    public StyleSheet styleSheet;
-    public PanelRenderer renderer;
+    public new PanelRenderer renderer;
     public SynListView generated;
     public SynVisualElementAsset entry;
 
@@ -38,16 +27,49 @@ public class UIParseTest : MonoBehaviour
 
     private void Start()
     {
-        ApiProvider.Log("Testing");
+        var selectionPanel = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/SelectionList.uxml");
+        Panel p = new Panel("SelectionPanel", selectionPanel, (ve) =>
+        {
+            var closeButton = ve.Get(name: "close-button") as Button;
+            if (closeButton != null)
+            {
+                closeButton.Subscribe(e => UIManager.ClosePanel("SelectionPanel"));
+            }
 
-        // AssetManager.Import<TextureAsset>("image/texture", false, "/temp", "blank.png",
-            // Permissions.PublicReadOnly, $"test{Path.DirectorySeparatorChar}Blank.png");
+            var list = ve.Get(name: "selections") as ListView;
+            if (list != null)
+            {
+                var teamNames = new List<string>() { "Mean Machine", "Spartan Robotics", "Shockwave" };
+                list.Populate(teamNames,
+                    () =>
+                    {
+                        var a = new Label();
+                        a.SetStyleProperty("height", "30px");
+                        return a;
+                    },
+                    (element, index) =>
+                    {
+                        (element as Label).Color = (1.0f, 1.0f, 1.0f, 1.0f);
+                        (element as Label).Name = $"sel-{teamNames[index]}";
+                        (element as Label).Text = teamNames[index];
+                        // element.SetStyleProperty("width", "30px");
+                    }
+                );
 
-        /*Tab testTab = new Tab("Test Toolbar",
-            AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-toolbar.uxml",
-                Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}ToolbarTest.uxml"),
-            sve => ApiProvider.Log("Running Tab Binding"));*/
+                var selectButton = ve.Get(name: "select-button") as Button;
+                if (selectButton != null)
+                {
+                    selectButton.Subscribe(
+                        e => Logger.Log($"You've selected team \"{teamNames[list.SelectedIndex]}\"")
+                    );
+                }
+            }
+        });
 
+        UIManager.AddPanel(p);
+        UIManager.ShowPanel(p.Name);
+
+        /*
         var a = AssetManager.Search("ToolbarTest.uxml");
         var asset = AssetManager.GetAsset<SynVisualElementAsset>("/modules/synthesis_core/ToolbarTest.uxml");
         
@@ -56,44 +78,7 @@ public class UIParseTest : MonoBehaviour
             sve => ApiProvider.Log("Running Tab Binding"));
         
         UIManager.AddTab(testTab);
-        // UIManager.ShowPanel("Test Panel");
-
-        ApiProvider.Log("=====");
-        // UIManager.RecursivePrint(PanelRenderer.visualTree);
+        */
     }
-
-    /*void Start()
-    {
-        asset = AssetManager.Import<TextureAsset>("image/texture", false, "/temp", "test.jpeg",
-            Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test.jpeg");
-
-        entry = AssetManager.Import<SynVisualElementAsset>("text/uxml", false, "/temp", "test-entry.uxml",
-            Permissions.PublicReadWrite, $"test{Path.DirectorySeparatorChar}test-entry.uxml");
-        
-        XmlDocument doc = new XmlDocument();
-        doc.Load($"Assets{Path.DirectorySeparatorChar}UI{Path.DirectorySeparatorChar}TestListView.uxml");
-        generated = ((VisualElement)UIParser.CreateVisualElement("Test_UI", doc).Get(name: "test-list-view")).GetSynVisualElement() as SynListView;
-        // var doc2 = new XmlDocument();
-        // doc.Load($"Assets{Path.DirectorySeparatorChar}UI{Path.DirectorySeparatorChar}TestListEntry.uxml");
-        // entry = UIParser.CreateVisualElement("Test_Entry", doc);
-        // ApiProvider.Log($"Type: {listView.GetType().FullName}");
-
-        var sourceItem = new List<string>() {"Hi", "Hello"};
-        generated.Populate(sourceItem, () => entry.GetElement("entry"),
-            (element, index) =>
-            {
-                var label = (element.Get(name: "test-label") as SynLabel);
-                label.Text = sourceItem[index];
-            });
-        
-        renderer.postUxmlReload += () =>
-        {
-            // generated.
-            PanelRenderer.visualTree.Q<VisualElement>(name: "screen").Add((ListView)generated);
-            ApiProvider.Log("PostUxmlLoad");
-            generated.PostUxmlLoad();
-            return null;
-        };
-    }*/
 #endif
 }

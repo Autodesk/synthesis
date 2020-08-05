@@ -167,22 +167,12 @@ namespace TestApi
             EventBus.ResetAllListeners();
         }
 
+        /*
         [Test]
         public static void TestGltf()
         {
-            // Khronos glTF CSharp Loader
-            //var deserializedFile = Interface.LoadModel("MultiDepthHierarchy_v9_1593489237.glb");
-            //Assert.IsNotNull(deserializedFile);
-
-
-            string joints = "MultiDepthHierarchy_v2_Joints.glb";
-            string noJoints = "MultiDepthHierarchy_v9_No_Joints.glb";
-            //var fs = File.OpenRead(FileSystem.TestPath + "MultiDepthHierarchy_v9_No_Joints.glb");
-            var path = $"test2/{Path.DirectorySeparatorChar}{joints}";
-            // var fs = File.OpenRead(path);
-            var glb = AssetManager.Import<GltfAsset>("text/gltf", false, "/temp", "test.gltf", Permissions.PublicReadWrite, path);
-            Assert.IsNotNull(glb);
+            // TODO test GLTFAsset
         }
-
+        */
     }
 }

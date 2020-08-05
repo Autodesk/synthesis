@@ -1,17 +1,16 @@
-﻿using System;
-using SynthesisAPI.Modules.Attributes;
+﻿using SynthesisAPI.Modules.Attributes;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     [BuiltinComponent]
     public class Parent : Component
     {
-        private Entity value = 0;
-        public static implicit operator Entity(Parent p) => p.value;
+        private Entity parentEntity = 0;
+        public static implicit operator Entity(Parent p) => p.parentEntity;
         //TODO wont set if entity does not exist
         public void Set(Entity entity)
         {
-            value = entity;
+            parentEntity = entity;
             Changed = true;
         }
         public bool Changed { get; private set; }

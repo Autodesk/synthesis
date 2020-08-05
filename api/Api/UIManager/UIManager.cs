@@ -33,6 +33,9 @@ namespace SynthesisAPI.UIManager
             {
                 var container = Instance.RootElement.UnityVisualElement.Q<UnityVisualElement>(name: "tab-container");
                 container.Remove(container.Q<UnityVisualElement>(name: $"tab-{tabName}"));
+
+                if (tabName == SelectedTabName)
+                    SelectTab("__");
             }
         }
 
@@ -48,7 +51,7 @@ namespace SynthesisAPI.UIManager
                 if (existingToolbar != null)
                     toolbarContainer.Remove(existingToolbar);
 
-                Instance.SelectedTab = "__";
+                SelectedTabName = "__";
             }
             else
             {
@@ -57,9 +60,9 @@ namespace SynthesisAPI.UIManager
                 if (existingToolbar != null)
                     toolbarContainer.Remove(existingToolbar);
 
-                if (Instance.SelectedTab == tabName)
+                if (SelectedTabName == tabName)
                 { 
-                    Instance.SelectedTab = "__";
+                    SelectedTabName = "__";
                 }
                 else
                 {
@@ -72,7 +75,7 @@ namespace SynthesisAPI.UIManager
                     // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
                     toolbarContainer.Add((UnityVisualElement) toolbar);
 
-                    Instance.SelectedTab = tabName; 
+                    SelectedTabName = tabName; 
                 }
             }
 
@@ -126,7 +129,7 @@ namespace SynthesisAPI.UIManager
                 get => RootElement.UnityVisualElement.Q(name: "bottom");
             }
             
-            public string SelectedTab = "__";
+            public string SelectedTabName = "__";
 
             public Dictionary<string, Tab> LoadedTabs;
             public Dictionary<string, Panel> LoadedPanels;
@@ -161,6 +164,10 @@ namespace SynthesisAPI.UIManager
         private static Inner Instance => Inner.InnerInstance;
         private static Dictionary<string, Tab> LoadedTabs => Instance.LoadedTabs;
         private static Dictionary<string, Panel> LoadedPanels => Instance.LoadedPanels;
+        private static string SelectedTabName {
+            get => Instance.SelectedTabName;
+            set => Instance.SelectedTabName = value;
+        }
 
     }
 }

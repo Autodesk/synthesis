@@ -3,7 +3,7 @@ using System;
 
 namespace Engine.ModuleLoader
 {
-    public class LoadModuleException : SynthesisExpection
+    public class LoadModuleException : SynthesisException
     {
         public LoadModuleException() { }
         public LoadModuleException(string message) : base(message) { }

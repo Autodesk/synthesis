@@ -10,20 +10,19 @@ using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Components;
 
 namespace SynthesisCore
 {
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
-        private Selectable selectable;
-        private Transform transform;
-
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
             Entity e = EnvironmentManager.AddEntity();
+
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             var _m1 = new ProfilerMarker();
             Bundle o = g.Parse();
