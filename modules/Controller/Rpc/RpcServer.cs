@@ -27,45 +27,57 @@ namespace Controller.Rpc
         public override void OnUpdate() { }
         public override void OnPhysicsUpdate() { }
 
+        public override void Teardown()
+        {
+            if (listener.IsListening)
+                listener.Stop(); // close server when Synthesis closes
+        }
+
         private async void Start()
         {
-            while (true)
+            while (listener.IsListening)
             {
-                HttpListenerContext context = await listener.GetContextAsync();
-
-                var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
-
-                Result<object, RpcError> result;
-                MethodCallContext? call = null;
-
                 try
                 {
-                    call = MethodCallContext.FromJson(requestContent);
+                    HttpListenerContext context = await listener.GetContextAsync();
 
-                    if (call.JsonRpcVersion != RpcManager.JsonRpcVersion)
+                    var requestContent = new StreamReader(context.Request.InputStream).ReadToEnd();
+
+                    Result<object, RpcError> result;
+                    MethodCallContext? call = null;
+
+                    try
                     {
-                        result = new Result<object, RpcError>(
-                            new InvalidRequest($"Incompatible RPC versions call {call.JsonRpcVersion} vs current {RpcManager.JsonRpcVersion}"));
+                        call = MethodCallContext.FromJson(requestContent);
+
+                        if (call.JsonRpcVersion != RpcManager.JsonRpcVersion)
+                        {
+                            result = new Result<object, RpcError>(
+                                new InvalidRequest($"Incompatible RPC versions call {call.JsonRpcVersion} vs current {RpcManager.JsonRpcVersion}"));
+                        }
+                        else
+                        {
+                            result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        result = RpcManager.Invoke(call.MethodName, call.Params.ToArray());
+                        result = new Result<object, RpcError>((ParseError)e);
                     }
+
+                    var response = RpcResponse.ToJson(RpcManager.JsonRpcVersion, result, call == null ? 0 : call.Id);
+
+                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(response);
+
+                    context.Response.ContentLength64 = buffer.Length;
+                    context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                    context.Response.OutputStream.Close(); // Must close output stream
                 }
-                catch(Exception e)
+                catch (ObjectDisposedException)
                 {
-                    result = new Result<object, RpcError>((ParseError)e);
+                    return;
                 }
-
-                var response = RpcResponse.ToJson(RpcManager.JsonRpcVersion, result, call == null ? 0 : call.Id);
-
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(response);
-
-                context.Response.ContentLength64 = buffer.Length;
-                context.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                context.Response.OutputStream.Close(); // Must close output stream
             }
-            // listener.Stop(); // TODO close server when Synthesis closes
         }
     }
 }

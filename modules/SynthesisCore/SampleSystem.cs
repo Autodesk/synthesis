@@ -71,6 +71,8 @@ namespace SynthesisCore
             return m;
         }
 
+        public override void Teardown() { }
+
         /*
         [TaggedCallback("input/move")]
         public void Move(DigitalEvent digitalEvent)

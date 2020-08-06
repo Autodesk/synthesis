@@ -25,8 +25,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def forward(self, channel, distance):
@@ -38,8 +38,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def backward(self, channel, distance):
@@ -51,8 +51,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def left(self, channel, distance):
@@ -64,8 +64,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def right(self, channel, distance):
@@ -77,8 +77,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def up(self, channel, distance):
@@ -90,8 +90,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def down(self, channel, distance):
@@ -103,8 +103,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
     def test(self, value):
@@ -116,8 +116,8 @@ class ControllerSys:
 
         error_code = error_code.value
         if error_code != 0:
-            error_message = None if error_message.value is None else error_message.value.decode("utf-8")
-            error_data = None if error_data.value is None else error_data.value.decode("utf-8")
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
             raise RpcError(error_code, error_message, error_data)
 
         return ret

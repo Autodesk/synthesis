@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.EnvironmentManager.Components;
+﻿using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,6 @@ namespace Engine.ModuleLoader.Adapters
 	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
-		private static List<Selectable> selectables = new List<Selectable>(); // TODO manage lifetime
 		private new MeshCollider collider;
 		private Material[] materials;
 		public const float FlashSelectedTime = 0.1f; // sec
@@ -18,7 +18,6 @@ namespace Engine.ModuleLoader.Adapters
 		public void SetInstance(Selectable obj)
 		{
 			instance = obj;
-			selectables.Add(instance);
 		}
 
 		public static Selectable NewInstance()
@@ -30,7 +29,7 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (Selectable.Selected != null)
 			{
-				foreach (var selectable in selectables)
+				foreach (var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
 				{
 					selectable.SetSelected(false);
 				}
