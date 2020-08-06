@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="/modules/SynthesisCore/UI/uss/Toolbar.uss" />
+    <ui:Button text="Tab" name="blank-tab" class="tab-button">
+        
+    </ui:Button>
+</ui:UXML>

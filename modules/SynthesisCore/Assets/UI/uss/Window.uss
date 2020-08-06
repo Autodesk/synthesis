@@ -1,0 +1,127 @@
+.window-button {
+    width: 75px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 12px;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-top-width: 0.5px;
+    border-bottom-width: 0.5px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(255, 255, 255);
+    border-left-color: rgb(162, 162, 162);
+    border-right-color: rgb(162, 162, 162);
+    border-top-color: rgb(162, 162, 162);
+    border-bottom-color: rgb(162, 162, 162);
+    position: relative;
+}
+
+.window-button-blue {
+    width: 75px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 12px;
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-top-width: 0.5px;
+    border-bottom-width: 0.5px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgb(0, 166, 226);
+    color: rgb(255, 255, 255);
+    border-left-color: rgb(0, 166, 226);
+    border-right-color: rgb(0, 166, 226);
+    border-top-color: rgb(0, 166, 226);
+    border-bottom-color: rgb(0, 166, 226);
+}
+
+.window-button:hover {
+    border-left-color: rgb(210, 210, 210);
+    border-right-color: rgb(210, 210, 210);
+    border-top-color: rgb(210, 210, 210);
+    border-bottom-color: rgb(210, 210, 210);
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-top-width: 0.5px;
+    border-bottom-width: 0.5px;
+}
+
+.window-button:active {
+    background-color: rgb(234, 234, 234);
+}
+
+.window-button-blue:hover {
+    background-color: rgb(58, 181, 225);
+}
+
+.window-button-blue:active {
+    background-color: rgb(0, 126, 192);
+}
+
+.window-header-container {
+    height: 50px;
+    width: 100%;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    flex-direction: row;
+}
+
+.window-header-title {
+    font-size: 20px;
+    color: rgb(106, 97, 97);
+    margin-left: 5px;
+    margin-right: 0;
+    margin-top: 3px;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.window-header-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.window-bottom-button-panel {
+    height: 50px;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    flex-direction: row;
+    align-items: auto;
+    justify-content: flex-start;
+}
+
+.window {
+    background-color: rgb(255, 255, 255);
+}
+
+.window-content {
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-direction: column;
+    background-color: rgb(250, 250, 250);
+}
