@@ -94,7 +94,6 @@ message TriangleMesh { // not using Vectors here to avoid overhead on large mesh
 }
 
 message PhysicalProperties {
-    double density = 1; // kg/(cm^3)
     double mass = 2; // kg
     double volume = 3; //cm^3
     double area = 4; // cm^2

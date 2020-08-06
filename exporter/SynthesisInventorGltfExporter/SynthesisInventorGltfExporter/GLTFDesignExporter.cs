@@ -33,6 +33,7 @@ namespace SynthesisInventorGltfExporter
             .WithMetallicRoughnessShader()
             .WithChannelParam("BaseColor", Vector4.One);
 
+        private Dictionary<string, MassProperties> massPropertiesMap;
         private Dictionary<string, MaterialBuilder> materialCache;
         private List<AssemblyJoint> allDocumentJoints;
         
@@ -53,6 +54,7 @@ namespace SynthesisInventorGltfExporter
             exportFaceMaterials = checkFaceMaterials;
             exportMaterials = checkMaterialsChecked;
             materialCache = new Dictionary<string, MaterialBuilder>();
+            massPropertiesMap = new Dictionary<string, MassProperties>();
             allDocumentJoints = new List<AssemblyJoint>();
             warnings = new List<string>();
 
@@ -73,7 +75,12 @@ namespace SynthesisInventorGltfExporter
             var extras = new JObject();
             extras.Add("joints", ExportJoints(assemblyDocument));
             parsedJToken.Add("extras", extras);
-            
+
+            try
+            {
+                ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
+            } catch {}
+
             var readSettings = new ReadSettings();
             readSettings.FileReader = assetFileName => dictionary[assetFileName];
             var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
@@ -94,8 +101,49 @@ namespace SynthesisInventorGltfExporter
             Debug.WriteLine("----------");
             progressBar.Close();
         }
-        
-        
+
+        private void ExportMassProperties(JArray meshList)
+        {
+            foreach (var jToken in meshList)
+            {
+                var mesh = (JObject) jToken;
+                var meshName = (string) mesh.GetValue("name");
+                if (meshName != null)
+                {
+                    if (massPropertiesMap.ContainsKey(meshName))
+                    {
+                        try
+                        {
+                            var meshExtras = new JObject();
+                            meshExtras.Add("physicalProperties", PhysicalPropertiesToJSON(massPropertiesMap[meshName]));
+                            mesh.Add("extras", meshExtras);
+                        }
+                        catch
+                        {
+                            
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        private JObject PhysicalPropertiesToJSON(MassProperties massProperties)
+        {
+            return JObject.Parse(JsonFormatter.Default.Format(ExportPhysicalProperties(massProperties)));
+        }
+
+        private PhysicalProperties ExportPhysicalProperties(MassProperties massProperties)
+        {
+            var physicalProperties = new PhysicalProperties();
+            physicalProperties.Mass = massProperties.Mass; // kg -> kg
+            physicalProperties.Area = massProperties.Area/Math.Pow(100, 2); // cm^2 -> m^2
+            physicalProperties.Volume = massProperties.Volume/Math.Pow(100, 3); // cm^3 -> m^3
+            physicalProperties.CenterOfMass = GetVector3DConvertUnits(massProperties.CenterOfMass);
+            return physicalProperties;
+        }
+
+
         private JArray ExportJoints(AssemblyDocument assemblyDocument)
         {
             var jointArray = new JArray();
@@ -121,8 +169,8 @@ namespace SynthesisInventorGltfExporter
             try { protoJoint.IsLocked = invJoint.Locked; } catch {}
             try { protoJoint.IsSuppressed = invJoint.Suppressed; } catch {}
         
-            protoJoint.OccurrenceOneUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceOne);
-            protoJoint.OccurrenceTwoUUID = GetJointedOccurrenceUUID(invJoint.OccurrenceTwo);
+            protoJoint.OccurrenceOneUUID = GetOccurrenceUniqueId(invJoint.OccurrenceOne);
+            protoJoint.OccurrenceTwoUUID = GetOccurrenceUniqueId(invJoint.OccurrenceTwo);
             
             var assemblyJointDefinition = invJoint.Definition;
             
@@ -307,7 +355,7 @@ namespace SynthesisInventorGltfExporter
             return protoJointMotion;
         }
 
-        private string GetJointedOccurrenceUUID(ComponentOccurrence occurrence)
+        private string GetOccurrenceUniqueId(ComponentOccurrence occurrence)
         {
             return string.Join("+", new List<ComponentOccurrence>(occurrence.OccurrencePath.Cast<ComponentOccurrence>()).Select(o => o.Name));
         }
@@ -357,7 +405,7 @@ namespace SynthesisInventorGltfExporter
         {
             var componentOccurrenceDefinition = componentOccurrence.Definition;
 
-            ExportAppearanceCached(componentOccurrence.Appearance);
+            // ExportAppearanceCached(componentOccurrence.Appearance);
 
             // node.LocalTransform = InvToGltfMatrix4X4(componentOccurrence.Transformation); TODO: mesh caching by using definitions instead of occurrences (materials were an issue)
             switch (componentOccurrenceDefinition.Type)
@@ -410,7 +458,12 @@ namespace SynthesisInventorGltfExporter
 
         private MeshBuilder<VertexPosition> ExportMesh(ComponentOccurrence componentOccurrence)
         {
-            var mesh = new MeshBuilder<VertexPosition>("mesh");
+            var occurrenceUniqueId = GetOccurrenceUniqueId(componentOccurrence);
+            var mesh = new MeshBuilder<VertexPosition>(occurrenceUniqueId);
+            try
+            {
+                massPropertiesMap[occurrenceUniqueId] = componentOccurrence.MassProperties;
+            } catch {}
             foreach (SurfaceBody surfaceBody in componentOccurrence.SurfaceBodies)
             {
                 if (exportMaterials && exportFaceMaterials)
