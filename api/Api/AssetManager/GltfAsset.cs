@@ -8,6 +8,7 @@ using System.Linq;
 using SharpGLTF.Memory;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
+using SharpGLTF.IO;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -52,10 +53,6 @@ namespace SynthesisAPI.AssetManager
         public Bundle Parse()
         {
             if (model == null) return null;
-
-            // Parse all joints into JointCollection components
-            // Store JointCollections in a dictionary using occurence one as the key and a JointCollection as the value
-
             return CreateBundle(model.DefaultScene.VisualChildren.First()); 
         }
 
@@ -67,7 +64,21 @@ namespace SynthesisAPI.AssetManager
 
             foreach (Node child in node.VisualChildren)
                 bundle.ChildBundles.Add(CreateBundle(child, node));
+
+            if (parent == null)
+                AddExtras(bundle);
             return bundle;
+        }
+
+        private void AddExtras(Bundle bundle)
+        {
+            JsonDictionary extras = (JsonDictionary)model.Extras;
+
+            //todo: Joints
+            //EnvironmentManager.Components.JointCollection jl = new EnvironmentManager.Components.JointCollection();
+            //foreach (JsonDictionary joint in (JsonList)extras["joints"])
+                //jl.Add(ParseJoints(joint));
+            //bundle.Components.Add(jl);
         }
 
         private void AddComponents(Bundle bundle, Node node, Node parent = null)
@@ -141,6 +152,24 @@ namespace SynthesisAPI.AssetManager
 
             return t;
         }
+
+        //private Environment.Components.JointCollection.IJoint ParseJoints(JsonDictionary jointDict)
+        //{
+            // todo: Environment.Components.JointCollection.IJoint j = new Environment.Components.JointCollection.IJoint();
+
+            // HEADER
+
+            // todo:
+            // parsing here
+
+            // if (model != null) bundle.Components.Add(ParseJoints(jointDict));
+            //Environment.Components.JointList.Joints j = new Environment.Components.JointList.Joints();
+
+            //todo:
+            //parsing here
+
+            //return j;
+        //}
         #endregion
     }
 }
