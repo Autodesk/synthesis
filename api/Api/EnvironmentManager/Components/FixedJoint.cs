@@ -1,36 +1,72 @@
 ﻿using SynthesisAPI.Modules.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
+using MathNet.Spatial.Euclidean;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     [BuiltinComponent]
-    public class FixedJoint : Component
+    public class FixedJoint : Component, IJoint
     {
-        internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
-        internal Func<string, object> LinkedGetter = n => throw new Exception("Setter not assigned");
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        private void Set(string n, object o) => LinkedSetter(n, o);
-        private T Get<T>(string n) => (T)LinkedGetter(n);
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
         #region Properties
 
+        internal Vector3D axis = new Vector3D(1, 0, 0);
+        public Vector3D Axis {
+            get => axis;
+            set {
+                axis = value;
+                OnPropertyChanged();
+            }
+        }
+        internal Vector3D anchor = new Vector3D(0, 0, 0);
+        public Vector3D Anchor {
+            get => anchor;
+            set {
+                anchor = value;
+                OnPropertyChanged();
+            }
+        }
+        internal Rigidbody connectedBody = null;
         public Rigidbody ConnectedBody {
-            get => Get<Rigidbody>("connectedbody");
-            set => Set("connectedbody", value);
+            get => connectedBody;
+            set {
+                connectedBody = value;
+                OnPropertyChanged();
+            }
         }
+        internal float breakForce = float.PositiveInfinity;
         public float BreakForce {
-            get => Get<float>("breakforce");
-            set => Set("breakforce", value);
+            get => breakForce;
+            set {
+                breakForce = value < 0.0f ? 0.0f : value;
+                OnPropertyChanged();
+            }
         }
+        internal float breakTorque = float.PositiveInfinity;
         public float BreakTorque {
-            get => Get<float>("breaktorque");
-            set => Set("breaktorque", value);
+            get => breakTorque;
+            set {
+                breakTorque = value < 0.0f ? 0.0f : value;
+                OnPropertyChanged();
+            }
         }
+        internal bool enableCollision = false;
         public bool EnableCollision {
-            get => Get<bool>("enablecollision");
-            set => Set("enablecollision", value);
+            get => enableCollision;
+            set {
+                enableCollision = value;
+                OnPropertyChanged();
+            }
         }
 
         #endregion

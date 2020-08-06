@@ -3,66 +3,111 @@ using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Modules.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
     [BuiltinComponent]
-    public class HingeJoint : Component, IControllable
+    public class HingeJoint : Component, IJoint, IControllable
     {
-        internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not setup");
-        internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not setup");
-
-        private void Set(string n, object o) => LinkedSetter(n, o);
-        private T Get<T>(string n) => (T)LinkedGetter(n);
-
         #region Properties
 
+        internal Vector3D anchor = new Vector3D(0, 0, 0);
         public Vector3D Anchor {
-            get => Get<Vector3D>("anchor");
-            set => Set("anchor", value);
+            get => anchor;
+            set {
+                anchor = value;
+                OnPropertyChanged();
+            }
         }
+        internal Vector3D axis = new Vector3D(1, 0, 0);
         public Vector3D Axis {
-            get => Get<Vector3D>("axis");
-            set => Set("axis", value);
+            get => axis;
+            set {
+                axis = value;
+                OnPropertyChanged();
+            }
         }
+        internal float breakForce = float.PositiveInfinity;
         public float BreakForce {
-            get => Get<float>("breakforce");
-            set => Set("breakforce", value);
+            get => breakForce;
+            set {
+                breakForce = value < 0.0f ? 0.0f : value;
+                OnPropertyChanged();
+            }
         }
+        internal float breakTorque = float.PositiveInfinity;
         public float BreakTorque {
-            get => Get<float>("breaktorque");
-            set => Set("breaktorque", value);
+            get => breakTorque;
+            set {
+                breakTorque = value < 0.0f ? 0.0f : value;
+                OnPropertyChanged();
+            }
         }
+        internal Rigidbody connectedBody = null;
         public Rigidbody ConnectedBody {
-            get => Get<Rigidbody>("connectedbody");
-            set => Set("connectedbody", value);
+            get => connectedBody;
+            set {
+                connectedBody = value;
+                OnPropertyChanged();
+            }
         }
+        internal bool enableCollision = false;
         public bool EnableCollision {
-            get => Get<bool>("enablecollision");
-            set => Set("enablecollision", value);
+            get => enableCollision;
+            set {
+                enableCollision = value;
+                OnPropertyChanged();
+            }
         }
+        internal bool useLimits = false;
         public bool UseLimits {
-            get => Get<bool>("uselimits");
-            set => Set("uselimits", value);
+            get => useLimits;
+            set {
+                useLimits = value;
+                OnPropertyChanged();
+            }
         }
+        internal JointLimits limits = new JointLimits();
         public JointLimits Limits {
-            get => Get<JointLimits>("limits");
-            set => Set("limits", value);
+            get => limits;
+            set {
+                limits = value;
+                OnPropertyChanged();
+            }
         }
+        internal float velocity = 0.0f;
         public float Velocity {
-            get => Get<float>("velocity");
+            get => velocity;
         }
+        internal float angle = 0.0f; 
         public float Angle {
-            get => Get<float>("angle");
+            get => angle;
         }
+        internal bool useMotor = false;
         public bool UseMotor {
-            get => Get<bool>("usemotor");
-            set => Set("usemotor", value);
+            get => useMotor;
+            set {
+                useMotor = value;
+                OnPropertyChanged();
+            }
         }
+        internal JointMotor motor = new JointMotor();
         public JointMotor Motor {
-            get => Get<JointMotor>("motor");
-            set => Set("motor", value);
+            get => motor;
+            set {
+                motor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion

@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 namespace SynthesisAPI.UIManager
 {
@@ -48,7 +50,7 @@ namespace SynthesisAPI.UIManager
                 x.Name.Equals(node.Name.Replace("ui:", "")));
             if (elementType == null)
             {
-                ApiProvider.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
+                Utilities.Logger.Log($"Couldn't find type \"{node.Name.Replace("ui:", "")}\"\nSkipping...", LogLevel.Warning);
                 return null;
             }
             dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
@@ -65,7 +67,7 @@ namespace SynthesisAPI.UIManager
                     if (property == null)
                     {
                         // throw new Exception($"No property found with name \"{attr.Name}\"");
-                        ApiProvider.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
+                        Logger.Log($"Skipping attribute \"{attr.Name}\"", LogLevel.Warning);
                         continue;
                     }
 
@@ -150,7 +152,7 @@ namespace SynthesisAPI.UIManager
             var property = typeof(IStyle).GetProperty(propertyName);
             if (property == null)
             {
-                ApiProvider.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
+                Logger.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
                 // Debug.Log($"Type of style: \"{typeof(element.style).FullName}\"");
             }
 
@@ -193,9 +195,9 @@ namespace SynthesisAPI.UIManager
                         throw new Exception("Unhandled type in USS parser");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                ApiProvider.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
+                Logger.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
             }
 
             return element;
@@ -236,7 +238,7 @@ namespace SynthesisAPI.UIManager
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    ApiProvider.Log("Can't find asset", LogLevel.Warning);
+                    Logger.Log("Can't find asset", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -244,10 +246,10 @@ namespace SynthesisAPI.UIManager
                     return new StyleBackground(asset.Sprite.texture);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // FAIL TO GET TEXTURE
-                ApiProvider.Log("Exception when parsing background texture", LogLevel.Warning);
+                Logger.Log("Exception when parsing background texture", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }

@@ -70,6 +70,13 @@ namespace Engine.ModuleLoader.Adapters
 			}
 		}
 
+		private void ToUnity()
+        {
+			unityTransform.localPosition = MathUtil.MapVector3D(instance.Position);
+			unityTransform.localRotation = MathUtil.MapQuaternion(instance.Rotation);
+			unityTransform.localScale = MathUtil.MapVector3D(instance.Scale);
+		}
+
 		public void SetInstance(Transform transform)
 		{
 			instance = transform;

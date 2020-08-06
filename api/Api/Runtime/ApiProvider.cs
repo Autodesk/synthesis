@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 
@@ -8,7 +9,7 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
-    public static class ApiProvider
+	internal static class ApiProvider
 	{
 		private static IApiProvider? Instance => Inner.Instance;
 
@@ -30,18 +31,13 @@ namespace SynthesisAPI.Runtime
 			internal static IApiProvider? Instance;
 		}
 
-		public static void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
-		{
-			Instance?.Log(o, logLevel, memberName, filePath, lineNumber);
-		}
-
-		public static void SetEnableDebugLogs(bool enable) => Instance?.SetEnableDebugLogs(enable);
-
 		public static void AddEntityToScene(Entity entity) => Instance?.AddEntityToScene(entity);
 
 		public static void RemoveEntityFromScene(Entity entity) => Instance?.RemoveEntityFromScene(entity);
 
 		public static Component? AddComponentToScene(Entity entity, Type t) => Instance?.AddComponentToScene(entity,t);
+
+		public static void AddComponentToScene(Entity entity, Component component) => Instance?.AddComponentToScene(entity, component);
 
 		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
 

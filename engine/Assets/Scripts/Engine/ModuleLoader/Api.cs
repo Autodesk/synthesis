@@ -21,14 +21,15 @@ using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
 using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
-
 using Engine.ModuleLoader.Adapters;
+using Logger = SynthesisAPI.Utilities.Logger;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
 using System.Threading.Tasks;
 
 namespace Engine.ModuleLoader
 {
+
 	public class Api : MonoBehaviour
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
@@ -42,7 +43,8 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
-			SynthesisAPI.Runtime.ApiProvider.RegisterApiProvider(new ApiProvider());
+            ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+			Logger.RegisterLogger(new LoggerImpl());
 			LoadApi();
 			LoadModules();
 			RerouteConsoleOutput();
@@ -102,7 +104,7 @@ namespace Engine.ModuleLoader
 			// Ensure module contains metadata
 			if (module.Entries.All(e => e.Name != ModuleMetadata.MetadataFilename))
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
+				Logger.Log($"Potential module missing is metadata file: {filePath}", LogLevel.Warning);
 				return null;
 			}
 
@@ -219,7 +221,7 @@ namespace Engine.ModuleLoader
 			}
 			foreach (var file in fileManifest)
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
+				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
 			}
 			moduleInfo.archive.Dispose();
 		}
@@ -281,14 +283,14 @@ namespace Engine.ModuleLoader
 				{
 					foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
 					{
-						SynthesisAPI.Runtime.ApiProvider.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+						Logger.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
 					}
 				}
 				return false;
 			}
 			catch (Exception e)
 			{
-				SynthesisAPI.Runtime.ApiProvider.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
+				Logger.Log($"Failed to get types from module {owningModule}\n{e}", LogLevel.Error);
 				return false;
 			}
 
@@ -322,7 +324,7 @@ namespace Engine.ModuleLoader
 				}
 				catch (Exception e)
 				{
-					SynthesisAPI.Runtime.ApiProvider.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
+					Logger.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\n{e}", LogLevel.Error);
 					// TODO unload assembly? return false?
 					continue;
 				}
@@ -374,61 +376,9 @@ namespace Engine.ModuleLoader
 				});
 		}
 
-		private void RerouteConsoleOutput()
+		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
-			var writer = new StreamWriter(newConsoleStream);
-			Console.SetOut(writer);
-
-			var reader = new StreamReader(newConsoleStream);
-			bool firstUse = true;
-			Task.Run(() =>
-			{
-				while (true)
-				{
-					if (newConsoleStream.Position != lastConsoleStreamPos)
-					{
-						if (firstUse)
-						{
-							SynthesisAPI.Runtime.ApiProvider.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
-							firstUse = false;
-						}
-						writer.Flush();
-						var pos = newConsoleStream.Position;
-						newConsoleStream.Position = lastConsoleStreamPos;
-
-						SynthesisAPI.Runtime.ApiProvider.Log(reader.ReadToEnd());
-
-						lastConsoleStreamPos = pos;
-						newConsoleStream.Position = pos;
-					}
-				}
-			});
-		}
-
-		private class ApiProvider : IApiProvider
-		{
-			private GameObject _entityParent;
-			private Dictionary<Entity, GameObject> _gameObjects;
-			private readonly Dictionary<Type, Type> _builtins;
 			private bool debugLogsEnabled = true;
-
-			public ApiProvider()
-			{
-				_entityParent = new GameObject("Entities");
-				_gameObjects = new Dictionary<Entity, GameObject>();
-				_builtins = new Dictionary<Type, Type>
-				{
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
-					{typeof(SynthesisAPI.EnvironmentManager.Components.AudioSource), typeof(AudioSourceAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider), typeof(MeshColliderAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.HingeJoint), typeof(HingeJointAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.FixedJoint), typeof(FixedJointAdapter) }
-				};
-			}
 
 			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
@@ -469,20 +419,75 @@ namespace Engine.ModuleLoader
 			{
 				debugLogsEnabled = enable;
 			}
+		}
+		private void RerouteConsoleOutput()
+		{
+			var writer = new StreamWriter(newConsoleStream);
+			Console.SetOut(writer);
+
+			var reader = new StreamReader(newConsoleStream);
+			bool firstUse = true;
+			Task.Run(() =>
+			{
+				while (true)
+				{
+					if (newConsoleStream.Position != lastConsoleStreamPos)
+					{
+						if (firstUse)
+						{
+							Logger.Log("Please use ApiProvider.Log intsead of Console.WriteLine", LogLevel.Warning);
+							firstUse = false;
+						}
+						writer.Flush();
+						var pos = newConsoleStream.Position;
+						newConsoleStream.Position = lastConsoleStreamPos;
+
+						Logger.Log(reader.ReadToEnd());
+
+						lastConsoleStreamPos = pos;
+						newConsoleStream.Position = pos;
+					}
+				}
+			});
+		}
+			
+		public static class ApiProviderData
+		{
+			public static GameObject EntityParent { get; set; }
+			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+		}
+
+		private class ApiProviderImpl : IApiProvider
+		{
+			private readonly Dictionary<Type, Type> _builtins;
+
+			public ApiProviderImpl()
+			{
+				ApiProviderData.EntityParent = new GameObject("Entities");
+				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
+				_builtins = new Dictionary<Type, Type>
+				{
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
+				};
+			}
 
 			public void AddEntityToScene(Entity entity)
 			{
-				if (_gameObjects.ContainsKey(entity))
+				if (ApiProviderData.GameObjects.ContainsKey(entity))
 					throw new Exception($"Entity \"{entity}\" already exists");
-				var gameObject = new GameObject($"Entity {entity.GetIndex()}");
-				gameObject.transform.SetParent(_entityParent.transform);
-				_gameObjects.Add(entity, gameObject);
+				var gameObject = new GameObject($"Entity {entity.Index}");
+				gameObject.transform.SetParent(ApiProviderData.EntityParent.transform);
+				ApiProviderData.GameObjects.Add(entity, gameObject);
 			}
 
 			public void RemoveEntityFromScene(Entity entity)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				Destroy(gameObject);
 			}
@@ -490,7 +495,7 @@ namespace Engine.ModuleLoader
 			public Component AddComponentToScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				dynamic component;
 				Type type;
@@ -534,10 +539,35 @@ namespace Engine.ModuleLoader
 				return component;
 			}
 
+			public void AddComponentToScene(Entity entity, Component component)
+			{
+				GameObject gameObject;
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
+					throw new Exception($"Entity \"{entity}\" does not exist");
+				Type componentType = component.GetType();
+				Type type;
+				if (_builtins.ContainsKey(componentType))
+				{
+					type = _builtins[componentType];
+				}
+				else if (componentType.IsSubclassOf(typeof(SystemBase)))
+				{
+					type = typeof(SystemAdapter);
+				}
+				else
+				{
+					type = typeof(ComponentAdapter);
+				}
+
+				dynamic gameObjectComponent = gameObject.AddComponent(type);
+				dynamic c = component; //runtime cast
+				gameObjectComponent.SetInstance(c);
+			}
+
 			public void RemoveComponentFromScene(Entity entity, Type t)
 			{
 				GameObject gameObject;
-				if (!_gameObjects.TryGetValue(entity, out gameObject))
+				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
 				Type type;
 				if (_builtins.ContainsKey(t))

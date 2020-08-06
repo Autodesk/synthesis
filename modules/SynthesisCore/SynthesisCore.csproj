@@ -18,6 +18,9 @@
     <Reference Include="Api">
       <HintPath>..\..\api\Api\bin\Debug\netstandard2.0\Api.dll</HintPath>
     </Reference>
+    <Reference Include="Api">
+      <HintPath>..\..\api\Api\bin\Debug\netstandard2.0\Api.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

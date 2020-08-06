@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SynthesisAPI.Utilities;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -15,76 +17,119 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
         #region Properties
 
-        // These delegates will be setup by the Adapter
-        internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
-        internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not assigned");
-
-        private void Set(string name, object obj) => LinkedSetter(name, obj);
-        private T Get<T>(string name) => (T)LinkedGetter(name);
-
         public delegate void CollisionFeedback(float magn);
         public CollisionFeedback OnEnterCollision = m => { };
 
-        public bool useGravity {
-            get => Get<bool>("useGravity");
-            set => Set("useGravity", value);
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal bool useGravity = true;
+        public bool UseGravity {
+            get => useGravity;
+            set {
+                useGravity = value;
+                OnPropertyChanged();
+            }
         }
+        internal bool isKinematic = false;
         /// <summary>
         /// Essentially toggle for physics. When Kinematic physical forces won't apply to this body
         /// </summary>
         public bool IsKinematic {
-            get => Get<bool>("isKinematic");
-            set => Set("isKinematic", value);
+            get => isKinematic;
+            set {
+                isKinematic = value;
+                OnPropertyChanged();
+            }
         }
+        internal float mass = 1.0f;
         /// <summary>
         /// Mass of body in kilograms
         /// </summary>
         public float Mass {
-            get => Get<float>("mass");
-            set => Set("mass", value < 0.001f ? 0.001f : value);
+            get => mass;
+            set {
+                mass = value < 0.0001f ? 0.0001f : value;
+                OnPropertyChanged();
+            }
         }
+        internal Vector3D velocity = new Vector3D(0, 0, 0);
         /// <summary>
         /// Velocity of body in meters/second
         /// </summary>
         public Vector3D Velocity {
-            get => Get<Vector3D>("velocity");
-            set => Set("velocity", value);
+            get => velocity;
+            set {
+                velocity = value; // TODO: Validate?
+                OnPropertyChanged();
+            }
         }
+        internal float drag = 0.0f;
         /// <summary>
         /// Linear drag coefficent of the body
         /// </summary>
         public float Drag {
-            get => Get<float>("drag");
-            set => Set("drag", value);
+            get => drag;
+            set {
+                drag = value; // TODO: Validate?
+                OnPropertyChanged();
+            }
         }
+        internal Vector3D angularVelocity = new Vector3D(0, 0, 0);
         /// <summary>
         /// Angular velocity of the body in radians/second
         /// </summary>
         public Vector3D AngularVelocity {
-            get => Get<Vector3D>("angularVelocity");
-            set => Set("angularVelocity", value);
+            get => angularVelocity;
+            set {
+                angularVelocity = value; // TODO: Validate?
+                OnPropertyChanged();
+            }
         }
+        internal float angularDrag = 0.05f;
         /// <summary>
         /// Angular drag coefficent of the body
         /// </summary>
         public float AngularDrag {
-            get => Get<float>("angularDrag");
-            set => Set("angularDrag", value);
+            get => angularDrag;
+            set {
+                angularDrag = value; // TODO: Validate?
+                OnPropertyChanged();
+            }
         }
+        internal float maxAngularVelocity = 7.0f;
         public float MaxAngularVelocity {
-            get => Get<float>("maxangularvelocity");
-            set => Set("maxangularvelocity", value);
+            get => maxAngularVelocity;
+            set {
+                maxAngularVelocity = value > 0.0f ? value : 0.0f;
+                OnPropertyChanged();
+            }
         }
+        internal float maxDepenetrationVelocity = 30.0f; // I don't know what the default is
         public float MaxDepenetrationVelocity {
-            get => Get<float>("maxdepenetrationvelocity");
-            set => Set("maxdepenetrationvelocity", value);
+            get => maxDepenetrationVelocity;
+            set {
+                maxDepenetrationVelocity = value; // TODO: Validate?
+                OnPropertyChanged();
+            }
         }
+        internal CollisionDetectionMode collisionDetectionMode = CollisionDetectionMode.Discrete;
         /// <summary>
         /// 
         /// </summary>
         public CollisionDetectionMode CollisionDetectionMode {
-            get => Get<CollisionDetectionMode>("collisionDetectionMode");
-            set => Set("collisionDetectionMode", value);
+            get => collisionDetectionMode;
+            set {
+                collisionDetectionMode = value;
+                OnPropertyChanged();
+            }
+        }
+        internal RigidbodyConstraints constraints = RigidbodyConstraints.None;
+        public RigidbodyConstraints Constraints {
+            get => constraints;
+            set {
+                constraints = value;
+                OnPropertyChanged();
+            }
         }
 
         #endregion
@@ -122,6 +167,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
         internal void ProcessedChanges() => Changed = false;
 
         private TResult ConvertEnum<TResult>(object i) => (TResult)Enum.Parse(typeof(TResult), i.ToString(), true);
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     #region Enums

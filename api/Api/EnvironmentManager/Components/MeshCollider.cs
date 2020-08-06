@@ -2,6 +2,8 @@
 using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
@@ -11,36 +13,48 @@ namespace SynthesisAPI.EnvironmentManager.Components
     {
         #region Properties
 
-        internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
-        internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not assigned");
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        private void Set(string name, object obj) => LinkedSetter(name, obj);
-        private T Get<T>(string name) => (T)LinkedGetter(name);
-
+        internal bool convex = true;
         /// <summary>
         /// This is just here so when it detects changes it will default this
         /// </summary>
         public bool Convex {
-            get => Get<bool>("convex");
-            set => Set("convex", value);
+            get => convex;
         }
+        internal MeshColliderCookingOptions cookingOptions = MeshColliderCookingOptions.UseFastMidphase
+            | MeshColliderCookingOptions.CookForFasterSimulation | MeshColliderCookingOptions.EnableMeshCleaning
+            | MeshColliderCookingOptions.WeldColocatedVertices;
         public MeshColliderCookingOptions CookingOptions {
-            get => Get<MeshColliderCookingOptions>("cookingoptions");
-            set => Set("cookingoptions", value);
+            get => cookingOptions;
+            set {
+                cookingOptions = value;
+                OnPropertyChanged();
+            }
         }
+        internal Mesh sharedMesh = null; // If mesh is null, it will attempt to grab from the MeshAdapter
         public Mesh SharedMesh {
-            get => Get<Mesh>("sharedmesh");
-            set => Set("sharedmesh", value);
+            get => sharedMesh;
+            set {
+                sharedMesh = value;
+                OnPropertyChanged();
+            }
         }
+        internal PhysicsMaterial material = new PhysicsMaterial(); // TODO: Some default friction and bounce values?
         public PhysicsMaterial Material {
-            get => Get<PhysicsMaterial>("material");
-            set => Set("material", value);
+            get => material;
+            set {
+                material = value;
+                OnPropertyChanged();
+            }
         }
 
         #endregion
 
-        internal bool Changed { get; private set; } = true;
-        internal void ProcessedChanges() => Changed = false;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     public enum MeshColliderCookingOptions

@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Utilities;
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine.UIElements;
@@ -6,18 +7,16 @@ using Component = SynthesisAPI.EnvironmentManager.Component;
 
 namespace SynthesisAPI.Runtime
 {
-    public interface IApiProvider
+	internal interface IApiProvider
 	{
-		void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0);
-
-		void SetEnableDebugLogs(bool enable);
-
 		void AddEntityToScene(Entity entity);
 
 		void RemoveEntityFromScene(Entity entity);
 
 		#nullable enable
 		Component? AddComponentToScene(Entity entity, Type t);
+
+		void AddComponentToScene(Entity entity, Component component);
 
 		void RemoveComponentFromScene(Entity entity, Type t);
 

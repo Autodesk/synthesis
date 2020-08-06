@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.Runtime;
+﻿using System.ComponentModel;
+using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using System;
 using UnityEngine;
 
@@ -12,77 +14,48 @@ namespace Engine.ModuleLoader.Adapters
         internal UnityEngine.FixedJoint unityJoint;
         internal FixedJoint instance;
 
-        private void OnEnable()
-        {
-            if (instance == null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if ((unityJoint = GetComponent<UnityEngine.FixedJoint>()) == null)
-                unityJoint = gameObject.AddComponent<UnityEngine.FixedJoint>();
-
-            instance.LinkedSetter = Setter;
-            instance.LinkedGetter = Getter;
-
-            // Tod
-        }
-
-        private object Getter(string n)
-        {
-            if (unityJoint == null)
-            {
-                ApiProvider.Log("Joint is broken, cannot get", LogLevel.Debug);
-            }
-
-            switch (n.ToLower())
-            {
-                case "connectedbody":
-                    if (unityJoint.connectedBody != null)
-                        return unityJoint.connectedBody.gameObject.GetComponent<RigidbodyAdapter>().instance;
-                    else
-                        return null;
-                case "breakforce":
-                    return unityJoint.breakForce;
-                case "breaktorque":
-                    return unityJoint.breakTorque;
-                case "enablecollision":
-                    return unityJoint.enableCollision;
-                default:
-                    throw new Exception($"Property {n} not supported");
-            }
-        }
-        private void Setter(string n, object o)
-        {
-            if (unityJoint == null)
-            {
-                ApiProvider.Log("Joint is broken, cannot set", LogLevel.Debug);
-            }
-
-            switch (n.ToLower())
-            {
-                case "connectedbody":
-                    unityJoint.connectedBody = ((RigidbodyAdapter)((Rigidbody)o).Adapter).unityRigidbody;
-                    break;
-                case "breakforce":
-                    unityJoint.breakForce = (float)o;
-                    break;
-                case "breaktorque":
-                    unityJoint.breakTorque = (float)o;
-                    break;
-                case "enablecollision":
-                    unityJoint.enableCollision = (bool)o;
-                    break;
-                default:
-                    throw new Exception($"Property {n} not supported");
-            }
-        }
-
         public void SetInstance(FixedJoint joint)
         {
             instance = joint;
-            gameObject.SetActive(true);
+            if ((unityJoint = GetComponent<UnityEngine.FixedJoint>()) == null)
+                unityJoint = gameObject.AddComponent<UnityEngine.FixedJoint>();
+
+            instance.PropertyChanged += UpdateProperty;
+
+            unityJoint.axis = instance.axis.Map();
+            unityJoint.anchor = instance.anchor.Map();
+        }
+
+        private void UpdateProperty(object sender, PropertyChangedEventArgs args)
+        {
+            if (unityJoint == null)
+            {
+                SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Debug);
+            }
+
+            switch (args.PropertyName.ToLower())
+            {
+                case "axis":
+                    unityJoint.axis = instance.axis.Map();
+                    break;
+                case "anchor":
+                    unityJoint.anchor = instance.anchor.Map();
+                    break;
+                case "connectedbody":
+                    unityJoint.connectedBody = ((RigidbodyAdapter)instance.connectedBody.Adapter).unityRigidbody;
+                    break;
+                case "breakforce":
+                    unityJoint.breakForce = instance.breakForce;
+                    break;
+                case "breaktorque":
+                    unityJoint.breakTorque = instance.breakTorque;
+                    break;
+                case "enablecollision":
+                    unityJoint.enableCollision = instance.enableCollision;
+                    break;
+                default:
+                    throw new Exception($"Property {args.PropertyName} not supported");
+            }
         }
 
         public static FixedJoint NewInstance() => new FixedJoint();

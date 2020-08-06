@@ -10,6 +10,7 @@ using Rigidbody = SynthesisAPI.EnvironmentManager.Components.Rigidbody;
 using ConfigurableJointMotion = SynthesisAPI.EnvironmentManager.Components.ConfigurableJointMotion;
 using JointLimits = SynthesisAPI.EnvironmentManager.Components.JointLimits;
 using JointMotor = SynthesisAPI.EnvironmentManager.Components.JointMotor;
+using System.ComponentModel;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -19,116 +20,78 @@ namespace Engine.ModuleLoader.Adapters
         internal HingeJoint instance;
         internal UnityEngine.HingeJoint unityJoint;
 
-        private void OnEnable()
-        {
-            if (instance == null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            if ((unityJoint = GetComponent<UnityEngine.HingeJoint>()) == null)
-                unityJoint = gameObject.AddComponent<UnityEngine.HingeJoint>();
-
-            instance.LinkedGetter = Getter;
-            instance.LinkedSetter = Setter;
-
-            // unityJoint.lim
-
-            // TOOD
-        }
-
-        public object Getter(string n)
-        {
-            if (unityJoint == null)
-            {
-                ApiProvider.Log("Joint is broken, cannot get", LogLevel.Debug);
-            }
-
-            switch (n.ToLower())
-            {
-                case "anchor":
-                    return unityJoint.anchor.Map();
-                case "axis":
-                    return unityJoint.axis.Map();
-                case "breakforce":
-                    return unityJoint.breakForce;
-                case "breaktorque":
-                    return unityJoint.breakTorque;
-                case "connectedbody":
-                    if (unityJoint.connectedBody == null)
-                        return null;
-                    else
-                        return unityJoint.connectedBody.gameObject.GetComponent<RigidbodyAdapter>().instance; // TODO
-                case "enablecollision":
-                    return unityJoint.enableCollision;
-                case "uselimits":
-                    return unityJoint.useLimits;
-                // case ""
-                case "limits":
-                    return new JointLimits(unityJoint.limits);
-                case "velocity":
-                    return unityJoint.velocity;
-                case "angle":
-                    return unityJoint.angle;
-                case "usemotor":
-                    return unityJoint.useMotor;
-                case "motor":
-                    return new JointMotor(unityJoint.motor);
-                default:
-                    throw new Exception($"Property {n} not supported");
-            }
-        }
-
-        public void Setter(string n, object o)
-        {
-            if (unityJoint == null)
-            {
-                ApiProvider.Log("Joint is broken, cannot set", LogLevel.Debug);
-            }
-
-            switch (n.ToLower())
-            {
-                case "anchor":
-                    unityJoint.anchor = ((Vector3D)o).Map();
-                    break;
-                case "axis":
-                    unityJoint.axis = ((Vector3D)o).Map();
-                    break;
-                case "breakforce":
-                    unityJoint.breakForce = (float)o;
-                    break;
-                case "breakTorque":
-                    unityJoint.breakTorque = (float)o;
-                    break;
-                case "connectedbody":
-                    // TODO
-                    unityJoint.connectedBody = ((RigidbodyAdapter)((Rigidbody)o).Adapter).unityRigidbody;
-                    break;
-                case "enablecollision":
-                    unityJoint.enableCollision = (bool)o;
-                    break;
-                case "uselimits":
-                    unityJoint.useLimits = (bool)o;
-                    break;
-                case "limits":
-                    unityJoint.limits = ((JointLimits)o).GetUnity();
-                    break;
-                case "usemotor":
-                    unityJoint.useMotor = (bool)o;
-                    break;
-                case "motor":
-                    unityJoint.motor = ((JointMotor)o).GetUnity();
-                    break;
-                default:
-                    throw new Exception($"Property {n} not supported");
-            }
-        }
-
         public void SetInstance(HingeJoint joint)
         {
             instance = joint;
-            gameObject.SetActive(true);
+            
+            if ((unityJoint = GetComponent<UnityEngine.HingeJoint>()) == null)
+                unityJoint = gameObject.AddComponent<UnityEngine.HingeJoint>();
+
+            instance.PropertyChanged += UpdateProperty;
+
+            // Init all variables
+
+            unityJoint.anchor = instance.anchor.Map();
+            unityJoint.axis = instance.axis.Map();
+            unityJoint.breakForce = instance.breakForce;
+            unityJoint.breakTorque = instance.breakTorque;
+            unityJoint.connectedBody = ((RigidbodyAdapter)instance.connectedBody?.Adapter).unityRigidbody;
+            unityJoint.enableCollision = instance.enableCollision;
+            unityJoint.useLimits = instance.useLimits;
+            unityJoint.limits = instance.limits.GetUnity();
+            unityJoint.useMotor = instance.useMotor;
+            unityJoint.motor = instance.motor.GetUnity();
+        }
+
+        public void UpdateProperty(object sender, PropertyChangedEventArgs args)
+        {
+            if (unityJoint == null)
+            {
+                // TODO: Need to do something else if joint breaks
+                SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Debug);
+            }
+
+            switch (args.PropertyName.ToLower())
+            {
+                case "anchor":
+                    unityJoint.anchor = instance.anchor.Map();
+                    break;
+                case "axis":
+                    unityJoint.axis = instance.axis.Map();
+                    break;
+                case "breakforce":
+                    unityJoint.breakForce = instance.breakForce;
+                    break;
+                case "breakTorque":
+                    unityJoint.breakTorque = instance.breakTorque;
+                    break;
+                case "connectedbody":
+                    // TODO
+                    unityJoint.connectedBody = ((RigidbodyAdapter)instance.connectedBody.Adapter).unityRigidbody;
+                    break;
+                case "enablecollision":
+                    unityJoint.enableCollision = instance.enableCollision;
+                    break;
+                case "uselimits":
+                    unityJoint.useLimits = instance.useLimits;
+                    break;
+                case "limits":
+                    unityJoint.limits = instance.limits.GetUnity();
+                    break;
+                case "usemotor":
+                    unityJoint.useMotor = instance.useMotor;
+                    break;
+                case "motor":
+                    unityJoint.motor = instance.motor.GetUnity();
+                    break;
+                default:
+                    throw new Exception($"Property {args.PropertyName} not supported");
+            }
+        }
+
+        public void Update() {
+            instance.velocity = unityJoint.velocity;
+            instance.angle = unityJoint.angle;
         }
 
         public static HingeJoint NewInstance() => new HingeJoint();

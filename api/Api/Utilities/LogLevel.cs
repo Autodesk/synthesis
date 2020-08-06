@@ -1,4 +1,4 @@
-﻿namespace SynthesisAPI.Runtime
+﻿namespace SynthesisAPI.Utilities
 {
     public enum LogLevel
     {

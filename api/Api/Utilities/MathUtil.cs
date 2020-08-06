@@ -175,5 +175,7 @@ namespace SynthesisAPI.Utilities
 		public static UnityEngine.Vector2 Map(this Vector2D vec) => MapVector2D(vec);
 		public static UnityEngine.Vector3 Map(this Vector3D vec) => MapVector3D(vec);
 		public static UnityEngine.Quaternion Map(this Quaternion quat) => MapQuaternion(quat);
+
+		public static Vector3D ToMathNet(this System.Numerics.Vector3 vec) => new Vector3D(vec.X, vec.Y, vec.Z);
 	}
 }
