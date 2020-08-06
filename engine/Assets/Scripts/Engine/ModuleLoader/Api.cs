@@ -43,7 +43,7 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
-            ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new LoggerImpl());
 			LoadApi();
 			LoadModules();
@@ -58,23 +58,31 @@ namespace Engine.ModuleLoader
 			}
 
 			var modules = PreloadModules();
-			ResolveDependencies(modules);
-
-			foreach (var (archive, metadata) in modules)
+			try
 			{
-				try
+				ResolveDependencies(modules);
+
+				foreach (var (archive, metadata) in modules)
 				{
 					LoadModule((archive, metadata));
+
+					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
+					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
 				}
-				catch (Exception e)
+				ModuleManager.MarkFinishedLoading();
+			}
+			catch (Exception e)
+			{
+				// TODO error screen
+				throw e;
+			}
+			finally
+			{
+				foreach (var (archive, _) in modules)
 				{
 					archive.Dispose();
-					throw e; // TODO should we stop loading all modules? Error screen?
 				}
-				EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
-				ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
 			}
-			ModuleManager.MarkFinishedLoading();
 		}
 
 		private List<PreloadedModule> PreloadModules()
@@ -91,10 +99,18 @@ namespace Engine.ModuleLoader
 				{
 					if (metadata.Name == module?.Item2.Name)
 					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
 						throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
 					}
 					if (metadata.TargetPath == module?.Item2.TargetPath)
 					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
 						throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
 					}
 				}
@@ -235,7 +251,6 @@ namespace Engine.ModuleLoader
 			{
 				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
 			}
-			moduleInfo.archive.Dispose();
 		}
 
 		private bool LoadApi()
@@ -462,7 +477,7 @@ namespace Engine.ModuleLoader
 				}
 			});
 		}
-			
+
 		public static class ApiProviderData
 		{
 			public static GameObject EntityParent { get; set; }
