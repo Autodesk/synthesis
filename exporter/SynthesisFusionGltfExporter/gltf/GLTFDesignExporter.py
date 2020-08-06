@@ -10,7 +10,10 @@ import adsk.core
 import adsk.fusion
 from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
 
+from google.protobuf.json_format import MessageToDict
+
 from apper import AppObjects
+from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
 from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
 from .utils.GLTFUtils import isEmptyLeafNode
 from .utils.pyutils.counters import EventCounter
@@ -402,6 +405,11 @@ class GLTFDesignExporter(object):
 
         if len(mesh.primitives) == 0:
             return
+
+        try:
+            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bodyList]))
+        except:
+            self.warnings.append(f"Unable to get physical properties for component {mesh.name}")
 
         self.componentRevIdToMeshTemplate[revisionId] = mesh
         self.componentRevIdToMatOverrideDict[revisionId] = {}
