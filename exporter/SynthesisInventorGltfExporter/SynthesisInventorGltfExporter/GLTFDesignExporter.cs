@@ -81,6 +81,12 @@ namespace SynthesisInventorGltfExporter
                 ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
             } catch {}
 
+            try
+            {
+                var asset = (JObject) parsedJToken.GetValue("asset");
+                asset.Property("generator").Value = "Autodesk.Synthesis.Inventor";
+            } catch { }
+
             var readSettings = new ReadSettings();
             readSettings.FileReader = assetFileName => dictionary[assetFileName];
             var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);

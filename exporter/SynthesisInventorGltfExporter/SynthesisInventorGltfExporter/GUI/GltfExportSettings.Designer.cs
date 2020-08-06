@@ -136,6 +136,7 @@
             // 
             // comboFileType
             // 
+            this.comboFileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboFileType.FormattingEnabled = true;
             this.comboFileType.Items.AddRange(new object[] {"Binary (.glb)", "JSON (.gltf)"});
             this.comboFileType.Location = new System.Drawing.Point(186, 136);
