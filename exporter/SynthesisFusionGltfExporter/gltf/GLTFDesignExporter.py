@@ -25,17 +25,15 @@ from .extras.ExportJoints import exportJoints
 
 
 
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, useGlb = True):
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType:str = "glb", quality="8"):
     ao = AppObjects()
 
     if ao.document.dataFile is None:
         ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
         return
 
-    start = time.perf_counter()
-    startRealtime = time.time()
-
-    exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly)
+    exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality)
+    useGlb = fileType == "glb"
     if showFileDialog:
         dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
         dialog.filter = "glTF Binary (*.glb)" if useGlb else "glTF JSON (*.gltf)"
@@ -54,11 +52,9 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
     if exportResults is None:
         ao.ui.messageBox(f"The glTF export was cancelled.")
         return
-    perfResults, bufferResults, warnings, modelStats, eventCounter = exportResults
+    perfResults, bufferResults, warnings, modelStats, eventCounter, duration = exportResults
 
-    end = time.perf_counter()
-    endRealtime = time.time()
-    finishedMessageDebug = (f"glTF export completed in {round(end - start, 4)} seconds ({round(endRealtime - startRealtime, 4)} realtime)\n"
+    finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                        f"File saved to {filePath}\n\n"
                        f"==== Export Performance Results ====\n"
                        f"{perfResults}\n"
@@ -72,7 +68,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
                        f"{warnings}\n"
                        )
     print(finishedMessageDebug)
-    finishedMessage = f"glTF export completed successfully in {round(end - start, 4)} seconds.\nFile saved to: {filePath}"
+    finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
     ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
 
 
@@ -138,12 +134,13 @@ class GLTFDesignExporter(object):
 
     warnings: List[str]
 
-    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly = True):  # todo: allow the export of designs besides the one in the foreground?
+    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly = True, quality: str = "8"):  # todo: allow the export of designs besides the one in the foreground?
         self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
         self.enableFaceMaterials = enableFaceMaterials
         self.ao = ao
+        self.meshQuality = int(quality)
 
         self.warnings = []
 
@@ -211,6 +208,8 @@ class GLTFDesignExporter(object):
                 pass
             else: # no
                 return
+
+        start = time.perf_counter()
 
         self.defaultAppearance = self.getDefaultAppearance()
 
@@ -289,7 +288,10 @@ class GLTFDesignExporter(object):
 
         if len(self.warnings) == 0:
             self.warnings.append("None :)")
-        return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter)
+
+        end = time.perf_counter()
+
+        return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter), round(end - start, 4)
 
     def exportScene(self) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.
@@ -463,7 +465,7 @@ class GLTFDesignExporter(object):
         meshCalculator = fusionBRep.meshManager.createMeshCalculator()
         if meshCalculator is None:
             return None
-        meshCalculator.setQuality(11)  # todo mesh quality settings
+        meshCalculator.setQuality(self.meshQuality)  # todo mesh quality settings
 
         self.perfWatch.switch_segment('calculating meshes')
         mesh = meshCalculator.calculate()
