@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Modules;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
@@ -33,23 +34,17 @@ namespace SynthesisCore.Systems
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
 
-            Button environmentsButton = (Button)UIManager.RootElement.Get("environments-button");
-            environmentsButton.Subscribe(x =>
-            {
-                UIManager.TogglePanel("Environments");
-            });
+            Button environmentsButton = (Button) UIManager.RootElement.Get("environments-button");
+            environmentsButton.Subscribe(x => UIManager.TogglePanel("Environments"));
 
-            Button modulesButton = (Button)UIManager.RootElement.Get("modules-button");
-            modulesButton.Subscribe(x =>
-            {
-                UIManager.TogglePanel("Modules");
-            });
+            Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
+            modulesButton.Subscribe(x => UIManager.TogglePanel("Modules"));
 
-            Button settingsButton = (Button)UIManager.RootElement.Get("settings-button");
-            settingsButton.Subscribe(x =>
-            {
-                UIManager.TogglePanel("Settings");
-            });
+            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
+            settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
+
+            Button helpButton = (Button) UIManager.RootElement.Get("help-button");
+            helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
         }
 
         private void RegisterOKCloseButtons(VisualElement visualElement, string panelName)

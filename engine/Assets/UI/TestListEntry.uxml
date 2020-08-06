@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="list-entry" style="height: 30px; justify-content: space-around; align-items: center;">
-        <ui:Label text="Label" name="test-label" style="font-size: 25px;" />
-    </ui:VisualElement>
-</ui:UXML>
