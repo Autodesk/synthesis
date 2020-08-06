@@ -16,5 +16,10 @@
 		/// Called on physics update
 		/// </summary>
 		public abstract void OnPhysicsUpdate();
+
+		/// <summary>
+		/// Called once to teardown the SystemBase
+		/// </summary>
+		public abstract void Teardown();
 	}
 }

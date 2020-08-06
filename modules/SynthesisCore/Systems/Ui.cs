@@ -67,5 +67,7 @@ namespace SynthesisCore.Systems
         public override void OnPhysicsUpdate() { }
 
         public override void OnUpdate() { }
+
+        public override void Teardown() { }
     }
 }

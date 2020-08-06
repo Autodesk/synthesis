@@ -23,6 +23,8 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void FixedUpdate() => _system.OnPhysicsUpdate();
 
+		public void OnDestroy() => _system.Teardown();
+
 		public void SetInstance(SystemBase instance)
 		{
 			_system = instance;

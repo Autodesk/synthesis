@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
-using SynthesisAPI.AssetManager;
-using SynthesisAPI.DevelopmentTools;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.InputEvents;
-using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
+
+#nullable enable
 
 namespace SynthesisCore
 {
@@ -23,6 +18,7 @@ namespace SynthesisCore
         {
             Entity e = EnvironmentManager.AddEntity();
 
+            /*
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             var _m1 = new ProfilerMarker();
             Bundle o = g.Parse();
@@ -30,13 +26,22 @@ namespace SynthesisCore
             var _m2 = new ProfilerMarker();
             e.AddBundle(o);
             Logger.Log($"Spawn Time: {_m2.TimeSinceCreation.TotalMilliseconds}");
+            */
+
+            e.AddComponent<Transform>();
+            e.AddComponent<Selectable>();
+            e.AddComponent<Moveable>().Channel = 5;
+            Mesh m = e.AddComponent<Mesh>();
+            cube(m);
         }
 
         public override void OnUpdate() { }
 
-        private Mesh cube()
+        private Mesh cube(Mesh? m)
         {
-            Mesh m = new Mesh();
+            if (m == null)
+                m = new Mesh();
+
             m.Vertices = new List<Vector3D>()
             {
                 new Vector3D(0,0,0),
@@ -65,6 +70,8 @@ namespace SynthesisCore
             };
             return m;
         }
+
+        public override void Teardown() { }
 
         /*
         [TaggedCallback("input/move")]

@@ -1,7 +1,13 @@
 .vs/
 .DS_Store
 **/*/.idea/
-*.dll
-*.dll.meta
 !engine/CoreEngine/Assets/Api.dll
 !engine/CoreEngine/Assets/Api.dll.meta
+
+# Binary
+*.exe
+*.exe.stackdump
+*.a
+*.dll
+*.dll.meta
+*.so

@@ -43,7 +43,7 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
-            ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new LoggerImpl());
 			LoadApi();
 			LoadModules();
@@ -58,15 +58,31 @@ namespace Engine.ModuleLoader
 			}
 
 			var modules = PreloadModules();
-			ResolveDependencies(modules);
-
-			foreach (var (arhive, metadata) in modules)
+			try
 			{
-				LoadModule((arhive, metadata));
-				EventBus.Push(new LoadModuleEvent(metadata.Name));
-				ModuleManager.AddToLoadedModuleList(metadata.Name);
+				ResolveDependencies(modules);
+
+				foreach (var (archive, metadata) in modules)
+				{
+					LoadModule((archive, metadata));
+
+					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
+					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
+				}
+				ModuleManager.MarkFinishedLoading();
 			}
-			ModuleManager.MarkFinishedLoading();
+			catch (Exception e)
+			{
+				// TODO error screen
+				throw e;
+			}
+			finally
+			{
+				foreach (var (archive, _) in modules)
+				{
+					archive.Dispose();
+				}
+			}
 		}
 
 		private List<PreloadedModule> PreloadModules()
@@ -83,10 +99,18 @@ namespace Engine.ModuleLoader
 				{
 					if (metadata.Name == module?.Item2.Name)
 					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
 						throw new LoadModuleException($"Attempting to load module with duplicate name: {metadata.Name}");
 					}
 					if (metadata.TargetPath == module?.Item2.TargetPath)
 					{
+						foreach (var (archive, _) in modules)
+						{
+							archive.Dispose();
+						}
 						throw new LoadModuleException($"Attempting to load modules into same target path: {metadata.TargetPath}");
 					}
 				}
@@ -201,7 +225,6 @@ namespace Engine.ModuleLoader
 				{
 					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
 					{
-						moduleInfo.archive.Dispose();
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
 				}
@@ -211,7 +234,12 @@ namespace Engine.ModuleLoader
 						moduleInfo.metadata.TargetPath + SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar +
 						GetPath(RemovePath(metadataPath, entry.FullName));
 					var perm = Permissions.PublicReadWrite;
-					if (AssetManager.Import(AssetManager.GetTypeFromFileExtension(extension),
+					var type = AssetManager.GetTypeFromFileExtension(extension);
+					if (type == null)
+					{
+						throw new LoadModuleException($"Failed to determine asset type from file extension of asset: {entry.Name}");
+					}
+					else if (AssetManager.Import(type,
 						new DeflateStreamWrapper(stream, entry.Length), targetPath, entry.Name, perm, "") == null)
 					{
 						throw new LoadModuleException($"Failed to import asset: {entry.Name}");
@@ -223,7 +251,6 @@ namespace Engine.ModuleLoader
 			{
 				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
 			}
-			moduleInfo.archive.Dispose();
 		}
 
 		private bool LoadApi()
@@ -450,7 +477,7 @@ namespace Engine.ModuleLoader
 				}
 			});
 		}
-			
+
 		public static class ApiProviderData
 		{
 			public static GameObject EntityParent { get; set; }

@@ -54,10 +54,12 @@ namespace Controller
         public static async Task<T> InvokeAsync<T>(string methodName, params object[] args)
         {
             var result = await MakeRequestAsync(methodName, args);
+            /*
             if (!result.HasResult)
             {
                 throw new Exception($"Method {methodName} did not return result");
             }
+            */
             object value = result.Result;
             if(value.GetType() != typeof(T))
             {
@@ -70,10 +72,12 @@ namespace Controller
         {
             var result = await MakeRequestAsync(methodName, args);
 
+            /*
             if (result.HasResult)
             {
                 ApiProvider.Log($"Discarding result value from call to {methodName}", LogLevel.Warning);
             }
+            */
             return;
         }
 
@@ -96,7 +100,7 @@ namespace Controller
             }
             if (result.Error != null)
             {
-                throw result.Error;
+                throw new Exception(result.Error?.Message);
             }
             return result;
         }

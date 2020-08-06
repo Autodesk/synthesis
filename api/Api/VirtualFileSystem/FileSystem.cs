@@ -148,7 +148,7 @@ namespace SynthesisAPI.VirtualFileSystem
             var (top, actualPath) = Directory.GetTopDirectory(path);
             if (top != Instance.RootNode.Name)
             {
-                throw new DirectroyExpection("Path outside of virtual file system");
+                throw new DirectoryException("Path outside of virtual file system");
             }
             if (path.Length > MaxDirectoryDepth)
             {
@@ -203,7 +203,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 }
                 if(dir == null)
                 {
-                    throw new DirectroyExpection("Failed to create directory");
+                    throw new DirectoryException("Failed to create directory");
                 }
             }
             return dir;

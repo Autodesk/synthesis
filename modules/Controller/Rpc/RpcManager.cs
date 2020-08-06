@@ -22,6 +22,8 @@ namespace Controller.Rpc
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
+        private static bool Initialized = false;
+
         static RpcManager()
         {
             Init();
@@ -29,8 +31,12 @@ namespace Controller.Rpc
 
         public static void Init()
         {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Controller");
-            RegisterAll(assembly);
+            if (!Initialized)
+            {
+                Initialized = true;
+                var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Controller");
+                RegisterAll(assembly);
+            }
         }
 
         public static void RegisterAll(Assembly assembly)
@@ -68,7 +74,7 @@ namespace Controller.Rpc
 
         private static bool IsPrimitive(Type type)
         {
-            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(void))
                 return true;
             if (type.IsArray)
                 return IsPrimitive(type.GetElementType());
@@ -79,16 +85,24 @@ namespace Controller.Rpc
         {
             if (handlers.ContainsKey(methodName))
             {
-                throw new Exception("Registering existing method name");
+                throw new Exception($"Registering method with existing name {methodName}");
             }
-            foreach(var p in handler.GetParameters().Where(p => !IsPrimitive(p.ParameterType)))
+            if (handler.IsGenericMethod)
             {
-                throw new Exception($"Registering method {methodName} parameter {p.Name} with non-primitive type {p.ParameterType.Name}");
+                throw new Exception($"Registering generic method {methodName}");
+            }
+            foreach (var p in handler.GetParameters().Where(p => !IsPrimitive(p.ParameterType)))
+            {
+                throw new Exception($"Registering method {methodName} that has parameter {p.Name} with non-primitive type {p.ParameterType.Name}");
+            }
+            if(!IsPrimitive(handler.ReturnType))
+            {
+                throw new Exception($"Registering method {methodName} that returns non-primitive type {handler.ReturnType.Name}");
             }
             handlers[methodName] = handler;
         }
 
-        public static Result<T, Exception> Invoke<T>(string methodName, params object[] args)
+        public static Result<T, RpcError> Invoke<T>(string methodName, params object[] args)
         {
             return Invoke(methodName, args).MapResult<T>((res) => (T)res);
         }
@@ -117,7 +131,7 @@ namespace Controller.Rpc
                     }
                     else
                     {
-                        throw new Exception("RPC method call missing arguments");
+                        throw new InvalidParams("RPC method call missing arguments");
                     }
                 }
                 else if (param.ParameterType != args[args_i].GetType())
@@ -157,13 +171,13 @@ namespace Controller.Rpc
             return value;
         }
 
-        public static Result<object, Exception> Invoke(string methodName, params object[] args)
+        public static Result<object, RpcError> Invoke(string methodName, params object[] args)
         {
             try
             {
                 if (!handlers.ContainsKey(methodName))
                 {
-                    throw new Exception($"Missing RPC function: {methodName}");
+                    return new Result<object, RpcError>(new MethodNotFound($"Missing RPC function: {methodName}"));
                 }
                 var handler = handlers[methodName];
                 args = FixArguments(handler, args);
@@ -171,13 +185,17 @@ namespace Controller.Rpc
                 if (handler.ReturnType == typeof(void))
                 {
                     handler.Invoke(null, args);
-                    return new Result<object, Exception>(new Void());
+                    return new Result<object, RpcError>(new Void());
                 }
-                return new Result<object, Exception>(handler.Invoke(null, args));
+                return new Result<object, RpcError>(handler.Invoke(null, args));
+            }
+            catch (TargetInvocationException e)
+            {
+                return new Result<object, RpcError>(new InternalError($"Error while calling method {methodName}", e.InnerException));
             }
             catch (Exception e)
             {
-                return new Result<object, Exception>(new Exception($"RPC server failed to invoke {methodName}", e));
+                return new Result<object, RpcError>(new InternalError($"Failed to invoke method {methodName}", e));
             }
         }
 

@@ -97,7 +97,7 @@ namespace Tests
 
                 if (SynthesisAPI.Modules.ModuleManager.IsFinishedLoading)
                 {
-                    var hasTestModule = SynthesisAPI.Modules.ModuleManager.GetLoadedModules().Contains(TestModuleMetadata.Name);
+                    var hasTestModule = SynthesisAPI.Modules.ModuleManager.GetLoadedModules().Contains(new SynthesisAPI.Modules.ModuleManager.ModuleInfo(TestModuleMetadata.Name, TestModuleMetadata.Version));
                     var textAsset = AssetManager.GetAsset<SynthesisAPI.AssetManager.TextAsset>(
                         $"/modules/{TestModuleMetadata.TargetPath}/{TestTextFileFolder}/{TestTextFileName}");
                     var hasTextContents = textAsset != null && textAsset.ReadToEnd() == TestTextFileContents;

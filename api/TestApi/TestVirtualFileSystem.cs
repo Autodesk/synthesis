@@ -18,7 +18,7 @@ namespace TestApi
                 FileSystem.Traverse<Directory>("temp");
                 Assert.Fail();
             }
-            catch (DirectroyExpection e)
+            catch (DirectoryException e)
             {
                 Assert.NotNull(e);
             }

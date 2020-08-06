@@ -18,5 +18,7 @@ namespace SynthesisCore
         {
             InputManager.UpdateInputs();
         }
+
+        public override void Teardown() { }
     }
 }

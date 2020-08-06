@@ -93,6 +93,8 @@ namespace SynthesisCore.Systems
             InputManager.AssignAxis("Mouse Y", new Analog("Mouse Y"));
         }
 
+        public override void Teardown() { }
+
         [TaggedCallback("input/camera_forward")]
         public void CameraForward(DigitalEvent digitalEvent)
         {
