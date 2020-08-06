@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Windows.Forms;
 using Google.Protobuf;
 using Inventor;
 using Newtonsoft.Json;
@@ -16,9 +17,11 @@ using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 using SharpGLTF.Transforms;
 using Synthesis.Gltfextras;
+using Application = Inventor.Application;
 using Asset = Inventor.Asset;
 using Color = Inventor.Color;
 using File = System.IO.File;
+using ProgressBar = Inventor.ProgressBar;
 
 namespace SynthesisInventorGltfExporter
 {
@@ -49,6 +52,9 @@ namespace SynthesisInventorGltfExporter
 
         public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            
             exportTolerance = numericToleranceValue;
             exportHidden = checkHiddenChecked;
             exportFaceMaterials = checkFaceMaterials;
@@ -106,6 +112,10 @@ namespace SynthesisInventorGltfExporter
             }
             Debug.WriteLine("----------");
             progressBar.Close();
+            
+            sw.Stop();
+            
+            MessageBox.Show("glTF export completed successfully in "+sw.Elapsed.TotalSeconds.ToString("N2")+" seconds.\nFile saved to: "+filePath);
         }
 
         private void ExportMassProperties(JArray meshList)
