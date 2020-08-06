@@ -473,7 +473,8 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider), typeof(MeshColliderAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) }
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Joints), typeof(JointsAdapter) }
 				};
 			}
 

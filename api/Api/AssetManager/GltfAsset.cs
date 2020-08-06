@@ -74,11 +74,10 @@ namespace SynthesisAPI.AssetManager
         {
             JsonDictionary extras = (JsonDictionary)model.Extras;
 
-            //todo: Joints
-            //EnvironmentManager.Components.JointCollection jl = new EnvironmentManager.Components.JointCollection();
-            //foreach (JsonDictionary joint in (JsonList)extras["joints"])
-                //jl.Add(ParseJoints(joint));
-            //bundle.Components.Add(jl);
+            EnvironmentManager.Components.Joints jl = new EnvironmentManager.Components.Joints();
+            foreach (JsonDictionary joint in (JsonList)extras["joints"])
+                jl.Add(ParseJoints(joint));
+            bundle.Components.Add(jl);
         }
 
         private void AddComponents(Bundle bundle, Node node, Node parent = null)
@@ -153,23 +152,17 @@ namespace SynthesisAPI.AssetManager
             return t;
         }
 
-        //private Environment.Components.JointCollection.IJoint ParseJoints(JsonDictionary jointDict)
-        //{
-            // todo: Environment.Components.JointCollection.IJoint j = new Environment.Components.JointCollection.IJoint();
+        private EnvironmentManager.Components.IJoint ParseJoints(JsonDictionary jointDict)
+        {
+            EnvironmentManager.Components.IJoint j;
 
             // HEADER
-
-            // todo:
-            // parsing here
-
-            // if (model != null) bundle.Components.Add(ParseJoints(jointDict));
-            //Environment.Components.JointList.Joints j = new Environment.Components.JointList.Joints();
 
             //todo:
             //parsing here
 
-            //return j;
-        //}
+            return null;
+        }
         #endregion
     }
 }

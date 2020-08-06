@@ -1,5 +1,4 @@
-﻿using Api.EnvironmentManager;
-using MathNet.Spatial.Euclidean;
+﻿using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Modules.Attributes;
 using System;
 using System.Collections.Generic;
@@ -9,10 +8,10 @@ using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
-    public class HingeJoint : Component, IJoint, IControllable
+    public class HingeJoint : IJoint
     {
         #region Properties
+        //TODO: Add parent and child body connections
 
         internal Vector3D anchor = new Vector3D(0, 0, 0);
         public Vector3D Anchor {

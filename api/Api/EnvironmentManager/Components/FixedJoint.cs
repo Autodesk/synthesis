@@ -8,8 +8,7 @@ using MathNet.Spatial.Euclidean;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
-    public class FixedJoint : Component, IJoint
+    public class FixedJoint : IJoint
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
