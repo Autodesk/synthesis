@@ -162,7 +162,7 @@
     <Content Include="Resources\RibbonIcons\Gears32.png" />
     <Content Include="Resources\RibbonIcons\JointEditor32.png" />
     <Content Include="Resources\RibbonIcons\Weight32.png" />
-    <Content Include="Unused\InvAppearances.csv" />
+    <Content Include="Unused\InventorAllAppearanceProperties.csv" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
