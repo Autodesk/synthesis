@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using SynthesisAPI.Modules.Attributes;
@@ -17,34 +19,51 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public delegate Vector3D ScaleValidatorDelegate(Vector3D scale);
 
 		public PositionValidatorDelegate PositionValidator = (Vector3D position) => position;
-		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation;
+		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation.Normalized;
 		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
 
-		// These delegates will be setup by the Adapter
-		internal Action<string, object> LinkedSetter = (n, o) => throw new Exception("Setter not assigned");
-		internal Func<string, object> LinkedGetter = n => throw new Exception("Getter not assigned");
+		public event PropertyChangedEventHandler PropertyChanged;
 
-		public Vector3D Position
-		{
-			get => (Vector3D)LinkedGetter("position");
-			set => LinkedSetter("position", PositionValidator(value));
+		internal string name = string.Empty;
+		public string Name {
+			get => name;
+			set {
+				name = value;
+				OnPropertyChanged();
+			}
 		}
 
+		internal Vector3D position = new Vector3D(0, 0, 0);
+		public Vector3D Position
+		{
+			get => position;
+			set {
+				position = PositionValidator(value);
+				OnPropertyChanged();
+			}
+		}
+
+		internal Quaternion rotation = new Quaternion(1, 0, 0, 0);
 		public Quaternion Rotation
 		{
-			get => (Quaternion)LinkedGetter("rotation");
+			get => rotation;
 			set
 			{
 				if (!value.IsUnitQuaternion)
 					Logger.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
-				LinkedSetter("rotation", RotationValidator(value));
+				rotation = RotationValidator(value);
+				OnPropertyChanged();
 			}
 		}
 
+		internal Vector3D scale = new Vector3D(1, 1, 1);
 		public Vector3D Scale
 		{
-			get => (Vector3D)LinkedGetter("localScale");
-			set => LinkedSetter("localScale", ScaleValidator(value));
+			get => scale;
+			set {
+				scale = ScaleValidator(value);
+				OnPropertyChanged();
+			}
 		}
 
 		public void Rotate(UnitVector3D axis, double angle, bool useWorldAxis = false)
@@ -80,6 +99,11 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public void LookAt(Vector3D target)
 		{
 			Rotation = MathUtil.LookAt((target - Position).Normalize());
+		}
+
+		protected void OnPropertyChanged([CallerMemberName] string name = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 		}
 
 		internal bool Changed { get; private set; } = true;

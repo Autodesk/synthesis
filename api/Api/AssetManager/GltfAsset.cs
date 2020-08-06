@@ -52,6 +52,10 @@ namespace SynthesisAPI.AssetManager
         public Bundle Parse()
         {
             if (model == null) return null;
+
+            // Parse all joints into JointCollection components
+            // Store JointCollections in a dictionary using occurence one as the key and a JointCollection as the value
+
             return CreateBundle(model.DefaultScene.VisualChildren.First()); 
         }
 
@@ -77,8 +81,26 @@ namespace SynthesisAPI.AssetManager
                 node.LocalTransform = localTransform;
             }
 
-            bundle.Components.Add(ParseTransform(node.LocalTransform));
-            if (node.Mesh != null) bundle.Components.Add(ParseMesh(node.Mesh, node.LocalTransform.Scale.ToMathNet()));
+            bundle.Components.Add(ParseTransform(node.LocalTransform, node.Name));
+            if (node.Mesh != null)
+            {
+                var sc = node.LocalTransform.Scale;
+                bundle.Components.Add(ParseMesh(node.Mesh, new Vector3D(sc.X, sc.Y, sc.Z)));
+                bundle.Components.Add(ParseMeshCollider());
+                bundle.Components.Add(ParseRigidbody());
+            }
+        }
+
+        private EnvironmentManager.Components.Rigidbody ParseRigidbody() // TODO: Get physical properties (Mass)
+        {
+            EnvironmentManager.Components.Rigidbody rigidbody = new EnvironmentManager.Components.Rigidbody();
+            return rigidbody;
+        }
+
+        private EnvironmentManager.Components.MeshCollider ParseMeshCollider()
+        {
+            EnvironmentManager.Components.MeshCollider collider = new EnvironmentManager.Components.MeshCollider();
+            return collider;
         }
 
         private EnvironmentManager.Components.Mesh ParseMesh(Mesh nodeMesh, Vector3D scaleFactor)
@@ -90,8 +112,8 @@ namespace SynthesisAPI.AssetManager
                 // checks for POSITION or NORMAL vertex as not all designs have both (TODO: This doesn't trip, if it did would we screw up the triangles?)
                 if (primitive.VertexAccessors.ContainsKey("POSITION"))
                 {
-                    Vector3Array vertices = primitive.GetVertices("POSITION").AsVector3Array();
-                    foreach (System.Numerics.Vector3 vertex in vertices)
+                    var vertices = primitive.GetVertices("POSITION").AsVector3Array();
+                    foreach (var vertex in vertices)
                         m.Vertices.Add(new Vector3D(vertex.X * scaleFactor.X, vertex.Y * scaleFactor.Y, vertex.Z * scaleFactor.Z));
                 }
 
@@ -102,15 +124,20 @@ namespace SynthesisAPI.AssetManager
             return m;
         }
 
-        private EnvironmentManager.Components.Transform ParseTransform(SharpGLTF.Transforms.AffineTransform nodeTransform)
+        private EnvironmentManager.Components.Transform ParseTransform(SharpGLTF.Transforms.AffineTransform nodeTransform, string name)
         {
             EnvironmentManager.Components.Transform t = new EnvironmentManager.Components.Transform();
+            t.Name = name;
 
-            t.Rotation = new Quaternion(nodeTransform.Rotation.W, nodeTransform.Rotation.X,
-                nodeTransform.Rotation.Y, nodeTransform.Rotation.Z);
+            //var quat = .Inversed;
+
+            t.Rotation = new Quaternion(nodeTransform.Rotation.W,
+                nodeTransform.Rotation.X, nodeTransform.Rotation.Y, nodeTransform.Rotation.Z);
             t.Position = new Vector3D(nodeTransform.Translation.X * nodeTransform.Scale.X,
                 nodeTransform.Translation.Y * nodeTransform.Scale.Y, nodeTransform.Translation.Z * nodeTransform.Scale.Z);
             //scale is applied directly to vertices -> default 1x
+
+            // t.Rotate(new Vector3D(180, 0, 0));
 
             return t;
         }

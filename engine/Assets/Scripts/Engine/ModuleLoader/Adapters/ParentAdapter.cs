@@ -10,31 +10,23 @@ namespace Engine.ModuleLoader.Adapters
     {
         private Parent instance;
 
-        // Use this for initialization
-        void Awake()
+        public void SetInstance(Parent parent)
         {
+            instance = parent;
 
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (instance.Changed)
+            instance.PropertyChanged += (s, e) =>
             {
-                GameObject parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
-                gameObject.transform.SetParent(parent.transform);
-                instance.ProcessedChanges();
-            }
+                if (e.PropertyName == "ParentEntity")
+                {
+                    GameObject _parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
+                    gameObject.transform.SetParent(_parent.transform);
+                }
+            };
         }
 
         void OnDestroy()
         {
             instance.Entity.Value.RemoveEntity();
-        }
-
-        public void SetInstance(Parent parent)
-        {
-            instance = parent;
         }
 
         public static Parent NewInstance()
