@@ -28,12 +28,10 @@ namespace SynthesisCore.Systems
 
             Logger.RegisterLogger(new ToastLogger());
 
-            Logger.Log("Test log", LogLevel.Debug);
-            Logger.Log("Test log", LogLevel.Info);
-            Logger.Log("Test log", LogLevel.Warning);
-            Logger.Log("Test log", LogLevel.Error);
-            Logger.Log("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", LogLevel.Info);
-            Logger.Log("Test log 2", LogLevel.Info);
+            UIManager.AddTab(engineTab);
+            UIManager.AddPanel(environmentsWindow);
+            UIManager.AddPanel(modulesWindow);
+            UIManager.AddPanel(settingsWindow);
 
             Button environmentsButton = (Button)UIManager.RootElement.Get("environments-button");
             environmentsButton.Subscribe(x =>
