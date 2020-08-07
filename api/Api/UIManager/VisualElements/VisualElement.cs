@@ -47,6 +47,13 @@ namespace SynthesisAPI.UIManager.VisualElements
             return null;
         }
 
+        public IEnumerable<VisualElement> GetChildren() {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+                children.Add(child.GetVisualElement());
+            return children;
+        }
+
         public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
 

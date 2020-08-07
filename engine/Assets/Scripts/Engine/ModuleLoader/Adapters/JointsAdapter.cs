@@ -7,6 +7,7 @@ using HingeJoint = SynthesisAPI.EnvironmentManager.Components.HingeJoint;
 using System.ComponentModel;
 using System;
 using SynthesisAPI.Utilities;
+using UnityEditorInternal;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -20,6 +21,9 @@ namespace Engine.ModuleLoader.Adapters
             instance = joints;
             instance.AddJoint += Add;
             instance.RemoveJoint += Remove;
+            
+            foreach (var joint in instance._joints)
+                Add(joint);
         }
 
         public static Joints NewInstance => new Joints();
@@ -66,11 +70,13 @@ namespace Engine.ModuleLoader.Adapters
 
                 //init
                 //TODO: Add parent and child body connections
+                _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}").AddComponent<UnityEngine.FixedJoint>();
+                
                 _unityJoint.anchor = _joint.anchor.Map();
                 _unityJoint.axis = _joint.axis.Map();
                 _unityJoint.breakForce = _joint.breakForce;
                 _unityJoint.breakTorque = _joint.breakTorque;
-                _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedBody?.Adapter).unityRigidbody;
+                _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedChild?.Adapter).unityRigidbody;
                 _unityJoint.enableCollision = _joint.enableCollision;
             }
             public void Update()
@@ -84,6 +90,7 @@ namespace Engine.ModuleLoader.Adapters
                     SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Debug);
                 }
 
+                // TODO: What should we do about the parent?
                 switch (args.PropertyName.ToLower())
                 {
                     case "axis":
@@ -92,8 +99,8 @@ namespace Engine.ModuleLoader.Adapters
                     case "anchor":
                         _unityJoint.anchor = _joint.anchor.Map();
                         break;
-                    case "connectedbody":
-                        _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedBody.Adapter).unityRigidbody;
+                    case "connectedchild":
+                        _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedChild.Adapter).unityRigidbody;
                         break;
                     case "breakforce":
                         _unityJoint.breakForce = _joint.breakForce;
@@ -120,11 +127,13 @@ namespace Engine.ModuleLoader.Adapters
 
                 //init all properties
                 //TODO: Add parent and child body connections
+                _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}").AddComponent<UnityEngine.HingeJoint>();
+                
                 _unityJoint.anchor = _joint.anchor.Map();
                 _unityJoint.axis = _joint.axis.Map();
                 _unityJoint.breakForce = _joint.breakForce;
                 _unityJoint.breakTorque = _joint.breakTorque;
-                _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedBody?.Adapter).unityRigidbody;
+                _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedChild?.Adapter).unityRigidbody;
                 _unityJoint.enableCollision = _joint.enableCollision;
                 _unityJoint.useLimits = _joint.useLimits;
                 _unityJoint.limits = _joint.limits.GetUnity();
@@ -145,6 +154,7 @@ namespace Engine.ModuleLoader.Adapters
                 }
 
                 //TODO: Add parent and child body connections
+                // TODO: What should we do about the parent?
                 switch (args.PropertyName.ToLower())
                 {
                     case "anchor":
@@ -159,8 +169,8 @@ namespace Engine.ModuleLoader.Adapters
                     case "breakTorque":
                         _unityJoint.breakTorque = _joint.breakTorque;
                         break;
-                    case "connectedbody":
-                        _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedBody.Adapter).unityRigidbody;
+                    case "connectedchild":
+                        _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedChild.Adapter).unityRigidbody;
                         break;
                     case "enablecollision":
                         _unityJoint.enableCollision = _joint.enableCollision;

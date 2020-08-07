@@ -24,15 +24,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		internal string name = string.Empty;
-		public string Name {
-			get => name;
-			set {
-				name = value;
-				OnPropertyChanged();
-			}
-		}
-
 		internal Vector3D position = new Vector3D(0, 0, 0);
 		public Vector3D Position
 		{

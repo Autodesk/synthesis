@@ -45,11 +45,19 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal Rigidbody connectedBody = null;
-        public Rigidbody ConnectedBody {
-            get => connectedBody;
+        internal Rigidbody connectedParent = null;
+        public Rigidbody ConnectedParent {
+            get => connectedParent;
             set {
-                connectedBody = value;
+                connectedParent = value;
+                OnPropertyChanged();
+            }
+        }
+        internal Rigidbody connectedChild = null;
+        public Rigidbody ConnectedChild {
+            get => connectedChild;
+            set {
+                connectedChild = value;
                 OnPropertyChanged();
             }
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Collections.Specialized;
+using System.Collections.Generic;
+using System;
 using System.IO;
 using SynthesisAPI.VirtualFileSystem;
 using SharpGLTF.Schema2;
@@ -9,6 +11,7 @@ using SharpGLTF.Memory;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
 using SharpGLTF.IO;
+using Newtonsoft.Json.Linq;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -53,8 +56,15 @@ namespace SynthesisAPI.AssetManager
         public Bundle Parse()
         {
             if (model == null) return null;
-            return CreateBundle(model.DefaultScene.VisualChildren.First()); 
+            var bundle = CreateBundle(model.DefaultScene.VisualChildren.First());
+
+            bundle.Components.Add(ParseJoints());
+
+            // ParseJoints(ref bundle);
+            return bundle;
         }
+
+        private Dictionary<string, EnvironmentManager.Components.Rigidbody> rigidbodies = new Dictionary<string, EnvironmentManager.Components.Rigidbody>();
 
         private Bundle CreateBundle(Node node, Node parent = null)
         {
@@ -65,20 +75,20 @@ namespace SynthesisAPI.AssetManager
             foreach (Node child in node.VisualChildren)
                 bundle.ChildBundles.Add(CreateBundle(child, node));
 
-            if (parent == null)
-                AddExtras(bundle);
             return bundle;
         }
 
-        private void AddExtras(Bundle bundle)
+        /*private void AddExtras(Bundle bundle)
         {
             JsonDictionary extras = (JsonDictionary)model.Extras;
 
-            EnvironmentManager.Components.Joints jl = new EnvironmentManager.Components.Joints();
+            //todo: Joints
+            EnvironmentManager.Components.JointCollection jl = new EnvironmentManager.Components.JointCollection();
+
             foreach (JsonDictionary joint in (JsonList)extras["joints"])
                 jl.Add(ParseJoints(joint));
             bundle.Components.Add(jl);
-        }
+        }*/
 
         private void AddComponents(Bundle bundle, Node node, Node parent = null)
         {
@@ -97,7 +107,9 @@ namespace SynthesisAPI.AssetManager
                 var sc = node.LocalTransform.Scale;
                 bundle.Components.Add(ParseMesh(node.Mesh, new Vector3D(sc.X, sc.Y, sc.Z)));
                 bundle.Components.Add(ParseMeshCollider());
-                bundle.Components.Add(ParseRigidbody());
+                var rigid = ParseRigidbody();
+                bundle.Components.Add(rigid);
+                rigidbodies.Add(node.Name, rigid);
             }
         }
 
@@ -137,7 +149,7 @@ namespace SynthesisAPI.AssetManager
         private EnvironmentManager.Components.Transform ParseTransform(SharpGLTF.Transforms.AffineTransform nodeTransform, string name)
         {
             EnvironmentManager.Components.Transform t = new EnvironmentManager.Components.Transform();
-            t.Name = name;
+            // t.Name = name;
 
             //var quat = .Inversed;
 
@@ -152,17 +164,56 @@ namespace SynthesisAPI.AssetManager
             return t;
         }
 
-        private EnvironmentManager.Components.IJoint ParseJoints(JsonDictionary jointDict)
+        private EnvironmentManager.Components.Joints ParseJoints()
         {
-            EnvironmentManager.Components.IJoint j;
+            var joints = (model.Extras as JsonDictionary)["joints"] as JsonList;
+            joints.ToString();
+            // Logger.Log(joints.GetType().FullName);
 
-            // HEADER
+            var allJoints = new EnvironmentManager.Components.Joints();
 
-            //todo:
-            //parsing here
+            foreach (var jointObj in joints) {
+                var joint = jointObj as JsonDictionary;
+                string name = joint.Get("header").Get<string>("name"); // Probably not gonna be used
+                var originObj = joint.Get("origin");
+                Vector3D anchor = new Vector3D((double)originObj.TryGet<decimal>("x", 0),
+                    (double)originObj.TryGet<decimal>("y", 0), (double)originObj.TryGet<decimal>("z", 0));
+                EnvironmentManager.Components.Rigidbody parent = rigidbodies[joint.Get<string>("occurrenceOneUUID")];
+                EnvironmentManager.Components.Rigidbody child = rigidbodies[joint.Get<string>("occurrenceTwoUUID")];
+                if (joint.ContainsKey("revoluteJointMotion")) {
+                    var rotAxisVec = joint.Get("revoluteJointMotion").Get("rotationAxisVector"); // If any of these fail, it is an invalid joint export
+                    Vector3D axis = new Vector3D((double)rotAxisVec.TryGet<decimal>("x", 0),
+                        (double)rotAxisVec.TryGet<decimal>("y", 0), (double)rotAxisVec.TryGet<decimal>("z", 0));
+                    // TODO: Support limits
+                    var result = new EnvironmentManager.Components.HingeJoint();
+                    result.Anchor = anchor;
+                    result.Axis = axis;
+                    result.ConnectedParent = parent;
+                    result.ConnectedChild = child;
+                    allJoints.Add(result);
+                } else {
+                    Logger.Log("Joint type not found, defaulting to a fixed joint", LogLevel.Warning);
+                    var result = new EnvironmentManager.Components.FixedJoint();
+                    result.Anchor = anchor;
+                    result.ConnectedParent = parent;
+                    result.ConnectedChild = child;
+                    allJoints.Add(result);
+                }
+            }
 
-            return null;
+            return allJoints;
         }
         #endregion
+    }
+
+    public static class JsonDictionaryExtensions {
+        public static T Get<T>(this JsonDictionary dict, string key) => (T)dict[key];
+        public static T TryGet<T>(this JsonDictionary dict, string key, T defaultObj) {
+            if (dict.ContainsKey(key))
+                return (T)dict[key];
+            else
+                return defaultObj;
+        }
+        public static JsonDictionary Get(this JsonDictionary dict, string key) => (JsonDictionary)dict[key];
     }
 }
