@@ -116,10 +116,14 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public override IEnumerable<Object> PostUxmlLoad()
         {
+            
             if (PopulateParams.Source.Count < 1)
                 return null!;
             Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
-            Element.bindItem = (element, index) => PopulateParams.BindItem(element.GetVisualElement(), index);
+            Type t = PopulateParams.MakeItem().GetType();
+            Element.bindItem = (element, index) => PopulateParams.BindItem(
+                (VisualElement)Activator.CreateInstance(t, new object[] { element }), 
+                index);
             Element.itemsSource = PopulateParams.Source;
             base.PostUxmlLoad();
             return null!;

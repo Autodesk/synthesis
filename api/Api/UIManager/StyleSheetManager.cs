@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.UIManager

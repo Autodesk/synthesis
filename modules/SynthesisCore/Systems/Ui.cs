@@ -27,8 +27,8 @@ namespace SynthesisCore.Systems
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => RegisterOKCloseButtons(element, "Settings"));
 
-
             Logger.RegisterLogger(new ToastLogger());
+            Logger.Log("Test log\nline 2");
 
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);

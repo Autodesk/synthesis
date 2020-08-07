@@ -1,6 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="screen" style="flex-grow: 1;">
-        <Style src="USS/Toolbar.uss" />
         <ui:VisualElement name="toolbar">
             <ui:VisualElement name="top" class="top">
                 <ui:VisualElement name="left-buttons" style="flex-direction: row;">

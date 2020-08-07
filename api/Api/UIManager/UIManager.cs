@@ -11,7 +11,6 @@ namespace SynthesisAPI.UIManager
 {
     public static class UIManager
     {
-    
         public static VisualElement RootElement {
             get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
         }

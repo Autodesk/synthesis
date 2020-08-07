@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SynthesisAPI.UIManager.VisualElements;
+using System.Collections.Generic;
 
 namespace SynthesisAPI.UIManager
 {
@@ -21,8 +22,12 @@ namespace SynthesisAPI.UIManager
                 
                 if (line.StartsWith("."))
                 {
+                    if(line[line.Length - 1] == '{')
+                    {
+                        line = line.Substring(0, line.Length - 1).Trim(); // remove " {" from line
+                    }
                     string[] lineContents = line.Split('.');
-                    string className = lineContents[1].Substring(0, lineContents[1].Length - 2); // substring to remove " {" from line
+                    string className = lineContents[1]; 
 
                     currentClass = new UssClass(className);
                     //Logger.Log("[UI] New class found with name [" + className + "]");

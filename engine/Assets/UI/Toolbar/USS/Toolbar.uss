@@ -75,3 +75,29 @@
 .bottom {
     height: 40px;
 }
+
+.toast-notification {
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
+}
+
+.toast-notification.unity-base-text-field {
+    white-space: normal;
+    -unity-text-align: upper-left;
+}
+
+.toast-notification .unity-base-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    white-space: normal;
+    -unity-text-align: upper-left;
+    overflow: visible;
+    white-space: normal;
+	border-width: 0px;
+}
+

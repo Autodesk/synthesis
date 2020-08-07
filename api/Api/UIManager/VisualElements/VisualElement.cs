@@ -57,6 +57,8 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
+        public void AddToClassList(string className) => _visualElement.AddToClassList(className);
+        public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
 
         public void SetStyleProperty(string name, string value)
         {
