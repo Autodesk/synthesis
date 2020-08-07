@@ -11,7 +11,7 @@ def exportJoints(fusionJoints):
     for fusionJoint in fusionJoints:
         if isJointInvalid(fusionJoint):
             continue
-        joints.append(MessageToDict(fillJoint(fusionJoint)))
+        joints.append(MessageToDict(fillJoint(fusionJoint), including_default_value_fields=True))
     return joints
 
 def isJointInvalid(fusionJoint):
