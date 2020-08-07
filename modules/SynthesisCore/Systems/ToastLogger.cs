@@ -27,7 +27,7 @@ namespace SynthesisCore.Systems
             /// <summary>
             /// Height of padding around a toast in px
             /// </summary>
-            public const int PaddingHeight = 15; // px
+            public const int PaddingHeight = 10; // px
 
             /// <summary>
             /// Raw text from Log call
@@ -77,16 +77,29 @@ namespace SynthesisCore.Systems
             var element = new VisualElement();
             
             element.SetStyleProperty("flex-direction", "row");
+            element.SetStyleProperty("align-content", "center");
             element.SetStyleProperty("padding-top", "5px");
             element.SetStyleProperty("padding-bottom", "5px");
             element.SetStyleProperty("padding-left", "5px");
             element.SetStyleProperty("padding-right", "5px");
             element.SetStyleProperty("margin-bottom", "10px");
-            var height = Toast.PaddingHeight + Toast.LineHeight * toast.Lines.Count;
+            var heightNoPadding = Toast.LineHeight * toast.Lines.Count;
+            var height = Toast.PaddingHeight + heightNoPadding;
 
             element.SetStyleProperty("height", height.ToString() + "px");
             element.SetStyleProperty("max-height", height.ToString() + "px");
             element.SetStyleProperty("min-height", height.ToString() + "px");
+
+            #region MakeIcon
+
+            var icon = new VisualElement();
+            icon.SetStyleProperty("height", "20px");
+            icon.SetStyleProperty("width", "20px");
+            icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/add-icon.png");
+            icon.SetStyleProperty("margin-right", "5px");
+            element.Add(icon);
+
+            #endregion
 
             #region MakeTextArea
 
@@ -95,13 +108,12 @@ namespace SynthesisCore.Systems
             var textArea = new VisualElement();
 
             textArea.SetStyleProperty("flex-direction", "column");
+            textArea.SetStyleProperty("justify-content", "center");
             textArea.SetStyleProperty("margin-right", "5px");
-            textArea.SetStyleProperty("height", height.ToString() + "px");
-            textArea.SetStyleProperty("max-height", height.ToString() + "px");
-            textArea.SetStyleProperty("min-height", height.ToString() + "px");
+            textArea.SetStyleProperty("height", heightNoPadding.ToString() + "px");
+            textArea.SetStyleProperty("max-height", heightNoPadding.ToString() + "px");
+            textArea.SetStyleProperty("min-height", heightNoPadding.ToString() + "px");
             textArea.SetStyleProperty("width", "100%");
-            //textArea.SetStyleProperty("max-width", "100%");
-            //textArea.SetStyleProperty("min-width", "390px");
             textArea.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
 
             switch (toast.LogLevel) // Log-level-specific formatting
@@ -153,6 +165,7 @@ namespace SynthesisCore.Systems
             #region MakeCloseButton
 
             var closeButton = new Button { Name = $"toat-close-button-{currentToastID}" };
+            // closeButton.SetStyleProperty("align-self", "");
             closeButton.SetStyleProperty("height", "25px");
             closeButton.SetStyleProperty("width", "25px");
             closeButton.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");

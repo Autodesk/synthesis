@@ -261,7 +261,7 @@ namespace SynthesisAPI.UIManager
 
         public static StyleBackground ToStyleBackground(string str)
         {
-            string path = str.Replace(" ", "").Substring(5, str.Length - 8);
+            string path = str.Replace(" ", "");
             
             try
             {
@@ -279,7 +279,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                Logger.Log("Exception when parsing background texture", LogLevel.Warning);
+                Logger.Log($"Exception when parsing background texture", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
