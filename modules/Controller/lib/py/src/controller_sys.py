@@ -161,6 +161,7 @@ def messages(controller_sys):
         time.sleep(1)
         controller_sys.log_str("This is an error toast i = " + str(i), 3);
         time.sleep(1)
+        i += 1
 
 
 def main():

@@ -76,7 +76,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public TextField(_UnityTextField element)
         {
-            Element = (_UnityTextField)element;
+            Element = element;
         }
 
         protected override dynamic DynamicVisualElement

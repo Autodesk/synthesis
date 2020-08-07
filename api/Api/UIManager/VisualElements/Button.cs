@@ -54,7 +54,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public override IEnumerable<object> PostUxmlLoad()
         {
-            Element.clickable.clicked += () => EventBus.EventBus.Push(EventTag, new ButtonClickableEvent());
+            Element.clickable.clicked += () => EventBus.EventBus.Push(EventTag, new ButtonClickableEvent(Name));
             base.PostUxmlLoad();
             return null!;
         }

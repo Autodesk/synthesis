@@ -14,7 +14,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         /// Wrapper for the Unity ListView
         /// This is necessary because these methods are currently protected and we need access to them
         /// </summary>
-        private class UnityListViewWrapper : _UnityListView
+        public class UnityListViewWrapper : _UnityListView
         {
             public new void AddToSelection(int index) => base.AddToSelection(index);
             public new void ClearSelection() => base.ClearSelection();
@@ -45,7 +45,12 @@ namespace SynthesisAPI.UIManager.VisualElements
                 throw new Exception();
             Element.selectionType = SelectionType.Single;
         }
-        
+
+        public ListView(UnityListViewWrapper element)
+        {
+            Element = element;
+        }
+
         // Unsure if this is needed
         ~ListView()
         {

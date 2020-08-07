@@ -30,6 +30,18 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement.name = value;
         }
 
+        public bool Focusable
+        {
+            get => _visualElement.focusable;
+            set => _visualElement.focusable = value;
+        }
+
+        public bool Enabled
+        {
+            get => _visualElement.enabledSelf;
+            set => _visualElement.SetEnabled(value);
+        }
+
         public IStyle style {
             get => _visualElement.style;
         }
@@ -55,8 +67,19 @@ namespace SynthesisAPI.UIManager.VisualElements
             return children;
         }
 
-        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
+        public VisualElement Get(string name = null, string className = null)
+        {
+            if (_visualElement == null)
+                return null;
+            var found = _visualElement.Q(name, className);
+            if (found == null)
+                return null;
+            return found.GetVisualElement();
+        }
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
+        public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
+        public void RemoveAt(int index) => _visualElement.RemoveAt(index);
+        public void Insert(int index, VisualElement element) => _visualElement.Insert(index, element._visualElement);
         public void AddToClassList(string className) => _visualElement.AddToClassList(className);
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
 

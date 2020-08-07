@@ -1,10 +1,8 @@
-﻿using SynthesisAPI.AssetManager;
-using SynthesisAPI.UIManager;
+﻿using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace SynthesisCore.Systems
@@ -13,177 +11,179 @@ namespace SynthesisCore.Systems
     {
         private struct Toast
         {
-            public const int CharsPerToastLine = 45;
-            public const int LineHeight = 20;
-            public const int PaddingHeight = 20;
-            private const string Ellipsis = "...";
+            public const int CharsPerToastLine = 35;
+            public const int LineHeight = 25; // px
+            public const int PaddingHeight = 15; // px
 
-            public readonly string Content;
-            public readonly string AdjustedContent;
-            public readonly int LineCount;
+            public readonly string RawText;
+            public readonly List<string> Lines;
             public readonly LogLevel LogLevel;
 
             public Toast(string content, LogLevel logLevel)
             {
-                Content = content;
+                RawText = content;
                 LogLevel = logLevel;
-
-
-                // AdjustedContent = Content.Length > CharsPerToastLine ? Content.Substring(0, CharsPerToastLine - Ellipsis.Length) + Ellipsis : Content;
-                
-                AdjustedContent = "";
-                LineCount = 0;
-                var last_i = -1;
-                for (var i = 0; i < content.Length;)
-                {
-                    if(last_i != -1)
-                    {
-                        AdjustedContent += string.Concat(Enumerable.Repeat(" ", CharsPerToastLine * 2 - (i - last_i))); // CharsPerToastLine * 2 because adding extra spaces doesn't matter. Unity trims them after it wraps the line
-                    }
-                    last_i = i;
-                    var next = Utilities.Math.Min(CharsPerToastLine, content.Length - i);
-                    var newline = content.IndexOf('\n', i, next);
-                    if (newline != -1)
-                    {
-                        AdjustedContent += content.Substring(i, newline - i);
-                        i = newline + 1;
-                    }
-                    else
-                    {
-                        AdjustedContent += content.Substring(i, next);
-                        i += next;
-                    }
-                    LineCount++;
-                }
-                Logger.Log(AdjustedContent, LogLevel.Debug);
-                Logger.Log(LineCount, LogLevel.Debug);
+                Lines = Utilities.Text.SplitLines(RawText, CharsPerToastLine);
             }
         }
 
         private bool debugLogsEnabled = false;
         private static bool initialized = false;
         private static bool currentlyLogging = false;
+        private static bool scrollToBottom = false;
 
-        private static ListView toastListView = new ListView();
+        private static VisualElement toastFeed = new VisualElement();
         private static List<Toast> toastList = new List<Toast>();
         private static int currentToastID = 0;
-        private static VisualElement toastListContainer;
+        private static VisualElement toastContainer;
+        private static ScrollView toastScrollView;
+        private static VisualElement toastScrollViewBottom;
 
         private static void SendToast(Toast toast)
         {
-            toastList.Add(toast);
             if (!initialized)
                 Setup();
-            UpdateContainerHeight();
-            toastListView.Refresh();
-            toastListView.ScrollToItem(toastList.Count); // TODO does not scroll all the way down for some reason
-            toastListView.Refresh();
+
+            toastList.Add(toast);
+
+            #region MakeElement
+
+            var element = new VisualElement();
+            
+            element.SetStyleProperty("flex-direction", "row");
+            element.SetStyleProperty("padding-top", "5px");
+            element.SetStyleProperty("padding-bottom", "5px");
+            element.SetStyleProperty("padding-left", "5px");
+            element.SetStyleProperty("padding-right", "5px");
+            element.SetStyleProperty("margin-bottom", "10px");
+            var height = Toast.PaddingHeight + Toast.LineHeight * toast.Lines.Count;
+
+            element.SetStyleProperty("height", height.ToString() + "px");
+            element.SetStyleProperty("max-height", height.ToString() + "px");
+            element.SetStyleProperty("min-height", height.ToString() + "px");
+
+            #region MakeTextArea
+
+            var textArea = new VisualElement();
+
+            textArea.SetStyleProperty("flex-direction", "column");
+            textArea.SetStyleProperty("margin-right", "5px");
+            textArea.SetStyleProperty("height", height.ToString() + "px");
+            textArea.SetStyleProperty("max-height", height.ToString() + "px");
+            textArea.SetStyleProperty("min-height", height.ToString() + "px");
+            textArea.SetStyleProperty("width", "100%");
+            //textArea.SetStyleProperty("max-width", "100%");
+            //textArea.SetStyleProperty("min-width", "390px");
+            textArea.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
+
+            switch (toast.LogLevel)
+            {
+                case LogLevel.Debug:
+                    {
+                        element.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
+                        break;
+                    }
+                case LogLevel.Warning:
+                    {
+                        element.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
+                        break;
+                    }
+                case LogLevel.Error:
+                    {
+                        element.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
+                        break;
+                    }
+                default:
+                case LogLevel.Info:
+                    {
+                        element.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
+                        break;
+                    }
+            }
+
+            for (var i = 0; i < toast.Lines.Count; i++)
+            {
+                var label = new Label
+                {
+                    Name = $"sel-toast-label-{currentToastID}-{i}",
+                    Text = toast.Lines[i]
+                };
+                label.SetStyleProperty("height", Toast.LineHeight.ToString() + "px");
+                label.SetStyleProperty("width", "100%");
+                label.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
+                label.SetStyleProperty("font-size", "20");
+                label.SetStyleProperty("color", "rgb(255, 255, 255)");
+                textArea.Add(label);
+            }
+            
+            element.Add(textArea);
+
+            #endregion
+
+            #region MakeCloseButton
+
+            var closeButton = new Button { Name = $"toat-close-button-{currentToastID}" };
+            closeButton.SetStyleProperty("height", "25px");
+            closeButton.SetStyleProperty("width", "25px");
+            closeButton.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
+            closeButton.Text = "X"; // TODO replace with image
+                                    // closeButton.SetStyleProperty("background-image", "url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;)");
+            closeButton.Subscribe(e =>
+            {
+                if (e is ButtonClickableEvent be && be.Name == closeButton.Name)
+                {
+                    toastFeed.Remove(element);
+                    toastList.Remove(toast);
+                    UpdateContainerHeight();
+                }
+            });
+            element.Add(closeButton);
+
+            #endregion
+
+            toastFeed.Add(element);
+
+            #endregion
+
+            scrollToBottom = true; // Scroll on next frame (wait for UI to update positions first)
             currentToastID++;
+            UpdateContainerHeight();
+        }
+
+        private static void Setup()
+        {
+            if (initialized)
+                return;
+
+            toastContainer = UIManager.RootElement.Get("toast-notification-container");
+            toastFeed = UIManager.RootElement.Get("toast-feed");
+            toastScrollView = (ScrollView)UIManager.RootElement.Get("toast-scroll-view");
+
+            toastScrollViewBottom = new VisualElement { Name = "toast-list-container-bottom" };
+            toastScrollViewBottom.SetStyleProperty("width", "100%");
+            toastScrollViewBottom.SetStyleProperty("height", "1px");
+            toastScrollViewBottom.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
+            toastScrollView.Add(toastScrollViewBottom);
+
+            initialized = true;
         }
 
         private static void UpdateContainerHeight()
         {
-            var height = 0; // toastList.Count * toastListView.ItemHeight
-            foreach (var i in toastList)
+            var height = 0;
+            foreach (var toast in toastList)
             {
-                height += Toast.PaddingHeight + Toast.LineHeight * i.LineCount;
+                height += toast.Lines.Count * Toast.LineHeight + Toast.PaddingHeight;
             }
-            toastListContainer.SetStyleProperty("height", height.ToString() + "px");
-           
-            // toastListContainer.SetStyleProperty("height", (toastList.Count * toastListView.ItemHeight).ToString() + "px");
+            toastContainer.SetStyleProperty("height", height.ToString() + "px");
         }
 
-        private static void BindToast(VisualElement element, int index)
+        public static void ScrollToBottom()
         {
-            try
+            if (scrollToBottom)
             {
-                var textField = element as TextField;
-
-                textField.IsMultiline = true;
-                textField.IsReadOnly = true;
-                textField.Name = $"sel-toast-{currentToastID}";
-                textField.Value = toastList[index].AdjustedContent;
-
-                textField.AddToClassList("toast-notification");
-                var height = Toast.PaddingHeight + Toast.LineHeight * toastList[index].LineCount;
-                textField.SetStyleProperty("height", height.ToString() + "px");
-                textField.SetStyleProperty("max-height", height.ToString() + "px");
-
-                switch (toastList[index].LogLevel)
-                {
-                    case LogLevel.Debug:
-                        {
-                            textField.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
-                            break;
-                        }
-                    case LogLevel.Warning:
-                        {
-                            textField.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
-                            break;
-                        }
-                    case LogLevel.Error:
-                        {
-                            textField.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
-                            break;
-                        }
-                    default:
-                    case LogLevel.Info:
-                        {
-                            textField.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
-                            break;
-                        }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Here ex", e);
-            }
-        }
-
-		private static void Setup()
-        {
-            try
-            {
-                if (initialized)
-                    return;
-
-                toastListContainer = UIManager.RootElement.Get("toast-notification-container");
-
-                // Position at bottom of container
-                toastListView.SetStyleProperty("position", "absolute");
-                toastListView.SetStyleProperty("bottom", "0");
-                toastListView.SetStyleProperty("width", "100%");
-                toastListView.SetStyleProperty("height", "100%");
-
-                toastListView.ItemHeight = 55; // 55 // sum of max-height and margin for elements
-
-                toastListView.Populate(toastList, () => new TextField(), BindToast);
-
-                toastListView.SubscribeOnSelectionChanged(e =>
-                {
-                    if (e is ListView.SelectionChangedEvent selectionChangedEvent && selectionChangedEvent.SelectedObjects.Count > 0)
-                    {
-                        toastList.RemoveAt(toastListView.SelectedIndex);
-                        toastListView.Refresh();
-                        toastListView.ClearSelection();
-                        UpdateContainerHeight();
-                    }
-                });
-
-                toastListView.SubscribeOnItemChosen(e =>
-                {
-                    if (e is ListView.ItemChosenEvent itemChosenEvent)
-                    {
-                    // TODO show whole Toast.Content maybe
-                }
-                });
-
-                toastListContainer.Add(toastListView);
-                initialized = true;
-            }
-            catch (Exception e)
-            {
-                throw new System.Exception("Toast setup", e);
+                toastScrollView.ScrollTo(toastScrollViewBottom);
+                scrollToBottom = false;
             }
         }
 

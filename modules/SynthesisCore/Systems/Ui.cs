@@ -28,7 +28,11 @@ namespace SynthesisCore.Systems
                 element => RegisterOKCloseButtons(element, "Settings"));
 
             Logger.RegisterLogger(new ToastLogger());
-            Logger.Log("Test log\nline 2");
+            
+            Logger.Log("Test log 1\nline 2");
+            Logger.Log("Test log 2\nline 2\nline 3");
+            Logger.Log("Test log 3\nline 2\nline 3\nline 4");
+            Logger.Log("This defines the alignment along the main axis. It helps distribute extra free space leftover when either all the flex items on a line are inflexible, or are flexible but have reached their maximum size. It also exerts some control over the alignment of items when they overflow ");
 
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);
@@ -71,7 +75,10 @@ namespace SynthesisCore.Systems
 
         public override void OnPhysicsUpdate() { }
 
-        public override void OnUpdate() { }
+        public override void OnUpdate()
+        {
+            ToastLogger.ScrollToBottom();
+        }
 
         public override void Teardown() { }
     }

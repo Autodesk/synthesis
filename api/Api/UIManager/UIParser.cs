@@ -341,10 +341,24 @@ namespace SynthesisAPI.UIManager
         /// <returns></returns>
         public static VisualElement GetVisualElement(this UnityVisualElement element)
         {
-            Type t = Array.Find(typeof(VisualElement).Assembly.GetTypes(), t => 
-                t.Name == element.GetType().Name && t.FullName != element.GetType().FullName
-                ) ?? typeof(VisualElement);
-            return (VisualElement)Activator.CreateInstance(t, new object[] {element});
+            Type t = default;
+            try
+            {
+                t = typeof(VisualElement).Assembly.GetTypes().FirstOrDefault(t =>
+                    t.Name == element.GetType().Name && t.FullName != element.GetType().FullName);
+            }
+            catch(Exception e)
+            {
+                throw new SynthesisException($"Failed to get visual element of {element.GetType().FullName}, could not find matching type", e);
+            }
+            try
+            {
+                return (VisualElement)Activator.CreateInstance(t, new object[] { element });
+            }
+            catch(Exception e)
+            {
+                throw new SynthesisException($"Failed to get visual element of {element.GetType().FullName}, attempted type {t.FullName}", e);
+            }
         }
 
     }
