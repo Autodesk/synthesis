@@ -4,6 +4,8 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
+using System.Collections.Generic;
 
 namespace SynthesisCore.Systems
 {
@@ -16,33 +18,36 @@ namespace SynthesisCore.Systems
             var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Environments.uxml");
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Settings.uxml");
-            
+
             Tab engineTab = new Tab("Engine", tabAsset, null);
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
                 element => RegisterOKCloseButtons(element, "Environments"));
-            Panel modulesWindow = new Panel("Modules", modulesAsset, 
+            Panel modulesWindow = new Panel("Modules", modulesAsset,
                 element => RegisterOKCloseButtons(element, "Modules"));
-            Panel settingsWindow = new Panel("Settings", settingsAsset, 
+            Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => RegisterOKCloseButtons(element, "Settings"));
-            
+
+
+            Logger.RegisterLogger(new ToastLogger());
+
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
 
-            Button environmentsButton = (Button) UIManager.RootElement.Get("environments-button");
+            Button environmentsButton = (Button)UIManager.RootElement.Get("environments-button");
             environmentsButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Environments");
             });
 
-            Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
+            Button modulesButton = (Button)UIManager.RootElement.Get("modules-button");
             modulesButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Modules");
             });
 
-            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
+            Button settingsButton = (Button)UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Settings");

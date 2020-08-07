@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
-using UnityListView = UnityEngine.UIElements.ListView;
+using _UnityListView = UnityEngine.UIElements.ListView;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class ListView: VisualElement
     {
-        private EventBus.EventBus.EventCallback _callback;
-        
-        public UnityListView Element
+        /// <summary>
+        /// Wrapper for the Unity ListView
+        /// This is necessary because these methods are currently protected and we need access to them
+        /// </summary>
+        private class UnityListViewWrapper : _UnityListView
         {
-            get => (_visualElement as UnityListView)!;
+            public new void AddToSelection(int index) => base.AddToSelection(index);
+            public new void ClearSelection() => base.ClearSelection();
+            public new void RemoveFromSelection(int index) => base.RemoveFromSelection(index);
+            public new void SetSelection(int index) => base.SetSelection(index);
+        }
+
+        private EventBus.EventBus.EventCallback _callback;
+
+        private UnityListViewWrapper Element
+        {
+            get => (_visualElement as UnityListViewWrapper)!;
             set => _visualElement = value;
         }
         
-        public static explicit operator UnityListView(ListView e) => e.Element;
-        public static explicit operator ListView(UnityListView e) => new ListView(e);
+        // internal static explicit operator UnityListViewWrapper(ListView e) => e.Element;
+        // internal static explicit operator ListView(UnityListViewWrapper e) => new ListView(e);
         // public static explicit operator SynListView(VisualElement e) => new SynListView((e as UnityListView)!);
 
         private (IList Source, Func<VisualElement> MakeItem, Action<VisualElement, int> BindItem) PopulateParams =
@@ -30,15 +40,9 @@ namespace SynthesisAPI.UIManager.VisualElements
         public ListView()
         {
             // Element = ApiProvider.InstantiateFocusable<UnityListView>()!;
-            Element = ApiProvider.CreateUnityType<UnityListView>()!;
+            Element = ApiProvider.CreateUnityType<UnityListViewWrapper>()!;
             if (Element == null)
                 throw new Exception();
-            Element.selectionType = SelectionType.Single;
-        }
-
-        public ListView(UnityListView element)
-        {
-            Element = element;
             Element.selectionType = SelectionType.Single;
         }
         
@@ -55,35 +59,68 @@ namespace SynthesisAPI.UIManager.VisualElements
             PostUxmlLoad();
         }
 
+        public void Refresh()
+        {
+            Element.Refresh();
+        }
+
         public int SelectedIndex => Element.selectedIndex;
         public object SelectedItem => Element.selectedItem;
-        
-        public string EventTag => $"button/{Element.name}";
+        public int ItemHeight
+        {
+            get => Element.itemHeight;
+            set => Element.itemHeight = value;
+        }
+        public void ClearSelection() => Element.ClearSelection();
+        public void ScrollTo(VisualElement visualElement) => Element.ScrollTo(visualElement.UnityVisualElement);
+        public void ScrollToItem(int index) => Element.ScrollToItem(index);
+
+        public string SelectedEventTag => $"button/{Element.name}";
+        public string ItemChosenEventTag => $"item-chosen/{Element.name}";
+
+        public class SelectionChangedEvent: IEvent
+        {
+            public List<object> SelectedObjects { get; private set; }
+            public SelectionChangedEvent(List<object> selectedObjects)
+            {
+                SelectedObjects = selectedObjects;
+            }
+        }
+
+        public class ItemChosenEvent : IEvent
+        {
+            public object Item{ get; private set; }
+            public ItemChosenEvent(object item)
+            {
+                Item = item;
+            }
+        }
 
         public void SubscribeOnSelectionChanged(Action<IEvent> callback)
         {
+            EventBus.EventBus.RemoveTagListener(SelectedEventTag, _callback);
             _callback = e => callback(e);
-            EventBus.EventBus.NewTagListener(EventTag, _callback);
-            PostUxmlLoad();
+            EventBus.EventBus.NewTagListener(SelectedEventTag, _callback);
+            
+            Element.onSelectionChanged += l => EventBus.EventBus.Push(SelectedEventTag, new SelectionChangedEvent(l));
+        }
+
+        public void SubscribeOnItemChosen(Action<IEvent> callback)
+        {
+            EventBus.EventBus.RemoveTagListener(SelectedEventTag, _callback);
+            _callback = e => callback(e);
+            EventBus.EventBus.NewTagListener(ItemChosenEventTag, _callback);
+
+            Element.onItemChosen += o => EventBus.EventBus.Push(ItemChosenEventTag, new ItemChosenEvent(o));
         }
 
         public override IEnumerable<Object> PostUxmlLoad()
         {
             if (PopulateParams.Source.Count < 1)
                 return null!;
-            Logger.Log("Didn't return");
-            if (Element == null)
-                throw new Exception("This should be impossible");
             Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
             Element.bindItem = (element, index) => PopulateParams.BindItem(element.GetVisualElement(), index);
             Element.itemsSource = PopulateParams.Source;
-            for (int i = 0; i < Element.itemsSource.Count; i++)
-            {
-                var elem = Element.makeItem();
-                Element.bindItem(elem, i);
-                Element.Add(elem);
-            }
-            Logger.Log("Calling children", LogLevel.Warning);
             base.PostUxmlLoad();
             return null!;
         }
@@ -91,7 +128,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is UnityListView ? value : Element;
+            set => Element = value is UnityListViewWrapper ? value : Element;
         }
     }
 }

@@ -17,5 +17,6 @@
             <ui:VisualElement name="bottom" class="bottom" style="height: auto;" />
         </ui:VisualElement>
         <ui:VisualElement name="panel-center" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px; height: auto;" />
+        <ui:VisualElement name="toast-notification-container" style="width: 400px; height: 0; max-height: 400px; margin-left: 30px; margin-right: 30px; margin-top: 30px; margin-bottom: 30px; background-color: rgba(0, 0, 0, 0);" />
     </ui:VisualElement>
 </ui:UXML>

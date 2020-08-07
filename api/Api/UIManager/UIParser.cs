@@ -217,7 +217,7 @@ namespace SynthesisAPI.UIManager
                         property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
                         break;
                     default:
-                        Logger.Log("Default");
+                        Logger.Log("Unhandled type in USS parser", LogLevel.Warning);
                         break;
                         //throw new Exception("Unhandled type in USS parser");
                 }
@@ -227,7 +227,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 //Logger.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
-                Logger.Log("failed to set property. Skipping " + propertyName, LogLevel.Warning);
+                Logger.Log($"Failed to set property. Skipping {propertyName}", LogLevel.Warning);
             }
 
             return element;
@@ -321,7 +321,7 @@ namespace SynthesisAPI.UIManager
                         float.Parse(numbers[0]) / 255.0f,
                         float.Parse(numbers[1]) / 255.0f,
                         float.Parse(numbers[2]) / 255.0f,
-                        float.Parse(numbers[3]) / 255.0f);
+                        float.Parse(numbers[3]));
                     break;
             }
 
