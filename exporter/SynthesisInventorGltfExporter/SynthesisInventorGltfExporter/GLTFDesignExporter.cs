@@ -52,70 +52,81 @@ namespace SynthesisInventorGltfExporter
 
         public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            
-            exportTolerance = numericToleranceValue;
-            exportHidden = checkHiddenChecked;
-            exportFaceMaterials = checkFaceMaterials;
-            exportMaterials = checkMaterialsChecked;
-            materialCache = new Dictionary<string, MaterialBuilder>();
-            massPropertiesMap = new Dictionary<string, MassProperties>();
-            allDocumentJoints = new List<AssemblyJoint>();
-            warnings = new List<string>();
-
-            progressTotal = 2 + assemblyDocument.AllReferencedDocuments.Count;
-            progressBar = application.CreateProgressBar(false, progressTotal, "Exporting " + assemblyDocument.DisplayName + " to glTF");
-
-            progressBar.Message = "Preparing for export...";
-
-            var sceneBuilder = ExportScene(assemblyDocument);
-
-            progressBar.Message = "Exporting joints...";
-            progressBar.UpdateProgress();
-            // TODO: Figure out a more elegant solution for extras. This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. 
-            var modelRoot = sceneBuilder.ToSchema2();
-            var dictionary = modelRoot.WriteToDictionary("temp");
-            var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
-            var parsedJToken = (JObject) JToken.ReadFrom(new JsonTextReader(new StringReader(jsonString)));
-            var extras = new JObject();
-            extras.Add("joints", ExportJoints(assemblyDocument));
-            parsedJToken.Add("extras", extras);
-
             try
             {
-                ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
-            } catch {}
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
 
-            try
-            {
-                var asset = (JObject) parsedJToken.GetValue("asset");
-                asset.Property("generator").Value = "Autodesk.Synthesis.Inventor";
-            } catch { }
+                exportTolerance = numericToleranceValue;
+                exportHidden = checkHiddenChecked;
+                exportFaceMaterials = checkFaceMaterials;
+                exportMaterials = checkMaterialsChecked;
+                materialCache = new Dictionary<string, MaterialBuilder>();
+                massPropertiesMap = new Dictionary<string, MassProperties>();
+                allDocumentJoints = new List<AssemblyJoint>();
+                warnings = new List<string>();
 
-            var readSettings = new ReadSettings();
-            readSettings.FileReader = assetFileName => dictionary[assetFileName];
-            var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
-            
-            progressBar.Message = "Saving file...";
-            progressBar.UpdateProgress();
+                progressTotal = 2 + assemblyDocument.AllReferencedDocuments.Count;
+                progressBar = application.CreateProgressBar(false, progressTotal, "Exporting " + assemblyDocument.DisplayName + " to glTF");
 
-            if (glb)
-                modifiedGltf.SaveGLB(filePath);
-            else
-                modifiedGltf.SaveGLTF(filePath);
+                progressBar.Message = "Preparing for export...";
 
-            Debug.WriteLine("-----gltf export warnings-----");
-            foreach (var warning in warnings)
-            {
-                Debug.WriteLine(warning);
+                var sceneBuilder = ExportScene(assemblyDocument);
+
+                progressBar.Message = "Exporting joints...";
+                progressBar.UpdateProgress();
+                // TODO: Figure out a more elegant solution for extras. This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. 
+                var modelRoot = sceneBuilder.ToSchema2();
+                var dictionary = modelRoot.WriteToDictionary("temp");
+                var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
+                var parsedJToken = (JObject) JToken.ReadFrom(new JsonTextReader(new StringReader(jsonString)));
+                var extras = new JObject();
+                extras.Add("joints", ExportJoints(assemblyDocument));
+                parsedJToken.Add("extras", extras);
+
+                try
+                {
+                    ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
+                }
+                catch { }
+
+                try
+                {
+                    var asset = (JObject) parsedJToken.GetValue("asset");
+                    asset.Property("generator").Value = "Autodesk.Synthesis.Inventor";
+                }
+                catch { }
+
+                var readSettings = new ReadSettings();
+                readSettings.FileReader = assetFileName => dictionary[assetFileName];
+                var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
+
+                progressBar.Message = "Saving file...";
+                progressBar.UpdateProgress();
+
+                if (glb)
+                    modifiedGltf.SaveGLB(filePath);
+                else
+                    modifiedGltf.SaveGLTF(filePath);
+
+
+                Debug.WriteLine("-----gltf export warnings-----");
+                foreach (var warning in warnings)
+                {
+                    Debug.WriteLine(warning);
+                }
+
+                Debug.WriteLine("----------");
+                progressBar.Close();
+
+                sw.Stop();
+
+                MessageBox.Show("glTF export completed successfully in " + sw.Elapsed.TotalSeconds.ToString("N2") + " seconds.\nFile saved to: " + filePath);
             }
-            Debug.WriteLine("----------");
-            progressBar.Close();
-            
-            sw.Stop();
-            
-            MessageBox.Show("glTF export completed successfully in "+sw.Elapsed.TotalSeconds.ToString("N2")+" seconds.\nFile saved to: "+filePath);
+            catch
+            {
+                MessageBox.Show("glTF export failed!\nPlease contact frc@autodesk.com to report this bug.");
+            }
         }
 
         private void ExportMassProperties(JArray meshList)
@@ -551,25 +562,37 @@ namespace SynthesisInventorGltfExporter
         }
         private void ExportPrimitive(SurfaceBody surfaceBody, Face surfaceFace, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
         {
-            int facetCount;
-            int vertCount;
-            var coords = new double[]{};
-            var norms = new double[]{};
-            var indices = new int[]{};
-            if (surfaceBody != null) 
-                surfaceBody.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
-            else
-                surfaceFace.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
-            for (var c = 0; c < indices.Length; c += 3)
+            try
             {
-                var indexA = indices[c];
-                var indexB = indices[c+1];
-                var indexC = indices[c+2];
-                primitive.AddTriangle(
-                    GetCoordinates(coords, indexA-1),
-                    GetCoordinates(coords, indexB-1),
-                    GetCoordinates(coords, indexC-1)
-                );
+                int facetCount;
+                int vertCount;
+                var coords = new double[] { };
+                var norms = new double[] { };
+                var indices = new int[] { };
+                if (surfaceBody != null)
+                    surfaceBody.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
+                else
+                    surfaceFace.CalculateFacets((double) exportTolerance, out vertCount, out facetCount, out coords, out norms, out indices);
+                if (indices.Length % 3 != 0 || coords.Length % 3 != 0)
+                {
+                    warnings.Add("Invalid mesh calculated!");
+                    return;
+                }
+                for (var c = 0; c < indices.Length; c += 3)
+                {
+                    var indexA = indices[c];
+                    var indexB = indices[c + 1];
+                    var indexC = indices[c + 2];
+                    primitive.AddTriangle(
+                        GetCoordinates(coords, indexA - 1),
+                        GetCoordinates(coords, indexB - 1),
+                        GetCoordinates(coords, indexC - 1)
+                    );
+                }
+            }
+            catch
+            {
+                warnings.Add("Unable to export surface body");
             }
         }
         

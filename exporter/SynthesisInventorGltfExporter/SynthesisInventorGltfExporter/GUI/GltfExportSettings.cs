@@ -96,10 +96,5 @@ namespace SynthesisInventorGltfExporter.GUI
                 checkFace.Checked = false;
             }
         }
-
-        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
