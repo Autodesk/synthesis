@@ -50,7 +50,7 @@ namespace SynthesisCore.Systems
             }
         }
 
-        private bool debugLogsEnabled = false;
+        private bool debugLogsEnabled = true;
         private static bool initialized = false;
         private static bool currentlyLogging = false;
         private static bool scrollToBottom = false;
@@ -83,6 +83,7 @@ namespace SynthesisCore.Systems
             element.SetStyleProperty("padding-left", "5px");
             element.SetStyleProperty("padding-right", "5px");
             element.SetStyleProperty("margin-bottom", "10px");
+            element.SetStyleProperty("background-color", "rgb(255, 255, 255)");
             var heightNoPadding = Toast.LineHeight * toast.Lines.Count;
             var height = Toast.PaddingHeight + heightNoPadding;
 
@@ -93,10 +94,47 @@ namespace SynthesisCore.Systems
             #region MakeIcon
 
             var icon = new VisualElement();
-            icon.SetStyleProperty("height", "20px");
-            icon.SetStyleProperty("width", "20px");
+            icon.SetStyleProperty("height", "25px");
+            icon.SetStyleProperty("min-height", "25px");
+            icon.SetStyleProperty("max-height", "25px");
+            icon.SetStyleProperty("width", "25px");
+            icon.SetStyleProperty("min-width", "25px");
+            icon.SetStyleProperty("max-width", "25px");
             icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/add-icon.png");
-            icon.SetStyleProperty("margin-right", "5px");
+            icon.SetStyleProperty("border-top-width", "0px");
+            icon.SetStyleProperty("border-bottom-width", "0px");
+            icon.SetStyleProperty("border-left-width", "0px");
+            icon.SetStyleProperty("border-right-width", "0px");
+
+            switch (toast.LogLevel) // Log-level-specific formatting
+            {
+                case LogLevel.Debug:
+                    {
+                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/wrench-icon.png");
+                        element.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
+                        break;
+                    }
+                case LogLevel.Warning:
+                    {
+                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/warning-icon-white-solid.png");
+                        element.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
+                        break;
+                    }
+                case LogLevel.Error:
+                    {
+                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/error-icon-white-solid.png");
+                        element.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
+                        break;
+                    }
+                default:
+                case LogLevel.Info:
+                    {
+                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/info-icon-white-solid.png");
+                        element.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
+                        break;
+                    }
+            }
+
             element.Add(icon);
 
             #endregion
@@ -109,37 +147,13 @@ namespace SynthesisCore.Systems
 
             textArea.SetStyleProperty("flex-direction", "column");
             textArea.SetStyleProperty("justify-content", "center");
+            textArea.SetStyleProperty("margin-left", "5px");
             textArea.SetStyleProperty("margin-right", "5px");
             textArea.SetStyleProperty("height", heightNoPadding.ToString() + "px");
             textArea.SetStyleProperty("max-height", heightNoPadding.ToString() + "px");
             textArea.SetStyleProperty("min-height", heightNoPadding.ToString() + "px");
             textArea.SetStyleProperty("width", "100%");
             textArea.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
-
-            switch (toast.LogLevel) // Log-level-specific formatting
-            {
-                case LogLevel.Debug:
-                    {
-                        element.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
-                        break;
-                    }
-                case LogLevel.Warning:
-                    {
-                        element.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
-                        break;
-                    }
-                case LogLevel.Error:
-                    {
-                        element.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
-                        break;
-                    }
-                default:
-                case LogLevel.Info:
-                    {
-                        element.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
-                        break;
-                    }
-            }
 
             // Create labels for each line of text in the toast
 
@@ -169,8 +183,11 @@ namespace SynthesisCore.Systems
             closeButton.SetStyleProperty("height", "25px");
             closeButton.SetStyleProperty("width", "25px");
             closeButton.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
-            closeButton.Text = "X"; // TODO replace with image
-            // closeButton.SetStyleProperty("background-image", "url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;)");
+            closeButton.SetStyleProperty("border-top-width", "0px");
+            closeButton.SetStyleProperty("border-bottom-width", "0px");
+            closeButton.SetStyleProperty("border-left-width", "0px");
+            closeButton.SetStyleProperty("border-right-width", "0px");
+            closeButton.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/close-icon-white.png");
             closeButton.Subscribe(e =>
             {
                 if (e is ButtonClickableEvent be && be.Name == closeButton.Name)

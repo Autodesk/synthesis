@@ -43,8 +43,10 @@ namespace Engine.ModuleLoader
 		public void Awake()
 		{
 			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
-			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+#if UNITY_EDITOR
 			Logger.RegisterLogger(new LoggerImpl());
+#endif
+			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			LoadApi();
 			LoadModules();
 			RerouteConsoleOutput();

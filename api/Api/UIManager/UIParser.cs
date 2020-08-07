@@ -219,23 +219,20 @@ namespace SynthesisAPI.UIManager
                     default:
                         Logger.Log("Unhandled type in USS parser", LogLevel.Warning);
                         break;
-                        //throw new Exception("Unhandled type in USS parser");
                 }
-                // Logger.Log("Successfully set styling for " + propertyName);
                 
             }
             catch (Exception e)
             {
-                //Logger.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
-                Logger.Log($"Failed to set property. Skipping {propertyName}", LogLevel.Warning);
+                Logger.Log($"Failed to set property. Skipping {propertyName}\n{e}", LogLevel.Warning);
             }
 
             return element;
         }
 
-        public static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str));
+        public static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str.Replace("px", "")));
 
-        public static StyleInt ToStyleInt(string str) => new StyleInt(int.Parse(str));
+        public static StyleInt ToStyleInt(string str) => new StyleInt(int.Parse(str.Replace("px", "")));
 
         public static StyleLength ToStyleLength(string str)
         {
