@@ -30,13 +30,23 @@ try:
         import numpy
         import google.protobuf
     except:
+        app = adsk.core.Application.get()
+        ui = app.userInterface
+        progressBar = ui.createProgressDialog()
+        progressBar.isCancelButtonShown = False
+        progressBar.reset()
+        progressBar.show(f"Installing dependencies for Synthesis glTF Exporter", 0, 3, 0)
+
         try:
             from pathlib import Path
             p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
             with cd(p):
                 os.system("python -m pip install pygltflib")
+                progressBar.progressValue = 1
                 os.system("python -m pip install numpy")
+                progressBar.progressValue = 2
                 os.system("python -m pip install protobuf")
+                progressBar.progressValue = 3
             from pygltflib import *
             import numpy as np
 
@@ -45,6 +55,8 @@ try:
             ui = app.userInterface
             if ui:
                 ui.messageBox('Fatal Error: Unable to import libraries {}'.format(traceback.format_exc()))
+
+        progressBar.hide()
 
     # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
@@ -96,15 +108,25 @@ except:
     app = adsk.core.Application.get()
     ui = app.userInterface
     if ui:
-        ui.messageBox(f'Initialization: {traceback.format_exc()}')
+        ui.messageBox(f'Unable to start glTF Exporter for Synthesis!\nPlease contact frc@autodesk.com to report this bug.')
+        # ui.messageBox(f'Initialization: {traceback.format_exc()}')
 
 # Set to True to display various useful messages when debugging your app
 debug = False
 
 def run(context):
-    my_addin.run_app()
+    try:
+        my_addin.run_app()
+    except:
+        app = adsk.core.Application.get()
+        ui = app.userInterface
+        if ui:
+            ui.messageBox(f'glTF Exporter for Synthesis has encountered an error!\nPlease contact frc@autodesk.com to report this bug.')
 
 def stop(context):
-    my_addin.stop_app()
-    sys.path.pop(0)
-    sys.path.pop(0)
+    try:
+        my_addin.stop_app()
+        sys.path.pop(0)
+        sys.path.pop(0)
+    except:
+        pass

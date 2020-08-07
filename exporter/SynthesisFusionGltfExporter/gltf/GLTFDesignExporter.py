@@ -26,50 +26,56 @@ from .extras.ExportJoints import exportJoints
 
 
 def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType:str = "glb", quality="8"):
-    ao = AppObjects()
+    try:
+        ao = AppObjects()
 
-    if ao.document.dataFile is None:
-        ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
-        return
+        if ao.document.dataFile is None:
+            ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
+            return
 
-    exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality)
-    useGlb = fileType == "glb"
-    if showFileDialog:
-        dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
-        dialog.filter = "glTF Binary (*.glb)" if useGlb else "glTF JSON (*.gltf)"
-        dialog.isMultiSelectEnabled = False
-        dialog.title = "Select glTF Export Location"
-        dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{"glb" if useGlb else "gltf"}'
-        results = dialog.showSave()
-        if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
+        exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality)
+        useGlb = fileType == "glb"
+        if showFileDialog:
+            dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
+            dialog.filter = "glTF Binary (*.glb)" if useGlb else "glTF JSON (*.gltf)"
+            dialog.isMultiSelectEnabled = False
+            dialog.title = "Select glTF Export Location"
+            dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{"glb" if useGlb else "gltf"}'
+            results = dialog.showSave()
+            if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
+                ao.ui.messageBox(f"The glTF export was cancelled.")
+                return
+            filePath = dialog.filename
+
+        else:
+            filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
+        exportResults = exporter.saveGltf(filePath, useGlb)
+        if exportResults is None:
             ao.ui.messageBox(f"The glTF export was cancelled.")
             return
-        filePath = dialog.filename
+        perfResults, bufferResults, warnings, modelStats, eventCounter, duration = exportResults
 
-    else:
-        filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
-    exportResults = exporter.saveGltf(filePath, useGlb)
-    if exportResults is None:
-        ao.ui.messageBox(f"The glTF export was cancelled.")
-        return
-    perfResults, bufferResults, warnings, modelStats, eventCounter, duration = exportResults
-
-    finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
-                       f"File saved to {filePath}\n\n"
-                       f"==== Export Performance Results ====\n"
-                       f"{perfResults}\n"
-                       f"==== Buffer Writing Results ====\n"
-                       f"{bufferResults}\n"
-                       f"==== Model Stats ====\n"
-                       f"{modelStats}\n"
-                       f"==== Events Counter ====\n"
-                       f"{eventCounter}\n"
-                       f"==== Warnings ====\n"
-                       f"{warnings}\n"
-                       )
-    print(finishedMessageDebug)
-    finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
-    ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
+        finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
+                           f"File saved to {filePath}\n\n"
+                           f"==== Export Performance Results ====\n"
+                           f"{perfResults}\n"
+                           f"==== Buffer Writing Results ====\n"
+                           f"{bufferResults}\n"
+                           f"==== Model Stats ====\n"
+                           f"{modelStats}\n"
+                           f"==== Events Counter ====\n"
+                           f"{eventCounter}\n"
+                           f"==== Warnings ====\n"
+                           f"{warnings}\n"
+                           )
+        print(finishedMessageDebug)
+        finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
+        ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
+    except:
+        app = adsk.core.Application.get()
+        ui = app.userInterface
+        if ui:
+            ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.')
 
 
 class GLTFDesignExporter(object):
