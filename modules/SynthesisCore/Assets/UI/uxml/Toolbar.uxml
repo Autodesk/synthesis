@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="/modules/SynthesisCore/UI/uss/Toolbar.uss" />
+    <Style src="/modules/synthesis_core/UI/uss/Toolbar.uss" />
     <ui:VisualElement name="toolbar">
         <ui:VisualElement name="top" class="top">
             <ui:VisualElement name="left-buttons" style="flex-direction: row;">

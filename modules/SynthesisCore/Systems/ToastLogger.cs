@@ -100,7 +100,7 @@ namespace SynthesisCore.Systems
             icon.SetStyleProperty("width", "25px");
             icon.SetStyleProperty("min-width", "25px");
             icon.SetStyleProperty("max-width", "25px");
-            icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/add-icon.png");
+            icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/add-icon.png");
             icon.SetStyleProperty("border-top-width", "0px");
             icon.SetStyleProperty("border-bottom-width", "0px");
             icon.SetStyleProperty("border-left-width", "0px");
@@ -110,26 +110,26 @@ namespace SynthesisCore.Systems
             {
                 case LogLevel.Debug:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/wrench-icon.png");
+                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/wrench-icon.png");
                         element.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
                         break;
                     }
                 case LogLevel.Warning:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/warning-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/warning-icon-white-solid.png");
                         element.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
                         break;
                     }
                 case LogLevel.Error:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/error-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/error-icon-white-solid.png");
                         element.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
                         break;
                     }
                 default:
                 case LogLevel.Info:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/info-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/info-icon-white-solid.png");
                         element.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
                         break;
                     }
@@ -187,7 +187,7 @@ namespace SynthesisCore.Systems
             closeButton.SetStyleProperty("border-bottom-width", "0px");
             closeButton.SetStyleProperty("border-left-width", "0px");
             closeButton.SetStyleProperty("border-right-width", "0px");
-            closeButton.SetStyleProperty("background-image", "/modules/SynthesisCore/UI/images/close-icon-white.png");
+            closeButton.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/close-icon-white.png");
             closeButton.Subscribe(e =>
             {
                 if (e is ButtonClickableEvent be && be.Name == closeButton.Name)
