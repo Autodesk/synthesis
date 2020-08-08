@@ -430,7 +430,7 @@ class GLTFDesignExporter(object):
             return
 
         try:
-            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bodyList]), including_default_value_fields=True)
+            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bodyList]))
         except:
             self.warnings.append(f"Unable to get physical properties for component {mesh.name}")
 
