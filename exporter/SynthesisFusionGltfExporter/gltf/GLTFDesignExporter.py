@@ -2,20 +2,15 @@ import copy
 import struct
 import time
 import traceback
-from datetime import date, datetime
-
 
 from io import BytesIO
 from typing import Dict, List
-from typing import Optional, Union, Tuple, Callable
+from typing import Optional, Union
 
 import adsk
 import adsk.core
 import adsk.fusion
 from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
-from pygltflib import gltf_asdict, json_serial
-import json
-from dataclasses_json.core import _ExtendedEncoder as JsonEncoder
 
 from google.protobuf.json_format import MessageToDict
 
@@ -84,59 +79,6 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         if ui:
             ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
 
-def gltf_to_json(gltf) -> str:
-    return to_json(gltf, default=json_serial, indent=None, allow_nan=False, skipkeys=True)
-
-def delete_empty_keys_ignore_keys(dictionary, ignoreKeys):
-    """
-    Delete keys with the value ``None`` in a dictionary, recursively.
-
-    This alters the input so you may wish to ``copy`` the dict first.
-
-    Courtesy Chris Morgan and modified from:
-    https://stackoverflow.com/questions/4255400/exclude-empty-null-values-from-json-serialization
-    """
-    for key, value in list(dictionary.items()):
-        if value is None or (hasattr(value, '__iter__') and len(value) == 0):
-            del dictionary[key]
-        elif isinstance(value, dict):
-            if key not in ignoreKeys:
-                delete_empty_keys_ignore_keys(value, ignoreKeys)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    delete_empty_keys_ignore_keys(item, ignoreKeys)
-    return dictionary  # For convenience
-
-def to_json(gltf,
-            *,
-            skipkeys: bool = False,
-            ensure_ascii: bool = True,
-            check_circular: bool = True,
-            allow_nan: bool = True,
-            indent: Optional[Union[int, str]] = None,
-            separators: Tuple[str, str] = None,
-            default: Callable = None,
-            sort_keys: bool = True,
-            **kw) -> str:
-    """
-    to_json and from_json from dataclasses_json
-    courtesy https://github.com/lidatong/dataclasses-json
-    """
-
-    data = gltf_asdict(gltf)
-    data = delete_empty_keys_ignore_keys(data, ['extras'])
-    return json.dumps(data,
-                      cls=JsonEncoder,
-                      skipkeys=skipkeys,
-                      ensure_ascii=ensure_ascii,
-                      check_circular=check_circular,
-                      allow_nan=allow_nan,
-                      indent=indent,
-                      separators=separators,
-                      default=default,
-                      sort_keys=sort_keys,
-                      **kw)
 
 class GLTFDesignExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
@@ -300,7 +242,7 @@ class GLTFDesignExporter(object):
         self.primaryBuffer.byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
 
         # ==== do NOT make changes to the glTF object beyond this point ====
-        json = gltf_to_json(self.gltf)
+        json = self.gltf.gltf_to_json()
         # with open(filepath+".debug.json", "wt") as jsonFile:
         #     jsonFile.write(json)
         jsonBytes = bytearray(json.encode("utf-8"))  # type: bytearray
