@@ -1,4 +1,4 @@
-﻿using SynthesisAPI.UIManager.VisualElements;
+﻿using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using System.Collections.Generic;
 
 namespace SynthesisAPI.UIManager
@@ -60,7 +60,7 @@ namespace SynthesisAPI.UIManager
             return classes.ContainsKey(className);
         }
 
-        internal UnityEngine.UIElements.VisualElement ApplyClassToVisualElement(string className, UnityEngine.UIElements.VisualElement visualElement)
+        internal _UnityVisualElement ApplyClassToVisualElement(string className, _UnityVisualElement visualElement)
         {
             //Logger.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
             UssClass ussClass = classes[className];

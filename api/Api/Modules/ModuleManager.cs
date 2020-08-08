@@ -1,10 +1,11 @@
 ﻿using SynthesisAPI.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("CoreEngine")]
 [assembly: InternalsVisibleTo("MockApi")]
+[assembly: InternalsVisibleTo("TestApi")]
+[assembly: InternalsVisibleTo("PlayMode.Tests")]
 
 namespace SynthesisAPI.Modules
 {

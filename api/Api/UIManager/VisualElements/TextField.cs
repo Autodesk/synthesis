@@ -74,7 +74,7 @@ namespace SynthesisAPI.UIManager.VisualElements
                 throw new Exception();
         }
 
-        public TextField(_UnityTextField element)
+        internal TextField(_UnityTextField element)
         {
             Element = element;
         }

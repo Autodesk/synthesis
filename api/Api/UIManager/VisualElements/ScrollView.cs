@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
 using _UnityScrollView = UnityEngine.UIElements.ScrollView;
 
@@ -14,7 +12,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement = value;
         }
 
-        public ScrollView(_UnityScrollView visualElement)
+        internal ScrollView(_UnityScrollView visualElement)
         {
             Element = visualElement;
         }

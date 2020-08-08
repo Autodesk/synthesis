@@ -1,12 +1,8 @@
 ﻿using SynthesisAPI.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SynthesisAPI.EventBus;
-using UnityEngine;
-using UnityButton = UnityEngine.UIElements.Button;
+using _UnityButton = UnityEngine.UIElements.Button;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
@@ -14,9 +10,9 @@ namespace SynthesisAPI.UIManager.VisualElements
     {
         private EventBus.EventBus.EventCallback _callback;
         
-        public UnityButton Element
+        protected _UnityButton Element
         {
-            get => (_visualElement as UnityButton)!;
+            get => (_visualElement as _UnityButton)!;
             set => _visualElement = value;
         }
 
@@ -24,9 +20,6 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             get => $"button/{Element.name}";
         }
-        
-        public static explicit operator UnityButton(Button element) => element.Element;
-        public static explicit operator Button(UnityButton element) => new Button(element);
 
         public string Text {
             get => Element.text;
@@ -35,12 +28,12 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public Button()
         {
-            _visualElement = ApiProvider.CreateUnityType<UnityButton>()!;
+            _visualElement = ApiProvider.CreateUnityType<_UnityButton>()!;
             if (_visualElement == null)
                 throw new Exception();
         }
 
-        public Button(UnityButton element)
+        internal Button(_UnityButton element)
         {
             Element = element;
         }
@@ -69,7 +62,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is UnityButton ? value : Element;
+            set => Element = value is _UnityButton ? value : Element;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
-using UnityEngine.UIElements;
+using _SelectionType = UnityEngine.UIElements.SelectionType;
 using _UnityListView = UnityEngine.UIElements.ListView;
 
 namespace SynthesisAPI.UIManager.VisualElements
@@ -14,7 +14,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         /// Wrapper for the Unity ListView
         /// This is necessary because these methods are currently protected and we need access to them
         /// </summary>
-        public class UnityListViewWrapper : _UnityListView
+        public class _UnityListViewWrapper : _UnityListView
         {
             public new void AddToSelection(int index) => base.AddToSelection(index);
             public new void ClearSelection() => base.ClearSelection();
@@ -24,9 +24,9 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         private EventBus.EventBus.EventCallback _callback;
 
-        private UnityListViewWrapper Element
+        protected _UnityListViewWrapper Element
         {
-            get => (_visualElement as UnityListViewWrapper)!;
+            get => (_visualElement as _UnityListViewWrapper)!;
             set => _visualElement = value;
         }
         
@@ -40,13 +40,13 @@ namespace SynthesisAPI.UIManager.VisualElements
         public ListView()
         {
             // Element = ApiProvider.InstantiateFocusable<UnityListView>()!;
-            Element = ApiProvider.CreateUnityType<UnityListViewWrapper>()!;
+            Element = ApiProvider.CreateUnityType<_UnityListViewWrapper>()!;
             if (Element == null)
                 throw new Exception();
-            Element.selectionType = SelectionType.Single;
+            Element.selectionType = _SelectionType.Single;
         }
 
-        public ListView(UnityListViewWrapper element)
+        internal ListView(_UnityListViewWrapper element)
         {
             Element = element;
         }
@@ -137,7 +137,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is UnityListViewWrapper ? value : Element;
+            set => Element = value is _UnityListViewWrapper ? value : Element;
         }
     }
 }

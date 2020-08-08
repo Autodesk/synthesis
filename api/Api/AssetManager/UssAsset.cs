@@ -9,7 +9,7 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class UssAsset : Asset
     {
-        public StyleSheet _styleSheet { get; private set; }
+        public StyleSheet StyleSheet { get; private set; }
         
         public UssAsset(string name, Permissions perm, string sourcePath)
         {
@@ -19,7 +19,7 @@ namespace SynthesisAPI.AssetManager
         public override IEntry Load(byte[] data)
         {
             string[] contents = Encoding.UTF8.GetString(data).Split('\n');
-            _styleSheet = new StyleSheet(contents);
+            StyleSheet = new StyleSheet(contents);
             return this;
         }
     }

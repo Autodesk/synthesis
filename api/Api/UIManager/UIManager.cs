@@ -75,7 +75,7 @@ namespace SynthesisAPI.UIManager
                     var toolbar = LoadedTabs[tabName].Ui.GetElement("active-toolbar");
                     LoadedTabs[tabName].BindFunc(toolbar);
                     // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
-                    toolbarContainer.Add((UnityVisualElement) toolbar);
+                    toolbarContainer.Add(toolbar.UnityVisualElement);
 
                     SelectedTabName = tabName; 
                 }

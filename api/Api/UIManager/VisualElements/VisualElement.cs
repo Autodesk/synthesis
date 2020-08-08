@@ -2,25 +2,22 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
-using UnityVisualElement = UnityEngine.UIElements.VisualElement;
+using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
     {
-        protected UnityVisualElement _visualElement;
-
-        public static explicit operator UnityVisualElement(VisualElement element) => element._visualElement;
-        public static explicit operator VisualElement(UnityVisualElement element) => new VisualElement(element);
+        protected _UnityVisualElement _visualElement;
 
         public VisualElement()
         {
-            _visualElement = ApiProvider.CreateUnityType<UnityVisualElement>()!;
+            _visualElement = ApiProvider.CreateUnityType<_UnityVisualElement>()!;
             if (_visualElement == null)
                 throw new Exception("Failed to instantiate VisualElement");
         }
 
-        public VisualElement(UnityVisualElement visualElement)
+        internal VisualElement(_UnityVisualElement visualElement)
         {
             _visualElement = visualElement;
         }
@@ -46,7 +43,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => _visualElement.style;
         }
 
-        internal UnityVisualElement UnityVisualElement {
+        internal _UnityVisualElement UnityVisualElement {
             get => _visualElement;
         }
 
