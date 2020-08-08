@@ -1,6 +1,8 @@
 import copy
 import struct
 import time
+import traceback
+
 from io import BytesIO
 from typing import Dict, List
 from typing import Optional, Union
@@ -12,7 +14,7 @@ from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Ac
 
 from google.protobuf.json_format import MessageToDict
 
-from apper import AppObjects
+from apper import AppObjects, Fusion360Utilities
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
 from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
 from .utils.GLTFUtils import isEmptyLeafNode
@@ -75,7 +77,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         app = adsk.core.Application.get()
         ui = app.userInterface
         if ui:
-            ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.')
+            ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
 
 
 class GLTFDesignExporter(object):
@@ -175,6 +177,10 @@ class GLTFDesignExporter(object):
         self.componentRevIdToMatOverrideDict = {}
         self.materialNameToGltfIndex = {}
 
+        self.usedCompIdMap = {}
+
+        self.allAffectedOccurrences = []
+
     def saveGltf(self, filepath: str, useGlb: bool):
         """
         Exports the current fusion document into a glb file.
@@ -189,7 +195,7 @@ class GLTFDesignExporter(object):
         self.progressBar = self.ao.ui.createProgressDialog()
         self.progressBar.isCancelButtonShown = False
         self.progressBar.reset()
-        self.progressBar.show(f"Exporting {self.ao.document.name} to GLB", "Preparing for export...", 0, 100, 0)
+        self.progressBar.show(f"Exporting {self.ao.document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
         # noinspection PyUnresolvedReferences
         adsk.doEvents() # show progress bar
@@ -206,7 +212,7 @@ class GLTFDesignExporter(object):
                 return
 
         try:
-            self.gltf.extras['joints'] = exportJoints(self.ao.design.rootComponent.allJoints)
+            self.gltf.extras['joints'], self.allAffectedOccurrences = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.perfWatch)
         except RuntimeError: # todo: report this bug
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
@@ -375,6 +381,15 @@ class GLTFDesignExporter(object):
         if not self.exportVisibleBodiesOnly or occur.isVisible:
             node.mesh = self.exportMeshWithOverrideCached(occur.component, materialOverride)
         # node.extras['isGrounded'] = occur.isGrounded
+
+        self.perfWatch.switch_segment("item_id_tree")
+        if occur.fullPathName in self.allAffectedOccurrences:
+            node.extras["uuid"] = Fusion360Utilities.item_id(occur, self.GLTF_GENERATOR_ID)
+        # path_name = occur.fullPathName
+        # if path_name in self.usedCompIdMap:
+        #     self.eventCounter.event("**Found duplicate id")
+        # self.usedCompIdMap[path_name] = True
+        self.perfWatch.stop()
 
         node.children = [index for index in [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences] if index is not None]
 

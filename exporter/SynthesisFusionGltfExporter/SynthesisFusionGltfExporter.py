@@ -108,7 +108,7 @@ except:
     app = adsk.core.Application.get()
     ui = app.userInterface
     if ui:
-        ui.messageBox(f'Unable to start glTF Exporter for Synthesis!\nPlease contact frc@autodesk.com to report this bug.')
+        ui.messageBox(f'Unable to start glTF Exporter for Synthesis!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
         # ui.messageBox(f'Initialization: {traceback.format_exc()}')
 
 # Set to True to display various useful messages when debugging your app
@@ -121,7 +121,7 @@ def run(context):
         app = adsk.core.Application.get()
         ui = app.userInterface
         if ui:
-            ui.messageBox(f'glTF Exporter for Synthesis has encountered an error!\nPlease contact frc@autodesk.com to report this bug.')
+            ui.messageBox(f'glTF Exporter for Synthesis has encountered an error!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
 
 def stop(context):
     try:
