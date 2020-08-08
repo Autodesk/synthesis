@@ -33,6 +33,7 @@ def fillJoint(fusionJoint, projectId, perfWatch):
     protoJoint = Joint()
     # protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
     protoJoint.header.name = fusionJoint.name
+    protoJoint.header.uuid = Fusion360Utilities.item_id(fusionJoint, projectId)
     fillPoint3DConvertUnits(getJointOrigin(fusionJoint), protoJoint.origin)
     protoJoint.isLocked = fusionJoint.isLocked
     protoJoint.isSuppressed = fusionJoint.isSuppressed
