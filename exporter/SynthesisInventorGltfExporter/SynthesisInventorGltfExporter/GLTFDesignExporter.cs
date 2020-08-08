@@ -32,7 +32,6 @@ namespace SynthesisInventorGltfExporter
      */
     public class GLTFDesignExporter
     {
-        private static JsonFormatter synFormatter = new JsonFormatter(new JsonFormatter.Settings(true));
         private MaterialBuilder defaultMaterial = new MaterialBuilder()
             .WithMetallicRoughnessShader()
             .WithChannelParam("BaseColor", Vector4.One);
@@ -158,7 +157,7 @@ namespace SynthesisInventorGltfExporter
 
         private JObject PhysicalPropertiesToJSON(MassProperties massProperties)
         {
-            return JObject.Parse(synFormatter.Format(ExportPhysicalProperties(massProperties)));
+            return JObject.Parse(JsonFormatter.Default.Format(ExportPhysicalProperties(massProperties)));
         }
 
         private PhysicalProperties ExportPhysicalProperties(MassProperties massProperties)
@@ -178,7 +177,7 @@ namespace SynthesisInventorGltfExporter
             
             foreach (AssemblyJoint joint in allDocumentJoints)
             {
-                try { jointArray.Add(JObject.Parse(synFormatter.Format(ExportJoint(joint)))); } catch {}
+                try { jointArray.Add(JObject.Parse(JsonFormatter.Default.Format(ExportJoint(joint)))); } catch {}
             }
         
             return jointArray;
