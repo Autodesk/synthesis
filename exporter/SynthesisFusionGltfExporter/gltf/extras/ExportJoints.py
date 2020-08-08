@@ -17,7 +17,7 @@ def exportJoints(fusionJoints, projectId, perfWatch):
             continue
         joint, affectedOccurrences = fillJoint(fusionJoint, projectId, perfWatch)
         allAffectedOccurrences += affectedOccurrences
-        joints.append(MessageToDict(joint))
+        joints.append(MessageToDict(joint, including_default_value_fields=True))
     return joints, [occ.fullPathName for occ in allAffectedOccurrences if occ is not None]
 
 def isJointInvalid(fusionJoint):
