@@ -90,7 +90,7 @@ namespace Engine.ModuleLoader
 					LoadModule((archive, metadata));
 
 					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
-					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
+					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version, metadata.Author, metadata.Description));
 				}
 				catch (Exception e)
 				{
