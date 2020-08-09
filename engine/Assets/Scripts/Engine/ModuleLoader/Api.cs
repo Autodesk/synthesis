@@ -35,14 +35,12 @@ namespace Engine.ModuleLoader
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
 
-		private static Dictionary<string, string> assemblyOwners = new Dictionary<string, string>();
-
 		private static MemoryStream newConsoleStream = new MemoryStream();
 		private static long lastConsoleStreamPos = 0;
 
 		public void Awake()
 		{
-			assemblyOwners.Add(Assembly.GetExecutingAssembly().GetName().Name, "CoreEngine");
+			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 #if UNITY_EDITOR
 			Logger.RegisterLogger(new LoggerImpl());
 #endif
@@ -287,7 +285,7 @@ namespace Engine.ModuleLoader
 					RegisterTagCallback(callback, instance);
 				}
 			}
-			assemblyOwners.Add(apiAssembly.GetName().Name, "Api");
+			ModuleManager.RegisterModuleAssemblyName(apiAssembly.GetName().Name, "Api");
 			return true;
 		}
 
@@ -359,7 +357,7 @@ namespace Engine.ModuleLoader
 				}
 			}
 
-			assemblyOwners.Add(assembly.GetName().Name, owningModule);
+			ModuleManager.RegisterModuleAssemblyName(assembly.GetName().Name, owningModule);
 			return true;
 		}
 
@@ -411,8 +409,8 @@ namespace Engine.ModuleLoader
 
 			public void Log(object o, LogLevel logLevel = LogLevel.Info, string memberName = "", string filePath = "", int lineNumber = 0)
 			{
-				var callSite = new StackTrace().GetFrame(2).GetMethod().DeclaringType?.Assembly.GetName().Name;
-				var msg = $"{(assemblyOwners.ContainsKey(callSite) ? assemblyOwners[callSite] : $"{callSite}.dll")}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}";
+				var type = new StackTrace().GetFrame(2).GetMethod().DeclaringType;
+				var msg = $"{ModuleManager.GetDeclaringModule(type)}\\{filePath.Split('\\').Last()}:{lineNumber}: {o}";
 				switch (logLevel)
 				{
 					case LogLevel.Info:

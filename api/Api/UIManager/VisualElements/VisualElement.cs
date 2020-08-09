@@ -33,6 +33,15 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement.focusable = value;
         }
 
+        /// <summary>
+        /// TODO: tooltips do not seem to be supported by Unity yet
+        /// </summary>
+        public string Tooltip
+        {
+            get => _visualElement.tooltip;
+            set => _visualElement.tooltip = value;
+        }
+
         public bool Enabled
         {
             get => _visualElement.enabledSelf;

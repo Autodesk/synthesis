@@ -1,7 +1,10 @@
-﻿using SynthesisAPI.UIManager;
+﻿using SynthesisAPI.Modules;
+using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace SynthesisCore.Systems
@@ -41,11 +44,16 @@ namespace SynthesisCore.Systems
             /// Log level of the log call
             /// </summary>
             public readonly LogLevel LogLevel;
+            /// <summary>
+            /// Tooltip on hover
+            /// </summary>
+            public readonly string Tooltip;
 
-            public Toast(string content, LogLevel logLevel)
+            public Toast(string content, LogLevel logLevel, string tooltip)
             {
                 RawText = content;
                 LogLevel = logLevel;
+                Tooltip = tooltip;
                 Lines = Utilities.Text.SplitLines(RawText, CharsPerToastLine);
             }
         }
@@ -74,22 +82,22 @@ namespace SynthesisCore.Systems
 
             // Create a toast visual element
 
-            var element = new VisualElement();
+            var toastElement = new VisualElement();
             
-            element.SetStyleProperty("flex-direction", "row");
-            element.SetStyleProperty("align-content", "center");
-            element.SetStyleProperty("padding-top", "5px");
-            element.SetStyleProperty("padding-bottom", "5px");
-            element.SetStyleProperty("padding-left", "5px");
-            element.SetStyleProperty("padding-right", "5px");
-            element.SetStyleProperty("margin-bottom", "10px");
-            element.SetStyleProperty("background-color", "rgb(255, 255, 255)");
+            toastElement.SetStyleProperty("flex-direction", "row");
+            toastElement.SetStyleProperty("align-content", "center");
+            toastElement.SetStyleProperty("padding-top", "5px");
+            toastElement.SetStyleProperty("padding-bottom", "5px");
+            toastElement.SetStyleProperty("padding-left", "5px");
+            toastElement.SetStyleProperty("padding-right", "5px");
+            toastElement.SetStyleProperty("margin-bottom", "10px");
+            toastElement.SetStyleProperty("background-color", "rgb(255, 255, 255)");
             var heightNoPadding = Toast.LineHeight * toast.Lines.Count;
             var height = Toast.PaddingHeight + heightNoPadding;
 
-            element.SetStyleProperty("height", height.ToString() + "px");
-            element.SetStyleProperty("max-height", height.ToString() + "px");
-            element.SetStyleProperty("min-height", height.ToString() + "px");
+            toastElement.SetStyleProperty("height", height.ToString() + "px");
+            toastElement.SetStyleProperty("max-height", height.ToString() + "px");
+            toastElement.SetStyleProperty("min-height", height.ToString() + "px");
 
             #region MakeIcon
 
@@ -111,31 +119,31 @@ namespace SynthesisCore.Systems
                 case LogLevel.Debug:
                     {
                         icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/wrench-icon.png");
-                        element.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
+                        toastElement.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
                         break;
                     }
                 case LogLevel.Warning:
                     {
                         icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/warning-icon-white-solid.png");
-                        element.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
+                        toastElement.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
                         break;
                     }
                 case LogLevel.Error:
                     {
                         icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/error-icon-white-solid.png");
-                        element.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
+                        toastElement.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
                         break;
                     }
                 default:
                 case LogLevel.Info:
                     {
                         icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/info-icon-white-solid.png");
-                        element.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
+                        toastElement.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
                         break;
                     }
             }
 
-            element.Add(icon);
+            toastElement.Add(icon);
 
             #endregion
 
@@ -172,7 +180,7 @@ namespace SynthesisCore.Systems
                 textArea.Add(label);
             }
             
-            element.Add(textArea);
+            toastElement.Add(textArea);
 
             #endregion
 
@@ -192,16 +200,16 @@ namespace SynthesisCore.Systems
             {
                 if (e is ButtonClickableEvent be && be.Name == closeButton.Name)
                 {
-                    toastFeed.Remove(element);
+                    toastFeed.Remove(toastElement);
                     toastList.Remove(toast);
                     UpdateContainerHeight();
                 }
             });
-            element.Add(closeButton);
+            toastElement.Add(closeButton);
 
             #endregion
 
-            toastFeed.Add(element);
+            toastFeed.Add(toastElement);
 
             #endregion
 
@@ -260,8 +268,10 @@ namespace SynthesisCore.Systems
             {
                 currentlyLogging = true;
                 if (logLevel != LogLevel.Debug || debugLogsEnabled)
-                { 
-                    var msg = new Toast(o.ToString(), logLevel);
+                {
+                    var type = new StackTrace().GetFrame(2).GetMethod().DeclaringType;
+                    var tooltip = $"{ModuleManager.GetDeclaringModule(type)}\\{filePath.Split('\\').Last()}:{lineNumber}";
+                    var msg = new Toast(o.ToString(), logLevel, tooltip);
                     SendToast(msg);
                 }
                 currentlyLogging = false;
