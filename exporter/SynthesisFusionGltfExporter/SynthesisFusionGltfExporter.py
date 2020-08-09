@@ -35,7 +35,7 @@ try:
         progressBar = ui.createProgressDialog()
         progressBar.isCancelButtonShown = False
         progressBar.reset()
-        progressBar.show(f"Installing dependencies for Synthesis glTF Exporter", 0, 3, 0)
+        progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 3, 0)
 
         try:
             from pathlib import Path
