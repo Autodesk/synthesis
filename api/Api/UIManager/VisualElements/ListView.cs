@@ -133,11 +133,5 @@ namespace SynthesisAPI.UIManager.VisualElements
             base.PostUxmlLoad();
             return null!;
         }
-
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is _UnityListViewWrapper ? value : Element;
-        }
     }
 }

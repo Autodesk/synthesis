@@ -93,19 +93,5 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             _visualElement = UIParser.ParseEntry($"{name}:{value}", _visualElement);
         }
-        
-        #region Dynamic Accessors
-
-        /// <summary>
-        /// Allows you to access <see cref="https://docs.unity3d.com/ScriptReference/UIElements.VisualElement.html">VisualElement</see>
-        /// and still compile without the UnityEngine assembly. This is going to be protected until we need it
-        /// </summary>
-        protected virtual dynamic DynamicVisualElement
-        {
-            get => _visualElement;
-            set => _visualElement = value is VisualElement ? value : _visualElement;
-        }
-
-        #endregion
     }
 }

@@ -27,11 +27,5 @@ namespace SynthesisAPI.UIManager.VisualElements
                 throw new Exception();
         }
         public void ScrollTo(VisualElement visualElement) => Element.ScrollTo(visualElement.UnityVisualElement);
-
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is _UnityScrollView ? value : Element;
-        }
     }
 }

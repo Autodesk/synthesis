@@ -33,11 +33,5 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             Element = element;
         }
-        
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is _UnityLabel ? value : Element;
-        }
     }
 }
