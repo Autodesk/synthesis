@@ -35,8 +35,8 @@ namespace Engine.ModuleLoader
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
 
-		private static MemoryStream newConsoleStream = new MemoryStream();
-		private static long lastConsoleStreamPos = 0;
+		private static MemoryStream _newConsoleStream = new MemoryStream();
+		private static long _lastConsoleStreamPos = 0;
 
 		public void Awake()
 		{
@@ -172,7 +172,7 @@ namespace Engine.ModuleLoader
 			{
 				foreach (var dependency in metadata.Dependencies)
 				{
-					if (!moduleList.Any(m => m.metadata.Name == dependency.Name))
+					if (moduleList.All(m => m.metadata.Name != dependency.Name))
 					{
 						throw new LoadModuleException($"Module {metadata.Name} is missing dependency module {dependency.Name}");
 					}
@@ -333,9 +333,9 @@ namespace Engine.ModuleLoader
 			}
 			catch (ReflectionTypeLoadException e)
 			{
-				if (e is ReflectionTypeLoadException reflectionTypeLoadException)
+				if (e is { } reflectionTypeLoadException)
 				{
-					foreach (Exception inner in reflectionTypeLoadException.LoaderExceptions)
+					foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
 					{
 						Logger.Log($"Loading module {owningModule} resulted in type errors\n{inner}", LogLevel.Error);
 					}
@@ -349,7 +349,7 @@ namespace Engine.ModuleLoader
 			}
 
 			foreach (var exportedModuleClass in types
-				.Where(t => t.GetCustomAttribute<ModuleExportAttribute>() != null))
+				.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null))
 			{
 				try
 				{
@@ -361,8 +361,7 @@ namespace Engine.ModuleLoader
 						exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
 					}
 
-					if (exportedModuleClassInstance == null)
-						exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
+					exportedModuleClassInstance ??= Activator.CreateInstance(exportedModuleClass);
 
 					foreach (var callback in exportedModuleClass.GetMethods()
 						.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
@@ -509,16 +508,16 @@ namespace Engine.ModuleLoader
 		}
 		private void RerouteConsoleOutput()
 		{
-			var writer = new StreamWriter(newConsoleStream);
+			var writer = new StreamWriter(_newConsoleStream);
 			Console.SetOut(writer);
 
-			var reader = new StreamReader(newConsoleStream);
+			var reader = new StreamReader(_newConsoleStream);
 			bool firstUse = true;
 			Task.Run(() =>
 			{
 				while (Application.isPlaying)
 				{
-					if (newConsoleStream.Position != lastConsoleStreamPos)
+					if (_newConsoleStream.Position != _lastConsoleStreamPos)
 					{
 						if (firstUse)
 						{
@@ -526,13 +525,13 @@ namespace Engine.ModuleLoader
 							firstUse = false;
 						}
 						writer.Flush();
-						var pos = newConsoleStream.Position;
-						newConsoleStream.Position = lastConsoleStreamPos;
+						var pos = _newConsoleStream.Position;
+						_newConsoleStream.Position = _lastConsoleStreamPos;
 
 						Logger.Log(reader.ReadToEnd());
 
-						lastConsoleStreamPos = pos;
-						newConsoleStream.Position = pos;
+						_lastConsoleStreamPos = pos;
+						_newConsoleStream.Position = pos;
 					}
 				}
 			});

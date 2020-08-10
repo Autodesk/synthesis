@@ -4,8 +4,13 @@ using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.VirtualFileSystem;
+using UnityEngine;
+using ILogger = SynthesisAPI.Utilities.ILogger;
 
 namespace SynthesisCore.Systems
 {
@@ -222,6 +227,9 @@ namespace SynthesisCore.Systems
         {
             if (initialized)
                 return;
+
+            var wrenchIcon = File.Open();
+            AssetManager.Import("image/sprite", null, "/modules/runtime", "wrench-icon.png", Permissions.PublicReadOnly, "");
 
             toastContainer = UIManager.RootElement.Get("toast-notification-container");
             toastFeed = UIManager.RootElement.Get("toast-feed");
