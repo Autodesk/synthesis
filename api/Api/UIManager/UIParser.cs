@@ -266,13 +266,17 @@ namespace SynthesisAPI.UIManager
         internal static StyleBackground ToStyleBackground(string str)
         {
             string path = str.Replace(" ", "");
-            
+            if (path.StartsWith("url(\"") || path.StartsWith("url('"))
+                path = path.Remove(0, 5);
+            if (path.EndsWith("\")") || path.EndsWith("')"))
+                path = path.Remove(path.Length - 2, 2);
+
             try
             {
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    Logger.Log("Can't find asset", LogLevel.Warning);
+                    Logger.Log($"Can't find USS background image asset: {path}", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -283,7 +287,7 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                Logger.Log($"Exception when parsing background texture", LogLevel.Warning);
+                Logger.Log($"Exception when parsing background texture\n{e}", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
