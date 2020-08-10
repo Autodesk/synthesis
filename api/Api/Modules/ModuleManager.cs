@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("CoreEngine")]
 [assembly: InternalsVisibleTo("MockApi")]
+[assembly: InternalsVisibleTo("TestApi")]
+[assembly: InternalsVisibleTo("PlayMode.Tests")]
 
 namespace SynthesisAPI.Modules
 {
@@ -66,14 +68,28 @@ namespace SynthesisAPI.Modules
             return Instance.LoadedModules.Contains(module);
         }
 
+        [ExposedApi]
+        public static string GetDeclaringModule(Type type)
+        {
+            var callSite = type.Assembly.GetName().Name;
+            return Instance.AssemblyOwners.ContainsKey(callSite) ? Instance.AssemblyOwners[callSite] : $"{callSite}.dll";
+        }
+
+        internal static void RegisterModuleAssemblyName(string assemblyName, string owningModule)
+        {
+            Instance.AssemblyOwners.Add(assemblyName, owningModule);
+        }
+
         private class Inner
         {
             public Inner()
             {
                 LoadedModules = new List<ModuleInfo>();
+                AssemblyOwners = new Dictionary<string, string>();
             }
 
             public List<ModuleInfo> LoadedModules;
+            public Dictionary<string, string> AssemblyOwners;
             public bool IsFinishedLoading { get; set; }
 
             public static readonly Inner Instance = new Inner();

@@ -2,25 +2,22 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
-using UnityVisualElement = UnityEngine.UIElements.VisualElement;
+using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
     {
-        protected UnityVisualElement _visualElement;
-
-        public static explicit operator UnityVisualElement(VisualElement element) => element._visualElement;
-        public static explicit operator VisualElement(UnityVisualElement element) => new VisualElement(element);
+        protected _UnityVisualElement _visualElement;
 
         public VisualElement()
         {
-            _visualElement = ApiProvider.CreateUnityType<UnityVisualElement>()!;
+            _visualElement = ApiProvider.CreateUnityType<_UnityVisualElement>()!;
             if (_visualElement == null)
                 throw new Exception("Failed to instantiate VisualElement");
         }
 
-        public VisualElement(UnityVisualElement visualElement)
+        internal VisualElement(_UnityVisualElement visualElement)
         {
             _visualElement = visualElement;
         }
@@ -30,11 +27,32 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement.name = value;
         }
 
+        public bool Focusable
+        {
+            get => _visualElement.focusable;
+            set => _visualElement.focusable = value;
+        }
+
+        /// <summary>
+        /// TODO: tooltips do not seem to be supported by Unity yet
+        /// </summary>
+        public string Tooltip
+        {
+            get => _visualElement.tooltip;
+            set => _visualElement.tooltip = value;
+        }
+
+        public bool Enabled
+        {
+            get => _visualElement.enabledSelf;
+            set => _visualElement.SetEnabled(value);
+        }
+
         public IStyle style {
             get => _visualElement.style;
         }
 
-        internal UnityVisualElement UnityVisualElement {
+        internal _UnityVisualElement UnityVisualElement {
             get => _visualElement;
         }
 
@@ -47,8 +65,29 @@ namespace SynthesisAPI.UIManager.VisualElements
             return null;
         }
 
-        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
+        public IEnumerable<VisualElement> GetChildren()
+        {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+                children.Add(child.GetVisualElement());
+            return children;
+        }
+
+        public VisualElement Get(string name = null, string className = null)
+        {
+            if (_visualElement == null)
+                return null;
+            var found = _visualElement.Q(name, className);
+            if (found == null)
+                return null;
+            return found.GetVisualElement();
+        }
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
+        public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
+        public void RemoveAt(int index) => _visualElement.RemoveAt(index);
+        public void Insert(int index, VisualElement element) => _visualElement.Insert(index, element._visualElement);
+        public void AddToClassList(string className) => _visualElement.AddToClassList(className);
+        public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
 
         public void SetStyleProperty(string name, string value)
         {

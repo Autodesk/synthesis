@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
-using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.UIManager
@@ -14,7 +13,7 @@ namespace SynthesisAPI.UIManager
             // Logger.Log("[UI] Attempting registry of new stylesheet with name [" + asset.Name + "]");
             if (!styleSheets.ContainsKey(asset.Name))
             {
-                styleSheets.Add(asset.Name, asset._styleSheet);
+                styleSheets.Add(asset.Name, asset.StyleSheet);
             }
         }
 

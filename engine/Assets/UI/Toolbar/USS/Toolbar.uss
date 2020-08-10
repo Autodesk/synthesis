@@ -26,6 +26,14 @@
 
 .toolbar-button:hover {
     background-color: rgb(187, 187, 187);
+    border-left-color: rgb(0, 238, 13);
+    border-right-color: rgb(0, 238, 13);
+    border-top-color: rgb(0, 238, 13);
+    border-bottom-color: rgb(0, 238, 13);
+    border-left-width: 10px;
+    border-right-width: 10px;
+    border-top-width: 10px;
+    border-bottom-width: 10px;
 }
 
 .toolbar-button:active {
@@ -74,4 +82,8 @@
 
 .bottom {
     height: 40px;
+}
+
+#toast-scroll-view.unity-scroll-view {
+    flex-shrink: 0;
 }

@@ -1,4 +1,4 @@
-﻿using SynthesisAPI.VirtualFileSystem;
+﻿using SynthesisAPI.Utilities;
 using System;
 
 namespace Engine.ModuleLoader

@@ -150,14 +150,30 @@ def box(controller_sys):
         time.sleep(1)
 
 
+def messages(controller_sys):
+    i = 0;
+    while True:
+        controller_sys.log_str("This is an info toast i = " + str(i) + " plus a lot of other content", 0);
+        time.sleep(1)
+        controller_sys.log_str("This is a debug toast i = " + str(i), 1);
+        time.sleep(1)
+        controller_sys.log_str("This is a warning toast i = " + str(i), 2);
+        time.sleep(1)
+        controller_sys.log_str("This is an error toast i = " + str(i), 3);
+        time.sleep(1)
+        i += 1
+
+
 def main():
     controller_sys = ControllerSys()
 
-    test(controller_sys)
+    # test(controller_sys)
 
-    controller_sys.log_str("Hello World!", 2);
+    # controller_sys.log_str("Hello World!", 2);
 
-    box(controller_sys)
+    # box(controller_sys)
+
+    messages(controller_sys)
 
 
 main()

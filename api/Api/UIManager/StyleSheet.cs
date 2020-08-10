@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
+using System.Collections.Generic;
 
 namespace SynthesisAPI.UIManager
 {
@@ -21,8 +22,12 @@ namespace SynthesisAPI.UIManager
                 
                 if (line.StartsWith("."))
                 {
+                    if(line[line.Length - 1] == '{')
+                    {
+                        line = line.Substring(0, line.Length - 1).Trim(); // remove " {" from line
+                    }
                     string[] lineContents = line.Split('.');
-                    string className = lineContents[1].Substring(0, lineContents[1].Length - 2); // substring to remove " {" from line
+                    string className = lineContents[1]; 
 
                     currentClass = new UssClass(className);
                     //Logger.Log("[UI] New class found with name [" + className + "]");
@@ -55,7 +60,7 @@ namespace SynthesisAPI.UIManager
             return classes.ContainsKey(className);
         }
 
-        internal UnityEngine.UIElements.VisualElement ApplyClassToVisualElement(string className, UnityEngine.UIElements.VisualElement visualElement)
+        internal _UnityVisualElement ApplyClassToVisualElement(string className, _UnityVisualElement visualElement)
         {
             //Logger.Log("[UI] Attempting to apply class [" + className + "] to [" + visualElement.name + "]");
             UssClass ussClass = classes[className];

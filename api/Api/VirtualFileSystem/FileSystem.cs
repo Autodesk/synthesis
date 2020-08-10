@@ -148,7 +148,7 @@ namespace SynthesisAPI.VirtualFileSystem
             var (top, actualPath) = Directory.GetTopDirectory(path);
             if (top != Instance.RootNode.Name)
             {
-                throw new DirectoryException("Path outside of virtual file system");
+                throw new DirectoryException($"Path outside of virtual file system \"{string.Join(Directory.DirectorySeparatorChar.ToString(), path)}\"");
             }
             if (path.Length > MaxDirectoryDepth)
             {

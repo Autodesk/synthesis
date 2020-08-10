@@ -1,23 +1,16 @@
 ﻿using SynthesisAPI.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityLabel = UnityEngine.UIElements.Label;
+using _UnityLabel = UnityEngine.UIElements.Label;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class Label : VisualElement
     {
-        private UnityLabel Element
+        private _UnityLabel Element
         {
-            get => (_visualElement as UnityLabel)!;
+            get => (_visualElement as _UnityLabel)!;
             set => _visualElement = value;
         }
-
-        public static explicit operator UnityLabel(Label element) => element.Element;
-        public static implicit operator Label(UnityLabel element) => new Label(element);
 
         public string Text {
             get => Element.text;
@@ -31,12 +24,12 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public Label()
         {
-            Element = ApiProvider.CreateUnityType<UnityLabel>()!;
+            Element = ApiProvider.CreateUnityType<_UnityLabel>()!;
             if (Element == null)
                 throw new Exception();
         }
 
-        public Label(UnityLabel element)
+        internal Label(_UnityLabel element)
         {
             Element = element;
         }
@@ -44,7 +37,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         protected override dynamic DynamicVisualElement
         {
             get => Element;
-            set => Element = value is UnityLabel ? value : Element;
+            set => Element = value is _UnityLabel ? value : Element;
         }
     }
 }
