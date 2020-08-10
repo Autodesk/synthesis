@@ -67,7 +67,10 @@ def getJointOrigin(fusionJoint):
         origin = geometryOrOrigin.geometry.origin
         # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
         # noinspection PyArgumentList
-        return adsk.core.Point3D.create(origin.x + geometryOrOrigin.offsetX.value ,origin.y + geometryOrOrigin.offsetY.value ,origin.z + geometryOrOrigin.offsetZ.value)
+        offsetX = 0 if geometryOrOrigin.offsetX is None else geometryOrOrigin.offsetX.value
+        offsetY = 0 if geometryOrOrigin.offsetY is None else geometryOrOrigin.offsetY.value
+        offsetZ = 0 if geometryOrOrigin.offsetZ is None else geometryOrOrigin.offsetZ.value
+        return adsk.core.Point3D.create(origin.x + offsetX, origin.y + offsetY, origin.z + offsetZ)
 
 def getJointedOccurrenceUUID(fusionJoint, fusionOccur, projectId, perfWatch):
     # if fusionOccur is None:
