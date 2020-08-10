@@ -269,8 +269,10 @@ class GLTFDesignExporter(object):
             else: # cancel
                 return
 
+        self.rootItemId = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
+
         try:
-            self.gltf.extras['joints'], self.allAffectedOccurrences = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.perfWatch)
+            self.gltf.extras['joints'], self.allAffectedOccurrences = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.perfWatch)
         except RuntimeError: # todo: report this bug
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
@@ -408,6 +410,9 @@ class GLTFDesignExporter(object):
         ]
 
         node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
+
+        if "" in self.allAffectedOccurrences:
+            node.extras["uuid"] = self.rootItemId
 
         if isEmptyLeafNode(node):
             return

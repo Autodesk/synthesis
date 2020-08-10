@@ -9,16 +9,16 @@ from google.protobuf.json_format import MessageToDict
 
 from gltf.extras.proto.gltf_extras_pb2 import Joint
 
-def exportJoints(fusionJoints, projectId, perfWatch):
+def exportJoints(fusionJoints, projectId, rootItemId, perfWatch):
     joints = []
     allAffectedOccurrences = []
     for fusionJoint in fusionJoints:
         if isJointInvalid(fusionJoint):
             continue
-        joint, affectedOccurrences = fillJoint(fusionJoint, projectId, perfWatch)
+        joint, affectedOccurrences = fillJoint(fusionJoint, projectId, rootItemId, perfWatch)
         allAffectedOccurrences += affectedOccurrences
         joints.append(MessageToDict(joint, including_default_value_fields=True))
-    return joints, [occ.fullPathName for occ in allAffectedOccurrences if occ is not None]
+    return joints, [occ.fullPathName if occ is not None else "" for occ in allAffectedOccurrences]
 
 def isJointInvalid(fusionJoint):
     if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
@@ -29,7 +29,7 @@ def isJointInvalid(fusionJoint):
         return True
     return False
 
-def fillJoint(fusionJoint, projectId, perfWatch):
+def fillJoint(fusionJoint, projectId, rootItemId, perfWatch):
     protoJoint = Joint()
     # protoJoint.header.uuid = item_id(fusionJoint, ATTR_GROUP_NAME)
     protoJoint.header.name = fusionJoint.name
@@ -41,8 +41,8 @@ def fillJoint(fusionJoint, projectId, perfWatch):
     # If occurrenceOne or occurrenceTwo is null, the joint is jointed to the root component
     occurrenceTwo = fusionJoint.occurrenceOne
     occurrenceOne = fusionJoint.occurrenceTwo
-    protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(fusionJoint, occurrenceTwo, projectId, perfWatch)
-    protoJoint.occurrenceTwoUUID = getJointedOccurrenceUUID(fusionJoint, occurrenceOne, projectId, perfWatch)
+    protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(fusionJoint, occurrenceTwo, projectId, rootItemId, perfWatch)
+    protoJoint.occurrenceTwoUUID = getJointedOccurrenceUUID(fusionJoint, occurrenceOne, projectId, rootItemId, perfWatch)
 
     fillJointMotionFuncSwitcher = {
         0: fillRigidJointMotion,
@@ -72,12 +72,12 @@ def getJointOrigin(fusionJoint):
         offsetZ = 0 if geometryOrOrigin.offsetZ is None else geometryOrOrigin.offsetZ.value
         return adsk.core.Point3D.create(origin.x + offsetX, origin.y + offsetY, origin.z + offsetZ)
 
-def getJointedOccurrenceUUID(fusionJoint, fusionOccur, projectId, perfWatch):
+def getJointedOccurrenceUUID(fusionJoint, fusionOccur, projectId, rootItemId, perfWatch):
     # if fusionOccur is None:
     #     return item_id(fusionJoint.parentComponent, ATTR_GROUP_NAME)  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
     # return item_id(fusionOccur, ATTR_GROUP_NAME)
     if fusionOccur is None:
-        return ""  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
+        return rootItemId  # If the occurrence of a joint is null, the joint is jointed to the parent component (which should always be the root object)
     perfWatch.switch_segment("item_id_joint")
     uuid = Fusion360Utilities.item_id(fusionOccur, projectId)
     perfWatch.stop()
