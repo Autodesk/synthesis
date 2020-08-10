@@ -2,30 +2,25 @@ import copy
 import struct
 import time
 import traceback
-from datetime import date, datetime
-
 
 from io import BytesIO
 from typing import Dict, List
-from typing import Optional, Union, Tuple, Callable
+from typing import Optional, Union
 
 import adsk
 import adsk.core
 import adsk.fusion
 from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
-from pygltflib import gltf_asdict, json_serial
-import json
-from dataclasses_json.core import _ExtendedEncoder as JsonEncoder
 
 from google.protobuf.json_format import MessageToDict
 
 from apper import AppObjects, Fusion360Utilities
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
 from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
-from .utils.GLTFUtils import isEmptyLeafNode
-from .utils.pyutils.counters import EventCounter
-from .utils.pyutils.timers import SegmentedStopwatch
-from .GLTFConstants import ComponentType, DataType
+from .utils.PygltfUtils import isEmptyLeafNode, writeGltfToFile, writeGlbToFile
+from gltf.utils.EventCounter import EventCounter
+from gltf.utils.Stopwatch import SegmentedStopwatch
+from gltf.utils.GLTFConstants import ComponentType, DataType
 from .utils.ByteUtils import *
 from .utils.MathUtils import isIdentityMatrix3D
 from .extras.ExportJoints import exportJoints
@@ -84,59 +79,6 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         if ui:
             ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
 
-def gltf_to_json(gltf) -> str:
-    return to_json(gltf, default=json_serial, indent=None, allow_nan=False, skipkeys=True)
-
-def delete_empty_keys_ignore_keys(dictionary, ignoreKeys):
-    """
-    Delete keys with the value ``None`` in a dictionary, recursively.
-
-    This alters the input so you may wish to ``copy`` the dict first.
-
-    Courtesy Chris Morgan and modified from:
-    https://stackoverflow.com/questions/4255400/exclude-empty-null-values-from-json-serialization
-    """
-    for key, value in list(dictionary.items()):
-        if value is None or (hasattr(value, '__iter__') and len(value) == 0):
-            del dictionary[key]
-        elif isinstance(value, dict):
-            if key not in ignoreKeys:
-                delete_empty_keys_ignore_keys(value, ignoreKeys)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    delete_empty_keys_ignore_keys(item, ignoreKeys)
-    return dictionary  # For convenience
-
-def to_json(gltf,
-            *,
-            skipkeys: bool = False,
-            ensure_ascii: bool = True,
-            check_circular: bool = True,
-            allow_nan: bool = True,
-            indent: Optional[Union[int, str]] = None,
-            separators: Tuple[str, str] = None,
-            default: Callable = None,
-            sort_keys: bool = True,
-            **kw) -> str:
-    """
-    to_json and from_json from dataclasses_json
-    courtesy https://github.com/lidatong/dataclasses-json
-    """
-
-    data = gltf_asdict(gltf)
-    data = delete_empty_keys_ignore_keys(data, ['extras'])
-    return json.dumps(data,
-                      cls=JsonEncoder,
-                      skipkeys=skipkeys,
-                      ensure_ascii=ensure_ascii,
-                      check_circular=check_circular,
-                      allow_nan=allow_nan,
-                      indent=indent,
-                      separators=separators,
-                      default=default,
-                      sort_keys=sort_keys,
-                      **kw)
 
 class GLTFDesignExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
@@ -171,9 +113,7 @@ class GLTFDesignExporter(object):
     FusionRevId = int
 
     # constants
-    GLTF_VERSION = 2
-    GLB_HEADER_SIZE = 12
-    GLB_CHUNK_SIZE = 8
+
     GLTF_GENERATOR_ID = "Autodesk.Synthesis.Fusion"
 
     MAT_OVERRIDEABLE_TAG = "fusExpMatOverrideable"
@@ -224,9 +164,8 @@ class GLTFDesignExporter(object):
 
         # The glB format only allows one buffer to be embedded in the main file.
         # We'll call this buffer the primaryBuffer.
-        self.primaryBuffer = Buffer()
-        self.primaryBufferIndex = len(self.gltf.buffers)
-        self.gltf.buffers.append(self.primaryBuffer)
+        self.gltf.buffers.append(Buffer())
+        self.primaryBufferIndex = len(self.gltf.buffers)-1
 
         # The actual binary data for the buffer will get stored in this memory stream
         self.primaryBufferStream = io.BytesIO()
@@ -299,47 +238,19 @@ class GLTFDesignExporter(object):
         self.perfWatch.switch_segment('encoding and file writing')
 
         # convert gltf to json and serialize
-        self.primaryBuffer.byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
+        self.gltf.buffers[self.primaryBufferIndex].byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
 
         # ==== do NOT make changes to the glTF object beyond this point ====
-        json = gltf_to_json(self.gltf)
-        # with open(filepath+".debug.json", "wt") as jsonFile:
-        #     jsonFile.write(json)
-        jsonBytes = bytearray(json.encode("utf-8"))  # type: bytearray
-
         # add padding bytes to the end of each chunk data
-        alignByteArrayToBoundary(jsonBytes)
         alignBytesIOToBoundary(self.primaryBufferStream)
 
         # get the memoryView of the primary buffer stream
         primaryBufferData = self.primaryBufferStream.getbuffer()
 
-        if (useGlb):
-            glbLength = self.GLB_HEADER_SIZE + \
-                        self.GLB_CHUNK_SIZE + len(jsonBytes) + \
-                        self.GLB_CHUNK_SIZE + len(primaryBufferData)
-
-            with open(filepath, 'wb') as stream:
-                # header
-                stream.write(b'glTF')  # magic
-                stream.write(struct.pack('<I', self.GLTF_VERSION))  # version
-                stream.write(struct.pack('<I', glbLength))  # length
-
-                # json chunk
-                stream.write(struct.pack('<I', len(jsonBytes)))  # chunk length
-                stream.write(bytes("JSON", 'utf-8'))  # chunk type
-                stream.write(jsonBytes)  # chunk data
-
-                # buffer chunk
-                stream.write(struct.pack('<I', len(primaryBufferData)))  # chunk length
-                stream.write(bytes("BIN\x00", 'utf-8'))  # chunk type
-                # noinspection PyTypeChecker
-                stream.write(primaryBufferData)  # chunk data
-
-                stream.flush()  # flush to file
+        if useGlb:
+            writeGlbToFile(self.gltf, primaryBufferData, filepath)
         else:
-            self.gltf._glb_data = primaryBufferData.tobytes()
-            self.gltf.save(filepath)
+            writeGltfToFile(self.gltf, primaryBufferData, filepath)
 
         self.perfWatch.stop()
 
@@ -364,6 +275,8 @@ class GLTFDesignExporter(object):
         end = time.perf_counter()
 
         return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter), round(end - start, 4)
+
+
 
     def exportScene(self) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.

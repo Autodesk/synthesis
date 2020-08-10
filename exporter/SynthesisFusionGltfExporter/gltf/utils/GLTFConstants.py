@@ -14,6 +14,10 @@
 
 from enum import Enum, IntEnum
 
+# GLB constants
+GLTF_VERSION = 2
+GLB_HEADER_SIZE = 12
+GLB_CHUNK_SIZE = 8
 
 class ComponentType(IntEnum):
     Byte = 5120
