@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using System.Threading.Tasks;
+using System.Threading;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
 
@@ -20,12 +21,12 @@ using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 using Unity.UIElements.Runtime;
 using UnityEngine.UIElements;
-using Directory = System.IO.Directory;
+using UnityEngine;
 using Engine.ModuleLoader.Adapters;
 using Logger = SynthesisAPI.Utilities.Logger;
+using Directory = System.IO.Directory;
 
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
-using System.Threading.Tasks;
 
 namespace Engine.ModuleLoader
 {
@@ -40,14 +41,26 @@ namespace Engine.ModuleLoader
 
 		public void Awake()
 		{
+			SetupErrorHandlers(); // Always do this first
+
+			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene
+
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 #if UNITY_EDITOR
 			Logger.RegisterLogger(new LoggerImpl());
 #endif
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
-			LoadApi();
+			try
+			{
+				LoadApi();
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to load API\n{e}", LogLevel.Error);
+			}
 			LoadModules();
 			RerouteConsoleOutput();
+			//throw new Exception("I am an unhandled exception");
 		}
 
 		private void LoadModules()
@@ -56,33 +69,44 @@ namespace Engine.ModuleLoader
 			{
 				Directory.CreateDirectory(ModulesSourcePath);
 			}
-
-			var modules = PreloadModules();
+			List<PreloadedModule> modules = new List<PreloadedModule>();
+			try
+			{
+				modules = PreloadModules();
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to preload modules\n{e}", LogLevel.Error);
+			}
 			try
 			{
 				ResolveDependencies(modules);
-
-				foreach (var (archive, metadata) in modules)
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to resolve module dependencies\n{e}", LogLevel.Error);
+			}
+			foreach (var (archive, metadata) in modules)
+			{
+				try
 				{
 					LoadModule((archive, metadata));
 
 					EventBus.Push(new LoadModuleEvent(metadata.Name, metadata.Version));
 					ModuleManager.AddToLoadedModuleList(new ModuleManager.ModuleInfo(metadata.Name, metadata.Version));
 				}
-				ModuleManager.MarkFinishedLoading();
-			}
-			catch (Exception e)
-			{
-				// TODO error screen
-				throw e;
-			}
-			finally
-			{
-				foreach (var (archive, _) in modules)
+				catch (Exception e)
 				{
-					archive.Dispose();
+					Logger.Log($"Failed to load module {metadata.Name}\n{e}", LogLevel.Error);
+					// TODO error screen
+					throw e;
 				}
 			}
+			foreach (var (archive, _) in modules)
+			{
+				archive.Dispose();
+			}
+			ModuleManager.MarkFinishedLoading();
 		}
 
 		private List<PreloadedModule> PreloadModules()
@@ -256,36 +280,43 @@ namespace Engine.ModuleLoader
 		private bool LoadApi()
 		{
 			// Set up Api
-			var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
-			foreach (var type in apiAssembly.GetTypes())
+			try
 			{
-				object instance = null;
+				var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
+				foreach (var type in apiAssembly.GetTypes())
+				{
+					object instance = null;
 
-				if (type.IsSubclassOf(typeof(SystemBase)))
-				{
-					var entity = EnvironmentManager.AddEntity();
-					instance = entity.AddComponent(type);
-				}
+					if (type.IsSubclassOf(typeof(SystemBase)))
+					{
+						var entity = EnvironmentManager.AddEntity();
+						instance = entity.AddComponent(type);
+					}
 
-				if (instance == null && type.GetMethods().Any(m =>
-					m.GetCustomAttribute<CallbackAttribute>() != null ||
-					m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
-				{
-					instance = Activator.CreateInstance(type);
-				}
+					if (instance == null && type.GetMethods().Any(m =>
+						m.GetCustomAttribute<CallbackAttribute>() != null ||
+						m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+					{
+						instance = Activator.CreateInstance(type);
+					}
 
-				foreach (var callback in type.GetMethods()
-					.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
-				{
-					RegisterTypeCallback(callback, instance);
+					foreach (var callback in type.GetMethods()
+						.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
+					{
+						RegisterTypeCallback(callback, instance);
+					}
+					foreach (var callback in type.GetMethods()
+						.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
+					{
+						RegisterTagCallback(callback, instance);
+					}
 				}
-				foreach (var callback in type.GetMethods()
-					.Where(m => m.GetCustomAttribute<TaggedCallbackAttribute>() != null))
-				{
-					RegisterTagCallback(callback, instance);
-				}
+				ModuleManager.RegisterModuleAssemblyName(apiAssembly.GetName().Name, "Api");
 			}
-			ModuleManager.RegisterModuleAssemblyName(apiAssembly.GetName().Name, "Api");
+			catch (Exception e)
+			{
+				Logger.Log($"Failed to load API\n{e}", LogLevel.Error);
+			}
 			return true;
 		}
 
@@ -403,6 +434,34 @@ namespace Engine.ModuleLoader
 				});
 		}
 
+		private static void SetupErrorHandlers()
+		{
+			Application.logMessageReceivedThreaded +=
+				(condition, stackTrace, type) =>
+				{
+					if (type == LogType.Exception)
+					{
+						Logger.Log($"Unhandled exception: {condition}\n{stackTrace}", LogLevel.Error);
+						// TODO show some module-independent error screen
+						if (!ModuleManager.IsFinishedLoading)
+						{
+							Task.Run(() =>
+							{
+								while (Application.isPlaying)
+								{
+									Thread.Sleep(250);
+									if (ModuleManager.IsFinishedLoading)
+									{
+										Logger.Log($"Unhandled exception: {condition}\n{stackTrace}", LogLevel.Error);
+										break;
+									}
+								}
+							});
+						}
+					}
+				};
+		}
+
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
 			private bool debugLogsEnabled = true;
@@ -456,7 +515,7 @@ namespace Engine.ModuleLoader
 			bool firstUse = true;
 			Task.Run(() =>
 			{
-				while (true)
+				while (Application.isPlaying)
 				{
 					if (newConsoleStream.Position != lastConsoleStreamPos)
 					{
