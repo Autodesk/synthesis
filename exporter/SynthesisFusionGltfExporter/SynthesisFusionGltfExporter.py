@@ -9,6 +9,8 @@ app_path = os.path.dirname(__file__)
 sys.path.insert(0, app_path)
 sys.path.insert(0, os.path.join(app_path, 'apper'))
 
+my_addin = None
+
 try:
     import config
     import apper
@@ -29,6 +31,7 @@ try:
         import pygltflib
         import numpy
         import google.protobuf
+
     except:
         app = adsk.core.Application.get()
         ui = app.userInterface
@@ -36,6 +39,7 @@ try:
         progressBar.isCancelButtonShown = False
         progressBar.reset()
         progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 3, 0)
+        adsk.doEvents()
 
         try:
             from pathlib import Path
@@ -43,20 +47,22 @@ try:
             with cd(p):
                 os.system("python -m pip install pygltflib")
                 progressBar.progressValue = 1
+                adsk.doEvents()
                 os.system("python -m pip install numpy")
                 progressBar.progressValue = 2
+                adsk.doEvents()
                 os.system("python -m pip install protobuf")
                 progressBar.progressValue = 3
-            from pygltflib import *
-            import numpy as np
+                adsk.doEvents()
+
+            progressBar.hide()
+
+            import pygltflib
+            import numpy
+            import google.protobuf
 
         except:
-            app = adsk.core.Application.get()
-            ui = app.userInterface
-            if ui:
-                ui.messageBox('Fatal Error: Unable to import libraries {}'.format(traceback.format_exc()))
-
-        progressBar.hide()
+            raise ImportError(f'Unable to install python dependencies for the glTF Exporter for Synthesis addin!')
 
     # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
@@ -115,6 +121,8 @@ except:
 debug = False
 
 def run(context):
+    if my_addin is None:
+        return
     try:
         my_addin.run_app()
     except:
