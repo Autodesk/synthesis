@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="header" class="window" style="height: 459px; width: 348px;">
+        <Style src="/Assets/UI/Window/USS/Window.uss" />
+        <ui:VisualElement name="header" class="window-header-container" style="height: 42px; width: 351px;">
+            <ui:VisualElement name="icon" class="window-header-icon" style="height: 32px; width: 36px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+            <ui:Label text="Joint Editor" name="title" class="window-header-title panel-heading" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
