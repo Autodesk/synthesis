@@ -22,8 +22,12 @@ namespace SynthesisCore.Systems
             Tab engineTab = new Tab("Engine", tabAsset, null);
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
                 element => RegisterOKCloseButtons(element, "Environments"));
-            Panel modulesWindow = new Panel("Modules", modulesAsset,
-                element => RegisterOKCloseButtons(element, "Modules"));
+            Panel modulesWindow = new Panel("Modules", modulesAsset, 
+                element =>
+                {
+                    RegisterOKCloseButtons(element, "Modules");
+                    LoadModulesWindowContent(element);
+                });
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => RegisterOKCloseButtons(element, "Settings"));
 
@@ -60,6 +64,28 @@ namespace SynthesisCore.Systems
             {
                 UIManager.ClosePanel(panelName);
             });
+        }
+
+        private void LoadModulesWindowContent(VisualElement visualElement)
+        {
+            var moduleAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Module.uxml");
+
+            foreach (var moduleInfo in ModuleManager.GetLoadedModules())
+            {
+                VisualElement moduleElement = moduleAsset?.GetElement("module");
+                
+                Label titleText = (Label) moduleElement?.Get("title");
+                // Label authorText = (Label) moduleElement?.Get("author");
+                // Label descriptionText = (Label) moduleElement?.Get("description");
+
+                titleText.Text = titleText.Text
+                    .Replace("%name%", moduleInfo.Name)
+                    .Replace("%version%", moduleInfo.Version);
+
+                ListView moduleList = (ListView) visualElement.Get("module-list");
+                moduleList.Add(moduleElement);
+            }
+            
         }
 
         public override void OnPhysicsUpdate() { }

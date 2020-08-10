@@ -379,6 +379,10 @@ namespace SynthesisAPI.UIManager
                 {
                     var styleSheetPath = node.Attributes["src"].Value;
                     var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(styleSheetPath);
+                    if (ussAsset == null)
+                    {
+                        throw new SynthesisException($"Failed to find style sheet \n{styleSheetPath}\" when loading style sheets");
+                    }
                     StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
                 }
 

@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="module" class="module-container">
+        <Style src="/modules/synthesis_core/UI/uss/Module.uss" />
+        <ui:VisualElement name="icon" class="module-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/module-icon.png&apos;);" />
+        <ui:VisualElement name="basic-info-container" style="width: 150px;">
+            <ui:Label text="%name% v%version%" name="title" />
+            <ui:Label text="by %author%" name="author" />
+        </ui:VisualElement>
+        <ui:VisualElement name="filler-container" style="width: 30px; height: 100%;" />
+        <ui:VisualElement name="description-container" style="width: auto;">
+            <ui:Label text="%description%" name="description" style="white-space: normal; width: 250px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
