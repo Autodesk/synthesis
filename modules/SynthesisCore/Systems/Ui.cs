@@ -75,12 +75,17 @@ namespace SynthesisCore.Systems
                 VisualElement moduleElement = moduleAsset?.GetElement("module");
                 
                 Label titleText = (Label) moduleElement?.Get("title");
-                // Label authorText = (Label) moduleElement?.Get("author");
-                // Label descriptionText = (Label) moduleElement?.Get("description");
+                Label authorText = (Label) moduleElement?.Get("author");
+                Label descriptionText = (Label) moduleElement?.Get("description");
 
                 titleText.Text = titleText.Text
                     .Replace("%name%", moduleInfo.Name)
                     .Replace("%version%", moduleInfo.Version);
+
+                authorText.Text = authorText.Text.Replace("%author%",
+                    string.IsNullOrEmpty(moduleInfo.Author) ? "Unknown" : moduleInfo.Author);
+                descriptionText.Text = descriptionText.Text.Replace("%description%",
+                    string.IsNullOrEmpty(moduleInfo.Description) ? "No description" : moduleInfo.Description);
 
                 ListView moduleList = (ListView) visualElement.Get("module-list");
                 moduleList.Add(moduleElement);
