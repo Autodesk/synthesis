@@ -17,6 +17,7 @@ namespace SynthesisCore.Systems
             var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Environments.uxml");
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
+            var jointsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Joints.uxml");
 
             Tab engineTab = new Tab("Engine", tabAsset, null);
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
@@ -25,6 +26,8 @@ namespace SynthesisCore.Systems
                 element => RegisterOKCloseButtons(element, "Modules"));
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => RegisterOKCloseButtons(element, "Settings"));
+            Panel jointsWindow = new Panel("Joints", jointsAsset,
+                element => RegisterOKCloseButtons(element, "Joints"));
 
             Logger.RegisterLogger(new ToastLogger());
 
@@ -32,6 +35,7 @@ namespace SynthesisCore.Systems
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
+            UIManager.AddPanel(jointsWindow);
 
             Button environmentsButton = (Button)UIManager.RootElement.Get("environments-button");
             environmentsButton.Subscribe(x =>
@@ -49,6 +53,11 @@ namespace SynthesisCore.Systems
             settingsButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Settings");
+            });
+            Button jointsButton = (Button)UIManager.RootElement.Get("joints-button");
+            settingsButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Joints");
             });
         }
 
