@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="joint" class="joint-container">
-        <Style src="USS/joint.uss" />
+        <Style src="USS/Joint.uss" />
         <ui:VisualElement name="border-box" class="joint-container" style="height: 99px; width: 342px; border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px; border-left-color: rgba(7, 7, 7, 255); border-right-color: rgba(7, 7, 7, 255); border-top-color: rgba(7, 7, 7, 255); border-bottom-color: rgba(7, 7, 7, 255);">
             <ui:VisualElement name="icon" class="icon" />
             <ui:VisualElement name="joint-dropdowns" style="height: 85px; width: 259px;">
