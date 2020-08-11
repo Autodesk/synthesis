@@ -6,7 +6,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public class ScrollView : VisualElement
     {
-        private _UnityScrollView Element
+        private protected _UnityScrollView Element
         {
             get => (_visualElement as _UnityScrollView)!;
             set => _visualElement = value;

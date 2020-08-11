@@ -26,7 +26,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         private EventBus.EventBus.EventCallback _callback;
 
-        protected _UnityListView Element
+        private protected _UnityListView Element
         {
             get => (_visualElement as _UnityListView)!;
             set => _visualElement = value;

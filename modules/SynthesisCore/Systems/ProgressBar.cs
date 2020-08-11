@@ -1,9 +1,5 @@
 ﻿using SynthesisAPI.AssetManager;
-using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
-using System;
-using System.Collections.Generic;
 
 namespace SynthesisCore.Systems
 {
@@ -47,6 +43,9 @@ namespace SynthesisCore.Systems
             _labelElement.Text = _label;
         }
 
+        /// <summary>
+        /// Progress bar percent in the range 0 to 1 inclusive
+        /// </summary>
         public double Value
         {
             get => _value;
