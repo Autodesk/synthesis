@@ -6,16 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading;
-using Component = SynthesisAPI.EnvironmentManager.Component;
-using Debug = UnityEngine.Debug;
-
-using System.IO.Compression;
-using Assets.Scripts.Engine.Util;
-using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
@@ -24,7 +16,8 @@ using UnityEngine.UIElements;
 using UnityEngine;
 using Engine.ModuleLoader.Adapters;
 using Logger = SynthesisAPI.Utilities.Logger;
-using Directory = System.IO.Directory;
+using Component = SynthesisAPI.EnvironmentManager.Component;
+using Debug = UnityEngine.Debug;
 
 
 namespace Engine.ModuleLoader
@@ -48,15 +41,9 @@ namespace Engine.ModuleLoader
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
-			try
-			{
-				ModuleLoader.PreloadApi();
-			}
-			catch (Exception e)
-			{
-				Logger.Log($"Failed to load API\n{e}", LogLevel.Error);
-			}
-			ModuleLoader.Run(ModulesSourcePath, BaseModuleTargetPath);
+			ModuleLoader.PreloadApi();
+			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
+
 			RerouteConsoleOutput();
 		}
 

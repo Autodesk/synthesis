@@ -4,9 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Assets.Scripts.Engine.Util;
-using Google.Protobuf.WellKnownTypes;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
@@ -14,22 +12,20 @@ using SynthesisAPI.Modules;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
-using UnityEngine;
 using Logger = SynthesisAPI.Utilities.Logger;
 using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engine.ModuleLoader.ModuleMetadata>;
 
 using Directory = System.IO.Directory;
-using Object = System.Object;
 using Type = System.Type;
 
 namespace Engine.ModuleLoader
 {
-	public static class ModuleLoader
+    public static class ModuleLoader
 	{
 		private static string _moduleSourcePath;
 		private static string _baseModuleTargetPath;
 
-		public static void Run(string moduleSourcePath, string baseModuleTargetPath)
+		public static void LoadModules(string moduleSourcePath, string baseModuleTargetPath)
 		{
 			_moduleSourcePath = moduleSourcePath;
 			_baseModuleTargetPath = baseModuleTargetPath;
@@ -68,7 +64,7 @@ namespace Engine.ModuleLoader
 				{
 					Logger.Log($"Failed to load module {metadata.Name}\n{e}", LogLevel.Error);
 					// TODO error screen
-					throw;
+					break;
 				}
 			}
 			foreach (var (archive, _) in modules)
@@ -134,6 +130,7 @@ namespace Engine.ModuleLoader
 			}
 			catch (Exception e)
 			{
+				module.Dispose();
 				throw new LoadModuleException($"Failed to deserialize metadata in module: {fullPath}", e);
 			}
 		}
@@ -363,7 +360,7 @@ namespace Engine.ModuleLoader
 					else if (system != null)
 					{
 						var entity = EnvironmentManager.AddEntity();
-						_ = entity.AddComponent(system);
+						instances[system] = entity.AddComponent(system);
 					}
 					else
 					{
@@ -464,11 +461,11 @@ namespace Engine.ModuleLoader
 			var initClass = types.FirstOrDefault(t => t.Name == "ModuleInitializer");
 			if (initClass == null)
 			{
-				Logger.Log($"No initializer class found for {moduleName}");
+				Logger.Log($"No initializer class found for {moduleName}", LogLevel.Debug);
 			}
 			else if (!(initClass.IsAbstract && initClass.IsSealed))
 			{
-				Logger.Log($"Initializer for module {moduleName} is not static. Please make this class static.");
+				Logger.Log($"Initializer for module {moduleName} is not static. Please make this class static.", LogLevel.Warning);
 			}
 			else
 			{
