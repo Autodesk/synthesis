@@ -308,13 +308,8 @@ namespace Engine.ModuleLoader
 				Destroy(gameObject.GetComponent(type));
 			}
 
-			public T CreateUnityType<T>(params object[] args) where T : class
-			{
-				if (args.Length > 0)
-					return (T)Activator.CreateInstance(typeof(T), args);
-				else
-					return (T)Activator.CreateInstance(typeof(T));
-			}
+			public T CreateUnityType<T>(params object[] args) where T : class =>
+				(T)Activator.CreateInstance(typeof(T), args);
 
 			public VisualTreeAsset GetDefaultUIAsset(string assetName)
 			{

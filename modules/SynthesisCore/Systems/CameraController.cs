@@ -14,6 +14,7 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.Systems
 {
+    [InitializationPriority(2)]
     public class CameraController : SystemBase
     {
         public static float SensitivityX { get => 2; } // TODO: integrate with preference manager

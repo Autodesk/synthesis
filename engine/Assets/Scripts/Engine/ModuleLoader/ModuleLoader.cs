@@ -411,38 +411,42 @@ namespace Engine.ModuleLoader
 		private static List<(Type initializer, Type system, MethodInfo callback)> ResolveInitializationOrder(List<Type> types, string moduleName)
 		{
 			var systems = types.Where(t => t.IsSubclassOf(typeof(SystemBase))).ToList();
-			var callbacks = types.Where(t => !t.IsSubclassOf(typeof(SystemBase))).ToList();
+			var callbacks = types.Where(t => !t.IsSubclassOf(typeof(SystemBase)) || t.GetMethods().Any(m =>
+				m.GetCustomAttribute<CallbackAttribute>() != null ||
+				m.GetCustomAttribute<TaggedCallbackAttribute>() != null)).SelectMany(m =>
+				m.GetMethods().Where(m2 =>
+					m2.GetCustomAttribute<CallbackAttribute>() != null ||
+					m2.GetCustomAttribute<TaggedCallbackAttribute>() != null)).ToList();
 			var prioritizedSystems =
 				systems.Where(t =>
 					t.GetCustomAttribute<InitializationPriorityAttribute>() != null).OrderBy(t =>
 					t.GetCustomAttribute<InitializationPriorityAttribute>().Value).ToList();
-			var prioritizedCallbacks = callbacks.SelectMany(t=> t.GetMethods().Where(m =>
-					m.GetCustomAttribute<InitializationPriorityAttribute>() != null)).OrderBy(m =>
+			var prioritizedCallbacks = callbacks.Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>() != null).OrderBy(m =>
 				m.GetCustomAttribute<InitializationPriorityAttribute>().Value).ToList();
 			var prioritizedElements = new List<(Type, Type, MethodInfo)>();
 			var systemIndex = 0;
 			var callbackIndex = 0;
 
-			byte? GetPriority(object o)
+			byte GetPriority(object o)
 			{
 				if (o is Type t)
-					return t.GetCustomAttribute<InitializationPriorityAttribute>()?.Value;
+					return t.GetCustomAttribute<InitializationPriorityAttribute>().Value;
 				else if (o is MethodInfo m)
-					return m.GetCustomAttribute<InitializationPriorityAttribute>()?.Value;
+					return m.GetCustomAttribute<InitializationPriorityAttribute>().Value;
 				else
-					return null;
+					return 255;
 			}
 
 			for (var i = 0; i < prioritizedSystems.Count + prioritizedCallbacks.Count; ++i)
 			{
-				if (GetPriority(prioritizedSystems[systemIndex]) <= GetPriority(prioritizedCallbacks[callbackIndex]))
+				if (GetPriority(prioritizedSystems.ElementAtOrDefault(systemIndex))-1 <= GetPriority(prioritizedCallbacks.ElementAtOrDefault(callbackIndex))-1)
 				{
-					prioritizedElements.Add((null, prioritizedSystems[systemIndex], null));
+					prioritizedElements.Add((null, prioritizedSystems.ElementAtOrDefault(systemIndex), null));
 					++systemIndex;
 				}
 				else
 				{
-					prioritizedElements.Add((null, null, prioritizedCallbacks[callbackIndex]));
+					prioritizedElements.Add((null, null, prioritizedCallbacks.ElementAtOrDefault(callbackIndex)));
 					++callbackIndex;
 				}
 			}
@@ -452,7 +456,7 @@ namespace Engine.ModuleLoader
 				prioritizedElements.Add((null, system, null));
 			}
 
-			foreach (var callback in callbacks.SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>() == null))
+			foreach (var callback in callbacks.Where(m => m.GetCustomAttribute<InitializationPriorityAttribute>() == null))
 			{
 				prioritizedElements.Add((null,null, callback));
 			}
