@@ -3,12 +3,7 @@
   <Name>SynthesisCore</Name>
   <Version>0.0.1</Version>
   <TargetPath>synthesis_core</TargetPath>
-  <Dependencies>
-    <Dependency>
-      <Name>Utilities</Name>
-      <Version>0.0.1</Version>
-    </Dependency>
-  </Dependencies>
+  <Dependencies />
   <FileManifest>
     <string>SynthesisCore.dll</string>
 	<string>UI/uxml/Environments.uxml</string>

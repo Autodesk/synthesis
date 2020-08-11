@@ -5,7 +5,6 @@ using SynthesisAPI.Modules.Attributes;
 
 namespace SynthesisCore
 {
-    [ModuleExport]
     public class InputSystem : SystemBase
     {
         public InputSystem() { }

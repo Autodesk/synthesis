@@ -46,6 +46,7 @@ namespace Engine.ModuleLoader
 
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			Logger.RegisterLogger(new LoggerImpl());
+			Logger.RegisterLogger(new ToastLogger());
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 
 			try
@@ -58,6 +59,11 @@ namespace Engine.ModuleLoader
 			}
 			LoadModules();
 			RerouteConsoleOutput();
+		}
+
+		public void Update()
+		{
+			ToastLogger.ScrollToBottom();
 		}
 
 		private void LoadModules()
@@ -280,7 +286,11 @@ namespace Engine.ModuleLoader
 			try
 			{
 				var apiAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "Api");
-				foreach (var type in apiAssembly.GetTypes())
+				foreach (var type in apiAssembly.GetTypes()
+					.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null &&
+					(t.IsSubclassOf(typeof(SystemBase)) ||
+						t.GetMethods().Any(m => m.GetCustomAttribute<CallbackAttribute>() != null || 
+						m.GetCustomAttribute<TaggedCallbackAttribute>() != null))))
 				{
 					object instance = null;
 
@@ -333,7 +343,7 @@ namespace Engine.ModuleLoader
 			}
 			catch (ReflectionTypeLoadException e)
 			{
-				if (e is { } reflectionTypeLoadException)
+				if (e is ReflectionTypeLoadException reflectionTypeLoadException)
 				{
 					foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
 					{
@@ -349,7 +359,10 @@ namespace Engine.ModuleLoader
 			}
 
 			foreach (var exportedModuleClass in types
-				.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null))
+				.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null && 
+					(t.IsSubclassOf(typeof(SystemBase)) ||
+						t.GetMethods().Any(m => m.GetCustomAttribute<CallbackAttribute>() != null
+						|| m.GetCustomAttribute<TaggedCallbackAttribute>() != null))))
 			{
 				try
 				{
@@ -361,7 +374,8 @@ namespace Engine.ModuleLoader
 						exportedModuleClassInstance = entity.AddComponent(exportedModuleClass);
 					}
 
-					exportedModuleClassInstance ??= Activator.CreateInstance(exportedModuleClass);
+					if(exportedModuleClassInstance == null)
+						exportedModuleClassInstance = Activator.CreateInstance(exportedModuleClass);
 
 					foreach (var callback in exportedModuleClass.GetMethods()
 						.Where(m => m.GetCustomAttribute<CallbackAttribute>() != null))
@@ -460,6 +474,8 @@ namespace Engine.ModuleLoader
 					}
 				};
 			Screen.fullScreen = false;
+
+			var _ = SynthesisAPI.UIManager.UIManager.RootElement;
 		}
 
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
