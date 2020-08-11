@@ -58,11 +58,5 @@ namespace SynthesisAPI.UIManager.VisualElements
             EventBus.EventBus.NewTagListener(EventTag, _callback);
             PostUxmlLoad();
         }
-        
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is _UnityButton ? value : Element;
-        }
     }
 }

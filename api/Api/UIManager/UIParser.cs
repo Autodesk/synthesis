@@ -69,7 +69,7 @@ namespace SynthesisAPI.UIManager
                 }
                 return null;
             }
-            dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
+            _UnityVisualElement element = (_UnityVisualElement)typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { new object[] {} });
             if (element != null)
             {
@@ -148,7 +148,7 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="data"></param>
         /// <param name="element">WARNING: Make sure this type is or inherits <see cref="UnityEngine.UIElements.VisualElement" /></param>
-        internal static dynamic ParseStyle(string data, dynamic element)
+        internal static _UnityVisualElement ParseStyle(string data, _UnityVisualElement element)
         {
             var list = data.Replace("&apos;", "\"").Split(';').ToList();
             foreach (string entry in list)
@@ -209,7 +209,7 @@ namespace SynthesisAPI.UIManager
             return null;
         }
 
-        internal static dynamic ParseEntry(string entry, dynamic element)
+        internal static _UnityVisualElement ParseEntry(string entry, _UnityVisualElement element)
         { 
             if(element == null)
             {

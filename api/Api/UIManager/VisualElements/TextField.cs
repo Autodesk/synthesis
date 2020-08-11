@@ -78,11 +78,5 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             Element = element;
         }
-
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is _UnityTextField ? value : Element;
-        }
     }
 }

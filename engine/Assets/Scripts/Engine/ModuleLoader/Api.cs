@@ -30,7 +30,6 @@ using PreloadedModule = System.ValueTuple<System.IO.Compression.ZipArchive, Engi
 
 namespace Engine.ModuleLoader
 {
-
 	public class Api : MonoBehaviour
 	{
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
@@ -41,15 +40,14 @@ namespace Engine.ModuleLoader
 
 		public void Awake()
 		{
-			SetupErrorHandlers(); // Always do this first
+			SetupApplication(); // Always do this first
 
 			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene
 
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
-#if UNITY_EDITOR
 			Logger.RegisterLogger(new LoggerImpl());
-#endif
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+
 			try
 			{
 				LoadApi();
@@ -60,7 +58,6 @@ namespace Engine.ModuleLoader
 			}
 			LoadModules();
 			RerouteConsoleOutput();
-			//throw new Exception("I am an unhandled exception");
 		}
 
 		private void LoadModules()
@@ -329,7 +326,6 @@ namespace Engine.ModuleLoader
 			var assembly = Assembly.Load(memStream.ToArray());
 
 			// Set up module
-
 			Type[] types;
 			try
 			{
@@ -379,6 +375,10 @@ namespace Engine.ModuleLoader
 					{
 						RegisterTagCallback(callback, exportedModuleClassInstance);
 					}
+				}
+				catch (TypeLoadException e)
+				{
+					Logger.Log($"Module loader failed to process type {exportedModuleClass} from module {owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
 				}
 				catch (Exception e)
 				{
@@ -434,7 +434,7 @@ namespace Engine.ModuleLoader
 				});
 		}
 
-		private static void SetupErrorHandlers()
+		private static void SetupApplication()
 		{
 			Application.logMessageReceivedThreaded +=
 				(condition, stackTrace, type) =>
@@ -460,6 +460,7 @@ namespace Engine.ModuleLoader
 						}
 					}
 				};
+			Screen.fullScreen = false;
 		}
 
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
@@ -541,6 +542,12 @@ namespace Engine.ModuleLoader
 		{
 			public static GameObject EntityParent { get; set; }
 			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+
+			static ApiProviderData()
+			{
+				EntityParent = new GameObject("Entities");
+				GameObjects = new Dictionary<Entity, GameObject>();
+			}
 		}
 
 		private class ApiProviderImpl : IApiProvider
@@ -549,8 +556,6 @@ namespace Engine.ModuleLoader
 
 			public ApiProviderImpl()
 			{
-				ApiProviderData.EntityParent = new GameObject("Entities");
-				ApiProviderData.GameObjects = new Dictionary<Entity, GameObject>();
 				_builtins = new Dictionary<Type, Type>
 				{
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Mesh), typeof(MeshAdapter) },
@@ -583,12 +588,15 @@ namespace Engine.ModuleLoader
 				GameObject gameObject;
 				if (!ApiProviderData.GameObjects.TryGetValue(entity, out gameObject))
 					throw new Exception($"Entity \"{entity}\" does not exist");
-				dynamic component;
+
 				Type type;
+				Component component;
+
 				if (_builtins.ContainsKey(t))
 				{
 					type = _builtins[t];
-					component = type.GetMethod("NewInstance")?.Invoke(null, null);
+					component = (Component)type.GetMethod("NewInstance")?.Invoke(null, null);
+
 					if (component == null)
 					{
 						throw new LoadModuleException($"Builtin {type.FullName} type lacked way to create new instance of type {t.FullName}");
@@ -619,8 +627,8 @@ namespace Engine.ModuleLoader
 					}
 				}
 
-				dynamic gameObjectComponent = gameObject.AddComponent(type);
-				gameObjectComponent.SetInstance(component);
+				var gameObjectComponent = gameObject.AddComponent(type);
+				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 
 				return component;
 			}
@@ -645,9 +653,8 @@ namespace Engine.ModuleLoader
 					type = typeof(ComponentAdapter);
 				}
 
-				dynamic gameObjectComponent = gameObject.AddComponent(type);
-				dynamic c = component; //runtime cast
-				gameObjectComponent.SetInstance(c);
+				var gameObjectComponent = gameObject.AddComponent(type);
+				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 			}
 
 			public void RemoveComponentFromScene(Entity entity, Type t)
