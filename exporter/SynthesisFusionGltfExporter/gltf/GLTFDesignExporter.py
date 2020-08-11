@@ -1,19 +1,12 @@
-import copy
-import struct
 import time
 import traceback
 from io import BytesIO
-from typing import Dict, List
-from typing import Optional, Union
 
-import adsk
 import adsk.core
 import adsk.fusion
 from google.protobuf.json_format import MessageToDict
-from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
 
 from apper import AppObjects, Fusion360Utilities
-from gltf.utils.GLTFConstants import *
 from .extras.ExportJoints import exportJoints
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
 from .utils.ByteUtils import *
@@ -49,18 +42,12 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         if exportResults is None:
             ao.ui.messageBox(f"The glTF export was cancelled.")
             return
-        perfResults, bufferResults, warnings, modelStats, eventCounter, duration = exportResults
+        warnings, modelStats, duration = exportResults
 
         finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                                 f"File saved to {filePath}\n\n"
-                                f"==== Export Performance Results ====\n"
-                                f"{perfResults}\n"
-                                f"==== Buffer Writing Results ====\n"
-                                f"{bufferResults}\n"
                                 f"==== Model Stats ====\n"
                                 f"{modelStats}\n"
-                                f"==== Events Counter ====\n"
-                                f"{eventCounter}\n"
                                 f"==== Warnings ====\n"
                                 f"{warnings}\n"
                                 )
@@ -130,7 +117,7 @@ class GLTFDesignExporter(object):
     componentRevIdToMatOverrideDict: Dict[FusionRevId, Dict[GLTFIndex, GLTFIndex]]  # dict for material overridden mesh caching, from gltf material override id to gltf mesh with that material override
 
     defaultAppearance: adsk.core.Appearance  # aluminum
-    materialNameToGltfIndex: Dict[str, GLTFIndex]  # dict for gltf material caching, from fusion appearance name to material gltf index
+    materialIdToGltfIndex: Dict[str, GLTFIndex]  # dict for gltf material caching, from fusion appearance name to material gltf index
 
     warnings: List[str]
 
@@ -164,7 +151,7 @@ class GLTFDesignExporter(object):
 
         self.componentRevIdToMeshTemplate = {}
         self.componentRevIdToMatOverrideDict = {}
-        self.materialNameToGltfIndex = {}
+        self.materialIdToGltfIndex = {}
 
         self.usedCompIdMap = {}
 
@@ -265,6 +252,7 @@ class GLTFDesignExporter(object):
         """Exports the open fusion design to a glTF scene.
         
         Returns: The index of the exported scene in the glTF scenes list.
+
         """
         scene = Scene()
 
@@ -289,6 +277,7 @@ class GLTFDesignExporter(object):
             rootComponent: The root component of the open fusion document.
 
         Returns: The index of the exported node in the glTF nodes list.
+
         """
         node = Node()
         node.name = rootComponent.name
@@ -343,6 +332,7 @@ class GLTFDesignExporter(object):
             fusionComponent: The fusion component to export.
 
         Returns: The mesh that was exported.
+
         """
         bRepBodies = fusionComponent.bRepBodies
         if len(bRepBodies) == 0:
@@ -374,12 +364,13 @@ class GLTFDesignExporter(object):
         return mesh
 
     def exportPrimitivesBRepBodyAutosplit(self, fusionBRepBody: adsk.fusion.BRepBody) -> List[Primitive]:
-        """Exports a fusion bRep body to a glTF primitive.
+        """Exports a fusion bRep body to a list of glTF primitives, splitting the body into faces if face materials are enabled.
 
         Args:
             fusionBRepBody: The fusion bRep body to export.
 
-        Returns: The exported primitive object.
+        Returns: The exported primitives.
+
         """
 
         if not fusionBRepBody.isVisible and self.exportVisibleBodiesOnly:
@@ -388,12 +379,10 @@ class GLTFDesignExporter(object):
         faces = []
 
         if self.enableMaterials and self.enableFaceMaterials:
-            if len(fusionBRepBody.faces) == 0:
-                return []
-            faces = list(fusionBRepBody.faces)  # type: List[adsk.fusion.BRepFace] # this is REALLY slow
-            exportFacesTogether = isSameMaterial(faces)
+            faces = list(fusionBRepBody.faces)  # type: List[adsk.fusion.BRepFace] # this api call is REALLY slow, which is why we go to the trouble of re-using this list
+            exportFacesTogether = isSameMaterial(faces)  # split faces if faces have different materials assigned
         else:
-            exportFacesTogether = True
+            exportFacesTogether = True  # never split faces if face materials are off
 
         if exportFacesTogether:  # todo add tag for meshes with no overridable materials which don't need to have multiple copies of the template
             return [self.exportPrimitiveBRepBodyOrFace(fusionBRepBody)]
@@ -401,6 +390,14 @@ class GLTFDesignExporter(object):
             return [self.exportPrimitiveBRepBodyOrFace(face) for face in faces]
 
     def exportPrimitiveBRepBodyOrFace(self, fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace]) -> Optional[Primitive]:
+        """Exports a glTF primitive from a fusion bRepBody or bRepFace using only one material.
+
+        Args:
+            fusionBRep: The fusion bRepBody or bRepFace to export.
+
+        Returns: The glTF primitive object if the mesh was successfully exported.
+
+        """
         primitive = Primitive()
 
         meshCalculator = fusionBRep.meshManager.createMeshCalculator()
@@ -443,8 +440,8 @@ class GLTFDesignExporter(object):
             componentType: The glTF component type to store the data. Set to None to autodetect the smallest necessary unsigned integer type (for indices)
             calculateLimits: Whether or not it is necessary to calculate the limits of the data. If the componentType must be auto-detected, the limits will be calculated anyways.
 
-        Returns:
-            GLTFIndex: The index of the exported accessor in the glTF accessors list.
+        Returns: The index of the exported accessor in the glTF accessors list.
+
         """
         componentCount = len(array)  # the number of components, e.g. 12 floats
         componentsPerData = DataType.numElements(dataType)  # the number of components in one datum, e.g. 3 floats per Vec3
@@ -575,22 +572,30 @@ class GLTFDesignExporter(object):
         return len(self.gltf.meshes) - 1
 
     def exportMaterialFromAppearanceCached(self, appearance: adsk.core.Appearance) -> Optional[GLTFIndex]:
+        """Checks if the fusion Appearance already exists in a glTF document, exports the Appearance if it doesn't.
+
+        Args:
+            appearance:
+
+        Returns: The index of the exported material in the materials list of the glTF object.
+
+        """
         if appearance is None:  # body or face didn't come with an appearance
             return None
 
-        materialName = appearance.name
-        if materialName in self.materialNameToGltfIndex:
-            materialIndex = self.materialNameToGltfIndex[materialName]
+        materialId = appearance.id
+        if materialId in self.materialIdToGltfIndex:
+            materialIndex = self.materialIdToGltfIndex[materialId]
             if materialIndex == -1:  # was previously unable to export material
                 return None
-            return materialIndex
+            return materialIndex  # appearance already exists in the glTF document
 
         materialIndex = self.exportMaterialFromAppearance(appearance)
         if materialIndex is None:
-            self.materialNameToGltfIndex[materialName] = -1  # was unable to export material
-            return None
+            self.materialIdToGltfIndex[materialId] = -1
+            return None  # was unable to export material
 
-        self.materialNameToGltfIndex[materialName] = materialIndex
+        self.materialIdToGltfIndex[materialId] = materialIndex  # cache the appearance
 
         return materialIndex
 
@@ -601,6 +606,7 @@ class GLTFDesignExporter(object):
             fusionAppearance: The fusion appearance to export.
 
         Returns: The index of the exported material in the materials list of the glTF object.
+
         """
         props = fusionAppearance.appearanceProperties
 

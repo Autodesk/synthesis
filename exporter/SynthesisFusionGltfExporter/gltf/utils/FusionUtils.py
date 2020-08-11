@@ -43,7 +43,8 @@ def fusionAttenLengthToAlpha(attenLength: adsk.core.FloatProperty) -> float:
     return max(min((464 - 7 * attenLength.value) / 1938, 1), 0.03)  # todo: this conversion is just made up, figure out an accurate one
 
 def isSameMaterial(faces: List[adsk.fusion.BRepFace]):
-    # if all faces use the same material
+    if len(faces) == 0:
+        return True
     materialName = faces[0].appearance.name
     for face in faces[1:]:
         if face.appearance.name != materialName:
