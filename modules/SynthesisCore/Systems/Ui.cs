@@ -61,6 +61,15 @@ namespace SynthesisCore.Systems
             });
         }
 
+        private void RegisterJointsButton(VisualElement visualElement, string panelName)
+        {
+            Button jointsButton = (Button)visualElement.Get("joints-button");
+            okButton?.Subscribe(x =>
+            {
+                UIManager.ShowPanel(panelName);
+            });
+        }
+
         private void RegisterOKCloseButtons(VisualElement visualElement, string panelName)
         {
             Button okButton = (Button) visualElement.Get("ok-button");

@@ -11,6 +11,7 @@
                     <ui:Button name="modules-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
                     <ui:Button name="settings-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
                     <ui:Button name="help-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
+                    <ui:Button name="joints-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UIERuntime/USS/dropdown.png&apos;);" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="bottom" class="bottom" style="height: auto;" />
