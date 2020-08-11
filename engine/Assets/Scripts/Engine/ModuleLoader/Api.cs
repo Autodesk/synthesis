@@ -38,7 +38,7 @@ namespace Engine.ModuleLoader
 		private static MemoryStream _newConsoleStream = new MemoryStream();
 		private static long _lastConsoleStreamPos = 0;
 
-		public void Awake()
+		public void Start() // Must happen after ResourceLedger is initialized (in Awake)
 		{
 			SetupApplication(); // Always do this first
 
@@ -46,8 +46,8 @@ namespace Engine.ModuleLoader
 
 			ModuleManager.RegisterModuleAssemblyName(Assembly.GetExecutingAssembly().GetName().Name, "Core Engine");
 			Logger.RegisterLogger(new LoggerImpl());
-			Logger.RegisterLogger(new ToastLogger());
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
+			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
 			try
 			{
