@@ -6,6 +6,7 @@ import json
 
 import apper
 from ..gltf.GLTFDesignExporter import exportDesign
+from ..gltf.utils.GLTFConstants import FileType
 
 
 # Class for a Fusion 360 Palette Command
@@ -36,7 +37,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             faceMaterials = settings['faceMaterials']
             exportHidden = not settings['exportHidden']
             quality = settings['quality']
-            useGlb = settings['useGlb']
+            useGlb = FileType.fromString(settings['useGlb'])
             exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality)
 
 

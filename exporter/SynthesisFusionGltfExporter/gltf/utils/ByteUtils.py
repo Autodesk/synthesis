@@ -1,6 +1,6 @@
 import io
 
-def calculateAlignmentNumPadding(currentSize: int, byteAlignment: int = 4) -> int:
+def calculatePaddingBytes(currentSize: int, byteAlignment: int = 4) -> int:
     """Calculates the number of bytes needed to pad a data structure to the given alignment.
 
     Args:
@@ -22,12 +22,12 @@ def calculateAlignment(currentSize: int, byteAlignment: int = 4) -> int:
 
     Returns: The new length of the data structure in bytes.
     """
-    return currentSize + calculateAlignmentNumPadding(currentSize, byteAlignment)
+    return currentSize + calculatePaddingBytes(currentSize, byteAlignment)
 
 def alignBytesIOToBoundary(stream: io.BytesIO, byteAlignment: int = 4) -> None:
-    stream.write(b'\x00\x00\x00'[0:calculateAlignmentNumPadding(stream.seek(0, io.SEEK_END), byteAlignment)])
+    stream.write(b'\x00\x00\x00'[0:calculatePaddingBytes(stream.seek(0, io.SEEK_END), byteAlignment)])
     assert stream.tell() % byteAlignment == 0
 
 def alignByteArrayToBoundary(byteArray: bytearray, byteAlignment: int = 4) -> None:
-    byteArray.extend(b'   '[0:calculateAlignmentNumPadding(len(byteArray), byteAlignment)])
+    byteArray.extend(b'   '[0:calculatePaddingBytes(len(byteArray), byteAlignment)])
     assert len(byteArray) % byteAlignment == 0

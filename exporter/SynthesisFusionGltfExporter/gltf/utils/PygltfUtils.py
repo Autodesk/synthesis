@@ -3,8 +3,16 @@ from .DictUtils import dictDeleteEmptyKeys
 from .GLTFConstants import *
 from pygltflib import *
 
+from .MathUtils import isIdentityMatrix3D
+
+
 def isEmptyLeafNode(node: Node) -> bool:
     return len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0
+
+def notIdentityMatrix3DOrNone(flatMatrix: List[float]) -> Optional[List[float]]:
+    if not isIdentityMatrix3D(flatMatrix):
+        return flatMatrix
+    return None
 
 def writeGltfToFile(gltf, primaryBufferData, filepath):
     gltf._glb_data = primaryBufferData.tobytes()

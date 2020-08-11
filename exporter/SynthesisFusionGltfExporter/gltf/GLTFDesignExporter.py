@@ -2,7 +2,6 @@ import copy
 import struct
 import time
 import traceback
-
 from io import BytesIO
 from typing import Dict, List
 from typing import Optional, Union
@@ -10,24 +9,20 @@ from typing import Optional, Union
 import adsk
 import adsk.core
 import adsk.fusion
+from google.protobuf.json_format import MessageToDict
 from pygltflib import GLTF2, Asset, Scene, Node, Mesh, Primitive, Attributes, Accessor, BufferView, Buffer, Material, PbrMetallicRoughness
 
-from google.protobuf.json_format import MessageToDict
-
 from apper import AppObjects, Fusion360Utilities
-from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
-from .utils.FusionUtils import fusionColorToRGBAArray, isSameMaterial, fusionAttenLengthToAlpha
-from .utils.PygltfUtils import isEmptyLeafNode, writeGltfToFile, writeGlbToFile
-from gltf.utils.EventCounter import EventCounter
-from gltf.utils.Stopwatch import SegmentedStopwatch
-from gltf.utils.GLTFConstants import ComponentType, DataType
-from .utils.ByteUtils import *
-from .utils.MathUtils import isIdentityMatrix3D
+from gltf.utils.GLTFConstants import *
 from .extras.ExportJoints import exportJoints
+from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
+from .utils.ByteUtils import *
+from .utils.FusionUtils import *
+from .utils.MathUtils import *
+from .utils.PygltfUtils import *
 
 
-
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType:str = "glb", quality="8"):
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality="8"):
     try:
         ao = AppObjects()
 
@@ -36,40 +31,39 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
             return
 
         exporter = GLTFDesignExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality)
-        useGlb = fileType == "glb"
         if showFileDialog:
-            dialog = ao.ui.createFileDialog() # type: adsk.core.FileDialog
-            dialog.filter = "glTF Binary (*.glb)" if useGlb else "glTF JSON (*.gltf)"
+            dialog = ao.ui.createFileDialog()  # type: adsk.core.FileDialog
+            dialog.filter = "glTF Binary (*.glb)" if fileType == FileType.GLB else "glTF JSON (*.gltf)"
             dialog.isMultiSelectEnabled = False
             dialog.title = "Select glTF Export Location"
-            dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{"glb" if useGlb else "gltf"}'
+            dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{FileType.getExtension(fileType)}'
             results = dialog.showSave()
-            if results != 0 and results != 2: # For some reason the generated python API enums were wrong, so we're just using the literals
+            if results != 0 and results != 2:  # For some reason the generated python API enums were wrong, so we're just using the literals
                 ao.ui.messageBox(f"The glTF export was cancelled.")
                 return
             filePath = dialog.filename
 
         else:
             filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
-        exportResults = exporter.saveGltf(filePath, useGlb)
+        exportResults = exporter.saveGltf(filePath, fileType)
         if exportResults is None:
             ao.ui.messageBox(f"The glTF export was cancelled.")
             return
         perfResults, bufferResults, warnings, modelStats, eventCounter, duration = exportResults
 
         finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
-                           f"File saved to {filePath}\n\n"
-                           f"==== Export Performance Results ====\n"
-                           f"{perfResults}\n"
-                           f"==== Buffer Writing Results ====\n"
-                           f"{bufferResults}\n"
-                           f"==== Model Stats ====\n"
-                           f"{modelStats}\n"
-                           f"==== Events Counter ====\n"
-                           f"{eventCounter}\n"
-                           f"==== Warnings ====\n"
-                           f"{warnings}\n"
-                           )
+                                f"File saved to {filePath}\n\n"
+                                f"==== Export Performance Results ====\n"
+                                f"{perfResults}\n"
+                                f"==== Buffer Writing Results ====\n"
+                                f"{bufferResults}\n"
+                                f"==== Model Stats ====\n"
+                                f"{modelStats}\n"
+                                f"==== Events Counter ====\n"
+                                f"{eventCounter}\n"
+                                f"==== Warnings ====\n"
+                                f"{warnings}\n"
+                                )
         print(finishedMessageDebug)
         finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
         ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
@@ -140,20 +134,16 @@ class GLTFDesignExporter(object):
 
     warnings: List[str]
 
-    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly = True, quality: str = "8"):  # todo: allow the export of designs besides the one in the foreground?
+    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True,
+                 quality: str = "8"):  # todo: allow the export of designs besides the one in the foreground?
         self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
         self.enableFaceMaterials = enableFaceMaterials
-        self.ao = ao
+        self.ao = ao  # type: AppObjects
         self.meshQuality = int(quality)
 
         self.warnings = []
-
-        # These stopwatches are for export performance testing only.
-        self.perfWatch = SegmentedStopwatch(time.perf_counter)
-        self.bufferWatch = SegmentedStopwatch(time.perf_counter)
-        self.eventCounter = EventCounter()
 
         self.gltf = GLTF2()  # The root glTF object.
 
@@ -165,10 +155,12 @@ class GLTFDesignExporter(object):
         # The glB format only allows one buffer to be embedded in the main file.
         # We'll call this buffer the primaryBuffer.
         self.gltf.buffers.append(Buffer())
-        self.primaryBufferIndex = len(self.gltf.buffers)-1
+        self.primaryBufferIndex = len(self.gltf.buffers) - 1
 
         # The actual binary data for the buffer will get stored in this memory stream
         self.primaryBufferStream = io.BytesIO()
+
+        self.rootItemId = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
 
         self.componentRevIdToMeshTemplate = {}
         self.componentRevIdToMatOverrideDict = {}
@@ -176,14 +168,15 @@ class GLTFDesignExporter(object):
 
         self.usedCompIdMap = {}
 
-        self.allAffectedOccurrences = []
+        self.jointedOccurrencePaths = []
 
-    def saveGltf(self, filepath: str, useGlb: bool):
+    def saveGltf(self, filepath: str, fileType: FileType):
         """
         Exports the current fusion document into a glb file.
 
         Args:
             filepath: The full path to the file to create
+            useGlb: Export file type
 
         Returns: Performance logs
 
@@ -195,34 +188,32 @@ class GLTFDesignExporter(object):
         self.progressBar.show(f"Exporting {self.ao.document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
         # noinspection PyUnresolvedReferences
-        adsk.doEvents() # show progress bar
+        adsk.doEvents()  # show progress bar
 
-        if self.enableMaterials and self.checkIfAppearancesAreBugged():
+        if self.enableMaterials and checkIfAppearancesAreBugged(self.ao.design):
             result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
                                            f"Do you want to continue the export with materials turned off?\n"
                                            f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
-            if result == 0 or result == 2: # yes
+            if result == 0 or result == 2:  # yes
                 self.enableMaterials = False
-            elif result == 3: # no
+            elif result == 3:  # no
                 pass
-            else: # cancel
+            else:  # cancel
                 return
 
-        self.rootItemId = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
-
         try:
-            self.gltf.extras['joints'], self.allAffectedOccurrences = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.perfWatch)
-        except RuntimeError: # todo: report this bug
+            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.warnings)
+        except RuntimeError:  # todo: report this bug
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
-            if result == 0 or result == 2: # yes
+            if result == 0 or result == 2:  # yes
                 pass
-            else: # no
+            else:  # no
                 return
 
         start = time.perf_counter()
 
-        self.defaultAppearance = self.getDefaultAppearance()
+        self.defaultAppearance = getDefaultAppearance(self.ao.app)
 
         self.gltf.scene = self.exportScene()  # export the current fusion document
 
@@ -235,8 +226,6 @@ class GLTFDesignExporter(object):
         self.progressBar.message = "Serializing data to file..."
         self.progressBar.progressValue = self.progressBar.maximumValue - 1
 
-        self.perfWatch.switch_segment('encoding and file writing')
-
         # convert gltf to json and serialize
         self.gltf.buffers[self.primaryBufferIndex].byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
 
@@ -247,16 +236,12 @@ class GLTFDesignExporter(object):
         # get the memoryView of the primary buffer stream
         primaryBufferData = self.primaryBufferStream.getbuffer()
 
-        if useGlb:
+        if fileType == FileType.GLB:
             writeGlbToFile(self.gltf, primaryBufferData, filepath)
         else:
             writeGltfToFile(self.gltf, primaryBufferData, filepath)
 
-        self.perfWatch.stop()
-
         self.progressBar.hide()
-
-        # self.warnings.append(str(self.componentRevIdToMatOverrideDict))
 
         stats = (f"scenes: {len(self.gltf.scenes)}\n"
                  f"nodes: {len(self.gltf.nodes)}\n"
@@ -274,9 +259,7 @@ class GLTFDesignExporter(object):
 
         end = time.perf_counter()
 
-        return str(self.perfWatch), str(self.bufferWatch), "\n".join(self.warnings), stats, str(self.eventCounter), round(end - start, 4)
-
-
+        return self.warnings, stats, round(end - start, 4)
 
     def exportScene(self) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.
@@ -288,15 +271,13 @@ class GLTFDesignExporter(object):
         # We export components into meshes first while recording a mapping from fusion component unique ids to glTF mesh indices so we can refer to mesh instances as we export the nodes.
         # This allows us to avoid serializing duplicate meshes for components which occur multiple times in one assembly, similar to fusion's system of components and occurrences.
 
-        self.perfWatch.switch_segment('exporting node tree')
         self.progressBar.message = "Reading list of fusion components..."
         self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
-        # self.progressBar.message = "Exporting occurrence tree..."
-        # self.progressBar.progressValue+=1
+
         rootNode = self.exportRootNode(self.ao.root_comp)
         if rootNode is not None:
             scene.nodes.append(rootNode)
-        self.perfWatch.stop()
+
 
         self.gltf.scenes.append(scene)
         return len(self.gltf.scenes) - 1
@@ -311,20 +292,11 @@ class GLTFDesignExporter(object):
         """
         node = Node()
         node.name = rootComponent.name
-
         node.mesh = self.exportMeshWithOverrideCached(rootComponent, -1)
-
-        scale = self.DESIGN_SCALE
-        node.matrix = [
-            scale, 0, 0, 0,
-            0, scale, 0, 0,
-            0, 0, scale, 0,
-            0, 0, 0, 1,
-        ]
-
+        node.scale = [self.DESIGN_SCALE] * 3
         node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
 
-        if "" in self.allAffectedOccurrences:
+        if "" in self.jointedOccurrencePaths:
             node.extras["uuid"] = self.rootItemId
 
         if isEmptyLeafNode(node):
@@ -332,12 +304,12 @@ class GLTFDesignExporter(object):
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
 
-    def exportNode(self, occur: adsk.fusion.Occurrence, materialOverride: GLTFIndex) -> Optional[GLTFIndex]:
+    def exportNode(self, occur: adsk.fusion.Occurrence, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
         """Recursively exports the component hierarchy of the open fusion document to glTF nodes, starting with an occurrence in the fusion hierarchy.
 
         Args:
             occur: An occurrence to be exported.
-            materialOverride: The current occurrence-level material override in effect.
+            overrideMatIndex: The current occurrence-level material override in effect.
 
         Returns: The index of the exported node in the glTF nodes list.
         """
@@ -347,27 +319,17 @@ class GLTFDesignExporter(object):
         if self.enableMaterials and self.enableMaterialOverrides:
             appearance = occur.appearance
             if appearance is not None:
-                self.eventCounter.event("got override material")
-                materialOverride = self.exportMaterialFromAppearanceCached(appearance)
+                overrideMatIndex = self.exportMaterialFromAppearanceCached(appearance)
 
-        flatMatrix = occur.transform.asArray()
-        if not isIdentityMatrix3D(flatMatrix):
-            node.matrix = [flatMatrix[i + j * 4] for i in range(4) for j in range(4)]  # transpose the flat 4x4 matrix3d
+        node.matrix = notIdentityMatrix3DOrNone(transposeFlatMatrix3D(occur.transform.asArray()))  # transpose the flat 4x4 matrix3d
 
-        if not self.exportVisibleBodiesOnly or occur.isVisible:
-            node.mesh = self.exportMeshWithOverrideCached(occur.component, materialOverride)
-        # node.extras['isGrounded'] = occur.isGrounded
+        if occur.isVisible or not self.exportVisibleBodiesOnly:
+            node.mesh = self.exportMeshWithOverrideCached(occur.component, overrideMatIndex)
 
-        self.perfWatch.switch_segment("item_id_tree")
-        if occur.fullPathName in self.allAffectedOccurrences:
+        if occur.fullPathName in self.jointedOccurrencePaths:
             node.extras["uuid"] = Fusion360Utilities.item_id(occur, self.GLTF_GENERATOR_ID)
-        # path_name = occur.fullPathName
-        # if path_name in self.usedCompIdMap:
-        #     self.eventCounter.event("**Found duplicate id")
-        # self.usedCompIdMap[path_name] = True
-        self.perfWatch.stop()
 
-        node.children = [index for index in [self.exportNode(occur, materialOverride) for occur in occur.childOccurrences] if index is not None]
+        node.children = [index for index in [self.exportNode(occur, overrideMatIndex) for occur in occur.childOccurrences] if index is not None]
 
         if isEmptyLeafNode(node):
             return
@@ -382,42 +344,36 @@ class GLTFDesignExporter(object):
 
         Returns: The mesh that was exported.
         """
-        bodies = fusionComponent.bRepBodies
-        if len(bodies) == 0:
+        bRepBodies = fusionComponent.bRepBodies
+        if len(bRepBodies) == 0:
             return
-
-        revisionId = fusionComponent.revisionId
 
         mesh = Mesh()
         mesh.name = fusionComponent.name
-        # mesh.extras['description'] = fusionComponent.description
-        # mesh.extras['revisionId'] = revisionId
-        # mesh.extras['partNumber'] = fusionComponent.partNumber
-        # protoComponent.materialId = fusionComponent.material.id
-        # fillPhysicalProperties(fusionComponent.physicalProperties, protoComponent.physicalProperties)
 
-        self.perfWatch.switch_segment("reading list of brepbodies")
-        bodyList = list(bodies)
-        self.perfWatch.stop()
+        bRepBodiesList = list(bRepBodies)  # Improve performance by only generating list from API once
 
-        mesh.primitives = [prim for primList in [self.exportPrimitiveBRepBodyAutosplit(bRepBody) for bRepBody in bodyList] for prim in primList if prim is not None]
-
+        mesh.primitives = [prim for primList in [self.exportPrimitivesBRepBodyAutosplit(bRepBody) for bRepBody in bRepBodiesList] for prim in primList if prim is not None]
         if len(mesh.primitives) == 0:
             return
 
         try:
-            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bodyList]), including_default_value_fields=True)
+            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bRepBodiesList]), including_default_value_fields=True)
         except:
             self.warnings.append(f"Unable to get physical properties for component {mesh.name}")
 
+        revisionId = fusionComponent.revisionId
         self.componentRevIdToMeshTemplate[revisionId] = mesh
         self.componentRevIdToMatOverrideDict[revisionId] = {}
+
+        # Progress bar
         numMeshes = len(self.componentRevIdToMeshTemplate)
         self.progressBar.progressValue = numMeshes
         self.progressBar.message = f"Calculating meshes for component {numMeshes} of {self.progressBar.maximumValue}..."
+
         return mesh
 
-    def exportPrimitiveBRepBodyAutosplit(self, fusionBRepBody: adsk.fusion.BRepBody) -> List[Primitive]:
+    def exportPrimitivesBRepBodyAutosplit(self, fusionBRepBody: adsk.fusion.BRepBody) -> List[Primitive]:
         """Exports a fusion bRep body to a glTF primitive.
 
         Args:
@@ -426,16 +382,8 @@ class GLTFDesignExporter(object):
         Returns: The exported primitive object.
         """
 
-        # primitive.extras['name'] = fusionBRepBody.name
-        # protoMeshBody.appearanceId = fusionBRepBody.appearance.id
-        # protoMeshBody.materialId = fusionBRepBody.material.id
-        # fillPhysicalProperties(fusionBRepBody.physicalProperties, protoMeshBody.physicalProperties)
-
-        if self.exportVisibleBodiesOnly and not fusionBRepBody.isVisible:
-            self.eventCounter.event("ignored invisible brepbody")
+        if not fusionBRepBody.isVisible and self.exportVisibleBodiesOnly:
             return []
-
-        self.perfWatch.switch_segment('deciding whether to separate faces')
 
         faces = []
 
@@ -447,13 +395,9 @@ class GLTFDesignExporter(object):
         else:
             exportFacesTogether = True
 
-        self.perfWatch.stop()
-
         if exportFacesTogether:  # todo add tag for meshes with no overridable materials which don't need to have multiple copies of the template
-            self.eventCounter.event("exported brepbody as one mesh")
             return [self.exportPrimitiveBRepBodyOrFace(fusionBRepBody)]
         else:
-            self.eventCounter.event("exported brepbody as split faces")
             return [self.exportPrimitiveBRepBodyOrFace(face) for face in faces]
 
     def exportPrimitiveBRepBodyOrFace(self, fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace]) -> Optional[Primitive]:
@@ -462,11 +406,9 @@ class GLTFDesignExporter(object):
         meshCalculator = fusionBRep.meshManager.createMeshCalculator()
         if meshCalculator is None:
             return None
-        meshCalculator.setQuality(self.meshQuality)  # todo mesh quality settings
+        meshCalculator.setQuality(self.meshQuality)
 
-        self.perfWatch.switch_segment('calculating meshes')
         mesh = meshCalculator.calculate()
-        self.perfWatch.stop()
 
         if mesh is None:
             return None
@@ -476,27 +418,17 @@ class GLTFDesignExporter(object):
         if len(indices) == 0 or len(coords) == 0:
             return None
 
-        self.perfWatch.switch_segment('writing mesh data to buffer')
-
         primitive.attributes = Attributes()
-        # primitive.attributes.NORMAL = self.exportAccessor(mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True)
+        # primitive.attributes.NORMAL = self.exportAccessor(mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True)  # Looks fine without normals
         primitive.attributes.POSITION = self.exportAccessor(coords, DataType.Vec3, ComponentType.Float, True)  # glTF requires limits for position coordinates.
         primitive.indices = self.exportAccessor(indices, DataType.Scalar, None, False)  # Autodetect component type on a per-mesh basis. glTF does not require limits for indices.
 
-        self.perfWatch.stop()
-
         if self.enableMaterials:
-            self.perfWatch.switch_segment('exporting materials')
-
-            materialIndex = self.exportMaterialFromAppearanceCached(fusionBRep.appearance)
-            primitive.material = materialIndex # doesn't matter if it's None
+            primitive.material = self.exportMaterialFromAppearanceCached(fusionBRep.appearance)
 
             appearSourceType = fusionBRep.appearanceSourceType
-            if appearSourceType != 1 and appearSourceType != 3:
-                self.eventCounter.event("found prim with overridable material")
+            if appearSourceType != 1 and appearSourceType != 3: # not body or face, https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-908a0043-6f96-4f61-b541-b7585bd1f32e
                 primitive.extras[self.MAT_OVERRIDEABLE_TAG] = True
-
-            self.perfWatch.stop()
         else:
             primitive.material = self.exportMaterialFromAppearanceCached(self.defaultAppearance)
 
@@ -515,7 +447,7 @@ class GLTFDesignExporter(object):
             GLTFIndex: The index of the exported accessor in the glTF accessors list.
         """
         componentCount = len(array)  # the number of components, e.g. 12 floats
-        componentsPerData = DataType.num_elements(dataType)  # the number of components in one datum, e.g. 3 floats per Vec3
+        componentsPerData = DataType.numElements(dataType)  # the number of components in one datum, e.g. 3 floats per Vec3
         dataCount = int(componentCount / componentsPerData)  # the number of data, e.g. 4 Vec3s
 
         assert componentCount != 0  # don't try to export an empty array
@@ -526,7 +458,6 @@ class GLTFDesignExporter(object):
         accessor.count = dataCount
         accessor.type = dataType
 
-        self.bufferWatch.switch_segment("calculating min/max")
 
         if calculateLimits or componentType is None:  # must calculate limits if auto type detection is necessary
             accessor.max = tuple(max(array[i::componentsPerData]) for i in range(componentsPerData))  # tuple of max values in each position of the data type
@@ -535,16 +466,15 @@ class GLTFDesignExporter(object):
         alignBytesIOToBoundary(self.primaryBufferStream)  # buffers should start/end at aligned values for efficiency
         bufferByteOffset = calculateAlignment(self.primaryBufferStream.tell())  # start of the buffer to be created
 
-        self.bufferWatch.stop()
 
         if componentType is None:
             # Auto detect smallest unsigned integer type.
             componentMin = min(accessor.min)
             componentMax = max(accessor.max)
 
-            ubyteMin, ubyteMax = ComponentType.get_limits(ComponentType.UnsignedByte)
-            ushortMin, ushortMax = ComponentType.get_limits(ComponentType.UnsignedShort)
-            uintMin, uintMax = ComponentType.get_limits(ComponentType.UnsignedInt)
+            ubyteMin, ubyteMax = ComponentType.getValueLimits(ComponentType.UnsignedByte)
+            ushortMin, ushortMax = ComponentType.getValueLimits(ComponentType.UnsignedShort)
+            uintMin, uintMax = ComponentType.getValueLimits(ComponentType.UnsignedInt)
 
             if ubyteMin <= componentMin and componentMax < ubyteMax:
                 componentType = ComponentType.UnsignedByte
@@ -555,18 +485,12 @@ class GLTFDesignExporter(object):
             else:
                 self.warnings.append(f"Failed to autodetect unsigned integer type for limits ({componentMin}, {componentMax})")
 
-            self.bufferWatch.switch_segment(f"component type detected: {str(componentType).split('.')[1]}")
-            self.bufferWatch.stop()
-
-        self.bufferWatch.switch_segment("writing to stream")
 
         # Pack the supplied data into the primary glB buffer stream.
         accessor.componentType = componentType
-        packFormat = "<" + ComponentType.to_type_code(componentType)
+        packFormat = "<" + ComponentType.getTypeCode(componentType)
         for item in array:
             self.primaryBufferStream.write(struct.pack(packFormat, item))
-
-        self.bufferWatch.stop()
 
         bufferByteLength = calculateAlignment(self.primaryBufferStream.tell() - bufferByteOffset)  # Calculate the length of the bufferView to be created.
 
@@ -610,7 +534,6 @@ class GLTFDesignExporter(object):
         else:
             overrideDict = self.componentRevIdToMatOverrideDict[fusionComponent.revisionId]
             if overrideMatIndex in overrideDict:
-                self.eventCounter.event("used cached mesh with materials")
                 return overrideDict[overrideMatIndex]
             meshTemplate = self.componentRevIdToMeshTemplate.get(fusionComponent.revisionId, None)
 
@@ -635,10 +558,8 @@ class GLTFDesignExporter(object):
 
         """
         if overrideMat == -1:  # caller wants mesh with no override material
-            self.eventCounter.event("copied mesh without override")
             mesh = templateMesh  # just give them back the template
         else:  # caller wants mesh with override material
-            self.eventCounter.event("copied mesh with override")
             # shallow copy the mesh but with the override material index for all overridable materials
             mesh = Mesh()
             mesh.name = templateMesh.name
@@ -649,7 +570,6 @@ class GLTFDesignExporter(object):
                 if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
                     prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
                     prim.material = overrideMat
-                    self.eventCounter.event("applied override material to prim")
                 mesh.primitives.append(prim)
         self.gltf.meshes.append(mesh)
         return len(self.gltf.meshes) - 1
@@ -663,7 +583,6 @@ class GLTFDesignExporter(object):
             materialIndex = self.materialNameToGltfIndex[materialName]
             if materialIndex == -1:  # was previously unable to export material
                 return None
-            self.eventCounter.event("used cached material")
             return materialIndex
 
         materialIndex = self.exportMaterialFromAppearance(appearance)
@@ -729,26 +648,4 @@ class GLTFDesignExporter(object):
         self.gltf.materials.append(material)
         return len(self.gltf.materials) - 1
 
-    def checkIfAppearancesAreBugged(self) -> bool:
-        """Checks if the appearances of a fusion document are bugged.
 
-        According to the Fusion 360 API documentation, the id property of a adsk.core.Appearance should be unique.
-        For many models imported into Fusion 360 (as opposed to being designed in Fusion), the material ids are duplicated.
-        This leads to a bug where the Fusion 360 API does not return the correct materials for a model, thus making it impossible to export the materials.
-
-        Returns: True if the appearances are bugged.
-
-        """
-        usedIdMap = {}
-        for appearance in self.ao.design.appearances:
-            if appearance.id in usedIdMap:
-                return True
-            usedIdMap[appearance.id] = True
-        return False
-
-    def getDefaultAppearance(self) -> Optional[adsk.core.Appearance]:
-        fusionMatLib = self.ao.app.materialLibraries.itemById("C1EEA57C-3F56-45FC-B8CB-A9EC46A9994C") # Fusion 360 Material Library
-        if fusionMatLib is None:
-            return None
-        aluminum = fusionMatLib.appearances.itemById("PrismMaterial-002_physmat_aspects:Prism-028") # Aluminum - Satin
-        return aluminum
