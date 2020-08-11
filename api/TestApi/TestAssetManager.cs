@@ -137,7 +137,6 @@ namespace TestApi
             Assert.AreSame(testJson, test);
         }
 
-        [ModuleExport]
         private class AssetImportSubscriber
         {
             static public List<AssetImportEvent> Events { get; private set; } = new List<AssetImportEvent>();

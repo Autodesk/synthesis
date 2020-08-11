@@ -369,6 +369,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 RootNode = new Directory("", Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
                 RootNode.AddEntryInner(new Directory("environment", Permissions.PublicReadWrite));
                 RootNode.AddEntryInner(new Directory("modules", Permissions.PublicReadWrite));
+                RootNode.AddEntryInner(new Directory("runtime", Permissions.PublicReadWrite));
                 RootNode.AddEntryInner(new Directory("temp", Permissions.PublicReadWrite));
             }
 

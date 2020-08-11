@@ -3,8 +3,5 @@
 namespace SynthesisAPI.Modules.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
-	internal class BuiltinComponentAttribute : Attribute
-	{
-
-	}
+	public class ModuleOmitAttribute : Attribute {}
 }

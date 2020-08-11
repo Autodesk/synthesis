@@ -7,7 +7,6 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
 	public class Transform : Component
 	{
 		private Vector3D _position = new Vector3D();

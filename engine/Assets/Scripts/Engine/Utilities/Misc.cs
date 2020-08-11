@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Engine.Util
 {
-    public static class Utilities
+    public static class Misc
     {
         public static UnityEngine.GameObject FindGameObject(string name)
         {
@@ -15,6 +15,7 @@ namespace Engine.Util
         {
             return UnityEngine.Resources.FindObjectsOfTypeAll<TGameObject>().First(o => o.name == name);
         }
+
 
         public static UnityEngine.Vector3 MapVector3D(Vector3D vec) =>
             MathUtil.MapVector3D(vec);

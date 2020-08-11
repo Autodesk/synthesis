@@ -8,7 +8,6 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.Systems
 {
-    [ModuleExport]
     public class Ui : SystemBase
     {
         public override void Setup()
@@ -25,8 +24,6 @@ namespace SynthesisCore.Systems
                 element => RegisterOKCloseButtons(element, "Modules"));
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => RegisterOKCloseButtons(element, "Settings"));
-
-            Logger.RegisterLogger(new ToastLogger());
 
             UIManager.AddTab(engineTab);
             UIManager.AddPanel(environmentsWindow);
@@ -69,10 +66,7 @@ namespace SynthesisCore.Systems
 
         public override void OnPhysicsUpdate() { }
 
-        public override void OnUpdate()
-        {
-            ToastLogger.ScrollToBottom();
-        }
+        public override void OnUpdate() { }
 
         public override void Teardown() { }
     }

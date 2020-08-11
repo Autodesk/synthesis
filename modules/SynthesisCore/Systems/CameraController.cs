@@ -9,13 +9,12 @@ using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
-using Utilities;
 
 #nullable enable
 
 namespace SynthesisCore.Systems
 {
-    [ModuleExport]
+    [InitializationPriority(2)]
     public class CameraController : SystemBase
     {
         public static float SensitivityX { get => 2; } // TODO: integrate with preference manager

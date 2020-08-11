@@ -9,7 +9,6 @@ using SynthesisCore.Components;
 
 namespace SynthesisCore
 {
-    [ModuleExport]
     public class SampleSystem : SystemBase
     {
         public override void OnPhysicsUpdate() { }

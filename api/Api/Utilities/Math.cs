@@ -1,8 +1,7 @@
 ﻿using MathNet.Spatial.Euclidean;
-using MathNet.Spatial.Units;
 using System;
 
-namespace Utilities
+namespace SynthesisAPI.Utilities
 {
     public static class Math
     {
