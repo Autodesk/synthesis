@@ -44,16 +44,17 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
             return
         warnings, modelStats, duration = exportResults
 
+        warningsString = '\n'.join(warnings)
         finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                                 f"File saved to {filePath}\n\n"
                                 f"==== Model Stats ====\n"
                                 f"{modelStats}\n"
                                 f"==== Warnings ====\n"
-                                f"{warnings}\n"
+                                f"{warningsString}\n"
                                 )
         print(finishedMessageDebug)
         finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
-        ao.ui.messageBox(finishedMessage, "Synthesis glTF Exporter")
+        ao.ui.messageBox(finishedMessageDebug, "Synthesis glTF Exporter")
     except:
         app = adsk.core.Application.get()
         ui = app.userInterface

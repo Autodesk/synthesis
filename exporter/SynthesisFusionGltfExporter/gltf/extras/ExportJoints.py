@@ -13,23 +13,38 @@ def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNode
     jointsDict = []
     allAffectedOccurrences = []
     for fusionJoint in fusionJoints:
-        if isJointInvalid(fusionJoint, warnings):
+        result = fillJoint(fusionJoint, groupName, rootNodeUUID, warnings)
+        if result is None:
             continue
-        joint, affectedOccurrences = fillJoint(fusionJoint, groupName, rootNodeUUID)
+        joint, affectedOccurrences = result
         allAffectedOccurrences += affectedOccurrences
         jointsDict.append(MessageToDict(joint, including_default_value_fields=True))
     return jointsDict, [occ.fullPathName if occ is not None else "" for occ in allAffectedOccurrences]
 
-def isJointInvalid(fusionJoint: adsk.fusion.Joint, warnings: List[str]):
-    if fusionJoint.occurrenceOne is None and fusionJoint.occurrenceTwo is None:
-        warnings.append(f"Ignoring joint with unknown occurrence references: {fusionJoint.name}")
-        return True
+def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, warnings: List[str]) -> Optional[Tuple[Joint, List[adsk.fusion.Occurrence]]]:
     if fusionJoint.jointMotion.jointType not in range(6):
         warnings.append(f"Ignoring joint with unknown type: {fusionJoint.name}")
-        return True
-    return False
+        return None
 
-def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str) -> Tuple[Joint, List[adsk.fusion.Occurrence]]:
+    occurrenceOne = fusionJoint.occurrenceOne
+    occurrenceTwo = fusionJoint.occurrenceTwo
+
+    if occurrenceOne is None:
+        try:
+            occurrenceOne = fusionJoint.geometryOrOriginOne.entityOne.assemblyContext
+        except:
+            pass
+
+    if occurrenceTwo is None:
+        try:
+            occurrenceTwo = fusionJoint.geometryOrOriginTwo.entityOne.assemblyContext
+        except:
+            pass
+
+    if occurrenceTwo is None and occurrenceOne is None:
+        warnings.append(f"Ignoring joint with unknown occurrence references: {fusionJoint.name}")
+        return None
+
     protoJoint = Joint()
     protoJoint.header.name = fusionJoint.name
     protoJoint.header.uuid = Fusion360Utilities.item_id(fusionJoint, groupName)
@@ -37,8 +52,6 @@ def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str) -> 
     protoJoint.isLocked = fusionJoint.isLocked
     protoJoint.isSuppressed = fusionJoint.isSuppressed
 
-    occurrenceTwo = fusionJoint.occurrenceOne
-    occurrenceOne = fusionJoint.occurrenceTwo
     protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(occurrenceTwo, groupName, rootUUID)
     protoJoint.occurrenceTwoUUID = getJointedOccurrenceUUID(occurrenceOne, groupName, rootUUID)
 

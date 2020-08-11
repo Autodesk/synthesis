@@ -23,7 +23,7 @@ def writeGlbToFile(gltf, primaryBufferData, filepath):
         writeGlbToStream(gltf, primaryBufferData, stream)
 
 def writeGlbToStream(gltf, primaryBufferData, stream):
-    jsonBytes = bytearray(gltfToJson(gltf, default=json_serial, indent=None, allow_nan=False, skipkeys=True).encode("utf-8"))  # type: bytearray
+    jsonBytes = bytearray(gltfToJson(gltf, default=json_serial, indent=1, allow_nan=False, skipkeys=True).encode("utf-8"))  # type: bytearray
 
     alignByteArrayToBoundary(jsonBytes)
 
