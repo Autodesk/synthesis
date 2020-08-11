@@ -5,21 +5,16 @@
   <TargetPath>synthesis_core</TargetPath>
   <Author>Synthesis Team</Author>
   <Description>The main Synthesis module</Description>
-  <Dependencies>
-    <Dependency>
-      <Name>Utilities</Name>
-      <Version>0.0.1</Version>
-    </Dependency>
-  </Dependencies>
+  <Dependencies />
   <FileManifest>
     <string>SynthesisCore.dll</string>
-    <string>Test.glb</string>
 	<string>UI/uxml/Environments.uxml</string>
     <string>UI/uxml/General.uxml</string>
     <string>UI/uxml/Graphics.uxml</string>
     <string>UI/uxml/Modules.uxml</string>
     <string>UI/uxml/Module.uxml</string>
     <string>UI/uxml/Settings.uxml</string>
+    <string>UI/uxml/ProgressBar.uxml</string>
     <string>UI/uxml/Tab.uxml</string>
     <string>UI/uxml/Toolbar.uxml</string>
     <string>UI/uss/Modules.uss</string>
@@ -27,6 +22,7 @@
     <string>UI/uss/Settings.uss</string>
     <string>UI/uss/Toolbar.uss</string>
     <string>UI/uss/Window.uss</string>
+    <string>UI/uss/ProgressBar.uss</string>
     <string>UI/images/add-icon.png</string>
     <string>UI/images/close-icon-black.png</string>
     <string>UI/images/close-icon-white.png</string>

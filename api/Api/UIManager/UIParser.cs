@@ -74,6 +74,7 @@ namespace SynthesisAPI.UIManager
                     if (attr.Name.Equals("class"))
                     {
                         //Logger.Log("Class found with value: " + attr.Value);
+                        element.AddToClassList(attr.Value);
                         element = StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, element);
                     }
 
@@ -160,6 +161,7 @@ namespace SynthesisAPI.UIManager
         {
             string propertyName = MapCssName(propertyStr);
             if (propertyName == "unityFontStyle") propertyName = "unityFontStyleAndWeight";
+            if (propertyName == "textAlign") propertyName = "unityTextAlign";
             return typeof(IStyle).GetProperty(propertyName);
         }
 
