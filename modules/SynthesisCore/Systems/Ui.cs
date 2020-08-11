@@ -17,9 +17,10 @@ namespace SynthesisCore.Systems
             var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Environments.uxml");
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
-            var jointsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/SynthesisCore/UI/uxml/Joints.uxml");
+            var jointsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
-            Tab engineTab = new Tab("Engine", tabAsset, null);
+            Tab engineTab = new Tab("Engine", tabAsset, _ => { });
+            Tab jointsTab = new Tab("Joints Tab", tabAsset, _ => { });
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
                 element => RegisterOKCloseButtons(element, "Environments"));
             Panel modulesWindow = new Panel("Modules", modulesAsset,
@@ -32,6 +33,7 @@ namespace SynthesisCore.Systems
             Logger.RegisterLogger(new ToastLogger());
 
             UIManager.AddTab(engineTab);
+            UIManager.AddTab(jointsTab);
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
@@ -55,18 +57,9 @@ namespace SynthesisCore.Systems
                 UIManager.TogglePanel("Settings");
             });
             Button jointsButton = (Button)UIManager.RootElement.Get("joints-button");
-            settingsButton.Subscribe(x =>
+            jointsButton.Subscribe(x =>
             {
                 UIManager.TogglePanel("Joints");
-            });
-        }
-
-        private void RegisterJointsButton(VisualElement visualElement, string panelName)
-        {
-            Button jointsButton = (Button)visualElement.Get("joints-button");
-            okButton?.Subscribe(x =>
-            {
-                UIManager.ShowPanel(panelName);
             });
         }
 
