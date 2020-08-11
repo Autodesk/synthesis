@@ -199,7 +199,7 @@ namespace Engine
             closeButton.SetStyleProperty("border-bottom-width", "0px");
             closeButton.SetStyleProperty("border-left-width", "0px");
             closeButton.SetStyleProperty("border-right-width", "0px");
-            closeButton.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/close-icon-white.png");
+            closeButton.SetStyleProperty("background-image", "/runtime/close-icon-white.png");
             closeButton.Subscribe(e =>
             {
                 if (e is ButtonClickableEvent be && be.Name == closeButton.Name)
@@ -226,8 +226,10 @@ namespace Engine
         {
             if (initialized)
                 return;
-            
+
             // Load icons into virtual file system
+            var closeIconStream = File.OpenRead("Assets/UI/Toasts/close-icon-white.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", closeIconStream, "/runtime", "close-icon-white.png", Permissions.PublicReadOnly, "");
             var wrenchStream = File.OpenRead("Assets/UI/Toasts/wrench-icon.png");
             AssetManager.Import<SpriteAsset>("image/sprite", wrenchStream, "/runtime", "wrench-icon.png", Permissions.PublicReadOnly, "");
             var warningStream = File.OpenRead("Assets/UI/Toasts/warning-icon-white-solid.png");
