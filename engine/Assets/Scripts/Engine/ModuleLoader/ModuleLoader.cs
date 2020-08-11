@@ -235,7 +235,6 @@ namespace Engine.ModuleLoader
 						throw new LoadModuleException($"Failed to import asset: {entry.Name}");
 					}
 				}
-				// Debug.Log("Loaded " + entry.Name);
 			}
 			foreach (var file in fileManifest)
 			{
@@ -289,7 +288,7 @@ namespace Engine.ModuleLoader
 					}
 					else
 					{
-						Logger.Log("How even");
+						throw new LoadModuleException("Type prioritization failed");
 					}
 					ModuleManager.RegisterModuleAssemblyName(apiAssembly.GetName().Name, "Api");
 				}
@@ -459,17 +458,16 @@ namespace Engine.ModuleLoader
 			}
 
 			var initClass = types.FirstOrDefault(t => t.Name == "ModuleInitializer");
-			if (initClass == null)
+			if (initClass != null)
 			{
-				Logger.Log($"No initializer class found for {moduleName}", LogLevel.Debug);
-			}
-			else if (!(initClass.IsAbstract && initClass.IsSealed))
-			{
-				Logger.Log($"Initializer for module {moduleName} is not static. Please make this class static.", LogLevel.Warning);
-			}
-			else
-			{
-				prioritizedElements.Insert(0, (initClass, null, null));
+				if (!(initClass.IsAbstract && initClass.IsSealed))
+				{
+					Logger.Log($"Initializer for module {moduleName} is not static. Please make this class static.", LogLevel.Warning);
+				}
+				else
+				{
+					prioritizedElements.Insert(0, (initClass, null, null));
+				}
 			}
 
 			return prioritizedElements;
