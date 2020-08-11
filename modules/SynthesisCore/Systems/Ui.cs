@@ -19,7 +19,7 @@ namespace SynthesisCore.Systems
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
 
-            Tab engineTab = new Tab("Engine", tabAsset, null);
+            Tab engineTab = new Tab("Engine", tabAsset, _ => { });
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
                 element => RegisterOKCloseButtons(element, "Environments"));
             Panel modulesWindow = new Panel("Modules", modulesAsset, 
