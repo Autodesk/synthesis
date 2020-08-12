@@ -1,5 +1,6 @@
 import time
 import traceback
+from typing import List, Any
 
 import adsk.core
 import adsk.fusion
@@ -15,7 +16,7 @@ from .utils.PyUtils import appendGetIndex
 from .utils.PygltfUtils import *
 
 
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality="8"):
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality: int = 8):
     try:
         ao = AppObjects()
 
@@ -44,11 +45,15 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
             return
         exportWarnings, modelStats, duration = exportResults
 
+        if len(exportWarnings) == 0:
+            exportWarnings.append("None :)")
+
+        modelStatsString = '\n'.join(modelStats)
         warningsString = '\n'.join(exportWarnings)
         finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                                 f"File saved to {filePath}\n\n"
                                 f"==== Model Stats ====\n"
-                                f"{modelStats}\n"
+                                f"{modelStatsString}\n"
                                 f"==== Warnings ====\n"
                                 f"{warningsString}\n"
                                 )
@@ -56,6 +61,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
         ao.ui.messageBox(finishedMessageDebug, "Synthesis glTF Exporter")
     except:
+        # noinspection PyArgumentList
         app = adsk.core.Application.get()
         ui = app.userInterface
         if ui:
@@ -100,6 +106,11 @@ class FusionGltfExporter(object):
     DESIGN_SCALE = 0.01  # fusion uses cm, glTF uses meters, so scale the root transform matrix
 
     # fields
+    ao: AppObjects
+
+    rootNodeUUID: str
+    jointedOccurrencePaths: List[str]
+
     gltf: GLTF2
 
     primaryBufferIndex: int
@@ -117,15 +128,13 @@ class FusionGltfExporter(object):
     exportWarnings: List[str]
 
     def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True,
-                 quality: str = "8"):  # todo: allow the export of designs besides the one in the foreground?
-        self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
+                 meshQuality: int = 8):  # todo: allow the export of designs besides the one in the foreground?
+        self.ao = ao
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
         self.enableFaceMaterials = enableFaceMaterials
-        self.ao = ao  # type: AppObjects
-        self.meshQuality = int(quality)
-
-        self.exportWarnings = []
+        self.exportVisibleBodiesOnly = exportVisibleBodiesOnly
+        self.meshQuality = meshQuality
 
         self.gltf = GLTF2()  # The root glTF object.
 
@@ -141,16 +150,16 @@ class FusionGltfExporter(object):
         # The actual binary data for the buffer will get stored in this memory stream
         self.primaryBufferStream = io.BytesIO()
 
-        self.rootItemId = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
+        self.rootNodeUUID = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
 
         self.componentRevIdToMeshTemplate = {}
         self.componentRevIdToMatOverrideDict = {}
         self.materialIdToGltfIndex = {}
         self.defaultAppearance = getDefaultAppearance(self.ao.app)
 
-        self.usedCompIdMap = {}
-
         self.jointedOccurrencePaths = []
+
+        self.exportWarnings = []
 
     def saveGltf(self, filepath: str, fileType: FileType):
         """
@@ -165,27 +174,22 @@ class FusionGltfExporter(object):
         """
 
         self.progressBar = self.ao.ui.createProgressDialog()
-        self.progressBar.isCancelButtonShown = False
+        self.progressBar.isCancelButtonShown = False  # TODO: Allow cancel
         self.progressBar.reset()
         self.progressBar.show(f"Exporting {self.ao.document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
         # noinspection PyUnresolvedReferences
         adsk.doEvents()  # show progress bar
 
-        if self.enableMaterials and checkIfAppearancesAreBugged(self.ao.design):
-            result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
-                                           f"Do you want to continue the export with materials turned off?\n"
-                                           f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
-            if result == 0 or result == 2:  # yes
-                self.enableMaterials = False
-            elif result == 3:  # no
-                pass
-            else:  # cancel
-                return
+        if not self.settingsPreCheck():
+            return
+
+        rootComponent = self.ao.design.rootComponent  # type: adsk.fusion.Component
 
         try:
-            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.exportWarnings)
+            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(list(rootComponent.allJoints) + list(rootComponent.allAsBuiltJoints), self.GLTF_GENERATOR_ID, self.rootNodeUUID, self.exportWarnings)
         except RuntimeError:  # todo: report this bug
+            print(traceback.format_exc())
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
             if result == 0 or result == 2:  # yes
@@ -195,7 +199,10 @@ class FusionGltfExporter(object):
 
         start = time.perf_counter()
 
-        self.gltf.scene = self.exportScene()  # export the current fusion document
+        self.progressBar.message = "Reading list of fusion components..."
+        self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
+
+        self.gltf.scene = self.exportScene(rootComponent)  # export the current fusion document
 
         # Clean tags
         for mesh in self.gltf.meshes:
@@ -223,25 +230,42 @@ class FusionGltfExporter(object):
 
         self.progressBar.hide()
 
-        stats = (f"scenes: {len(self.gltf.scenes)}\n"
-                 f"nodes: {len(self.gltf.nodes)}\n"
-                 f"meshes: {len(self.gltf.meshes)}\n"
-                 f"primitives: {sum([len(x.primitives) for x in self.gltf.meshes])}\n"
-                 f"materials: {len(self.gltf.materials)}\n"
-                 f"accessors: {len(self.gltf.accessors)}\n"
-                 f"bufferViews: {len(self.gltf.bufferViews)}\n"
-                 f"buffers: {len(self.gltf.buffers)}\n"
-                 f"joints: {len(self.gltf.extras['joints']) if 'joints' in self.gltf.extras else 'could not export'}\n"
-                 )
-
-        if len(self.exportWarnings) == 0:
-            self.exportWarnings.append("None :)")
+        stats = [f"scenes: {len(self.gltf.scenes)}",
+                 f"nodes: {len(self.gltf.nodes)}",
+                 f"meshes: {len(self.gltf.meshes)}",
+                 f"primitives: {sum([len(x.primitives) for x in self.gltf.meshes])}",
+                 f"materials: {len(self.gltf.materials)}",
+                 f"accessors: {len(self.gltf.accessors)}",
+                 f"bufferViews: {len(self.gltf.bufferViews)}",
+                 f"buffers: {len(self.gltf.buffers)}",
+                 f"joints: {len(self.gltf.extras['joints']) if 'joints' in self.gltf.extras else 0}",
+                 ]
 
         end = time.perf_counter()
+        exportTime = round(end - start, 4)
 
-        return self.exportWarnings, stats, round(end - start, 4)
+        return self.exportWarnings, stats, exportTime
 
-    def exportScene(self) -> GLTFIndex:
+    def settingsPreCheck(self):
+        """Validates user settings.
+
+        Returns: True if the export should continue.
+
+        """
+        if self.enableMaterials and checkIfAppearancesAreBugged(self.ao.design):
+            result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
+                                           f"Do you want to continue the export with materials turned off?\n"
+                                           f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
+            if result == 0 or result == 2:  # yes
+                self.enableMaterials = False
+            elif result == 3:  # no
+                pass
+            else:  # cancel
+                return False
+
+        return True
+
+    def exportScene(self, rootComponent: adsk.fusion.Component) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.
         
         Returns: The index of the exported scene in the glTF scenes list.
@@ -252,10 +276,7 @@ class FusionGltfExporter(object):
         # We export components into meshes first while recording a mapping from fusion component unique ids to glTF mesh indices so we can refer to mesh instances as we export the nodes.
         # This allows us to avoid serializing duplicate meshes for components which occur multiple times in one assembly, similar to fusion's system of components and occurrences.
 
-        self.progressBar.message = "Reading list of fusion components..."
-        self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
-
-        rootNode = self.exportRootNode(self.ao.root_comp)
+        rootNode = self.exportRootNode(rootComponent)
         if rootNode is not None:
             scene.nodes.append(rootNode)
 
@@ -277,7 +298,7 @@ class FusionGltfExporter(object):
         node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
 
         if "" in self.jointedOccurrencePaths:
-            node.extras["uuid"] = self.rootItemId
+            node.extras["uuid"] = self.rootNodeUUID
 
         if isEmptyLeafNode(node):
             return
@@ -505,4 +526,3 @@ class FusionGltfExporter(object):
         if material is None:
             return None
         return appendGetIndex(self.gltf.materials, material)
-

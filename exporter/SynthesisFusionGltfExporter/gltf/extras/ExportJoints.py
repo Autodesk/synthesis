@@ -9,7 +9,7 @@ from apper import Fusion360Utilities
 from gltf.extras.proto.gltf_extras_pb2 import Joint
 
 
-def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNodeUUID: str, exportWarnings: List[str]) -> Tuple[List[Dict], List[str]]:
+def exportJoints(fusionJoints: List[Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]], groupName: str, rootNodeUUID: str, exportWarnings: List[str]) -> Tuple[List[Dict], List[str]]:
     jointsDict = []
     allAffectedOccurrences = []
     for fusionJoint in fusionJoints:
@@ -21,7 +21,7 @@ def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNode
         jointsDict.append(MessageToDict(joint, including_default_value_fields=True))
     return jointsDict, [occ.fullPathName if occ is not None else "" for occ in allAffectedOccurrences]
 
-def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, exportWarnings: List[str]) -> Optional[Tuple[Joint, List[adsk.fusion.Occurrence]]]:
+def fillJoint(fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint], groupName: str, rootUUID: str, exportWarnings: List[str]) -> Optional[Tuple[Joint, List[adsk.fusion.Occurrence]]]:
     if fusionJoint.jointMotion.jointType not in range(6):
         exportWarnings.append(f"Ignoring joint with unknown type: {fusionJoint.name}")
         return None
@@ -49,7 +49,6 @@ def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, exp
     protoJoint.header.name = fusionJoint.name
     protoJoint.header.uuid = Fusion360Utilities.item_id(fusionJoint, groupName)
     fillPoint3DConvertUnits(getJointOrigin(fusionJoint), protoJoint.origin)
-    protoJoint.isLocked = fusionJoint.isLocked
     protoJoint.isSuppressed = fusionJoint.isSuppressed
 
     protoJoint.occurrenceOneUUID = getJointedOccurrenceUUID(occurrenceTwo, groupName, rootUUID)
@@ -69,8 +68,8 @@ def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, exp
     fillJointMotionFunc(fusionJoint.jointMotion, protoJoint)
     return protoJoint, [occurrenceOne, occurrenceTwo]
 
-def getJointOrigin(fusionJoint: adsk.fusion.Joint) -> adsk.core.Point3D:
-    geometryOrOrigin = fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo
+def getJointOrigin(fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]) -> adsk.core.Point3D:
+    geometryOrOrigin = (fusionJoint.geometryOrOriginOne if fusionJoint.geometryOrOriginOne.objectType == 'adsk::fusion::JointGeometry' else fusionJoint.geometryOrOriginTwo) if fusionJoint.objectType == 'adsk::fusion::Joint' else fusionJoint.geometry
     if geometryOrOrigin.objectType == 'adsk::fusion::JointGeometry':
         return geometryOrOrigin.origin
     else:  # adsk::fusion::JointOrigin

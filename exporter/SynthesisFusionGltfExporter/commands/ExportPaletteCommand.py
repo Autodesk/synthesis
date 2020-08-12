@@ -36,7 +36,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             materials = settings['materials']
             faceMaterials = settings['faceMaterials']
             exportHidden = not settings['exportHidden']
-            quality = settings['quality']
+            quality = int(settings['quality'])
             useGlb = FileType.fromString(settings['useGlb'])
             exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality)
 
