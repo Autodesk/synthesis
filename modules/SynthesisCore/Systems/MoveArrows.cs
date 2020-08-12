@@ -27,14 +27,16 @@ namespace SynthesisCore.Systems
             direction = UnitVector3D.XAxis;
             arrows = EnvironmentManager.AddEntity();
             transform = arrows.AddComponent<Transform>();
+            var arrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
+            var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
+            var sprite = arrows.AddComponent<Sprite>();
+            sprite.SetSprite(arrowSpriteAsset);
+            sprite.AlwaysOnTop = true;
             arrows.AddComponent<MeshCollider2D>().OnClick = () =>
             {
                 Logger.Log("Here mod");
+                sprite.SetSprite(selectedArrowSpriteAsset);
             };
-            var spriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
-            var sprite = arrows.AddComponent<Sprite>();
-            sprite.SetSprite(spriteAsset);
-            sprite.AlwaysOnTop = true;
         }
 
         public override void Teardown() { }
