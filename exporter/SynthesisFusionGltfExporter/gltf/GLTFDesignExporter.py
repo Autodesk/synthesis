@@ -10,6 +10,7 @@ from .extras.ExportJoints import exportJoints
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
 from .utils.FusionUtils import *
 from .utils.MathUtils import *
+from .utils.FusionToPygltfTranslation import *
 from .utils.PygltfUtils import *
 
 
@@ -324,6 +325,66 @@ class GLTFDesignExporter(object):
         self.gltf.nodes.append(node)
         return len(self.gltf.nodes) - 1
 
+
+    def exportMeshWithOverrideCached(self, fusionComponent: adsk.fusion.Component, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
+        """Makes a copy of a glTF mesh with the provided glTF override material, or returns a cached material-overridden mesh if one exists.
+
+        This method requires the mesh template map (componentRevIdToMeshTemplate) to be filled.
+
+        Args:
+            fusionComponent: The fusion component which the mesh should be derived from.
+            overrideMatIndex: The index in the glTF object's material array of the material the returned mesh should be overridden with.
+
+        Returns: The index of the material-overridden mesh in the meshes list of the glTF object.
+
+        """
+        # If we've already created a gltf mesh with the same material override, just use that one
+        if fusionComponent.revisionId not in self.componentRevIdToMeshTemplate:
+            meshTemplate = self.exportMesh(fusionComponent)
+        else:
+            overrideDict = self.componentRevIdToMatOverrideDict[fusionComponent.revisionId]
+            if overrideMatIndex in overrideDict:
+                return overrideDict[overrideMatIndex]
+            meshTemplate = self.componentRevIdToMeshTemplate.get(fusionComponent.revisionId, None)
+
+        # Create a mesh with the material override from the template
+        if meshTemplate is None:
+            return
+        newMeshIndex = self.exportMeshWithOverride(meshTemplate, overrideMatIndex)
+
+        self.componentRevIdToMatOverrideDict[fusionComponent.revisionId][overrideMatIndex] = newMeshIndex
+        return newMeshIndex
+
+    def exportMeshWithOverride(self, templateMesh: Mesh, overrideMat: GLTFIndex) -> GLTFIndex:
+        """Makes a copy of a glTF mesh with the provided glTF override material.
+
+        Each primitive in the duplicated mesh will be colored with the provided override material as long as the material is allowed to be overridden (as defined by fusion).
+
+        Args:
+            templateMesh: The template mesh to duplicate.
+            overrideMat: The material to apply to each material-overridable primitive in the duplicated mesh.
+
+        Returns: The index of the material-overridden mesh in the meshes list of the glTF object.
+
+        """
+        if overrideMat == -1:  # caller wants mesh with no override material
+            mesh = templateMesh  # just give them back the template
+        else:  # caller wants mesh with override material
+            # shallow copy the mesh but with the override material index for all overridable materials
+            mesh = Mesh()
+            mesh.name = templateMesh.name
+            mesh.extras = templateMesh.extras
+            mesh.extensions = templateMesh.extensions
+            for oldPrim in templateMesh.primitives:
+                prim = copy.copy(oldPrim)  # shallow copy, use same accessors
+                if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
+                    prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
+                    prim.material = overrideMat
+                mesh.primitives.append(prim)
+        self.gltf.meshes.append(mesh)
+        return len(self.gltf.meshes) - 1
+
+
     def exportMesh(self, fusionComponent: adsk.fusion.Component) -> Optional[Mesh]:
         """Exports a fusion component to a glTF mesh.
 
@@ -431,65 +492,6 @@ class GLTFDesignExporter(object):
         return primitive
 
 
-
-    def exportMeshWithOverrideCached(self, fusionComponent: adsk.fusion.Component, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
-        """Makes a copy of a glTF mesh with the provided glTF override material, or returns a cached material-overridden mesh if one exists.
-
-        This method requires the mesh template map (componentRevIdToMeshTemplate) to be filled.
-
-        Args:
-            fusionComponent: The fusion component which the mesh should be derived from.
-            overrideMatIndex: The index in the glTF object's material array of the material the returned mesh should be overridden with.
-
-        Returns: The index of the material-overridden mesh in the meshes list of the glTF object.
-
-        """
-        # If we've already created a gltf mesh with the same material override, just use that one
-        if fusionComponent.revisionId not in self.componentRevIdToMeshTemplate:
-            meshTemplate = self.exportMesh(fusionComponent)
-        else:
-            overrideDict = self.componentRevIdToMatOverrideDict[fusionComponent.revisionId]
-            if overrideMatIndex in overrideDict:
-                return overrideDict[overrideMatIndex]
-            meshTemplate = self.componentRevIdToMeshTemplate.get(fusionComponent.revisionId, None)
-
-        # Create a mesh with the material override from the template
-        if meshTemplate is None:
-            return
-        newMeshIndex = self.exportMeshWithOverride(meshTemplate, overrideMatIndex)
-
-        self.componentRevIdToMatOverrideDict[fusionComponent.revisionId][overrideMatIndex] = newMeshIndex
-        return newMeshIndex
-
-    def exportMeshWithOverride(self, templateMesh: Mesh, overrideMat: GLTFIndex) -> GLTFIndex:
-        """Makes a copy of a glTF mesh with the provided glTF override material.
-
-        Each primitive in the duplicated mesh will be colored with the provided override material as long as the material is allowed to be overridden (as defined by fusion).
-
-        Args:
-            templateMesh: The template mesh to duplicate.
-            overrideMat: The material to apply to each material-overridable primitive in the duplicated mesh.
-
-        Returns: The index of the material-overridden mesh in the meshes list of the glTF object.
-
-        """
-        if overrideMat == -1:  # caller wants mesh with no override material
-            mesh = templateMesh  # just give them back the template
-        else:  # caller wants mesh with override material
-            # shallow copy the mesh but with the override material index for all overridable materials
-            mesh = Mesh()
-            mesh.name = templateMesh.name
-            mesh.extras = templateMesh.extras
-            mesh.extensions = templateMesh.extensions
-            for oldPrim in templateMesh.primitives:
-                prim = copy.copy(oldPrim)  # shallow copy, use same accessors
-                if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
-                    prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
-                    prim.material = overrideMat
-                mesh.primitives.append(prim)
-        self.gltf.meshes.append(mesh)
-        return len(self.gltf.meshes) - 1
-
     def exportMaterialFromAppearanceCached(self, appearance: adsk.core.Appearance) -> Optional[GLTFIndex]:
         """Checks if the fusion Appearance already exists in a glTF document, exports the Appearance if it doesn't.
 
@@ -527,22 +529,9 @@ class GLTFDesignExporter(object):
         Returns: The index of the exported material in the materials list of the glTF object.
 
         """
-        appearancePBR = getPBRSettingsFromAppearance(fusionAppearance, exportWarnings)
-        if appearancePBR is None:
-            return
-        baseColorFactor, emissiveColorFactor, metallicFactor, roughnessFactor, transparent = appearancePBR
-
-        material = Material()
-        material.name = fusionAppearance.name
-        material.alphaCutoff = None  # this is a bug with the gltf python lib
-        material.emissiveFactor = emissiveColorFactor
-
-        pbr = PbrMetallicRoughness()
-        pbr.baseColorFactor = baseColorFactor
-        pbr.metallicFactor = metallicFactor
-        pbr.roughnessFactor = roughnessFactor
-
-        material.pbrMetallicRoughness = pbr
+        material = fusionMatToGltf(fusionAppearance, exportWarnings)
+        if material is None:
+            return None
 
         self.gltf.materials.append(material)
         return len(self.gltf.materials) - 1
