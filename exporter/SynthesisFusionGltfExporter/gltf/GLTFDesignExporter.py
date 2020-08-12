@@ -1,6 +1,5 @@
 import time
 import traceback
-from io import BytesIO
 
 import adsk.core
 import adsk.fusion
@@ -9,7 +8,6 @@ from google.protobuf.json_format import MessageToDict
 from apper import AppObjects, Fusion360Utilities
 from .extras.ExportJoints import exportJoints
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
-from .utils.ByteUtils import *
 from .utils.FusionUtils import *
 from .utils.MathUtils import *
 from .utils.PygltfUtils import *
@@ -42,9 +40,9 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
         if exportResults is None:
             ao.ui.messageBox(f"The glTF export was cancelled.")
             return
-        warnings, modelStats, duration = exportResults
+        exportWarnings, modelStats, duration = exportResults
 
-        warningsString = '\n'.join(warnings)
+        warningsString = '\n'.join(exportWarnings)
         finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                                 f"File saved to {filePath}\n\n"
                                 f"==== Model Stats ====\n"
@@ -120,7 +118,7 @@ class GLTFDesignExporter(object):
     defaultAppearance: adsk.core.Appearance  # aluminum
     materialIdToGltfIndex: Dict[str, GLTFIndex]  # dict for gltf material caching, from fusion appearance name to material gltf index
 
-    warnings: List[str]
+    exportWarnings: List[str]
 
     def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True,
                  quality: str = "8"):  # todo: allow the export of designs besides the one in the foreground?
@@ -131,7 +129,7 @@ class GLTFDesignExporter(object):
         self.ao = ao  # type: AppObjects
         self.meshQuality = int(quality)
 
-        self.warnings = []
+        self.exportWarnings = []
 
         self.gltf = GLTF2()  # The root glTF object.
 
@@ -190,7 +188,7 @@ class GLTFDesignExporter(object):
                 return
 
         try:
-            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.warnings)
+            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(self.ao.design.rootComponent.allJoints, self.GLTF_GENERATOR_ID, self.rootItemId, self.exportWarnings)
         except RuntimeError:  # todo: report this bug
             result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
                                            f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
@@ -242,12 +240,12 @@ class GLTFDesignExporter(object):
                  f"joints: {len(self.gltf.extras['joints']) if 'joints' in self.gltf.extras else 'could not export'}\n"
                  )
 
-        if len(self.warnings) == 0:
-            self.warnings.append("None :)")
+        if len(self.exportWarnings) == 0:
+            self.exportWarnings.append("None :)")
 
         end = time.perf_counter()
 
-        return self.warnings, stats, round(end - start, 4)
+        return self.exportWarnings, stats, round(end - start, 4)
 
     def exportScene(self) -> GLTFIndex:
         """Exports the open fusion design to a glTF scene.
@@ -351,7 +349,7 @@ class GLTFDesignExporter(object):
         try:
             mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bRepBodiesList]), including_default_value_fields=True)
         except:
-            self.warnings.append(f"Unable to get physical properties for component {mesh.name}")
+            self.exportWarnings.append(f"Unable to get physical properties for component {mesh.name}")
 
         revisionId = fusionComponent.revisionId
         self.componentRevIdToMeshTemplate[revisionId] = mesh
@@ -417,9 +415,9 @@ class GLTFDesignExporter(object):
             return None
 
         primitive.attributes = Attributes()
-        # primitive.attributes.NORMAL = self.exportAccessor(mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True)  # Looks fine without normals
-        primitive.attributes.POSITION = self.exportAccessor(coords, DataType.Vec3, ComponentType.Float, True)  # glTF requires limits for position coordinates.
-        primitive.indices = self.exportAccessor(indices, DataType.Scalar, None, False)  # Autodetect component type on a per-mesh basis. glTF does not require limits for indices.
+        # primitive.attributes.NORMAL = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True, self.warnings)  # Looks fine without normals
+        primitive.attributes.POSITION = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, coords, DataType.Vec3, ComponentType.Float, True, self.exportWarnings)  # glTF requires limits for position coordinates.
+        primitive.indices = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, indices, DataType.Scalar, None, False, self.exportWarnings)  # Autodetect component type on a per-mesh basis. glTF does not require limits for indices.
 
         if self.enableMaterials:
             primitive.material = self.exportMaterialFromAppearanceCached(fusionBRep.appearance)
@@ -432,87 +430,7 @@ class GLTFDesignExporter(object):
 
         return primitive
 
-    def exportAccessor(self, array: List[Union[int, float]], dataType: DataType, componentType: Optional[ComponentType], calculateLimits: bool) -> GLTFIndex:
-        """Creates an accessor to store an array of data.
 
-        Args:
-            array: The array of data to store in a flat array, eg. [x, y, x, y] NOT [[x, y], [x, y]].
-            dataType: The glTF data type to store.
-            componentType: The glTF component type to store the data. Set to None to autodetect the smallest necessary unsigned integer type (for indices)
-            calculateLimits: Whether or not it is necessary to calculate the limits of the data. If the componentType must be auto-detected, the limits will be calculated anyways.
-
-        Returns: The index of the exported accessor in the glTF accessors list.
-
-        """
-        componentCount = len(array)  # the number of components, e.g. 12 floats
-        componentsPerData = DataType.numElements(dataType)  # the number of components in one datum, e.g. 3 floats per Vec3
-        dataCount = int(componentCount / componentsPerData)  # the number of data, e.g. 4 Vec3s
-
-        assert componentCount != 0  # don't try to export an empty array
-        assert dataCount * componentsPerData == componentCount  # componentsPerData should divide evenly
-
-        accessor = Accessor()
-
-        accessor.count = dataCount
-        accessor.type = dataType
-
-
-        if calculateLimits or componentType is None:  # must calculate limits if auto type detection is necessary
-            accessor.max = tuple(max(array[i::componentsPerData]) for i in range(componentsPerData))  # tuple of max values in each position of the data type
-            accessor.min = tuple(min(array[i::componentsPerData]) for i in range(componentsPerData))  # tuple of min values in each position of the data type
-
-        alignBytesIOToBoundary(self.primaryBufferStream)  # buffers should start/end at aligned values for efficiency
-        bufferByteOffset = calculateAlignment(self.primaryBufferStream.tell())  # start of the buffer to be created
-
-
-        if componentType is None:
-            # Auto detect smallest unsigned integer type.
-            componentMin = min(accessor.min)
-            componentMax = max(accessor.max)
-
-            ubyteMin, ubyteMax = ComponentType.getValueLimits(ComponentType.UnsignedByte)
-            ushortMin, ushortMax = ComponentType.getValueLimits(ComponentType.UnsignedShort)
-            uintMin, uintMax = ComponentType.getValueLimits(ComponentType.UnsignedInt)
-
-            if ubyteMin <= componentMin and componentMax < ubyteMax:
-                componentType = ComponentType.UnsignedByte
-            elif ushortMin <= componentMin and componentMax < ushortMax:
-                componentType = ComponentType.UnsignedShort
-            elif uintMin <= componentMin and componentMax < uintMax:
-                componentType = ComponentType.UnsignedInt
-            else:
-                self.warnings.append(f"Failed to autodetect unsigned integer type for limits ({componentMin}, {componentMax})")
-
-
-        # Pack the supplied data into the primary glB buffer stream.
-        accessor.componentType = componentType
-        packFormat = "<" + ComponentType.getTypeCode(componentType)
-        for item in array:
-            self.primaryBufferStream.write(struct.pack(packFormat, item))
-
-        bufferByteLength = calculateAlignment(self.primaryBufferStream.tell() - bufferByteOffset)  # Calculate the length of the bufferView to be created.
-
-        accessor.bufferView = self.exportBufferView(bufferByteOffset, bufferByteLength)  # Create the glTF bufferView object with the calculated start and length.
-
-        self.gltf.accessors.append(accessor)
-        return len(self.gltf.accessors) - 1
-
-    def exportBufferView(self, byteOffset: int, byteLength: int) -> GLTFIndex:
-        """Creates a glTF bufferView with the specified offset and length, referencing the default glB buffer.
-
-        Args:
-            byteOffset: Index of the starting byte in the referenced buffer.
-            byteLength: Length in bytes of the bufferView.
-
-        Returns: The index of the exported bufferView in the glTF bufferViews list.
-        """
-        bufferView = BufferView()
-        bufferView.buffer = self.primaryBufferIndex  # index of the default glB buffer.
-        bufferView.byteOffset = byteOffset
-        bufferView.byteLength = byteLength
-
-        self.gltf.bufferViews.append(bufferView)
-        return len(self.gltf.bufferViews) - 1
 
     def exportMeshWithOverrideCached(self, fusionComponent: adsk.fusion.Component, overrideMatIndex: GLTFIndex) -> Optional[GLTFIndex]:
         """Makes a copy of a glTF mesh with the provided glTF override material, or returns a cached material-overridden mesh if one exists.
@@ -591,7 +509,7 @@ class GLTFDesignExporter(object):
                 return None
             return materialIndex  # appearance already exists in the glTF document
 
-        materialIndex = self.exportMaterialFromAppearance(appearance)
+        materialIndex = self.exportMaterialFromAppearance(appearance, self.exportWarnings)
         if materialIndex is None:
             self.materialIdToGltfIndex[materialId] = -1
             return None  # was unable to export material
@@ -600,7 +518,7 @@ class GLTFDesignExporter(object):
 
         return materialIndex
 
-    def exportMaterialFromAppearance(self, fusionAppearance: adsk.core.Appearance) -> Optional[GLTFIndex]:
+    def exportMaterialFromAppearance(self, fusionAppearance: adsk.core.Appearance, exportWarnings: List[str]) -> Optional[GLTFIndex]:
         """Exports a glTF material from a fusion Appearance and add the exported material to the glTF object.
 
         Args:
@@ -609,7 +527,7 @@ class GLTFDesignExporter(object):
         Returns: The index of the exported material in the materials list of the glTF object.
 
         """
-        appearancePBR = getPBRSettingsFromAppearance(fusionAppearance, self.warnings)
+        appearancePBR = getPBRSettingsFromAppearance(fusionAppearance, exportWarnings)
         if appearancePBR is None:
             return
         baseColorFactor, emissiveColorFactor, metallicFactor, roughnessFactor, transparent = appearancePBR

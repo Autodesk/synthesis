@@ -4,7 +4,7 @@ import adsk.fusion
 
 from typing import *
 
-def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, warnings=None) -> Optional[Tuple[List[float], List[float], float, float, bool]]:
+def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportWarnings: List[str]) -> Optional[Tuple[List[float], List[float], float, float, bool]]:
     """Gets Physically Based Rendering settings from a fusion appearance.
 
     Args:
@@ -14,8 +14,6 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, warning
     Returns: None if the material is unrecognized, otherwise returns RGBA base color, RGB emissive factor, metallic factor, roughness factor, and whether the material is transparent.
 
     """
-    if warnings is None:
-        warnings = []
     props = fusionAppearance.appearanceProperties
 
     transparent = False
@@ -46,10 +44,10 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, warning
     elif matModelType == 5:  # Glazing
         baseColor = props.itemById("glazing_transmission_color").value
     else:  # ??? idk what type 4 material is
-        warnings.append(f"Unsupported material modeling type: {fusionAppearance.name}")
+        exportWarnings.append(f"Unsupported material modeling type: {fusionAppearance.name}")
 
     if baseColor is None:
-        warnings.append(f"Ignoring material that does not have color: {fusionAppearance.name}")
+        exportWarnings.append(f"Ignoring material that does not have color: {fusionAppearance.name}")
         return None
 
     baseColorFactor = fusionColorToRGBAArray(baseColor)[:3] + [fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]

@@ -9,11 +9,11 @@ from apper import Fusion360Utilities
 from gltf.extras.proto.gltf_extras_pb2 import Joint
 
 
-def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNodeUUID: str, warnings: List[str]) -> Tuple[List[Dict], List[str]]:
+def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNodeUUID: str, exportWarnings: List[str]) -> Tuple[List[Dict], List[str]]:
     jointsDict = []
     allAffectedOccurrences = []
     for fusionJoint in fusionJoints:
-        result = fillJoint(fusionJoint, groupName, rootNodeUUID, warnings)
+        result = fillJoint(fusionJoint, groupName, rootNodeUUID, exportWarnings)
         if result is None:
             continue
         joint, affectedOccurrences = result
@@ -21,9 +21,9 @@ def exportJoints(fusionJoints: List[adsk.fusion.Joint], groupName: str, rootNode
         jointsDict.append(MessageToDict(joint, including_default_value_fields=True))
     return jointsDict, [occ.fullPathName if occ is not None else "" for occ in allAffectedOccurrences]
 
-def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, warnings: List[str]) -> Optional[Tuple[Joint, List[adsk.fusion.Occurrence]]]:
+def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, exportWarnings: List[str]) -> Optional[Tuple[Joint, List[adsk.fusion.Occurrence]]]:
     if fusionJoint.jointMotion.jointType not in range(6):
-        warnings.append(f"Ignoring joint with unknown type: {fusionJoint.name}")
+        exportWarnings.append(f"Ignoring joint with unknown type: {fusionJoint.name}")
         return None
 
     occurrenceOne = fusionJoint.occurrenceOne
@@ -42,7 +42,7 @@ def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, war
             pass
 
     if occurrenceTwo is None and occurrenceOne is None:
-        warnings.append(f"Ignoring joint with unknown occurrence references: {fusionJoint.name}")
+        exportWarnings.append(f"Ignoring joint with unknown occurrence references: {fusionJoint.name}")
         return None
 
     protoJoint = Joint()

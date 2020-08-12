@@ -1,5 +1,7 @@
 from enum import Enum, IntEnum
 
+# Generic constants for working with the glTF standard
+
 # GLB constants
 GLTF_VERSION = 2
 GLB_HEADER_SIZE = 12
