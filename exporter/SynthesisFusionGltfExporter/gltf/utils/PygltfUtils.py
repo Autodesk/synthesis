@@ -1,5 +1,5 @@
 from .DictUtils import dictDeleteEmptyKeys
-from .GLTFConstants import *
+from .GltfConstants import *
 from pygltflib import *
 
 from io import BytesIO
@@ -7,11 +7,12 @@ from .ByteUtils import *
 from .MathUtils import isIdentityMatrix3D
 
 # Utilities specific to the pygltf library
+from .PyUtils import appendGetIndex
 
 GLTFIndex = int
 
 def exportAccessor(gltf: GLTF2, primaryBufferIndex: GLTFIndex, primaryBufferStream: BytesIO, array: List[Union[int, float]], dataType: DataType, componentType: Optional[ComponentType], calculateLimits: bool,
-                   exportWarnings: List[str]) -> GLTFIndex:
+                   exportWarnings: List[str]) -> Optional[GLTFIndex]:
     """Creates an accessor to store an array of data.
 
     Args:
@@ -23,12 +24,15 @@ def exportAccessor(gltf: GLTF2, primaryBufferIndex: GLTFIndex, primaryBufferStre
     Returns: The index of the exported accessor in the glTF accessors list.
 
     """
+    if array is None:
+        return None
+
     componentCount = len(array)  # the number of components, e.g. 12 floats
     componentsPerData = DataType.numElements(dataType)  # the number of components in one datum, e.g. 3 floats per Vec3
     dataCount = int(componentCount / componentsPerData)  # the number of data, e.g. 4 Vec3s
 
-    assert componentCount != 0  # don't try to export an empty array
-    assert dataCount * componentsPerData == componentCount  # componentsPerData should divide evenly
+    if componentCount == 0 or dataCount * componentsPerData != componentCount:
+        return None
 
     accessor = Accessor()
 
@@ -70,8 +74,7 @@ def exportAccessor(gltf: GLTF2, primaryBufferIndex: GLTFIndex, primaryBufferStre
 
     accessor.bufferView = exportBufferView(gltf, primaryBufferIndex, bufferByteOffset, bufferByteLength)  # Create the glTF bufferView object with the calculated start and length.
 
-    gltf.accessors.append(accessor)
-    return len(gltf.accessors) - 1
+    return appendGetIndex(gltf.accessors, accessor)
 
 
 def exportBufferView(gltf: GLTF2, primaryBufferIndex: int, byteOffset: int, byteLength: int) -> GLTFIndex:
@@ -88,8 +91,7 @@ def exportBufferView(gltf: GLTF2, primaryBufferIndex: int, byteOffset: int, byte
     bufferView.byteOffset = byteOffset
     bufferView.byteLength = byteLength
 
-    gltf.bufferViews.append(bufferView)
-    return len(gltf.bufferViews) - 1
+    return appendGetIndex(gltf.bufferViews, bufferView)
 
 def isEmptyLeafNode(node: Node) -> bool:
     return len(node.children) == 0 and node.mesh is None and node.camera is None and len(node.extensions) == 0 and len(node.extras) == 0

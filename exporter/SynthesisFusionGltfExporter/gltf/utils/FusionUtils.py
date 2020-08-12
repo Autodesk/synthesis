@@ -4,6 +4,24 @@ import adsk.fusion
 
 from typing import *
 
+def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[Optional[List[float]], Optional[List[float]]]:
+    meshCalculator = fusionBRep.meshManager.createMeshCalculator()
+    if meshCalculator is None:
+        return None, None
+    meshCalculator.setQuality(meshQuality)
+
+    mesh = meshCalculator.calculate()
+
+    if mesh is None:
+        return None, None
+
+    coords = mesh.nodeCoordinatesAsFloat
+    indices = mesh.nodeIndices
+    if len(indices) == 0 or len(coords) == 0:
+        return None, None
+
+    return coords, indices
+
 def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportWarnings: List[str]) -> Optional[Tuple[List[float], List[float], float, float, bool]]:
     """Gets Physically Based Rendering settings from a fusion appearance.
 
