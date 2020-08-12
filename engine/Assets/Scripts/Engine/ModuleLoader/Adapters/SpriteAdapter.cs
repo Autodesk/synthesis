@@ -38,7 +38,7 @@ namespace Engine.ModuleLoader.Adapters
 			if (instance.Changed)
 			{
 				renderer.sprite = instance._sprite;
-				if (instance._alwaysOnTop)
+				if (instance.Entity?.GetComponent<AlwaysOnTop>() != null)
 					renderer.material = new Material(Shader.Find("Custom/AlwaysOnTop"));
 				else
 					renderer.material = defaultMaterial;

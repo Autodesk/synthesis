@@ -11,7 +11,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		internal bool _flipX;
 		internal bool _flipY;
 		internal Color _color = Color.FromArgb(255, 255, 255, 255);
-		internal bool _alwaysOnTop;
 
 		public Sprite() { }
 
@@ -50,15 +49,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			set
 			{
 				_color = value;
-				Changed = true;
-			}
-		}
-		public bool AlwaysOnTop
-		{
-			get => _alwaysOnTop;
-			set
-			{
-				_alwaysOnTop = value;
 				Changed = true;
 			}
 		}

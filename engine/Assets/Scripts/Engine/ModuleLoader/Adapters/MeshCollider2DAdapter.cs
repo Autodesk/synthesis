@@ -2,10 +2,11 @@
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using UnityEngine;
+using static Engine.ModuleLoader.Api;
 
 namespace Engine.ModuleLoader.Adapters
 {
-    public sealed class MeshCollider2DAdapter : MonoBehaviour, IApiAdapter<MeshCollider2D>
+	public sealed class MeshCollider2DAdapter : MonoBehaviour, IApiAdapter<MeshCollider2D>
 	{
 		private MeshCollider2D instance;
 		private MeshCollider meshCollider = null;
@@ -41,30 +42,32 @@ namespace Engine.ModuleLoader.Adapters
 				{
 					Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
 
-					if (sprite.AlwaysOnTop)
+					// TODO block hits to other objects "below" this one
+					bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
+					bool hitAlwaysOnTop = false;
+					bool hitMe = false;
+					var hits = Physics.RaycastAll(ray, Mathf.Infinity);
+					foreach (var hit in hits)
 					{
-						// TODO block hits to other objects "below" this one
-						var hits = Physics.RaycastAll(ray, Mathf.Infinity);
-						foreach (var hit in hits)
+						if (ApiProviderData.GameObjects.TryGetValue(hit.transform.gameObject, out Entity otherE))
 						{
-							if (hit.transform == transform)
+							if (otherE.GetComponent<AlwaysOnTop>() != null)
 							{
-								instance.OnMouseDown();
+								hitAlwaysOnTop = true;
 							}
 						}
-					}
-					else
-					{
-						Physics.Raycast(ray, out RaycastHit hit);
-
 						if (hit.transform == transform)
 						{
-							instance.OnMouseDown();
+							hitMe = true;
 						}
 					}
-                }
-                else
-                {
+					if (hitMe && (isAlwaysOnTop || !hitAlwaysOnTop))
+					{
+						instance.OnMouseDown();
+					}
+				}
+				else
+				{
 					instance.OnMouseUp();
 				}
 			}

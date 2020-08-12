@@ -39,7 +39,7 @@ namespace SynthesisCore.Systems
                 var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
                 sprite = arrowSpriteEntity.AddComponent<Sprite>();
                 sprite.SetSprite(arrowSpriteAsset);
-                sprite.AlwaysOnTop = true;
+                arrowSpriteEntity.AddComponent<AlwaysOnTop>();
 
                 collider = arrowSpriteEntity.AddComponent<MeshCollider2D>();
                 collider.OnMouseDown = () =>

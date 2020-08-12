@@ -541,12 +541,12 @@ namespace Engine.ModuleLoader
 		public static class ApiProviderData
 		{
 			public static GameObject EntityParent { get; set; }
-			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+			public static BiDictionary<Entity, GameObject> GameObjects { get; set; }
 
 			static ApiProviderData()
 			{
 				EntityParent = new GameObject("Entities");
-				GameObjects = new Dictionary<Entity, GameObject>();
+				GameObjects = new BiDictionary<Entity, GameObject>();
 			}
 		}
 
@@ -571,7 +571,7 @@ namespace Engine.ModuleLoader
 
 			public void AddEntityToScene(Entity entity)
 			{
-				if (ApiProviderData.GameObjects.ContainsKey(entity))
+				if (ApiProviderData.GameObjects.Contains(entity))
 					throw new Exception($"Entity \"{entity}\" already exists");
 				var gameObject = new GameObject($"Entity {entity.Index}");
 				gameObject.transform.SetParent(ApiProviderData.EntityParent.transform);
