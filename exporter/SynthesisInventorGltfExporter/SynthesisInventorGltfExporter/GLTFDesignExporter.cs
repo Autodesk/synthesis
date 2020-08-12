@@ -652,10 +652,13 @@ namespace SynthesisInventorGltfExporter
                 colorVector = new Vector4(tempColor.Red / 255f, tempColor.Green / 255f, tempColor.Blue / 255f, (float) tempColor.Opacity);
             }
             catch { }
+
+            var isMetal = IsMetal(appearance);
+            var metallicFactor = isMetal ? 1f : 0f;
             var material = new MaterialBuilder()
                 .WithMetallicRoughnessShader()
                 .WithChannelParam("BaseColor", colorVector )
-                .WithChannelParam("MetallicRoughness", new Vector4(1,1,0,0) ); // TODO: metallic roughness
+                .WithChannelParam("MetallicRoughness", new Vector4(metallicFactor,1,0,0) ); // btw metallic isn't getting applied for some reason // TODO: metallic and roughness
             materialCache[appearanceName] = material;
             return material;
         }
@@ -675,6 +678,14 @@ namespace SynthesisInventorGltfExporter
             try {return ((ColorAssetValue) appearance["ceramic_color"]).Value;} catch {}
             try {return ((ColorAssetValue) appearance["glazing_transmittance_map"]).Value;} catch {}
             throw new Exception("Could not get color!");
+        }
+        
+        private bool IsMetal(Asset appearance)
+        { // TODO: Figure out how to identify appearance types so this isn't neccecary
+            try {return ((BooleanAssetValue) appearance["generic_is_metal"]).Value;} catch {}
+            try {var _ = ((ColorAssetValue) appearance["metal_color"]).Value; return true; } catch {}
+            try {var _ = ((ColorAssetValue) appearance["metallicpaint_base_color"]).Value; return true; } catch {}
+            return false;
         }
 
         private void ExportPrimitive(SurfaceBody surfaceBody, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
