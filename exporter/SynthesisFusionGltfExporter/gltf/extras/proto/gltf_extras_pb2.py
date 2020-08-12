@@ -20,689 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11gltf_extras.proto\x12\x14synthesis.gltfextras\x1a\x19google/protobuf/any.proto\"\xb1\x02\n\x08\x44ocument\x12\x30\n\x08userMeta\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.UserMeta\x12\x38\n\x0c\x64ocumentMeta\x18\x02 \x01(\x0b\x32\".synthesis.gltfextras.DocumentMeta\x12,\n\x06\x64\x65sign\x18\x03 \x01(\x0b\x32\x1c.synthesis.gltfextras.Design\x12\x42\n\nattributes\x18\x04 \x03(\x0b\x32..synthesis.gltfextras.Document.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"L\n\x08UserMeta\x12\x10\n\x08userName\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x13\n\x0b\x64isplayName\x18\x03 \x01(\t\x12\r\n\x05\x65mail\x18\x04 \x01(\t\"\x7f\n\x0c\x44ocumentMeta\x12\x15\n\rfusionVersion\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x15\n\rversionNumber\x18\x03 \x01(\x05\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\n\n\x02id\x18\x05 \x01(\t\x12\x12\n\nexportTime\x18\x06 \x01(\x03\"\x8d\x02\n\x06\x44\x65sign\x12\x37\n\rhierarchyRoot\x18\x01 \x01(\x0b\x32 .synthesis.gltfextras.Occurrence\x12\x33\n\ncomponents\x18\x02 \x03(\x0b\x32\x1f.synthesis.gltfextras.Component\x12+\n\x06joints\x18\x03 \x03(\x0b\x32\x1b.synthesis.gltfextras.Joint\x12\x31\n\tmaterials\x18\x04 \x03(\x0b\x32\x1e.synthesis.gltfextras.Material\x12\x35\n\x0b\x61ppearances\x18\x05 \x03(\x0b\x32 .synthesis.gltfextras.Appearance\"\xe3\x02\n\nOccurrence\x12,\n\x06header\x18\x01 \x01(\x0b\x32\x1c.synthesis.gltfextras.Header\x12\x12\n\nisGrounded\x18\x02 \x01(\x08\x12\x31\n\ttransform\x18\x03 \x01(\x0b\x32\x1e.synthesis.gltfextras.Matrix3D\x12\x15\n\rcomponentUUID\x18\x04 \x01(\t\x12:\n\x10\x63hildOccurrences\x18\x05 \x03(\x0b\x32 .synthesis.gltfextras.Occurrence\x12\x44\n\nattributes\x18\x06 \x03(\x0b\x32\x30.synthesis.gltfextras.Occurrence.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"\xa3\x03\n\tComponent\x12,\n\x06header\x18\x01 \x01(\x0b\x32\x1c.synthesis.gltfextras.Header\x12\x12\n\npartNumber\x18\x02 \x01(\t\x12\x38\n\x0b\x62oundingBox\x18\x03 \x01(\x0b\x32#.synthesis.gltfextras.BoundingBox3D\x12\x12\n\nmaterialId\x18\x04 \x01(\t\x12\x44\n\x12physicalProperties\x18\x05 \x01(\x0b\x32(.synthesis.gltfextras.PhysicalProperties\x12\x32\n\nmeshBodies\x18\x06 \x03(\x0b\x32\x1e.synthesis.gltfextras.MeshBody\x12\x43\n\nattributes\x18\x07 \x03(\x0b\x32/.synthesis.gltfextras.Component.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"\xab\x03\n\x08MeshBody\x12,\n\x06header\x18\x01 \x01(\x0b\x32\x1c.synthesis.gltfextras.Header\x12\x14\n\x0c\x61ppearanceId\x18\x02 \x01(\t\x12\x12\n\nmaterialId\x18\x03 \x01(\t\x12\x44\n\x12physicalProperties\x18\x04 \x01(\x0b\x32(.synthesis.gltfextras.PhysicalProperties\x12:\n\rboundingBox3D\x18\x05 \x01(\x0b\x32#.synthesis.gltfextras.BoundingBox3D\x12\x38\n\x0ctriangleMesh\x18\x06 \x01(\x0b\x32\".synthesis.gltfextras.TriangleMesh\x12\x42\n\nattributes\x18\x07 \x03(\x0b\x32..synthesis.gltfextras.MeshBody.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"O\n\x0cTriangleMesh\x12\x10\n\x08vertices\x18\x01 \x03(\x01\x12\x0f\n\x07normals\x18\x02 \x03(\x01\x12\x0f\n\x07indices\x18\x03 \x03(\x05\x12\x0b\n\x03uvs\x18\x04 \x03(\x01\"\x87\x01\n\x12PhysicalProperties\x12\x0f\n\x07\x64\x65nsity\x18\x01 \x01(\x01\x12\x0c\n\x04mass\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x01\x12\x0c\n\x04\x61rea\x18\x04 \x01(\x01\x12\x34\n\x0c\x63\x65nterOfMass\x18\x05 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\"\xd0\x06\n\x05Joint\x12,\n\x06header\x18\x01 \x01(\x0b\x32\x1c.synthesis.gltfextras.Header\x12.\n\x06origin\x18\x02 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x10\n\x08isLocked\x18\x03 \x01(\x08\x12\x14\n\x0cisSuppressed\x18\x04 \x01(\x08\x12\x19\n\x11occurrenceOneUUID\x18\x05 \x01(\t\x12\x19\n\x11occurrenceTwoUUID\x18\x06 \x01(\t\x12?\n\nattributes\x18\x07 \x03(\x0b\x32+.synthesis.gltfextras.Joint.AttributesEntry\x12\x42\n\x10rigidJointMotion\x18\x08 \x01(\x0b\x32&.synthesis.gltfextras.RigidJointMotionH\x00\x12H\n\x13revoluteJointMotion\x18\t \x01(\x0b\x32).synthesis.gltfextras.RevoluteJointMotionH\x00\x12\x44\n\x11sliderJointMotion\x18\n \x01(\x0b\x32\'.synthesis.gltfextras.SliderJointMotionH\x00\x12N\n\x16\x63ylindricalJointMotion\x18\x0b \x01(\x0b\x32,.synthesis.gltfextras.CylindricalJointMotionH\x00\x12\x46\n\x12pinSlotJointMotion\x18\x0c \x01(\x0b\x32(.synthesis.gltfextras.PinSlotJointMotionH\x00\x12\x44\n\x11planarJointMotion\x18\r \x01(\x0b\x32\'.synthesis.gltfextras.PlanarJointMotionH\x00\x12@\n\x0f\x62\x61llJointMotion\x18\x0e \x01(\x0b\x32%.synthesis.gltfextras.BallJointMotionH\x00\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\x42\r\n\x0bjointMotion\"\x12\n\x10RigidJointMotion\"\xa3\x01\n\x13RevoluteJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\x9d\x01\n\x11SliderJointMotion\x12<\n\x14slideDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\nslideValue\x18\x02 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xf2\x01\n\x16\x43ylindricalJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x12\n\nslideValue\x18\x04 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x05 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xac\x02\n\x12PinSlotJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12<\n\x14slideDirectionVector\x18\x04 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\nslideValue\x18\x05 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x06 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xe8\x03\n\x11PlanarJointMotion\x12=\n\x15normalDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x43\n\x1bprimarySlideDirectionVector\x18\x02 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x19\n\x11primarySlideValue\x18\x03 \x01(\x01\x12=\n\x12primarySlideLimits\x18\x04 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x45\n\x1dsecondarySlideDirectionVector\x18\x05 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x1b\n\x13secondarySlideValue\x18\x06 \x01(\x01\x12?\n\x14secondarySlideLimits\x18\x07 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x15\n\rrotationValue\x18\x08 \x01(\x01\x12\x39\n\x0erotationLimits\x18\t \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xa6\x03\n\x0f\x42\x61llJointMotion\x12;\n\x13rollDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x11\n\trollValue\x18\x02 \x01(\x01\x12\x35\n\nrollLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12<\n\x14pitchDirectionVector\x18\x04 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\npitchValue\x18\x05 \x01(\x01\x12\x36\n\x0bpitchLimits\x18\x06 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12:\n\x12yawDirectionVector\x18\x07 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x10\n\x08yawValue\x18\x08 \x01(\x01\x12\x34\n\tyawLimits\x18\t \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xa6\x01\n\x0bJointLimits\x12\x1d\n\x15isMaximumValueEnabled\x18\x01 \x01(\x08\x12\x1d\n\x15isMinimumValueEnabled\x18\x02 \x01(\x08\x12\x1a\n\x12isRestValueEnabled\x18\x03 \x01(\x08\x12\x14\n\x0cmaximumValue\x18\x04 \x01(\x01\x12\x14\n\x0cminimumValue\x18\x05 \x01(\x01\x12\x11\n\trestValue\x18\x06 \x01(\x01\"x\n\x08Material\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x14\n\x0c\x61ppearanceId\x18\x03 \x01(\t\x12<\n\nproperties\x18\x04 \x01(\x0b\x32(.synthesis.gltfextras.MaterialProperties\"\xec\x01\n\x12MaterialProperties\x12\x0f\n\x07\x64\x65nsity\x18\x01 \x01(\x05\x12\x15\n\ryieldStrength\x18\x02 \x01(\x05\x12\x17\n\x0ftensileStrength\x18\x03 \x01(\x05\x12L\n\nattributes\x18\x04 \x03(\x0b\x32\x38.synthesis.gltfextras.MaterialProperties.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"z\n\nAppearance\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\nhasTexture\x18\x03 \x01(\x08\x12>\n\nproperties\x18\x04 \x01(\x0b\x32*.synthesis.gltfextras.AppearanceProperties\"\xf1\x04\n\x14\x41ppearanceProperties\x12+\n\x06\x61lbedo\x18\x01 \x01(\x0b\x32\x1b.synthesis.gltfextras.Color\x12\x12\n\nglossiness\x18\x02 \x01(\x05\x12M\n\nhighlights\x18\x03 \x01(\x0e\x32\x39.synthesis.gltfextras.AppearanceProperties.HighlightsMode\x12\x1a\n\x12reflectivityDirect\x18\x04 \x01(\x05\x12\x1b\n\x13reflectivityOblique\x18\x05 \x01(\x05\x12\x14\n\x0ctransparency\x18\x06 \x01(\x05\x12\x14\n\x0ctranslucency\x18\x07 \x01(\x05\x12\x17\n\x0frefractiveIndex\x18\x08 \x01(\x05\x12:\n\x15selfIlluminationColor\x18\t \x01(\x0b\x32\x1b.synthesis.gltfextras.Color\x12!\n\x19selfIlluminationLuminance\x18\n \x01(\x05\x12!\n\x19selfIlluminationColorTemp\x18\x0b \x01(\x05\x12N\n\nattributes\x18\x0c \x03(\x0b\x32:.synthesis.gltfextras.AppearanceProperties.AttributesEntry\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\"0\n\x0eHighlightsMode\x12\x0c\n\x08METALLIC\x10\x00\x12\x10\n\x0cNON_METALLIC\x10\x01\"M\n\x06Header\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x12\n\nrevisionId\x18\x04 \x01(\t\"3\n\x05\x43olor\x12\t\n\x01R\x18\x01 \x01(\x05\x12\t\n\x01G\x18\x02 \x01(\x05\x12\t\n\x01\x42\x18\x03 \x01(\x05\x12\t\n\x01\x41\x18\x04 \x01(\x05\"s\n\rBoundingBox3D\x12\x30\n\x08maxPoint\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x30\n\x08minPoint\x18\x02 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\"+\n\x08Vector3D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\"\x19\n\x08Matrix3D\x12\r\n\x05\x63\x65lls\x18\x01 \x03(\x01\x62\x06proto3'
+  serialized_pb=b'\n\x11gltf_extras.proto\x12\x14synthesis.gltfextras\x1a\x19google/protobuf/any.proto\"v\n\x12PhysicalProperties\x12\x0c\n\x04mass\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x01\x12\x0c\n\x04\x61rea\x18\x04 \x01(\x01\x12\x34\n\x0c\x63\x65nterOfMass\x18\x05 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\"\xd0\x06\n\x05Joint\x12,\n\x06header\x18\x01 \x01(\x0b\x32\x1c.synthesis.gltfextras.Header\x12.\n\x06origin\x18\x02 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x10\n\x08isLocked\x18\x03 \x01(\x08\x12\x14\n\x0cisSuppressed\x18\x04 \x01(\x08\x12\x19\n\x11occurrenceOneUUID\x18\x05 \x01(\t\x12\x19\n\x11occurrenceTwoUUID\x18\x06 \x01(\t\x12?\n\nattributes\x18\x07 \x03(\x0b\x32+.synthesis.gltfextras.Joint.AttributesEntry\x12\x42\n\x10rigidJointMotion\x18\x08 \x01(\x0b\x32&.synthesis.gltfextras.RigidJointMotionH\x00\x12H\n\x13revoluteJointMotion\x18\t \x01(\x0b\x32).synthesis.gltfextras.RevoluteJointMotionH\x00\x12\x44\n\x11sliderJointMotion\x18\n \x01(\x0b\x32\'.synthesis.gltfextras.SliderJointMotionH\x00\x12N\n\x16\x63ylindricalJointMotion\x18\x0b \x01(\x0b\x32,.synthesis.gltfextras.CylindricalJointMotionH\x00\x12\x46\n\x12pinSlotJointMotion\x18\x0c \x01(\x0b\x32(.synthesis.gltfextras.PinSlotJointMotionH\x00\x12\x44\n\x11planarJointMotion\x18\r \x01(\x0b\x32\'.synthesis.gltfextras.PlanarJointMotionH\x00\x12@\n\x0f\x62\x61llJointMotion\x18\x0e \x01(\x0b\x32%.synthesis.gltfextras.BallJointMotionH\x00\x1aG\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12#\n\x05value\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any:\x02\x38\x01\x42\r\n\x0bjointMotion\"\x12\n\x10RigidJointMotion\"\xa3\x01\n\x13RevoluteJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\x9d\x01\n\x11SliderJointMotion\x12<\n\x14slideDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\nslideValue\x18\x02 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xf2\x01\n\x16\x43ylindricalJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x12\n\nslideValue\x18\x04 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x05 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xac\x02\n\x12PinSlotJointMotion\x12:\n\x12rotationAxisVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x15\n\rrotationValue\x18\x02 \x01(\x01\x12\x39\n\x0erotationLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12<\n\x14slideDirectionVector\x18\x04 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\nslideValue\x18\x05 \x01(\x01\x12\x36\n\x0bslideLimits\x18\x06 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xe8\x03\n\x11PlanarJointMotion\x12=\n\x15normalDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x43\n\x1bprimarySlideDirectionVector\x18\x02 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x19\n\x11primarySlideValue\x18\x03 \x01(\x01\x12=\n\x12primarySlideLimits\x18\x04 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x45\n\x1dsecondarySlideDirectionVector\x18\x05 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x1b\n\x13secondarySlideValue\x18\x06 \x01(\x01\x12?\n\x14secondarySlideLimits\x18\x07 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12\x15\n\rrotationValue\x18\x08 \x01(\x01\x12\x39\n\x0erotationLimits\x18\t \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xa6\x03\n\x0f\x42\x61llJointMotion\x12;\n\x13rollDirectionVector\x18\x01 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x11\n\trollValue\x18\x02 \x01(\x01\x12\x35\n\nrollLimits\x18\x03 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12<\n\x14pitchDirectionVector\x18\x04 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x12\n\npitchValue\x18\x05 \x01(\x01\x12\x36\n\x0bpitchLimits\x18\x06 \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\x12:\n\x12yawDirectionVector\x18\x07 \x01(\x0b\x32\x1e.synthesis.gltfextras.Vector3D\x12\x10\n\x08yawValue\x18\x08 \x01(\x01\x12\x34\n\tyawLimits\x18\t \x01(\x0b\x32!.synthesis.gltfextras.JointLimits\"\xa6\x01\n\x0bJointLimits\x12\x1d\n\x15isMaximumValueEnabled\x18\x01 \x01(\x08\x12\x1d\n\x15isMinimumValueEnabled\x18\x02 \x01(\x08\x12\x1a\n\x12isRestValueEnabled\x18\x03 \x01(\x08\x12\x14\n\x0cmaximumValue\x18\x04 \x01(\x01\x12\x14\n\x0cminimumValue\x18\x05 \x01(\x01\x12\x11\n\trestValue\x18\x06 \x01(\x01\"$\n\x06Header\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"+\n\x08Vector3D\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
 
 
-
-_APPEARANCEPROPERTIES_HIGHLIGHTSMODE = _descriptor.EnumDescriptor(
-  name='HighlightsMode',
-  full_name='synthesis.gltfextras.AppearanceProperties.HighlightsMode',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='METALLIC', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='NON_METALLIC', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=6179,
-  serialized_end=6227,
-)
-_sym_db.RegisterEnumDescriptor(_APPEARANCEPROPERTIES_HIGHLIGHTSMODE)
-
-
-_DOCUMENT_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.Document.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.Document.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.Document.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_DOCUMENT = _descriptor.Descriptor(
-  name='Document',
-  full_name='synthesis.gltfextras.Document',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='userMeta', full_name='synthesis.gltfextras.Document.userMeta', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='documentMeta', full_name='synthesis.gltfextras.Document.documentMeta', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='design', full_name='synthesis.gltfextras.Document.design', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.Document.attributes', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_DOCUMENT_ATTRIBUTESENTRY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=71,
-  serialized_end=376,
-)
-
-
-_USERMETA = _descriptor.Descriptor(
-  name='UserMeta',
-  full_name='synthesis.gltfextras.UserMeta',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='userName', full_name='synthesis.gltfextras.UserMeta.userName', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='synthesis.gltfextras.UserMeta.id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='displayName', full_name='synthesis.gltfextras.UserMeta.displayName', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='email', full_name='synthesis.gltfextras.UserMeta.email', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=378,
-  serialized_end=454,
-)
-
-
-_DOCUMENTMETA = _descriptor.Descriptor(
-  name='DocumentMeta',
-  full_name='synthesis.gltfextras.DocumentMeta',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='fusionVersion', full_name='synthesis.gltfextras.DocumentMeta.fusionVersion', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='name', full_name='synthesis.gltfextras.DocumentMeta.name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='versionNumber', full_name='synthesis.gltfextras.DocumentMeta.versionNumber', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='description', full_name='synthesis.gltfextras.DocumentMeta.description', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='synthesis.gltfextras.DocumentMeta.id', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='exportTime', full_name='synthesis.gltfextras.DocumentMeta.exportTime', index=5,
-      number=6, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=456,
-  serialized_end=583,
-)
-
-
-_DESIGN = _descriptor.Descriptor(
-  name='Design',
-  full_name='synthesis.gltfextras.Design',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='hierarchyRoot', full_name='synthesis.gltfextras.Design.hierarchyRoot', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='components', full_name='synthesis.gltfextras.Design.components', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='joints', full_name='synthesis.gltfextras.Design.joints', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='materials', full_name='synthesis.gltfextras.Design.materials', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='appearances', full_name='synthesis.gltfextras.Design.appearances', index=4,
-      number=5, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=586,
-  serialized_end=855,
-)
-
-
-_OCCURRENCE_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.Occurrence.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.Occurrence.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.Occurrence.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_OCCURRENCE = _descriptor.Descriptor(
-  name='Occurrence',
-  full_name='synthesis.gltfextras.Occurrence',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='header', full_name='synthesis.gltfextras.Occurrence.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='isGrounded', full_name='synthesis.gltfextras.Occurrence.isGrounded', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='transform', full_name='synthesis.gltfextras.Occurrence.transform', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='componentUUID', full_name='synthesis.gltfextras.Occurrence.componentUUID', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='childOccurrences', full_name='synthesis.gltfextras.Occurrence.childOccurrences', index=4,
-      number=5, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.Occurrence.attributes', index=5,
-      number=6, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_OCCURRENCE_ATTRIBUTESENTRY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=858,
-  serialized_end=1213,
-)
-
-
-_COMPONENT_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.Component.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.Component.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.Component.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_COMPONENT = _descriptor.Descriptor(
-  name='Component',
-  full_name='synthesis.gltfextras.Component',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='header', full_name='synthesis.gltfextras.Component.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='partNumber', full_name='synthesis.gltfextras.Component.partNumber', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='boundingBox', full_name='synthesis.gltfextras.Component.boundingBox', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='materialId', full_name='synthesis.gltfextras.Component.materialId', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='physicalProperties', full_name='synthesis.gltfextras.Component.physicalProperties', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='meshBodies', full_name='synthesis.gltfextras.Component.meshBodies', index=5,
-      number=6, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.Component.attributes', index=6,
-      number=7, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_COMPONENT_ATTRIBUTESENTRY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1216,
-  serialized_end=1635,
-)
-
-
-_MESHBODY_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.MeshBody.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.MeshBody.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.MeshBody.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_MESHBODY = _descriptor.Descriptor(
-  name='MeshBody',
-  full_name='synthesis.gltfextras.MeshBody',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='header', full_name='synthesis.gltfextras.MeshBody.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='appearanceId', full_name='synthesis.gltfextras.MeshBody.appearanceId', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='materialId', full_name='synthesis.gltfextras.MeshBody.materialId', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='physicalProperties', full_name='synthesis.gltfextras.MeshBody.physicalProperties', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='boundingBox3D', full_name='synthesis.gltfextras.MeshBody.boundingBox3D', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='triangleMesh', full_name='synthesis.gltfextras.MeshBody.triangleMesh', index=5,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.MeshBody.attributes', index=6,
-      number=7, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_MESHBODY_ATTRIBUTESENTRY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1638,
-  serialized_end=2065,
-)
-
-
-_TRIANGLEMESH = _descriptor.Descriptor(
-  name='TriangleMesh',
-  full_name='synthesis.gltfextras.TriangleMesh',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='vertices', full_name='synthesis.gltfextras.TriangleMesh.vertices', index=0,
-      number=1, type=1, cpp_type=5, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='normals', full_name='synthesis.gltfextras.TriangleMesh.normals', index=1,
-      number=2, type=1, cpp_type=5, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='indices', full_name='synthesis.gltfextras.TriangleMesh.indices', index=2,
-      number=3, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='uvs', full_name='synthesis.gltfextras.TriangleMesh.uvs', index=3,
-      number=4, type=1, cpp_type=5, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2067,
-  serialized_end=2146,
-)
 
 
 _PHYSICALPROPERTIES = _descriptor.Descriptor(
@@ -714,35 +36,28 @@ _PHYSICALPROPERTIES = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='density', full_name='synthesis.gltfextras.PhysicalProperties.density', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='mass', full_name='synthesis.gltfextras.PhysicalProperties.mass', index=1,
+      name='mass', full_name='synthesis.gltfextras.PhysicalProperties.mass', index=0,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='volume', full_name='synthesis.gltfextras.PhysicalProperties.volume', index=2,
+      name='volume', full_name='synthesis.gltfextras.PhysicalProperties.volume', index=1,
       number=3, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='area', full_name='synthesis.gltfextras.PhysicalProperties.area', index=3,
+      name='area', full_name='synthesis.gltfextras.PhysicalProperties.area', index=2,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='centerOfMass', full_name='synthesis.gltfextras.PhysicalProperties.centerOfMass', index=4,
+      name='centerOfMass', full_name='synthesis.gltfextras.PhysicalProperties.centerOfMass', index=3,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -760,8 +75,8 @@ _PHYSICALPROPERTIES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2149,
-  serialized_end=2284,
+  serialized_start=70,
+  serialized_end=188,
 )
 
 
@@ -799,8 +114,8 @@ _JOINT_ATTRIBUTESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=305,
-  serialized_end=376,
+  serialized_start=953,
+  serialized_end=1024,
 )
 
 _JOINT = _descriptor.Descriptor(
@@ -926,8 +241,8 @@ _JOINT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2287,
-  serialized_end=3135,
+  serialized_start=191,
+  serialized_end=1039,
 )
 
 
@@ -951,8 +266,8 @@ _RIGIDJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3137,
-  serialized_end=3155,
+  serialized_start=1041,
+  serialized_end=1059,
 )
 
 
@@ -997,8 +312,8 @@ _REVOLUTEJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3158,
-  serialized_end=3321,
+  serialized_start=1062,
+  serialized_end=1225,
 )
 
 
@@ -1043,8 +358,8 @@ _SLIDERJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3324,
-  serialized_end=3481,
+  serialized_start=1228,
+  serialized_end=1385,
 )
 
 
@@ -1103,8 +418,8 @@ _CYLINDRICALJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3484,
-  serialized_end=3726,
+  serialized_start=1388,
+  serialized_end=1630,
 )
 
 
@@ -1170,8 +485,8 @@ _PINSLOTJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3729,
-  serialized_end=4029,
+  serialized_start=1633,
+  serialized_end=1933,
 )
 
 
@@ -1258,8 +573,8 @@ _PLANARJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4032,
-  serialized_end=4520,
+  serialized_start=1936,
+  serialized_end=2424,
 )
 
 
@@ -1346,8 +661,8 @@ _BALLJOINTMOTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4523,
-  serialized_end=4945,
+  serialized_start=2427,
+  serialized_end=2849,
 )
 
 
@@ -1413,353 +728,8 @@ _JOINTLIMITS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4948,
-  serialized_end=5114,
-)
-
-
-_MATERIAL = _descriptor.Descriptor(
-  name='Material',
-  full_name='synthesis.gltfextras.Material',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='synthesis.gltfextras.Material.id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='name', full_name='synthesis.gltfextras.Material.name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='appearanceId', full_name='synthesis.gltfextras.Material.appearanceId', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='properties', full_name='synthesis.gltfextras.Material.properties', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=5116,
-  serialized_end=5236,
-)
-
-
-_MATERIALPROPERTIES_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.MaterialProperties.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.MaterialProperties.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.MaterialProperties.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_MATERIALPROPERTIES = _descriptor.Descriptor(
-  name='MaterialProperties',
-  full_name='synthesis.gltfextras.MaterialProperties',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='density', full_name='synthesis.gltfextras.MaterialProperties.density', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='yieldStrength', full_name='synthesis.gltfextras.MaterialProperties.yieldStrength', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='tensileStrength', full_name='synthesis.gltfextras.MaterialProperties.tensileStrength', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.MaterialProperties.attributes', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_MATERIALPROPERTIES_ATTRIBUTESENTRY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=5239,
-  serialized_end=5475,
-)
-
-
-_APPEARANCE = _descriptor.Descriptor(
-  name='Appearance',
-  full_name='synthesis.gltfextras.Appearance',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='synthesis.gltfextras.Appearance.id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='name', full_name='synthesis.gltfextras.Appearance.name', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='hasTexture', full_name='synthesis.gltfextras.Appearance.hasTexture', index=2,
-      number=3, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='properties', full_name='synthesis.gltfextras.Appearance.properties', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=5477,
-  serialized_end=5599,
-)
-
-
-_APPEARANCEPROPERTIES_ATTRIBUTESENTRY = _descriptor.Descriptor(
-  name='AttributesEntry',
-  full_name='synthesis.gltfextras.AppearanceProperties.AttributesEntry',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='key', full_name='synthesis.gltfextras.AppearanceProperties.AttributesEntry.key', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='synthesis.gltfextras.AppearanceProperties.AttributesEntry.value', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=b'8\001',
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=305,
-  serialized_end=376,
-)
-
-_APPEARANCEPROPERTIES = _descriptor.Descriptor(
-  name='AppearanceProperties',
-  full_name='synthesis.gltfextras.AppearanceProperties',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='albedo', full_name='synthesis.gltfextras.AppearanceProperties.albedo', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='glossiness', full_name='synthesis.gltfextras.AppearanceProperties.glossiness', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='highlights', full_name='synthesis.gltfextras.AppearanceProperties.highlights', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='reflectivityDirect', full_name='synthesis.gltfextras.AppearanceProperties.reflectivityDirect', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='reflectivityOblique', full_name='synthesis.gltfextras.AppearanceProperties.reflectivityOblique', index=4,
-      number=5, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='transparency', full_name='synthesis.gltfextras.AppearanceProperties.transparency', index=5,
-      number=6, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='translucency', full_name='synthesis.gltfextras.AppearanceProperties.translucency', index=6,
-      number=7, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='refractiveIndex', full_name='synthesis.gltfextras.AppearanceProperties.refractiveIndex', index=7,
-      number=8, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='selfIlluminationColor', full_name='synthesis.gltfextras.AppearanceProperties.selfIlluminationColor', index=8,
-      number=9, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='selfIlluminationLuminance', full_name='synthesis.gltfextras.AppearanceProperties.selfIlluminationLuminance', index=9,
-      number=10, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='selfIlluminationColorTemp', full_name='synthesis.gltfextras.AppearanceProperties.selfIlluminationColorTemp', index=10,
-      number=11, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='attributes', full_name='synthesis.gltfextras.AppearanceProperties.attributes', index=11,
-      number=12, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_APPEARANCEPROPERTIES_ATTRIBUTESENTRY, ],
-  enum_types=[
-    _APPEARANCEPROPERTIES_HIGHLIGHTSMODE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=5602,
-  serialized_end=6227,
+  serialized_start=2852,
+  serialized_end=3018,
 )
 
 
@@ -1785,20 +755,6 @@ _HEADER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='description', full_name='synthesis.gltfextras.Header.description', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='revisionId', full_name='synthesis.gltfextras.Header.revisionId', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1811,100 +767,8 @@ _HEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6229,
-  serialized_end=6306,
-)
-
-
-_COLOR = _descriptor.Descriptor(
-  name='Color',
-  full_name='synthesis.gltfextras.Color',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='R', full_name='synthesis.gltfextras.Color.R', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='G', full_name='synthesis.gltfextras.Color.G', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='B', full_name='synthesis.gltfextras.Color.B', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='A', full_name='synthesis.gltfextras.Color.A', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=6308,
-  serialized_end=6359,
-)
-
-
-_BOUNDINGBOX3D = _descriptor.Descriptor(
-  name='BoundingBox3D',
-  full_name='synthesis.gltfextras.BoundingBox3D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='maxPoint', full_name='synthesis.gltfextras.BoundingBox3D.maxPoint', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='minPoint', full_name='synthesis.gltfextras.BoundingBox3D.minPoint', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=6361,
-  serialized_end=6476,
+  serialized_start=3020,
+  serialized_end=3056,
 )
 
 
@@ -1949,73 +813,10 @@ _VECTOR3D = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6478,
-  serialized_end=6521,
+  serialized_start=3058,
+  serialized_end=3101,
 )
 
-
-_MATRIX3D = _descriptor.Descriptor(
-  name='Matrix3D',
-  full_name='synthesis.gltfextras.Matrix3D',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='cells', full_name='synthesis.gltfextras.Matrix3D.cells', index=0,
-      number=1, type=1, cpp_type=5, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=6523,
-  serialized_end=6548,
-)
-
-_DOCUMENT_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_DOCUMENT_ATTRIBUTESENTRY.containing_type = _DOCUMENT
-_DOCUMENT.fields_by_name['userMeta'].message_type = _USERMETA
-_DOCUMENT.fields_by_name['documentMeta'].message_type = _DOCUMENTMETA
-_DOCUMENT.fields_by_name['design'].message_type = _DESIGN
-_DOCUMENT.fields_by_name['attributes'].message_type = _DOCUMENT_ATTRIBUTESENTRY
-_DESIGN.fields_by_name['hierarchyRoot'].message_type = _OCCURRENCE
-_DESIGN.fields_by_name['components'].message_type = _COMPONENT
-_DESIGN.fields_by_name['joints'].message_type = _JOINT
-_DESIGN.fields_by_name['materials'].message_type = _MATERIAL
-_DESIGN.fields_by_name['appearances'].message_type = _APPEARANCE
-_OCCURRENCE_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_OCCURRENCE_ATTRIBUTESENTRY.containing_type = _OCCURRENCE
-_OCCURRENCE.fields_by_name['header'].message_type = _HEADER
-_OCCURRENCE.fields_by_name['transform'].message_type = _MATRIX3D
-_OCCURRENCE.fields_by_name['childOccurrences'].message_type = _OCCURRENCE
-_OCCURRENCE.fields_by_name['attributes'].message_type = _OCCURRENCE_ATTRIBUTESENTRY
-_COMPONENT_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_COMPONENT_ATTRIBUTESENTRY.containing_type = _COMPONENT
-_COMPONENT.fields_by_name['header'].message_type = _HEADER
-_COMPONENT.fields_by_name['boundingBox'].message_type = _BOUNDINGBOX3D
-_COMPONENT.fields_by_name['physicalProperties'].message_type = _PHYSICALPROPERTIES
-_COMPONENT.fields_by_name['meshBodies'].message_type = _MESHBODY
-_COMPONENT.fields_by_name['attributes'].message_type = _COMPONENT_ATTRIBUTESENTRY
-_MESHBODY_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_MESHBODY_ATTRIBUTESENTRY.containing_type = _MESHBODY
-_MESHBODY.fields_by_name['header'].message_type = _HEADER
-_MESHBODY.fields_by_name['physicalProperties'].message_type = _PHYSICALPROPERTIES
-_MESHBODY.fields_by_name['boundingBox3D'].message_type = _BOUNDINGBOX3D
-_MESHBODY.fields_by_name['triangleMesh'].message_type = _TRIANGLEMESH
-_MESHBODY.fields_by_name['attributes'].message_type = _MESHBODY_ATTRIBUTESENTRY
 _PHYSICALPROPERTIES.fields_by_name['centerOfMass'].message_type = _VECTOR3D
 _JOINT_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
 _JOINT_ATTRIBUTESENTRY.containing_type = _JOINT
@@ -2073,28 +874,6 @@ _BALLJOINTMOTION.fields_by_name['pitchDirectionVector'].message_type = _VECTOR3D
 _BALLJOINTMOTION.fields_by_name['pitchLimits'].message_type = _JOINTLIMITS
 _BALLJOINTMOTION.fields_by_name['yawDirectionVector'].message_type = _VECTOR3D
 _BALLJOINTMOTION.fields_by_name['yawLimits'].message_type = _JOINTLIMITS
-_MATERIAL.fields_by_name['properties'].message_type = _MATERIALPROPERTIES
-_MATERIALPROPERTIES_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_MATERIALPROPERTIES_ATTRIBUTESENTRY.containing_type = _MATERIALPROPERTIES
-_MATERIALPROPERTIES.fields_by_name['attributes'].message_type = _MATERIALPROPERTIES_ATTRIBUTESENTRY
-_APPEARANCE.fields_by_name['properties'].message_type = _APPEARANCEPROPERTIES
-_APPEARANCEPROPERTIES_ATTRIBUTESENTRY.fields_by_name['value'].message_type = google_dot_protobuf_dot_any__pb2._ANY
-_APPEARANCEPROPERTIES_ATTRIBUTESENTRY.containing_type = _APPEARANCEPROPERTIES
-_APPEARANCEPROPERTIES.fields_by_name['albedo'].message_type = _COLOR
-_APPEARANCEPROPERTIES.fields_by_name['highlights'].enum_type = _APPEARANCEPROPERTIES_HIGHLIGHTSMODE
-_APPEARANCEPROPERTIES.fields_by_name['selfIlluminationColor'].message_type = _COLOR
-_APPEARANCEPROPERTIES.fields_by_name['attributes'].message_type = _APPEARANCEPROPERTIES_ATTRIBUTESENTRY
-_APPEARANCEPROPERTIES_HIGHLIGHTSMODE.containing_type = _APPEARANCEPROPERTIES
-_BOUNDINGBOX3D.fields_by_name['maxPoint'].message_type = _VECTOR3D
-_BOUNDINGBOX3D.fields_by_name['minPoint'].message_type = _VECTOR3D
-DESCRIPTOR.message_types_by_name['Document'] = _DOCUMENT
-DESCRIPTOR.message_types_by_name['UserMeta'] = _USERMETA
-DESCRIPTOR.message_types_by_name['DocumentMeta'] = _DOCUMENTMETA
-DESCRIPTOR.message_types_by_name['Design'] = _DESIGN
-DESCRIPTOR.message_types_by_name['Occurrence'] = _OCCURRENCE
-DESCRIPTOR.message_types_by_name['Component'] = _COMPONENT
-DESCRIPTOR.message_types_by_name['MeshBody'] = _MESHBODY
-DESCRIPTOR.message_types_by_name['TriangleMesh'] = _TRIANGLEMESH
 DESCRIPTOR.message_types_by_name['PhysicalProperties'] = _PHYSICALPROPERTIES
 DESCRIPTOR.message_types_by_name['Joint'] = _JOINT
 DESCRIPTOR.message_types_by_name['RigidJointMotion'] = _RIGIDJOINTMOTION
@@ -2105,104 +884,9 @@ DESCRIPTOR.message_types_by_name['PinSlotJointMotion'] = _PINSLOTJOINTMOTION
 DESCRIPTOR.message_types_by_name['PlanarJointMotion'] = _PLANARJOINTMOTION
 DESCRIPTOR.message_types_by_name['BallJointMotion'] = _BALLJOINTMOTION
 DESCRIPTOR.message_types_by_name['JointLimits'] = _JOINTLIMITS
-DESCRIPTOR.message_types_by_name['Material'] = _MATERIAL
-DESCRIPTOR.message_types_by_name['MaterialProperties'] = _MATERIALPROPERTIES
-DESCRIPTOR.message_types_by_name['Appearance'] = _APPEARANCE
-DESCRIPTOR.message_types_by_name['AppearanceProperties'] = _APPEARANCEPROPERTIES
 DESCRIPTOR.message_types_by_name['Header'] = _HEADER
-DESCRIPTOR.message_types_by_name['Color'] = _COLOR
-DESCRIPTOR.message_types_by_name['BoundingBox3D'] = _BOUNDINGBOX3D
 DESCRIPTOR.message_types_by_name['Vector3D'] = _VECTOR3D
-DESCRIPTOR.message_types_by_name['Matrix3D'] = _MATRIX3D
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-Document = _reflection.GeneratedProtocolMessageType('Document', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _DOCUMENT_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Document.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _DOCUMENT,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Document)
-  })
-_sym_db.RegisterMessage(Document)
-_sym_db.RegisterMessage(Document.AttributesEntry)
-
-UserMeta = _reflection.GeneratedProtocolMessageType('UserMeta', (_message.Message,), {
-  'DESCRIPTOR' : _USERMETA,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.UserMeta)
-  })
-_sym_db.RegisterMessage(UserMeta)
-
-DocumentMeta = _reflection.GeneratedProtocolMessageType('DocumentMeta', (_message.Message,), {
-  'DESCRIPTOR' : _DOCUMENTMETA,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.DocumentMeta)
-  })
-_sym_db.RegisterMessage(DocumentMeta)
-
-Design = _reflection.GeneratedProtocolMessageType('Design', (_message.Message,), {
-  'DESCRIPTOR' : _DESIGN,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Design)
-  })
-_sym_db.RegisterMessage(Design)
-
-Occurrence = _reflection.GeneratedProtocolMessageType('Occurrence', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _OCCURRENCE_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Occurrence.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _OCCURRENCE,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Occurrence)
-  })
-_sym_db.RegisterMessage(Occurrence)
-_sym_db.RegisterMessage(Occurrence.AttributesEntry)
-
-Component = _reflection.GeneratedProtocolMessageType('Component', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _COMPONENT_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Component.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _COMPONENT,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Component)
-  })
-_sym_db.RegisterMessage(Component)
-_sym_db.RegisterMessage(Component.AttributesEntry)
-
-MeshBody = _reflection.GeneratedProtocolMessageType('MeshBody', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _MESHBODY_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.MeshBody.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _MESHBODY,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.MeshBody)
-  })
-_sym_db.RegisterMessage(MeshBody)
-_sym_db.RegisterMessage(MeshBody.AttributesEntry)
-
-TriangleMesh = _reflection.GeneratedProtocolMessageType('TriangleMesh', (_message.Message,), {
-  'DESCRIPTOR' : _TRIANGLEMESH,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.TriangleMesh)
-  })
-_sym_db.RegisterMessage(TriangleMesh)
 
 PhysicalProperties = _reflection.GeneratedProtocolMessageType('PhysicalProperties', (_message.Message,), {
   'DESCRIPTOR' : _PHYSICALPROPERTIES,
@@ -2282,70 +966,12 @@ JointLimits = _reflection.GeneratedProtocolMessageType('JointLimits', (_message.
   })
 _sym_db.RegisterMessage(JointLimits)
 
-Material = _reflection.GeneratedProtocolMessageType('Material', (_message.Message,), {
-  'DESCRIPTOR' : _MATERIAL,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Material)
-  })
-_sym_db.RegisterMessage(Material)
-
-MaterialProperties = _reflection.GeneratedProtocolMessageType('MaterialProperties', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _MATERIALPROPERTIES_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.MaterialProperties.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _MATERIALPROPERTIES,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.MaterialProperties)
-  })
-_sym_db.RegisterMessage(MaterialProperties)
-_sym_db.RegisterMessage(MaterialProperties.AttributesEntry)
-
-Appearance = _reflection.GeneratedProtocolMessageType('Appearance', (_message.Message,), {
-  'DESCRIPTOR' : _APPEARANCE,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Appearance)
-  })
-_sym_db.RegisterMessage(Appearance)
-
-AppearanceProperties = _reflection.GeneratedProtocolMessageType('AppearanceProperties', (_message.Message,), {
-
-  'AttributesEntry' : _reflection.GeneratedProtocolMessageType('AttributesEntry', (_message.Message,), {
-    'DESCRIPTOR' : _APPEARANCEPROPERTIES_ATTRIBUTESENTRY,
-    '__module__' : 'gltf_extras_pb2'
-    # @@protoc_insertion_point(class_scope:synthesis.gltfextras.AppearanceProperties.AttributesEntry)
-    })
-  ,
-  'DESCRIPTOR' : _APPEARANCEPROPERTIES,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.AppearanceProperties)
-  })
-_sym_db.RegisterMessage(AppearanceProperties)
-_sym_db.RegisterMessage(AppearanceProperties.AttributesEntry)
-
 Header = _reflection.GeneratedProtocolMessageType('Header', (_message.Message,), {
   'DESCRIPTOR' : _HEADER,
   '__module__' : 'gltf_extras_pb2'
   # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Header)
   })
 _sym_db.RegisterMessage(Header)
-
-Color = _reflection.GeneratedProtocolMessageType('Color', (_message.Message,), {
-  'DESCRIPTOR' : _COLOR,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Color)
-  })
-_sym_db.RegisterMessage(Color)
-
-BoundingBox3D = _reflection.GeneratedProtocolMessageType('BoundingBox3D', (_message.Message,), {
-  'DESCRIPTOR' : _BOUNDINGBOX3D,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.BoundingBox3D)
-  })
-_sym_db.RegisterMessage(BoundingBox3D)
 
 Vector3D = _reflection.GeneratedProtocolMessageType('Vector3D', (_message.Message,), {
   'DESCRIPTOR' : _VECTOR3D,
@@ -2354,19 +980,6 @@ Vector3D = _reflection.GeneratedProtocolMessageType('Vector3D', (_message.Messag
   })
 _sym_db.RegisterMessage(Vector3D)
 
-Matrix3D = _reflection.GeneratedProtocolMessageType('Matrix3D', (_message.Message,), {
-  'DESCRIPTOR' : _MATRIX3D,
-  '__module__' : 'gltf_extras_pb2'
-  # @@protoc_insertion_point(class_scope:synthesis.gltfextras.Matrix3D)
-  })
-_sym_db.RegisterMessage(Matrix3D)
 
-
-_DOCUMENT_ATTRIBUTESENTRY._options = None
-_OCCURRENCE_ATTRIBUTESENTRY._options = None
-_COMPONENT_ATTRIBUTESENTRY._options = None
-_MESHBODY_ATTRIBUTESENTRY._options = None
 _JOINT_ATTRIBUTESENTRY._options = None
-_MATERIALPROPERTIES_ATTRIBUTESENTRY._options = None
-_APPEARANCEPROPERTIES_ATTRIBUTESENTRY._options = None
 # @@protoc_insertion_point(module_scope)
