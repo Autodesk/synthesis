@@ -1,1 +1,0 @@
-protoc --csharp_out=. .\gltf_extras.proto
