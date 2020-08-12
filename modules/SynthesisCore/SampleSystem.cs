@@ -28,7 +28,7 @@ namespace SynthesisCore
             Logger.Log($"Spawn Time: {_m2.TimeSinceCreation.TotalMilliseconds}");
             */
 
-            e.AddComponent<Transform>();
+            e.AddComponent<Transform>().Position = new Vector3D(10, 0, 0);
             e.AddComponent<Selectable>();
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();

@@ -3,11 +3,9 @@ using MathNet.Spatial.Units;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using Utilities;
 
@@ -18,6 +16,7 @@ namespace SynthesisCore.Systems
     [ModuleExport]
     public class CameraController : SystemBase
     {
+        public static CameraController Instance;
         public static float SensitivityX { get => 2; } // TODO: integrate with preference manager
         public static float SensitivityY { get => 2; }
         public static float SensitivityZoom { get => 3; }
@@ -30,7 +29,7 @@ namespace SynthesisCore.Systems
         private Vector3D offset = new Vector3D();
 
         private Entity? cameraEntity = null;
-        private Transform cameraTransform;
+        public Transform cameraTransform { get; private set; }
 
         /// <summary>
         /// An optional target to focus on
@@ -59,6 +58,11 @@ namespace SynthesisCore.Systems
 
         public override void Setup()
         {
+            if(Instance == null)
+            {
+                Instance = this;
+            }
+
             if (cameraEntity == null)
             {
                 cameraEntity = EnvironmentManager.AddEntity();

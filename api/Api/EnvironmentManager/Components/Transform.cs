@@ -85,9 +85,13 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			Position += v;
 		}
 
-		public void LookAt(Vector3D target)
+		public void LookAt(Vector3D targetPosition)
 		{
-			Rotation = MathUtil.LookAt((target - Position).Normalize());
+			Rotation = MathUtil.LookAt((targetPosition - Position).Normalize());
+		}
+		public void LookAt(Vector3D targetPosition, UnitVector3D upward)
+		{
+			Rotation = MathUtil.LookAt((targetPosition - Position).Normalize(), upward);
 		}
 
 		internal bool Changed { get; private set; } = true;
