@@ -8,6 +8,7 @@
   <Dependencies />
   <FileManifest>
     <string>SynthesisCore.dll</string>
+    <string>sprites/arrow.png</string>
 	<string>UI/uxml/Environments.uxml</string>
     <string>UI/uxml/General.uxml</string>
     <string>UI/uxml/Graphics.uxml</string>
