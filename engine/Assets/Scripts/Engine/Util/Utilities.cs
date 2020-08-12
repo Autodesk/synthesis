@@ -43,6 +43,21 @@ namespace Engine.Util
             return output;
         }
 
+        public static TOutput[] MapAllToArray<TInput, TOutput>(IEnumerable<TInput> input, Func<TInput, TOutput> converter)
+        {
+            if (input == null)
+                return null;
+
+            List<TOutput> output = new List<TOutput>();
+
+            foreach (var i in input)
+            {
+                output.Add(converter(i));
+            }
+
+            return output.ToArray();
+        }
+
         public static EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
         {
             EventTrigger.Entry entry = new EventTrigger.Entry();

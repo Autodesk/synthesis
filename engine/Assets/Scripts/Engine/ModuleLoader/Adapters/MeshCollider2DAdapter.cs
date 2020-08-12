@@ -1,34 +1,23 @@
 ﻿using Engine.Util;
-using MathNet.Spatial.Euclidean;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.Utilities;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Engine.ModuleLoader.Adapters
 {
     public sealed class MeshCollider2DAdapter : MonoBehaviour, IApiAdapter<MeshCollider2D>
 	{
 		private MeshCollider2D instance;
-		private PolygonCollider2D polygonCollider = null;
 		private MeshCollider meshCollider = null;
-
-		private bool addMeshColliderNext = false;
-		private UnityEngine.Mesh mesh;
 
 		public void Awake()
 		{
-			if (gameObject.GetComponent<EventTrigger>() == null)
+			if (meshCollider == null)
 			{
-				var eventTrigger = gameObject.AddComponent<EventTrigger>();
-				eventTrigger.triggers.Add(Utilities.MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
-				{
-					if (((PointerEventData)data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
-						instance.OnClick();
-				}));
+				meshCollider = gameObject.AddComponent<MeshCollider>();
+				meshCollider.sharedMesh = new UnityEngine.Mesh();
+				meshCollider.convex = true;
 			}
-
 			if (instance == null)
 			{
 				gameObject.SetActive(false);
@@ -37,30 +26,46 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Update()
 		{
-			if (addMeshColliderNext && gameObject.GetComponent<PolygonCollider2D>() == null && mesh != null)
+			var sprite = instance.Entity?.GetComponent<SynthesisAPI.EnvironmentManager.Components.Sprite>();
+			if (sprite != null)
 			{
-				if (meshCollider == null)
-					meshCollider = gameObject.AddComponent<MeshCollider>();
-				meshCollider.convex = true;
-				meshCollider.sharedMesh = mesh;
-				instance.Mesh.Vertices = (List<Vector3D>)Utilities.MapAll(mesh.vertices, MathUtil.MapVector3);
-				instance.Mesh.UVs = (List<Vector2D >)Utilities.MapAll(mesh.uv, MathUtil.MapVector2);
-				instance.Mesh.Triangles = new List<int>(mesh.triangles);
-				addMeshColliderNext = false;
-			}
-			if (instance.Changed)
-			{
-				if (meshCollider != null)
+				if (instance.Changed)
 				{
-					Destroy(meshCollider);
-				}
-				else
-				{
-					polygonCollider = gameObject.AddComponent<PolygonCollider2D>();
-					mesh = polygonCollider.CreateMesh(true, true);
-					Destroy(polygonCollider);
-					addMeshColliderNext = true;
+					meshCollider.sharedMesh.triangles = new int[0];
+					meshCollider.sharedMesh.vertices = Utilities.MapAllToArray(sprite._sprite.vertices, (v2d) => new Vector3(v2d.x, v2d.y, 0));
+					meshCollider.sharedMesh.triangles = Utilities.MapAllToArray(sprite._sprite.triangles, (i) => (int)i);
+					instance.Bounds._bounds = meshCollider.bounds;
 					instance.ProcessedChanges();
+				}
+				if (Input.GetMouseButton(0)) // TODO use preference manager?
+				{
+					Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+
+					if (sprite.AlwaysOnTop)
+					{
+						// TODO block hits to other objects "below" this one
+						var hits = Physics.RaycastAll(ray, Mathf.Infinity);
+						foreach (var hit in hits)
+						{
+							if (hit.transform == transform)
+							{
+								instance.OnMouseDown();
+							}
+						}
+					}
+					else
+					{
+						Physics.Raycast(ray, out RaycastHit hit);
+
+						if (hit.transform == transform)
+						{
+							instance.OnMouseDown();
+						}
+					}
+                }
+                else
+                {
+					instance.OnMouseUp();
 				}
 			}
 		}

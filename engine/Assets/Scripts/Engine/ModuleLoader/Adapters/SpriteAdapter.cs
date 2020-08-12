@@ -10,6 +10,7 @@ namespace Engine.ModuleLoader.Adapters
 		private Sprite instance = null;
 		private new SpriteRenderer renderer = null;
 		private Material defaultMaterial;
+		private bool updated = false;
 
 		public void Awake()
 		{
@@ -20,14 +21,23 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				gameObject.SetActive(false);
 			}
+			defaultMaterial = renderer.material;
 		}
 
 		public void Update()
 		{
+			if (updated)
+			{
+				var collider = instance.Entity?.GetComponent<MeshCollider2D>();
+				if (collider != null)
+				{
+					collider.Changed = true;
+				}
+				updated = false;
+			}
 			if (instance.Changed)
 			{
 				renderer.sprite = instance._sprite;
-				defaultMaterial = renderer.material;
 				if (instance._alwaysOnTop)
 					renderer.material = new Material(Shader.Find("Custom/AlwaysOnTop"));
 				else
@@ -35,14 +45,10 @@ namespace Engine.ModuleLoader.Adapters
 
 				renderer.flipX = instance._flipX;
 				renderer.flipY = instance._flipY;
-				renderer.color = new Color(instance._color.R, instance._color.G, instance._color.B, instance._color.A);
-				var collider = instance.Entity?.GetComponent<MeshCollider2D>();
-
-				if (collider != null)
-				{
-					collider.Changed = true;
-				}
+				renderer.color = new Color32(instance._color.R, instance._color.G, instance._color.B, instance._color.A);
 				instance.ProcessedChanges();
+
+				updated = true;
 			}
 		}
 

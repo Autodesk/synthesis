@@ -1,20 +1,27 @@
 ﻿using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.Utilities;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
 	public class MeshCollider2D : Component
 	{
-		public Mesh Mesh { get; internal set; }
-		public OnClickDelegate OnClick;
+		public delegate void EventDelegate();
 
-		public delegate void OnClickDelegate();
+		public Mesh Mesh { get; internal set; }
+		public Bounds Bounds { get; internal set; }
+		public EventDelegate OnMouseDown;
+		public EventDelegate OnMouseUp;
+
 
 		public MeshCollider2D()
 		{
 			Mesh = new Mesh();
-			OnClick = () => { };
+			Bounds = new Bounds();
+			OnMouseDown = () => { };
+			OnMouseUp = () => { };
 		}
-
 
 		public bool Changed { get; internal set; } = true;
 		internal void ProcessedChanges() => Changed = false;

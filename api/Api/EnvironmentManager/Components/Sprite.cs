@@ -10,7 +10,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		internal UnityEngine.Sprite _sprite;
 		internal bool _flipX;
 		internal bool _flipY;
-		internal Color _color = Color.White;
+		internal Color _color = Color.FromArgb(255, 255, 255, 255);
 		internal bool _alwaysOnTop;
 
 		public Sprite() { }
@@ -62,6 +62,9 @@ namespace SynthesisAPI.EnvironmentManager.Components
 				Changed = true;
 			}
 		}
+
+		public int Width => _sprite.texture.width;
+		public int Height => _sprite.texture.height;
 
 		public bool Changed { get; private set; } = true;
 		internal void ProcessedChanges() => Changed = false;
