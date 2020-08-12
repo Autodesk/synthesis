@@ -609,50 +609,23 @@ class GLTFDesignExporter(object):
         Returns: The index of the exported material in the materials list of the glTF object.
 
         """
-        props = fusionAppearance.appearanceProperties
+        appearancePBR = getPBRSettingsFromAppearance(fusionAppearance, self.warnings)
+        if appearancePBR is None:
+            return
+        baseColorFactor, emissiveColorFactor, metallicFactor, roughnessFactor, transparent = appearancePBR
 
         material = Material()
-        material.alphaCutoff = None  # this is a bug with the gltf python lib
         material.name = fusionAppearance.name
+        material.alphaCutoff = None  # this is a bug with the gltf python lib
+        material.emissiveFactor = emissiveColorFactor
 
         pbr = PbrMetallicRoughness()
-        pbr.baseColorFactor = None  # this is a bug with the gltf python lib
-        pbr.metallicFactor = 0.0
-        roughnessProp = props.itemById("surface_roughness")
-        pbr.roughnessFactor = roughnessProp.value if roughnessProp is not None else 0.1
+        pbr.baseColorFactor = baseColorFactor
+        pbr.metallicFactor = metallicFactor
+        pbr.roughnessFactor = roughnessFactor
 
-        baseColor = None
-
-        modelItem = props.itemById("interior_model")
-        if modelItem is None:
-            return None
-        matModelType = modelItem.value
-
-        if matModelType == 0:  # Opaque
-            baseColor = props.itemById("opaque_albedo").value
-            if props.itemById("opaque_emission").value:
-                material.emissiveFactor = fusionColorToRGBAArray(props.itemById("opaque_luminance_modifier").value)[:3]
-        elif matModelType == 1:  # Metal
-            pbr.metallicFactor = 1.0
-            baseColor = props.itemById("metal_f0").value
-        elif matModelType == 2:  # Layered
-            baseColor = props.itemById("layered_diffuse").value
-        elif matModelType == 3:  # Transparent
-            baseColor = props.itemById("transparent_color").value
-            material.alphaMode = "BLEND"
-        elif matModelType == 5:  # Glazing
-            baseColor = props.itemById("glazing_transmission_color").value
-        else:  # ??? idk what type 4 material is
-            self.warnings.append(f"Unsupported material modeling type: {material.name}")
-
-        if baseColor is None:
-            self.warnings.append(f"Ignoring material that does not have color: {material.name}")
-            return None
-
-        pbr.baseColorFactor = fusionColorToRGBAArray(baseColor)[:3] + [fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
         material.pbrMetallicRoughness = pbr
 
         self.gltf.materials.append(material)
         return len(self.gltf.materials) - 1
-
 

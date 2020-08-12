@@ -29,7 +29,7 @@ def fillJoint(fusionJoint: adsk.fusion.Joint, groupName: str, rootUUID: str, war
     occurrenceOne = fusionJoint.occurrenceOne
     occurrenceTwo = fusionJoint.occurrenceTwo
 
-    if occurrenceOne is None:
+    if occurrenceOne is None:  # These are needed because there's a bug where .occurrenceOne and .occurrenceTwo don't work when a parent occ is jointed to a child occ. TODO: Report bug
         try:
             occurrenceOne = fusionJoint.geometryOrOriginOne.entityOne.assemblyContext
         except:

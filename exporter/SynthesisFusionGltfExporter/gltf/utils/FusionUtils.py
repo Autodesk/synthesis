@@ -4,6 +4,57 @@ import adsk.fusion
 
 from typing import *
 
+def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, warnings=None) -> Optional[Tuple[List[float], List[float], float, float, bool]]:
+    """Gets Physically Based Rendering settings from a fusion appearance.
+
+    Args:
+        fusionAppearance: The fusion appearance to read from.
+        warnings: A list of warnings to append onto.
+
+    Returns: None if the material is unrecognized, otherwise returns RGBA base color, RGB emissive factor, metallic factor, roughness factor, and whether the material is transparent.
+
+    """
+    if warnings is None:
+        warnings = []
+    props = fusionAppearance.appearanceProperties
+
+    transparent = False
+    emissiveColorFactor = None
+    metallicFactor = 0.0
+    roughnessProp = props.itemById("surface_roughness")
+    roughnessFactor = roughnessProp.value if roughnessProp is not None else 0.1
+
+    baseColor = None
+
+    modelItem = props.itemById("interior_model")
+    if modelItem is None:
+        return None
+    matModelType = modelItem.value
+
+    if matModelType == 0:  # Opaque
+        baseColor = props.itemById("opaque_albedo").value
+        if props.itemById("opaque_emission").value:
+            emissiveColorFactor = fusionColorToRGBAArray(props.itemById("opaque_luminance_modifier").value)[:3]
+    elif matModelType == 1:  # Metal
+        metallicFactor = 1.0
+        baseColor = props.itemById("metal_f0").value
+    elif matModelType == 2:  # Layered
+        baseColor = props.itemById("layered_diffuse").value
+    elif matModelType == 3:  # Transparent
+        baseColor = props.itemById("transparent_color").value
+        transparent = True
+    elif matModelType == 5:  # Glazing
+        baseColor = props.itemById("glazing_transmission_color").value
+    else:  # ??? idk what type 4 material is
+        warnings.append(f"Unsupported material modeling type: {fusionAppearance.name}")
+
+    if baseColor is None:
+        warnings.append(f"Ignoring material that does not have color: {fusionAppearance.name}")
+        return None
+
+    baseColorFactor = fusionColorToRGBAArray(baseColor)[:3] + [fusionAttenLengthToAlpha(props.itemById("transparent_distance"))]
+
+    return baseColorFactor, emissiveColorFactor, metallicFactor, roughnessFactor, transparent
 
 def checkIfAppearancesAreBugged(design: adsk.fusion.Design) -> bool:
     """Checks if the appearances of a fusion document are bugged.
