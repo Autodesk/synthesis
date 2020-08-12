@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Engine.Util;
-using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
@@ -39,7 +38,7 @@ namespace Engine.ModuleLoader.Adapters
 		}
 
 		private void ToUnity()
-        {
+		{
 			if (instance != null)
 			{
 				filter.mesh.vertices = ((List<Vector3>)Utilities.MapAll(instance.Vertices, MathUtil.MapVector3D)).ToArray();

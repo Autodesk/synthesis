@@ -13,6 +13,7 @@ namespace SynthesisCore.Systems
     {
         private static Entity arrowsEntity;
         private static Transform arrowsTransform;
+
         public class Arrow
         {
             public Entity ArrowEntity { get; private set; }
@@ -23,6 +24,9 @@ namespace SynthesisCore.Systems
             private MeshCollider2D collider;
             private bool hasSetSpritePivot = false;
             private Sprite sprite;
+
+            private const double sizeEpsilon = 0.001;
+            private double lastSize = 0;
 
             public Arrow(UnitVector3D direction)
             {
@@ -77,8 +81,21 @@ namespace SynthesisCore.Systems
                 if (!hasSetSpritePivot && collider.Bounds.Extents.Y != 0)
                 {
                     var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
-                    arrowSpriteTransform.Position = new Vector3D(0, collider.Bounds.Extents.Y, 0);
+                    arrowSpriteTransform.Position = new Vector3D(0, collider.Bounds.Extents.Y * 2, 0);
                     hasSetSpritePivot = true;
+                }
+            }
+
+            public void UpdateScaling()
+            {
+                var vectorToCamera = CameraController.Instance.cameraTransform.Position - arrowsTransform.Position;
+
+                var size = vectorToCamera.Length * 0.01;
+                if (System.Math.Abs(size - lastSize) > sizeEpsilon)
+                {
+                    Logger.Log(size);
+                    arrowsTransform.Scale = new Vector3D(size, size, size);
+                    lastSize = size;
                 }
             }
         }
@@ -95,7 +112,9 @@ namespace SynthesisCore.Systems
                 var forward = CameraController.Instance.cameraTransform.Position - arrow.Transform.Position;
                 forward -= forward.ProjectOn(arrow.Direction);
                 arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
+                arrow.UpdateScaling();
             }
+
             MoveArrowsTransform();
         }
 
@@ -120,7 +139,7 @@ namespace SynthesisCore.Systems
                 if (xMod != 0 || yMod != 0)
                 {
 
-                    var magnitude = System.Math.Abs(xMod) + System.Math.Abs(yMod);
+                    var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 0.2;
 
                     var horizontalDir = UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
                     var mouseDir = new Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side

@@ -7,7 +7,7 @@ using static Engine.ModuleLoader.Api;
 
 namespace Engine.ModuleLoader.Adapters
 {
-	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
+    public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
 		private new MeshCollider collider;
@@ -83,6 +83,7 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (collider.sharedMesh == null)
 			{
+
 				collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
 				materials = gameObject.GetComponent<MeshRenderer>().materials;
 				if (collider.sharedMesh == null)
@@ -96,7 +97,7 @@ namespace Engine.ModuleLoader.Adapters
 				Select();
 			}
 			*/
-			if (Input.GetMouseButton(0)) // TODO use preference manager?
+			if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
 			{
 				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
 

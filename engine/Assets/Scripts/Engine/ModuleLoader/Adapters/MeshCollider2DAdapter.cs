@@ -1,6 +1,8 @@
 ﻿using Engine.Util;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.Utilities;
+using System;
 using UnityEngine;
 using static Engine.ModuleLoader.Api;
 
@@ -38,7 +40,7 @@ namespace Engine.ModuleLoader.Adapters
 					instance.Bounds._bounds = meshCollider.bounds;
 					instance.ProcessedChanges();
 				}
-				if (Input.GetMouseButton(0)) // TODO use preference manager?
+				if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
 				{
 					Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -66,7 +68,7 @@ namespace Engine.ModuleLoader.Adapters
 						instance.OnMouseDown();
 					}
 				}
-				else
+				else if(Input.GetMouseButtonUp(0))
 				{
 					instance.OnMouseUp();
 				}
