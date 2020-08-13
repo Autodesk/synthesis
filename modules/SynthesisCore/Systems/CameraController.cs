@@ -7,13 +7,12 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
-using Utilities;
 
 #nullable enable
 
 namespace SynthesisCore.Systems
 {
-    [ModuleExport]
+    [InitializationPriority(2)]
     public class CameraController : SystemBase
     {
         public static CameraController Instance;

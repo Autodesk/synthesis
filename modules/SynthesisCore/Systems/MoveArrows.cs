@@ -11,7 +11,6 @@ namespace SynthesisCore.Systems
     /// <summary>
     /// System that controls arrows to move entities around
     /// </summary>
-    [ModuleExport]
     public class MoveArrows : SystemBase
     {
         private static Entity arrowsEntity;

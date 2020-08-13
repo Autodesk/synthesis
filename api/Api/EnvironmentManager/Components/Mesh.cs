@@ -5,7 +5,6 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
 	public class Mesh : Component
 	{
 		private List<Vector3D> _vertices = new List<Vector3D>();

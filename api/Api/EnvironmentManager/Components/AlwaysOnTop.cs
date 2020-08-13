@@ -2,7 +2,7 @@
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
+    // [BuiltIn]
     public class AlwaysOnTop : Component
 	{
 	}

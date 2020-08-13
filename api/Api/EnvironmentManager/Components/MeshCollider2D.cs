@@ -5,6 +5,7 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
+	// [BuiltIn]
 	public class MeshCollider2D : Component
 	{
 		public delegate void EventDelegate();

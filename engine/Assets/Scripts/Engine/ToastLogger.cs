@@ -4,13 +4,18 @@ using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.VirtualFileSystem;
+using UnityEngine;
+using ILogger = SynthesisAPI.Utilities.ILogger;
 
-namespace SynthesisCore.Systems
+namespace Engine
 {
     /// <summary>
-    /// Logs to the toast feed in SynthesisCore
+    /// Logs to the toast feed
     /// </summary>
     public class ToastLogger : ILogger
     {
@@ -54,7 +59,7 @@ namespace SynthesisCore.Systems
                 RawText = content;
                 LogLevel = logLevel;
                 Tooltip = tooltip;
-                Lines = Utilities.Text.SplitLines(RawText, CharsPerToastLine);
+                Lines = Text.SplitLines(RawText, CharsPerToastLine);
             }
         }
 
@@ -108,7 +113,6 @@ namespace SynthesisCore.Systems
             icon.SetStyleProperty("width", "25px");
             icon.SetStyleProperty("min-width", "25px");
             icon.SetStyleProperty("max-width", "25px");
-            icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/add-icon.png");
             icon.SetStyleProperty("border-top-width", "0px");
             icon.SetStyleProperty("border-bottom-width", "0px");
             icon.SetStyleProperty("border-left-width", "0px");
@@ -118,26 +122,26 @@ namespace SynthesisCore.Systems
             {
                 case LogLevel.Debug:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/wrench-icon.png");
+                        icon.SetStyleProperty("background-image", "/runtime/wrench-icon.png");
                         toastElement.SetStyleProperty("background-color", "rgba(187, 187, 187, 1)");
                         break;
                     }
                 case LogLevel.Warning:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/warning-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/runtime/warning-icon-white-solid.png");
                         toastElement.SetStyleProperty("background-color", "rgba(255, 165, 0, 1)");
                         break;
                     }
                 case LogLevel.Error:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/error-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/runtime/error-icon-white-solid.png");
                         toastElement.SetStyleProperty("background-color", "rgba(255, 24, 66, 1)");
                         break;
                     }
                 default:
                 case LogLevel.Info:
                     {
-                        icon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/info-icon-white-solid.png");
+                        icon.SetStyleProperty("background-image", "/runtime/info-icon-white-solid.png");
                         toastElement.SetStyleProperty("background-color", "rgba(0, 173, 222, 1)");
                         break;
                     }
@@ -195,7 +199,7 @@ namespace SynthesisCore.Systems
             closeButton.SetStyleProperty("border-bottom-width", "0px");
             closeButton.SetStyleProperty("border-left-width", "0px");
             closeButton.SetStyleProperty("border-right-width", "0px");
-            closeButton.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/close-icon-white.png");
+            closeButton.SetStyleProperty("background-image", "/runtime/close-icon-white.png");
             closeButton.Subscribe(e =>
             {
                 if (e is ButtonClickableEvent be && be.Name == closeButton.Name)
@@ -222,6 +226,18 @@ namespace SynthesisCore.Systems
         {
             if (initialized)
                 return;
+
+            // Load icons into virtual file system
+            var closeIconStream = File.OpenRead("Assets/UI/Toasts/close-icon-white.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", closeIconStream, "/runtime", "close-icon-white.png", Permissions.PublicReadOnly, "");
+            var wrenchStream = File.OpenRead("Assets/UI/Toasts/wrench-icon.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", wrenchStream, "/runtime", "wrench-icon.png", Permissions.PublicReadOnly, "");
+            var warningStream = File.OpenRead("Assets/UI/Toasts/warning-icon-white-solid.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", warningStream, "/runtime", "warning-icon-white-solid.png", Permissions.PublicReadOnly, "");
+            var errorStream = File.OpenRead("Assets/UI/Toasts/error-icon-white-solid.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", errorStream, "/runtime", "error-icon-white-solid.png", Permissions.PublicReadOnly, "");
+            var infoStream = File.OpenRead("Assets/UI/Toasts/info-icon-white-solid.png");
+            AssetManager.Import<SpriteAsset>("image/sprite", infoStream, "/runtime", "info-icon-white-solid.png", Permissions.PublicReadOnly, "");
 
             toastContainer = UIManager.RootElement.Get("toast-notification-container");
             toastFeed = UIManager.RootElement.Get("toast-feed");

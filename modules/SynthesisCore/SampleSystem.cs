@@ -8,7 +8,6 @@ using SynthesisCore.Systems;
 
 namespace SynthesisCore
 {
-    [ModuleExport]
     public class SampleSystem : SystemBase
     {
         public override void OnPhysicsUpdate() { }

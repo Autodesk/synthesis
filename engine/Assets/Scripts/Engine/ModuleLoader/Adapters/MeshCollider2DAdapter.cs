@@ -35,8 +35,8 @@ namespace Engine.ModuleLoader.Adapters
 				if (instance.Changed)
 				{
 					meshCollider.sharedMesh.triangles = new int[0];
-					meshCollider.sharedMesh.vertices = Utilities.MapAllToArray(sprite._sprite.vertices, (v2d) => new Vector3(v2d.x, v2d.y, 0));
-					meshCollider.sharedMesh.triangles = Utilities.MapAllToArray(sprite._sprite.triangles, (i) => (int)i);
+					meshCollider.sharedMesh.vertices = Misc.MapAllToArray(sprite._sprite.vertices, (v2d) => new Vector3(v2d.x, v2d.y, 0));
+					meshCollider.sharedMesh.triangles = Misc.MapAllToArray(sprite._sprite.triangles, (i) => (int)i);
 					instance.Bounds._bounds = meshCollider.bounds;
 					instance.ProcessedChanges();
 				}

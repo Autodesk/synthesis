@@ -2,7 +2,6 @@
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
 	public class Camera : Component
 	{
 

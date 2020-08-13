@@ -4,7 +4,6 @@
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
     public class Selectable : Component
     {
         public static Selectable? Selected { get; private set; } = null;

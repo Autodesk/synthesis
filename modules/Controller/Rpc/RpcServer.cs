@@ -10,7 +10,6 @@ using System.Net;
 
 namespace Controller.Rpc
 {
-    [ModuleExport]
     public class RpcServer : SystemBase
     {
         private static HttpListener listener = new HttpListener();

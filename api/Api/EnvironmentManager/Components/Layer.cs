@@ -4,7 +4,7 @@ using _UnityLayerMask = UnityEngine.LayerMask;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
+    // [BuiltIn]
     public class Layer : Component
     {
         internal int _layerMask;

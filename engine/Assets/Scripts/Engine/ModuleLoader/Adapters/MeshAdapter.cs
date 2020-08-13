@@ -41,8 +41,8 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (instance != null)
 			{
-				filter.mesh.vertices = ((List<Vector3>)Utilities.MapAll(instance.Vertices, MathUtil.MapVector3D)).ToArray();
-				filter.mesh.uv = ((List<Vector2>)Utilities.MapAll(instance.UVs, MathUtil.MapVector2D)).ToArray();
+				filter.mesh.vertices = ((List<Vector3>)Misc.MapAll(instance.Vertices, MathUtil.MapVector3D)).ToArray();
+				filter.mesh.uv = ((List<Vector2>)Misc.MapAll(instance.UVs, MathUtil.MapVector2D)).ToArray();
 				filter.mesh.triangles = instance.Triangles.ToArray();
 			}
 		}

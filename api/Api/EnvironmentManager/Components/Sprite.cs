@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
+	// [BuiltIn]
 	public class Sprite : Component
 	{
 		internal UnityEngine.Sprite _sprite;
