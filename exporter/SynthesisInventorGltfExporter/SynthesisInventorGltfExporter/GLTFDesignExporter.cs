@@ -39,7 +39,7 @@ namespace SynthesisInventorGltfExporter
 
         private Dictionary<string, MassProperties> massPropertiesMap;
         private Dictionary<string, string> jointedComponentUUIDMap;
-        private Dictionary<string, string> jointedComponentRealNames;
+        private Dictionary<string, string> allComponentRealNames;
         private Dictionary<string, MaterialBuilder> materialCache;
         
         private List<string> warnings;
@@ -51,10 +51,12 @@ namespace SynthesisInventorGltfExporter
         private bool exportMaterials;
         private bool exportFaceMaterials;
         private bool exportHidden;
+        private bool includeSynthData;
         private decimal exportTolerance;
         private static readonly string appName = "Autodesk.Synthesis.Inventor";
 
-        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue)
+        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue,
+            bool includeSynthChecked)
         {
             try
             {
@@ -65,58 +67,65 @@ namespace SynthesisInventorGltfExporter
                 exportHidden = checkHiddenChecked;
                 exportFaceMaterials = checkFaceMaterials;
                 exportMaterials = checkMaterialsChecked;
+                includeSynthData = includeSynthChecked;
                 materialCache = new Dictionary<string, MaterialBuilder>();
                 massPropertiesMap = new Dictionary<string, MassProperties>();
                 jointedComponentUUIDMap = new Dictionary<string, string>();
-                jointedComponentRealNames = new Dictionary<string, string>();
+                allComponentRealNames = new Dictionary<string, string>();
                 warnings = new List<string>();
 
                 progressTotal = 2 + assemblyDocument.AllReferencedDocuments.Count;
                 progressBar = application.CreateProgressBar(false, progressTotal, "Exporting " + assemblyDocument.DisplayName + " to glTF");
 
                 progressBar.Message = "Preparing for export...";
-
-                var extras = new JObject();
-                extras.Add("joints", ExportJoints(FindJointsScene(assemblyDocument)));
                 
                 var sceneBuilder = ExportScene(assemblyDocument);
 
                 progressBar.Message = "Exporting joints...";
                 progressBar.UpdateProgress();
-                // TODO: Figure out a more elegant solution for extras. This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. 
-                var modelRoot = sceneBuilder.ToSchema2();
-                var dictionary = modelRoot.WriteToDictionary("temp");
-                var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
-                var parsedJToken = (JObject) JToken.ReadFrom(new JsonTextReader(new StringReader(jsonString)));
-
-                parsedJToken.Add("extras", extras);
-
-                try
-                {
-                    ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
-                }
-                catch { }
                 
-                ExportJointedCompUUID((JArray) parsedJToken.GetValue("nodes"));
+                var modelRoot = sceneBuilder.ToSchema2();
 
-                try
+                if (includeSynthData)
                 {
-                    var asset = (JObject) parsedJToken.GetValue("asset");
-                    asset.Property("generator").Value = appName;
-                }
-                catch { }
+                    // TODO: Figure out a more elegant solution for extras. This is only needed because sharpGLTF (this version anyways) doesn't support writing extras so we need to do it manually. 
+                    var dictionary = modelRoot.WriteToDictionary("temp");
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var jsonString = Encoding.ASCII.GetString(dictionary["temp.gltf"].Array);
+                    var parsedJToken = (JObject) JToken.ReadFrom(new JsonTextReader(new StringReader(jsonString)));
 
-                var readSettings = new ReadSettings();
-                readSettings.FileReader = assetFileName => dictionary[assetFileName];
-                var modifiedGltf = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
+                    var rootExtras = new JObject();
+                    rootExtras.Add("joints", ExportJoints(FindJointsScene(assemblyDocument)));
+                    
+                    parsedJToken.Add("extras", rootExtras);
+
+                    try
+                    {
+                        ExportMassProperties((JArray) parsedJToken.GetValue("meshes"));
+                    }
+                    catch { }
+
+                    ExportJointedCompUUID((JArray) parsedJToken.GetValue("nodes"));
+
+                    try
+                    {
+                        var asset = (JObject) parsedJToken.GetValue("asset");
+                        asset.Property("generator").Value = appName;
+                    }
+                    catch { }
+
+                    var readSettings = new ReadSettings();
+                    readSettings.FileReader = assetFileName => dictionary[assetFileName];
+                    modelRoot = ModelRoot.ReadGLTF(new MemoryStream(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(parsedJToken))), readSettings);
+                }
 
                 progressBar.Message = "Saving file...";
                 progressBar.UpdateProgress();
 
                 if (glb)
-                    modifiedGltf.SaveGLB(filePath);
+                    modelRoot.SaveGLB(filePath);
                 else
-                    modifiedGltf.SaveGLTF(filePath);
+                    modelRoot.SaveGLTF(filePath);
 
 
                 Debug.WriteLine("-----gltf export warnings-----");
@@ -151,7 +160,7 @@ namespace SynthesisInventorGltfExporter
                         try
                         {
                             var meshExtras = new JObject();
-                            meshExtras.Add("UUID", jointedComponentUUIDMap[nodeName]);
+                            meshExtras.Add("uuid", jointedComponentUUIDMap[nodeName]);
                             node.Add("extras", meshExtras);
                         }
                         catch
@@ -163,7 +172,7 @@ namespace SynthesisInventorGltfExporter
 
                 try
                 {
-                    node["name"] = jointedComponentRealNames[nodeName];
+                    node["name"] = allComponentRealNames[nodeName];
                 }
                 catch { }
             }
@@ -215,10 +224,14 @@ namespace SynthesisInventorGltfExporter
         private JArray ExportJoints(List<AssemblyJoint> allDocumentJoints)
         {
             var jointArray = new JArray();
+            var exportedJointSet = new HashSet<string>();
             
             foreach (AssemblyJoint joint in allDocumentJoints)
             {
-                try { jointArray.Add(JObject.Parse(synFormatter.Format(ExportJoint(joint)))); } catch {}
+                if (exportedJointSet.Add(GetOrSetObjectUUID(joint)))
+                {
+                    try { jointArray.Add(JObject.Parse(synFormatter.Format(ExportJoint(joint)))); } catch {}
+                }
             }
         
             return jointArray;
@@ -239,9 +252,13 @@ namespace SynthesisInventorGltfExporter
             
             try { protoJoint.IsLocked = invJoint.Locked; } catch {}
             try { protoJoint.IsSuppressed = invJoint.Suppressed; } catch {}
-        
-            protoJoint.OccurrenceOneUUID = GetOrSetObjectUUID(invJoint.OccurrenceOne);
-            protoJoint.OccurrenceTwoUUID = GetOrSetObjectUUID(invJoint.OccurrenceTwo);
+
+            var invJointOccurrenceOne = invJoint.OccurrenceOne;
+            var invJointOccurrenceTwo = invJoint.OccurrenceTwo;
+            protoJoint.OccurrenceOneUUID = GetOrSetObjectUUID(invJointOccurrenceOne);
+            protoJoint.OccurrenceTwoUUID = GetOrSetObjectUUID(invJointOccurrenceTwo);
+            jointedComponentUUIDMap[GetOccurrencePath(invJointOccurrenceOne)] = protoJoint.OccurrenceOneUUID;
+            jointedComponentUUIDMap[GetOccurrencePath(invJointOccurrenceTwo)] = protoJoint.OccurrenceTwoUUID;
             
             var assemblyJointDefinition = invJoint.Definition;
             
@@ -441,14 +458,23 @@ namespace SynthesisInventorGltfExporter
 
             var synAttributeSet = occurrenceAttributeSets[appName];
 
-            if (!synAttributeSet.NameIsUsed["UUID"])
+            if (!synAttributeSet.NameIsUsed["uuid"])
             {
-                var uuidString = Guid.NewGuid().ToString();
-                synAttributeSet.Add("UUID", ValueTypeEnum.kStringType, uuidString);
-                return uuidString;
+                var newUUID = Guid.NewGuid().ToString();
+                synAttributeSet.Add("uuid", ValueTypeEnum.kStringType, newUUID);
+                return newUUID;
+            }
+            
+            string uuid = synAttributeSet["uuid"].Value;
+
+            if (!Guid.TryParse(uuid, out _))
+            {
+                var newUUID = Guid.NewGuid().ToString();
+                synAttributeSet["uuid"].Value = newUUID;
+                return newUUID;
             }
 
-            return synAttributeSet["UUID"].Value;
+            return uuid;
         }
         
         private string GetObjectUUID(dynamic hasAttributeSets)
@@ -456,17 +482,17 @@ namespace SynthesisInventorGltfExporter
             var occurrenceAttributeSets = hasAttributeSets.AttributeSets;
             if (!occurrenceAttributeSets.NameIsUsed[appName])
             {
-                return "";
+                return null;
             }
 
             var synAttributeSet = occurrenceAttributeSets[appName];
 
-            if (!synAttributeSet.NameIsUsed["UUID"])
+            if (!synAttributeSet.NameIsUsed["uuid"])
             {
-                return "";
+                return null;
             }
 
-            return synAttributeSet["UUID"].Value;
+            return synAttributeSet["uuid"].Value;
         }
 
         private static Vector3D GetVector3DConvertUnits(dynamic getJointCenter)
@@ -505,22 +531,11 @@ namespace SynthesisInventorGltfExporter
         {
             foreach (ComponentOccurrence childOccurrence in occurrences)
             {
-                FindJointsNode(childOccurrence, allDocumentJoints);
+                allDocumentJoints.AddRange(childOccurrence.Joints.Cast<AssemblyJoint>());
+                FindJointsNodes(childOccurrence.SubOccurrences.Cast<ComponentOccurrence>(), allDocumentJoints);
             }
         }
 
-        private void FindJointsNode(ComponentOccurrence componentOccurrence, List<AssemblyJoint> allDocumentJoints)
-        {
-            if (componentOccurrence.Definition.Type == ObjectTypeEnum.kAssemblyComponentDefinitionObject) 
-                FindJointsAssembly(componentOccurrence, allDocumentJoints);
-        }
-        private void FindJointsAssembly(ComponentOccurrence componentOccurrence, List<AssemblyJoint> allDocumentJoints)
-        {
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            var assemblyComponentDefinition = (AssemblyComponentDefinition)componentOccurrence.Definition;
-            allDocumentJoints.AddRange(assemblyComponentDefinition.Joints.Cast<AssemblyJoint>());
-            FindJointsNodes(componentOccurrence.SubOccurrences.Cast<ComponentOccurrence>(), allDocumentJoints);
-        }
         private SceneBuilder ExportScene(AssemblyDocument assemblyDocument)
         {
             var scene = new SceneBuilder();
@@ -547,15 +562,16 @@ namespace SynthesisInventorGltfExporter
         {
             var componentOccurrenceDefinition = componentOccurrence.Definition;
             
-            var occurrencePath = GetOccurrencePath(componentOccurrence);
-            node.Name = occurrencePath;
-            
-            var occurrenceUuid = GetObjectUUID(componentOccurrence);
-            if (occurrenceUuid != "")
+            if (includeSynthData)
             {
-                jointedComponentUUIDMap[occurrencePath] = occurrenceUuid;
+                var occurrencePath = GetOccurrencePath(componentOccurrence);
+                node.Name = occurrencePath;
+                allComponentRealNames[occurrencePath] = componentOccurrence.Name;
             }
-            jointedComponentRealNames[occurrencePath] = componentOccurrence.Name;
+            else
+            {
+                node.Name = componentOccurrence.Name;
+            }
 
 
             // ExportAppearanceCached(componentOccurrence.Appearance);
@@ -612,11 +628,16 @@ namespace SynthesisInventorGltfExporter
         {
             var occurrencePath = GetOccurrencePath(componentOccurrence);
             var mesh = new MeshBuilder<VertexPosition>(occurrencePath);
-            try
+
+            if (includeSynthData)
             {
-                massPropertiesMap[occurrencePath] = componentOccurrence.MassProperties;
-            } catch {}
-            
+                try
+                {
+                    massPropertiesMap[occurrencePath] = componentOccurrence.MassProperties;
+                }
+                catch { }
+            }
+
             foreach (SurfaceBody surfaceBody in componentOccurrence.SurfaceBodies)
             {
                 if (exportMaterials && exportFaceMaterials)

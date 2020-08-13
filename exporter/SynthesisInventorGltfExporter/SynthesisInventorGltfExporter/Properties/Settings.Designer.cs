@@ -106,5 +106,17 @@ namespace SynthesisInventorGltfExporter.Properties {
                 this["ExportGLB"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IncludeSynthesisData {
+            get {
+                return ((bool)(this["IncludeSynthesisData"]));
+            }
+            set {
+                this["IncludeSynthesisData"] = value;
+            }
+        }
     }
 }

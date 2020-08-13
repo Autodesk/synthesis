@@ -55,7 +55,7 @@ namespace SynthesisInventorGltfExporter.GUI
                 }
 
                 var exporter = new GLTFDesignExporter();
-                exporter.ExportDesign(application, assemblyDocument, dialog.FileName, Settings.Default.ExportGLB,checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value);
+                exporter.ExportDesign(application, assemblyDocument, dialog.FileName, Settings.Default.ExportGLB,checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value, includeSynth.Checked);
                 Close();
             };
             cancelButton.Click += (sender, args) =>
@@ -70,6 +70,7 @@ namespace SynthesisInventorGltfExporter.GUI
             checkFace.Checked = Settings.Default.ExportFaceMaterials;
             checkHidden.Checked = Settings.Default.ExportHidden;
             numericTolerance.Value = Settings.Default.MeshTolerance;
+            includeSynth.Checked = Settings.Default.IncludeSynthesisData;
             comboFileType.SelectedIndex = Settings.Default.ExportGLB ? 0 : 1;
             checkMaterials_CheckedChanged(null, null);
         }
@@ -80,6 +81,7 @@ namespace SynthesisInventorGltfExporter.GUI
             Settings.Default.ExportFaceMaterials = checkFace.Checked;
             Settings.Default.ExportHidden = checkHidden.Checked;
             Settings.Default.MeshTolerance = numericTolerance.Value;
+            Settings.Default.IncludeSynthesisData = includeSynth.Checked;
             Settings.Default.ExportGLB = comboFileType.SelectedIndex == 0;
             Settings.Default.Save();
         }
