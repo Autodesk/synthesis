@@ -166,7 +166,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCopy "$(TargetDir)*" "C:\Program Files\Autodesk\Synthesis\Exporter\" /Y /R /S /I
+    <PostBuildEvent>XCopy "$(TargetDir)*" "C:\Program Files\Autodesk\Synthesis\SynthesisInventorGltfExporter\" /Y /R /S /I
 XCopy "$(ProjectDir)Autodesk.SynthesisInventorGltfExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 </PostBuildEvent>
   </PropertyGroup>
