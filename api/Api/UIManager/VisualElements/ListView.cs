@@ -10,6 +10,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public class ListView: VisualElement
     {
+        /*
         /// <summary>
         /// Wrapper for the Unity ListView
         /// This is necessary because these methods are currently protected and we need access to them
@@ -21,12 +22,13 @@ namespace SynthesisAPI.UIManager.VisualElements
             public new void RemoveFromSelection(int index) => base.RemoveFromSelection(index);
             public new void SetSelection(int index) => base.SetSelection(index);
         }
+        */
 
         private EventBus.EventBus.EventCallback _callback;
 
-        protected _UnityListViewWrapper Element
+        private protected _UnityListView Element
         {
-            get => (_visualElement as _UnityListViewWrapper)!;
+            get => (_visualElement as _UnityListView)!;
             set => _visualElement = value;
         }
         
@@ -40,13 +42,13 @@ namespace SynthesisAPI.UIManager.VisualElements
         public ListView()
         {
             // Element = ApiProvider.InstantiateFocusable<UnityListView>()!;
-            Element = ApiProvider.CreateUnityType<_UnityListViewWrapper>()!;
+            Element = ApiProvider.CreateUnityType<_UnityListView>()!;
             if (Element == null)
                 throw new Exception();
             Element.selectionType = _SelectionType.Single;
         }
 
-        internal ListView(_UnityListViewWrapper element)
+        internal ListView(_UnityListView element)
         {
             Element = element;
         }
@@ -76,7 +78,7 @@ namespace SynthesisAPI.UIManager.VisualElements
             get => Element.itemHeight;
             set => Element.itemHeight = value;
         }
-        public void ClearSelection() => Element.ClearSelection();
+        // public void ClearSelection() => Element.ClearSelection();
         public void ScrollTo(VisualElement visualElement) => Element.ScrollTo(visualElement.UnityVisualElement);
         public void ScrollToItem(int index) => Element.ScrollToItem(index);
 

@@ -24,6 +24,12 @@ namespace Engine.ModuleLoader.Adapters
                 GameObject parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
                 gameObject.transform.SetParent(parent.transform);
                 instance.ProcessedChanges();
+
+                var transform = instance.Entity?.GetComponent<SynthesisAPI.EnvironmentManager.Components.Transform>();
+                if (transform != null)
+                {
+                    transform.Changed = true;
+                }
             }
         }
 

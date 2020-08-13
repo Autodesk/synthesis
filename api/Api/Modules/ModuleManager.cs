@@ -16,10 +16,22 @@ namespace SynthesisAPI.Modules
         {
             public string Name { get; }
             public string Version { get; }
+            public string Author { get; }
+            public string Description { get; }
+
             public ModuleInfo(string name, string version)
             {
                 Name = name;
                 Version = version;
+                Author = "";
+                Description = "";
+            }
+            public ModuleInfo(string name, string version, string author, string description)
+            {
+                Name = name;
+                Version = version;
+                Author = author;
+                Description = description;
             }
 
             public override bool Equals(object obj)

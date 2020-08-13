@@ -1,6 +1,9 @@
 ﻿using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 namespace Engine.Util
 {
@@ -25,5 +28,43 @@ namespace Engine.Util
             MathUtil.MapUnityQuaternion(q);
         public static UnityEngine.Quaternion MapQuaternion(Quaternion q) =>
             MathUtil.MapQuaternion(q);
+
+        public static IEnumerable<TOutput> MapAll<TInput, TOutput>(IEnumerable<TInput> input, Func<TInput, TOutput> converter)
+        {
+            if (input == null)
+                return null;
+
+            List<TOutput> output = new List<TOutput>();
+
+            foreach(var i in input)
+            {
+                output.Add(converter(i));
+            }
+
+            return output;
+        }
+
+        public static TOutput[] MapAllToArray<TInput, TOutput>(IEnumerable<TInput> input, Func<TInput, TOutput> converter)
+        {
+            if (input == null)
+                return null;
+
+            List<TOutput> output = new List<TOutput>();
+
+            foreach (var i in input)
+            {
+                output.Add(converter(i));
+            }
+
+            return output.ToArray();
+        }
+
+        public static EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
+        {
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = type;
+            entry.callback.AddListener(action);
+            return entry;
+        }
     }
 }

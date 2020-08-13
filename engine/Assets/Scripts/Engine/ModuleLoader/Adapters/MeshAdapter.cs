@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MathNet.Spatial.Euclidean;
+using Engine.Util;
 using SynthesisAPI.Utilities;
 using UnityEngine;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
@@ -12,7 +12,6 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Awake()
 		{
-			MeshRenderer renderer;
 
 			if ((filter = gameObject.GetComponent<MeshFilter>()) == null)
 				filter = gameObject.AddComponent<MeshFilter>();
@@ -39,10 +38,13 @@ namespace Engine.ModuleLoader.Adapters
 		}
 
 		private void ToUnity()
-        {
-			filter.mesh.vertices = Convert(instance.Vertices);
-			filter.mesh.uv = Convert(instance.UVs);
-			filter.mesh.triangles = instance.Triangles.ToArray();
+		{
+			if (instance != null)
+			{
+				filter.mesh.vertices = ((List<Vector3>)Misc.MapAll(instance.Vertices, MathUtil.MapVector3D)).ToArray();
+				filter.mesh.uv = ((List<Vector2>)Misc.MapAll(instance.UVs, MathUtil.MapVector2D)).ToArray();
+				filter.mesh.triangles = instance.Triangles.ToArray();
+			}
 		}
 
 		public void SetInstance(Mesh mesh)
@@ -58,20 +60,6 @@ namespace Engine.ModuleLoader.Adapters
 
 		private Mesh instance;
 		private MeshFilter filter;
-
-		private Vector3[] Convert(List<Vector3D> vec)
-		{
-			Vector3[] vectors = new Vector3[vec.Count];
-			for (int i = 0; i < vec.Count; i++)
-				vectors[i] = MathUtil.MapVector3D(vec[i]);
-			return vectors;
-		}
-		private Vector2[] Convert(List<Vector2D> vec)
-		{
-			Vector2[] vectors = new Vector2[vec.Count];
-			for (int i = 0; i < vec.Count; i++)
-				vectors[i] = MathUtil.MapVector2D(vec[i]);
-			return vectors;
-		}
+		private new MeshRenderer renderer;
 	}
 }

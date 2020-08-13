@@ -64,6 +64,8 @@ namespace Engine.ModuleLoader
         public string Version { get; set; }
 
         public string TargetPath { get; set; }
+        public string Author { get; set; }
+        public string Description { get; set; }
 
         public List<Dependency> Dependencies { get; set; }
 

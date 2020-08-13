@@ -6,7 +6,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public class Label : VisualElement
     {
-        private _UnityLabel Element
+        private protected _UnityLabel Element
         {
             get => (_visualElement as _UnityLabel)!;
             set => _visualElement = value;

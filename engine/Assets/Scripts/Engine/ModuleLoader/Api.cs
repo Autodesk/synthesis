@@ -41,6 +41,7 @@ namespace Engine.ModuleLoader
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
+
 			ModuleLoader.PreloadApi();
 			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
 
@@ -158,12 +159,12 @@ namespace Engine.ModuleLoader
 		public static class ApiProviderData
 		{
 			public static GameObject EntityParent { get; set; }
-			public static Dictionary<Entity, GameObject> GameObjects { get; set; }
+			public static BiDictionary<Entity, GameObject> GameObjects { get; set; }
 
 			static ApiProviderData()
 			{
 				EntityParent = new GameObject("Entities");
-				GameObjects = new Dictionary<Entity, GameObject>();
+				GameObjects = new BiDictionary<Entity, GameObject>();
 			}
 		}
 
@@ -179,13 +180,16 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Camera), typeof(CameraAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
-					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) }
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) },
+					// { typeof(SynthesisAPI.EnvironmentManager.Components.Layer), typeof(LayerAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Sprite), typeof(SpriteAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter) }
 				};
 			}
 
 			public void AddEntityToScene(Entity entity)
 			{
-				if (ApiProviderData.GameObjects.ContainsKey(entity))
+				if (ApiProviderData.GameObjects.Contains(entity))
 					throw new Exception($"Entity \"{entity}\" already exists");
 				var gameObject = new GameObject($"Entity {entity.Index}");
 				gameObject.transform.SetParent(ApiProviderData.EntityParent.transform);

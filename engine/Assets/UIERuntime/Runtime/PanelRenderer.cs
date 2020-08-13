@@ -227,8 +227,6 @@ namespace Unity.UIElements.Runtime
         {
             // Basically this method only causes issues for us
             
-            Logger.Log("Recreate Called", LogLevel.Debug);
-            
             if (enableLiveUpdates)
             {
                 trackedAssetSet.Clear();

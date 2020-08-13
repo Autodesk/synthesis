@@ -15,7 +15,7 @@ namespace SynthesisAPI.UIManager
             get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
         }
         private static UnityVisualElement CreateTab() =>
-            ApiProvider.GetDefaultUIAsset("BlankTabAsset").CloneTree();
+            ApiProvider.GetDefaultUIAsset("BlankTabAsset")?.CloneTree();
         
         public static void AddTab(Tab tab)
         {

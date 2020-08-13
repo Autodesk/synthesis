@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="toolbar-test" style="background-image: url(&apos;/Assets/Textures/Blank.png&apos;); width: auto; height: 144px; -unity-background-image-tint-color: rgba(17, 17, 17, 255); align-items: center; justify-content: center;">
-        <ui:Label text="Label" name="txt" style="font-size: 67px; color: rgba(255, 255, 255, 255);" />
-    </ui:VisualElement>
-</ui:UXML>

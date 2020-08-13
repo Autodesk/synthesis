@@ -9,8 +9,8 @@ namespace SynthesisAPI.UIManager.VisualElements
     public class Button : VisualElement
     {
         private EventBus.EventBus.EventCallback _callback;
-        
-        protected _UnityButton Element
+
+        private protected _UnityButton Element
         {
             get => (_visualElement as _UnityButton)!;
             set => _visualElement = value;

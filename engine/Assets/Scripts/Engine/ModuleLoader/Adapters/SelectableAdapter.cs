@@ -3,7 +3,7 @@ using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using static Engine.ModuleLoader.Api;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -13,7 +13,6 @@ namespace Engine.ModuleLoader.Adapters
 		private new MeshCollider collider;
 		private Material[] materials;
 		public const float FlashSelectedTime = 0.1f; // sec
-		// private bool isPointerOnThis = false;
 
 		public void SetInstance(Selectable obj)
 		{
@@ -27,6 +26,11 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Deselect()
 		{
+			if (instance.IsSelected)
+			{
+				instance.SetSelected(false);
+				instance.OnDeselect();
+			}
 			if (Selectable.Selected != null)
 			{
 				foreach (var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
@@ -43,6 +47,7 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				Deselect();
 				instance.SetSelected(true);
+				instance.OnSelect();
 
 				StartCoroutine(FlashYellow());
 			}
@@ -65,27 +70,8 @@ namespace Engine.ModuleLoader.Adapters
 			}
 		}
 
-		private EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
-		{
-			EventTrigger.Entry entry = new EventTrigger.Entry();
-			entry.eventID = type;
-			entry.callback.AddListener(action);
-			return entry;
-		}
-
 		public void Awake()
 		{
-			if (gameObject.GetComponent<EventTrigger>() == null)
-			{
-				var eventTrigger = gameObject.AddComponent<EventTrigger>();
-				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
-				{
-					if (((PointerEventData)data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
-						Select();
-				}));
-				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
-				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerExit,  data => isPointerOnThis = false));
-			}
 			if (gameObject.GetComponent<MeshCollider>() == null)
 			{
 				collider = gameObject.AddComponent<MeshCollider>();
@@ -102,6 +88,7 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			if (collider.sharedMesh == null)
 			{
+
 				collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
 				materials = gameObject.GetComponent<MeshRenderer>().materials;
 				if (collider.sharedMesh == null)
@@ -109,12 +96,34 @@ namespace Engine.ModuleLoader.Adapters
 					throw new System.Exception("Selectable entity does not have a mesh");
 				}
 			}
-			/*
-			if (Input.GetMouseButtonDown(0) && isPointerOnThis)
+			if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
 			{
-				Select();
+				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+
+				// TODO block hits to other objects "below" this one
+				bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
+				bool hitAlwaysOnTop = false;
+				bool hitMe = false;
+				var hits = Physics.RaycastAll(ray, Mathf.Infinity);
+				foreach (var hit in hits)
+				{
+					if (ApiProviderData.GameObjects.TryGetValue(hit.transform.gameObject, out Entity otherE))
+					{
+						if (otherE.GetComponent<AlwaysOnTop>() != null)
+						{
+							hitAlwaysOnTop = true;
+						}
+					}
+					if (hit.transform == transform)
+					{
+						hitMe = true;
+					}
+				}
+				if (hitMe && (isAlwaysOnTop || !hitAlwaysOnTop))
+				{
+					Select();
+				}
 			}
-			*/
 			if (Input.GetMouseButtonDown(1)) // TODO use preference manager for this
 			{
 				Deselect();

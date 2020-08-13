@@ -8,7 +8,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
     {
-        protected _UnityVisualElement _visualElement;
+        private protected _UnityVisualElement _visualElement;
 
         public VisualElement()
         {
@@ -64,6 +64,32 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
             return null;
         }
+        public IEnumerable<VisualElement> GetAllChildrenWhere(Func<VisualElement, bool> predicate)
+        {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+            {
+                var synChild = child.GetVisualElement();
+                if (predicate(synChild))
+                {
+                    children.Add(synChild);
+                }
+                children.AddRange(synChild.GetAllChildrenWhere(predicate));
+            }
+            return children;
+        }
+
+        public IEnumerable<VisualElement> GetAllChildren()
+        {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+            {
+                var synChild = child.GetVisualElement();
+                children.Add(synChild);
+                children.AddRange(synChild.GetAllChildren());
+            }
+            return children;
+        }
 
         public IEnumerable<VisualElement> GetChildren()
         {
@@ -80,14 +106,24 @@ namespace SynthesisAPI.UIManager.VisualElements
             var found = _visualElement.Q(name, className);
             if (found == null)
                 return null;
-            return found.GetVisualElement();
+            try
+            {
+                return found.GetVisualElement();
+            }
+            catch (Exception)
+            {
+                return new VisualElement(found);
+            }
         }
+
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
         public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
         public void RemoveAt(int index) => _visualElement.RemoveAt(index);
         public void Insert(int index, VisualElement element) => _visualElement.Insert(index, element._visualElement);
         public void AddToClassList(string className) => _visualElement.AddToClassList(className);
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
+        public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
+        public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)
         {
