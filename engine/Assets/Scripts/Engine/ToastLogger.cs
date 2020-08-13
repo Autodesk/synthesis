@@ -228,15 +228,16 @@ namespace Engine
                 return;
 
             // Load icons into virtual file system
-            var closeIconStream = File.OpenRead("Assets/UI/Toasts/close-icon-white.png");
+            var closeIconStream = File.OpenRead("Assets/Resources/UI/Toasts/close-icon-white.png");
             AssetManager.Import<SpriteAsset>("image/sprite", closeIconStream, "/runtime", "close-icon-white.png", Permissions.PublicReadOnly, "");
-            var wrenchStream = File.OpenRead("Assets/UI/Toasts/wrench-icon.png");
+            var wrenchStream = File.OpenRead("Assets/Resources/UI/Toasts/wrench-icon.png");
             AssetManager.Import<SpriteAsset>("image/sprite", wrenchStream, "/runtime", "wrench-icon.png", Permissions.PublicReadOnly, "");
-            var warningStream = File.OpenRead("Assets/UI/Toasts/warning-icon-white-solid.png");
+            var warningStream = File.OpenRead("Assets/Resources/UI/Toasts/warning-icon-white-solid.png");
             AssetManager.Import<SpriteAsset>("image/sprite", warningStream, "/runtime", "warning-icon-white-solid.png", Permissions.PublicReadOnly, "");
-            var errorStream = File.OpenRead("Assets/UI/Toasts/error-icon-white-solid.png");
+            var errorStream = File.OpenRead("Assets/Resources/UI/Toasts/error-icon-white-solid.png");
             AssetManager.Import<SpriteAsset>("image/sprite", errorStream, "/runtime", "error-icon-white-solid.png", Permissions.PublicReadOnly, "");
-            var infoStream = File.OpenRead("Assets/UI/Toasts/info-icon-white-solid.png");
+            var infoStream = File.OpenRead("Assets/Resources/UI/Toasts/info-icon-white-solid.png");
+            
             AssetManager.Import<SpriteAsset>("image/sprite", infoStream, "/runtime", "info-icon-white-solid.png", Permissions.PublicReadOnly, "");
 
             toastContainer = UIManager.RootElement.Get("toast-notification-container");
