@@ -16,7 +16,7 @@ from .utils.PyUtils import appendGetIndex
 from .utils.PygltfUtils import *
 
 
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality: int = 8):
+def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality: int = 8, includeSynthesisData=True):
     try:
         ao = AppObjects()
 
@@ -24,7 +24,7 @@ def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverr
             ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
             return
 
-        exporter = FusionGltfExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality)
+        exporter = FusionGltfExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality, includeSynthesisData)
         if showFileDialog:
             dialog = ao.ui.createFileDialog()  # type: adsk.core.FileDialog
             dialog.filter = "glTF Binary (*.glb)" if fileType == FileType.GLB else "glTF JSON (*.gltf)"
@@ -127,9 +127,9 @@ class FusionGltfExporter(object):
     progressBar: adsk.core.ProgressDialog
     exportWarnings: List[str]
 
-    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True,
-                 meshQuality: int = 8):  # todo: allow the export of designs besides the one in the foreground?
+    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True, meshQuality: int = 8, includeSynthesisData: bool = True):  # todo: allow the export of designs besides the one in the foreground?
         self.ao = ao
+        self.includeSynthesisData = includeSynthesisData
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
         self.enableFaceMaterials = enableFaceMaterials
@@ -186,16 +186,17 @@ class FusionGltfExporter(object):
 
         rootComponent = self.ao.design.rootComponent  # type: adsk.fusion.Component
 
-        try:
-            self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(list(rootComponent.allJoints) + list(rootComponent.allAsBuiltJoints), self.GLTF_GENERATOR_ID, self.rootNodeUUID, self.exportWarnings)
-        except RuntimeError:  # todo: report this bug
-            print(traceback.format_exc())
-            result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
-                                           f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
-            if result == 0 or result == 2:  # yes
-                pass
-            else:  # no
-                return
+        if self.includeSynthesisData:
+            try:
+                self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(list(rootComponent.allJoints) + list(rootComponent.allAsBuiltJoints), self.GLTF_GENERATOR_ID, self.rootNodeUUID, self.exportWarnings)
+            except RuntimeError:  # todo: report this bug
+                print(traceback.format_exc())
+                result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
+                                               f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
+                if result == 0 or result == 2:  # yes
+                    pass
+                else:  # no
+                    return
 
         start = time.perf_counter()
 
@@ -416,10 +417,11 @@ class FusionGltfExporter(object):
         if len(mesh.primitives) == 0:
             return
 
-        try:
-            mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bRepBodiesList]), including_default_value_fields=True)
-        except:
-            self.exportWarnings.append(f"Unable to get physical properties for component {mesh.name}")
+        if self.includeSynthesisData:
+            try:
+                mesh.extras['physicalProperties'] = MessageToDict(combinePhysicalProperties([exportPhysicalProperties(bRepBody.physicalProperties) for bRepBody in bRepBodiesList]), including_default_value_fields=True)
+            except:
+                self.exportWarnings.append(f"Unable to get physical properties for component {mesh.name}")
 
         revisionId = fusionComponent.revisionId
         self.componentRevIdToMeshTemplate[revisionId] = mesh

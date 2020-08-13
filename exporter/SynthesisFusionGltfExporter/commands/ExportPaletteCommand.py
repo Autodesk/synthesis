@@ -37,8 +37,9 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             faceMaterials = settings['faceMaterials']
             exportHidden = not settings['exportHidden']
             quality = int(settings['quality'])
+            includeSynthesis = settings['includeSynthesis']
             useGlb = FileType.fromString(settings['useGlb'])
-            exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality)
+            exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality, includeSynthesisData=includeSynthesis)
 
 
     # Handle any extra cleanup when user closes palette here
