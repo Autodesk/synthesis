@@ -27,8 +27,6 @@
           <e p="Settings.settings" t="Include" />
         </e>
         <e p="proto" t="Include">
-          <e p="compile.bat" t="Include" />
-          <e p="gltf_extras.proto" t="Include" />
           <e p="GltfExtras.cs" t="Include" />
         </e>
         <e p="Resources" t="Include">
@@ -48,7 +46,7 @@
           </e>
         </e>
         <e p="RibbonAddInServer.cs" t="Include" />
-        <e p="RobotExporterAddInServer.cs" t="Include" />
+        <e p="SynthesisInventorGltfExporter.cs" t="Include" />
         <e p="SynthesisInventorGltfExporter.csproj" t="IncludeRecursive" />
         <e p="unused" t="Include">
           <e p="AppearanceDebugging.cs" t="Include" />

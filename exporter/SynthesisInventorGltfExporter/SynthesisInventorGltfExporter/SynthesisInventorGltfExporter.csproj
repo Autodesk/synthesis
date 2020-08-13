@@ -118,7 +118,7 @@
     <Compile Include="PictureDispConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="proto\GltfExtras.cs" />
-    <Compile Include="RobotExporterAddInServer.cs" />
+    <Compile Include="SynthesisInventorGltfExporter.cs" />
     <Compile Include="RibbonAddInServer.cs" />
     <Compile Include="Unused\AppearanceDebugging.cs" />
     <EmbeddedResource Include="GUI\GltfExportSettings.resx">
@@ -150,8 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Autodesk.SynthesisInventorGltfExporter.Inventor.addin" />
-    <Content Include="proto\compile.bat" />
-    <Content Include="proto\gltf_extras.proto" />
     <Content Include="Resources\Branding\SynthesisLogo16.bmp" />
     <Content Include="Resources\Branding\SynthesisLogo32.bmp" />
     <Content Include="Resources\Branding\SynthesisLogoIco.ico" />

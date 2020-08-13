@@ -20,12 +20,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d26a3dd-41f1-44f8-bbc5-07e14f8d476b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/README.rst" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/16x16-dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/16x16-dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/16x16.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/16x16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/32x32-dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/32x32-dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/32x32.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/32x32.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/64x64-dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/64x64-dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/64x64.png" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/command_icons/64x64.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/16x16-disabled.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/16x16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/16x16@2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/32x32-disabled.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/32x32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/keyboard_shortcuts.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/readme_cover.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/commands/resources/palette_icons/save_view.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +61,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/54/JsonProperty.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/2c/cf8b0267/SurfaceBody.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/RobotExporterAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/EC52DBAB-7E86-4B26-AFC2-F1371F352867/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Roaming/NuGet/NuGet.Config" root0="FORCE_HIGHLIGHTING" />
@@ -263,7 +274,7 @@
       <workItem from="1596759796285" duration="3838000" />
       <workItem from="1597204352110" duration="594000" />
       <workItem from="1597260190705" duration="6258000" />
-      <workItem from="1597270178974" duration="4425000" />
+      <workItem from="1597270178974" duration="5939000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
