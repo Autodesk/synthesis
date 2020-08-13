@@ -1,71 +1,19 @@
 import time
 import traceback
-from typing import List, Any
 
+# noinspection PyUnresolvedReferences
 import adsk.core
+# noinspection PyUnresolvedReferences
 import adsk.fusion
 from google.protobuf.json_format import MessageToDict
 
+# noinspection PyUnresolvedReferences
 from apper import AppObjects, Fusion360Utilities
 from .extras.ExportJoints import exportJoints
 from .extras.ExportPhysicalProperties import exportPhysicalProperties, combinePhysicalProperties
-from .utils.FusionUtils import *
-from .utils.MathUtils import *
 from .utils.FusionToPygltfTranslation import *
-from .utils.PyUtils import appendGetIndex
+from .utils.MathUtils import *
 from .utils.PygltfUtils import *
-
-
-def exportDesign(showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality: int = 8, includeSynthesisData=True):
-    try:
-        ao = AppObjects()
-
-        if ao.document.dataFile is None:
-            ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
-            return
-
-        exporter = FusionGltfExporter(ao, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality, includeSynthesisData)
-        if showFileDialog:
-            dialog = ao.ui.createFileDialog()  # type: adsk.core.FileDialog
-            dialog.filter = "glTF Binary (*.glb)" if fileType == FileType.GLB else "glTF JSON (*.gltf)"
-            dialog.isMultiSelectEnabled = False
-            dialog.title = "Select glTF Export Location"
-            dialog.initialFilename = f'{ao.document.name.replace(" ", "_")}.{FileType.getExtension(fileType)}'
-            results = dialog.showSave()
-            if results != 0 and results != 2:  # For some reason the generated python API enums were wrong, so we're just using the literals
-                ao.ui.messageBox(f"The glTF export was cancelled.")
-                return
-            filePath = dialog.filename
-
-        else:
-            filePath = f'C:/temp/{ao.document.name.replace(" ", "_")}_{int(time.time())}.glb'
-        exportResults = exporter.saveGltf(filePath, fileType)
-        if exportResults is None:
-            ao.ui.messageBox(f"The glTF export was cancelled.")
-            return
-        exportWarnings, modelStats, duration = exportResults
-
-        if len(exportWarnings) == 0:
-            exportWarnings.append("None :)")
-
-        modelStatsString = '\n'.join(modelStats)
-        warningsString = '\n'.join(exportWarnings)
-        finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
-                                f"File saved to {filePath}\n\n"
-                                f"==== Model Stats ====\n"
-                                f"{modelStatsString}\n"
-                                f"==== Warnings ====\n"
-                                f"{warningsString}\n"
-                                )
-        print(finishedMessageDebug)
-        finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
-        ao.ui.messageBox(finishedMessageDebug, "Synthesis glTF Exporter")
-    except:
-        # noinspection PyArgumentList
-        app = adsk.core.Application.get()
-        ui = app.userInterface
-        if ui:
-            ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
 
 
 class FusionGltfExporter(object):
@@ -127,8 +75,80 @@ class FusionGltfExporter(object):
     progressBar: adsk.core.ProgressDialog
     exportWarnings: List[str]
 
-    def __init__(self, ao: AppObjects, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True, meshQuality: int = 8, includeSynthesisData: bool = True):  # todo: allow the export of designs besides the one in the foreground?
+    # settings
+    includeSynthesisData: bool
+    enableMaterials: bool
+    enableMaterialOverrides: bool
+    enableFaceMaterials: bool
+    exportVisibleBodiesOnly: bool
+    meshQuality: int
+
+    def __init__(self, ao: AppObjects):  # todo: allow the export of designs besides the one in the foreground?
         self.ao = ao
+
+        self.bRepIdToFaceMeshes = {}
+        self.bRepIdToBodyMeshes = {}
+
+    def exportDesignUI(self, document: adsk.core.Document, showFileDialog=False, enableMaterials=True, enableMaterialOverrides=True, enableFaceMaterials=True, exportVisibleBodiesOnly=True, fileType: FileType = FileType.GLB, quality: int = 8, includeSynthesisData=True):
+        try:
+
+            if document.dataFile is None:
+                self.ao.ui.messageBox("Export Cancelled: You must save your Fusion design before exporting.")
+                return
+
+            if showFileDialog:
+                dialog = self.ao.ui.createFileDialog()  # type: adsk.core.FileDialog
+                dialog.filter = "glTF Binary (*.glb)" if fileType == FileType.GLB else "glTF JSON (*.gltf)"
+                dialog.isMultiSelectEnabled = False
+                dialog.title = "Select glTF Export Location"
+                dialog.initialFilename = f'{document.name.replace(" ", "_")}.{FileType.getExtension(fileType)}'
+                results = dialog.showSave()
+                if results != 0 and results != 2:  # For some reason the generated python API enums were wrong, so we're just using the literals
+                    self.ao.ui.messageBox(f"The glTF export was cancelled.")
+                    return
+                filePath = dialog.filename
+
+            else:
+                filePath = f'C:/temp/{document.name.replace(" ", "_")}_{int(time.time())}.glb'
+            exportResults = self.saveGltf(document, filePath, fileType, enableMaterials, enableMaterialOverrides, enableFaceMaterials, exportVisibleBodiesOnly, quality, includeSynthesisData)
+            if exportResults is None:
+                self.ao.ui.messageBox(f"The glTF export was cancelled.")
+                return
+            exportWarnings, modelStats, duration = exportResults
+
+            if len(exportWarnings) == 0:
+                exportWarnings.append("None :)")
+
+            modelStatsString = '\n'.join(modelStats)
+            warningsString = '\n'.join(exportWarnings)
+            finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
+                                    f"File saved to {filePath}\n\n"
+                                    f"==== Model Stats ====\n"
+                                    f"{modelStatsString}\n"
+                                    f"==== Warnings ====\n"
+                                    f"{warningsString}\n"
+                                    )
+            print(finishedMessageDebug)
+            finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
+            self.ao.ui.messageBox(finishedMessageDebug, "Synthesis glTF Exporter")
+        except:
+            # noinspection PyArgumentList
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            if ui:
+                ui.messageBox(f'glTF export failed!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
+
+    def saveGltf(self, document: adsk.core.Document, filepath: str, fileType: FileType, enableMaterials: bool = False, enableMaterialOverrides: bool = False, enableFaceMaterials: bool = False, exportVisibleBodiesOnly=True, meshQuality: int = 8, includeSynthesisData: bool = True):
+        """
+        Exports the current fusion document into a glb file.
+
+        Args:
+            filepath: The full path to the file to create
+            fileType: Export file type
+
+        Returns: Performance logs
+
+        """
         self.includeSynthesisData = includeSynthesisData
         self.enableMaterials = enableMaterials
         self.enableMaterialOverrides = enableMaterialOverrides
@@ -150,7 +170,7 @@ class FusionGltfExporter(object):
         # The actual binary data for the buffer will get stored in this memory stream
         self.primaryBufferStream = io.BytesIO()
 
-        self.rootNodeUUID = Fusion360Utilities.item_id(self.ao.design, self.GLTF_GENERATOR_ID)
+        self.rootNodeUUID = Fusion360Utilities.item_id(document.design, self.GLTF_GENERATOR_ID)
 
         self.componentRevIdToMeshTemplate = {}
         self.componentRevIdToMatOverrideDict = {}
@@ -161,30 +181,18 @@ class FusionGltfExporter(object):
 
         self.exportWarnings = []
 
-    def saveGltf(self, filepath: str, fileType: FileType):
-        """
-        Exports the current fusion document into a glb file.
-
-        Args:
-            filepath: The full path to the file to create
-            fileType: Export file type
-
-        Returns: Performance logs
-
-        """
-
         self.progressBar = self.ao.ui.createProgressDialog()
         self.progressBar.isCancelButtonShown = False  # TODO: Allow cancel
         self.progressBar.reset()
-        self.progressBar.show(f"Exporting {self.ao.document.name} to glTF", "Preparing for export...", 0, 100, 0)
+        self.progressBar.show(f"Exporting {document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
         # noinspection PyUnresolvedReferences
         adsk.doEvents()  # show progress bar
 
-        if not self.settingsPreCheck():
+        if not self.settingsPreCheck(document):
             return
 
-        rootComponent = self.ao.design.rootComponent  # type: adsk.fusion.Component
+        rootComponent = document.design.rootComponent  # type: adsk.fusion.Component
 
         if self.includeSynthesisData:
             try:
@@ -201,7 +209,7 @@ class FusionGltfExporter(object):
         start = time.perf_counter()
 
         self.progressBar.message = "Reading list of fusion components..."
-        self.progressBar.maximumValue = len(self.ao.design.allComponents) + 1
+        self.progressBar.maximumValue = len(document.design.allComponents) + 1
 
         self.gltf.scene = self.exportScene(rootComponent)  # export the current fusion document
 
@@ -247,13 +255,13 @@ class FusionGltfExporter(object):
 
         return self.exportWarnings, stats, exportTime
 
-    def settingsPreCheck(self):
+    def settingsPreCheck(self, document: adsk.core.Document):
         """Validates user settings.
 
         Returns: True if the export should continue.
 
         """
-        if self.enableMaterials and checkIfAppearancesAreBugged(self.ao.design):
+        if self.enableMaterials and checkIfAppearancesAreBugged(document.design):
             result = self.ao.ui.messageBox(f"The materials on this design cannot be exported due to a bug in the Fusion 360 API.\n"
                                            f"Do you want to continue the export with materials turned off?\n"
                                            f"(press no to attempt material export, press cancel to cancel export)", "", adsk.core.MessageBoxButtonTypes.YesNoCancelButtonType)
@@ -455,23 +463,35 @@ class FusionGltfExporter(object):
         else:
             exportFacesTogether = True  # never split faces if face materials are off
 
-        if exportFacesTogether:  # todo add tag for meshes with no overridable materials which don't need to have multiple copies of the template
-            return [self.exportPrimitiveBRepBodyOrFace(fusionBRepBody)]
-        else:
-            return [self.exportPrimitiveBRepBodyOrFace(face) for face in faces]
+        # todo add tag for meshes with no overridable materials which don't need to have multiple copies of the template
+        return [self.exportPrimitiveBRepBodyOrFace(face) for face in self.calculateMeshBRepCached(fusionBRepBody, faces, exportFacesTogether)]
 
-    def exportPrimitiveBRepBodyOrFace(self, fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace]) -> Optional[Primitive]:
+    def calculateMeshBRepCached(self, fusionBRepBody: adsk.fusion.BRepBody, faces: List[adsk.fusion.BRepFace], exportFacesTogether: bool) -> List[Tuple[Optional[List[float]], Optional[List[float]], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]]:
+        bRepId = f"{fusionBRepBody.revisionId}-{str(self.meshQuality)}-{str(0 if exportFacesTogether else 1)}"  # TODO: this is a terrible way to include settings in the cache, come up with something better
+
+        if bRepId in self.bRepIdToFaceMeshes:
+            return self.bRepIdToFaceMeshes[bRepId]  # appearance already exists in the glTF document
+
+        if exportFacesTogether:
+            rawMeshes = [calculateMeshForBRep(fusionBRepBody, self.meshQuality)]
+        else:
+            rawMeshes = [calculateMeshForBRep(face, self.meshQuality) for face in faces]
+
+        self.bRepIdToFaceMeshes[bRepId] = rawMeshes  # cache the appearance
+        return rawMeshes
+
+    def exportPrimitiveBRepBodyOrFace(self, rawMesh: Tuple[Optional[List[float]], Optional[List[float]], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]) -> Optional[Primitive]:
         """Exports a glTF primitive from a fusion bRepBody or bRepFace using only one material.
 
         Args:
-            fusionBRep: The fusion bRepBody or bRepFace to export.
+            rawMesh: The fusion bRepBody or bRepFace to export.
 
         Returns: The glTF primitive object if the mesh was successfully exported.
 
         """
         primitive = Primitive()
 
-        coords, indices = calculateMeshForBRep(fusionBRep, self.meshQuality)
+        coords, indices, bodyOrFace = rawMesh
 
         primitive.attributes = Attributes()
         # primitive.attributes.NORMAL = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True, self.warnings)  # Looks fine without normals
@@ -483,9 +503,9 @@ class FusionGltfExporter(object):
             return None
 
         if self.enableMaterials:
-            primitive.material = self.exportMaterialFromAppearanceCached(fusionBRep.appearance)
+            primitive.material = self.exportMaterialFromAppearanceCached(bodyOrFace.appearance)
 
-            appearSourceType = fusionBRep.appearanceSourceType
+            appearSourceType = bodyOrFace.appearanceSourceType
             if not (appearSourceType == 1 or appearSourceType == 3): # not body or face, https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-908a0043-6f96-4f61-b541-b7585bd1f32e
                 primitive.extras[self.MAT_OVERRIDEABLE_TAG] = True
         else:

@@ -5,12 +5,18 @@ import adsk.cam
 import json
 
 import apper
-from ..gltf.FusionGltfExporter import exportDesign
+from apper import AppObjects
+from ..gltf.FusionGltfExporter import FusionGltfExporter
 from ..gltf.utils.GltfConstants import FileType
 
 
 # Class for a Fusion 360 Palette Command
 class ExportPaletteShowCommand(apper.PaletteCommandBase):
+
+    def __init__(self, name: str, options: dict):
+        super().__init__(name, options)
+        self.ao = AppObjects()
+        self.exporter = FusionGltfExporter(self.ao)
 
     # Run when user executes command in UI, useful for handling extra tasks on palette like docking
     def on_palette_execute(self, palette: adsk.core.Palette):
@@ -39,7 +45,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             quality = int(settings['quality'])
             includeSynthesis = settings['includeSynthesis']
             useGlb = FileType.fromString(settings['useGlb'])
-            exportDesign(showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality, includeSynthesisData=includeSynthesis)
+            self.exporter.exportDesignUI(self.ao.app.activeDocument, showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality, includeSynthesisData=includeSynthesis)
 
 
     # Handle any extra cleanup when user closes palette here
