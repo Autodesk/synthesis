@@ -14,6 +14,7 @@ namespace SynthesisCore.Systems
         private static Entity arrowsEntity;
         private static Transform arrowsTransform;
         private static Entity? targetEntity = null;
+        private static Transform targetTransform = null;
 
         private static Arrow[] arrows = new Arrow[3];
         private static UnitVector3D? selectedArrowDirection = null;
@@ -96,7 +97,7 @@ namespace SynthesisCore.Systems
 
             public void UpdateScaling()
             {
-                var vectorToCamera = CameraController.Instance.cameraTransform.Position - arrowsTransform.Position;
+                var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
 
                 var size = vectorToCamera.Length * 0.01;
                 if (System.Math.Abs(size - lastSize) > sizeEpsilon)
@@ -117,7 +118,7 @@ namespace SynthesisCore.Systems
             {
                 foreach (var arrow in arrows)
                 {
-                    var forward = CameraController.Instance.cameraTransform.Position - arrow.Transform.Position;
+                    var forward = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
                     forward -= forward.ProjectOn(arrow.Direction);
                     arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
                     arrow.UpdateScaling();
@@ -151,6 +152,7 @@ namespace SynthesisCore.Systems
             
             targetEntity = entity;
             arrowsEntity.GetComponent<Parent>().Set(targetEntity.Value);
+            targetTransform = targetEntity?.GetComponent<Transform>();
         }
 
         public static void StopMovingEntity()
@@ -180,8 +182,7 @@ namespace SynthesisCore.Systems
                     if (deltaDir.Length > float.Epsilon)
                     {
                         var unitDeltaDir = deltaDir.Normalize();
-                        var transform = targetEntity?.GetComponent<Transform>();
-                        transform.Position += unitDeltaDir.ScaleBy(magnitude);
+                        targetTransform.Position += unitDeltaDir.ScaleBy(magnitude);
                     }
                 }
             }
