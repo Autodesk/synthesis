@@ -11,6 +11,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		internal bool _flipX;
 		internal bool _flipY;
 		internal Color _color = Color.FromArgb(255, 255, 255, 255);
+		internal bool _visible;
 
 		public Sprite() { }
 
@@ -43,6 +44,17 @@ namespace SynthesisAPI.EnvironmentManager.Components
 				Changed = true;
 			}
 		}
+
+		public bool Visible
+		{
+			get => _visible;
+			set
+			{
+				_visible = value;
+				Changed = true;
+			}
+		}
+
 		public Color Color
 		{
 			get => _color;

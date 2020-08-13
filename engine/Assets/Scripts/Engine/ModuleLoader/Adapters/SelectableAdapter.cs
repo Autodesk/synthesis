@@ -7,13 +7,12 @@ using static Engine.ModuleLoader.Api;
 
 namespace Engine.ModuleLoader.Adapters
 {
-    public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
+	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
 		private new MeshCollider collider;
 		private Material[] materials;
 		public const float FlashSelectedTime = 0.1f; // sec
-		// private bool isPointerOnThis = false;
 
 		public void SetInstance(Selectable obj)
 		{
@@ -27,6 +26,11 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Deselect()
 		{
+			if (instance.IsSelected)
+			{
+				instance.SetSelected(false);
+				instance.OnDeselect();
+			}
 			if (Selectable.Selected != null)
 			{
 				foreach (var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
@@ -43,6 +47,7 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				Deselect();
 				instance.SetSelected(true);
+				instance.OnSelect();
 
 				StartCoroutine(FlashYellow());
 			}
@@ -91,12 +96,6 @@ namespace Engine.ModuleLoader.Adapters
 					throw new System.Exception("Selectable entity does not have a mesh");
 				}
 			}
-			/*
-			if (Input.GetMouseButtonDown(0) && isPointerOnThis)
-			{
-				Select();
-			}
-			*/
 			if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
 			{
 				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);

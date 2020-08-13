@@ -46,6 +46,7 @@ namespace Engine.ModuleLoader.Adapters
 				renderer.flipX = instance._flipX;
 				renderer.flipY = instance._flipY;
 				renderer.color = new Color32(instance._color.R, instance._color.G, instance._color.B, instance._color.A);
+				renderer.enabled = instance._visible;
 				instance.ProcessedChanges();
 
 				updated = true;

@@ -13,6 +13,11 @@ namespace SynthesisCore.Systems
     {
         private static Entity arrowsEntity;
         private static Transform arrowsTransform;
+        private static Entity? targetEntity = null;
+
+        private static Arrow[] arrows = new Arrow[3];
+        private static UnitVector3D? selectedArrowDirection = null;
+        private static bool isMovingEntity => targetEntity != null;
 
         public class Arrow
         {
@@ -27,6 +32,7 @@ namespace SynthesisCore.Systems
 
             private const double sizeEpsilon = 0.001;
             private double lastSize = 0;
+            private bool hasUpdatedScalingOnce = false;
 
             public Arrow(UnitVector3D direction)
             {
@@ -42,6 +48,7 @@ namespace SynthesisCore.Systems
                 var arrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
                 var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
                 sprite = arrowSpriteEntity.AddComponent<Sprite>();
+                sprite.Visible = false;
                 sprite.SetSprite(arrowSpriteAsset);
                 arrowSpriteEntity.AddComponent<AlwaysOnTop>();
 
@@ -78,6 +85,7 @@ namespace SynthesisCore.Systems
 
             public void UpdateSpritePivot()
             {
+                sprite.Visible = hasSetSpritePivot && hasUpdatedScalingOnce;
                 if (!hasSetSpritePivot && collider.Bounds.Extents.Y != 0)
                 {
                     var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
@@ -93,43 +101,68 @@ namespace SynthesisCore.Systems
                 var size = vectorToCamera.Length * 0.01;
                 if (System.Math.Abs(size - lastSize) > sizeEpsilon)
                 {
-                    Logger.Log(size);
                     arrowsTransform.Scale = new Vector3D(size, size, size);
                     lastSize = size;
                 }
+
+                hasUpdatedScalingOnce = true;
             }
         }
-        private static Arrow[] arrows = new Arrow[3];
-        private static UnitVector3D? selectedArrowDirection = null;
 
         public override void OnPhysicsUpdate() { }
 
         public override void OnUpdate()
         {
-            foreach (var arrow in arrows)
+            if (isMovingEntity)
             {
-                arrow.UpdateSpritePivot();
-                var forward = CameraController.Instance.cameraTransform.Position - arrow.Transform.Position;
-                forward -= forward.ProjectOn(arrow.Direction);
-                arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
-                arrow.UpdateScaling();
+                foreach (var arrow in arrows)
+                {
+                    var forward = CameraController.Instance.cameraTransform.Position - arrow.Transform.Position;
+                    forward -= forward.ProjectOn(arrow.Direction);
+                    arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
+                    arrow.UpdateScaling();
+                    arrow.UpdateSpritePivot();
+                }
+
+                MoveEntityTransform();
             }
-
-            MoveArrowsTransform();
         }
 
-        public override void Setup()
-        {
-            arrowsEntity = EnvironmentManager.AddEntity();
-            arrowsTransform = arrowsEntity.AddComponent<Transform>();
-            arrows[0] = new Arrow(UnitVector3D.XAxis);
-            arrows[1] = new Arrow(UnitVector3D.YAxis);
-            arrows[2] = new Arrow(UnitVector3D.ZAxis);
-        }
+        public override void Setup() { }
 
         public override void Teardown() { }
 
-        private void MoveArrowsTransform()
+        public static void MoveEntity(Entity entity)
+        {
+            if (entity.GetComponent<Transform>() == null)
+            {
+                Logger.Log("Move arrows cannot move an entity that has no transform", LogLevel.Error);
+                return;
+            }
+            if (!isMovingEntity)
+            {
+                // Create arrows
+                arrowsEntity = EnvironmentManager.AddEntity();
+                arrowsTransform = arrowsEntity.AddComponent<Transform>();
+                arrows[0] = new Arrow(UnitVector3D.XAxis);
+                arrows[1] = new Arrow(UnitVector3D.YAxis);
+                arrows[2] = new Arrow(UnitVector3D.ZAxis);
+            }
+            
+            targetEntity = entity;
+            arrowsEntity.GetComponent<Parent>().Set(targetEntity.Value);
+        }
+
+        public static void StopMovingEntity()
+        {
+            if (isMovingEntity)
+            {
+                EnvironmentManager.RemoveEntity(arrowsEntity);
+                targetEntity = null;
+            }
+        }
+
+        private void MoveEntityTransform()
         {
             if (selectedArrowDirection.HasValue)
             {
@@ -147,7 +180,8 @@ namespace SynthesisCore.Systems
                     if (deltaDir.Length > float.Epsilon)
                     {
                         var unitDeltaDir = deltaDir.Normalize();
-                        arrowsTransform.Position += unitDeltaDir.ScaleBy(magnitude);
+                        var transform = targetEntity?.GetComponent<Transform>();
+                        transform.Position += unitDeltaDir.ScaleBy(magnitude);
                     }
                 }
             }

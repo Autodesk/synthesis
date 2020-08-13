@@ -253,8 +253,7 @@ namespace SynthesisCore.Systems
         private void SetNewFocus(Vector3D newFocusPoint)
         {
             focusPoint = newFocusPoint;
-
-            isCameraMovingToNewFocus = true;
+            
             moveTime = 0;
             cameraMoveStartPosition = cameraTransform.Position;
 
@@ -262,6 +261,7 @@ namespace SynthesisCore.Systems
             //targetRotation = MathUtil.LookAt((-offset).Normalize()).Normalized;
 
             offset = cameraMoveStartPosition - focusPoint;
+            isCameraMovingToNewFocus = offset.Length > MoveToFocusCameraMinDistance;
 
             timeToReachNewFocus = Math.Min(MoveCameraToFocusTime, offset.Length / MoveToFocusCameraMinSpeed);
 

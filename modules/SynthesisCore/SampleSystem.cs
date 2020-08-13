@@ -4,8 +4,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisCore.Components;
-
-#nullable enable
+using SynthesisCore.Systems;
 
 namespace SynthesisCore
 {
@@ -29,7 +28,15 @@ namespace SynthesisCore
             */
 
             e.AddComponent<Transform>().Position = new Vector3D(0, 0, 5);
-            e.AddComponent<Selectable>();
+            var selectable = e.AddComponent<Selectable>();
+            selectable.OnSelect = () =>
+            {
+                MoveArrows.MoveEntity(selectable.Entity.Value);
+            };
+            selectable.OnDeselect = () =>
+            {
+                MoveArrows.StopMovingEntity();
+            };
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();
             cube(m);

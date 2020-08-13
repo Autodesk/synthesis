@@ -94,7 +94,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			Rotation = MathUtil.LookAt((targetPosition - Position).Normalize(), upward);
 		}
 
-		internal bool Changed { get; private set; } = true;
+		internal bool Changed { get; set; } = true;
 		internal void ProcessedChanges() => Changed = false;
 	}
 }
