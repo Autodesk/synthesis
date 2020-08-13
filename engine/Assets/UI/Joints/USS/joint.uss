@@ -35,3 +35,13 @@
     top: 11px;
     left: 0;
 }
+
+.title {
+    -unity-font-style: normal;
+    -unity-font: url('/Assets/TextMesh Pro/Fonts/LiberationSans.ttf');
+    font-size: 16px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
