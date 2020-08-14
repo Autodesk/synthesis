@@ -11,6 +11,9 @@
     <string>sprites/arrow.png</string>
     <string>sprites/arrow-selected.png</string>
 	<string>UI/uxml/TitleBar.uxml</string>
+    <string>UI/uxml/Entity.uxml</string>
+    <string>UI/uxml/Entities.uxml</string>
+    <string>UI/uxml/Environment.uxml</string>
 	<string>UI/uxml/Environments.uxml</string>
     <string>UI/uxml/General.uxml</string>
     <string>UI/uxml/Graphics.uxml</string>
@@ -30,6 +33,10 @@
     <string>UI/uss/Toolbar.uss</string>
     <string>UI/uss/TitleBar.uss</string>
     <string>UI/images/add-icon.png</string>
+    <string>UI/images/cad-icon.png</string>
+    <string>UI/images/add-entity-icon.png</string>
+    <string>UI/images/set-environment-icon.png</string>
+    <string>UI/images/delete-entity-icon.png</string>
     <string>UI/images/close-icon-black.png</string>
     <string>UI/images/close-icon-white.png</string>
     <string>UI/images/info-icon-white.png</string>
