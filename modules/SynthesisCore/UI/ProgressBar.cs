@@ -1,7 +1,7 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.UIManager.VisualElements;
 
-namespace SynthesisCore.Systems
+namespace SynthesisCore.UI
 {
     public class ProgressBar
     {

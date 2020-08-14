@@ -5,6 +5,7 @@ using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisCore.Components;
 using SynthesisCore.Systems;
+using SynthesisCore.UI;
 
 namespace SynthesisCore
 {
@@ -30,11 +31,11 @@ namespace SynthesisCore
             var selectable = e.AddComponent<Selectable>();
             selectable.OnSelect = () =>
             {
-                MoveArrows.MoveEntity(selectable.Entity.Value);
+                EntityToolbar.Open(selectable.Entity.Value);
             };
             selectable.OnDeselect = () =>
             {
-                MoveArrows.StopMovingEntity();
+                EntityToolbar.Close();
             };
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();

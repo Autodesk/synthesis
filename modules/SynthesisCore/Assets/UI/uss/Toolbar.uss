@@ -1,0 +1,108 @@
+.toolbar {
+    background-color: rgb(217, 217, 217);
+	width: 100%;
+	height: 100px;
+	flex-direction: row;
+	flex-shrink: 0;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.toolbar-category {
+	width: 100%;
+	height: 100%;
+	flex-direction: row;
+    background-color: rgba(255, 0, 0, 0);
+}
+
+.toolbar-category-container {
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.toolbar-category-inner {
+	width: 100%;
+	height: 80%;
+	flex-direction: row;
+	flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.toolbar-category-label {
+	text-align: middle-center;
+	height: 20%;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.toolbar-category-divider {
+	width: 3px;
+	height: 90%;
+	margin-top: 5px;
+	padding-bottom: 5px;
+    background-color: rgb(200, 200, 200);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.toolbar-button-container {
+	border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+	background-color: rgba(0, 0, 0, 0);
+	height: 100%;
+	width: 80px;
+	margin-right: 10px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.toolbar-button {
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0);
+	border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 0px; 
+	padding-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px; 
+	margin-bottom: 0px;
+}
+
+.toolbar-button:hover {
+    background-color: rgb(217, 217, 217);
+	
+}
+
+.toolbar-button:active {
+    background-color: rgb(153, 153, 153);
+}
+
+.toolbar-button-icon {
+	width: 100%;
+	height: 100%;
+	border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}

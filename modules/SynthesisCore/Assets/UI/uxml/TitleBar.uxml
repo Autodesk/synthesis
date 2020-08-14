@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+	<ui:VisualElement name="title-bar">
+		<Style src="/modules/synthesis_core/UI/uss/TitleBar.uss" />
+		<ui:VisualElement name="top" class="top">
+			<ui:VisualElement name="left-buttons" style="flex-direction: row;">
+				<ui:Button name="settings-button" class="title-bar-button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/settings-icon.png&apos;);" />
+				<ui:Button name="modules-button" class="title-bar-button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
+			</ui:VisualElement>
+			<ui:VisualElement name="tab-container" class="tab-container" />
+			<ui:VisualElement name="right-buttons" style="flex-direction: row;">
+				<ui:Button name="hide-toolbar-button" class="title-bar-button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/toolbar-hide-icon.png&apos;);" />
+				<ui:Button name="help-button" class="title-bar-button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/help-icon.png&apos;);" />
+			</ui:VisualElement>
+		</ui:VisualElement>
+		<ui:VisualElement name="bottom" class="bottom" />
+	</ui:VisualElement>
+</ui:UXML>

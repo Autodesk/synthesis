@@ -7,36 +7,53 @@ using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 
-namespace SynthesisCore.Systems
+namespace SynthesisCore.UI
 {
     public class Ui : SystemBase
     {
+        public static VisualElementAsset ToolbarAsset;
+        public static VisualElementAsset ToolbarButtonAsset;
+        public static VisualElementAsset ToolbarCategoryAsset;
+
+        private static bool IsToolbarVisible = true;
+
         public override void Setup()
         {
-            var tabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
-            var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Environments.uxml");
+            var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
+            ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
+            ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
+            ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
+
+            UIManager.SetBlankTabAsset(blankTabAsset);
+
+            var titleBarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/TitleBar.uxml");
+            UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
+
+            EngineToolbar.CreateToolbar();
+
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
 
-            Tab engineTab = new Tab("Engine", tabAsset, _ => { });
-            Panel environmentsWindow = new Panel("Environments", environmentsAsset,
-                element => RegisterOKCloseButtons(element, "Environments"));
             Panel modulesWindow = new Panel("Modules", modulesAsset, 
                 element =>
                 {
-                    RegisterOKCloseButtons(element, "Modules");
+                    Utilities.RegisterOKCloseButtons(element, "Modules");
                     LoadModulesWindowContent(element);
                 });
             Panel settingsWindow = new Panel("Settings", settingsAsset,
-                element => RegisterOKCloseButtons(element, "Settings"));
-
-            UIManager.AddTab(engineTab);
-            UIManager.AddPanel(environmentsWindow);
+                element => Utilities.RegisterOKCloseButtons(element, "Settings"));
+            
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
 
-            Button environmentsButton = (Button) UIManager.RootElement.Get("environments-button");
-            environmentsButton.Subscribe(x => UIManager.TogglePanel("Environments"));
+            Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
+            hideToolbarButton.Subscribe(x => {
+                hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
+                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png" : 
+                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
+                IsToolbarVisible = !IsToolbarVisible;
+                UIManager.SetToolbarVisible(IsToolbarVisible);
+            });
 
             Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
             modulesButton.Subscribe(x => UIManager.TogglePanel("Modules"));
@@ -46,21 +63,6 @@ namespace SynthesisCore.Systems
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
-        }
-
-        private void RegisterOKCloseButtons(VisualElement visualElement, string panelName)
-        {
-            Button okButton = (Button) visualElement.Get("ok-button");
-            okButton?.Subscribe(x =>
-            {
-                UIManager.ClosePanel(panelName);
-            });
-            
-            Button closeButton = (Button) visualElement.Get("close-button");
-            closeButton?.Subscribe(x =>
-            {
-                UIManager.ClosePanel(panelName);
-            });
         }
 
         private void LoadModulesWindowContent(VisualElement visualElement)

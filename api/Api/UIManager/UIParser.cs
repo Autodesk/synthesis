@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using SynthesisAPI.AssetManager;
-using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
+using VisualElementAsset = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,16 +17,16 @@ namespace SynthesisAPI.UIManager
     // ReSharper disable once InconsistentNaming
     public static class UIParser
     {
-        public static VisualElement CreateVisualElement(string name, XmlDocument doc)
+        public static VisualElementAsset CreateVisualElement(string name, XmlDocument doc)
         {
             return doc.FirstChild.Name.Replace("ui:", "") == "UXML" ?
                 CreateVisualElements(name, doc.FirstChild.ChildNodes) :
                 CreateVisualElements(name, doc.ChildNodes);
         }
 
-        public static VisualElement CreateVisualElements(string name, XmlNodeList nodes)
+        public static VisualElementAsset CreateVisualElements(string name, XmlNodeList nodes)
         {
-            RecursivelySearchForStyleSheet(nodes);
+            SearchForStyleSheet(nodes);
             _UnityVisualElement root = new _UnityVisualElement() { name = name };
             foreach (XmlNode node in nodes)
             {
@@ -43,7 +43,7 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static VisualElement CreateVisualElement(XmlNode node)
+        public static VisualElementAsset CreateVisualElement(XmlNode node)
         {
             if (node == null)
                 throw new Exception("Node is null");
@@ -349,7 +349,7 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        internal static VisualElement GetVisualElement(this _UnityVisualElement element)
+        internal static VisualElementAsset GetVisualElement(this _UnityVisualElement element)
         {
             if(element == null)
             {
@@ -359,7 +359,7 @@ namespace SynthesisAPI.UIManager
             Type t = default;
             try
             {
-                t = typeof(VisualElement).Assembly.GetTypes().First(t =>
+                t = typeof(VisualElementAsset).Assembly.GetTypes().First(t =>
                     t.Name == element.GetType().Name && t.FullName != element.GetType().FullName);
             }
             catch(Exception e)
@@ -369,7 +369,7 @@ namespace SynthesisAPI.UIManager
             try
             {
                 BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                return (VisualElement)Activator.CreateInstance(t, flags, null, new object[] { element }, null);
+                return (VisualElementAsset)Activator.CreateInstance(t, flags, null, new object[] { element }, null);
             }
             catch(Exception e)
             {
@@ -377,7 +377,7 @@ namespace SynthesisAPI.UIManager
             }
         }
 
-        private static void RecursivelySearchForStyleSheet(XmlNodeList nodeList)
+        private static void SearchForStyleSheet(XmlNodeList nodeList)
         {
             foreach (XmlNode node in nodeList)
             {
@@ -394,7 +394,7 @@ namespace SynthesisAPI.UIManager
 
                 if (node.HasChildNodes)
                 {
-                    RecursivelySearchForStyleSheet(node.ChildNodes);
+                    SearchForStyleSheet(node.ChildNodes);
                 }
             }
         }

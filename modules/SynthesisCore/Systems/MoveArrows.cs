@@ -115,6 +115,10 @@ namespace SynthesisCore.Systems
 
         public override void OnUpdate()
         {
+            if (!arrowsEntity.EntityExists())
+            {
+                targetEntity = null;
+            }
             if (IsMovingEntity)
             {
                 foreach (var arrow in arrows)

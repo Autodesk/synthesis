@@ -129,5 +129,13 @@ namespace Engine.ModuleLoader.Adapters
 				Deselect();
 			}
 		}
+
+		public void OnDestroy()
+		{
+			if (instance.IsSelected)
+			{
+				Deselect();
+			}
+		}
 	}
 }

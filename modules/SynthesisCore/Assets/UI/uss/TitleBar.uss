@@ -1,13 +1,13 @@
-.toolbar-button {
+.title-bar-button {
     width: 30px;
     height: 30px;
     border-left-color: rgb(204, 204, 204);
     border-right-color: rgb(204, 204, 204);
     border-top-color: rgb(204, 204, 204);
     border-bottom-color: rgb(204, 204, 204);
-    background-color: rgb(204, 204, 204);
-    margin-left: 0;
-    margin-right: 0;
+    background-color: rgba(0, 0, 0, 0);
+    margin-left: 5px;
+    margin-right: 5px;
     margin-top: 0;
     margin-bottom: 0;
     padding-left: 0;
@@ -24,11 +24,11 @@
     border-bottom-right-radius: 0;
 }
 
-.toolbar-button:hover {
+.title-bar-button:hover {
     background-color: rgb(172, 172, 172);
 }
 
-.toolbar-button:active {
+.title-bar-button:active {
     background-color: rgb(153, 153, 153);
 }
 
@@ -52,10 +52,20 @@
     padding-left: 4px;
     padding-bottom: 0;
     flex-direction: row;
+	flex-grow: 1;
     flex-shrink: 0;
 }
 
 .tab-button:hover {
+    background-color: rgb(217, 217, 217);
+}
+
+
+.inactive-tab {
+    background-color: rgb(187, 187, 187);
+}
+
+.active-tab {
     background-color: rgb(217, 217, 217);
 }
 
@@ -73,8 +83,4 @@
 
 .bottom {
     height: 40px;
-}
-
-#toast-scroll-view.unity-scroll-view {
-    flex-shrink: 0;
 }

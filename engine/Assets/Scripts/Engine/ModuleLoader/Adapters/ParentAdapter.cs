@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.EnvironmentManager;
 using static Engine.ModuleLoader.Api;
@@ -10,14 +9,9 @@ namespace Engine.ModuleLoader.Adapters
     {
         private Parent instance;
 
-        // Use this for initialization
-        void Awake()
-        {
+        public void Awake() { }
 
-        }
-
-        // Update is called once per frame
-        void Update()
+        public void Update()
         {
             if (instance.Changed)
             {
@@ -33,7 +27,7 @@ namespace Engine.ModuleLoader.Adapters
             }
         }
 
-        void OnDestroy()
+        public void OnDestroy()
         {
             instance.Entity.Value.RemoveEntity();
         }
