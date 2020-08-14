@@ -14,6 +14,7 @@ namespace SynthesisCore.Systems
         public static VisualElementAsset TabAsset;
         public static VisualElementAsset ToolbarAsset;
         public static VisualElementAsset ToolbarButtonAsset;
+        public static VisualElementAsset ToolbarCategoryAsset;
 
         private static bool IsToolbarVisible = true;
 
@@ -26,6 +27,7 @@ namespace SynthesisCore.Systems
 
             ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
+            ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
 
             Tab engineTab = new Tab("Engine", ToolbarAsset, _ => { });
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,

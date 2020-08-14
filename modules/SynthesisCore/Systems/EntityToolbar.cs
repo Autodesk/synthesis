@@ -18,21 +18,32 @@ namespace SynthesisCore.Systems
         {
             entityTab = new Tab("Entity", Ui.ToolbarAsset, toolbarElement => {
                 // Populate tabs of toolbar
-                AddButton(toolbarElement, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
+                var testCategory = AddButtonCategory(toolbarElement, "MODIFY");
+                AddButton(testCategory, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
                     _ => {
                         openedMoveArrows = true;
                         MoveArrows.MoveEntity(selectedEntity);
                     });
-                AddButton(toolbarElement, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
+                AddButton(testCategory, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
                     _ => EnvironmentManager.RemoveEntity(selectedEntity));
             });
             toolbarCreated = true;
         }
 
-        private static void AddButton(VisualElement toolbarElement, string buttonName, string iconPath, System.Action<IEvent> callback)
+        private static VisualElement AddButtonCategory(VisualElement toolbarElement, string label)
+        {
+            var category = Ui.ToolbarCategoryAsset.GetElement($"toolbar-category-{label}");
+            toolbarElement.Get(className: "toolbar").Add(category);
+
+            var labelElement = (Label) category.Get(className: "toolbar-category-label");
+            labelElement.Text = label;
+            return category.Get(className: "toolbar-category-inner");
+        }
+
+        private static void AddButton(VisualElement toolbarCategory, string buttonName, string iconPath, System.Action<IEvent> callback)
          {
             var buttonContainer = Ui.ToolbarButtonAsset.GetElement(buttonName);
-            toolbarElement.Get(className: "toolbar").Add(buttonContainer);
+            toolbarCategory.Get(className: "toolbar-category-inner").Add(buttonContainer);
             var button = (Button)buttonContainer.Get(className: "toolbar-button");
             button.Name = buttonName;
             button.Subscribe(e => callback(e));
