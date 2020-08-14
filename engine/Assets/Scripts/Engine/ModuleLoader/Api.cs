@@ -41,7 +41,6 @@ namespace Engine.ModuleLoader
 			ApiProvider.RegisterApiProvider(new ApiProviderImpl());
 			Logger.RegisterLogger(new ToastLogger()); // Must happen after ApiProvider is registered
 
-
 			ModuleLoader.PreloadApi();
 			ModuleLoader.LoadModules(ModulesSourcePath, BaseModuleTargetPath);
 
@@ -80,6 +79,8 @@ namespace Engine.ModuleLoader
 					}
 				};
 			Screen.fullScreen = false;
+
+			GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
 
 			var _ = SynthesisAPI.UIManager.UIManager.RootElement;
 		}

@@ -1,4 +1,6 @@
+.main-screen {
 
+}
 
 #toast-scroll-view.unity-scroll-view {
     flex-shrink: 0;

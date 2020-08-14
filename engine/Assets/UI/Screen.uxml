@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="screen" style="flex-grow: 1;">
+    <ui:VisualElement name="screen" class="main-screen" style="flex-grow: 1;">
         <Style src="/Assets/UI/Screen.uss" />
         <ui:VisualElement name="title-bar-container" />
         <ui:VisualElement name="panel-center" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px; height: auto;" />
