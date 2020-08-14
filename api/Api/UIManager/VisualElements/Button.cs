@@ -11,7 +11,7 @@ namespace SynthesisAPI.UIManager.VisualElements
     {
         private EventBus.EventBus.EventCallback _callback;
 
-        private protected _UnityButton Element
+        internal _UnityButton Element
         {
             get => (_visualElement as _UnityButton)!;
             set => _visualElement = value;

@@ -19,14 +19,14 @@ namespace SynthesisAPI.UIManager
         
         public static void AddTab(Tab tab)
         {
+            tab.buttonElement = new VisualElements.Button(CreateTab().Q<UnityButton>(name: "blank-tab"));
             LoadedTabs.Add(tab.Name, tab);
             // TODO: Spawn in tab button
-            var newButton = CreateTab().Q<UnityButton>(name: "blank-tab");
-            newButton.name = $"tab-{tab.Name}";
-            newButton.text = tab.Name;
-            newButton.clickable.clicked += () =>
+            tab.buttonElement.Element.name = $"tab-{tab.Name}";
+            tab.buttonElement.Element.text = tab.Name;
+            tab.buttonElement.Element.clickable.clicked += () =>
                 EventBus.EventBus.Push("ui/select-tab", new SelectTabEvent(tab.Name));
-            Instance.TabContainer.Add(newButton);
+            Instance.TabContainer.Add(tab.buttonElement.Element);
         }
 
         public static void RemoveTab(string tabName)
@@ -44,22 +44,18 @@ namespace SynthesisAPI.UIManager
         public static void SelectTab(string tabName)
         {
             var toolbarContainer = Instance.ToolbarContainer;
-
+            
+            // Remove Existing
+            var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
+            if (existingToolbar != null)
+                toolbarContainer.Remove(existingToolbar);
+            
             if (tabName.Equals("__"))
             {
-                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
-                if (existingToolbar != null)
-                    toolbarContainer.Remove(existingToolbar);
-
                 SelectedTabName = "__";
             }
             else
             {
-                // Remove Existing
-                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
-                if (existingToolbar != null)
-                    toolbarContainer.Remove(existingToolbar);
-
                 if (SelectedTabName == tabName)
                 { 
                     SelectedTabName = "__";
@@ -78,6 +74,15 @@ namespace SynthesisAPI.UIManager
                     SelectedTabName = tabName; 
                 }
             }
+
+            // Add class active-tab to currently selected tab
+            foreach (var i in LoadedTabs)
+            {
+                if (i.Value.buttonElement != null)
+                    i.Value.buttonElement.RemoveFromClassList("active-tab");
+            }
+            if(LoadedTabs.ContainsKey(SelectedTabName))
+                LoadedTabs[SelectedTabName].buttonElement.AddToClassList("active-tab");
 
             // TODO: Maybe some event
         }
