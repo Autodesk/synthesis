@@ -45,5 +45,7 @@
     <string>UI/images/settings-icon.png</string>
     <string>UI/images/move-entity-icon.png</string>
     <string>UI/images/delete-icon.png</string>
+    <string>UI/images/toolbar-hide-icon.png</string>
+    <string>UI/images/toolbar-show-icon.png</string>
   </FileManifest>
 </ModuleMetadata>

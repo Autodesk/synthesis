@@ -11,6 +11,8 @@ namespace SynthesisAPI.UIManager
 {
     public static class UIManager
     {
+        private const string SelectedTabBlankName = "__";
+
         public static VisualElement RootElement {
             get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
         }
@@ -27,6 +29,8 @@ namespace SynthesisAPI.UIManager
             tab.buttonElement.Element.clickable.clicked += () =>
                 EventBus.EventBus.Push("ui/select-tab", new SelectTabEvent(tab.Name));
             Instance.TabContainer.Add(tab.buttonElement.Element);
+            if (SelectedTabName == SelectedTabBlankName && tab.Name == DefaultSelectedTabName)
+                SelectTab(tab.Name);
         }
 
         public static void RemoveTab(string tabName)
@@ -37,41 +41,33 @@ namespace SynthesisAPI.UIManager
                 container.Remove(container.Q<UnityVisualElement>(name: $"tab-{tabName}"));
 
                 if (tabName == SelectedTabName)
-                    SelectTab("__");
+                    SelectTab(DefaultSelectedTabName);
             }
         }
 
         public static void SelectTab(string tabName)
         {
-            var toolbarContainer = Instance.ToolbarContainer;
-            
             // Remove Existing
-            var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
-            if (existingToolbar != null)
-                toolbarContainer.Remove(existingToolbar);
+            SetToolbarVisible(false, false);
             
-            if (tabName.Equals("__"))
+            if (tabName == SelectedTabBlankName)
             {
-                SelectedTabName = "__";
+                SelectedTabName = SelectedTabBlankName;
             }
             else
             {
                 if (SelectedTabName == tabName)
                 { 
-                    SelectedTabName = "__";
+                    SelectedTabName = SelectedTabBlankName;
                 }
                 else
                 {
                     if (LoadedTabs[tabName].ToobarAsset == null)
                         throw new Exception($"UI for tab \"{tabName}\" is null");
-                    
-                    // Add toolbar
-                    var toolbar = LoadedTabs[tabName].ToobarAsset.GetElement("active-toolbar");
-                    LoadedTabs[tabName].BindToolbar(toolbar);
-                    // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
-                    toolbarContainer.Add(toolbar.UnityVisualElement);
 
-                    SelectedTabName = tabName; 
+                    SelectedTabName = tabName;
+
+                    SetToolbarVisible(IsToolbarVisible);
                 }
             }
 
@@ -85,6 +81,46 @@ namespace SynthesisAPI.UIManager
                 LoadedTabs[SelectedTabName].buttonElement.AddToClassList("active-tab");
 
             // TODO: Maybe some event
+        }
+
+        public static void SetDefaultTab(string tabName)
+        {
+            if (LoadedTabs.ContainsKey(tabName))
+            {
+                DefaultSelectedTabName = tabName;
+
+                if (SelectedTabName == SelectedTabBlankName)
+                    SelectTab(DefaultSelectedTabName);
+            }
+            else
+            {
+                Utilities.Logger.Log($"Cannot set default tab to non-existent tab {tabName}", Utilities.LogLevel.Warning);
+            }
+        }
+
+        public static void ResetDefaultTab()
+        {
+            DefaultSelectedTabName = SelectedTabBlankName;
+        }
+
+        public static void SetToolbarVisible(bool visible, bool rememberVisibility = true)
+        {
+            if(rememberVisibility)
+                IsToolbarVisible = visible;
+            var toolbarContainer = Instance.ToolbarContainer;
+            if (!visible) // Remove toolbar
+            {
+                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
+                if (existingToolbar != null)
+                    toolbarContainer.Remove(existingToolbar);
+            }
+            else if(LoadedTabs.ContainsKey(SelectedTabName)) // Add toolbar
+            {
+                var toolbar = LoadedTabs[SelectedTabName].ToobarAsset.GetElement("active-toolbar");
+                LoadedTabs[SelectedTabName].BindToolbar(toolbar);
+                // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
+                toolbarContainer.Add(toolbar.UnityVisualElement);
+            }
         }
 
         public static void AddPanel(Panel panel)
@@ -148,7 +184,9 @@ namespace SynthesisAPI.UIManager
                 }
             }
             
-            public string SelectedTabName = "__";
+            public string SelectedTabName = SelectedTabBlankName;
+            public string DefaultSelectedTabName = SelectedTabBlankName;
+            public bool IsToolbarVisible = true;
 
             public Dictionary<string, Tab> LoadedTabs;
             public Dictionary<string, Panel> LoadedPanels;
@@ -186,6 +224,17 @@ namespace SynthesisAPI.UIManager
         private static string SelectedTabName {
             get => Instance.SelectedTabName;
             set => Instance.SelectedTabName = value;
+        }
+
+        private static bool IsToolbarVisible
+        {
+            get => Instance.IsToolbarVisible;
+            set => Instance.IsToolbarVisible = value;
+        }
+        private static string DefaultSelectedTabName
+        {
+            get => Instance.DefaultSelectedTabName;
+            set => Instance.DefaultSelectedTabName = value;
         }
 
     }

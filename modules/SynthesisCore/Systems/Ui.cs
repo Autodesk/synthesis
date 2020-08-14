@@ -15,6 +15,8 @@ namespace SynthesisCore.Systems
         public static VisualElementAsset ToolbarAsset;
         public static VisualElementAsset ToolbarButtonAsset;
 
+        private static bool IsToolbarVisible = true;
+
         public override void Setup()
         {
             TabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
@@ -38,12 +40,22 @@ namespace SynthesisCore.Systems
                 element => RegisterOKCloseButtons(element, "Settings"));
 
             UIManager.AddTab(engineTab);
+            UIManager.SetDefaultTab(engineTab.Name);
             UIManager.AddPanel(environmentsWindow);
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
 
             Button environmentsButton = (Button) UIManager.RootElement.Get("environments-button");
             environmentsButton.Subscribe(x => UIManager.TogglePanel("Environments"));
+
+            Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
+            hideToolbarButton.Subscribe(x => {
+                hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
+                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png" : 
+                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
+                IsToolbarVisible = !IsToolbarVisible;
+                UIManager.SetToolbarVisible(IsToolbarVisible);
+            });
 
             Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
             modulesButton.Subscribe(x => UIManager.TogglePanel("Modules"));
