@@ -5,6 +5,7 @@ using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisCore.Components;
 using SynthesisCore.Systems;
+using SynthesisCore.UI;
 
 namespace SynthesisCore
 {

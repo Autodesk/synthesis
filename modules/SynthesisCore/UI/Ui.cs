@@ -7,7 +7,7 @@ using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 
-namespace SynthesisCore.Systems
+namespace SynthesisCore.UI
 {
     public class Ui : SystemBase
     {
