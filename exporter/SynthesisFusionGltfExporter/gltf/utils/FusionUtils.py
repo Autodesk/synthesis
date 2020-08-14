@@ -1,26 +1,20 @@
+from dataclasses import dataclass
+
 import adsk
 import adsk.core
 import adsk.fusion
 
 from typing import *
 
-def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[Optional[List[float]], Optional[List[float]], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]:
+def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[adsk.fusion.TriangleMesh, Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]:
     meshCalculator = fusionBRep.meshManager.createMeshCalculator()
     if meshCalculator is None:
-        return None, None, fusionBRep
+        return None, fusionBRep
     meshCalculator.setQuality(meshQuality)
 
     mesh = meshCalculator.calculate()
 
-    if mesh is None:
-        return None, None, fusionBRep
-
-    coords = mesh.nodeCoordinatesAsFloat
-    indices = mesh.nodeIndices
-    if len(indices) == 0 or len(coords) == 0:
-        return None, None, fusionBRep
-
-    return coords, indices, fusionBRep
+    return mesh, fusionBRep
 
 def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportWarnings: List[str]) -> Optional[Tuple[List[float], List[float], float, float, bool]]:
     """Gets Physically Based Rendering settings from a fusion appearance.

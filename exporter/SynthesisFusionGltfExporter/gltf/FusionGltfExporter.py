@@ -466,7 +466,7 @@ class FusionGltfExporter(object):
         # todo add tag for meshes with no overridable materials which don't need to have multiple copies of the template
         return [self.exportPrimitiveBRepBodyOrFace(face) for face in self.calculateMeshBRepCached(fusionBRepBody, faces, exportFacesTogether)]
 
-    def calculateMeshBRepCached(self, fusionBRepBody: adsk.fusion.BRepBody, faces: List[adsk.fusion.BRepFace], exportFacesTogether: bool) -> List[Tuple[Optional[List[float]], Optional[List[float]], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]]:
+    def calculateMeshBRepCached(self, fusionBRepBody: adsk.fusion.BRepBody, faces: List[adsk.fusion.BRepFace], exportFacesTogether: bool) -> List[Tuple[adsk.fusion.TriangleMesh, Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]]:
         bRepId = f"{fusionBRepBody.revisionId}-{str(self.meshQuality)}-{str(0 if exportFacesTogether else 1)}"  # TODO: this is a terrible way to include settings in the cache, come up with something better
 
         if bRepId in self.bRepIdToFaceMeshes:
@@ -480,7 +480,7 @@ class FusionGltfExporter(object):
         self.bRepIdToFaceMeshes[bRepId] = rawMeshes  # cache the appearance
         return rawMeshes
 
-    def exportPrimitiveBRepBodyOrFace(self, rawMesh: Tuple[Optional[List[float]], Optional[List[float]], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]) -> Optional[Primitive]:
+    def exportPrimitiveBRepBodyOrFace(self, rawMesh: Tuple[adsk.fusion.TriangleMesh, Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]) -> Optional[Primitive]:
         """Exports a glTF primitive from a fusion bRepBody or bRepFace using only one material.
 
         Args:
@@ -491,10 +491,20 @@ class FusionGltfExporter(object):
         """
         primitive = Primitive()
 
-        coords, indices, bodyOrFace = rawMesh
+        mesh, bodyOrFace = rawMesh
+
+        if mesh is None:
+            return None
+
+        normals = mesh.normalVectorsAsFloat
+        coords = mesh.nodeCoordinatesAsFloat
+        indices = mesh.nodeIndices
+
+        if len(indices) == 0 or len(coords) == 0:
+            return None
 
         primitive.attributes = Attributes()
-        # primitive.attributes.NORMAL = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, mesh.normalVectorsAsFloat, DataType.Vec3, ComponentType.Float, True, self.warnings)  # Looks fine without normals
+        primitive.attributes.NORMAL = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, normals, DataType.Vec3, ComponentType.Float, True, self.exportWarnings)  # Looks fine without normals
         primitive.attributes.POSITION = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, coords, DataType.Vec3, ComponentType.Float, True, self.exportWarnings)  # glTF requires limits for position coordinates.
         primitive.indices = exportAccessor(self.gltf, self.primaryBufferIndex, self.primaryBufferStream, indices, DataType.Scalar, None, False, self.exportWarnings)  # Autodetect component type on a per-mesh basis. glTF does not require limits for indices.
 
