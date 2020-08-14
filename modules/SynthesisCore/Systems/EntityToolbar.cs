@@ -16,7 +16,7 @@ namespace SynthesisCore.Systems
         
         private static void CreateToolbar()
         {
-            entityTab = new Tab("Entity", Ui.TabToolbar, toolbarElement => {
+            entityTab = new Tab("Entity", Ui.ToolbarAsset, toolbarElement => {
                 // Populate tabs of toolbar
                 AddButton(toolbarElement, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
                     _ => {
@@ -31,12 +31,12 @@ namespace SynthesisCore.Systems
 
         private static void AddButton(VisualElement toolbarElement, string buttonName, string iconPath, System.Action<IEvent> callback)
          {
-            var buttonContainer = Ui.Toolbartabcontainer.GetElement(buttonName);
-            toolbarElement.Get(className: "tab-toolbar").Add(buttonContainer);
-            var button = (Button)buttonContainer.Get(className: "toolbar-tab-button");
+            var buttonContainer = Ui.ToolbarButtonAsset.GetElement(buttonName);
+            toolbarElement.Get(className: "toolbar").Add(buttonContainer);
+            var button = (Button)buttonContainer.Get(className: "toolbar-button");
             button.Name = buttonName;
             button.Subscribe(e => callback(e));
-            var iconContainer = button.Get(className: "toolbar-tab-icon");
+            var iconContainer = button.Get(className: "toolbar-button-icon");
             iconContainer.SetStyleProperty("background-image", iconPath);
         }
 

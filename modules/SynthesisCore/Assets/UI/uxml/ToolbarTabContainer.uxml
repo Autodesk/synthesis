@@ -1,8 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-	<ui:VisualElement class="toolbar-tab-container" >
-		<Style src="/modules/synthesis_core/UI/uss/TabToolbar.uss" />
-		<ui:Button class="toolbar-tab-button" >
-			<ui:VisualElement class="toolbar-tab-icon" />
-		</ui:Button>
-	</ui:VisualElement>
-</ui:UXML>

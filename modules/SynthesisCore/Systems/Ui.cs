@@ -12,8 +12,8 @@ namespace SynthesisCore.Systems
     public class Ui : SystemBase
     {
         public static VisualElementAsset TabAsset;
-        public static VisualElementAsset TabToolbar;
-        public static VisualElementAsset Toolbartabcontainer;
+        public static VisualElementAsset ToolbarAsset;
+        public static VisualElementAsset ToolbarButtonAsset;
 
         public override void Setup()
         {
@@ -22,10 +22,10 @@ namespace SynthesisCore.Systems
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
 
-            TabToolbar = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/TabToolbar.uxml");
-            Toolbartabcontainer = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarTabContainer.uxml");
+            ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
+            ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
 
-            Tab engineTab = new Tab("Engine", TabToolbar, _ => { });
+            Tab engineTab = new Tab("Engine", ToolbarAsset, _ => { });
             Panel environmentsWindow = new Panel("Environments", environmentsAsset,
                 element => RegisterOKCloseButtons(element, "Environments"));
             Panel modulesWindow = new Panel("Modules", modulesAsset, 

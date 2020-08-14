@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-	<ui:VisualElement class="tab-toolbar" >
-		<Style src="/modules/synthesis_core/UI/uss/TabToolbar.uss" />
-	</ui:VisualElement>
-</ui:UXML>

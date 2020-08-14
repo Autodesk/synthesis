@@ -1,4 +1,4 @@
-.tab-toolbar {
+.toolbar {
     background-color: rgb(187, 187, 187);
 	width: 100%;
 	height: 100px;
@@ -13,7 +13,7 @@
     border-bottom-width: 0;
 }
 
-.toolbar-tab-container {
+.toolbar-button-container {
 	border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
@@ -28,7 +28,7 @@
 	padding-bottom: 2px;
 }
 
-.toolbar-tab-button {
+.toolbar-button {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0);
@@ -46,16 +46,16 @@
 	margin-bottom: 0px;
 }
 
-.toolbar-tab-button:hover {
+.toolbar-button:hover {
     background-color: rgb(217, 217, 217);
 	
 }
 
-.toolbar-tab-button:active {
+.toolbar-button:active {
     background-color: rgb(153, 153, 153);
 }
 
-.toolbar-tab-icon {
+.toolbar-button-icon {
 	width: 100%;
 	height: 100%;
 	border-left-width: 0;

@@ -1,5 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-	<ui:VisualElement class="toolbar" >
+	<ui:VisualElement class="toolbar-button-container" >
 		<Style src="/modules/synthesis_core/UI/uss/Toolbar.uss" />
+		<ui:Button class="toolbar-button" >
+			<ui:VisualElement class="toolbar-button-icon" />
+		</ui:Button>
 	</ui:VisualElement>
 </ui:UXML>
