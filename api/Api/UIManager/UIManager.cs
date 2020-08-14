@@ -44,8 +44,6 @@ namespace SynthesisAPI.UIManager
         public static void SelectTab(string tabName)
         {
             var toolbarContainer = Instance.ToolbarContainer;
-            if (toolbarContainer == null)
-                throw new Exception("ToolbarContainer is null");
 
             if (tabName.Equals("__"))
             {
@@ -68,12 +66,12 @@ namespace SynthesisAPI.UIManager
                 }
                 else
                 {
-                    if (LoadedTabs[tabName].Ui == null)
+                    if (LoadedTabs[tabName].ToobarAsset == null)
                         throw new Exception($"UI for tab \"{tabName}\" is null");
                     
                     // Add toolbar
-                    var toolbar = LoadedTabs[tabName].Ui.GetElement("active-toolbar");
-                    LoadedTabs[tabName].BindFunc(toolbar);
+                    var toolbar = LoadedTabs[tabName].ToobarAsset.GetElement("active-toolbar");
+                    LoadedTabs[tabName].BindToolbar(toolbar);
                     // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
                     toolbarContainer.Add(toolbar.UnityVisualElement);
 
@@ -136,7 +134,13 @@ namespace SynthesisAPI.UIManager
 
             public UnityVisualElement ToolbarContainer
             {
-                get => RootElement.UnityVisualElement.Q(name: "bottom");
+                get
+                {
+                    var toolbarContainer = RootElement.UnityVisualElement.Q(name: "bottom");
+                    if (toolbarContainer == null)
+                        throw new Exception("Could not find toolbar container");
+                    return toolbarContainer;
+                }
             }
             
             public string SelectedTabName = "__";

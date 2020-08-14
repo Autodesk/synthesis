@@ -30,11 +30,11 @@ namespace SynthesisCore
             var selectable = e.AddComponent<Selectable>();
             selectable.OnSelect = () =>
             {
-                MoveArrows.MoveEntity(selectable.Entity.Value);
+                EntityToolbar.Open(selectable.Entity.Value);
             };
             selectable.OnDeselect = () =>
             {
-                MoveArrows.StopMovingEntity();
+                EntityToolbar.Close();
             };
             e.AddComponent<Moveable>().Channel = 5;
             Mesh m = e.AddComponent<Mesh>();
