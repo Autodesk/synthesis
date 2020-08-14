@@ -21,7 +21,6 @@ namespace SynthesisAPI.Runtime
 		void RemoveComponentFromScene(Entity entity, Type t);
 
 		T CreateUnityType<T>(params object[] args) where T : class;
-		VisualTreeAsset GetDefaultUIAsset(string assetName);
 
         #region UI
 

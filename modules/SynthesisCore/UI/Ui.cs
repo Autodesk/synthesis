@@ -11,7 +11,6 @@ namespace SynthesisCore.UI
 {
     public class Ui : SystemBase
     {
-        public static VisualElementAsset TabAsset;
         public static VisualElementAsset ToolbarAsset;
         public static VisualElementAsset ToolbarButtonAsset;
         public static VisualElementAsset ToolbarCategoryAsset;
@@ -20,10 +19,15 @@ namespace SynthesisCore.UI
 
         public override void Setup()
         {
-            TabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
+            var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
+
+            UIManager.SetBlankTabAsset(blankTabAsset);
+
+            var titleBarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/TitleBar.uxml");
+            UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
 
             EngineToolbar.CreateToolbar();
 

@@ -1,5 +1,6 @@
 ﻿using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using System.Collections.Generic;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.UIManager
 {
@@ -31,12 +32,24 @@ namespace SynthesisAPI.UIManager
 
                     currentClass = new UssClass(className);
                     //Logger.Log("[UI] New class found with name [" + className + "]");
-                } else if (line.StartsWith("}"))
+                }
+                else if (line.StartsWith("}"))
                 {
                     if (currentClass != null)
                     {
-                        classes.Add(currentClass.ClassName, currentClass);
+                        if (HasClass(currentClass.ClassName))
+                        {
+                            Logger.Log($"Stylesheet defines class with duplicate name: {currentClass.ClassName}", LogLevel.Warning);
+                        }
+                        else
+                        {
+                            classes.Add(currentClass.ClassName, currentClass);
+                        }
                     }
+                }
+                else if (line.StartsWith("#"))
+                {
+                    Logger.Log("Stylesheet contains ID identifier '#' which is not currently supported", LogLevel.Error);
                 }
                 else
                 {

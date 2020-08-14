@@ -60,6 +60,11 @@
     background-color: rgb(217, 217, 217);
 }
 
+
+.inactive-tab {
+    background-color: rgb(187, 187, 187);
+}
+
 .active-tab {
     background-color: rgb(217, 217, 217);
 }
@@ -78,8 +83,4 @@
 
 .bottom {
     height: 40px;
-}
-
-#toast-scroll-view.unity-scroll-view {
-    flex-shrink: 0;
 }

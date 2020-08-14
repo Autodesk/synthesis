@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 using UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using UnityButton = UnityEngine.UIElements.Button;
 using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.UIManager
 {
@@ -16,12 +18,32 @@ namespace SynthesisAPI.UIManager
         public static VisualElement RootElement {
             get => ApiProvider.GetRootVisualElement()?.GetVisualElement();
         }
-        private static UnityVisualElement CreateTab() =>
-            ApiProvider.GetDefaultUIAsset("BlankTabAsset")?.CloneTree();
-        
+        private static UnityVisualElement CreateTab(string tabName) => BlankTabAsset.GetElement(tabName).UnityVisualElement;
+
+        public static void SetBlankTabAsset(VisualElementAsset blankTabAsset)
+        {
+            if (blankTabAsset.GetElement("test").Get("blank-tab") == null)
+            {
+                throw new SynthesisException("Blank tab asset must have an element with name \"blank-tab\"");
+            }
+            BlankTabAsset = blankTabAsset;
+        }
+
+        public static void SetTitleBar(VisualElement titleBarElement)
+        {
+            if(titleBarElement.Get("tab-container") == null)
+            {
+                throw new SynthesisException("Title bar must have an element with name \"tab-container\"");
+            }
+            foreach (var i in Instance.TitleBarContainer.Children())
+            {
+                Instance.TitleBarContainer.Remove(i);
+            }
+            Instance.TitleBarContainer.Add(titleBarElement.UnityVisualElement);
+        }
         public static void AddTab(Tab tab)
         {
-            tab.buttonElement = new VisualElements.Button(CreateTab().Q<UnityButton>(name: "blank-tab"));
+            tab.buttonElement = new VisualElements.Button(CreateTab(tab.Name).Q<UnityButton>(name: "blank-tab"));
             LoadedTabs.Add(tab.Name, tab);
             // TODO: Spawn in tab button
             tab.buttonElement.Element.name = $"tab-{tab.Name}";
@@ -47,38 +69,43 @@ namespace SynthesisAPI.UIManager
 
         public static void SelectTab(string tabName)
         {
+            if (SelectedTabName == tabName)
+            {
+                return;
+            }
             // Remove Existing
             SetToolbarVisible(false, false);
-            
+
             if (tabName == SelectedTabBlankName)
             {
                 SelectedTabName = SelectedTabBlankName;
             }
             else
             {
-                if (SelectedTabName == tabName)
-                { 
-                    SelectedTabName = SelectedTabBlankName;
-                }
-                else
-                {
-                    if (LoadedTabs[tabName].ToobarAsset == null)
-                        throw new Exception($"UI for tab \"{tabName}\" is null");
+                if (LoadedTabs[tabName].ToobarAsset == null)
+                    throw new Exception($"UI for tab \"{tabName}\" is null");
 
-                    SelectedTabName = tabName;
+                SelectedTabName = tabName;
 
-                    SetToolbarVisible(IsToolbarVisible);
-                }
+                SetToolbarVisible(IsToolbarVisible);
             }
 
             // Add class active-tab to currently selected tab
             foreach (var i in LoadedTabs)
             {
                 if (i.Value.buttonElement != null)
+                {
                     i.Value.buttonElement.RemoveFromClassList("active-tab");
+                    i.Value.buttonElement.AddToClassList("inactive-tab");
+                    StyleSheetManager.ApplyClassFromStyleSheets("inactive-tab", i.Value.buttonElement.UnityVisualElement);
+                }
             }
-            if(LoadedTabs.ContainsKey(SelectedTabName))
+            if (LoadedTabs.ContainsKey(SelectedTabName))
+            {
                 LoadedTabs[SelectedTabName].buttonElement.AddToClassList("active-tab");
+                LoadedTabs[SelectedTabName].buttonElement.RemoveFromClassList("inactive-tab");
+                StyleSheetManager.ApplyClassFromStyleSheets("active-tab", LoadedTabs[SelectedTabName].buttonElement.UnityVisualElement);
+            }
 
             // TODO: Maybe some event
         }
@@ -173,6 +200,11 @@ namespace SynthesisAPI.UIManager
                 get => RootElement.UnityVisualElement.Q(name: "tab-container");
             }
 
+            public UnityVisualElement TitleBarContainer
+            {
+                get => RootElement.UnityVisualElement.Q(name: "title-bar-container");
+            }
+
             public UnityVisualElement ToolbarContainer
             {
                 get
@@ -183,6 +215,8 @@ namespace SynthesisAPI.UIManager
                     return toolbarContainer;
                 }
             }
+
+            public VisualElementAsset BlankTabAsset;
             
             public string SelectedTabName = SelectedTabBlankName;
             public string DefaultSelectedTabName = SelectedTabBlankName;
@@ -236,6 +270,10 @@ namespace SynthesisAPI.UIManager
             get => Instance.DefaultSelectedTabName;
             set => Instance.DefaultSelectedTabName = value;
         }
-
+        private static VisualElementAsset BlankTabAsset
+        {
+            get => Instance.BlankTabAsset;
+            set => Instance.BlankTabAsset = value;
+        }
     }
 }

@@ -302,14 +302,6 @@ namespace Engine.ModuleLoader
 			public T CreateUnityType<T>(params object[] args) where T : class =>
 				(T)Activator.CreateInstance(typeof(T), args);
 
-			public VisualTreeAsset GetDefaultUIAsset(string assetName)
-			{
-				int index = Array.IndexOf(ResourceLedger.Instance.Keys, assetName);
-				if (index != -1)
-					return ResourceLedger.Instance.Values[index];
-				return null;
-			}
-
 			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
 				(TUnityType)Activator.CreateInstance(typeof(TUnityType));
 
