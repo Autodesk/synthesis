@@ -1,4 +1,4 @@
-.toolbar-button {
+.title-bar-button {
     width: 30px;
     height: 30px;
     border-left-color: rgb(204, 204, 204);
@@ -24,11 +24,17 @@
     border-bottom-right-radius: 0;
 }
 
-.toolbar-button:hover {
+
+.title-bar{
+	
+    background-color: rgb(255, 0, 0);
+}
+
+.title-bar-button:hover {
     background-color: rgb(172, 172, 172);
 }
 
-.toolbar-button:active {
+.title-bar-button:active {
     background-color: rgb(153, 153, 153);
 }
 

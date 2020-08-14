@@ -18,9 +18,6 @@ namespace SynthesisCore.Systems
         {
             entityTab = new Tab("Entity", Ui.TabToolbar, toolbarElement => {
                 // Populate tabs of toolbar
-                var bottom = UIManager.RootElement.Get("toolbar").Get("bottom");
-                bottom.Add(toolbarElement);
-
                 AddButton(toolbarElement, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
                     _ => {
                         openedMoveArrows = true;

@@ -1,16 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="screen" style="flex-grow: 1;">
-        <ui:VisualElement name="toolbar">
+        <Style src="/Assets/UI/TitleBar/Screen.uss" />
+        <ui:VisualElement name="title-bar">
             <ui:VisualElement name="top" class="top">
                 <ui:VisualElement name="left-buttons" style="flex-direction: row;">
-                    <ui:Button name="add-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/add-icon.png&apos;);" />
-                    <ui:Button name="environments-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/environments-icon.png&apos;);" />
+                    <ui:Button name="add-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/add-icon.png&apos;);" />
+                    <ui:Button name="environments-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/environments-icon.png&apos;);" />
                 </ui:VisualElement>
                 <ui:VisualElement name="tab-container" class="tab-container" />
                 <ui:VisualElement name="right-buttons" style="flex-direction: row;">
-                    <ui:Button name="modules-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/modules-icon.png&apos;);" />
-                    <ui:Button name="settings-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/settings-icon.png&apos;);" />
-                    <ui:Button name="help-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/help-icon.png&apos;);" />
+                    <ui:Button name="modules-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/modules-icon.png&apos;);" />
+                    <ui:Button name="settings-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/settings-icon.png&apos;);" />
+                    <ui:Button name="help-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/help-icon.png&apos;);" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="bottom" class="bottom" style="height: auto;" />
