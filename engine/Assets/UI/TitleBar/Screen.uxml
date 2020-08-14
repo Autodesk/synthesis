@@ -4,14 +4,12 @@
         <ui:VisualElement name="title-bar">
             <ui:VisualElement name="top" class="top">
                 <ui:VisualElement name="left-buttons" style="flex-direction: row;">
-                    <ui:Button name="add-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/add-icon.png&apos;);" />
-                    <ui:Button name="environments-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/environments-icon.png&apos;);" />
+                    <ui:Button name="settings-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/settings-icon.png&apos;);" />
+                    <ui:Button name="modules-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/modules-icon.png&apos;);" />
                 </ui:VisualElement>
                 <ui:VisualElement name="tab-container" class="tab-container" />
                 <ui:VisualElement name="right-buttons" style="flex-direction: row;">
                     <ui:Button name="hide-toolbar-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/toolbar-hide-icon.png&apos;);" />
-                    <ui:Button name="modules-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/modules-icon.png&apos;);" />
-                    <ui:Button name="settings-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/settings-icon.png&apos;);" />
                     <ui:Button name="help-button" class="title-bar-button" style="background-image: url(&apos;/Assets/UI/TitleBar/help-icon.png&apos;);" />
                 </ui:VisualElement>
             </ui:VisualElement>

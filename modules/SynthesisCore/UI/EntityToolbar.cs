@@ -19,13 +19,13 @@ namespace SynthesisCore.UI
         {
             entityTab = new Tab("Entity", Ui.ToolbarAsset, toolbarElement => {
                 // Populate tabs of toolbar
-                var testCategory = ToolbarTools.AddButtonCategory(toolbarElement, "MODIFY");
-                ToolbarTools.AddButton(testCategory, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
+                var modifyCategory = ToolbarTools.AddButtonCategory(toolbarElement, "MODIFY");
+                ToolbarTools.AddButton(modifyCategory, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
                     _ => {
                         openedMoveArrows = true;
                         MoveArrows.MoveEntity(selectedEntity);
                     });
-                ToolbarTools.AddButton(testCategory, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
+                ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
                     _ => EnvironmentManager.RemoveEntity(selectedEntity));
             });
             toolbarCreated = true;

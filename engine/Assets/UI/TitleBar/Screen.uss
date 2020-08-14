@@ -6,8 +6,8 @@
     border-top-color: rgb(204, 204, 204);
     border-bottom-color: rgb(204, 204, 204);
     background-color: rgba(0, 0, 0, 0);
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: 5px;
+    margin-right: 5px;
     margin-top: 0;
     margin-bottom: 0;
     padding-left: 0;
