@@ -624,10 +624,10 @@ namespace SynthesisInventorGltfExporter
             }
         }
 
-        private MeshBuilder<VertexPosition> ExportMesh(ComponentOccurrence componentOccurrence)
+        private MeshBuilder<VertexPositionNormal> ExportMesh(ComponentOccurrence componentOccurrence)
         {
             var occurrencePath = GetOccurrencePath(componentOccurrence);
-            var mesh = new MeshBuilder<VertexPosition>(occurrencePath);
+            var mesh = new MeshBuilder<VertexPositionNormal>(occurrencePath);
 
             if (includeSynthData)
             {
@@ -709,16 +709,16 @@ namespace SynthesisInventorGltfExporter
             return false;
         }
 
-        private void ExportPrimitive(SurfaceBody surfaceBody, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
+        private void ExportPrimitive(SurfaceBody surfaceBody, PrimitiveBuilder<MaterialBuilder, VertexPositionNormal, VertexEmpty, VertexEmpty> primitive)
         {
             ExportPrimitive(surfaceBody, null, primitive);
         }
         
-        private void ExportPrimitive(Face surfaceFace, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
+        private void ExportPrimitive(Face surfaceFace, PrimitiveBuilder<MaterialBuilder, VertexPositionNormal, VertexEmpty, VertexEmpty> primitive)
         {
             ExportPrimitive(null, surfaceFace, primitive);
         }
-        private void ExportPrimitive(SurfaceBody surfaceBody, Face surfaceFace, PrimitiveBuilder<MaterialBuilder, VertexPosition, VertexEmpty, VertexEmpty> primitive)
+        private void ExportPrimitive(SurfaceBody surfaceBody, Face surfaceFace, PrimitiveBuilder<MaterialBuilder, VertexPositionNormal, VertexEmpty, VertexEmpty> primitive)
         {
             try
             {
@@ -742,9 +742,9 @@ namespace SynthesisInventorGltfExporter
                     var indexB = indices[c + 1];
                     var indexC = indices[c + 2];
                     primitive.AddTriangle(
-                        GetCoordinates(coords, indexA - 1),
-                        GetCoordinates(coords, indexB - 1),
-                        GetCoordinates(coords, indexC - 1)
+                        GetNormsAndCoords(coords, norms,indexA - 1),
+                        GetNormsAndCoords(coords, norms,indexB - 1),
+                        GetNormsAndCoords(coords, norms,indexC - 1)
                     );
                 }
             }
@@ -753,38 +753,29 @@ namespace SynthesisInventorGltfExporter
                 warnings.Add("Unable to export surface body");
             }
         }
-        
-        private VertexPosition GetCoordinates(double[] coords, int index)
+
+        private VertexPositionNormal GetNormsAndCoords(double[] coords, double[] norms, int index)
         {
-            return new VertexPosition(
+            return new VertexPositionNormal(
+                GetCoordinates(coords, index),
+                GetNormal(norms, index)
+            );
+        }
+        private Vector3 GetCoordinates(double[] coords, int index)
+        {
+            return new Vector3(
                 (float)coords[index * 3],
                 (float)coords[index * 3 + 1],
                 (float)coords[index * 3 + 2]
             );
         }
-        
-        
-        private Matrix4x4 InvToGltfMatrix4X4(Matrix invTransform)
+        private Vector3 GetNormal(double[] norms, int index)
         {
-            var transform = new Matrix4x4(
-                (float) invTransform.Cell[1, 1],
-                (float) invTransform.Cell[2, 1],
-                (float) invTransform.Cell[3, 1],
-                (float) invTransform.Cell[4, 1],
-                (float) invTransform.Cell[1, 2],
-                (float) invTransform.Cell[2, 2],
-                (float) invTransform.Cell[3, 2],
-                (float) invTransform.Cell[4, 2],
-                (float) invTransform.Cell[1, 3],
-                (float) invTransform.Cell[2, 3],
-                (float) invTransform.Cell[3, 3],
-                (float) invTransform.Cell[4, 3],
-                (float) invTransform.Cell[1, 4],
-                (float) invTransform.Cell[2, 4],
-                (float) invTransform.Cell[3, 4],
-                (float) invTransform.Cell[4, 4]
+            return new Vector3(
+                (float)norms[index * 3],
+                (float)norms[index * 3 + 1],
+                (float)norms[index * 3 + 2]
             );
-            return AffineTransform.Evaluate(transform, null, null, null);
         }
     }
 }

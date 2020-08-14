@@ -121,6 +121,7 @@
     <Compile Include="SynthesisInventorGltfExporter.cs" />
     <Compile Include="RibbonAddInServer.cs" />
     <Compile Include="Unused\AppearanceDebugging.cs" />
+    <Compile Include="Unused\UnusedUtilities.cs" />
     <EmbeddedResource Include="GUI\GltfExportSettings.resx">
       <DependentUpon>GltfExportSettings.cs</DependentUpon>
     </EmbeddedResource>

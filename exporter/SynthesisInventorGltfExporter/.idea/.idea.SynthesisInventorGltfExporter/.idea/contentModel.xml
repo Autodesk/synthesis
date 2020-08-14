@@ -51,6 +51,7 @@
         <e p="unused" t="Include">
           <e p="AppearanceDebugging.cs" t="Include" />
           <e p="InventorAllAppearanceProperties.csv" t="Include" />
+          <e p="UnusedUtilities.cs" t="Include" />
         </e>
       </e>
       <e p="SynthesisInventorGltfExporter.sln" t="IncludeFlat" />
