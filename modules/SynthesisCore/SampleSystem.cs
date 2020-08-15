@@ -8,6 +8,8 @@ using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisCore.Components;
 using SynthesisCore.Systems;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 
 namespace SynthesisCore
 {
@@ -17,6 +19,8 @@ namespace SynthesisCore
 
         private MotorController frontLeft, frontRight, backLeft, backRight;
         private MotorController arm;
+
+        public Mesh m;
 
         public override void OnPhysicsUpdate() { }
 

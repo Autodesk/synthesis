@@ -6,6 +6,8 @@ using SynthesisAPI.AssetManager;
 using SynthesisAPI.Utilities;
 using System.Collections.Generic;
 
+using Math = System.Math;
+
 namespace SynthesisCore.Systems {
 
     public static class MotorManager {

@@ -43,11 +43,11 @@ namespace SynthesisCore.Systems
                 Direction = direction;
 
                 ArrowEntity = EnvironmentManager.AddEntity();
-                ArrowEntity.GetComponent<Parent>().Set(arrowsEntity);
+                ArrowEntity.GetComponent<Parent>().ParentEntity = arrowsEntity;
                 Transform = ArrowEntity.AddComponent<Transform>();
 
                 arrowSpriteEntity = EnvironmentManager.AddEntity();
-                arrowSpriteEntity.GetComponent<Parent>().Set(ArrowEntity);
+                arrowSpriteEntity.GetComponent<Parent>().ParentEntity = ArrowEntity;
 
                 var arrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
                 var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
@@ -161,7 +161,7 @@ namespace SynthesisCore.Systems
             }
             
             targetEntity = entity;
-            arrowsEntity.GetComponent<Parent>().Set(targetEntity.Value);
+            arrowsEntity.GetComponent<Parent>().ParentEntity = targetEntity.Value;
             targetTransform = targetEntity?.GetComponent<Transform>();
         }
 
