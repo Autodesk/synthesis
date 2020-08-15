@@ -7,7 +7,6 @@ using HingeJoint = SynthesisAPI.EnvironmentManager.Components.HingeJoint;
 using System.ComponentModel;
 using System;
 using SynthesisAPI.Utilities;
-using UnityEditorInternal;
 
 namespace Engine.ModuleLoader.Adapters
 {
