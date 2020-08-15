@@ -6,7 +6,7 @@
             <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
             <ui:Label text="Modules" name="title" class="window-header-title" />
         </ui:VisualElement>
-        <ui:ListView focusable="True" name="module-list" style="flex-grow: 1; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;" />
+        <ui:ListView focusable="True" name="module-list" class="window-list-container" />
         <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
             <ui:VisualElement name="left" style="width: 50%; flex-direction: row;">
                 <ui:Button text="Add..." name="add-module-button" class="window-button" />
