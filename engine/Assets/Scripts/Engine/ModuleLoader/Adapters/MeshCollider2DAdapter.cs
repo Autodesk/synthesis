@@ -6,6 +6,8 @@ using System;
 using UnityEngine;
 using static Engine.ModuleLoader.Api;
 
+using MeshCollider = UnityEngine.MeshCollider;
+
 namespace Engine.ModuleLoader.Adapters
 {
 	public sealed class MeshCollider2DAdapter : MonoBehaviour, IApiAdapter<MeshCollider2D>

@@ -22,7 +22,7 @@ namespace Engine.ModuleLoader.Adapters
             instance.AddJoint += Add;
             instance.RemoveJoint += Remove;
             
-            foreach (var joint in instance._joints)
+            foreach (var joint in instance.AllJoints)
                 Add(joint);
         }
 
