@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
 	public class Mesh : Component
 	{
 		public Mesh() { }

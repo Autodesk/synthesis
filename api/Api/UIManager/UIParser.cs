@@ -3,41 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using SynthesisAPI.AssetManager;
+using VisualElementAsset = SynthesisAPI.UIManager.VisualElements.VisualElement;
+using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityVisualElement = UnityEngine.UIElements.VisualElement;
-using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using Logger = SynthesisAPI.Utilities.Logger;
+using System.Reflection;
 
 namespace SynthesisAPI.UIManager
 {
     // ReSharper disable once InconsistentNaming
     public static class UIParser
     {
-        public static VisualElement CreateVisualElement(string name, XmlDocument doc)
+        public static VisualElementAsset CreateVisualElement(string name, XmlDocument doc)
         {
             return doc.FirstChild.Name.Replace("ui:", "") == "UXML" ?
                 CreateVisualElements(name, doc.FirstChild.ChildNodes) :
                 CreateVisualElements(name, doc.ChildNodes);
         }
 
-        public static VisualElement CreateVisualElements(string name, XmlNodeList nodes)
+        public static VisualElementAsset CreateVisualElements(string name, XmlNodeList nodes)
         {
-            UnityVisualElement root = new UnityVisualElement() { name = name };
+            SearchForStyleSheet(nodes);
+            _UnityVisualElement root = new _UnityVisualElement() { name = name };
             foreach (XmlNode node in nodes)
             {
                 if (node.Name.Replace("ui:", "") != "Style") {
-                    root.Add((UnityVisualElement)CreateVisualElement(node));
-                }
-                else
-                {
-                    var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
-                    StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
+                    root.Add(CreateVisualElement(node).UnityVisualElement);
                 }
             }
-            return (VisualElement)root;
+            return root.GetVisualElement();
         }
 
         /// <summary>
@@ -46,20 +43,14 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static VisualElement CreateVisualElement(XmlNode node)
+        public static VisualElementAsset CreateVisualElement(XmlNode node)
         {
             if (node == null)
                 throw new Exception("Node is null");
 
             // Logger.Log($"Looking for type: {node.Name.Replace("ui:", "")}");
-            Type elementType = Array.Find(typeof(UnityVisualElement).Assembly.GetTypes(), x =>
+            Type elementType = Array.Find(typeof(_UnityVisualElement).Assembly.GetTypes(), x =>
                 x.Name.Equals(node.Name.Replace("ui:", "")));
-            if (node.Name.Replace("ui:", "").Equals("Style"))
-            {
-                // Logger.Log("[UI] Style w/ src location " + node.Attributes["src"].Value, LogLevel.Debug);
-                var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(node.Attributes["src"].Value);
-                StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
-            }
             if (elementType == null)
             {
                 if (!node.Name.Replace("ui:", "").Equals("Style"))
@@ -68,7 +59,7 @@ namespace SynthesisAPI.UIManager
                 }
                 return null;
             }
-            dynamic element = typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
+            _UnityVisualElement element = (_UnityVisualElement)typeof(ApiProvider).GetMethod("CreateUnityType").MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { new object[] {} });
             if (element != null)
             {
@@ -83,6 +74,7 @@ namespace SynthesisAPI.UIManager
                     if (attr.Name.Equals("class"))
                     {
                         //Logger.Log("Class found with value: " + attr.Value);
+                        element.AddToClassList(attr.Value);
                         element = StyleSheetManager.ApplyClassFromStyleSheets(attr.Value, element);
                     }
 
@@ -123,31 +115,31 @@ namespace SynthesisAPI.UIManager
                 }
             } else
             {
-                element = ApiProvider.CreateUnityType<UnityVisualElement>();
+                element = ApiProvider.CreateUnityType<_UnityVisualElement>();
             }
 
             // Logger.Log("Finished Creating Element");
 
-            UnityVisualElement resultElement = (UnityVisualElement)element;
+            _UnityVisualElement resultElement = (_UnityVisualElement)element;
 
             foreach (XmlNode child in node.ChildNodes)
             {
                 // Logger.Log($"Adding child: {child.Name}");
                 var parsedChild = CreateVisualElement(child);
                 if (parsedChild != null)
-                    resultElement.Add((UnityVisualElement)parsedChild);
+                    resultElement.Add(parsedChild.UnityVisualElement);
                 // Logger.Log($"Finished adding child: {child.Name}");
             }
 
             // Logger.Log("Returning Result");
-            return (VisualElement)resultElement!;
+            return resultElement.GetVisualElement();
         }
 
         /// <summary>
         /// </summary>
         /// <param name="data"></param>
         /// <param name="element">WARNING: Make sure this type is or inherits <see cref="UnityEngine.UIElements.VisualElement" /></param>
-        private static dynamic ParseStyle(string data, dynamic element)
+        internal static _UnityVisualElement ParseStyle(string data, _UnityVisualElement element)
         {
             var list = data.Replace("&apos;", "\"").Split(';').ToList();
             foreach (string entry in list)
@@ -165,16 +157,62 @@ namespace SynthesisAPI.UIManager
                 .Select(s => s != "" ? char.ToUpper(s[0]) + s.Substring(1) : "")
                 .Aggregate("", (s, s1) => s + s1).Substring(1);
 
-        internal static dynamic ParseEntry(string entry, dynamic element)
+        internal static PropertyInfo? MapProperty(string propertyStr)
         {
+            string propertyName = MapCssName(propertyStr);
+            if (propertyName == "unityFontStyle") propertyName = "unityFontStyleAndWeight";
+            if (propertyName == "textAlign") propertyName = "unityTextAlign";
+            return typeof(IStyle).GetProperty(propertyName);
+        }
+
+        internal static object? ParseProperty(PropertyInfo property, string value)
+        {
+            if (property.PropertyType.GenericTypeArguments.Length > 0)
+            {
+                var result = typeof(UIParser)
+                    .GetMethod("ToStyleEnum",
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+                    .MakeGenericMethod(property.PropertyType.GenericTypeArguments[0])
+                    .Invoke(null, new object[] { value });
+
+                return result;
+            }
+
+            switch (property.PropertyType.Name)
+            {
+                case "StyleFloat":
+                    return ToStyleFloat(value);
+                case "StyleInt":
+                    return ToStyleInt(value);
+                case "StyleLength":
+                    return ToStyleLength(value);
+                case "StyleFont":
+                    return ToStyleFont(value);
+                case "StyleCursor":
+                    return ToStyleCursor(value);
+                case "StyleColor":
+                    return ToStyleColor(value);
+                case "StyleBackground":
+                    return ToStyleBackground(value);
+                default:
+                    Logger.Log("Unhandled type in USS parser", LogLevel.Warning);
+                    break;
+            }
+            return null;
+        }
+
+        internal static _UnityVisualElement ParseEntry(string entry, _UnityVisualElement element)
+        { 
+            if(element == null)
+            {
+                Logger.Log($"Failed to parse entry, element was null", LogLevel.Warning);
+                return null;
+            }
             var entrySplit = entry.Split(':');
             entrySplit[0] = entrySplit[0].Replace(" ", "");
             if (entrySplit[0] == "") return element;
 
-            string propertyName;
-            propertyName = MapCssName(entrySplit[0]);
-            if (propertyName == "unityFontStyle") propertyName = "unityFontStyleAndWeight";
-            var property = typeof(IStyle).GetProperty(propertyName);
+            var property = MapProperty(entrySplit[0]);
             if (property == null)
             {
                 Logger.Log($"Failed to find property \"{MapCssName(entrySplit[0])}\"", LogLevel.Warning);
@@ -183,61 +221,29 @@ namespace SynthesisAPI.UIManager
 
             try
             {
-                if (property.PropertyType.GenericTypeArguments.Length > 0)
+                var value = ParseProperty(property, entrySplit[1]);
+                if (value == null)
                 {
-                    property.SetValue(element.style,
-                        typeof(UIParser).GetMethod("ToStyleEnum")
-                            .MakeGenericMethod(property.PropertyType.GenericTypeArguments[0])
-                            .Invoke(null, new object[] {entrySplit[1]}));
-                    return element;
+                    Logger.Log($"Failed to parse entry {property.Name}\n\"{entry}\"", LogLevel.Warning);
                 }
-
-                switch (property.PropertyType.Name)
+                else
                 {
-                    case "StyleFloat":
-                        property.SetValue(element.style, ToStyleFloat(entrySplit[1]));
-                        break;
-                    case "StyleInt":
-                        property.SetValue(element.style, ToStyleInt(entrySplit[1]));
-                        break;
-                    case "StyleLength":
-                        // StyleLength len = ;
-                        property.SetValue(element.style, ToStyleLength(entrySplit[1]));
-                        break;
-                    case "StyleFont":
-                        property.SetValue(element.style, ToStyleFont(entrySplit[1]));
-                        break;
-                    case "StyleCursor":
-                        property.SetValue(element.style, ToStyleCursor(entrySplit[1]));
-                        break;
-                    case "StyleColor":
-                        property.SetValue(element.style, ToStyleColor(entrySplit[1]));
-                        break;
-                    case "StyleBackground":
-                        property.SetValue(element.style, ToStyleBackground(entrySplit[1]));
-                        break;
-                    default:
-                        Logger.Log("Default");
-                        break;
-                        //throw new Exception("Unhandled type in USS parser");
+                    property.SetValue(element.style, value);
                 }
-                // Logger.Log("Successfully set styling for " + propertyName);
-                
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //Logger.Log($"Failed to set property. Skipping \"{entrySplit[0]}\"", LogLevel.Warning);
-                Logger.Log("failed to set property. Skipping " + propertyName, LogLevel.Warning);
+                Logger.Log($"Failed to set property. Skipping {property.Name}\n\"{entry}\"", LogLevel.Warning);
             }
 
             return element;
         }
 
-        public static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str));
+        internal static StyleFloat ToStyleFloat(string str) => new StyleFloat(float.Parse(str.Replace("px", "")));
 
-        public static StyleInt ToStyleInt(string str) => new StyleInt(int.Parse(str));
+        internal static StyleInt ToStyleInt(string str) => new StyleInt(int.Parse(str.Replace("px", "")));
 
-        public static StyleLength ToStyleLength(string str)
+        internal static StyleLength ToStyleLength(string str)
         {
             str = str.Replace(" ", "");
             if (str.Contains("auto"))
@@ -257,18 +263,22 @@ namespace SynthesisAPI.UIManager
             
         }
 
-        public static StyleFont ToStyleFont(string _) => new StyleFont(StyleKeyword.Null);
+        internal static StyleFont ToStyleFont(string _) => new StyleFont(StyleKeyword.Null);
 
-        public static StyleBackground ToStyleBackground(string str)
+        internal static StyleBackground ToStyleBackground(string str)
         {
-            string path = str.Replace(" ", "").Substring(5, str.Length - 8);
-            
+            string path = str.Replace(" ", "");
+            if (path.StartsWith("url(\"") || path.StartsWith("url('"))
+                path = path.Remove(0, 5);
+            if (path.EndsWith("\")") || path.EndsWith("')"))
+                path = path.Remove(path.Length - 2, 2);
+
             try
             {
                 SpriteAsset? asset = AssetManager.AssetManager.GetAsset<SpriteAsset>(path);
                 if (asset == null)
                 {
-                    Logger.Log("Can't find asset", LogLevel.Warning);
+                    Logger.Log($"Can't find USS background image asset: {path}", LogLevel.Warning);
                     return new StyleBackground(StyleKeyword.Null);
                 }
                 else
@@ -279,14 +289,14 @@ namespace SynthesisAPI.UIManager
             catch (Exception e)
             {
                 // FAIL TO GET TEXTURE
-                Logger.Log("Exception when parsing background texture", LogLevel.Warning);
+                Logger.Log($"Exception when parsing background texture\n{e}", LogLevel.Warning);
                 return new StyleBackground(StyleKeyword.Null);
             }
         }
 
-        public static StyleCursor ToStyleCursor(string _) => new StyleCursor(StyleKeyword.Null);
+        internal static StyleCursor ToStyleCursor(string _) => new StyleCursor(StyleKeyword.Null);
 
-        public static StyleColor ToStyleColor(string str)
+        internal static StyleColor ToStyleColor(string str)
         {
             var color = new StyleColor();
 
@@ -321,14 +331,14 @@ namespace SynthesisAPI.UIManager
                         float.Parse(numbers[0]) / 255.0f,
                         float.Parse(numbers[1]) / 255.0f,
                         float.Parse(numbers[2]) / 255.0f,
-                        float.Parse(numbers[3]) / 255.0f);
+                        float.Parse(numbers[3]));
                     break;
             }
 
             return color;
         }
 
-        public static StyleEnum<T> ToStyleEnum<T>(string str) where T : struct, IConvertible => new StyleEnum<T>
+        internal static StyleEnum<T> ToStyleEnum<T>(string str) where T : struct, IConvertible => new StyleEnum<T>
             {value = (T) Enum.Parse(typeof(T), MapCssName(str.Replace(" ", "")), true)};
 
         /// <summary>
@@ -339,12 +349,54 @@ namespace SynthesisAPI.UIManager
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static VisualElement GetVisualElement(this UnityVisualElement element)
+        internal static VisualElementAsset GetVisualElement(this _UnityVisualElement element)
         {
-            Type t = Array.Find(typeof(VisualElement).Assembly.GetTypes(), t => 
-                t.Name == element.GetType().Name && t.FullName != element.GetType().FullName
-                ) ?? typeof(VisualElement);
-            return (VisualElement)Activator.CreateInstance(t, new object[] {element});
+            if(element == null)
+            {
+                throw new SynthesisException("Cannot get visual element of null unity element");
+            }
+
+            Type t = default;
+            try
+            {
+                t = typeof(VisualElementAsset).Assembly.GetTypes().First(t =>
+                    t.Name == element.GetType().Name && t.FullName != element.GetType().FullName);
+            }
+            catch(Exception e)
+            {
+                throw new SynthesisException($"Failed to get visual element of {element.GetType().FullName}, could not find matching type", e);
+            }
+            try
+            {
+                BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                return (VisualElementAsset)Activator.CreateInstance(t, flags, null, new object[] { element }, null);
+            }
+            catch(Exception e)
+            {
+                throw new SynthesisException($"Failed to get visual element of {element.GetType().FullName}, attempted type {t.FullName}", e);
+            }
+        }
+
+        private static void SearchForStyleSheet(XmlNodeList nodeList)
+        {
+            foreach (XmlNode node in nodeList)
+            {
+                if (node.Name.Equals("Style"))
+                {
+                    var styleSheetPath = node.Attributes["src"].Value;
+                    var ussAsset = AssetManager.AssetManager.GetAsset<UssAsset>(styleSheetPath);
+                    if (ussAsset == null)
+                    {
+                        throw new SynthesisException($"Failed to find style sheet \n{styleSheetPath}\" when loading style sheets");
+                    }
+                    StyleSheetManager.AttemptRegistryOfNewStyleSheet(ussAsset);
+                }
+
+                if (node.HasChildNodes)
+                {
+                    SearchForStyleSheet(node.ChildNodes);
+                }
+            }
         }
 
     }

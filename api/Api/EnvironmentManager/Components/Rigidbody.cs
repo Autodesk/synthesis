@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
     public class Rigidbody : Component
     {
         internal object Adapter = null;

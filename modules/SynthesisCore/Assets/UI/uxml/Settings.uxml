@@ -1,21 +1,21 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="/modules/SynthesisCore/UI/uss/Window.uss" />
-    <Style src="/modules/SynthesisCore/UI/uss/Settings.uss" />
     <ui:VisualElement name="window" class="window" style="width: 600px; height: 400px;">
+        <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
+        <Style src="/modules/synthesis_core/UI/uss/Settings.uss" />
         <ui:VisualElement name="header" class="window-header-container">
-            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/SynthesisCore/UI/images/settings-icon.png&apos;);" />
+            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/settings-icon.png&apos;);" />
             <ui:Label text="Settings" name="title" class="window-header-title" />
         </ui:VisualElement>
         <ui:VisualElement name="content" class="settings-content">
             <ui:VisualElement name="category-list-container" class="category-list-container">
                 <ui:Button text="        General" name="general-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/SynthesisCore/UI/images/general-settings-icon.png&apos;);" />
+                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/general-settings-icon.png&apos;);" />
                 </ui:Button>
                 <ui:Button text="        Graphics" name="graphics-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/SynthesisCore/UI/images/graphics-icon.png&apos;);" />
+                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/graphics-icon.png&apos;);" />
                 </ui:Button>
                 <ui:Button text="        Controls" name="controls-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/SynthesisCore/UI/images/controls-icon.png&apos;);" />
+                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/controls-icon.png&apos;);" />
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement name="page-container" style="height: 100%; width: 450px;" />

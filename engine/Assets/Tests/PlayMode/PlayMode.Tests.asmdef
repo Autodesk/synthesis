@@ -12,6 +12,7 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Api.dll",
+        "Microsoft.CSharp.dll",
         "System.IO.Compression.dll",
         "System.IO.Compression.FileSystem.dll",
         "System.IO.Compression.ZipFile.dll"

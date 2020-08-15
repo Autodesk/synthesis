@@ -4,12 +4,23 @@
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-	[BuiltinComponent]
     public class Selectable : Component
     {
         public static Selectable? Selected { get; private set; } = null;
 
         public bool IsSelected { get; private set; }
+
+        public delegate void EventDelegate();
+
+        public EventDelegate OnSelect;
+        public EventDelegate OnDeselect;
+
+        public Selectable()
+        {
+            IsSelected = false;
+            OnSelect = () => { };
+            OnDeselect = () => { };
+        }
 
         internal void SetSelected(bool selected)
         {

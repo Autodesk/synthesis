@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<ModuleMetadata xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SynthesisCore</Name>
+  <Version>0.0.1</Version>
+  <TargetPath>synthesis_core</TargetPath>
+  <Author>Synthesis Team</Author>
+  <Description>The main Synthesis module</Description>
+  <Dependencies />
+  <FileManifest>
+    <string>SynthesisCore.dll</string>
+    <string>sprites/arrow.png</string>
+    <string>sprites/arrow-selected.png</string>
+	<string>UI/uxml/TitleBar.uxml</string>
+	<string>UI/uxml/Environments.uxml</string>
+    <string>UI/uxml/General.uxml</string>
+    <string>UI/uxml/Graphics.uxml</string>
+    <string>UI/uxml/Modules.uxml</string>
+    <string>UI/uxml/Module.uxml</string>
+    <string>UI/uxml/Settings.uxml</string>
+    <string>UI/uxml/ProgressBar.uxml</string>
+    <string>UI/uxml/Tab.uxml</string>
+    <string>UI/uxml/Toolbar.uxml</string>
+    <string>UI/uxml/ToolbarButton.uxml</string>
+    <string>UI/uxml/ToolbarCategory.uxml</string>
+    <string>UI/uss/Modules.uss</string>
+    <string>UI/uss/Module.uss</string>
+    <string>UI/uss/Settings.uss</string>
+    <string>UI/uss/Window.uss</string>
+    <string>UI/uss/ProgressBar.uss</string>
+    <string>UI/uss/Toolbar.uss</string>
+    <string>UI/uss/TitleBar.uss</string>
+    <string>UI/images/add-icon.png</string>
+    <string>UI/images/close-icon-black.png</string>
+    <string>UI/images/close-icon-white.png</string>
+    <string>UI/images/info-icon-white.png</string>
+    <string>UI/images/info-icon-white-solid.png</string>
+    <string>UI/images/warning-icon-white-solid.png</string>
+    <string>UI/images/error-icon-white-solid.png</string>
+    <string>UI/images/bug-icon.png</string>
+    <string>UI/images/wrench-icon.png</string>
+    <string>UI/images/controls-icon.png</string>
+    <string>UI/images/environments-icon.png</string>
+    <string>UI/images/general-settings-icon.png</string>
+    <string>UI/images/graphics-icon.png</string>
+    <string>UI/images/help-icon.png</string>
+    <string>UI/images/modules-icon.png</string>
+    <string>UI/images/module-icon.png</string>
+    <string>UI/images/settings-icon.png</string>
+    <string>UI/images/move-entity-icon.png</string>
+    <string>UI/images/delete-icon.png</string>
+    <string>UI/images/toolbar-hide-icon.png</string>
+    <string>UI/images/toolbar-show-icon.png</string>
+  </FileManifest>
+</ModuleMetadata>

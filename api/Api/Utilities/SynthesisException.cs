@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SynthesisAPI.VirtualFileSystem
+namespace SynthesisAPI.Utilities
 {
     public class SynthesisException : Exception
     {

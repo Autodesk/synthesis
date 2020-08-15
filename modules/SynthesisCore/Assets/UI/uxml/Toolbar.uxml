@@ -1,18 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="/modules/SynthesisCore/UI/uss/Toolbar.uss" />
-    <ui:VisualElement name="toolbar">
-        <ui:VisualElement name="top" class="top">
-            <ui:VisualElement name="left-buttons" style="flex-direction: row;">
-                <ui:Button name="add-button" class="toolbar-button" style="background-image: url(&apos;../images/add-icon.png&apos;);" />
-                <ui:Button name="environments-button" class="toolbar-button" style="background-image: url(&apos;../images/environments-icon.png&apos;);" />
-            </ui:VisualElement>
-            <ui:VisualElement name="tab-container" class="tab-container" />
-            <ui:VisualElement name="right-buttons" style="flex-direction: row;">
-                <ui:Button name="modules-button" class="toolbar-button" style="background-image: url(&apos;../images/modules-icon.png&apos;);" />
-                <ui:Button name="settings-button" class="toolbar-button" style="background-image: url(&apos;../images/settings-icon.png&apos;);" />
-                <ui:Button name="help-button" class="toolbar-button" style="background-image: url(&apos;../images/help-icon.png&apos;);" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="bottom" class="bottom" />
-    </ui:VisualElement>
+	<ui:VisualElement class="toolbar" >
+		<Style src="/modules/synthesis_core/UI/uss/Toolbar.uss" />
+	</ui:VisualElement>
 </ui:UXML>

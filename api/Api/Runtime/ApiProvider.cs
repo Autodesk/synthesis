@@ -43,8 +43,6 @@ namespace SynthesisAPI.Runtime
 
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
 
-		public static VisualTreeAsset? GetDefaultUIAsset(string assetName) => Instance?.GetDefaultUIAsset(assetName);
-
 		// public static TUnityType? InstantiateFocusable<TUnityType>()
 		// 	where TUnityType : UnityEngine.UIElements.Focusable =>
 		// 	Instance?.InstantiateFocusable<TUnityType>();

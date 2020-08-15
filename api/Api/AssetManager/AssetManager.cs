@@ -22,7 +22,7 @@ namespace SynthesisAPI.AssetManager
         /// <param name="args"></param>
         /// <returns></returns>
         public delegate Asset? HandlerFunc(string name, Permissions perm,
-            string sourcePath, params dynamic[] args);
+            string sourcePath, params object[] args);
 
         /// <summary>
         /// Register a handler for importing a new type of asset
@@ -185,13 +185,13 @@ namespace SynthesisAPI.AssetManager
         /// <param name="args"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static Asset? Import(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        public static Asset? Import(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
 
-        internal static Asset? ImportInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static Asset? ImportInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args)
         {
             return InnerInstance.Import(assetType, createOnFail, false, null, targetPath, name, perm, sourcePath, args);
         }
@@ -208,13 +208,13 @@ namespace SynthesisAPI.AssetManager
         /// <param name="args"></param>
         /// <returns></returns>
         [ExposedApi]
-        public static TAsset? Import<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        public static TAsset? Import<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportInner<TAsset>(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
 
-        internal static TAsset? ImportInner<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+        internal static TAsset? ImportInner<TAsset>(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args) where TAsset : Asset
         {
             return (TAsset?)ImportInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
@@ -236,14 +236,14 @@ namespace SynthesisAPI.AssetManager
         /// <returns></returns>
         [ExposedApi]
         public static Asset? Import(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
+            Permissions perm, string sourcePath, params object[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportInner(assetType, stream, targetPath, name, perm, sourcePath, args);
         }
 
         internal static Asset? ImportInner(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
+            Permissions perm, string sourcePath, params object[] args)
         {
             return InnerInstance.Import(assetType, false, false, stream, targetPath, name, perm, sourcePath, args);
         }
@@ -262,14 +262,14 @@ namespace SynthesisAPI.AssetManager
         /// <returns></returns>
         [ExposedApi]
         public static TAsset? Import<TAsset>(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+            Permissions perm, string sourcePath, params object[] args) where TAsset : Asset
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportInner<TAsset>(assetType, stream, targetPath, name, perm, sourcePath, args);
         }
 
         internal static TAsset? ImportInner<TAsset>(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args) where TAsset : Asset
+            Permissions perm, string sourcePath, params object[] args) where TAsset : Asset
         {
             return (TAsset?)ImportInner(assetType, stream, targetPath, name, perm, sourcePath, args);
         }
@@ -277,27 +277,27 @@ namespace SynthesisAPI.AssetManager
         #region Lazy Imports
 
         [ExposedApi]
-        public static LazyAsset? ImportLazy(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        public static LazyAsset? ImportLazy(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportLazyInner(assetType, createOnFail, targetPath, name, perm, sourcePath, args);
         }
 
-        internal static LazyAsset? ImportLazyInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params dynamic[] args)
+        internal static LazyAsset? ImportLazyInner(string assetType, bool createOnFail, string targetPath, string name, Permissions perm, string sourcePath, params object[] args)
         {
             return (LazyAsset?)InnerInstance.Import(assetType, createOnFail, true, null, targetPath, name, perm, sourcePath, args);
         }
 
         [ExposedApi]
         public static LazyAsset? ImportLazy(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
+            Permissions perm, string sourcePath, params object[] args)
         {
             using var _ = ApiCallSource.StartExternalCall();
             return ImportLazyInner(assetType, stream, targetPath, name, perm, sourcePath, args);
         }
 
         internal static LazyAsset? ImportLazyInner(string assetType, Stream stream, string targetPath, string name,
-            Permissions perm, string sourcePath, params dynamic[] args)
+            Permissions perm, string sourcePath, params object[] args)
         {
             return (LazyAsset?)InnerInstance.Import(assetType, false, true, stream, targetPath, name, perm, sourcePath, args);
         }
@@ -443,14 +443,14 @@ namespace SynthesisAPI.AssetManager
             }
 
             public Asset? Import(string assetType, bool createOnFail, bool lazyImport, Stream? sourceStream, string targetPath, string name,
-                Permissions perm, string sourcePath, params dynamic[] args)
+                Permissions perm, string sourcePath, params object[] args)
             {
                 var types = SplitAssetType(assetType);
                 return Import(types[0], types[1], createOnFail, lazyImport, sourceStream, targetPath, name, perm, sourcePath, args);
             }
 
             public Asset? Import(string type, string subtype, bool createOnFail, bool lazyImport, Stream? sourceStream, string targetPath,
-                string name, Permissions perm, string sourcePath, params dynamic[] args)
+                string name, Permissions perm, string sourcePath, params object[] args)
             {
                 if (!AssetHandlers.ContainsKey(type) || !AssetHandlers[type].ContainsKey(subtype))
                 {

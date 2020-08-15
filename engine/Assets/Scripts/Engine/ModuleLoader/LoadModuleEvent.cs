@@ -4,13 +4,15 @@ namespace Engine.ModuleLoader
 {
 	public class LoadModuleEvent : IEvent
 	{
-		public LoadModuleEvent(string path)
+		public LoadModuleEvent(string name, string version)
 		{
-			Path = path;
+			Name = name;
+			Version = version;
 		}
 
-		public readonly string Path;
+		public readonly string Name;
+		public readonly string Version;
 
-		public object[] GetArguments() => new object[]{Path};
+		public object[] GetArguments() => new object[]{Name, Version};
 	}
 }

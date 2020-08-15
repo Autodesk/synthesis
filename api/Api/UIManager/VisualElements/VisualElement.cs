@@ -2,25 +2,22 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
-using UnityVisualElement = UnityEngine.UIElements.VisualElement;
+using _UnityVisualElement = UnityEngine.UIElements.VisualElement;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class VisualElement
     {
-        protected UnityVisualElement _visualElement;
-
-        public static explicit operator UnityVisualElement(VisualElement element) => element._visualElement;
-        public static explicit operator VisualElement(UnityVisualElement element) => new VisualElement(element);
+        private protected _UnityVisualElement _visualElement;
 
         public VisualElement()
         {
-            _visualElement = ApiProvider.CreateUnityType<UnityVisualElement>()!;
+            _visualElement = ApiProvider.CreateUnityType<_UnityVisualElement>()!;
             if (_visualElement == null)
                 throw new Exception("Failed to instantiate VisualElement");
         }
 
-        public VisualElement(UnityVisualElement visualElement)
+        internal VisualElement(_UnityVisualElement visualElement)
         {
             _visualElement = visualElement;
         }
@@ -30,11 +27,32 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement.name = value;
         }
 
+        public bool Focusable
+        {
+            get => _visualElement.focusable;
+            set => _visualElement.focusable = value;
+        }
+
+        /// <summary>
+        /// TODO: tooltips do not seem to be supported by Unity yet
+        /// </summary>
+        public string Tooltip
+        {
+            get => _visualElement.tooltip;
+            set => _visualElement.tooltip = value;
+        }
+
+        public bool Enabled
+        {
+            get => _visualElement.enabledSelf;
+            set => _visualElement.SetEnabled(value);
+        }
+
         public IStyle style {
             get => _visualElement.style;
         }
 
-        internal UnityVisualElement UnityVisualElement {
+        internal _UnityVisualElement UnityVisualElement {
             get => _visualElement;
         }
 
@@ -46,34 +64,70 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
             return null;
         }
+        public IEnumerable<VisualElement> GetAllChildrenWhere(Func<VisualElement, bool> predicate)
+        {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+            {
+                var synChild = child.GetVisualElement();
+                if (predicate(synChild))
+                {
+                    children.Add(synChild);
+                }
+                children.AddRange(synChild.GetAllChildrenWhere(predicate));
+            }
+            return children;
+        }
 
-        public IEnumerable<VisualElement> GetChildren() {
+        public IEnumerable<VisualElement> GetAllChildren()
+        {
+            var children = new List<VisualElement>();
+            foreach (var child in _visualElement.Children())
+            {
+                var synChild = child.GetVisualElement();
+                children.Add(synChild);
+                children.AddRange(synChild.GetAllChildren());
+            }
+            return children;
+        }
+
+        public IEnumerable<VisualElement> GetChildren()
+        {
             var children = new List<VisualElement>();
             foreach (var child in _visualElement.Children())
                 children.Add(child.GetVisualElement());
             return children;
         }
 
-        public VisualElement Get(string name = null, string className = null) => _visualElement.Q(name, className).GetVisualElement();
+        public VisualElement Get(string name = null, string className = null)
+        {
+            if (_visualElement == null)
+                return null;
+            var found = _visualElement.Q(name, className);
+            if (found == null)
+                return null;
+            try
+            {
+                return found.GetVisualElement();
+            }
+            catch (Exception)
+            {
+                return new VisualElement(found);
+            }
+        }
+
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
+        public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
+        public void RemoveAt(int index) => _visualElement.RemoveAt(index);
+        public void Insert(int index, VisualElement element) => _visualElement.Insert(index, element._visualElement);
+        public void AddToClassList(string className) => _visualElement.AddToClassList(className);
+        public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
+        public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
+        public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)
         {
             _visualElement = UIParser.ParseEntry($"{name}:{value}", _visualElement);
         }
-        
-        #region Dynamic Accessors
-
-        /// <summary>
-        /// Allows you to access <see cref="https://docs.unity3d.com/ScriptReference/UIElements.VisualElement.html">VisualElement</see>
-        /// and still compile without the UnityEngine assembly. This is going to be protected until we need it
-        /// </summary>
-        protected virtual dynamic DynamicVisualElement
-        {
-            get => _visualElement;
-            set => _visualElement = value is VisualElement ? value : _visualElement;
-        }
-
-        #endregion
     }
 }

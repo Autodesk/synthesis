@@ -5,18 +5,12 @@ using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.InputManager;
-using SynthesisAPI.InputManager.InputEvents;
-using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
 using SynthesisCore.Systems;
 
 namespace SynthesisCore
 {
-    [ModuleExport]
     public class SampleSystem : SystemBase
     {
         private Entity testBody;
@@ -106,7 +100,9 @@ namespace SynthesisCore
 
         private Mesh cube()
         {
-            Mesh m = new Mesh();
+            if (m == null)
+                m = new Mesh();
+
             m.Vertices = new List<Vector3D>()
             {
                 new Vector3D(-0.5,-0.5,-0.5),
@@ -135,6 +131,8 @@ namespace SynthesisCore
             };
             return m;
         }
+
+        public override void Teardown() { }
 
         /*
         [TaggedCallback("input/move")]

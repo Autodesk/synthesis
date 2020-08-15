@@ -1,0 +1,22 @@
+.module-icon {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.module-container {
+    height: 50px;
+    width: 100%;
+    flex-direction: row;
+    background-color: rgba(237, 237, 237, 255);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}

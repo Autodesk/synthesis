@@ -11,7 +11,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
     /// <summary>
     /// A container for Joints stored in an entity
     /// </summary>
-    [BuiltinComponent]
     public class Joints : Component
     {
         private Guid _guid;

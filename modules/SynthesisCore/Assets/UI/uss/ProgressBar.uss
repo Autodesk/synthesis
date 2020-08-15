@@ -1,0 +1,26 @@
+.progress-bar {
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+}
+
+.progress-bar-container{
+	width: 100%;
+	height: 100%;
+	background-color: rgb(125, 125, 125);
+	flex-direction: row;
+	flex-shrink: 0;
+}
+
+.progress-bar-progress {
+	background-color: rgb(75, 149, 211);
+	height: 100%;
+	width: 0%;
+}
+
+.progress-bar-label {
+	height: 100%;
+	position: absolute;
+	justify-content: flex-start;
+	text-align: middle-center;
+}

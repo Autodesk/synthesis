@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+	<ui:VisualElement class="toolbar-category" >
+		<ui:VisualElement class="toolbar-category-container" >
+			<Style src="/modules/synthesis_core/UI/uss/Toolbar.uss" />
+			<ui:VisualElement class="toolbar-category-inner" />
+			<ui:Label text="label" class="toolbar-category-label" />
+		</ui:VisualElement>
+		<ui:VisualElement class="toolbar-category-divider" />
+	</ui:VisualElement>
+</ui:UXML>

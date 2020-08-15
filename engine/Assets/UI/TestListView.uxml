@@ -1,3 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:ListView focusable="True" name="test-list-view" style="width: 184px; height: 57px;" />
-</ui:UXML>

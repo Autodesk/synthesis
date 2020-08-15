@@ -6,7 +6,6 @@ using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
     public class AudioSource : Component
     {
         internal Action<string, object> LinkedSetter;

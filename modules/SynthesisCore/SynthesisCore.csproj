@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Utilities\Utilities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Api">
       <HintPath>..\..\api\Api\bin\Debug\netstandard2.0\Api.dll</HintPath>
     </Reference>
@@ -25,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Assets" />
-    <Folder Include="Components\" />
     <Folder Include="Resources" />
   </ItemGroup>
 

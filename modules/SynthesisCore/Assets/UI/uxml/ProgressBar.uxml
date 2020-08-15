@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="progress-bar" class="progress-bar" style="width: 500px; height: 50px;">
+		<Style src="/modules/synthesis_core/UI/uss/ProgressBar.uss" />
+		<ui:VisualElement name="progress-bar-container" class="progress-bar-container" >
+			<ui:VisualElement name="progress-bar-progress" class="progress-bar-progress" />
+		</ui:VisualElement>
+		<ui:Label text="Label" name="progress-bar-label" class="progress-bar-label" />
+	</ui:VisualElement>
+</ui:UXML>

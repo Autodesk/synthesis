@@ -8,7 +8,6 @@ using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
     public class MeshCollider : Component
     {
         #region Properties

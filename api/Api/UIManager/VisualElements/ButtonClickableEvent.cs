@@ -5,6 +5,13 @@ namespace SynthesisAPI.UIManager.VisualElements
 {
     public struct ButtonClickableEvent: IEvent
     {
-        public object[] GetArguments() => null!;
+        public readonly string Name;
+
+        public ButtonClickableEvent(string name)
+        {
+            Name = name;
+        }
+
+        public object[] GetArguments() => new[] { Name };
     }
 }

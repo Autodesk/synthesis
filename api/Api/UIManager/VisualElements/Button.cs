@@ -1,32 +1,28 @@
 ﻿using SynthesisAPI.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SynthesisAPI.EventBus;
-using UnityEngine;
-using UnityButton = UnityEngine.UIElements.Button;
+using _UnityButton = UnityEngine.UIElements.Button;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.UIManager.VisualElements
 {
     public class Button : VisualElement
     {
         private EventBus.EventBus.EventCallback _callback;
-        
-        public UnityButton Element
+
+        internal _UnityButton Element
         {
-            get => (_visualElement as UnityButton)!;
+            get => (_visualElement as _UnityButton)!;
             set => _visualElement = value;
         }
 
+        private const string EventTagPrefix = "button/";
+
         public string EventTag
         {
-            get => $"button/{Element.name}";
+            get => $"{EventTagPrefix}{Element.name}";
         }
-        
-        public static explicit operator UnityButton(Button element) => element.Element;
-        public static explicit operator Button(UnityButton element) => new Button(element);
 
         public string Text {
             get => Element.text;
@@ -35,12 +31,12 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public Button()
         {
-            _visualElement = ApiProvider.CreateUnityType<UnityButton>()!;
+            _visualElement = ApiProvider.CreateUnityType<_UnityButton>()!;
             if (_visualElement == null)
                 throw new Exception();
         }
 
-        public Button(UnityButton element)
+        internal Button(_UnityButton element)
         {
             Element = element;
         }
@@ -54,22 +50,18 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public override IEnumerable<object> PostUxmlLoad()
         {
-            Element.clickable.clicked += () => EventBus.EventBus.Push(EventTag, new ButtonClickableEvent());
+            Element.clickable.clicked += () => EventBus.EventBus.Push(EventTag, new ButtonClickableEvent(Name));
             base.PostUxmlLoad();
             return null!;
         }
 
         public void Subscribe(Action<IEvent> action)
         {
+            if (EventTag == EventTagPrefix)
+                Logger.Log("Subscribing to unnamed button, cannot differentiate click event", LogLevel.Warning);
             _callback = e => action(e);
             EventBus.EventBus.NewTagListener(EventTag, _callback);
             PostUxmlLoad();
-        }
-        
-        protected override dynamic DynamicVisualElement
-        {
-            get => Element;
-            set => Element = value is UnityButton ? value : Element;
         }
     }
 }

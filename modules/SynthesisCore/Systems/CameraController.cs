@@ -3,24 +3,25 @@ using MathNet.Spatial.Units;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
-using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
-using Utilities;
 
 #nullable enable
 
 namespace SynthesisCore.Systems
 {
-    [ModuleExport]
+    [InitializationPriority(2)]
     public class CameraController : SystemBase
     {
-        public static float SensitivityX { get => 2; } // TODO: integrate with preference manager
-        public static float SensitivityY { get => 2; }
-        public static float SensitivityZoom { get => 3; }
+        public static CameraController Instance;
+        public static double SensitivityX { get => 2; } // TODO: integrate with preference manager
+        public static double SensitivityY { get => 2; }
+        public static double SensitivityZoom { get => 3; }
+
+        public static double SpeedModifier => UseSpeedModifier ? 3 : 1;
+        private static bool UseSpeedModifier = false;
 
         private bool inFreeRoamMode = true;
 
@@ -30,13 +31,15 @@ namespace SynthesisCore.Systems
         private Vector3D offset = new Vector3D();
 
         private Entity? cameraEntity = null;
-        private Transform cameraTransform;
+        public Transform cameraTransform { get; private set; }
 
         /// <summary>
         /// An optional target to focus on
         /// </summary>
         private Selectable? SelectedTarget = null;
         private Selectable? LastSelectedTarget = null;
+
+        public static bool EnableCameraPan = true;
 
         // These variables are used to move the camera when a new target is selected
         private bool isCameraMovingToNewFocus = false;
@@ -49,16 +52,21 @@ namespace SynthesisCore.Systems
         private const double MoveToFocusCameraMinSpeed = 8; // distance per sec
         private const double MoveToFocusCameraMinDistance = 10; // distance
 
-        private float xMod = 0, yMod = 0, zMod = 0, lastXMod = 0, lastYMod = 0, lastZMod = 0; // Used for accelerating the camera movement speed
+        private double xMod = 0, yMod = 0, zMod = 0, lastXMod = 0, lastYMod = 0, lastZMod = 0; // Used for accelerating the camera movement speed
 
         private static readonly Vector3D StartPosition = new Vector3D(5, 5, 5);
         private const double MinDistance = 0.25;
         private const double MaxDistance = 50;
         private const double MinHeight = 0.25;
-        private const double FreeRoamCameraMoveDelta = 0.03;
+        private static double FreeRoamCameraMoveDelta => 0.03 * SpeedModifier;
 
         public override void Setup()
         {
+            if(Instance == null)
+            {
+                Instance = this;
+            }
+
             if (cameraEntity == null)
             {
                 cameraEntity = EnvironmentManager.AddEntity();
@@ -85,6 +93,7 @@ namespace SynthesisCore.Systems
             InputManager.AssignDigitalInput("camera_right", new Digital("d"));
             InputManager.AssignDigitalInput("camera_up", new Digital("space"));
             InputManager.AssignDigitalInput("camera_down", new Digital("left shift"));
+            InputManager.AssignDigitalInput("camera_boost", new Digital("left ctrl"));
 
             // Bind controls for orbit
             InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0")); // TODO put control settings in preference manager
@@ -92,6 +101,8 @@ namespace SynthesisCore.Systems
             InputManager.AssignAxis("Mouse X", new Analog("Mouse X"));
             InputManager.AssignAxis("Mouse Y", new Analog("Mouse Y"));
         }
+
+        public override void Teardown() { }
 
         [TaggedCallback("input/camera_forward")]
         public void CameraForward(DigitalEvent digitalEvent)
@@ -149,6 +160,12 @@ namespace SynthesisCore.Systems
             {
                 cameraTransform.Position += UnitVector3D.YAxis.ScaleBy(-FreeRoamCameraMoveDelta);
             }
+        }
+
+        [TaggedCallback("input/camera_boost")]
+        public void CameraBoost(DigitalEvent digitalEvent)
+        {
+            UseSpeedModifier = inFreeRoamMode && digitalEvent.State == DigitalState.Held;
         }
 
         /// <summary>
@@ -235,8 +252,7 @@ namespace SynthesisCore.Systems
         private void SetNewFocus(Vector3D newFocusPoint)
         {
             focusPoint = newFocusPoint;
-
-            isCameraMovingToNewFocus = true;
+            
             moveTime = 0;
             cameraMoveStartPosition = cameraTransform.Position;
 
@@ -244,6 +260,7 @@ namespace SynthesisCore.Systems
             //targetRotation = MathUtil.LookAt((-offset).Normalize()).Normalized;
 
             offset = cameraMoveStartPosition - focusPoint;
+            isCameraMovingToNewFocus = offset.Length > MoveToFocusCameraMinDistance;
 
             timeToReachNewFocus = Math.Min(MoveCameraToFocusTime, offset.Length / MoveToFocusCameraMinSpeed);
 
@@ -259,7 +276,7 @@ namespace SynthesisCore.Systems
 
             lastZMod = zMod == 0 ? lastZMod : zMod;
 
-            if (isMouseDragging)
+            if (isMouseDragging && EnableCameraPan)
             {
                 // Add an intertial effect to camera movement (TODO use actual last cameraTransform.Position delta instead?), and add an option to enable this to preference manager
                 xMod = -InputManager.GetAxisValue("Mouse X") * SensitivityX;
@@ -272,6 +289,13 @@ namespace SynthesisCore.Systems
 
                 lastXMod = xMod == 0 ? lastXMod : xMod;
                 lastYMod = yMod == 0 ? lastYMod : yMod;
+            }
+            else
+            {
+                xMod = 0;
+                lastXMod = 0;
+                yMod = 0;
+                lastYMod = 0;
             }
         }
 

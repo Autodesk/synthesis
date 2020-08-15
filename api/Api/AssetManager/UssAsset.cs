@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using SynthesisAPI.UIManager;
+using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 
 namespace SynthesisAPI.AssetManager
@@ -9,7 +11,7 @@ namespace SynthesisAPI.AssetManager
     /// </summary>
     public class UssAsset : Asset
     {
-        public StyleSheet _styleSheet { get; private set; }
+        public StyleSheet StyleSheet { get; private set; }
         
         public UssAsset(string name, Permissions perm, string sourcePath)
         {
@@ -19,7 +21,14 @@ namespace SynthesisAPI.AssetManager
         public override IEntry Load(byte[] data)
         {
             string[] contents = Encoding.UTF8.GetString(data).Split('\n');
-            _styleSheet = new StyleSheet(contents);
+            try
+            {
+                StyleSheet = new StyleSheet(contents);
+            }
+            catch(Exception e)
+            {
+                Logger.Log($"Failed to load stylesheet {Name}\n{e}", LogLevel.Error);
+            }
             return this;
         }
     }

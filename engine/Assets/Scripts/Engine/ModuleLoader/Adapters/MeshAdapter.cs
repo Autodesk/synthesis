@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
-using MathNet.Spatial.Euclidean;
+using System.Linq;
+using Engine.Util;
 using SynthesisAPI.Utilities;
+using UnityEditor;
 using UnityEngine;
 using Logger = UnityEngine.Logger;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
@@ -11,13 +13,6 @@ namespace Engine.ModuleLoader.Adapters
 	{
 		private Material _defaultMaterial = null;
 		private MeshRenderer _renderer = null;
-
-		private void ToUnity()
-        {
-			filter.mesh.vertices = Convert(instance.Vertices);
-			filter.mesh.uv = Convert(instance.UVs);
-			filter.mesh.triangles = instance.Triangles.ToArray();
-		}
 
 		public void SetInstance(Mesh mesh)
 		{
@@ -38,8 +33,8 @@ namespace Engine.ModuleLoader.Adapters
 			_renderer.material = _defaultMaterial;
 
 			filter.mesh = new UnityEngine.Mesh();
-			filter.mesh.vertices = Convert(instance.Vertices);
-			filter.mesh.uv = Convert(instance.UVs);
+			filter.mesh.vertices = Misc.MapAll(instance._vertices, Misc.MapVector3D).ToArray();
+			filter.mesh.uv = Misc.MapAll(instance._uvs, x => new Vector2((float)x.X, (float)x.Y)).ToArray();
 			filter.mesh.triangles = instance.Triangles.ToArray();
 			
 			instance.PropertyChanged += (s, e) =>
@@ -47,10 +42,10 @@ namespace Engine.ModuleLoader.Adapters
 				switch (e.PropertyName.ToLower())
 				{
 					case "vertices":
-						filter.mesh.vertices = Convert(instance._vertices);
+						filter.mesh.vertices = Misc.MapAll(instance._vertices, Misc.MapVector3D).ToArray();
 						break;
 					case "uvs":
-						filter.mesh.uv = Convert(instance._uvs);
+						filter.mesh.uv = Misc.MapAll(instance._uvs, x => new Vector2((float)x.X, (float)x.Y)).ToArray();
 						break;
 					case "triangles":
 						filter.mesh.triangles = instance._triangles.ToArray();
@@ -73,20 +68,5 @@ namespace Engine.ModuleLoader.Adapters
 		internal Mesh instance;
 		internal MeshFilter filter;
 		internal MeshRenderer renderer;
-
-		private Vector3[] Convert(List<Vector3D> vec)
-		{
-			Vector3[] vectors = new Vector3[vec.Count];
-			for (int i = 0; i < vec.Count; i++)
-				vectors[i] = MathUtil.MapVector3D(vec[i]);
-			return vectors;
-		}
-		private Vector2[] Convert(List<Vector2D> vec)
-		{
-			Vector2[] vectors = new Vector2[vec.Count];
-			for (int i = 0; i < vec.Count; i++)
-				vectors[i] = MathUtil.MapVector2D(vec[i]);
-			return vectors;
-		}
 	}
 }

@@ -26,25 +26,11 @@ namespace SynthesisAPI.AssetManager
                 throw new Exception("Failed to load image");
             }
 
-            _sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new UnityEngine.Vector2(.5f, .5f));
+            Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new UnityEngine.Vector2(.5f, .5f));
 
             return this;
         }
 
-        private Sprite _sprite = null!;
-
-        [ExposedApi]
-        public Sprite Sprite {
-            get {
-                using var _ = ApiCallSource.StartExternalCall();
-                return GetSpriteInner();
-            } 
-        }
-
-        private Sprite GetSpriteInner()
-        {
-            ApiCallSource.AssertAccess(Permissions, Access.Read);
-            return _sprite;
-        }
+        internal Sprite Sprite { get; private set; }
     }
 }

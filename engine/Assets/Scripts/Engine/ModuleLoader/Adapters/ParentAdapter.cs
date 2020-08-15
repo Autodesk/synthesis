@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.EnvironmentManager;
 using static Engine.ModuleLoader.Api;
@@ -24,7 +23,7 @@ namespace Engine.ModuleLoader.Adapters
             };
         }
 
-        void OnDestroy()
+        public void OnDestroy()
         {
             instance.Entity.Value.RemoveEntity();
         }

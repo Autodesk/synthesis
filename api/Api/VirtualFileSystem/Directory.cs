@@ -92,7 +92,7 @@ namespace SynthesisAPI.VirtualFileSystem
         {
             if(paths.Length == 0)
             {
-                throw new DirectroyExpection();
+                throw new DirectoryException();
             }
             string target = paths[0];
             paths = paths.Skip(1).ToArray();
@@ -277,11 +277,11 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (value.Name.Equals(""))
             {
-                throw new DirectroyExpection("Directory: adding entry with empty name");
+                throw new DirectoryException("Directory: adding entry with empty name");
             }
             if (Entries.ContainsKey(value.Name))
             {
-                throw new DirectroyExpection($"Directory: adding entry to \"{GetPathInner()}\" with existing name \"{value.Name}\"");
+                throw new DirectoryException($"Directory: adding entry to \"{GetPathInner()}\" with existing name \"{value.Name}\"");
             }
             Entries.Add(value.Name, value);
 
@@ -292,7 +292,7 @@ namespace SynthesisAPI.VirtualFileSystem
             {
                 if (dir.Entries[".."] != null)
                 {
-                    throw new DirectroyExpection($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
+                    throw new DirectoryException($"Directory: adding entry \"{value.Name}\" with existing parent (entries cannot exist in multiple directories)");
                 }
                 dir.Entries[".."] = dir.Parent;
             }
@@ -313,7 +313,7 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
-                throw new DirectroyExpection("Cannot remove this \".\" or parent \"..\" from directory entries");
+                throw new DirectoryException("Cannot remove this \".\" or parent \"..\" from directory entries");
             }
 
             if (Entries.ContainsKey(key))
@@ -334,7 +334,7 @@ namespace SynthesisAPI.VirtualFileSystem
             ApiCallSource.AssertAccess(Permissions, Access.Write);
             if (key.Equals("") || key.Equals(".") || key.Equals(".."))
             {
-                throw new DirectroyExpection("Cannot remove this \".\" or parent \"..\" from directory entries");
+                throw new DirectoryException("Cannot remove this \".\" or parent \"..\" from directory entries");
             }
 
             if (Entries.ContainsKey(key))

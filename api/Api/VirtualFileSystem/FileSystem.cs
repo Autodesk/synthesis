@@ -148,7 +148,7 @@ namespace SynthesisAPI.VirtualFileSystem
             var (top, actualPath) = Directory.GetTopDirectory(path);
             if (top != Instance.RootNode.Name)
             {
-                throw new DirectroyExpection("Path outside of virtual file system");
+                throw new DirectoryException($"Path outside of virtual file system \"{string.Join(Directory.DirectorySeparatorChar.ToString(), path)}\"");
             }
             if (path.Length > MaxDirectoryDepth)
             {
@@ -203,7 +203,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 }
                 if(dir == null)
                 {
-                    throw new DirectroyExpection("Failed to create directory");
+                    throw new DirectoryException("Failed to create directory");
                 }
             }
             return dir;
@@ -369,6 +369,7 @@ namespace SynthesisAPI.VirtualFileSystem
                 RootNode = new Directory("", Permissions.PublicReadOnly); // root node name is "" so paths begin with "/" (since path strings are split at '/')
                 RootNode.AddEntryInner(new Directory("environment", Permissions.PublicReadWrite));
                 RootNode.AddEntryInner(new Directory("modules", Permissions.PublicReadWrite));
+                RootNode.AddEntryInner(new Directory("runtime", Permissions.PublicReadWrite));
                 RootNode.AddEntryInner(new Directory("temp", Permissions.PublicReadWrite));
             }
 

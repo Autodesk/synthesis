@@ -5,7 +5,7 @@ using SynthesisAPI.Modules.Attributes;
 
 namespace SynthesisCore
 {
-    [ModuleExport]
+    [InitializationPriority(1)]
     public class InputSystem : SystemBase
     {
         public InputSystem() { }
@@ -18,5 +18,7 @@ namespace SynthesisCore
         {
             InputManager.UpdateInputs();
         }
+
+        public override void Teardown() { }
     }
 }

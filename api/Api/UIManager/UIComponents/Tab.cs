@@ -7,14 +7,18 @@ namespace SynthesisAPI.UIManager.UIComponents
     public struct Tab
     {
         public string Name { get; private set; }
-        public VisualElementAsset Ui { get; private set; }
-        public Action<VisualElement> BindFunc { get; set; }
+        public VisualElementAsset ToobarAsset { get; private set; }
+        public BindToolbarDelegate BindToolbar { get; set; }
+        internal Button buttonElement;
 
-        public Tab(string name, VisualElementAsset ui, Action<VisualElement> bindFunc)
+        public delegate void BindToolbarDelegate(VisualElement toolbarElement);
+
+        public Tab(string name, VisualElementAsset toolbarAsset, BindToolbarDelegate bindToolbar)
         {
             Name = name;
-            Ui = ui;
-            BindFunc = bindFunc;
+            ToobarAsset = toolbarAsset;
+            BindToolbar = bindToolbar;
+            buttonElement = null;
         }
     }
 }

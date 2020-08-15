@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynthesisAPI.Utilities;
+using System;
 
 namespace SynthesisAPI.VirtualFileSystem
 {

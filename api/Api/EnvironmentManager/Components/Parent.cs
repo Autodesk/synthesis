@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
-    [BuiltinComponent]
     public class Parent : Component
     {
         public event PropertyChangedEventHandler PropertyChanged;

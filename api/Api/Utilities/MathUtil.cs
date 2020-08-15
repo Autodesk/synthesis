@@ -14,12 +14,12 @@ namespace SynthesisAPI.Utilities
 			var pitch = inAngle.Beta.Radians;
 			var roll = inAngle.Gamma.Radians;
 
-			var sinYaw = Math.Sin(yaw / 2);
-			var cosYaw = Math.Cos(yaw / 2);
-			var sinPitch = Math.Sin(pitch / 2);
-			var cosPitch = Math.Cos(pitch / 2);
-			var sinRoll = Math.Sin(roll / 2);
-			var cosRoll = Math.Cos(roll / 2);
+			var sinYaw = System.Math.Sin(yaw / 2);
+			var cosYaw = System.Math.Cos(yaw / 2);
+			var sinPitch = System.Math.Sin(pitch / 2);
+			var cosPitch = System.Math.Cos(pitch / 2);
+			var sinRoll = System.Math.Sin(roll / 2);
+			var cosRoll = System.Math.Cos(roll / 2);
 
 			var qx = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw;
 
@@ -96,10 +96,10 @@ namespace SynthesisAPI.Utilities
 			return MapUnityQuaternion(UnityEngine.Quaternion.RotateTowards(MapQuaternion(from), MapQuaternion(to), maxDegreesDelta)).Normalized;
 		}
 
+		internal static Vector2D MapVector2(UnityEngine.Vector2 vec) =>
+			new Vector2D(vec.x, vec.y);
 		internal static UnityEngine.Vector2 MapVector2D(Vector2D vec) =>
 			new UnityEngine.Vector2((float)vec.X, (float)vec.Y);
-		internal static Vector2D MapVector3(UnityEngine.Vector2 vec) =>
-			new Vector2D(vec.x, vec.y);
 		internal static UnityEngine.Vector3 MapVector3D(Vector3D vec) =>
 			new UnityEngine.Vector3((float)vec.X, (float)vec.Y, (float)vec.Z);
 		internal static Vector3D MapVector3(UnityEngine.Vector3 vec) =>
@@ -128,9 +128,9 @@ namespace SynthesisAPI.Utilities
 			}
 
 			// Math from https://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-			var real = Math.Cos(angle.Radians / 2d);
+			var real = System.Math.Cos(angle.Radians / 2d);
 
-			var factor = Math.Sin(angle.Radians / 2d);
+			var factor = System.Math.Sin(angle.Radians / 2d);
 			var imagX = axis.X * factor;
 			var imagY = axis.Y * factor;
 			var imagZ = axis.Z * factor;
