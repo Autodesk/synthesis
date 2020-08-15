@@ -26,6 +26,8 @@ namespace Engine.ModuleLoader.Adapters
 
             instance.PropertyChanged += UpdateProperty;
 
+            unityRigidbody.sleepThreshold = 0;
+
             unityRigidbody.useGravity = instance.useGravity;
             unityRigidbody.isKinematic = instance.isKinematic;
             unityRigidbody.mass = instance.mass;

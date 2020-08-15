@@ -3,6 +3,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
+using SynthesisAPI.EventBus;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
@@ -92,7 +93,7 @@ namespace Engine.ModuleLoader.Adapters
 				var eventTrigger = gameObject.AddComponent<EventTrigger>();
 				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
 				{
-					if (((PointerEventData)data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
+					if (((PointerEventData) data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
 						Select();
 				}));
 				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
@@ -101,7 +102,7 @@ namespace Engine.ModuleLoader.Adapters
 			if ((collider = gameObject.GetComponent<MeshColliderAdapter>()) == null)
 				throw new Exception("Entity must have a mesh collider component");
 
-			materials = collider.mesh.renderer.materials;
+			materials = GetComponent<MeshRenderer>().materials;
 		}
 
 		public void Start()
@@ -133,5 +134,9 @@ namespace Engine.ModuleLoader.Adapters
 				Deselect();
 			}
 		}
+		
+		
 	}
+
+	
 }

@@ -22,6 +22,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string ExportedJointUuid { get; set; } = string.Empty;
+
         internal bool useGravity = true;
         public bool UseGravity {
             get => useGravity;

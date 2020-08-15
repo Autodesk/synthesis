@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
@@ -10,26 +12,97 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
+using SynthesisCore.Systems;
 
 namespace SynthesisCore
 {
     [ModuleExport]
     public class SampleSystem : SystemBase
     {
+        private Entity testBody;
+
+        private MotorController frontLeft, frontRight, backLeft, backRight;
+        private MotorController arm;
 
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
-            Entity e = EnvironmentManager.AddEntity();
+            testBody = EnvironmentManager.AddEntity();
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
-            e.AddBundle(o);
+            testBody.AddBundle(o);
+
+            (float r, float g, float b, float a)[] colors = {
+                (1, 0, 0, 1),
+                (0, 1, 0, 1),
+                (0, 0, 1, 1),
+                (1, 0, 1, 1)
+            };
+
+            var TestMotor = new MotorType() {
+                MaxVelocity = 10000,
+                Torque = 50,
+                MotorName = "Testing Motor"
+            };
+
+            frontLeft = MotorManager.AllMotorControllers[3];
+            frontRight = MotorManager.AllMotorControllers[4];
+            backLeft = MotorManager.AllMotorControllers[1];
+            backRight = MotorManager.AllMotorControllers[2];
+
+            frontLeft.Gearing = 1.0f / 10.0f;
+            frontLeft.MotorType = TestMotor;
+            frontLeft.MotorCount = 1;
+            frontLeft.Locked = true;
+            frontRight.Gearing = 1.0f / 10.0f;
+            frontRight.MotorType = TestMotor;
+            frontRight.MotorCount = 1;
+            frontRight.Locked = true;
+            backLeft.Gearing = 1.0f / 10.0f;
+            backLeft.MotorType = TestMotor;
+            backLeft.MotorCount = 1;
+            backLeft.Locked = true;
+            backRight.Gearing = 1.0f / 10.0f;
+            backRight.MotorType = TestMotor;
+            backRight.MotorCount = 1;
+            backRight.Locked = true;
+
+            var ArmMotor = new MotorType() {
+                MaxVelocity = 10,
+                Torque = 50,
+                MotorName = "Arm Motor"
+            };
+
+            arm = MotorManager.AllMotorControllers[0];
+            arm.Gearing = 1.0f / 2.0f;
+            arm.MotorType = ArmMotor;
+            arm.MotorCount = 1;
+            arm.Locked = true;
 
             Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+
+            InputManager.AssignAxis("vert", new Analog("Vertical"));
+            InputManager.AssignAxis("hori", new Analog("Horizontal"));
         }
 
-        public override void OnUpdate() { }
+        public override void OnUpdate() {
+            float forward = InputManager.GetAxisValue("vert");
+            float turn = InputManager.GetAxisValue("hori");
+            
+            var moveArmForward = new Digital("t");
+            moveArmForward.Update();
+            if (moveArmForward.State == DigitalState.Down) {
+                arm.SetPercent(0.5f);
+            } else {
+                arm.SetPercent(0.0f);
+            }
+
+            frontLeft.SetPercent(forward + turn);
+            frontRight.SetPercent(forward - turn);
+            backLeft.SetPercent(forward + turn);
+            backRight.SetPercent(forward - turn);
+        }
 
         private Mesh cube()
         {

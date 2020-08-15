@@ -14,7 +14,7 @@ namespace Engine.ModuleLoader.Adapters
     public class JointsAdapter : MonoBehaviour, IApiAdapter<Joints>
     {
         private Joints instance;
-        private List<JointAdapter> _jointAdapters = new List<JointAdapter>();
+        private List<IJointAdapter> _jointAdapters = new List<IJointAdapter>();
 
         public void SetInstance(Joints joints)
         {
@@ -31,7 +31,7 @@ namespace Engine.ModuleLoader.Adapters
         // Update is called once per frame
         void Update()
         {
-            foreach (JointAdapter jointAdapter in _jointAdapters)
+            foreach (IJointAdapter jointAdapter in _jointAdapters)
                 jointAdapter.Update();
         }
 
@@ -49,19 +49,21 @@ namespace Engine.ModuleLoader.Adapters
             }
         }
 
-        void Remove(int jointIndex)
+        void Remove(IJoint j)
         {
-            _jointAdapters.RemoveAt(jointIndex);
+            _jointAdapters.RemoveAll(x => x.GetIJoint() == j); // Again, might not work
         }
 
-        interface JointAdapter
+        interface IJointAdapter
         {
             void Update();
+            IJoint GetIJoint();
         }
 
-        class FixedJointAdapter : JointAdapter
+        class FixedJointAdapter : IJointAdapter
         {
             private FixedJoint _joint;
+            public IJoint GetIJoint() => _joint;
             private UnityEngine.FixedJoint _unityJoint;
             public FixedJointAdapter(FixedJoint joint)
             {
@@ -70,7 +72,7 @@ namespace Engine.ModuleLoader.Adapters
 
                 //init
                 //TODO: Add parent and child body connections
-                _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}").AddComponent<UnityEngine.FixedJoint>();
+                _unityJoint = Api.ApiProviderData.GameObjects[_joint.connectedParent.Entity.Value].AddComponent<UnityEngine.FixedJoint>();
                 
                 _unityJoint.anchor = _joint.anchor.Map();
                 _unityJoint.axis = _joint.axis.Map();
@@ -116,9 +118,10 @@ namespace Engine.ModuleLoader.Adapters
                 }
             }
         }
-        class HingeJointAdapter : JointAdapter
+        class HingeJointAdapter : IJointAdapter
         {
             private HingeJoint _joint;
+            public IJoint GetIJoint() => _joint;
             private UnityEngine.HingeJoint _unityJoint;
             public HingeJointAdapter(HingeJoint joint)
             {
@@ -166,7 +169,7 @@ namespace Engine.ModuleLoader.Adapters
                     case "breakforce":
                         _unityJoint.breakForce = _joint.breakForce;
                         break;
-                    case "breakTorque":
+                    case "breaktorque":
                         _unityJoint.breakTorque = _joint.breakTorque;
                         break;
                     case "connectedchild":
