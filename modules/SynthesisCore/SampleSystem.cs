@@ -10,6 +10,7 @@ using SynthesisCore.Components;
 using SynthesisCore.Systems;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
+using SynthesisCore.UI;
 
 namespace SynthesisCore
 {
@@ -20,16 +21,46 @@ namespace SynthesisCore
         private MotorController frontLeft, frontRight, backLeft, backRight;
         private MotorController arm;
 
-        public Mesh m;
-
         public override void OnPhysicsUpdate() { }
 
         public override void Setup()
         {
+            /*
+            Entity e = EnvironmentManager.AddEntity();
+
+            e.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
+            Mesh m = e.AddComponent<Mesh>();
+            cube(m);
+            e.AddComponent<MeshCollider>();
+            var selectable = e.AddComponent<Selectable>();
+            selectable.OnSelect = () =>
+            {
+                EntityToolbar.Open(selectable.Entity.Value);
+            };
+            selectable.OnDeselect = () =>
+            {
+                EntityToolbar.Close();
+            };
+            e.AddComponent<Moveable>().Channel = 5;
+            */
+            
             testBody = EnvironmentManager.AddEntity();
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
             testBody.AddBundle(o);
+            /*
+            foreach(var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
+            {
+                selectable.OnSelect = () =>
+                {
+                    EntityToolbar.Open(selectable.Entity.Value);
+                };
+                selectable.OnDeselect = () =>
+                {
+                    EntityToolbar.Close();
+                };
+            }
+            */
 
             (float r, float g, float b, float a)[] colors = {
                 (1, 0, 0, 1),
@@ -102,7 +133,7 @@ namespace SynthesisCore
             backRight.SetPercent(forward - turn);
         }
 
-        private Mesh cube()
+        private Mesh cube(Mesh m)
         {
             if (m == null)
                 m = new Mesh();

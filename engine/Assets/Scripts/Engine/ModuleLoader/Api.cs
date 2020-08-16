@@ -250,7 +250,7 @@ namespace Engine.ModuleLoader
 						throw new LoadModuleException($"Failed to create instance of component with type {t.FullName}", e);
 					}
 				}
-
+				component.SetEntity(entity);
 				var gameObjectComponent = gameObject.AddComponent(type);
 				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 
@@ -276,7 +276,7 @@ namespace Engine.ModuleLoader
 				{
 					type = typeof(ComponentAdapter);
 				}
-
+				component.SetEntity(entity);
 				var gameObjectComponent = gameObject.AddComponent(type);
 				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 			}

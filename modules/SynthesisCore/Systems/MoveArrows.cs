@@ -36,8 +36,6 @@ namespace SynthesisCore.Systems
             private bool hasSetSpritePivot = false;
             private readonly Sprite sprite;
 
-            private bool hasUpdatedScalingOnce = false;
-
             public Arrow(UnitVector3D direction)
             {
                 Direction = direction;
@@ -87,27 +85,30 @@ namespace SynthesisCore.Systems
                 };
             }
 
-            public void UpdateSpritePivot()
+            public void Update()
             {
-                // Move sprite pivot point from center of image to base of arrow
-                sprite.Visible = hasSetSpritePivot && hasUpdatedScalingOnce;
-                if (!hasSetSpritePivot && collider.Bounds.Extents.Y != 0)
+                if (!hasSetSpritePivot)
                 {
-                    var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
-                    arrowSpriteTransform.Position = new Vector3D(0, collider.Bounds.Extents.Y * 2, 0);
-                    hasSetSpritePivot = true;
+                    // Move sprite pivot point from center of image to base of arrow
+                    var len = sprite.Bounds.Extents.ProjectOn(Direction).Length;
+                    if (len != 0)
+                    {
+                        var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
+                        arrowSpriteTransform.Position = new Vector3D(0, len * 2, 0);
+                        hasSetSpritePivot = true;
+                    }
                 }
-            }
+                else
+                {
+                    // Update size of arrows so they always look the same size as they move
+                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
 
-            public void UpdateScaling()
-            {
-                // Update size of arrows so they always look the same size as they move
-                var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
+                    var size = vectorToCamera.Length * 0.01;
+                    arrowsTransform.Scale = new Vector3D(size, size, size);
 
-                var size = vectorToCamera.Length * 0.01;
-                arrowsTransform.Scale = new Vector3D(size, size, size);
-
-                hasUpdatedScalingOnce = true;
+                    if (!sprite.Visible)
+                        sprite.Visible = true;
+                }
             }
         }
 
@@ -127,8 +128,7 @@ namespace SynthesisCore.Systems
                     var forward = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
                     forward -= forward.ProjectOn(arrow.Direction);
                     arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
-                    arrow.UpdateScaling();
-                    arrow.UpdateSpritePivot();
+                    arrow.Update();
                 }
 
                 MoveEntityTransform();
@@ -162,6 +162,7 @@ namespace SynthesisCore.Systems
             
             targetEntity = entity;
             arrowsEntity.GetComponent<Parent>().ParentEntity = targetEntity.Value;
+            arrowsTransform.Position = new Vector3D(0, 0, 0);
             targetTransform = targetEntity?.GetComponent<Transform>();
         }
 
@@ -174,6 +175,7 @@ namespace SynthesisCore.Systems
             {
                 EnvironmentManager.RemoveEntity(arrowsEntity);
                 targetEntity = null;
+                selectedArrowDirection = null;
             }
         }
 

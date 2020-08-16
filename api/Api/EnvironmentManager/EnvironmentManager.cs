@@ -118,7 +118,8 @@ namespace SynthesisAPI.EnvironmentManager
             if (IsComponent(componentType) && EntityExists(entity))
             {
                 Component? c = ApiProvider.AddComponentToScene(entity, componentType);
-                c?.SetEntity(entity);
+                if (c == null)
+                    throw new SynthesisException($"Failed to add component of type {componentType.FullName} to entity");
                 components.Set(entity.Index, entity.Gen, c);
                 return c;
             }
@@ -134,7 +135,6 @@ namespace SynthesisAPI.EnvironmentManager
         {
             if (EntityExists(entity))
             {
-                component.SetEntity(entity);
                 ApiProvider.AddComponentToScene(entity, component);
                 components.Set(entity.Index, entity.Gen, component);
             }
