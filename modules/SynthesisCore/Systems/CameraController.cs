@@ -312,7 +312,7 @@ namespace SynthesisCore.Systems
             }
             else // Orbit mode
             {
-                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.Position;
+                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.GlobalPosition;
                 if (newFocusPoint.HasValue)
                 {
                     if (SelectedTarget != LastSelectedTarget) // Set new focus point

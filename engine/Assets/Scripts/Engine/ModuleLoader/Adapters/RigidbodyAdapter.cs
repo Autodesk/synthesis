@@ -53,6 +53,12 @@ namespace Engine.ModuleLoader.Adapters
                 case "iskinematic":
                     unityRigidbody.isKinematic = instance.isKinematic;
                     break;
+                case "issleeping":
+                    if (instance.isSleeping && !unityRigidbody.IsSleeping())
+                        unityRigidbody.Sleep();
+                    else if (!instance.isSleeping && unityRigidbody.IsSleeping())
+                        unityRigidbody.WakeUp();
+                    break;
                 case "mass":
                     unityRigidbody.mass = instance.mass;
                     break;

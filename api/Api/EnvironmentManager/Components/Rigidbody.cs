@@ -132,6 +132,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
+        internal bool isSleeping = false;
+        public bool IsSleeping
+        {
+            get => isSleeping;
+            set
+            {
+                isSleeping = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 

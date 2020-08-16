@@ -101,7 +101,7 @@ namespace SynthesisCore.Systems
                 else
                 {
                     // Update size of arrows so they always look the same size as they move
-                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
+                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.GlobalPosition;
 
                     var size = vectorToCamera.Length * 0.01;
                     arrowsTransform.Scale = new Vector3D(size, size, size);
@@ -127,7 +127,7 @@ namespace SynthesisCore.Systems
                     // Make arrow face camera
                     var forward = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
                     forward -= forward.ProjectOn(arrow.Direction);
-                    arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
+                    arrow.Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
                     arrow.Update();
                 }
 
