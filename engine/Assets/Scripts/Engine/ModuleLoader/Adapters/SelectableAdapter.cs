@@ -1,22 +1,29 @@
-﻿using SynthesisAPI.EnvironmentManager;
+﻿using System;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
+using SynthesisAPI.EventBus;
 using UnityEngine;
-using static Engine.ModuleLoader.Api;
+using UnityEngine.EventSystems;
+using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
+using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 
 namespace Engine.ModuleLoader.Adapters
 {
 	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
-		private new MeshCollider collider;
+		private static List<Selectable> selectables = new List<Selectable>(); // TODO manage lifetime
+		private new MeshColliderAdapter collider;
 		private Material[] materials;
 		public const float FlashSelectedTime = 0.1f; // sec
 
 		public void SetInstance(Selectable obj)
 		{
 			instance = obj;
+			selectables.Add(instance);
+			gameObject.SetActive(true);
 		}
 
 		public static Selectable NewInstance()
@@ -70,13 +77,37 @@ namespace Engine.ModuleLoader.Adapters
 			}
 		}
 
-		public void Awake()
+		private EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
 		{
-			if (gameObject.GetComponent<MeshCollider>() == null)
+			EventTrigger.Entry entry = new EventTrigger.Entry();
+			entry.eventID = type;
+			entry.callback.AddListener(action);
+			return entry;
+		}
+
+		public void OnEnable()
+		{
+			if (instance == null)
 			{
-				collider = gameObject.AddComponent<MeshCollider>();
-				collider.convex = true; // Mesh collider wont have any holes
+				gameObject.SetActive(false);
+				return;
 			}
+
+			if (gameObject.GetComponent<EventTrigger>() == null)
+			{
+				var eventTrigger = gameObject.AddComponent<EventTrigger>();
+				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
+				{
+					if (((PointerEventData) data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
+						Select();
+				}));
+				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
+				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerExit,  data => isPointerOnThis = false));
+			}
+			if ((collider = gameObject.GetComponent<MeshColliderAdapter>()) == null)
+				throw new Exception("Entity must have a mesh collider component");
+
+			materials = GetComponent<MeshRenderer>().materials;
 		}
 
 		public void Start()
@@ -86,56 +117,14 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void Update()
 		{
-			if (collider.sharedMesh == null)
-			{
-
-				collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
-				materials = gameObject.GetComponent<MeshRenderer>().materials;
-				if (collider.sharedMesh == null)
-				{
-					throw new System.Exception("Selectable entity does not have a mesh");
-				}
-			}
-			if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
-			{
-				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-
-				// TODO block hits to other objects "below" this one
-				bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
-				bool hitAlwaysOnTop = false;
-				bool hitMe = false;
-				var hits = Physics.RaycastAll(ray, Mathf.Infinity);
-				foreach (var hit in hits)
-				{
-					if (ApiProviderData.GameObjects.TryGetValue(hit.transform.gameObject, out Entity otherE))
-					{
-						if (otherE.GetComponent<AlwaysOnTop>() != null)
-						{
-							hitAlwaysOnTop = true;
-						}
-					}
-					if (hit.transform == transform)
-					{
-						hitMe = true;
-					}
-				}
-				if (hitMe && (isAlwaysOnTop || !hitAlwaysOnTop))
-				{
-					Select();
-				}
-			}
 			if (Input.GetMouseButtonDown(1)) // TODO use preference manager for this
 			{
 				Deselect();
 			}
 		}
-
-		public void OnDestroy()
-		{
-			if (instance.IsSelected)
-			{
-				Deselect();
-			}
-		}
+		
+		
 	}
+
+	
 }

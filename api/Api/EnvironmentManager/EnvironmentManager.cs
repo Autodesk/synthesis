@@ -134,8 +134,8 @@ namespace SynthesisAPI.EnvironmentManager
         {
             if (EntityExists(entity))
             {
-                ApiProvider.AddComponentToScene(entity, component);
                 component.SetEntity(entity);
+                ApiProvider.AddComponentToScene(entity, component);
                 components.Set(entity.Index, entity.Gen, component);
             }
         }
@@ -188,7 +188,7 @@ namespace SynthesisAPI.EnvironmentManager
                 foreach (Bundle b in bundle.ChildBundles)
                 {
                     Entity e = AddEntity();
-                    e.GetComponent<Parent>()!.Set(entity);
+                    e.GetComponent<Parent>()!.ParentEntity = entity;
                     e.AddBundle(b);
                 }
                 foreach (Component c in bundle.Components)

@@ -182,7 +182,9 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) },
-					// { typeof(SynthesisAPI.EnvironmentManager.Components.Layer), typeof(LayerAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider), typeof(MeshColliderAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Joints), typeof(JointsAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Sprite), typeof(SpriteAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter) }
 				};

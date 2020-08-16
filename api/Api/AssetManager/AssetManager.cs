@@ -376,6 +376,13 @@ namespace SynthesisAPI.AssetManager
                            throw new Exception("Import of text/gltf asset: wrong number of arguments");
                        return new GltfAsset(name, perm, sourcePath);
                    });
+                RegisterAssetType("audio/wav", new[] { ".wav" },
+                    (name, perm, sourcePath, args) =>
+                    {
+                        if (args.Length != 0)
+                            throw new Exception("Import of audio/wav asset: wrong number of arguments");
+                        return new AudioClipAsset(name, perm, sourcePath);
+                    });
             }
 
             private Dictionary<string, Dictionary<string, HandlerFunc>> AssetHandlers { get; }

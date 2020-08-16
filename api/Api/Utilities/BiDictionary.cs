@@ -87,5 +87,14 @@ namespace SynthesisAPI.Utilities
         {
             return ((IEnumerable<KeyValuePair<A, B>>)collection).GetEnumerator();
         }
+
+        public void Add(BiDictionary<A, B> dict)
+        {
+            collection.AddRange(dict.collection);
+        }
+
+        public B GetUsingA(A key) => collection.Find(x => x.Key.Equals(key)).Value;
+
+        public A GetUsingB(B key) => collection.Find(x => x.Value.Equals(key)).Key;
     }
 }
