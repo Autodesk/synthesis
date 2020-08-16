@@ -5,12 +5,14 @@
             <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/add-icon.png&apos;);" />
             <ui:Label text="Add Entity" name="title" class="window-header-title" />
         </ui:VisualElement>
-        <ui:ListView focusable="True" name="entity-list" class="window-list-container" />
+        <ui:VisualElement name="content" class="window-content">
+            <ui:ListView focusable="True" name="entity-list" style="height: 300px;" />
+        </ui:VisualElement>
         <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
-            <ui:VisualElement name="left" style="width: 50%; flex-direction: row;">
-                <ui:Button text="Import..." name="import-entity-button" class="window-button" />
+            <ui:VisualElement name="left" class="button-panel-left-container">
+                <ui:Button text="Import..." name="import-button" class="window-button" />
             </ui:VisualElement>
-            <ui:VisualElement name="right" style="width: 50%; flex-direction: row; justify-content: flex-end;">
+            <ui:VisualElement name="right" class="button-panel-right-container">
                 <ui:Button text="OK" name="ok-button" class="window-button-blue" />
                 <ui:Button text="Close" name="close-button" class="window-button" />
             </ui:VisualElement>
