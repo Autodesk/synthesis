@@ -189,6 +189,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
         Impulse = 1, VelocityChange = 2
     }
 
+    [Flags]
     public enum RigidbodyConstraints
     {
         None = 0,
