@@ -132,13 +132,13 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
-        internal bool isSleeping = false;
-        public bool IsSleeping
+        internal bool detectCollisions = true;
+        public bool DetectCollisions
         {
-            get => isSleeping;
+            get => detectCollisions;
             set
             {
-                isSleeping = value;
+                detectCollisions = value;
                 OnPropertyChanged();
             }
         }

@@ -9,14 +9,14 @@ using UnityEngine.EventSystems;
 using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
 using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 using static Engine.ModuleLoader.Api;
+using SynthesisAPI.Utilities;
 
 namespace Engine.ModuleLoader.Adapters
 {
 	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
-		private new MeshColliderAdapter collider;
-		private Material[] materials;
+		private List<Material> materials = new List<Material>();
 		public const float FlashSelectedTime = 0.1f; // sec
 
 		public void SetInstance(Selectable obj)
@@ -32,16 +32,15 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Deselect()
 		{
-			if (instance.IsSelected)
-			{
-				instance.SetSelected(false);
-				instance.OnDeselect();
-			}
 			if (Selectable.Selected != null)
 			{
 				foreach (var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
 				{
-					selectable.SetSelected(false);
+					if (selectable.IsSelected)
+					{
+						selectable.SetSelected(false);
+						instance.OnDeselect();
+					}
 				}
 				Selectable.ResetSelected();
 			}
@@ -61,7 +60,7 @@ namespace Engine.ModuleLoader.Adapters
 
 		private IEnumerator FlashYellow() // TODO maybe make it highlight the mesh using some kind of shader
 		{
-			List<Color> backupColors = new List<Color>();
+			List<Color> backupColors = new List<Color>(materials.Count);
 			foreach (var m in materials)
 			{
 				backupColors.Add(m.color);
@@ -70,7 +69,7 @@ namespace Engine.ModuleLoader.Adapters
 
 			yield return new WaitForSeconds(FlashSelectedTime);
 
-			for (var i = 0; i < materials.Length; i++)
+			for (var i = 0; i < materials.Count; i++)
 			{
 				materials[i].color = backupColors[i];
 			}
@@ -84,10 +83,26 @@ namespace Engine.ModuleLoader.Adapters
 				return;
 			}
 
-			if ((collider = gameObject.GetComponent<MeshColliderAdapter>()) == null)
-				throw new Exception("Entity must have a mesh collider component");
+			if (gameObject.GetComponent<MeshColliderAdapter>() == null)
+			{
+				instance.UsingChildren = true;
+			}
 
-			materials = GetComponent<MeshRenderer>().materials;
+			if (!instance.UsingChildren)
+			{
+				var renderer = GetComponent<MeshRenderer>();
+				if (renderer != null)
+				{
+					materials.AddRange(GetComponent<MeshRenderer>().materials);
+				}
+			}
+			else
+			{
+				foreach (var m in GetComponentsInChildren<MeshRenderer>())
+				{
+					materials.AddRange(m.materials);
+				}
+			}
 		}
 
 		public void Update()
@@ -96,31 +111,51 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
 
-				// TODO block hits to other objects "below" this one
 				bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
-				bool hitAlwaysOnTop = false;
+				bool hitIntercepted = false;
 				bool hitMe = false;
 				var hits = Physics.RaycastAll(ray, Mathf.Infinity);
 				foreach (var hit in hits)
 				{
-					if (ApiProviderData.GameObjects.TryGetValue(hit.transform.gameObject, out Entity otherE))
-					{
-						if (otherE.GetComponent<AlwaysOnTop>() != null)
-						{
-							hitAlwaysOnTop = true;
-						}
-					}
-					if (hit.transform == transform)
+					if (hit.collider.transform == transform)
 					{
 						hitMe = true;
 					}
+					else if (ApiProviderData.GameObjects.TryGetValue(hit.collider.transform.gameObject, out Entity otherE))
+					{
+						if (otherE.GetComponent<AlwaysOnTop>() != null)
+						{
+							hitIntercepted = true;
+						}
+						else
+						{
+							if (instance.UsingChildren)
+							{
+								Entity parent = otherE;
+								while (parent != 0)
+								{
+									parent = parent.GetComponent<Parent>().ParentEntity;
+									if (parent == instance.Entity)
+									{
+										hitMe = true;
+										break;
+									}
+								}
+							}
+							if (!hitMe)
+							{
+
+								hitIntercepted = true;
+							}
+						}
+					}
 				}
-				if (hitMe && (isAlwaysOnTop || !hitAlwaysOnTop))
+				if (hitMe && (!hitIntercepted || isAlwaysOnTop))
 				{
 					Select();
 				}
 			}
-			if (Input.GetMouseButtonDown(1)) // TODO use preference manager for this
+			if (Selectable.Selected != null && Input.GetMouseButtonDown(1)) // TODO use preference manager for this
 			{
 				Deselect();
 			}

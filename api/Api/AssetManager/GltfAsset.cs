@@ -154,7 +154,6 @@ namespace SynthesisAPI.AssetManager
                     bundle.Components.Add(rigid);
                     return;
                 }
-                bundle.Components.Add(new EnvironmentManager.Components.Selectable());
             } else if (parent == null) {
                 var rigid = ParseRigidbody();
                 bundle.Components.Add(rigid);

@@ -101,7 +101,7 @@ namespace SynthesisCore.Systems
                 else
                 {
                     // Update size of arrows so they always look the same size as they move
-                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.GlobalPosition;
+                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
 
                     var size = vectorToCamera.Length * 0.01;
                     arrowsTransform.Scale = new Vector3D(size, size, size);
@@ -122,10 +122,11 @@ namespace SynthesisCore.Systems
             }
             if (IsMovingEntity)
             {
+                arrowsTransform.Position = targetTransform.GlobalPosition;
                 foreach (var arrow in arrows)
                 {
                     // Make arrow face camera
-                    var forward = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
+                    var forward = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
                     forward -= forward.ProjectOn(arrow.Direction);
                     arrow.Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
                     arrow.Update();
@@ -161,9 +162,13 @@ namespace SynthesisCore.Systems
             }
             
             targetEntity = entity;
-            arrowsEntity.GetComponent<Parent>().ParentEntity = targetEntity.Value;
-            arrowsTransform.Position = new Vector3D(0, 0, 0);
-            targetTransform = targetEntity?.GetComponent<Transform>();
+            foreach(var selectedRigidBody in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
+            {
+                // Disable all physics
+                selectedRigidBody.IsKinematic = true;
+                selectedRigidBody.DetectCollisions = false;
+            }
+            targetTransform = targetEntity?.GetComponent<Transform>(); // TODO need to move the root parent that is jointed to this
         }
 
         /// <summary>
@@ -176,6 +181,12 @@ namespace SynthesisCore.Systems
                 EnvironmentManager.RemoveEntity(arrowsEntity);
                 targetEntity = null;
                 selectedArrowDirection = null;
+                foreach (var selectedRigidBody in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
+                {
+                    // Re-enable all physics
+                    selectedRigidBody.IsKinematic = false;
+                    selectedRigidBody.DetectCollisions = true;
+                }
             }
         }
 
@@ -199,7 +210,7 @@ namespace SynthesisCore.Systems
                     if (deltaDir.Length > float.Epsilon)
                     {
                         var unitDeltaDir = deltaDir.Normalize();
-                        targetTransform.Position += unitDeltaDir.ScaleBy(magnitude);
+                        targetTransform.GlobalPosition += unitDeltaDir.ScaleBy(magnitude);
                     }
                 }
             }

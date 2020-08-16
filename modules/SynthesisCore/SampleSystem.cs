@@ -48,19 +48,16 @@ namespace SynthesisCore
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
             testBody.AddBundle(o);
-            /*
-            foreach(var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
+
+            var selectable = testBody.AddComponent<Selectable>();
+            selectable.OnSelect = () =>
             {
-                selectable.OnSelect = () =>
-                {
-                    EntityToolbar.Open(selectable.Entity.Value);
-                };
-                selectable.OnDeselect = () =>
-                {
-                    EntityToolbar.Close();
-                };
-            }
-            */
+                EntityToolbar.Open(selectable.Entity.Value);
+            };
+            selectable.OnDeselect = () =>
+            {
+                EntityToolbar.Close();
+            };
 
             (float r, float g, float b, float a)[] colors = {
                 (1, 0, 0, 1),
