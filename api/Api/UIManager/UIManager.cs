@@ -8,6 +8,8 @@ using UnityButton = UnityEngine.UIElements.Button;
 using VisualElement = SynthesisAPI.UIManager.VisualElements.VisualElement;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.Utilities;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.InputManager.InputEvents;
 
 namespace SynthesisAPI.UIManager
 {
@@ -35,24 +37,31 @@ namespace SynthesisAPI.UIManager
             {
                 throw new SynthesisException("Title bar must have an element with name \"tab-container\"");
             }
-            foreach (var i in Instance.TitleBarContainer.Children())
+            foreach (var i in Instance.TitleBarContainer.GetChildren())
             {
                 Instance.TitleBarContainer.Remove(i);
             }
-            Instance.TitleBarContainer.Add(titleBarElement.UnityVisualElement);
+            Instance.TitleBarContainer.Add(titleBarElement);
         }
         public static void AddTab(Tab tab)
         {
-            tab.buttonElement = new VisualElements.Button(CreateTab(tab.Name).Q<UnityButton>(name: "blank-tab"));
-            LoadedTabs.Add(tab.Name, tab);
-            // TODO: Spawn in tab button
-            tab.buttonElement.Element.name = $"tab-{tab.Name}";
-            tab.buttonElement.Element.text = tab.Name;
-            tab.buttonElement.Element.clickable.clicked += () =>
-                EventBus.EventBus.Push("ui/select-tab", new SelectTabEvent(tab.Name));
-            Instance.TabContainer.Add(tab.buttonElement.Element);
-            if (SelectedTabName == SelectedTabBlankName && tab.Name == DefaultSelectedTabName)
-                SelectTab(tab.Name);
+            if (LoadedTabs.ContainsKey(tab.Name))
+            {
+                Logger.Log($"Adding tab with duplicate name {tab.Name}", LogLevel.Warning);
+            }
+            else
+            {
+                tab.buttonElement = new VisualElements.Button(CreateTab(tab.Name).Q<UnityButton>(name: "blank-tab"));
+                LoadedTabs.Add(tab.Name, tab);
+                // TODO: Spawn in tab button
+                tab.buttonElement.Element.name = $"tab-{tab.Name}";
+                tab.buttonElement.Element.text = tab.Name;
+                tab.buttonElement.Element.clickable.clicked += () =>
+                    EventBus.EventBus.Push("ui/select-tab", new SelectTabEvent(tab.Name));
+                Instance.TabContainer.Add(tab.buttonElement);
+                if (SelectedTabName == SelectedTabBlankName && tab.Name == DefaultSelectedTabName)
+                    SelectTab(tab.Name);
+            }
         }
 
         public static void RemoveTab(string tabName)
@@ -137,16 +146,22 @@ namespace SynthesisAPI.UIManager
             var toolbarContainer = Instance.ToolbarContainer;
             if (!visible) // Remove toolbar
             {
-                var existingToolbar = toolbarContainer.Q(name: "active-toolbar");
+                var existingToolbar = toolbarContainer.Get(name: "active-toolbar");
                 if (existingToolbar != null)
                     toolbarContainer.Remove(existingToolbar);
             }
             else if(LoadedTabs.ContainsKey(SelectedTabName)) // Add toolbar
             {
                 var toolbar = LoadedTabs[SelectedTabName].ToobarAsset.GetElement("active-toolbar");
-                LoadedTabs[SelectedTabName].BindToolbar(toolbar);
+                if (LoadedTabs[SelectedTabName].ToolbarElement == null)
+                {
+                    LoadedTabs[SelectedTabName].BindToolbar(toolbar);
+                    var x = LoadedTabs[SelectedTabName];
+                    x.ToolbarElement = toolbar;
+                    LoadedTabs[SelectedTabName] = x;
+                }
                 // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
-                toolbarContainer.Add(toolbar.UnityVisualElement);
+                toolbarContainer.Add(LoadedTabs[SelectedTabName].ToolbarElement);
             }
         }
 
@@ -157,12 +172,19 @@ namespace SynthesisAPI.UIManager
 
         public static void ShowPanel(string panelName)
         {
-            var existingPanel = Instance.PanelContainer.Q(name: $"panel-{panelName}");
+            var existingPanel = Instance.PanelContainer.Get(name: $"panel-{panelName}");
             if (existingPanel == null)
             {
-                UnityVisualElement elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}").UnityVisualElement;
-                Instance.PanelContainer.Add(elm);
-                LoadedPanels[panelName].BindFunc(elm.GetVisualElement());
+                Instance.PanelContainer.Enabled = true;
+                var elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}");
+                if (LoadedPanels[panelName].PanelElement == null)
+                {
+                    LoadedPanels[panelName].BindPanel(elm);
+                    var x = LoadedPanels[panelName];
+                    x.PanelElement = elm;
+                    LoadedPanels[panelName] = x;
+                }
+                Instance.PanelContainer.Add(LoadedPanels[panelName].PanelElement);
             }
             
             // TODO: Maybe some event
@@ -170,14 +192,17 @@ namespace SynthesisAPI.UIManager
 
         public static void ClosePanel(string panelName)
         {
-            var existingPanel = Instance.PanelContainer.Q(name: $"panel-{panelName}");
+            var existingPanel = Instance.PanelContainer.Get(name: $"panel-{panelName}");
             if (existingPanel != null)
+            {
                 Instance.PanelContainer.Remove(existingPanel);
+                Instance.PanelContainer.Enabled = ((List<VisualElement>)Instance.PanelContainer.GetChildren()).Count > 0;
+            }
         }
 
         public static void TogglePanel(string panelName)
         {
-            var panelToToggle = Instance.PanelContainer.Q(name: $"panel-{panelName}");
+            var panelToToggle = Instance.PanelContainer.Get(name: $"panel-{panelName}");
             if (panelToToggle == null)
             {
                 ShowPanel(panelName);
@@ -188,31 +213,119 @@ namespace SynthesisAPI.UIManager
             }
         }
 
+        internal static void Setup()
+        {
+            Instance.SetupCatchAllMouseDown(RootElement.Get("catch-all-mouse-down"));
+            Instance.PanelContainer.Enabled = false;
+        }
+
         private class Inner
         {
-            public UnityVisualElement PanelContainer
-            {
-                get => RootElement.UnityVisualElement.Q(name: "panel-center");
-            }
-
-            public UnityVisualElement TabContainer
-            {
-                get => RootElement.UnityVisualElement.Q(name: "tab-container");
-            }
-
-            public UnityVisualElement TitleBarContainer
-            {
-                get => RootElement.UnityVisualElement.Q(name: "title-bar-container");
-            }
-
-            public UnityVisualElement ToolbarContainer
+            private VisualElement _panelContainer = null;
+            public VisualElement PanelContainer
             {
                 get
                 {
-                    var toolbarContainer = RootElement.UnityVisualElement.Q(name: "bottom");
-                    if (toolbarContainer == null)
-                        throw new Exception("Could not find toolbar container");
-                    return toolbarContainer;
+                    if(_panelContainer == null)
+                        _panelContainer = RootElement.UnityVisualElement.Q(name: "panel-center").GetVisualElement();
+                    return _panelContainer;
+                }
+            }
+
+            private VisualElement _tabContainer = null;
+
+            public VisualElement TabContainer
+            {
+                get
+                {
+                    if (_tabContainer == null)
+                        _tabContainer = RootElement.UnityVisualElement.Q(name: "tab-container").GetVisualElement() ;
+                    return _tabContainer;
+                }
+            }
+
+            private VisualElement _titleBarContainer = null;
+
+            public VisualElement TitleBarContainer
+            {
+                get
+                {
+                    if (_titleBarContainer == null)
+                        _titleBarContainer = RootElement.UnityVisualElement.Q(name: "title-bar-container").GetVisualElement();
+                    return _titleBarContainer;
+                }
+            }
+
+            private VisualElement _toolbarContainer = null;
+
+            public VisualElement ToolbarContainer
+            {
+                get
+                {
+                    if (_toolbarContainer == null)
+                        _toolbarContainer = RootElement.UnityVisualElement.Q(name: "bottom").GetVisualElement();
+                    return _toolbarContainer;
+                }
+            }
+
+            private bool[] nonUIMouseDown = new bool[3];
+            private bool nonUIMouseForwardingSetup = false;
+
+            public void SetupCatchAllMouseDown(VisualElement visualElement)
+            {
+                visualElement.UnityVisualElement.RegisterCallback<MouseDownEvent>(e =>
+                {
+                    nonUIMouseDown[e.button] = true;
+                    SendNonUIMouseEvent(e.button, DigitalState.Down);
+                });
+                if (!nonUIMouseForwardingSetup)
+                {
+                    ForwardNonUIMouseEvent(0);
+                    ForwardNonUIMouseEvent(1);
+                    ForwardNonUIMouseEvent(2);
+                    nonUIMouseForwardingSetup = true;
+                }
+            }
+
+            private const string InputNameMouse0 = "mouse 0 non-ui";
+            private const string InputNameMouse1 = "mouse 1 non-ui";
+            private const string InputNameMouse2 = "mouse 2 non-ui";
+
+            private void ForwardNonUIMouseEvent(int button)
+            {
+                InputManager.InputManager.AssignDigitalInput($"_internal mouse {button} non-ui-forwarder", new Digital($"mouse {button}"), e =>
+                {
+                    if (nonUIMouseDown[button])
+                    {
+                        var digitalEvent = (DigitalEvent)e;
+                        if (digitalEvent.State == DigitalState.Up)
+                        {
+                            nonUIMouseDown[button] = false;
+                            SendNonUIMouseEvent(0, DigitalState.Up);
+                        }
+                        else if (digitalEvent.State == DigitalState.Held)
+                        {
+                            SendNonUIMouseEvent(0, DigitalState.Held);
+                        }
+                    }
+                });
+            }
+            private void SendNonUIMouseEvent(int button, DigitalState state)
+            {
+                foreach (string name in InputManager.InputManager._mappedDigitalInputs.Keys)
+                {
+                    foreach (Input input in InputManager.InputManager._mappedDigitalInputs[name])
+                    {
+                        if (input.Name.EndsWith("non-ui") && input is Digital digitalInput)
+                        {
+                            if ((digitalInput.Name == InputNameMouse0 && button == 0) ||
+                                (digitalInput.Name == InputNameMouse1 && button == 1) ||
+                                (digitalInput.Name == InputNameMouse2 && button == 2))
+                            {
+                                EventBus.EventBus.Push($"input/{name}", new DigitalEvent(name, state));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -243,6 +356,10 @@ namespace SynthesisAPI.UIManager
 
             public static Inner InnerInstance
             {
+                set
+                {
+                    _instance = value;
+                }
                 get
                 {
                     if (_instance == null)
@@ -252,8 +369,16 @@ namespace SynthesisAPI.UIManager
             }
         }
 
-        private static Inner Instance => Inner.InnerInstance;
-        private static Dictionary<string, Tab> LoadedTabs => Instance.LoadedTabs;
+        private static Inner Instance
+        {
+            get => Inner.InnerInstance;
+            set => Inner.InnerInstance = value;
+        }
+        private static Dictionary<string, Tab> LoadedTabs
+        {
+            get => Instance.LoadedTabs;
+            set => Instance.LoadedTabs = value;
+        }
         private static Dictionary<string, Panel> LoadedPanels => Instance.LoadedPanels;
         private static string SelectedTabName {
             get => Instance.SelectedTabName;

@@ -18,7 +18,7 @@ using Engine.ModuleLoader.Adapters;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
-
+using SynthesisAPI.UIManager;
 
 namespace Engine.ModuleLoader
 {
@@ -82,8 +82,19 @@ namespace Engine.ModuleLoader
 
 			GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
 
-			var _ = SynthesisAPI.UIManager.UIManager.RootElement;
+			Task.Run(() =>
+			{
+				SynthesisAPI.UIManager.VisualElements.VisualElement root = null;
+				while (root == null)
+				{
+					root = UIManager.RootElement;
+					Thread.Sleep(200);
+				}
+
+				UIManager.Setup();
+			});
 		}
+
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
 			private bool debugLogsEnabled = true;
@@ -182,7 +193,9 @@ namespace Engine.ModuleLoader
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Transform), typeof(TransformAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Selectable), typeof(SelectableAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Parent), typeof(ParentAdapter) },
-					// { typeof(SynthesisAPI.EnvironmentManager.Components.Layer), typeof(LayerAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider), typeof(MeshColliderAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Rigidbody), typeof(RigidbodyAdapter) },
+					{ typeof(SynthesisAPI.EnvironmentManager.Components.Joints), typeof(JointsAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.Sprite), typeof(SpriteAdapter) },
 					{ typeof(SynthesisAPI.EnvironmentManager.Components.MeshCollider2D), typeof(MeshCollider2DAdapter) }
 				};
@@ -248,7 +261,7 @@ namespace Engine.ModuleLoader
 						throw new LoadModuleException($"Failed to create instance of component with type {t.FullName}", e);
 					}
 				}
-
+				component.SetEntity(entity);
 				var gameObjectComponent = gameObject.AddComponent(type);
 				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 
@@ -274,7 +287,7 @@ namespace Engine.ModuleLoader
 				{
 					type = typeof(ComponentAdapter);
 				}
-
+				component.SetEntity(entity);
 				var gameObjectComponent = gameObject.AddComponent(type);
 				type.GetMethod("SetInstance").Invoke(gameObjectComponent, new[] { component });
 			}

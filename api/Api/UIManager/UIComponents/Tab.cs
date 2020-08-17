@@ -9,6 +9,7 @@ namespace SynthesisAPI.UIManager.UIComponents
         public string Name { get; private set; }
         public VisualElementAsset ToobarAsset { get; private set; }
         public BindToolbarDelegate BindToolbar { get; set; }
+        internal VisualElement ToolbarElement;
         internal Button buttonElement;
 
         public delegate void BindToolbarDelegate(VisualElement toolbarElement);
@@ -16,8 +17,9 @@ namespace SynthesisAPI.UIManager.UIComponents
         public Tab(string name, VisualElementAsset toolbarAsset, BindToolbarDelegate bindToolbar)
         {
             Name = name;
-            ToobarAsset = toolbarAsset;
             BindToolbar = bindToolbar;
+            ToobarAsset = toolbarAsset;
+            ToolbarElement = null;
             buttonElement = null;
         }
     }

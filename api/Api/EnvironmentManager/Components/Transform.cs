@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using SynthesisAPI.Modules.Attributes;
@@ -9,10 +11,6 @@ namespace SynthesisAPI.EnvironmentManager.Components
 {
 	public class Transform : Component
 	{
-		private Vector3D _position = new Vector3D();
-		private Quaternion _rotation = Quaternion.One;
-		private Vector3D _scale = new Vector3D(1, 1, 1);
-
 		public UnitVector3D Forward => MathUtil.QuaternionToForwardVector(Rotation);
 
 		public delegate Vector3D PositionValidatorDelegate(Vector3D position);
@@ -20,40 +18,65 @@ namespace SynthesisAPI.EnvironmentManager.Components
 		public delegate Vector3D ScaleValidatorDelegate(Vector3D scale);
 
 		public PositionValidatorDelegate PositionValidator = (Vector3D position) => position;
-		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation;
+		public RotationValidatorDelegate RotationValidator = (Quaternion rotation) => rotation.Normalized;
 		public ScaleValidatorDelegate ScaleValidator = (Vector3D scale) => scale;
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		internal Vector3D position = new Vector3D(0, 0, 0);
 		public Vector3D Position
 		{
-			get => _position;
-			set
-			{
-				_position = PositionValidator(value);
-				Changed = true;
+			get => position;
+			set {
+				position = PositionValidator(value);
+				OnPropertyChanged();
 			}
 		}
 
+		internal Vector3D globalPosition = new Vector3D(0, 0, 0);
+		public Vector3D GlobalPosition
+		{
+			get => globalPosition;
+			set
+			{
+				globalPosition = PositionValidator(value);
+				OnPropertyChanged();
+			}
+		}
+
+		internal Quaternion rotation = new Quaternion(1, 0, 0, 0);
 		public Quaternion Rotation
 		{
-			get => _rotation;
+			get => rotation;
 			set
 			{
 				if (!value.IsUnitQuaternion)
 					Logger.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
-				_rotation = RotationValidator(value);
-				Changed = true;
+				rotation = RotationValidator(value);
+				OnPropertyChanged();
+			}
+		}
+		internal Quaternion globalRotation = new Quaternion(1, 0, 0, 0);
+		public Quaternion GlobalRotation
+		{
+			get => globalRotation;
+			set
+			{
+				globalRotation = RotationValidator(value);
+				OnPropertyChanged();
 			}
 		}
 
+		internal Vector3D scale = new Vector3D(1, 1, 1);
 		public Vector3D Scale
 		{
-			get => _scale;
-			set
-			{
-				_scale = ScaleValidator(value);
-				Changed = true;
+			get => scale;
+			set {
+				scale = ScaleValidator(value);
+				OnPropertyChanged();
 			}
 		}
+
 		public void Rotate(UnitVector3D axis, double angle, bool useWorldAxis = false)
 		{
 			Rotation = MathUtil.Rotate(Rotation, axis, angle, useWorldAxis);
@@ -93,7 +116,12 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			Rotation = MathUtil.LookAt((targetPosition - Position).Normalize(), upward);
 		}
 
-		internal bool Changed { get; set; } = true;
+		protected void OnPropertyChanged([CallerMemberName] string name = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+		}
+
+		internal bool Changed { get; private set; } = true;
 		internal void ProcessedChanges() => Changed = false;
 	}
 }

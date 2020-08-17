@@ -17,11 +17,12 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement = value;
         }
 
-        private const string EventTagPrefix = "button/";
+        private static int Id = 0;
+        private int id;
 
         public string EventTag
         {
-            get => $"{EventTagPrefix}{Element.name}";
+            get => $"button/{Element.name}-{id}";
         }
 
         public string Text {
@@ -34,11 +35,15 @@ namespace SynthesisAPI.UIManager.VisualElements
             _visualElement = ApiProvider.CreateUnityType<_UnityButton>()!;
             if (_visualElement == null)
                 throw new Exception();
+            id = Id;
+            Id++;
         }
 
         internal Button(_UnityButton element)
         {
             Element = element;
+            id = Id;
+            Id++;
         }
 
         // Unsure if this is needed
@@ -57,8 +62,6 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public void Subscribe(Action<IEvent> action)
         {
-            if (EventTag == EventTagPrefix)
-                Logger.Log("Subscribing to unnamed button, cannot differentiate click event", LogLevel.Warning);
             _callback = e => action(e);
             EventBus.EventBus.NewTagListener(EventTag, _callback);
             PostUxmlLoad();

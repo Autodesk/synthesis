@@ -36,18 +36,16 @@ namespace SynthesisCore.Systems
             private bool hasSetSpritePivot = false;
             private readonly Sprite sprite;
 
-            private bool hasUpdatedScalingOnce = false;
-
             public Arrow(UnitVector3D direction)
             {
                 Direction = direction;
 
                 ArrowEntity = EnvironmentManager.AddEntity();
-                ArrowEntity.GetComponent<Parent>().Set(arrowsEntity);
+                ArrowEntity.GetComponent<Parent>().ParentEntity = arrowsEntity;
                 Transform = ArrowEntity.AddComponent<Transform>();
 
                 arrowSpriteEntity = EnvironmentManager.AddEntity();
-                arrowSpriteEntity.GetComponent<Parent>().Set(ArrowEntity);
+                arrowSpriteEntity.GetComponent<Parent>().ParentEntity = ArrowEntity;
 
                 var arrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
                 var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
@@ -87,27 +85,30 @@ namespace SynthesisCore.Systems
                 };
             }
 
-            public void UpdateSpritePivot()
+            public void Update()
             {
-                // Move sprite pivot point from center of image to base of arrow
-                sprite.Visible = hasSetSpritePivot && hasUpdatedScalingOnce;
-                if (!hasSetSpritePivot && collider.Bounds.Extents.Y != 0)
+                if (!hasSetSpritePivot)
                 {
-                    var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
-                    arrowSpriteTransform.Position = new Vector3D(0, collider.Bounds.Extents.Y * 2, 0);
-                    hasSetSpritePivot = true;
+                    // Move sprite pivot point from center of image to base of arrow
+                    var len = sprite.Bounds.Extents.ProjectOn(Direction).Length;
+                    if (len != 0)
+                    {
+                        var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
+                        arrowSpriteTransform.Position = new Vector3D(0, len * 2, 0);
+                        hasSetSpritePivot = true;
+                    }
                 }
-            }
+                else
+                {
+                    // Update size of arrows so they always look the same size as they move
+                    var vectorToCamera = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
 
-            public void UpdateScaling()
-            {
-                // Update size of arrows so they always look the same size as they move
-                var vectorToCamera = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
+                    var size = vectorToCamera.Length * 0.01;
+                    arrowsTransform.Scale = new Vector3D(size, size, size);
 
-                var size = vectorToCamera.Length * 0.01;
-                arrowsTransform.Scale = new Vector3D(size, size, size);
-
-                hasUpdatedScalingOnce = true;
+                    if (!sprite.Visible)
+                        sprite.Visible = true;
+                }
             }
         }
 
@@ -121,14 +122,14 @@ namespace SynthesisCore.Systems
             }
             if (IsMovingEntity)
             {
+                arrowsTransform.Position = targetTransform.GlobalPosition;
                 foreach (var arrow in arrows)
                 {
                     // Make arrow face camera
-                    var forward = CameraController.Instance.cameraTransform.Position - targetTransform.Position;
+                    var forward = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
                     forward -= forward.ProjectOn(arrow.Direction);
-                    arrow.Transform.Rotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
-                    arrow.UpdateScaling();
-                    arrow.UpdateSpritePivot();
+                    arrow.Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
+                    arrow.Update();
                 }
 
                 MoveEntityTransform();
@@ -161,8 +162,13 @@ namespace SynthesisCore.Systems
             }
             
             targetEntity = entity;
-            arrowsEntity.GetComponent<Parent>().Set(targetEntity.Value);
-            targetTransform = targetEntity?.GetComponent<Transform>();
+            foreach(var selectedRigidBody in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
+            {
+                // Disable all physics
+                selectedRigidBody.IsKinematic = true;
+                selectedRigidBody.DetectCollisions = false;
+            }
+            targetTransform = targetEntity?.GetComponent<Transform>(); // TODO need to move the root parent that is jointed to this
         }
 
         /// <summary>
@@ -174,6 +180,13 @@ namespace SynthesisCore.Systems
             {
                 EnvironmentManager.RemoveEntity(arrowsEntity);
                 targetEntity = null;
+                selectedArrowDirection = null;
+                foreach (var selectedRigidBody in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
+                {
+                    // Re-enable all physics
+                    selectedRigidBody.IsKinematic = false;
+                    selectedRigidBody.DetectCollisions = true;
+                }
             }
         }
 
@@ -197,7 +210,7 @@ namespace SynthesisCore.Systems
                     if (deltaDir.Length > float.Epsilon)
                     {
                         var unitDeltaDir = deltaDir.Normalize();
-                        targetTransform.Position += unitDeltaDir.ScaleBy(magnitude);
+                        targetTransform.GlobalPosition += unitDeltaDir.ScaleBy(magnitude);
                     }
                 }
             }

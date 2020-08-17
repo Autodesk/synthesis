@@ -8,13 +8,15 @@ namespace SynthesisAPI.UIManager.UIComponents
     {
         public string Name { get; private set; }
         public VisualElementAsset Ui { get; private set; }
-        public Action<VisualElement> BindFunc { get; set; }
+        public Action<VisualElement> BindPanel { get; set; }
+        internal VisualElement PanelElement;
 
-        public Panel(string name, VisualElementAsset ui, Action<VisualElement> bindFunc)
+        public Panel(string name, VisualElementAsset ui, Action<VisualElement> bindPanel)
         {
             Name = name;
             Ui = ui;
-            BindFunc = bindFunc;
+            BindPanel = bindPanel;
+            PanelElement = null;
         }
 
     }

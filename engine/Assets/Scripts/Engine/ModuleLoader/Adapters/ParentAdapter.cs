@@ -9,32 +9,23 @@ namespace Engine.ModuleLoader.Adapters
     {
         private Parent instance;
 
-        public void Awake() { }
-
-        public void Update()
+        public void SetInstance(Parent parent)
         {
-            if (instance.Changed)
-            {
-                GameObject parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
-                gameObject.transform.SetParent(parent.transform);
-                instance.ProcessedChanges();
+            instance = parent;
 
-                var transform = instance.Entity?.GetComponent<SynthesisAPI.EnvironmentManager.Components.Transform>();
-                if (transform != null)
+            instance.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == "ParentEntity")
                 {
-                    transform.Changed = true;
+                    GameObject _parent = (Entity)instance == 0 ? ApiProviderData.EntityParent : ApiProviderData.GameObjects[instance];
+                    gameObject.transform.SetParent(_parent.transform);
                 }
-            }
+            };
         }
 
         public void OnDestroy()
         {
             instance.Entity.Value.RemoveEntity();
-        }
-
-        public void SetInstance(Parent parent)
-        {
-            instance = parent;
         }
 
         public static Parent NewInstance()

@@ -96,7 +96,7 @@ namespace SynthesisCore.Systems
             InputManager.AssignDigitalInput("camera_boost", new Digital("left ctrl"));
 
             // Bind controls for orbit
-            InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0")); // TODO put control settings in preference manager
+            InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0 non-ui")); // TODO put control settings in preference manager
             InputManager.AssignAxis("ZoomCamera", new Analog("Mouse ScrollWheel"));
             InputManager.AssignAxis("Mouse X", new Analog("Mouse X"));
             InputManager.AssignAxis("Mouse Y", new Analog("Mouse Y"));
@@ -312,7 +312,7 @@ namespace SynthesisCore.Systems
             }
             else // Orbit mode
             {
-                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.Position;
+                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.GlobalPosition;
                 if (newFocusPoint.HasValue)
                 {
                     if (SelectedTarget != LastSelectedTarget) // Set new focus point
