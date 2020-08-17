@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="joint" class="joint-container" style="flex-direction: column;">
-        <Style src="USS/Joint.uss" />
+        <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
         <ui:VisualElement name="border-box" class="joint-container" style="height: 24px; width: 335px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(7, 7, 7); border-right-color: rgb(7, 7, 7); border-top-color: rgb(7, 7, 7); border-bottom-color: rgb(7, 7, 7); flex-direction: column;">
             <ui:Label text="SYNTHESIS ADVANCED JOINT SETTINGS" name="title" class="title" style="font-size: 12px;" />
         </ui:VisualElement>
