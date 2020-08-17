@@ -29,11 +29,11 @@
 }
 
 .name-label {
-    width: 205px;
+    width: 245px;
 }
 
 .last-modified-label {
-    width: 180px;
+    width: 140px;
 }
 
 .icon {

@@ -6,36 +6,36 @@ using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
-    public class EnvironmentsWindow
+    public class EntitiesWindow
     {
         public Panel Panel { get; }
         private VisualElement Window;
-        private VisualElementAsset EnvironmentAsset;
-        private ListView EnvironmentList;
+        private VisualElementAsset EntityAsset;
+        private ListView EntityList;
 
-        public EnvironmentsWindow()
+        public EntitiesWindow()
         {
-            EnvironmentAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Environment.uxml");
+            EntityAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Entity.uxml");
 
-            var environmentsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Environments.uxml");
-            Panel = new Panel("Environments", environmentsAsset, OnWindowOpen);
+            var entitiesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Entities.uxml");
+            Panel = new Panel("Entities", entitiesAsset, OnWindowOpen);
         }
-        
-        private void OnWindowOpen(VisualElement environmentsWindow)
+
+        private void OnWindowOpen(VisualElement entitiesWindow)
         {
-            Window = environmentsWindow;
-            EnvironmentList = (ListView) Window.Get("environment-list");
+            Window = entitiesWindow;
+            EntityList = (ListView) Window.Get("entity-list");
             
-            LoadWindowContents();   
+            LoadWindowContents();
             RegisterButtons();
         }
-
+        
         private void LoadWindowContents()
         {
             // concrete implementation waiting on file browser, currently just using this stub code to show functionality
             for (int i = 0; i < 20; i++)
             {
-                EnvironmentList.Add(new EnvironmentItem(EnvironmentAsset, new FileInfo("2019 Destination: Deep Space Field", "3d")).EnvironmentElement);
+                EntityList.Add(new EntityItem(EntityAsset, new FileInfo("Godspeed Robot Team 2374", "3d")).EntityElement);
             }
         }
 
@@ -52,7 +52,5 @@ namespace SynthesisCore.UI
             Button closeButton = (Button) Window.Get("close-button");
             closeButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
         }
-        
     }
-
 }

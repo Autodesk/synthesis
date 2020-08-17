@@ -11,14 +11,13 @@ namespace SynthesisCore.UI
     {
         public Panel Panel { get; }
         private VisualElement Window;
-        private VisualElement ModuleElement;
+        private VisualElementAsset ModuleAsset;
         private ListView ModuleList;
 
         public ModuleWindow()
         {
-            var moduleAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Module.uxml");
-            ModuleElement = moduleAsset.GetElement("module");
-            
+            ModuleAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Module.uxml");
+
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             Panel = new Panel("Modules", modulesAsset, OnWindowOpen);
             
@@ -39,7 +38,7 @@ namespace SynthesisCore.UI
         {
             foreach (var moduleInfo in ModuleManager.GetLoadedModules())
             {
-                ModuleList.Add(new ModuleItem(ModuleElement, moduleInfo).ModuleElement);
+                ModuleList.Add(new ModuleItem(ModuleAsset, moduleInfo).ModuleElement);
             }
         }
 

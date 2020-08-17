@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.UIManager.VisualElements;
+﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
@@ -7,9 +8,9 @@ namespace SynthesisCore.UI
     {
         public VisualElement EnvironmentElement { get; }
 
-        public EnvironmentItem(VisualElement environmentElement, FileInfo fileInfo)
+        public EnvironmentItem(VisualElementAsset environmentAsset, FileInfo fileInfo)
         {
-            EnvironmentElement = environmentElement;
+            EnvironmentElement = environmentAsset.GetElement("environment");
 
             SetInformation(fileInfo);
             RegisterButtons();
@@ -32,14 +33,15 @@ namespace SynthesisCore.UI
             // trash can button to delete Environment from imported list
             deleteButton.Subscribe(x =>
             {
-                Logger.Log("Deleted Environment from list");
+                EnvironmentElement.RemoveFromHierarchy();
+                // delete from registered environments (to come)
             });
             
             // check mark button to set Environment
             setButton.Subscribe(x =>
             {
                 Logger.Log("Set environment");
-                // implementation to set environment from file reference
+                // implementation to set environment from file reference (to come)
             });
         }
 

@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.Modules;
+﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.Modules;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.UI
@@ -7,9 +8,9 @@ namespace SynthesisCore.UI
     {
         public VisualElement ModuleElement { get; }
 
-        public ModuleItem(VisualElement moduleElement, ModuleManager.ModuleInfo moduleInfo)
+        public ModuleItem(VisualElementAsset moduleAsset, ModuleManager.ModuleInfo moduleInfo)
         {
-            ModuleElement = moduleElement;
+            ModuleElement = moduleAsset.GetElement("module");
             
             SetInformation(moduleInfo);
             RegisterButtons();
