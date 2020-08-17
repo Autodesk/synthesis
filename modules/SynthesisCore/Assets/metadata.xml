@@ -58,5 +58,6 @@
     <string>UI/images/delete-icon.png</string>
     <string>UI/images/toolbar-hide-icon.png</string>
     <string>UI/images/toolbar-show-icon.png</string>
+    <string>Test.glb</string>
   </FileManifest>
 </ModuleMetadata>
