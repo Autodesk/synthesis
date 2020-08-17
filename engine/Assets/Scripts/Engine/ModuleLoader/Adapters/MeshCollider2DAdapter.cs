@@ -46,31 +46,38 @@ namespace Engine.ModuleLoader.Adapters
 				{
 					Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
 
-					// TODO block hits to other objects "below" this one
 					bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
-					bool hitAlwaysOnTop = false;
+					bool hitIntercepted = false;
 					bool hitMe = false;
 					var hits = Physics.RaycastAll(ray, Mathf.Infinity);
 					foreach (var hit in hits)
 					{
-						if (ApiProviderData.GameObjects.TryGetValue(hit.transform.gameObject, out Entity otherE))
-						{
-							if (otherE.GetComponent<AlwaysOnTop>() != null)
-							{
-								hitAlwaysOnTop = true;
-							}
-						}
-						if (hit.transform == transform)
+						if (hit.collider.transform == transform)
 						{
 							hitMe = true;
 						}
+						else if (ApiProviderData.GameObjects.TryGetValue(hit.collider.transform.gameObject, out Entity otherE))
+						{
+							if (otherE.GetComponent<AlwaysOnTop>() != null)
+							{
+								hitIntercepted = true;
+							}
+							else
+							{
+								if (!hitMe)
+								{
+
+									hitIntercepted = true;
+								}
+							}
+						}
 					}
-					if (hitMe && (isAlwaysOnTop || !hitAlwaysOnTop))
+					if (hitMe && (!hitIntercepted || isAlwaysOnTop))
 					{
 						instance.OnMouseDown();
 					}
 				}
-				else if(Input.GetMouseButtonUp(0))
+				else if (Input.GetMouseButtonUp(0))
 				{
 					instance.OnMouseUp();
 				}

@@ -14,6 +14,7 @@ namespace SynthesisCore.UI
 
         private static bool toolbarCreated = false;
         private static bool openedMoveArrows = false;
+        private static bool isOpen = false;
         
         private static void CreateToolbar()
         {
@@ -37,9 +38,13 @@ namespace SynthesisCore.UI
                 CreateToolbar();
 
             selectedEntity = entity;
-
-            UIManager.AddTab(entityTab);
+            
+            if(!isOpen)
+                UIManager.AddTab(entityTab);
+            
             UIManager.SelectTab(entityTab.Name);
+            
+            isOpen = true;
         }
 
         public static void Close()
@@ -49,6 +54,7 @@ namespace SynthesisCore.UI
                 MoveArrows.StopMovingEntity();
             }
             UIManager.RemoveTab(entityTab.Name);
+            isOpen = false;
         }
     }
 }

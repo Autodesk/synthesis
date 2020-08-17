@@ -30,6 +30,7 @@ namespace Engine.ModuleLoader.Adapters
 
             unityRigidbody.useGravity = instance.useGravity;
             unityRigidbody.isKinematic = instance.isKinematic;
+            unityRigidbody.detectCollisions = instance.detectCollisions;
             unityRigidbody.mass = instance.mass;
             unityRigidbody.velocity = instance.velocity.Map();
             unityRigidbody.drag = instance.drag;
@@ -52,6 +53,9 @@ namespace Engine.ModuleLoader.Adapters
                     break;
                 case "iskinematic":
                     unityRigidbody.isKinematic = instance.isKinematic;
+                    break;
+                case "detectcollisions":
+                    unityRigidbody.detectCollisions = instance.detectCollisions; 
                     break;
                 case "mass":
                     unityRigidbody.mass = instance.mass;

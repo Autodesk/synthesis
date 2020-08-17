@@ -36,9 +36,19 @@ namespace Engine.ModuleLoader.Adapters
 			{
 				case "Position":
 					unityTransform.localPosition = instance.Position.Map();
+					instance.GlobalPosition = instance.PositionValidator(unityTransform.position.Map());
+					break;
+				case "GlobalPosition":
+					unityTransform.position = instance.GlobalPosition.Map();
+					instance.position = instance.PositionValidator(unityTransform.localPosition.Map());
 					break;
 				case "Rotation":
 					unityTransform.localRotation = instance.Rotation.Map();
+					instance.GlobalRotation = instance.RotationValidator(unityTransform.rotation.Map());
+					break;
+				case "GlobalRotation":
+					unityTransform.rotation = instance.GlobalRotation.Map();
+					instance.rotation = instance.RotationValidator(unityTransform.localRotation.Map());
 					break;
 				case "Scale":
 					unityTransform.localScale = instance.Scale.Map();
@@ -53,6 +63,9 @@ namespace Engine.ModuleLoader.Adapters
 			instance.position = instance.PositionValidator(unityTransform.localPosition.Map());
 			instance.rotation = instance.RotationValidator(unityTransform.localRotation.Map());
 			instance.scale = instance.ScaleValidator(unityTransform.localScale.Map());
+
+			instance.globalPosition = instance.PositionValidator(unityTransform.position.Map());
+			instance.globalRotation = instance.RotationValidator(unityTransform.rotation.Map());
 		}
 
 		public static Transform NewInstance()

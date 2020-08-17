@@ -28,22 +28,28 @@ namespace Engine.ModuleLoader.Adapters
         public static Joints NewInstance => new Joints();
 
         // Update is called once per frame
-        void Update()
+        public void Update()
         {
-            foreach (IJointAdapter jointAdapter in _jointAdapters)
-                jointAdapter.Update();
+            for (var i = _jointAdapters.Count - 1; i >= 0; i--)
+            {
+                IJointAdapter jointAdapter = _jointAdapters[i];
+                if (!jointAdapter.Exists())
+                    _jointAdapters.Remove(jointAdapter);
+                else
+                    jointAdapter.Update();
+            }
         }
 
         void Add(IJoint joint)
         {
-            if (joint is SynthesisAPI.EnvironmentManager.Components.FixedJoint)
+            if (joint is FixedJoint fixedJoint)
             {
-                FixedJointAdapter jointAdapter = new FixedJointAdapter((FixedJoint) joint);
+                FixedJointAdapter jointAdapter = new FixedJointAdapter(fixedJoint);
                 _jointAdapters.Add(jointAdapter);
             }
-            else if (joint is SynthesisAPI.EnvironmentManager.Components.HingeJoint)
+            else if (joint is HingeJoint hingeJoint)
             {
-                HingeJointAdapter jointAdapter = new HingeJointAdapter((HingeJoint) joint);
+                HingeJointAdapter jointAdapter = new HingeJointAdapter(hingeJoint);
                 _jointAdapters.Add(jointAdapter);
             }
         }
@@ -57,6 +63,7 @@ namespace Engine.ModuleLoader.Adapters
         {
             void Update();
             IJoint GetIJoint();
+            bool Exists();
         }
 
         class FixedJointAdapter : IJointAdapter
@@ -64,6 +71,7 @@ namespace Engine.ModuleLoader.Adapters
             private FixedJoint _joint;
             public IJoint GetIJoint() => _joint;
             private UnityEngine.FixedJoint _unityJoint;
+            public bool Exists() => _unityJoint != null;
             public FixedJointAdapter(FixedJoint joint)
             {
                 _joint = joint;
@@ -88,7 +96,8 @@ namespace Engine.ModuleLoader.Adapters
             {
                 if (_unityJoint == null)
                 {
-                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Debug);
+                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Error);
+                    return;
                 }
 
                 // TODO: What should we do about the parent?
@@ -122,6 +131,7 @@ namespace Engine.ModuleLoader.Adapters
             private HingeJoint _joint;
             public IJoint GetIJoint() => _joint;
             private UnityEngine.HingeJoint _unityJoint;
+            public bool Exists() => _unityJoint != null;
             public HingeJointAdapter(HingeJoint joint)
             {
                 _joint = joint;
@@ -152,7 +162,8 @@ namespace Engine.ModuleLoader.Adapters
                 if (_unityJoint == null)
                 {
                     // TODO: Need to do something else if joint breaks
-                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Debug);
+                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Error);
+                    return;
                 }
 
                 //TODO: Add parent and child body connections

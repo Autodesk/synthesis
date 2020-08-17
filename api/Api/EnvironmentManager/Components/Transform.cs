@@ -33,6 +33,17 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			}
 		}
 
+		internal Vector3D globalPosition = new Vector3D(0, 0, 0);
+		public Vector3D GlobalPosition
+		{
+			get => globalPosition;
+			set
+			{
+				globalPosition = PositionValidator(value);
+				OnPropertyChanged();
+			}
+		}
+
 		internal Quaternion rotation = new Quaternion(1, 0, 0, 0);
 		public Quaternion Rotation
 		{
@@ -42,6 +53,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
 				if (!value.IsUnitQuaternion)
 					Logger.Log($"Warning: assigning rotation to non-unit quaternion {value}", LogLevel.Warning);
 				rotation = RotationValidator(value);
+				OnPropertyChanged();
+			}
+		}
+		internal Quaternion globalRotation = new Quaternion(1, 0, 0, 0);
+		public Quaternion GlobalRotation
+		{
+			get => globalRotation;
+			set
+			{
+				globalRotation = RotationValidator(value);
 				OnPropertyChanged();
 			}
 		}

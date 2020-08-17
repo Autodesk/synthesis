@@ -132,6 +132,16 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
+        internal bool detectCollisions = true;
+        public bool DetectCollisions
+        {
+            get => detectCollisions;
+            set
+            {
+                detectCollisions = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
