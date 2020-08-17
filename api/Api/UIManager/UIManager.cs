@@ -177,8 +177,14 @@ namespace SynthesisAPI.UIManager
             {
                 Instance.PanelContainer.Enabled = true;
                 var elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}");
-                Instance.PanelContainer.Add(elm);
-                LoadedPanels[panelName].BindFunc(elm);
+                if (LoadedPanels[panelName].PanelElement == null)
+                {
+                    LoadedPanels[panelName].BindPanel(elm);
+                    var x = LoadedPanels[panelName];
+                    x.PanelElement = elm;
+                    LoadedPanels[panelName] = x;
+                }
+                Instance.PanelContainer.Add(LoadedPanels[panelName].PanelElement);
             }
             
             // TODO: Maybe some event
@@ -189,8 +195,8 @@ namespace SynthesisAPI.UIManager
             var existingPanel = Instance.PanelContainer.Get(name: $"panel-{panelName}");
             if (existingPanel != null)
             {
-                Instance.PanelContainer.Enabled = false;
                 Instance.PanelContainer.Remove(existingPanel);
+                Instance.PanelContainer.Enabled = ((List<VisualElement>)Instance.PanelContainer.GetChildren()).Count > 0;
             }
         }
 
