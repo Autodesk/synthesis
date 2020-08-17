@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="window" class="window" style="height: 459px; width: 398px;">
+        <Style src="/Assets/UI/Window/USS/Window.uss" />
+        <ui:VisualElement name="header" class="window-header-container" style="height: 53px; width: 346px;">
+            <ui:VisualElement name="icon" class="window-header-icon" style="height: 30px; width: 30px; background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+            <ui:Label text="Joint Editor" name="title" class="window-header-title panel-heading" style="height: 41px; width: 292px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content" style="height: 345px; flex-grow: 1; flex-direction: row; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; background-color: rgb(250, 250, 250); width: 385px;">
+            <ui:VisualElement name="joint-list" class="window-content" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel" style="flex-direction: row-reverse;">
+            <ui:Button text="Close" name="close-button" class="window-button" />
+            <ui:Button text="OK" name="ok-button" class="window-button-blue" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

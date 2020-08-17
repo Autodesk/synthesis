@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="flex-grow: 1;">
+        <ui:VisualElement name="toolbar">
+            <ui:VisualElement name="top" class="top">
+                <ui:VisualElement name="left-buttons" style="flex-direction: row;">
+                    <ui:Button name="add-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/add-icon.png&apos;);" />
+                    <ui:Button name="environments-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/environments-icon.png&apos;);" />
+                </ui:VisualElement>
+                <ui:VisualElement name="tab-container" class="tab-container" />
+                <ui:VisualElement name="right-buttons" style="flex-direction: row;">
+                    <ui:Button name="modules-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                    <ui:Button name="settings-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/settings-icon.png&apos;);" />
+                    <ui:Button name="help-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/help-icon.png&apos;);" />
+                    <ui:Button name="joints-button" class="toolbar-button" style="background-image: url(&apos;/Assets/UI/Toolbar/Icons/modules-icon.png&apos;);" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="bottom" class="bottom" style="height: auto;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="panel-center" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px; height: auto;" />
+        <ui:VisualElement name="toast-notification-container" style="width: 400px; height: 0; max-height: 400px; overflow: hidden; margin-left: 30px; margin-right: 30px; margin-top: 30px; margin-bottom: 30px; background-color: rgba(0, 0, 0, 0);">
+            <ui:ScrollView name="toast-scroll-view" style="width: 400px; height: 400px; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; flex-shrink: 0; flex-basis: initial; flex-direction: column;">
+                <ui:VisualElement name="toast-feed" style="justify-content: flex-start; width: 100%; height: auto; background-color: rgba(0, 0, 0, 0); flex-shrink: 0; flex-basis: initial; -unity-text-align: upper-left;" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

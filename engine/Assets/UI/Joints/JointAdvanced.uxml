@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: column;">
+        <Style src="USS/Joint.uss" />
+        <ui:VisualElement name="border-box" class="joint-container" style="height: 24px; width: 335px; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(7, 7, 7); border-right-color: rgb(7, 7, 7); border-top-color: rgb(7, 7, 7); border-bottom-color: rgb(7, 7, 7); flex-direction: column;">
+            <ui:Label text="SYNTHESIS ADVANCED JOINT SETTINGS" name="title" class="title" style="font-size: 12px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="border-box" class="joint-container" style="height: 87px; width: 340px; border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px; border-left-color: rgb(7, 7, 7); border-right-color: rgb(7, 7, 7); border-top-color: rgb(7, 7, 7); border-bottom-color: rgb(7, 7, 7); flex-direction: column;">
+            <ui:Label text="Driver Port" name="title" class="title" />
+            <ui:VisualElement name="driver-port-container" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; flex-direction: row;">
+                <uie:LayerMaskField name="driver-port-type" class="joint-detail" style="height: 25px; width: 90px;" />
+                <uie:IntegerField value="42" name="driver-port-int" style="height: 24px; width: 195px; margin-top: 5px; margin-bottom: 5px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
