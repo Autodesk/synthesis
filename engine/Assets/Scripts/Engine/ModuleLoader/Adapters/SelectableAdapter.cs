@@ -1,19 +1,16 @@
-﻿using System;
-using SynthesisAPI.EnvironmentManager;
+﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
-using SynthesisAPI.EventBus;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
-using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
 using static Engine.ModuleLoader.Api;
-using SynthesisAPI.Utilities;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.InputManager.InputEvents;
 
 namespace Engine.ModuleLoader.Adapters
 {
-	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
+    public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
 		private List<Material> materials = new List<Material>();
@@ -103,13 +100,27 @@ namespace Engine.ModuleLoader.Adapters
 					materials.AddRange(m.materials);
 				}
 			}
+			InputManager.AssignDigitalInput($"_internal selectable select", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
+			InputManager.AssignDigitalInput($"_internal selectable deselect", new Digital($"mouse 1"), e =>
+			{
+				if (Selectable.Selected != null)
+				{
+					Deselect();
+				}
+			});
 		}
 
-		public void Update()
+		public void OnDestroy()
 		{
-			if (Input.GetMouseButtonDown(0)) // TODO use preference manager?
+			InputManager.UnassignDigitalInput($"_internal SelectableAdapter select");
+			InputManager.UnassignDigitalInput($"_internal SelectableAdapter deselect");
+		}
+
+		public void ProcessInput(DigitalEvent mouseDownEvent)
+		{
+			if (mouseDownEvent.State == DigitalState.Down)
 			{
-				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
+				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
 
 				bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
 				bool hitIntercepted = false;
@@ -154,10 +165,6 @@ namespace Engine.ModuleLoader.Adapters
 				{
 					Select();
 				}
-			}
-			if (Selectable.Selected != null && Input.GetMouseButtonDown(1)) // TODO use preference manager for this
-			{
-				Deselect();
 			}
 		}
 	}
