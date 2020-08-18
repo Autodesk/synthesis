@@ -43,6 +43,7 @@ jsonrpc_client!(pub struct ControllerRpc {
     pub fn up(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
     pub fn down(&mut self, channel: u32, distance: f64) -> RpcRequest<()>;
     pub fn test(&mut self, val: i32) -> RpcRequest<i32>;
+    pub fn set_motor_percent(&mut self, channel: u32, motorIndex: i32, percent: f32) -> RpcRequest<()>;
 });
 
 lazy_static! {
@@ -203,4 +204,5 @@ rpc_methods!{
     up(channel: u32, distance: f64) -> ()
     down(channel: u32, distance: f64) -> ()
     test(val: i32) -> i32
+    set_motor_percent(channel: u32, motorIndex: i32, percent: f32) -> ()
 }

@@ -97,6 +97,8 @@ namespace Controller
             }
         }
 
+        #endregion
+
         [RpcMethod("test")]
         public static int Test(int test)
         {
@@ -107,6 +109,14 @@ namespace Controller
             return test;
         }
 
-        #endregion
+        [RpcMethod("set_motor_percent")]
+        public static void SetMotorPercent(uint channel, int motorIndex, double percent)
+        {
+            foreach (var e in EnvironmentManager.GetEntitiesWhere(
+                e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<MotorManager>() != null))
+            {
+                e.GetComponent<MotorManager>().AllMotorControllers[motorIndex].SetPercent((float)percent);
+            }
+        }
     }
 }

@@ -1,16 +1,15 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.Modules.Attributes;
-using SynthesisCore.Components;
-using SynthesisCore.Systems;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisCore.UI;
+using SynthesisCore.Components;
+using SynthesisAPI.Modules.Attributes;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore
 {
@@ -18,6 +17,7 @@ namespace SynthesisCore
     {
         private Entity testBody;
 
+        private MotorManager motorManager;
         private MotorController frontLeft, frontRight, backLeft, backRight;
         private MotorController arm;
 
@@ -59,12 +59,7 @@ namespace SynthesisCore
                 EntityToolbar.Close();
             };
 
-            (float r, float g, float b, float a)[] colors = {
-                (1, 0, 0, 1),
-                (0, 1, 0, 1),
-                (0, 0, 1, 1),
-                (1, 0, 1, 1)
-            };
+            testBody.AddComponent<Moveable>().Channel = 5;
 
             var TestMotor = new MotorType() {
                 MaxVelocity = 10000,
@@ -72,10 +67,12 @@ namespace SynthesisCore
                 MotorName = "Testing Motor"
             };
 
-            frontLeft = MotorManager.AllMotorControllers[3];
-            frontRight = MotorManager.AllMotorControllers[4];
-            backLeft = MotorManager.AllMotorControllers[1];
-            backRight = MotorManager.AllMotorControllers[2];
+            motorManager = testBody.AddComponent<MotorManager>();
+
+            frontLeft = motorManager.AllMotorControllers[3];
+            frontRight = motorManager.AllMotorControllers[4];
+            backLeft = motorManager.AllMotorControllers[1];
+            backRight = motorManager.AllMotorControllers[2];
 
             frontLeft.Gearing = 1.0f / 10.0f;
             frontLeft.MotorType = TestMotor;
@@ -95,39 +92,46 @@ namespace SynthesisCore
             backRight.Locked = true;
 
             var ArmMotor = new MotorType() {
-                MaxVelocity = 10,
-                Torque = 50,
+                MaxVelocity = 1000000000f,
+                Torque = 3f,
                 MotorName = "Arm Motor"
             };
 
-            arm = MotorManager.AllMotorControllers[0];
+            arm = motorManager.AllMotorControllers[0];
             arm.Gearing = 1.0f / 2.0f;
             arm.MotorType = ArmMotor;
             arm.MotorCount = 1;
             arm.Locked = true;
-
-            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+            arm.SetPercent(0);
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
+            InputManager.AssignDigitalInput("move_arm", new Digital("t"));
         }
 
         public override void OnUpdate() {
             float forward = InputManager.GetAxisValue("vert");
             float turn = InputManager.GetAxisValue("hori");
             
-            var moveArmForward = new Digital("t");
-            moveArmForward.Update();
-            if (moveArmForward.State == DigitalState.Down) {
-                arm.SetPercent(0.5f);
-            } else {
-                arm.SetPercent(0.0f);
-            }
-
+            /*
             frontLeft.SetPercent(forward + turn);
             frontRight.SetPercent(forward - turn);
             backLeft.SetPercent(forward + turn);
             backRight.SetPercent(forward - turn);
+            */
+        }
+
+        [TaggedCallback("input/move_arm")]
+        public void MoveArm(DigitalEvent e)
+        {
+            if(e.State == DigitalState.Held)
+            {
+                arm.SetPercent(1f);
+            }
+            else
+            {
+                arm.SetPercent(-1f);
+            }
         }
 
         private Mesh cube(Mesh m)
@@ -165,32 +169,5 @@ namespace SynthesisCore
         }
 
         public override void Teardown() { }
-
-        /*
-        [TaggedCallback("input/move")]
-        public void Move(DigitalEvent digitalEvent)
-        {
-            if(digitalEvent.State == DigitalState.Held)
-            {
-                switch (digitalEvent.Name)
-                {
-                    case "w":
-                        ApiProvider.Log("w");
-                        break;
-                    case "a":
-                        ApiProvider.Log("a");
-                        break;
-                    case "s":
-                        ApiProvider.Log("s");
-                        break;
-                    case "d":
-                        ApiProvider.Log("d");
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        */
     }
 }
