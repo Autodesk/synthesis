@@ -463,7 +463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SendNavigationEvents: 1
-  m_SendIMGUIEvents: 1
+  m_SendIMGUIEvents: 0
   m_SendInputEvents: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical

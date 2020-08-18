@@ -473,11 +473,11 @@ namespace SynthesisAPI.AssetManager
                     {
                         sourceStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
                     }
-                }
 
-                if (sourceStream == null)
-                {
-                    throw new Exception("Source stream for import is empty");
+                    if (sourceStream == null)
+                    {
+                        throw new SynthesisException("Source stream for import is empty");
+                    }
                 }
 
                 Asset? newAsset = AssetHandlers[type][subtype](name, perm, path, args);
@@ -495,12 +495,16 @@ namespace SynthesisAPI.AssetManager
                     return (Asset?)FileSystem.AddEntry(targetPath, lazyAsset.Load(new byte[0]));
                 }
 
-                int streamLength = (int)sourceStream.Length;
+                byte[] data = new byte[0];
+                if (sourceStream != null)
+                {
+                    int streamLength = (int)sourceStream.Length;
 
-                byte[] data = new byte[streamLength];
-                sourceStream.Read(data, 0, streamLength);
+                    data = new byte[streamLength];
+                    sourceStream.Read(data, 0, streamLength);
 
-                sourceStream.Close();
+                    sourceStream.Close();
+                }
 
                 // TODO make it so we don't have to allocate twice the size of the asset every
                 // time we import it (i.e. a 500 KB asset will result in 1000 KB of allocation)

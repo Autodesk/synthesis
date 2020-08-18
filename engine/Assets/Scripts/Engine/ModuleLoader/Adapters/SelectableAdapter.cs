@@ -15,6 +15,7 @@ namespace Engine.ModuleLoader.Adapters
 		private Selectable instance;
 		private List<Material> materials = new List<Material>();
 		public const float FlashSelectedTime = 0.1f; // sec
+		private long lastClickTime = 0; // ms
 
 		public void SetInstance(Selectable obj)
 		{
@@ -35,8 +36,8 @@ namespace Engine.ModuleLoader.Adapters
 				{
 					if (selectable.IsSelected)
 					{
-						selectable.SetSelected(false);
-						instance.OnDeselect();
+						selectable.SetSelected(Selectable.SelectionType.Unselected);
+						selectable.OnDeselect();
 					}
 				}
 				Selectable.ResetSelected();
@@ -45,14 +46,24 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Select()
 		{
+			// Debug.Log("Select()");
+			var currentClickTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
 			if (!instance.IsSelected)
 			{
 				Deselect();
-				instance.SetSelected(true);
+				instance.SetSelected((currentClickTime - lastClickTime) <= 400 ? Selectable.SelectionType.ExtendedSelection : Selectable.SelectionType.ExtendedSelectionPending);
 				instance.OnSelect();
 
 				StartCoroutine(FlashYellow());
 			}
+			else
+			{
+				if ((currentClickTime - lastClickTime) <= 400)
+					instance.SetSelected(Selectable.SelectionType.ExtendedSelection);
+				else
+					instance.SetSelected(Selectable.SelectionType.Selected);
+			}
+			lastClickTime = currentClickTime;
 		}
 
 		private IEnumerator FlashYellow() // TODO maybe make it highlight the mesh using some kind of shader
