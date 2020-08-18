@@ -1,8 +1,11 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using System;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -44,8 +47,14 @@ namespace SynthesisCore.UI
             //     "Would you like to automatically upgrade your current Synthesis installation and restart?";
             // dialogInfo.SubmitButtonText = "Update";
             // dialogInfo.CloseButtonText = "Close";
-            // dialogInfo.SubmitButtonAction = 
-            // dialogInfo.CloseButtonAction =
+            // dialogInfo.SubmitButtonAction = ev =>
+            // {
+            //     Logger.Log("Submit button clicked");
+            // };
+            // dialogInfo.CloseButtonAction = ev =>
+            // {
+            //     Logger.Log("Close button clicked");
+            // };
             // Dialog.SendDialog(dialogInfo);
             // to be used when updater is added
 
