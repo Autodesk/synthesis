@@ -122,6 +122,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void Insert(int index, VisualElement element) => _visualElement.Insert(index, element._visualElement);
         public void AddToClassList(string className) => _visualElement.AddToClassList(className);
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
+        public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
