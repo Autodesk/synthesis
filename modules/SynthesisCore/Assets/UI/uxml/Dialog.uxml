@@ -13,8 +13,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="buttons" class="dialog-buttons">
-            <ui:Button text="%blue%" name="blue-button" class="window-button-blue" />
-            <ui:Button text="%white%" name="white-button" class="window-button" />
+            <ui:Button text="%blue%" name="submit-button" class="window-button-blue" />
+            <ui:Button text="%white%" name="close-button" class="window-button" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
