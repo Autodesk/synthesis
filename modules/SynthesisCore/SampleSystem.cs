@@ -17,9 +17,14 @@ namespace SynthesisCore
     {
         private Entity testBody;
 
-        private MotorManager motorManager;
-        private MotorController frontLeft, frontRight, backLeft, backRight;
-        private MotorController arm;
+        private GearAssemblyManager motorManager;
+        private MotorAssembly frontLeft, frontRight, backLeft, backRight;
+        private MotorAssembly arm;
+
+        private PowerSupply powerSupply;
+        private DCMotor testMotor;
+
+        private const double LoadTorque = 22 * 9.81 * 1.1 * 0.0508; // m * g * μ * r
 
         public override void OnPhysicsUpdate() { }
 
@@ -61,76 +66,67 @@ namespace SynthesisCore
 
             testBody.AddComponent<Moveable>().Channel = 5;
 
-            var TestMotor = new MotorType() {
-                MaxVelocity = 10000,
-                Torque = 50,
-                MotorName = "Testing Motor"
-            };
+            motorManager = testBody.AddComponent<GearAssemblyManager>();
 
-            motorManager = testBody.AddComponent<MotorManager>();
-
-            frontLeft = motorManager.AllMotorControllers[3];
-            frontRight = motorManager.AllMotorControllers[4];
-            backLeft = motorManager.AllMotorControllers[1];
-            backRight = motorManager.AllMotorControllers[2];
-
-            frontLeft.Gearing = 1.0f / 10.0f;
-            frontLeft.MotorType = TestMotor;
-            frontLeft.MotorCount = 1;
-            frontLeft.Locked = true;
-            frontRight.Gearing = 1.0f / 10.0f;
-            frontRight.MotorType = TestMotor;
-            frontRight.MotorCount = 1;
-            frontRight.Locked = true;
-            backLeft.Gearing = 1.0f / 10.0f;
-            backLeft.MotorType = TestMotor;
-            backLeft.MotorCount = 1;
-            backLeft.Locked = true;
-            backRight.Gearing = 1.0f / 10.0f;
-            backRight.MotorType = TestMotor;
-            backRight.MotorCount = 1;
-            backRight.Locked = true;
-
-            var ArmMotor = new MotorType() {
-                MaxVelocity = 1000000000f,
-                Torque = 3f,
-                MotorName = "Arm Motor"
-            };
-
-            arm = motorManager.AllMotorControllers[0];
-            arm.Gearing = 1.0f / 2.0f;
-            arm.MotorType = ArmMotor;
-            arm.MotorCount = 1;
-            arm.Locked = true;
-            arm.SetPercent(0);
+            frontLeft = motorManager.AllGearBoxes[3];
+            frontRight = motorManager.AllGearBoxes[4];
+            backLeft = motorManager.AllGearBoxes[1];
+            backRight = motorManager.AllGearBoxes[2];
+            arm = motorManager.AllGearBoxes[0];
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
-            InputManager.AssignDigitalInput("move_arm", new Digital("t"));
+            InputManager.AssignDigitalInput("move_arm_up", new Digital("t"));
+            InputManager.AssignDigitalInput("move_arm_down", new Digital("y"));
+
+            powerSupply = new PowerSupply(12); // V
+            testMotor = MotorFactory.CIMMotor();
         }
 
         public override void OnUpdate() {
             float forward = InputManager.GetAxisValue("vert");
             float turn = InputManager.GetAxisValue("hori");
-            
-            /*
-            frontLeft.SetPercent(forward + turn);
-            frontRight.SetPercent(forward - turn);
-            backLeft.SetPercent(forward + turn);
-            backRight.SetPercent(forward - turn);
-            */
+
+            var percent = forward + turn;
+            frontLeft.Update(powerSupply.VoltagePercent(percent), System.Math.Sign(percent) * LoadTorque);
+            percent = forward - turn;
+            frontRight.Update(powerSupply.VoltagePercent(percent), System.Math.Sign(percent) * LoadTorque);
+            percent = forward + turn;
+            backLeft.Update(powerSupply.VoltagePercent(percent), System.Math.Sign(percent) * LoadTorque);
+            percent = forward - turn;
+            backRight.Update(powerSupply.VoltagePercent(percent), System.Math.Sign(percent) * LoadTorque);
+
+            double percentVoltage = -1.0;
+
+            testMotor.Update(percentVoltage * powerSupply.Voltage, 2.5);
+
+            Logger.Log($"Torque: {(backRight.Motor.Torque * 1000)} m-Nm,   AngularSpeed: {backRight.Motor.AngularSpeed.RotationsPerMin} rpm,   " +
+                       $"Current: {backRight.Motor.Current} Amps,     Load: {System.Math.Sign(percent) * LoadTorque * 1000} m-Nm", LogLevel.Debug);
         }
 
-        [TaggedCallback("input/move_arm")]
-        public void MoveArm(DigitalEvent e)
+        [TaggedCallback("input/move_arm_up")]
+        public void MoveArmUp(DigitalEvent e)
         {
             if(e.State == DigitalState.Held)
             {
-                arm.SetPercent(1f);
+                arm.Update(powerSupply.VoltagePercent(0.25), 0);
             }
             else
             {
-                arm.SetPercent(-1f);
+                arm.Update(powerSupply.VoltagePercent(0), 0);
+            }
+        }
+
+        [TaggedCallback("input/move_arm_down")]
+        public void MoveArmDown(DigitalEvent e)
+        {
+            if (e.State == DigitalState.Held)
+            {
+                arm.Update(powerSupply.VoltagePercent(-0.25), 0);
+            }
+            else
+            {
+                arm.Update(powerSupply.VoltagePercent(0), 0);
             }
         }
 

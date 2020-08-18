@@ -113,9 +113,9 @@ namespace Controller
         public static void SetMotorPercent(uint channel, int motorIndex, double percent)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
-                e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<MotorManager>() != null))
+                e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<GearAssemblyManager>() != null))
             {
-                e.GetComponent<MotorManager>().AllMotorControllers[motorIndex].SetPercent((float)percent);
+                // e.GetComponent<MotorManager>().AllGearBoxes[motorIndex].SetPercent((float)percent);
             }
         }
     }
