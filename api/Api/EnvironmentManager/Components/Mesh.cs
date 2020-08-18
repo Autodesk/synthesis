@@ -60,6 +60,8 @@ namespace SynthesisAPI.EnvironmentManager.Components
 			}
 		}
 
+		public void RecalculateNormals() => OnPropertyChanged(name: "recalculate");
+
 		internal static Mesh FromUnity(UnityEngine.Mesh mesh) => new Mesh(mesh);
 		internal UnityEngine.Mesh ToUnity()
 		{
