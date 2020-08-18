@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="dialog" class="dialog-container">
+        <Style src="/modules/synthesis_core/UI/uss/Dialog.uss" />
+        <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
+        <ui:VisualElement name="header" class="dialog-header">
+            <ui:Label text="%title%" name="title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content" class="dialog-content">
+            <ui:VisualElement name="icon" class="dialog-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/information-icon.png&apos;);" />
+            <ui:VisualElement name="message" class="dialog-message">
+                <ui:Label text="%prompt%" name="prompt" class="dialog-message-prompt" />
+                <ui:Label text="%description%" name="description" class="dialog-message-description" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="buttons" class="dialog-buttons">
+            <ui:Button text="%blue%" name="blue-button" class="window-button-blue" />
+            <ui:Button text="%white%" name="white-button" class="window-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,47 @@
+.dialog-container {
+    width: 400px;
+    height: 200px;
+    background-color: rgb(229, 229, 229);
+}
+
+.dialog-header {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(221, 221, 221);
+}
+
+.dialog-content {
+    flex-direction: row;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    flex-grow: 1;
+}
+
+.dialog-buttons {
+    background-color: rgb(221, 221, 221);
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.dialog-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 20px;
+}
+
+.dialog-message {
+    width: 300px;
+}
+
+.dialog-message-prompt {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.dialog-message-description {
+    white-space: normal;
+}
