@@ -45,6 +45,8 @@ namespace SynthesisCore.UI
                 dialogElement.RemoveFromHierarchy();
             });
             
+            // used for centering dialog in absolute positioning
+            // not using relative as to not interfere with other elements on the screen
             dialogElement.SetStyleProperty("position", "absolute");
             dialogElement.SetStyleProperty("left", "50%");
             dialogElement.SetStyleProperty("margin-left", "-200px"); // should be set to negative half of dialog width
