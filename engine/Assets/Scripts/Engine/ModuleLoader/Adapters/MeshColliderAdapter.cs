@@ -12,7 +12,6 @@ namespace Engine.ModuleLoader.Adapters
 {
     public class MeshColliderAdapter : MonoBehaviour, IApiAdapter<MeshCollider>
     {
-        internal MeshAdapter mesh;
         internal UnityEngine.MeshCollider unityCollider;
         internal MeshCollider instance;
 
@@ -23,8 +22,8 @@ namespace Engine.ModuleLoader.Adapters
             if ((unityCollider = GetComponent<UnityEngine.MeshCollider>()) == null)
                 unityCollider = gameObject.AddComponent<UnityEngine.MeshCollider>();
 
-            if ((mesh = GetComponent<MeshAdapter>()) == null)
-                throw new Exception("No mesh adapter found");
+            if (instance.Entity?.GetComponent<Mesh>() == null)
+                throw new SynthesisException("Cannot add a MeshCollider to an entity without a Mesh");
 
             instance.PropertyChanged += UnityProperty;
 
@@ -32,8 +31,8 @@ namespace Engine.ModuleLoader.Adapters
 
             if (instance.sharedMesh == null)
             {
-                unityCollider.sharedMesh = EnvironmentManager.GetComponent<Mesh>(instance.Entity.Value).ToUnity();
-                instance.sharedMesh = new Mesh(unityCollider.sharedMesh);
+                instance.sharedMesh = instance.Entity?.GetComponent<Mesh>();
+                unityCollider.sharedMesh = instance.sharedMesh.ToUnity();
             } else
             {
                 unityCollider.sharedMesh = instance.sharedMesh.ToUnity();
@@ -64,6 +63,11 @@ namespace Engine.ModuleLoader.Adapters
                 default:
                     throw new Exception($"Property {args.PropertyName} is not setup");
             }
+        }
+
+        public void Start()
+        {
+            gameObject.transform.position = gameObject.transform.position + new Vector3(0, float.Epsilon, 0); // Enable Unity collider by moving transform slightly
         }
 
         private void Update()

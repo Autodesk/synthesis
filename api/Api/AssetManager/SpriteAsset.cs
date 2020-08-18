@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.Utilities;
+﻿using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
 using System;
 using UnityEngine;
@@ -29,6 +30,18 @@ namespace SynthesisAPI.AssetManager
             Sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new UnityEngine.Vector2(.5f, .5f));
 
             return this;
+        }
+
+        /// <summary>
+        /// Create a sprite asset from a texture
+        /// </summary>
+        /// <param name="texture">Texture to use</param>
+        /// <param name="position">Defines rectangular section of the texture to use for the sprite</param>
+        /// <param name="size">Defines rectangular section of the texture to use for the sprite</param>
+        /// <param name="pivot">Sprite's pivot point relative to its graphic rectangle</param>
+        internal void SetSprite(Texture2D texture, Vector2D position, Vector2D size, Vector2D pivot)
+        {
+            Sprite = Sprite.Create(texture, new Rect(MathUtil.MapVector2D(position), MathUtil.MapVector2D(size)), MathUtil.MapVector2D(pivot));
         }
 
         internal Sprite Sprite { get; private set; }

@@ -1,28 +1,25 @@
-﻿using System;
-using SynthesisAPI.EnvironmentManager;
+﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using System.Collections;
 using System.Collections.Generic;
-using SynthesisAPI.EventBus;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using MeshCollider = SynthesisAPI.EnvironmentManager.Components.MeshCollider;
-using Mesh = SynthesisAPI.EnvironmentManager.Components.Mesh;
+using static Engine.ModuleLoader.Api;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
+using SynthesisAPI.InputManager.InputEvents;
 
 namespace Engine.ModuleLoader.Adapters
 {
-	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
+    public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
-		private static List<Selectable> selectables = new List<Selectable>(); // TODO manage lifetime
-		private new MeshColliderAdapter collider;
-		private Material[] materials;
+		private List<Material> materials = new List<Material>();
 		public const float FlashSelectedTime = 0.1f; // sec
+		private long lastClickTime = 0; // ms
 
 		public void SetInstance(Selectable obj)
 		{
 			instance = obj;
-			selectables.Add(instance);
 			gameObject.SetActive(true);
 		}
 
@@ -33,16 +30,15 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Deselect()
 		{
-			if (instance.IsSelected)
-			{
-				instance.SetSelected(false);
-				instance.OnDeselect();
-			}
 			if (Selectable.Selected != null)
 			{
 				foreach (var selectable in EnvironmentManager.GetComponentsWhere<Selectable>(c => true))
 				{
-					selectable.SetSelected(false);
+					if (selectable.IsSelected)
+					{
+						selectable.SetSelected(Selectable.SelectionType.Unselected);
+						selectable.OnDeselect();
+					}
 				}
 				Selectable.ResetSelected();
 			}
@@ -50,19 +46,29 @@ namespace Engine.ModuleLoader.Adapters
 
 		private void Select()
 		{
+			// Debug.Log("Select()");
+			var currentClickTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
 			if (!instance.IsSelected)
 			{
 				Deselect();
-				instance.SetSelected(true);
+				instance.SetSelected((currentClickTime - lastClickTime) <= 400 ? Selectable.SelectionType.ExtendedSelection : Selectable.SelectionType.ExtendedSelectionPending);
 				instance.OnSelect();
 
 				StartCoroutine(FlashYellow());
 			}
+			else
+			{
+				if ((currentClickTime - lastClickTime) <= 400)
+					instance.SetSelected(Selectable.SelectionType.ExtendedSelection);
+				else
+					instance.SetSelected(Selectable.SelectionType.Selected);
+			}
+			lastClickTime = currentClickTime;
 		}
 
 		private IEnumerator FlashYellow() // TODO maybe make it highlight the mesh using some kind of shader
 		{
-			List<Color> backupColors = new List<Color>();
+			List<Color> backupColors = new List<Color>(materials.Count);
 			foreach (var m in materials)
 			{
 				backupColors.Add(m.color);
@@ -71,18 +77,10 @@ namespace Engine.ModuleLoader.Adapters
 
 			yield return new WaitForSeconds(FlashSelectedTime);
 
-			for (var i = 0; i < materials.Length; i++)
+			for (var i = 0; i < materials.Count; i++)
 			{
 				materials[i].color = backupColors[i];
 			}
-		}
-
-		private EventTrigger.Entry MakeEventTriggerEntry(EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
-		{
-			EventTrigger.Entry entry = new EventTrigger.Entry();
-			entry.eventID = type;
-			entry.callback.AddListener(action);
-			return entry;
 		}
 
 		public void OnEnable()
@@ -93,38 +91,92 @@ namespace Engine.ModuleLoader.Adapters
 				return;
 			}
 
-			if (gameObject.GetComponent<EventTrigger>() == null)
+			if (gameObject.GetComponent<MeshColliderAdapter>() == null)
 			{
-				var eventTrigger = gameObject.AddComponent<EventTrigger>();
-				eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerClick, data =>
+				instance.UsingChildren = true;
+			}
+
+			if (!instance.UsingChildren)
+			{
+				var renderer = GetComponent<MeshRenderer>();
+				if (renderer != null)
 				{
-					if (((PointerEventData) data).button == PointerEventData.InputButton.Left) // TODO use preference manager for this
-						Select();
-				}));
-				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerEnter, data => isPointerOnThis = true));
-				//eventTrigger.triggers.Add(MakeEventTriggerEntry(EventTriggerType.PointerExit,  data => isPointerOnThis = false));
+					materials.AddRange(GetComponent<MeshRenderer>().materials);
+				}
 			}
-			if ((collider = gameObject.GetComponent<MeshColliderAdapter>()) == null)
-				throw new Exception("Entity must have a mesh collider component");
-
-			materials = GetComponent<MeshRenderer>().materials;
-		}
-
-		public void Start()
-		{
-			gameObject.transform.position = gameObject.transform.position + new Vector3(0, float.Epsilon, 0); // Enable Unity collider by moving transform slightly
-		}
-
-		public void Update()
-		{
-			if (Input.GetMouseButtonDown(1)) // TODO use preference manager for this
+			else
 			{
-				Deselect();
+				foreach (var m in GetComponentsInChildren<MeshRenderer>())
+				{
+					materials.AddRange(m.materials);
+				}
+			}
+			InputManager.AssignDigitalInput($"_internal selectable select", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
+			InputManager.AssignDigitalInput($"_internal selectable deselect", new Digital($"mouse 1"), e =>
+			{
+				if (Selectable.Selected != null)
+				{
+					Deselect();
+				}
+			});
+		}
+
+		public void OnDestroy()
+		{
+			InputManager.UnassignDigitalInput($"_internal SelectableAdapter select");
+			InputManager.UnassignDigitalInput($"_internal SelectableAdapter deselect");
+		}
+
+		public void ProcessInput(DigitalEvent mouseDownEvent)
+		{
+			if (mouseDownEvent.State == DigitalState.Down)
+			{
+				Ray ray = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
+
+				bool isAlwaysOnTop = instance.Entity?.GetComponent<AlwaysOnTop>() != null;
+				bool hitIntercepted = false;
+				bool hitMe = false;
+				var hits = Physics.RaycastAll(ray, Mathf.Infinity);
+				foreach (var hit in hits)
+				{
+					if (hit.collider.transform == transform)
+					{
+						hitMe = true;
+					}
+					else if (ApiProviderData.GameObjects.TryGetValue(hit.collider.transform.gameObject, out Entity otherE))
+					{
+						if (otherE.GetComponent<AlwaysOnTop>() != null)
+						{
+							hitIntercepted = true;
+						}
+						else
+						{
+							if (instance.UsingChildren)
+							{
+								Entity parent = otherE;
+								while (parent != 0)
+								{
+									parent = parent.GetComponent<Parent>().ParentEntity;
+									if (parent == instance.Entity)
+									{
+										hitMe = true;
+										break;
+									}
+								}
+							}
+							if (!hitMe)
+							{
+
+								hitIntercepted = true;
+							}
+						}
+					}
+				}
+				if (hitMe && (!hitIntercepted || isAlwaysOnTop))
+				{
+					Select();
+				}
 			}
 		}
-		
-		
 	}
-
-	
 }

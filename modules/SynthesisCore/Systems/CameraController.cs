@@ -38,6 +38,7 @@ namespace SynthesisCore.Systems
         /// </summary>
         private Selectable? SelectedTarget = null;
         private Selectable? LastSelectedTarget = null;
+        private Selectable.SelectionType LastSelectedTargetType = Selectable.SelectionType.Unselected;
 
         public static bool EnableCameraPan = true;
 
@@ -96,7 +97,7 @@ namespace SynthesisCore.Systems
             InputManager.AssignDigitalInput("camera_boost", new Digital("left ctrl"));
 
             // Bind controls for orbit
-            InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0")); // TODO put control settings in preference manager
+            InputManager.AssignDigitalInput("camera_drag", new Digital("mouse 0 non-ui")); // TODO put control settings in preference manager
             InputManager.AssignAxis("ZoomCamera", new Analog("Mouse ScrollWheel"));
             InputManager.AssignAxis("Mouse X", new Analog("Mouse X"));
             InputManager.AssignAxis("Mouse Y", new Analog("Mouse Y"));
@@ -249,7 +250,7 @@ namespace SynthesisCore.Systems
             }
         }
 
-        private void SetNewFocus(Vector3D newFocusPoint)
+        private void SetNewFocus(Vector3D newFocusPoint, Selectable.SelectionType selectionType)
         {
             focusPoint = newFocusPoint;
             
@@ -260,7 +261,7 @@ namespace SynthesisCore.Systems
             //targetRotation = MathUtil.LookAt((-offset).Normalize()).Normalized;
 
             offset = cameraMoveStartPosition - focusPoint;
-            isCameraMovingToNewFocus = offset.Length > MoveToFocusCameraMinDistance;
+            isCameraMovingToNewFocus = selectionType == Selectable.SelectionType.ExtendedSelection && offset.Length > MoveToFocusCameraMinDistance;
 
             timeToReachNewFocus = Math.Min(MoveCameraToFocusTime, offset.Length / MoveToFocusCameraMinSpeed);
 
@@ -312,12 +313,12 @@ namespace SynthesisCore.Systems
             }
             else // Orbit mode
             {
-                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.Position;
+                var newFocusPoint = SelectedTarget?.Entity?.GetComponent<Transform>()?.GlobalPosition;
                 if (newFocusPoint.HasValue)
                 {
-                    if (SelectedTarget != LastSelectedTarget) // Set new focus point
+                    if (SelectedTarget != LastSelectedTarget || LastSelectedTargetType != SelectedTarget.State) // Set new focus point
                     {
-                        SetNewFocus(newFocusPoint.Value);
+                        SetNewFocus(newFocusPoint.Value, SelectedTarget.State);
                     }
                     else // Update possibly moving focus point
                     {
@@ -348,6 +349,7 @@ namespace SynthesisCore.Systems
             }
 
             LastSelectedTarget = SelectedTarget;
+            LastSelectedTargetType = SelectedTarget?.State ?? Selectable.SelectionType.Unselected;
         }
         public override void OnPhysicsUpdate() { }
     }

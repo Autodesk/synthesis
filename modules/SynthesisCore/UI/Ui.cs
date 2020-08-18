@@ -1,11 +1,8 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.Modules;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -19,31 +16,25 @@ namespace SynthesisCore.UI
 
         public override void Setup()
         {
-            var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
-
+            
+            var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             UIManager.SetBlankTabAsset(blankTabAsset);
-
+            
             var titleBarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/TitleBar.uxml");
             UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
 
             EngineToolbar.CreateToolbar();
-
-            var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
+            
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
+            
+            UIManager.AddPanel(new ModuleWindow().Panel);
 
-            Panel modulesWindow = new Panel("Modules", modulesAsset, 
-                element =>
-                {
-                    Utilities.RegisterOKCloseButtons(element, "Modules");
-                    LoadModulesWindowContent(element);
-                });
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => Utilities.RegisterOKCloseButtons(element, "Settings"));
             
-            UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
 
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
@@ -54,42 +45,12 @@ namespace SynthesisCore.UI
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
-
-            Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
-            modulesButton.Subscribe(x => UIManager.TogglePanel("Modules"));
-
+            
             Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
-        }
-
-        private void LoadModulesWindowContent(VisualElement visualElement)
-        {
-            var moduleAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Module.uxml");
-
-            foreach (var moduleInfo in ModuleManager.GetLoadedModules())
-            {
-                VisualElement moduleElement = moduleAsset?.GetElement("module");
-                
-                Label titleText = (Label) moduleElement?.Get("title");
-                Label authorText = (Label) moduleElement?.Get("author");
-                Label descriptionText = (Label) moduleElement?.Get("description");
-
-                titleText.Text = titleText.Text
-                    .Replace("%name%", moduleInfo.Name)
-                    .Replace("%version%", moduleInfo.Version);
-
-                authorText.Text = authorText.Text.Replace("%author%",
-                    string.IsNullOrEmpty(moduleInfo.Author) ? "Unknown" : moduleInfo.Author);
-                descriptionText.Text = descriptionText.Text.Replace("%description%",
-                    string.IsNullOrEmpty(moduleInfo.Description) ? "No description" : moduleInfo.Description);
-
-                ListView moduleList = (ListView) visualElement.Get("module-list");
-                moduleList.Add(moduleElement);
-            }
-            
         }
 
         public override void OnPhysicsUpdate() { }
