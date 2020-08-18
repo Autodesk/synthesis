@@ -18,7 +18,7 @@ using Engine.ModuleLoader.Adapters;
 using Logger = SynthesisAPI.Utilities.Logger;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
-
+using SynthesisAPI.UIManager;
 
 namespace Engine.ModuleLoader
 {
@@ -82,8 +82,19 @@ namespace Engine.ModuleLoader
 
 			GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
 
-			var _ = SynthesisAPI.UIManager.UIManager.RootElement;
+			Task.Run(() =>
+			{
+				SynthesisAPI.UIManager.VisualElements.VisualElement root = null;
+				while (root == null)
+				{
+					root = UIManager.RootElement;
+					Thread.Sleep(200);
+				}
+
+				UIManager.Setup();
+			});
 		}
+
 		private class LoggerImpl : SynthesisAPI.Utilities.ILogger
 		{
 			private bool debugLogsEnabled = true;

@@ -123,6 +123,17 @@ namespace SynthesisAPI.EventBus
             return false;
         }
 
+        public static bool RemoveAllTypeListeners<TEvent>() where TEvent : IEvent
+        {
+            string type = typeof(TEvent).FullName;
+            if (TypeSubscribers.ContainsKey(type) && Instance.TypeSubscribers[type] != null)
+            {
+                TypeSubscribers.Remove(type);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Unsubscribes listener from receiving further events of specified tag
         /// </summary>
@@ -138,6 +149,16 @@ namespace SynthesisAPI.EventBus
                     return true;
                 }
                 return false;
+            }
+            return false;
+        }
+
+        public static bool RemoveAllTagListeners(string tag)
+        {
+            if (TagSubscribers.ContainsKey(tag) && TagSubscribers[tag] != null)
+            {
+                TagSubscribers.Remove(tag);
+                return true;
             }
             return false;
         }
