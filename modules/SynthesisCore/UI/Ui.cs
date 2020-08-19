@@ -6,6 +6,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using System.Diagnostics;
 
 namespace SynthesisCore.UI
 {
@@ -33,7 +34,6 @@ namespace SynthesisCore.UI
 
             var modulesAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Modules.uxml");
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
-            var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
             Panel modulesWindow = new Panel("Modules", modulesAsset, 
                 element =>
@@ -43,12 +43,6 @@ namespace SynthesisCore.UI
                 });
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => Utilities.RegisterOKCloseButtons(element, "Settings"));
-            Panel jointsWindow = new Panel("Joints", jointsAssset,
-            element =>
-            {
-                Utilities.RegisterOKCloseButtons(element, "Joints");
-                LoadJointsWindowContent(element);
-            });
 
             UIManager.AddPanel(modulesWindow);
             UIManager.AddPanel(settingsWindow);
@@ -67,9 +61,6 @@ namespace SynthesisCore.UI
 
             Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
-
-            Button jointsButton = (Button)UIManager.RootElement.Get("joints-button");
-            jointsButton.Subscribe(x => UIManager.TogglePanel("Joints"));
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
@@ -99,17 +90,6 @@ namespace SynthesisCore.UI
                 ListView moduleList = (ListView) visualElement.Get("module-list");
                 moduleList.Add(moduleElement);
             }
-            
-        }
-
-        private void LoadJointsWindowContent(VisualElement visualElement)
-        {
-            var jointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/TempJoint.uxml");
-            VisualElement jointElement = jointAsset?.GetElement("joint");
-            Label titleText = (Label)jointElement?.Get("joint-type");
-
-            titleText.Text = titleText.Text
-                   .Replace("%jointName%", "test");
         }
 
         public override void OnPhysicsUpdate() { }

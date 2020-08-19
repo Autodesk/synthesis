@@ -22,26 +22,30 @@
     margin-bottom: 10px;
 }
 
+.details-label {
+    margin-right: 10px;
+}
+
+.description {
+    white-space: normal;
+}
+
+.description-container {
+    flex-grow: 1;
+}
+
 .joint-detail {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    flex-direction: row;
+    height: 117px;
+    width: 342px;
 }
 
-.icon {
-    height: 64px;
-    width: 59px;
-    background-image: url('/Assets/UI/Toolbar/Icons/modules-icon.png');
-    position: relative;
-    top: 11px;
-    left: 0;
+.left {
+    height: 429px;
+    width: 290px;
 }
 
-.title {
-    -unity-font-style: normal;
-    -unity-font: url('/Assets/TextMesh Pro/Fonts/LiberationSans.ttf');
-    font-size: 16px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+.right {
+    height: 431px;
+    width: 51px;
 }

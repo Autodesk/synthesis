@@ -1,14 +1,35 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="joint" class="joint-container">
+    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row;">
         <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
-        <ui:VisualElement name="border-box" class="joint-container" style="height: 133px; width: 342px; border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px; border-left-color: rgb(7, 7, 7); border-right-color: rgb(7, 7, 7); border-top-color: rgb(7, 7, 7); border-bottom-color: rgb(7, 7, 7); flex-direction: column;">
-            <ui:VisualElement name="border-box-container" style="height: 128px; width: 331.6667px; flex-direction: row;">
-                <ui:VisualElement name="icon" class="icon" />
-                <ui:VisualElement name="joint-dropdowns" style="height: 119px; width: 264px;">
-                    <uie:LayerMaskField label="Joint Type" name="joint-detail" class="joint-detail" />
-                    <uie:LayerMaskField label="Joint Side" name="joint-detail" class="joint-detail" />
-                    <uie:LayerMaskField label="Wheel Type" name="joint-detail" class="joint-detail" />
-                    <ui:Button text="Advanced" name="advanced-button" style="flex-direction: row; height: 19px; width: 258px; margin-right: 3px; margin-top: 5px; margin-bottom: 3px;" />
+        <ui:VisualElement name="left" class="left">
+            <ui:VisualElement name="motor-type" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Type" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="Talon SRX" name="motor-button" />
+                    <ui:Button text="Jaguar" name="motor-button" />
+                    <ui:Button text="Spark" name="motor-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="motor-gear" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Gear" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="1" name="motor-button" />
+                    <ui:Button text="2" name="motor-button" />
+                    <ui:Button text="3" name="motor-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="motor-count" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Count" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="1" name="motor-button" />
+                    <ui:Button text="2" name="motor-button" />
+                    <ui:Button text="3" name="motor-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
