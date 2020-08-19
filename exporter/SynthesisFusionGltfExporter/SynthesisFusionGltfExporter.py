@@ -83,7 +83,7 @@ def initializeAddin():
     import apper
     # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteShowCommand
-    fusionGltfExporterApp = apper.FusionApp(app_name, company_name, False)
+    fusionGltfExporterApp = apper.FusionApp(APP_NAME, COMPANY_NAME, False)
     # fusionGltfExporterApp.add_command(
     #     'Quick export to glTF',
     #     ExportCommand,

@@ -9,6 +9,8 @@ from .MathUtils import isIdentityMatrix3D
 # Utilities specific to the pygltf library
 from .PyUtils import appendGetIndex
 
+from ...config import *
+
 GLTFIndex = int
 
 def exportAccessor(gltf: GLTF2, primaryBufferIndex: GLTFIndex, primaryBufferStream: BytesIO, array: List[Union[int, float]], dataType: DataType, componentType: Optional[ComponentType], calculateLimits: bool,
@@ -110,7 +112,7 @@ def writeGlbToFile(gltf, primaryBufferData, filepath):
         writeGlbToStream(gltf, primaryBufferData, stream)
 
 def writeGlbToStream(gltf, primaryBufferData, stream):
-    jsonBytes = bytearray(gltfToJson(gltf, default=json_serial, indent=1, allow_nan=False, skipkeys=True).encode("utf-8"))  # type: bytearray
+    jsonBytes = bytearray(gltfToJson(gltf, default=json_serial, indent=4 if EXPORTER_DEBUG else None, allow_nan=False, skipkeys=True).encode("utf-8"))  # type: bytearray
 
     alignByteArrayToBoundary(jsonBytes)
 

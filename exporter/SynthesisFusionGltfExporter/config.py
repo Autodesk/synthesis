@@ -1,2 +1,3 @@
-app_name = 'SynthesisFusionGltfExporter'
-company_name = "Autodesk"
+APP_NAME = 'SynthesisFusionGltfExporter'
+COMPANY_NAME = "Autodesk"
+EXPORTER_DEBUG = False

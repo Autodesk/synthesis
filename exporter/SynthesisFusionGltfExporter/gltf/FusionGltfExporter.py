@@ -15,8 +15,12 @@ from .utils.FusionToPygltfTranslation import *
 from .utils.MathUtils import *
 from .utils.PygltfUtils import *
 
+from ..config import *
+
 import platform
 
+class ExportCancelledError(Exception):
+    pass
 
 class FusionGltfExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
@@ -126,13 +130,19 @@ class FusionGltfExporter(object):
             finishedMessageDebug = (f"glTF export completed in {duration} seconds.\n"
                                     f"File saved to {filePath}\n\n"
                                     f"==== Model Stats ====\n"
-                                    f"{modelStatsString}\n"
+                                    f"{modelStatsString}\n\n"
+                                    f"==== Warnings ====\n"
+                                    f"{warningsString}\n"
+                                    )
+            finishedMessage = (f"glTF export completed in {duration} seconds.\n"
+                                    f"File saved to {filePath}\n\n"
                                     f"==== Warnings ====\n"
                                     f"{warningsString}\n"
                                     )
             print(finishedMessageDebug)
-            finishedMessage = f"glTF export completed successfully in {duration} seconds.\nFile saved to: {filePath}"
-            self.ao.ui.messageBox(finishedMessageDebug, "Synthesis glTF Exporter")
+            self.ao.ui.messageBox(finishedMessageDebug if EXPORTER_DEBUG else finishedMessage, "Synthesis glTF Exporter")
+        except ExportCancelledError:
+            self.ao.ui.messageBox(f"The glTF export was cancelled.")
         except:
             # noinspection PyArgumentList
             app = adsk.core.Application.get()
@@ -185,7 +195,7 @@ class FusionGltfExporter(object):
         self.exportWarnings = []
 
         self.progressBar = self.ao.ui.createProgressDialog()
-        self.progressBar.isCancelButtonShown = False  # TODO: Allow cancel
+        self.progressBar.isCancelButtonShown = True
         self.progressBar.reset()
         self.progressBar.show(f"Exporting {document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
@@ -193,6 +203,7 @@ class FusionGltfExporter(object):
         adsk.doEvents()  # show progress bar
 
         if not self.settingsPreCheck(document):
+            self.progressBar.hide()
             return
 
         rootComponent = document.design.rootComponent  # type: adsk.fusion.Component
@@ -207,6 +218,7 @@ class FusionGltfExporter(object):
                 if result == 0 or result == 2:  # yes
                     pass
                 else:  # no
+                    self.progressBar.hide()
                     return
 
         start = time.perf_counter()
@@ -442,6 +454,9 @@ class FusionGltfExporter(object):
         numMeshes = len(self.componentRevIdToMeshTemplate)
         self.progressBar.progressValue = numMeshes
         self.progressBar.message = f"Calculating meshes for component {numMeshes} of {self.progressBar.maximumValue}..."
+
+        if self.progressBar.wasCancelled:
+            raise ExportCancelledError()
 
         return mesh
 
