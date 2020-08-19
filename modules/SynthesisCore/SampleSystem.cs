@@ -16,8 +16,6 @@ namespace SynthesisCore
 {
     public class SampleSystem : SystemBase
     {
-        private Entity testBody;
-
         private MotorController frontLeft, frontRight, backLeft, backRight;
         private MotorController arm;
 
@@ -44,10 +42,13 @@ namespace SynthesisCore
             e.AddComponent<Moveable>().Channel = 5;
             */
             
-            testBody = EnvironmentManager.AddEntity();
+            Entity testBody = EnvironmentManager.AddEntity();
+
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
             testBody.AddBundle(o);
+            SynthesisCoreData.ModelsDict.Add("TestBody", testBody);
+            var body = testBody.GetComponent<Joints>().AllJoints;
 
             var selectable = testBody.AddComponent<Selectable>();
             selectable.OnSelect = () =>
@@ -110,6 +111,18 @@ namespace SynthesisCore
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
+
+            Entity jointTest = EnvironmentManager.AddEntity();
+            Mesh m = new Mesh();
+            Bundle b = new Bundle();
+            b.Components.Add(selectable);
+            Transform t = new Transform();
+            t.Position = new Vector3D(10, 10, 10); //joint anchor position
+            b.Components.Add(t);
+            b.Components.Add(cube(m)); //replace the cube function with your mesh creation
+            jointTest.AddBundle(b);
+            //when done
+            jointTest.RemoveEntity();
         }
 
         public override void OnUpdate() {

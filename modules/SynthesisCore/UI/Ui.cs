@@ -6,6 +6,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using System.Diagnostics;
 
 namespace SynthesisCore.UI
 {
@@ -37,7 +38,7 @@ namespace SynthesisCore.UI
 
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => Utilities.RegisterOKCloseButtons(element, "Settings"));
-            
+
             UIManager.AddPanel(settingsWindow);
 
             // DialogInfo dialogInfo = new DialogInfo();
@@ -73,7 +74,6 @@ namespace SynthesisCore.UI
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
         }
-
         public override void OnPhysicsUpdate() { }
 
         public override void OnUpdate() { }

@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row;">
+        <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
+        <ui:VisualElement name="left" class="left">
+            <ui:VisualElement name="motor-type" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Type" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="Talon SRX" name="motor-button" />
+                    <ui:Button text="Jaguar" name="motor-button" />
+                    <ui:Button text="Spark" name="motor-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="motor-gear" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Gear" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="1" name="motor-button" />
+                    <ui:Button text="2" name="motor-button" />
+                    <ui:Button text="3" name="motor-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="motor-count" class="joint-detail" style="height: 72px; width: 280px;">
+                <ui:VisualElement name="details" class="details-label">
+                    <ui:Label text="Motor Count" name="name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="description" class="description-container">
+                    <ui:Button text="1" name="motor-button" />
+                    <ui:Button text="2" name="motor-button" />
+                    <ui:Button text="3" name="motor-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
