@@ -26,12 +26,12 @@ body {
 .fusion-content {
     flex: 1;
     padding: 8px 13px 8px 13px;
-    overflow: hidden;
+    overflow: initial;
 }
 
 .fusion-footer {
     padding: 0 6px;
-    overflow: hidden;
+    overflow: initial;
 }
 
 /* Tables */
