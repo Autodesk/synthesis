@@ -13,21 +13,9 @@ my_addin = None
 
 try:
     import config
-    import apper
-
-    class cd:
-        def __init__(self, newPath):
-            self.newPath = os.path.expanduser(newPath)
-
-        def __enter__(self):
-            self.savedPath = os.getcwd()
-            os.chdir(self.newPath)
-
-        def __exit__(self, etype, value, traceback):
-            os.chdir(self.savedPath)
-
-    # Figure out a better way to install python deps TODO: check for cross compatibility
+    # Figure out a better way to install python deps
     try:
+        import apper
         import pygltflib
         import numpy
         import google.protobuf
@@ -43,26 +31,48 @@ try:
 
         try:
             from pathlib import Path
-            p = Path(os.__file__).parents[1] # Assumes the location of the fusion python executable is two folders up from the os lib location
-            with cd(p):
-                os.system("python -m pip install pygltflib")
-                progressBar.progressValue = 1
+            import platform
+            import subprocess
+
+            system = platform.system()
+            if system == "Windows":
+                pythonFolder = Path(os.__file__).parents[1]  # Assumes the location of the fusion python executable is two folders up from the os lib location
+            elif system == "Darwin":   # macos
+                pythonFolder = Path(os.__file__).parents[2] / "bin"
+                progressBar.message = f"Installing pip..."
                 adsk.doEvents()
-                os.system("python -m pip install numpy")
-                progressBar.progressValue = 2
+                os.system(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"")
+                os.system(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"")
+            else:
+                raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
+
+            pipDeps = ["pygltflib", "numpy", "protobuf"]
+            for depName in pipDeps:
+                progressBar.progressValue += 1
+                progressBar.message = f"Installing {depName}..."
                 adsk.doEvents()
-                os.system("python -m pip install protobuf")
-                progressBar.progressValue = 3
-                adsk.doEvents()
+                os.system(f"\"{pythonFolder / 'python'}\" -m pip install {depName}")
+
+            if system == "Darwin":  # macos # TODO: High priority: This method of fixing the python deps on macos can potentially break other fusion add-ins and potentially parts of fusion itself. Find a better method to use deps on both windows and macos.
+                pipAntiDeps = ["dataclasses", "typing"]
+                for depName in pipAntiDeps:
+                    progressBar.message = f"Uninstalling {depName}..."
+                    adsk.doEvents()
+                    os.system(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y")
 
             progressBar.hide()
 
+            import apper
             import pygltflib
             import numpy
             import google.protobuf
 
         except:
-            raise ImportError(f'Unable to install python dependencies for the glTF Exporter for Synthesis addin!')
+            print(traceback.format_exc())
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            if ui:
+                ui.messageBox(f'Unable to install python dependencies for the glTF Exporter for Synthesis addin! \n\n{traceback.format_exc()}')
 
     # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
