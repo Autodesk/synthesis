@@ -1,4 +1,3 @@
-
 import os
 import platform
 import subprocess
@@ -30,13 +29,21 @@ def areDepsInstalled():
     except:
         return False
 
-def installDeps():
+
+def tryInstallDeps():
     # TODO: Figure out a better way to install python deps
 
     if areDepsInstalled():
         return True
 
-    progressBar = adsk.core.Application.get().userInterface.createProgressDialog()
+    app = adsk.core.Application.get()
+    ui = app.userInterface
+
+    if app.isOffLine:
+        ui.messageBox("Unable to install dependencies for Synthesis glTF Exporter when Fusion is offline. Please connect to the internet and try again!")
+        return False
+
+    progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
     progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 4, 0)
@@ -79,7 +86,7 @@ def installDeps():
     return False
 
 
-def initializeAddin():
+def createExporterAddin():
     import apper
     # from .commands.ExportCommand import ExportCommand
     from .commands.ExportPaletteCommand import ExportPaletteShowCommand
@@ -123,28 +130,41 @@ def initializeAddin():
 
     return fusionGltfExporterApp
 
+handlers = []
 
-# noinspection PyBroadException
-try:
-    if installDeps():
-        my_addin = initializeAddin()
-except:
-    reportErrorToUser("Unable to start glTF Exporter for Synthesis!")
+class DocumentActivatedHandler(adsk.core.DocumentEventHandler):
+    def __init__(self):
+        super().__init__()
 
-def run(_):
-    if my_addin is None:
-        return
+    def notify(self, args):
+        createAndStartAddin()
+
+
+def createAndStartAddin():
     # noinspection PyBroadException
     try:
-        my_addin.run_app()
+        global my_addin
+        if my_addin is None and tryInstallDeps():
+            my_addin = createExporterAddin()
+            my_addin.run_app()
     except:
         reportErrorToUser("glTF Exporter for Synthesis has encountered an error!")
 
-def stop(_):
-    # noinspection PyBroadException
-    try:
+
+def run(context):  # Called by Fusion API
+    if context.get("IsApplicationStartup", False):
+        app = adsk.core.Application.get()
+        onDocumentActivated = DocumentActivatedHandler()
+        app.documentActivated.add(onDocumentActivated)
+        handlers.append(onDocumentActivated)
+    else:
+        createAndStartAddin()
+
+
+def stop(context):  # Called by Fusion API
+    global my_addin
+    if my_addin is not None:
         my_addin.stop_app()
-        sys.path.pop(0)
-        sys.path.pop(0)
-    except:
-        pass
+        my_addin = None
+    sys.path.pop(0)
+    sys.path.pop(0)
