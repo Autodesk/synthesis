@@ -1,8 +1,16 @@
 
 import os
+import platform
+import subprocess
 import sys
-import adsk, adsk.core, adsk.fusion, traceback
-import traceback
+from pathlib import Path
+
+import adsk
+import adsk.core
+import adsk.fusion
+
+from .config import *
+from .gltf.utils.FusionUtils import reportErrorToUser
 
 app_path = os.path.dirname(__file__)
 
@@ -11,75 +19,72 @@ sys.path.insert(0, os.path.join(app_path, 'apper'))
 
 my_addin = None
 
-try:
-    import config
-    # Figure out a better way to install python deps
+def areDepsInstalled():
+    # noinspection PyBroadException
     try:
         import apper
         import pygltflib
         import numpy
         import google.protobuf
-
+        return True
     except:
-        app = adsk.core.Application.get()
-        ui = app.userInterface
-        progressBar = ui.createProgressDialog()
-        progressBar.isCancelButtonShown = False
-        progressBar.reset()
-        progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 3, 0)
+        return False
+
+def installDeps():
+    # TODO: Figure out a better way to install python deps
+
+    if areDepsInstalled():
+        return True
+
+    progressBar = adsk.core.Application.get().userInterface.createProgressDialog()
+    progressBar.isCancelButtonShown = False
+    progressBar.reset()
+    progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 4, 0)
+    adsk.doEvents()
+
+    system = platform.system()
+
+    # TODO: This method of finding the python folder is highly susceptible to breaking from changes to the fusion360 python installer. Figure out a better method to get deps.
+    if system == "Windows":
+        pythonFolder = Path(os.__file__).parents[1]  # Assumes the location of the fusion python executable is two folders up from the os lib location
+    elif system == "Darwin":  # macos
+        pythonFolder = Path(os.__file__).parents[2] / "bin"
+        progressBar.message = f"Installing pip..."
         adsk.doEvents()
+        subprocess.run(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"", shell=True)
+        subprocess.run(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"", shell=True)
+    else:
+        raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
 
-        try:
-            from pathlib import Path
-            import platform
-            system = platform.system()
+    pipDeps = ["pygltflib", "numpy", "protobuf"]
+    for depName in pipDeps:
+        progressBar.progressValue += 1
+        progressBar.message = f"Installing {depName}..."
+        adsk.doEvents()
+        subprocess.run(f"\"{pythonFolder / 'python'}\" -m pip install {depName}", shell=True)
 
-            # TODO: This method of finding the python folder is highly susceptible to breaking from changes to the fusion360 python installer. Figure out a better method to get deps.
-            if system == "Windows":
-                pythonFolder = Path(os.__file__).parents[1]  # Assumes the location of the fusion python executable is two folders up from the os lib location
-            elif system == "Darwin":   # macos
-                pythonFolder = Path(os.__file__).parents[2] / "bin"
-                progressBar.message = f"Installing pip..."
-                adsk.doEvents()
-                os.system(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"")
-                os.system(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"")
-            else:
-                raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
+    if system == "Darwin":  # macos # TODO: High priority: This method of fixing the python deps on macos can potentially break other fusion add-ins and potentially parts of fusion itself. Find a better method to use deps on both windows and macos.
+        pipAntiDeps = ["dataclasses", "typing"]
+        for depName in pipAntiDeps:
+            progressBar.message = f"Uninstalling {depName}..."
+            adsk.doEvents()
+            subprocess.run(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y", shell=True)
 
-            pipDeps = ["pygltflib", "numpy", "protobuf"]
-            for depName in pipDeps:
-                progressBar.progressValue += 1
-                progressBar.message = f"Installing {depName}..."
-                adsk.doEvents()
-                os.system(f"\"{pythonFolder / 'python'}\" -m pip install {depName}")
+    progressBar.hide()
 
-            if system == "Darwin":  # macos # TODO: High priority: This method of fixing the python deps on macos can potentially break other fusion add-ins and potentially parts of fusion itself. Find a better method to use deps on both windows and macos.
-                pipAntiDeps = ["dataclasses", "typing"]
-                for depName in pipAntiDeps:
-                    progressBar.message = f"Uninstalling {depName}..."
-                    adsk.doEvents()
-                    os.system(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y")
+    if areDepsInstalled():
+        return True
 
-            progressBar.hide()
+    reportErrorToUser("Unable to install python dependencies for the glTF Exporter for Synthesis addin!")
+    return False
 
-            import apper
-            import pygltflib
-            import numpy
-            import google.protobuf
 
-        except:
-            print(traceback.format_exc())
-            app = adsk.core.Application.get()
-            ui = app.userInterface
-            if ui:
-                ui.messageBox(f'Unable to install python dependencies for the glTF Exporter for Synthesis addin! \n\n{traceback.format_exc()}')
-
+def initializeAddin():
+    import apper
     # from .commands.ExportCommand import ExportCommand
-    from .commands.ExportPaletteCommand import ExportPaletteSendCommand, ExportPaletteShowCommand
-
-    my_addin = apper.FusionApp(config.app_name, config.company_name, False)
-
-    # my_addin.add_command(
+    from .commands.ExportPaletteCommand import ExportPaletteShowCommand
+    fusionGltfExporterApp = apper.FusionApp(app_name, company_name, False)
+    # fusionGltfExporterApp.add_command(
     #     'Quick export to glTF',
     #     ExportCommand,
     #     {
@@ -94,8 +99,7 @@ try:
     #         'command_promoted': True,
     #     }
     # )
-
-    my_addin.add_command(
+    fusionGltfExporterApp.add_command(
         'Export to glTF',
         ExportPaletteShowCommand,
         {
@@ -117,31 +121,27 @@ try:
         }
     )
 
-    app = adsk.core.Application.cast(adsk.core.Application.get())
-    ui = app.userInterface
+    return fusionGltfExporterApp
 
+
+# noinspection PyBroadException
+try:
+    if installDeps():
+        my_addin = initializeAddin()
 except:
-    app = adsk.core.Application.get()
-    ui = app.userInterface
-    if ui:
-        ui.messageBox(f'Unable to start glTF Exporter for Synthesis!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
-        # ui.messageBox(f'Initialization: {traceback.format_exc()}')
+    reportErrorToUser("Unable to start glTF Exporter for Synthesis!")
 
-# Set to True to display various useful messages when debugging your app
-debug = False
-
-def run(context):
+def run(_):
     if my_addin is None:
         return
+    # noinspection PyBroadException
     try:
         my_addin.run_app()
     except:
-        app = adsk.core.Application.get()
-        ui = app.userInterface
-        if ui:
-            ui.messageBox(f'glTF Exporter for Synthesis has encountered an error!\nPlease contact frc@autodesk.com to report this bug.\n\n{traceback.format_exc()}')
+        reportErrorToUser("glTF Exporter for Synthesis has encountered an error!")
 
-def stop(context):
+def stop(_):
+    # noinspection PyBroadException
     try:
         my_addin.stop_app()
         sys.path.pop(0)

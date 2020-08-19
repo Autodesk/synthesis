@@ -1,10 +1,16 @@
-from dataclasses import dataclass
+import traceback
+from typing import *
 
 import adsk
 import adsk.core
 import adsk.fusion
 
-from typing import *
+
+def reportErrorToUser(message):
+    app = adsk.core.Application.get()
+    ui = app.userInterface
+    if ui:  # TODO: Automatic error reporting
+        ui.messageBox(f'{message}\nPlease screenshot and send this error report to frc@autodesk.com.\n\nReport:\n{traceback.format_exc()}')
 
 def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[adsk.fusion.TriangleMesh, Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]:
     meshCalculator = fusionBRep.meshManager.createMeshCalculator()
