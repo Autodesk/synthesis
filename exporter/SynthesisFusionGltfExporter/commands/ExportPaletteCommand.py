@@ -9,6 +9,8 @@ from apper import AppObjects
 from ..gltf.FusionGltfExporter import FusionGltfExporter
 from ..gltf.utils.GltfConstants import FileType
 
+import pathlib
+
 
 # Class for a Fusion 360 Palette Command
 class ExportPaletteShowCommand(apper.PaletteCommandBase):
@@ -30,6 +32,12 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
         palette.setMaximumSize(300, 300)
         palette.setMinimumSize(300, 300)
         palette.setSize(300, 300)
+
+        try:  # Sometimes the url resets itself on macos, idk why, it might be a bug  #TODO investigate this
+            self.palette.htmlFileURL = pathlib.Path(self.palette.htmlFileURL).as_uri()
+        except:
+            pass
+
 
     # Run when ever a fusion event is fired from the corresponding web page
     def on_html_event(self, html_args: adsk.core.HTMLEventArgs):
