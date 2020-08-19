@@ -32,9 +32,9 @@ try:
         try:
             from pathlib import Path
             import platform
-            import subprocess
-
             system = platform.system()
+
+            # TODO: This method of finding the python folder is highly susceptible to breaking from changes to the fusion360 python installer. Figure out a better method to get deps.
             if system == "Windows":
                 pythonFolder = Path(os.__file__).parents[1]  # Assumes the location of the fusion python executable is two folders up from the os lib location
             elif system == "Darwin":   # macos

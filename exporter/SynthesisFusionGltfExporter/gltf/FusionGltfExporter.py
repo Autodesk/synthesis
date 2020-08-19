@@ -15,6 +15,8 @@ from .utils.FusionToPygltfTranslation import *
 from .utils.MathUtils import *
 from .utils.PygltfUtils import *
 
+import platform
+
 
 class FusionGltfExporter(object):
     """Class for exporting fusion designs into the glTF binary file format, aka glB.
@@ -159,7 +161,8 @@ class FusionGltfExporter(object):
         self.gltf = GLTF2()  # The root glTF object.
 
         self.gltf.asset = Asset()
-        self.gltf.asset.generator = self.GLTF_GENERATOR_ID
+        systemStr = platform.system()
+        self.gltf.asset.generator = f"{self.GLTF_GENERATOR_ID}.{systemStr}"
 
         self.gltf.scene = 0  # set the default scene to index 0
 
