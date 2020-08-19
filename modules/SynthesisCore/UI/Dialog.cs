@@ -11,6 +11,9 @@ namespace SynthesisCore.UI
         
         public static void SendDialog(DialogInfo dialogInfo)
         {
+            UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("width", "100%");
+            UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("height", "100%");
+
             VisualElement dialogElement = dialogAsset.GetElement("dialog");
             
             Label titleLabel = (Label) dialogElement.Get("title");
@@ -37,14 +40,18 @@ namespace SynthesisCore.UI
             {
                 dialogInfo.SubmitButtonAction?.Invoke(e);
                 dialogElement.RemoveFromHierarchy();
+                UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("width", "1px");
+                UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("height", "1px");
             });
             
             closeButton.Subscribe(e =>
             {
                 dialogInfo.CloseButtonAction?.Invoke(e);
                 dialogElement.RemoveFromHierarchy();
+                UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("width", "1px");
+                UIManager.RootElement.Get("dialog-free-roam").SetStyleProperty("height", "1px");
             });
-            
+
             // used for centering dialog in absolute positioning
             // not using relative as to not interfere with other elements on the screen
             dialogElement.SetStyleProperty("position", "absolute");
@@ -52,7 +59,7 @@ namespace SynthesisCore.UI
             dialogElement.SetStyleProperty("margin-left", "-200px"); // should be set to negative half of dialog width
             dialogElement.SetStyleProperty("top", "50%");
             dialogElement.SetStyleProperty("margin-top", "-100px"); // should be set to negative half of dialog height
-
+            
             UIManager.RootElement.Get("dialog-free-roam").Add(dialogElement);
         }
     }
