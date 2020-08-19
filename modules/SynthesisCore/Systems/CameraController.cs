@@ -250,7 +250,7 @@ namespace SynthesisCore.Systems
             }
         }
 
-        private void SetNewFocus(Vector3D newFocusPoint, Selectable.SelectionType selectionType)
+        public void SetNewFocus(Vector3D newFocusPoint, bool moveToPoint)
         {
             focusPoint = newFocusPoint;
             
@@ -261,7 +261,7 @@ namespace SynthesisCore.Systems
             //targetRotation = MathUtil.LookAt((-offset).Normalize()).Normalized;
 
             offset = cameraMoveStartPosition - focusPoint;
-            isCameraMovingToNewFocus = selectionType == Selectable.SelectionType.ExtendedSelection && offset.Length > MoveToFocusCameraMinDistance;
+            isCameraMovingToNewFocus = moveToPoint && offset.Length > MoveToFocusCameraMinDistance;
 
             timeToReachNewFocus = Math.Min(MoveCameraToFocusTime, offset.Length / MoveToFocusCameraMinSpeed);
 
@@ -318,7 +318,7 @@ namespace SynthesisCore.Systems
                 {
                     if (SelectedTarget != LastSelectedTarget || LastSelectedTargetType != SelectedTarget.State) // Set new focus point
                     {
-                        SetNewFocus(newFocusPoint.Value, SelectedTarget.State);
+                        SetNewFocus(newFocusPoint.Value, SelectedTarget.State == Selectable.SelectionType.ExtendedSelection);
                     }
                     else // Update possibly moving focus point
                     {

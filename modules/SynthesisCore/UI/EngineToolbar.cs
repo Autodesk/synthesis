@@ -75,35 +75,6 @@ namespace SynthesisCore.UI
                     }
                 }
             }
-            //    //if (j.GetType() == typeof(HingeJoint))
-            //    //{
-
-            //        //HingeJoint hinge = new HingeJoint();
-
-
-            //       // what joint, where (e.g. joint 0 is front-left wheel)
-            //       // highlight meshes
-            //       // motor configuration (motor type, count, gearing)
-            //       // what key controls it
-            //       //foreach (var motor in MotorManager.AllMotorControllers)
-            //       //{
-            //       //     motorType = motor.MotorType.MotorName;
-            //       //     gear = motor.Gearing;
-            //       //     motorCount = motor.MotorCount;
-            //       //}
-
-            //        // wheel type
-            //        // motor type
-            //        // advanced: torque, force, friction, etc.
-
-
-
-            //        //titleText.Text = titleText.Text
-            //        //    .Replace("%name%", ((HingeJoint)j).ConnectedParent.ExportedJointUuid);
-
-            //        ListView jointList = (ListView)visualElement.Get("joint-list");
-            //        jointList.Add(jointElement);
-            //    //}
         }
 
         private void HighlightJoint()
@@ -111,11 +82,9 @@ namespace SynthesisCore.UI
             Entity jointTest = EnvironmentManager.AddEntity();
             Bundle b = new Bundle();
 
-            Selectable selectable = new Selectable();
-            b.Components.Add(selectable);
-
             Transform t = new Transform();
             t.Position = new Vector3D(10, 10, 10); //joint anchor position
+            CameraController.Instance.SetNewFocus(t.Position, true);
             b.Components.Add(t);
             b.Components.Add(cube()); //replace the cube function with your mesh creation
             jointTest.AddBundle(b);
