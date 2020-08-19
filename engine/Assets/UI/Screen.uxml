@@ -8,7 +8,7 @@
             </ui:ScrollView>
         </ui:VisualElement>
         <ui:VisualElement name="title-bar-container" style="overflow: visible;" />
-        <ui:VisualElement name="panel-center" class="test-2 panel-center" />
+        <ui:VisualElement name="panel-center" class="panel-center" />
         <ui:VisualElement name="dialog-free-roam" class="dialog-free-roam" />
     </ui:VisualElement>
 </ui:UXML>
