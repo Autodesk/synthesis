@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GltfExportSettings));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.includeSynth = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.checkMaterials = new System.Windows.Forms.CheckBox();
             this.checkFace = new System.Windows.Forms.CheckBox();
@@ -39,7 +40,6 @@
             this.numericTolerance = new System.Windows.Forms.NumericUpDown();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            this.includeSynth = new System.Windows.Forms.CheckBox();
             this.MainLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize) (this.numericTolerance)).BeginInit();
             this.SuspendLayout();
@@ -71,6 +71,19 @@
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.MainLayout.Size = new System.Drawing.Size(334, 198);
             this.MainLayout.TabIndex = 14;
+            // 
+            // includeSynth
+            // 
+            this.includeSynth.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.MainLayout.SetColumnSpan(this.includeSynth, 2);
+            this.includeSynth.Dock = System.Windows.Forms.DockStyle.Left;
+            this.includeSynth.Location = new System.Drawing.Point(4, 137);
+            this.includeSynth.Margin = new System.Windows.Forms.Padding(4);
+            this.includeSynth.Name = "includeSynth";
+            this.includeSynth.Size = new System.Drawing.Size(311, 23);
+            this.includeSynth.TabIndex = 20;
+            this.includeSynth.Text = "Include Synthesis Data: ";
+            this.includeSynth.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -144,7 +157,7 @@
             this.comboFileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboFileType.FormattingEnabled = true;
             this.comboFileType.Items.AddRange(new object[] {"Binary (.glb)", "JSON (.gltf)"});
-            this.comboFileType.Location = new System.Drawing.Point(186, 169);
+            this.comboFileType.Location = new System.Drawing.Point(186, 168);
             this.comboFileType.Name = "comboFileType";
             this.comboFileType.Size = new System.Drawing.Size(145, 24);
             this.comboFileType.TabIndex = 18;
@@ -185,19 +198,6 @@
             this.okButton.TabIndex = 16;
             this.okButton.Text = "Export";
             this.okButton.UseVisualStyleBackColor = false;
-            // 
-            // includeSynth
-            // 
-            this.includeSynth.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.MainLayout.SetColumnSpan(this.includeSynth, 2);
-            this.includeSynth.Dock = System.Windows.Forms.DockStyle.Left;
-            this.includeSynth.Location = new System.Drawing.Point(4, 137);
-            this.includeSynth.Margin = new System.Windows.Forms.Padding(4);
-            this.includeSynth.Name = "includeSynth";
-            this.includeSynth.Size = new System.Drawing.Size(311, 23);
-            this.includeSynth.TabIndex = 20;
-            this.includeSynth.Text = "Include Synthesis Data: ";
-            this.includeSynth.UseVisualStyleBackColor = true;
             // 
             // GltfExportSettings
             // 

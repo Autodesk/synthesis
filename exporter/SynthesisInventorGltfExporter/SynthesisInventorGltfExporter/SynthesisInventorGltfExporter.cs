@@ -45,7 +45,7 @@ namespace SynthesisInventorGltfExporter
 
         protected override void ConfigureButtons()
         {
-            exportButton = Application.CommandManager.ControlDefinitions.AddButtonDefinition("Export glTF", "SynthesisGltfExporter:ExportButton", CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Configure add-in settings.", ToIPictureDisp(new Bitmap(Resources.SynthesisLogo16)), ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32)));
+            exportButton = Application.CommandManager.ControlDefinitions.AddButtonDefinition("Export to glTF", "SynthesisGltfExporter:ExportButton", CommandTypesEnum.kNonShapeEditCmdType, clientId, null, "Exports the open design to a glTF file.", ToIPictureDisp(new Bitmap(Resources.SynthesisLogo16)), ToIPictureDisp(new Bitmap(Resources.SynthesisLogo32)));
             exportButton.OnExecute += context =>
             {
                 new GltfExportSettings(Application).ShowDialog();
