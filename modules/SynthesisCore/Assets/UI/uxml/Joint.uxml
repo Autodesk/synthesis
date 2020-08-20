@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row;">
+    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row; width: 450px; height: auto;">
         <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
-        <ui:VisualElement name="left" class="left">
-            <ui:VisualElement name="motor-type" class="joint-detail" style="height: 72px; width: 280px;">
-                <ui:VisualElement name="details" class="details-label">
-                    <ui:Label text="Motor Type" name="name" />
+        <ui:VisualElement name="left" style="height: 130px; width: 321.3333px; margin-top: 5px; margin-bottom: 5px; margin-left: 5px; margin-right: 5px;">
+            <ui:VisualElement name="motor-type" class="joint-detail" style="height: 72px; width: auto;">
+                <ui:VisualElement name="details" class="details-label" style="width: 90px;">
+                    <ui:Label text="Motor Type&#10;" name="name" />
                 </ui:VisualElement>
                 <ui:VisualElement name="description" class="description-container">
                     <ui:Button text="Talon SRX" name="motor-button" />
@@ -12,26 +12,16 @@
                     <ui:Button text="Spark" name="motor-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="motor-gear" class="joint-detail" style="height: 72px; width: 280px;">
-                <ui:VisualElement name="details" class="details-label">
-                    <ui:Label text="Motor Gear" name="name" />
-                </ui:VisualElement>
-                <ui:VisualElement name="description" class="description-container">
-                    <ui:Button text="1" name="motor-button" />
-                    <ui:Button text="2" name="motor-button" />
-                    <ui:Button text="3" name="motor-button" />
-                </ui:VisualElement>
+            <ui:VisualElement name="motor-gear" class="joint-detail" style="height: auto; width: auto;">
+                <ui:TextField label="Motor Gear" value="filler text" text="Enter Number of Gears" name="details" style="height: 20px; width: 300px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="motor-count" class="joint-detail" style="height: 72px; width: 280px;">
-                <ui:VisualElement name="details" class="details-label">
-                    <ui:Label text="Motor Count" name="name" />
-                </ui:VisualElement>
-                <ui:VisualElement name="description" class="description-container">
-                    <ui:Button text="1" name="motor-button" />
-                    <ui:Button text="2" name="motor-button" />
-                    <ui:Button text="3" name="motor-button" />
-                </ui:VisualElement>
+            <ui:VisualElement name="motor-gear" class="joint-detail" style="height: auto; width: auto;">
+                <ui:TextField label="Motor Count" value="filler text" text="Enter Number of Count" name="details" style="height: 20px; width: 300px;" />
             </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="right" style="justify-content: center; align-items: center; height: 138.6667px; width: 108px;">
+            <ui:Button name="highlight-button" style="height: 73px; width: 82px; white-space: normal; background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
+            <ui:Label text="HIGHLIGHT" name="name" style="font-size: 8px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

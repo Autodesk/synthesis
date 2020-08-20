@@ -112,17 +112,17 @@ namespace SynthesisCore
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
 
-            Entity jointTest = EnvironmentManager.AddEntity();
-            Mesh m = new Mesh();
-            Bundle b = new Bundle();
-            b.Components.Add(selectable);
-            Transform t = new Transform();
-            t.Position = new Vector3D(10, 10, 10); //joint anchor position
-            b.Components.Add(t);
-            b.Components.Add(cube(m)); //replace the cube function with your mesh creation
-            jointTest.AddBundle(b);
-            //when done
-            jointTest.RemoveEntity();
+            //Entity jointTest = EnvironmentManager.AddEntity();
+            //Mesh m = new Mesh();
+            //Bundle b = new Bundle();
+            //b.Components.Add(selectable);
+            //Transform t = new Transform();
+            //t.Position = new Vector3D(10, 10, 10); //joint anchor position
+            //b.Components.Add(t);
+            //b.Components.Add(cube(m)); //replace the cube function with your mesh creation
+            //jointTest.AddBundle(b);
+            ////when done
+            //jointTest.RemoveEntity();
         }
 
         public override void OnUpdate() {
