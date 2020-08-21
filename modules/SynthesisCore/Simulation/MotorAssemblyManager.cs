@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// Manages all of the motor assemblies for an entity and its descendants
+    /// </summary>
     public class MotorAssemblyManager : Component
     {
         public void AddMotor(MotorAssembly controller)

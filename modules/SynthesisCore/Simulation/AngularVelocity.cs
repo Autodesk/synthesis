@@ -2,6 +2,9 @@
 
 namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// A class that pairs an angular velocity with units
+    /// </summary>
     public class AngularVelocity
     {
         private double radiansPerSec;

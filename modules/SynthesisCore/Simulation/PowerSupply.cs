@@ -1,25 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// Models a power supply such as a battery
+    /// </summary>
     public class PowerSupply
     {
         /// <summary>
-        /// Voltage in mV
+        /// Voltage in V
         /// </summary>
         public readonly double Voltage;
-        // public readonly double Capacity;
+        
+        // public readonly double Capacity; // TODO
 
+        /// <summary>
+        /// Calculates a percent of the voltage of the power supply
+        /// </summary>
+        /// <param name="percent"></param>
+        /// <returns></returns>
         public double VoltagePercent(double percent)
         {
             return Math.Min(Math.Max(percent, -1), 1) * Voltage;
         }
 
-        public PowerSupply(double voltage)
+        /// <summary>
+        /// Create a new power supply
+        /// </summary>
+        /// <param name="startingVoltage">The Voltage of the power supply in V</param>
+        public PowerSupply(double startingVoltage)
         {
-            Voltage = voltage;
+            Voltage = startingVoltage;
         }
     }
 }

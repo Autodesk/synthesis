@@ -1,15 +1,32 @@
 ﻿using SynthesisAPI.Utilities;
-using System;
 using Math = System.Math;
 
 namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// A model for DC motor behavior given its characteristics, applied voltage, and given load torque
+    /// </summary>
     public class DCMotor
     {
+        /// <summary>
+        /// Internal motor resistance in Ohms
+        /// </summary>
         public readonly double InternalResistance;
+        /// <summary>
+        /// The motor's torque constant in N m / Amp
+        /// </summary>
         public readonly double TorqueConstant;
+        /// <summary>
+        /// The motor's electircal constant in V / rad / sec
+        /// </summary>
         public readonly double ElectricalConstant;
+        /// <summary>
+        /// The motor's moment of inertia in kg m^2
+        /// </summary>
         public readonly double MomentOfInertia;
+        /// <summary>
+        /// The motor's frictional coefficient in N m s
+        /// </summary>
         public readonly double FrictionalCoefficient;
 
         private readonly double K;
@@ -35,6 +52,14 @@ namespace SynthesisCore.Simulation
         /// </summary>
         public double Current => lastCurrent;
 
+        /// <summary>
+        /// Construct a new DC motor
+        /// </summary>
+        /// <param name="internalResistance">Internal motor resistance in Ohms</param>
+        /// <param name="torqueConstant">The motor's torque constant in N m / Amp</param>
+        /// <param name="electricalConstant">The motor's electircal constant in V / rad / sec</param>
+        /// <param name="momentOfInertia">The motor's moment of inertia in kg m^2</param>
+        /// <param name="frictionalCoefficient">The motor's frictional coefficient in N m s</param>
         public DCMotor(double internalResistance, double torqueConstant, double electricalConstant, double momentOfInertia, double frictionalCoefficient)
         {
             InternalResistance = internalResistance;

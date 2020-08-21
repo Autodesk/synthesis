@@ -27,25 +27,24 @@ namespace SynthesisCore
         
         public override void Setup()
         {
-            /*
-            Entity e = EnvironmentManager.AddEntity();
+            Entity cube = EnvironmentManager.AddEntity();
 
-            e.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
-            e.AddComponent<MeshCollider>();
-            var selectable = e.AddComponent<Selectable>();
-            selectable.OnSelect = () =>
+            cube.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
+            Mesh m = cube.AddComponent<Mesh>();
+            MakeCube(m);
+            cube.AddComponent<MeshCollider>();
+            cube.AddComponent<Rigidbody>();
+            var cubeSelectable = cube.AddComponent<Selectable>();
+            cubeSelectable.OnSelect = () =>
             {
-                EntityToolbar.Open(selectable.Entity.Value);
+                EntityToolbar.Open(cubeSelectable.Entity.Value);
             };
-            selectable.OnDeselect = () =>
+            cubeSelectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
-            e.AddComponent<Moveable>().Channel = 5;
+            //e.AddComponent<Moveable>().Channel = 5;
 
-            */
             powerSupply = new PowerSupply(12); // V
             
 
@@ -55,11 +54,11 @@ namespace SynthesisCore
             testBody.AddBundle(o);
 
             var selectable = testBody.AddComponent<Selectable>();
-            selectable.OnSelect = () =>
+            cubeSelectable.OnSelect = () =>
             {
-                EntityToolbar.Open(selectable.Entity.Value);
+                EntityToolbar.Open(cubeSelectable.Entity.Value);
             };
-            selectable.OnDeselect = () =>
+            cubeSelectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
@@ -135,7 +134,7 @@ namespace SynthesisCore
             else
                 arm.SetVoltage(powerSupply.VoltagePercent(0));
         }
-        private Mesh cube(Mesh m)
+        private Mesh MakeCube(Mesh m)
         {
             if (m == null)
                 m = new Mesh();

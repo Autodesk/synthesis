@@ -1,5 +1,8 @@
 ﻿namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// A container for types of motors
+    /// </summary>
     public class MotorTypes
     {
         public static DCMotor CIMMotor

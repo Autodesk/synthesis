@@ -1,16 +1,20 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.Utilities;
 using System.Collections.Generic;
 
 namespace SynthesisCore.Simulation
 {
+    /// <summary>
+    /// A model for a motor assembly, which includes motors and gearing
+    /// 
+    /// This model can be used to update the phyics simulation
+    /// </summary>
     public class MotorAssembly
     {
         public readonly Entity Entity;
         public readonly HingeJoint Joint;
-        public List<DCMotor> Motors { get; private set; }
-        private DCMotor Motor;
+        // public List<DCMotor> Motors { get; private set; }
+        public DCMotor Motor { get; private set; } // TODO replace with Motors list above (allow multiple motors in an assembly)
 
         public double GearReduction;
 
@@ -43,11 +47,11 @@ namespace SynthesisCore.Simulation
             Joint = joint;
             Joint.UseMotor = true;
 
-            Motors = new List<DCMotor>();
+            // Motors = new List<DCMotor>();
             GearReduction = 1;
         }
 
-        public void Configure(DCMotor motor,/*IEnumerable<DCMotor> motors, */ double gearReduction = 1)
+        public void Configure(DCMotor motor, /*IEnumerable<DCMotor> motors, */ double gearReduction = 1)
         {
             // Motors = (List<DCMotor>) motors;
             Motor = motor;
