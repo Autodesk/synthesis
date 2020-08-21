@@ -21,6 +21,24 @@ namespace SynthesisCore.UI
         private void RegisterJointButtons(IJoint j)
         {
             Button highlightButton = (Button)JointElement.Get("highlight-button");
+            Button motorButton = (Button)JointElement.Get("motor-type-button");
+            Button gearButton = (Button)JointElement.Get("motor-gear-button");
+            Button countButton = (Button)JointElement.Get("motor-count-button");
+
+            motorButton.Subscribe(x =>
+            {
+                Logger.Log("To Do: Motor Type Dropdown");
+            });
+
+            gearButton.Subscribe(x =>
+            {
+                Logger.Log("To Do: Motor Gear Dropdown");
+            });
+
+            countButton.Subscribe(x =>
+            {
+                Logger.Log("To Do: Motor Count Dropdown");
+            });
 
             highlightButton.Subscribe(x =>
             {
