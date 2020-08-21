@@ -105,4 +105,5 @@
     border-right-width: 0;
     border-top-width: 0;
     border-bottom-width: 0;
+	padding-left: 12px;
 }

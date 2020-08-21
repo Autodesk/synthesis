@@ -5,6 +5,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Systems;
 
 namespace SynthesisCore.UI
 {
@@ -20,14 +21,18 @@ namespace SynthesisCore.UI
             JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
 
             var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
+
             Panel = new Panel("Joints", jointsAssset, OnWindowOpen);
         }
         
         private void OnWindowOpen(VisualElement jointsWindow)
         {
             Window = jointsWindow;
+
+            jointsWindow.SetStyleProperty("position", "absolute");
+            jointsWindow.SetStyleProperty("left", "0");
+
             JointList = (ListView) Window.Get("joint-list");
-            
             LoadWindowContents();   
             RegisterButtons();
         }
@@ -54,7 +59,5 @@ namespace SynthesisCore.UI
             Button closeButton = (Button) Window.Get("close-button");
             closeButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
         }
-        
     }
-
 }
