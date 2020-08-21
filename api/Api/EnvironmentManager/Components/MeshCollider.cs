@@ -1,10 +1,7 @@
-﻿using SynthesisAPI.Modules.Attributes;
+﻿using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Utilities;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -13,6 +10,25 @@ namespace SynthesisAPI.EnvironmentManager.Components
         #region Properties
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public class Collision
+        {
+            public readonly Vector3D Impulse;
+            public readonly Vector3D RelativeVelocity;
+            public readonly Entity? CollidingEntity;
+            internal Collision(Vector3D impulse, Vector3D relativeVelocity, Entity? collidingEntity)
+            {
+                Impulse = impulse;
+                RelativeVelocity = relativeVelocity;
+                CollidingEntity = collidingEntity;
+            }
+        }
+
+        public delegate void CollisionHandler(Collision collision);
+
+        public CollisionHandler OnCollisionEnter;
+        public CollisionHandler OnCollisionStay;
+        public CollisionHandler OnCollisionExit;
 
         internal bool convex = true;
         /// <summary>
@@ -54,6 +70,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
     }
 
     public enum MeshColliderCookingOptions

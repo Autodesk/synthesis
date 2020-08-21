@@ -182,11 +182,19 @@ def messages(controller_sys):
 
 
 def drive(controller_sys):
-    while(True):
+    i = 0
+    while(i < 20):
         controller_sys.set_motor_percent(5, 3, 1)
         controller_sys.set_motor_percent(5, 4, 1)
         controller_sys.set_motor_percent(5, 1, 1)
         controller_sys.set_motor_percent(5, 2, 1)
+        time.sleep(1)
+        i += 1
+	
+    controller_sys.set_motor_percent(5, 3, 0)
+    controller_sys.set_motor_percent(5, 4, 0)
+    controller_sys.set_motor_percent(5, 1, 0)
+    controller_sys.set_motor_percent(5, 2, 0)
 
 
 def main():

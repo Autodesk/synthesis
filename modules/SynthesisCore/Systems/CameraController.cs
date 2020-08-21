@@ -342,7 +342,6 @@ namespace SynthesisCore.Systems
                 }
                 else
                 {
-                    offset = cameraTransform.Position - focusPoint;
                     ProcessOrbit();
                     UpdateOrbitCameraPosition();
                 }

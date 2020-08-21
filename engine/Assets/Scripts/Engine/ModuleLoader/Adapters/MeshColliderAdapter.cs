@@ -7,6 +7,7 @@ using MeshColliderCookingOptions = SynthesisAPI.EnvironmentManager.Components.Me
 using PhysicsMaterial = SynthesisAPI.EnvironmentManager.Components.PhysicsMaterial;
 using System.ComponentModel;
 using SynthesisAPI.EnvironmentManager;
+using static Engine.ModuleLoader.Api;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -70,9 +71,43 @@ namespace Engine.ModuleLoader.Adapters
             gameObject.transform.position = gameObject.transform.position + new Vector3(0, float.Epsilon, 0); // Enable Unity collider by moving transform slightly
         }
 
-        private void Update()
+        public void Update()
         {
             // Nothing to actively update
+        }
+
+        private MeshCollider.Collision MapCollision(Collision collision)
+        {
+            Entity? e = null;
+            if (ApiProviderData.GameObjects.TryGetValue(collision.collider.transform.gameObject, out Entity otherE))
+            {
+                e = otherE;
+            }
+            return new MeshCollider.Collision(collision.impulse.Map(), collision.relativeVelocity.Map(), e);
+        }
+
+        public void OnCollisionEnter(Collision collision)
+        {
+            if(instance != null && instance.OnCollisionEnter != null)
+            {
+                instance.OnCollisionEnter(MapCollision(collision));
+            }
+        }
+
+        public void OnCollisionStay(Collision collision)
+        {
+            if (instance != null && instance.OnCollisionEnter != null)
+            {
+                instance.OnCollisionStay(MapCollision(collision));
+            }
+        }
+
+        public void OnCollisionExit(Collision collision)
+        {
+            if (instance != null && instance.OnCollisionEnter != null)
+            {
+                instance.OnCollisionExit(MapCollision(collision));
+            }
         }
 
         public static MeshCollider NewInstance()

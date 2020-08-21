@@ -4,6 +4,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Components;
+using SynthesisCore.Simulation;
 
 namespace Controller
 {
@@ -113,9 +114,9 @@ namespace Controller
         public static void SetMotorPercent(uint channel, int motorIndex, double percent)
         {
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
-                e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<GearAssemblyManager>() != null))
+                e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<MotorAssemblyManager>() != null))
             {
-                // e.GetComponent<MotorManager>().AllGearBoxes[motorIndex].SetPercent((float)percent);
+                e.GetComponent<MotorAssemblyManager>().AllGearBoxes[motorIndex].SetVoltage((float)percent * 12f);
             }
         }
     }

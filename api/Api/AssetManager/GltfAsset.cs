@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
-using System.Collections.Specialized;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.IO;
 using SynthesisAPI.VirtualFileSystem;
@@ -9,11 +6,8 @@ using SharpGLTF.Schema2;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.EnvironmentManager;
 using System.Linq;
-using SharpGLTF.Memory;
 using MathNet.Spatial.Euclidean;
-using SynthesisAPI.Runtime;
 using SharpGLTF.IO;
-using Newtonsoft.Json.Linq;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -47,7 +41,7 @@ namespace SynthesisAPI.AssetManager
             }
             catch (Exception)
             {
-                Logger.Log("GLTF file cannot be read", LogLevel.Warning);
+                Logger.Log($"GLTF asset \"{Name}\" either could not be read or could not be interpretted", LogLevel.Error);
             }
         }
 
