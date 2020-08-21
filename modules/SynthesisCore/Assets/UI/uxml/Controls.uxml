@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="page" style="flex-grow: 1;" >
+        <Style src="/modules/synthesis_core/UI/uss/Page.uss" />
+        <ui:ListView focusable="True" name="controls" style="height: 100%;" />
+    </ui:VisualElement>
+</ui:UXML>

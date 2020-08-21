@@ -4,8 +4,8 @@
     {
         // this is a temporary class while the file browser is made
 
-        public string Name { get; private set; }
-        public string LastModified { get; private set; }
+        public string Name { get; }
+        public string LastModified { get; }
 
         public FileInfo(string name, string lastModified)
         {

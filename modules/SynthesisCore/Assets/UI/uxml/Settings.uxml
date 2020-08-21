@@ -1,28 +1,34 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="window" class="window" style="width: 600px; height: 400px;">
+    <ui:VisualElement name="window" class="window" style="width: 500px; height: 350px;">
         <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
         <Style src="/modules/synthesis_core/UI/uss/Settings.uss" />
         <ui:VisualElement name="header" class="window-header-container">
             <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/settings-icon.png&apos;);" />
             <ui:Label text="Settings" name="title" class="window-header-title" />
         </ui:VisualElement>
-        <ui:VisualElement name="content" class="settings-content">
-            <ui:VisualElement name="category-list-container" class="category-list-container">
-                <ui:Button text="        General" name="general-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/general-settings-icon.png&apos;);" />
+        <ui:VisualElement name="content" class="window-content" style="flex-direction: row;">
+            <ui:VisualElement name="navigation" class="navigation-container">
+                <ui:Button name="general-settings-button" class="category-button">
+                    <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/general-settings-icon.png&apos;);" />
+                    <ui:Label text="General" name="name" />
                 </ui:Button>
-                <ui:Button text="        Graphics" name="graphics-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/graphics-icon.png&apos;);" />
+                <ui:Button name="graphics-settings-button" class="category-button">
+                    <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/graphics-icon.png&apos;);" />
+                    <ui:Label text="Graphics" name="name" />
                 </ui:Button>
-                <ui:Button text="        Controls" name="controls-category-button" class="category-button">
-                    <ui:VisualElement name="button-icon" class="category-button-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/controls-icon.png&apos;);" />
+                <ui:Button name="controls-settings-button" class="category-button">
+                    <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/controls-icon.png&apos;);" />
+                    <ui:Label text="Controls" name="name" />
                 </ui:Button>
             </ui:VisualElement>
-            <ui:VisualElement name="page-container" style="height: 100%; width: 450px;" />
+            <ui:VisualElement name="page-container" class="page-container" />
         </ui:VisualElement>
-        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel" style="flex-direction: row-reverse;">
-            <ui:Button text="Close" name="close-button" class="window-button" />
-            <ui:Button text="OK" name="ok-button" class="window-button-blue" />
+        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
+            <ui:VisualElement name="left" class="button-panel-left-container" />
+            <ui:VisualElement name="right" class="button-panel-right-container">
+                <ui:Button text="OK" name="ok-button" class="window-button-blue" />
+                <ui:Button text="Close" name="close-button" class="window-button" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

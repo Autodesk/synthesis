@@ -1,7 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="page">
-        <uie:EnumField label="Screen Mode" value="Center" name="screen-mode" />
-        <uie:EnumField label="Resolution" value="Test" name="resolution" include-obsolete-values="true" />
-        <uie:EnumField label="Quality" value="Center" name="quality" />
+        <ui:Label text="Graphics page" name="sample-text" />
     </ui:VisualElement>
 </ui:UXML>
