@@ -38,6 +38,7 @@
     flex-direction: row;
     height: 117px;
     width: 342px;
+    margin: 3px;
 }
 
 .left {
