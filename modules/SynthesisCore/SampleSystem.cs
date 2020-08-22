@@ -1,16 +1,16 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.Modules.Attributes;
-using SynthesisCore.Components;
-using SynthesisCore.Systems;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisCore.UI;
+using SynthesisCore.Components;
+using SynthesisAPI.Modules.Attributes;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.Utilities;
+using SynthesisCore.Simulation;
 
 namespace SynthesisCore
 {
@@ -18,119 +18,123 @@ namespace SynthesisCore
     {
         private Entity testBody;
 
-        private MotorController frontLeft, frontRight, backLeft, backRight;
-        private MotorController arm;
+        private MotorAssemblyManager motorManager;
+        private MotorAssembly frontLeft, frontRight, backLeft, backRight, arm;
 
-        public override void OnPhysicsUpdate() { }
+        private PowerSupply powerSupply;
 
+        // private const double LoadTorque = 22 * 9.81 * 1.1 * 0.0508; // m * g * μ * r
+        
         public override void Setup()
         {
-            /*
-            Entity e = EnvironmentManager.AddEntity();
+            Entity cube = EnvironmentManager.AddEntity();
 
-            e.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
-            Mesh m = e.AddComponent<Mesh>();
-            cube(m);
-            e.AddComponent<MeshCollider>();
-            var selectable = e.AddComponent<Selectable>();
-            selectable.OnSelect = () =>
+            cube.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
+            Mesh m = cube.AddComponent<Mesh>();
+            MakeCube(m);
+            cube.AddComponent<MeshCollider>();
+            cube.AddComponent<Rigidbody>();
+            var cubeSelectable = cube.AddComponent<Selectable>();
+            cubeSelectable.OnSelect = () =>
             {
-                EntityToolbar.Open(selectable.Entity.Value);
+                EntityToolbar.Open(cubeSelectable.Entity.Value);
             };
-            selectable.OnDeselect = () =>
+            cubeSelectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
-            e.AddComponent<Moveable>().Channel = 5;
-            */
+            //e.AddComponent<Moveable>().Channel = 5;
+
+            powerSupply = new PowerSupply(12); // V
             
+
             testBody = EnvironmentManager.AddEntity();
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
             testBody.AddBundle(o);
 
             var selectable = testBody.AddComponent<Selectable>();
-            selectable.OnSelect = () =>
+            cubeSelectable.OnSelect = () =>
             {
-                EntityToolbar.Open(selectable.Entity.Value);
+                EntityToolbar.Open(cubeSelectable.Entity.Value);
             };
-            selectable.OnDeselect = () =>
+            cubeSelectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
 
-            (float r, float g, float b, float a)[] colors = {
-                (1, 0, 0, 1),
-                (0, 1, 0, 1),
-                (0, 0, 1, 1),
-                (1, 0, 1, 1)
-            };
+            testBody.AddComponent<Moveable>().Channel = 5;
 
-            var TestMotor = new MotorType() {
-                MaxVelocity = 10000,
-                Torque = 50,
-                MotorName = "Testing Motor"
-            };
+            motorManager = testBody.AddComponent<MotorAssemblyManager>();
 
-            frontLeft = MotorManager.AllMotorControllers[3];
-            frontRight = MotorManager.AllMotorControllers[4];
-            backLeft = MotorManager.AllMotorControllers[1];
-            backRight = MotorManager.AllMotorControllers[2];
+            frontLeft = motorManager.AllGearBoxes[3];
+            frontRight = motorManager.AllGearBoxes[4];
+            backLeft = motorManager.AllGearBoxes[1];
+            backRight = motorManager.AllGearBoxes[2];
+            arm = motorManager.AllGearBoxes[0];
 
-            frontLeft.Gearing = 1.0f / 10.0f;
-            frontLeft.MotorType = TestMotor;
-            frontLeft.MotorCount = 1;
-            frontLeft.Locked = true;
-            frontRight.Gearing = 1.0f / 10.0f;
-            frontRight.MotorType = TestMotor;
-            frontRight.MotorCount = 1;
-            frontRight.Locked = true;
-            backLeft.Gearing = 1.0f / 10.0f;
-            backLeft.MotorType = TestMotor;
-            backLeft.MotorCount = 1;
-            backLeft.Locked = true;
-            backRight.Gearing = 1.0f / 10.0f;
-            backRight.MotorType = TestMotor;
-            backRight.MotorCount = 1;
-            backRight.Locked = true;
+            frontLeft.Configure(MotorTypes.CIMMotor, 9.29);
+            frontRight.Configure(MotorTypes.CIMMotor, 9.29);
+            backLeft.Configure(MotorTypes.CIMMotor, 9.29);
+            backRight.Configure(MotorTypes.CIMMotor, 9.29);
+            arm.Configure(MotorTypes.CIMMotor, 9.29);
 
-            var ArmMotor = new MotorType() {
-                MaxVelocity = 10,
-                Torque = 50,
-                MotorName = "Arm Motor"
-            };
-
-            arm = MotorManager.AllMotorControllers[0];
-            arm.Gearing = 1.0f / 2.0f;
-            arm.MotorType = ArmMotor;
-            arm.MotorCount = 1;
-            arm.Locked = true;
-
-            Digital[] test = { new Digital("w"), new Digital("a"), new Digital("s"), new Digital("d") };
+            frontLeft.SetConstantLoadTorque(0.6050985);
+            frontRight.SetConstantLoadTorque(0.6050985);
+            backLeft.SetConstantLoadTorque(0.6050985);
+            backRight.SetConstantLoadTorque(0.6050985);
+            arm.SetConstantLoadTorque(0.6050985);
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
+            InputManager.AssignDigitalInput("move_arm_up", new Digital("t"));
+            InputManager.AssignDigitalInput("move_arm_down", new Digital("y"));
+
+            foreach (var i in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
+            {
+                i.AngularDrag = 0;
+            }
         }
 
-        public override void OnUpdate() {
+        public override void OnUpdate()
+        {
             float forward = InputManager.GetAxisValue("vert");
             float turn = InputManager.GetAxisValue("hori");
-            
-            var moveArmForward = new Digital("t");
-            moveArmForward.Update();
-            if (moveArmForward.State == DigitalState.Down) {
-                arm.SetPercent(0.5f);
-            } else {
-                arm.SetPercent(0.0f);
-            }
 
-            frontLeft.SetPercent(forward + turn);
-            frontRight.SetPercent(forward - turn);
-            backLeft.SetPercent(forward + turn);
-            backRight.SetPercent(forward - turn);
+            var percent = forward + turn;
+            frontLeft.SetVoltage(powerSupply.VoltagePercent(percent));
+            percent = forward - turn;
+            frontRight.SetVoltage(powerSupply.VoltagePercent(percent));
+            percent = forward + turn;
+            backLeft.SetVoltage(powerSupply.VoltagePercent(percent));
+            percent = forward - turn;
+            backRight.SetVoltage(powerSupply.VoltagePercent(percent));
+            
+            frontLeft.Update();
+            frontRight.Update();
+            backLeft.Update();
+            backRight.Update();
+            arm.Update();
         }
 
-        private Mesh cube(Mesh m)
+        [TaggedCallback("input/move_arm_up")]
+        public void MoveArmUp(DigitalEvent e)
+        {
+            if(e.State == DigitalState.Held)
+                arm.SetVoltage(powerSupply.VoltagePercent(0.25));
+            else
+                arm.SetVoltage(powerSupply.VoltagePercent(0));
+        }
+
+        [TaggedCallback("input/move_arm_down")]
+        public void MoveArmDown(DigitalEvent e)
+        {
+            if (e.State == DigitalState.Held)
+                arm.SetVoltage(powerSupply.VoltagePercent(-0.25));
+            else
+                arm.SetVoltage(powerSupply.VoltagePercent(0));
+        }
+        private Mesh MakeCube(Mesh m)
         {
             if (m == null)
                 m = new Mesh();
@@ -166,31 +170,6 @@ namespace SynthesisCore
 
         public override void Teardown() { }
 
-        /*
-        [TaggedCallback("input/move")]
-        public void Move(DigitalEvent digitalEvent)
-        {
-            if(digitalEvent.State == DigitalState.Held)
-            {
-                switch (digitalEvent.Name)
-                {
-                    case "w":
-                        ApiProvider.Log("w");
-                        break;
-                    case "a":
-                        ApiProvider.Log("a");
-                        break;
-                    case "s":
-                        ApiProvider.Log("s");
-                        break;
-                    case "d":
-                        ApiProvider.Log("d");
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        */
+        public override void OnPhysicsUpdate() { }
     }
 }
