@@ -26,19 +26,19 @@ def calculateViewCubeRotation(app: adsk.core.Application):
     print(forwardVector)
     print(upVector)
 
-    return forwardUpVectorsToRotation(forwardVector, upVector)
+    return forwardUpVectorsToRotation(forwardVector, upVector).conjugate
 
 
 def getViewVector(viewport, orientation):
-    forwardCam = viewport.camera
-    forwardCam.isSmoothTransition = False
-    forwardCam.viewOrientation = orientation  # TODO: Bug report: view orientation changes don't respect isSmoothTransition
-    viewport.camera = forwardCam
+    tempCam = viewport.camera
+    tempCam.isSmoothTransition = False
+    tempCam.viewOrientation = orientation  # TODO: Bug report: view orientation changes don't respect isSmoothTransition
+    viewport.camera = tempCam
     for i in range(50):  # TODO: Please add view cube api so I don't have to do this
         adsk.doEvents()
         viewport.refresh()
-    forwardCam = viewport.camera
-    forwardVector = forwardCam.target.vectorTo(forwardCam.eye).asArray()
+    tempCam = viewport.camera
+    forwardVector = tempCam.target.vectorTo(tempCam.eye).asArray()
     return forwardVector
 
 
