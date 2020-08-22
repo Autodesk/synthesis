@@ -22,6 +22,8 @@ using Asset = Inventor.Asset;
 using Color = Inventor.Color;
 using File = System.IO.File;
 using ProgressBar = Inventor.ProgressBar;
+using Vector = Inventor.Vector;
+using View = Inventor.View;
 
 namespace SynthesisInventorGltfExporter
 {
@@ -55,7 +57,7 @@ namespace SynthesisInventorGltfExporter
         private decimal exportTolerance;
         private static readonly string appName = "Autodesk.Synthesis.Inventor";
 
-        public void ExportDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue,
+        public void ExportActiveDesign(Application application, AssemblyDocument assemblyDocument, string filePath, bool glb, bool checkMaterialsChecked, bool checkFaceMaterials, bool checkHiddenChecked, decimal numericToleranceValue,
             bool includeSynthChecked)
         {
             try
@@ -79,7 +81,7 @@ namespace SynthesisInventorGltfExporter
 
                 progressBar.Message = "Preparing for export...";
                 
-                var sceneBuilder = ExportScene(assemblyDocument);
+                var sceneBuilder = ExportScene(application, assemblyDocument);
 
                 progressBar.Message = "Exporting joints...";
                 progressBar.UpdateProgress();
@@ -476,24 +478,6 @@ namespace SynthesisInventorGltfExporter
 
             return uuid;
         }
-        
-        private string GetObjectUUID(dynamic hasAttributeSets)
-        {
-            var occurrenceAttributeSets = hasAttributeSets.AttributeSets;
-            if (!occurrenceAttributeSets.NameIsUsed[appName])
-            {
-                return null;
-            }
-
-            var synAttributeSet = occurrenceAttributeSets[appName];
-
-            if (!synAttributeSet.NameIsUsed["uuid"])
-            {
-                return null;
-            }
-
-            return synAttributeSet["uuid"].Value;
-        }
 
         private static Vector3D GetVector3DConvertUnits(dynamic getJointCenter)
         {
@@ -536,19 +520,74 @@ namespace SynthesisInventorGltfExporter
             }
         }
 
-        private SceneBuilder ExportScene(AssemblyDocument assemblyDocument)
+        private SceneBuilder ExportScene(Application application, AssemblyDocument assemblyDocument)
         {
             var scene = new SceneBuilder();
-            ExportNodeRootAssembly(assemblyDocument, scene);
+            ExportNodeRootAssembly(application, assemblyDocument, scene);
             return scene;
         }
 
-        private void ExportNodeRootAssembly(AssemblyDocument assemblyDocument, SceneBuilder scene)
+        private void ExportNodeRootAssembly(Application application, AssemblyDocument assemblyDocument, SceneBuilder scene)
         {
-            var root = new NodeBuilder(assemblyDocument.DisplayName).WithLocalScale(Vector3.Multiply(Vector3.One, 0.01f));
+            var root = new NodeBuilder(assemblyDocument.DisplayName).WithLocalRotation(GetActiveViewCubeOrientation(application)).WithLocalScale(Vector3.Multiply(Vector3.One, 0.01f));
             var assemblyComponentDefinition = assemblyDocument.ComponentDefinition;
             ExportNodes(assemblyComponentDefinition.Occurrences.Cast<ComponentOccurrence>(), scene, root);
         }
+
+        private Quaternion GetActiveViewCubeOrientation(Application application)
+        {
+            var activeView = application.ActiveView;
+            var initialCam = activeView.Camera;
+
+            var forwardVector = GetViewVector(activeView, ViewOrientationTypeEnum.kFrontViewOrientation);
+            var upVector = GetViewVector(activeView, ViewOrientationTypeEnum.kTopViewOrientation);
+
+            initialCam.ApplyWithoutTransition();
+
+            return Quaternion.Conjugate(ForwardUpVectorsToRotation(forwardVector, upVector));
+        }
+
+        private Vector3 GetViewVector(View activeView, ViewOrientationTypeEnum orientation)
+        {
+            var tempCam = activeView.Camera;
+            tempCam.ViewOrientationType = orientation;
+            tempCam.ApplyWithoutTransition();
+            tempCam = activeView.Camera;
+            return InvToNumericsVec3(tempCam.Target.VectorTo(tempCam.Eye));
+        }
+
+        private Vector3 InvToNumericsVec3(Vector upVector)
+        {
+            return new Vector3((float) upVector.X, (float) upVector.Y, (float) upVector.Z);
+        }
+
+        private Quaternion ForwardUpVectorsToRotation(Vector3 forwardVector, Vector3 upVector)  // Could have used Matrix4x4.CreateWorld, but it uses some weird axes
+        {
+            var zAxis = Vector3.Normalize(forwardVector);
+            var xAxis = Vector3.Normalize(Vector3.Cross(upVector, forwardVector));
+            var yAxis = Vector3.Normalize(Vector3.Cross(forwardVector, xAxis));
+
+            Matrix4x4 matrix;
+            matrix.M11 = xAxis.X;
+            matrix.M12 = xAxis.Y;
+            matrix.M13 = xAxis.Z;
+            matrix.M14 = 0.0f;
+            matrix.M21 = yAxis.X;
+            matrix.M22 = yAxis.Y;
+            matrix.M23 = yAxis.Z;
+            matrix.M24 = 0.0f;
+            matrix.M31 = zAxis.X;
+            matrix.M32 = zAxis.Y;
+            matrix.M33 = zAxis.Z;
+            matrix.M34 = 0.0f;
+            matrix.M41 = 0.0f;
+            matrix.M42 = 0.0f;
+            matrix.M43 = 0.0f;
+            matrix.M44 = 1f;
+            
+            return Quaternion.CreateFromRotationMatrix(matrix);
+        }
+
 
         private void ExportNodes(IEnumerable<ComponentOccurrence> occurrences, SceneBuilder scene, NodeBuilder parent)
         {

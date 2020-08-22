@@ -55,7 +55,7 @@ namespace SynthesisInventorGltfExporter.GUI
                 }
 
                 var exporter = new GLTFDesignExporter();
-                exporter.ExportDesign(application, assemblyDocument, dialog.FileName, Settings.Default.ExportGLB,checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value, includeSynth.Checked);
+                exporter.ExportActiveDesign(application, assemblyDocument, dialog.FileName, Settings.Default.ExportGLB,checkMaterials.Checked, checkFace.Checked, checkHidden.Checked, numericTolerance.Value, includeSynth.Checked);
                 Close();
             };
             cancelButton.Click += (sender, args) =>
