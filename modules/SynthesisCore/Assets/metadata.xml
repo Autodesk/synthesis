@@ -28,8 +28,6 @@
     <string>UI/uxml/Dialog.uxml</string>
     <string>UI/uxml/Joints.uxml</string> 
     <string>UI/uxml/Joint.uxml</string>
-    <string>UI/uxml/Bots.uxml</string>
-    <string>UI/uxml/Bot.uxml</string>
     <string>UI/uss/Entity.uss</string>
     <string>UI/uss/Modules.uss</string>
     <string>UI/uss/Module.uss</string>
