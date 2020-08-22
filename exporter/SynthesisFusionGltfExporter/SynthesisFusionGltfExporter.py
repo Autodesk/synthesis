@@ -24,6 +24,7 @@ def areDepsInstalled():
         import apper
         import pygltflib
         import numpy
+        import pyquaternion
         import google.protobuf
         return True
     except:
@@ -63,7 +64,7 @@ def tryInstallDeps():
     else:
         raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
 
-    pipDeps = ["pygltflib", "numpy", "protobuf"]
+    pipDeps = ["pygltflib", "numpy", "protobuf", "pyquaternion"]
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."

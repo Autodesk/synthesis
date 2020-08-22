@@ -21,8 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5d26a3dd-41f1-44f8-bbc5-07e14f8d476b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +60,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c4/a2442617/JsonSerializable.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2BFEA3BB-4283-49D3-BCB1-8A005490A230/8e/1898b988/SceneBuilder.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///SynthesisInventorGltfExporter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///GltfExportSettings.Designer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/9c/23cf366b/Scene.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7C/JProperty.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/7e/ae62bedc/RuntimeMethodInfo.cs" root0="SKIP_HIGHLIGHTING" />
@@ -264,7 +264,7 @@
       <workItem from="1597204352110" duration="594000" />
       <workItem from="1597260190705" duration="6258000" />
       <workItem from="1597270178974" duration="14461000" />
-      <workItem from="1597947881757" duration="603000" />
+      <workItem from="1597947881757" duration="1442000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -469,7 +469,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597364468134</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Fix export button tooltip">
+      <created>1597948668221</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1597948668221</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -492,7 +499,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Dll hell" />
     <MESSAGE value="Add gitignore" />
     <MESSAGE value="Add basic joint data export" />
     <MESSAGE value="Export joint motion and limits" />
@@ -517,7 +523,8 @@
     <MESSAGE value="Move protobuf compile to root exporter directory" />
     <MESSAGE value="Fix joint bug and add setting to disable synthesis metadata" />
     <MESSAGE value="Fix vertex normals" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix vertex normals" />
+    <MESSAGE value="Fix export button tooltip" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix export button tooltip" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597280129386">
@@ -528,10 +535,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="675" y="194" width="488" height="482" key="#xdebugger.evaluate/0.0.2048.1112@0.0.2048.1112" timestamp="1596587208646" />
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1597364467481">
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1597949376954">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1597364467481" />
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1597949376954" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596865560941">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -540,22 +547,22 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1596175004049" />
-    <state width="2005" height="454" key="GridCell.Tab.0.bottom" timestamp="1597378693935">
+    <state width="2005" height="303" key="GridCell.Tab.0.bottom" timestamp="1597949429936">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597378693935" />
-    <state width="2005" height="454" key="GridCell.Tab.0.center" timestamp="1597378693934">
+    <state width="2005" height="303" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597949429936" />
+    <state width="2005" height="303" key="GridCell.Tab.0.center" timestamp="1597949429936">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597378693934" />
-    <state width="2005" height="454" key="GridCell.Tab.0.left" timestamp="1597378693934">
+    <state width="2005" height="303" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597949429936" />
+    <state width="2005" height="303" key="GridCell.Tab.0.left" timestamp="1597949429936">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597378693934" />
-    <state width="2005" height="454" key="GridCell.Tab.0.right" timestamp="1597378693934">
+    <state width="2005" height="303" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597949429936" />
+    <state width="2005" height="303" key="GridCell.Tab.0.right" timestamp="1597949429936">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597378693934" />
+    <state width="2005" height="303" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597949429936" />
     <state width="2005" height="454" key="GridCell.Tab.1.bottom" timestamp="1597378693935">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -636,10 +643,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1597266352404" />
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1597364482981">
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1597949391077">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1597364482981" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1597949391077" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>

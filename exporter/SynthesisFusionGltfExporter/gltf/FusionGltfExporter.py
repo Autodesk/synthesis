@@ -199,60 +199,65 @@ class FusionGltfExporter(object):
         self.progressBar.reset()
         self.progressBar.show(f"Exporting {document.name} to glTF", "Preparing for export...", 0, 100, 0)
 
-        # noinspection PyUnresolvedReferences
-        adsk.doEvents()  # show progress bar
+        try:
 
-        if not self.settingsPreCheck(document):
+            # noinspection PyUnresolvedReferences
+            adsk.doEvents()  # show progress bar
+
+            if not self.settingsPreCheck(document):
+                self.progressBar.hide()
+                return
+
+            rootComponent = document.design.rootComponent  # type: adsk.fusion.Component
+
+            if self.includeSynthesisData:
+                try:
+                    self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(list(rootComponent.allJoints) + list(rootComponent.allAsBuiltJoints), self.GLTF_GENERATOR_ID, self.rootNodeUUID, self.exportWarnings)
+                except RuntimeError:  # todo: report this bug
+                    print(traceback.format_exc())
+                    result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
+                                                   f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
+                    if result == 0 or result == 2:  # yes
+                        pass
+                    else:  # no
+                        self.progressBar.hide()
+                        return
+
+            start = time.perf_counter()
+
+            self.progressBar.message = "Reading list of fusion components..."
+            self.progressBar.maximumValue = len(document.design.allComponents) + 1
+
+            self.gltf.scene = self.exportScene(rootComponent)  # export the current fusion document
+
+            # Clean tags
+            for mesh in self.gltf.meshes:
+                for prim in mesh.primitives:
+                    if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
+                        prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
+
+            self.progressBar.message = "Serializing data to file..."
+            self.progressBar.progressValue = self.progressBar.maximumValue - 1
+
+            # convert gltf to json and serialize
+            self.gltf.buffers[self.primaryBufferIndex].byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
+
+            # ==== do NOT make changes to the glTF object beyond this point ====
+            # add padding bytes to the end of each chunk data
+            alignBytesIOToBoundary(self.primaryBufferStream)
+
+            # get the memoryView of the primary buffer stream
+            primaryBufferData = self.primaryBufferStream.getbuffer()
+
+            if fileType == FileType.GLB:
+                writeGlbToFile(self.gltf, primaryBufferData, filepath)
+            else:
+                writeGltfToFile(self.gltf, primaryBufferData, filepath)
+
+        except Exception as e:
+            raise  # pass on the exception but hide the progress bar
+        finally:
             self.progressBar.hide()
-            return
-
-        rootComponent = document.design.rootComponent  # type: adsk.fusion.Component
-
-        if self.includeSynthesisData:
-            try:
-                self.gltf.extras['joints'], self.jointedOccurrencePaths = exportJoints(list(rootComponent.allJoints) + list(rootComponent.allAsBuiltJoints), self.GLTF_GENERATOR_ID, self.rootNodeUUID, self.exportWarnings)
-            except RuntimeError:  # todo: report this bug
-                print(traceback.format_exc())
-                result = self.ao.ui.messageBox(f"Could not export joints due to a bug in the Fusion API.\n"
-                                               f"Do you want to continue the export without joints?", "", adsk.core.MessageBoxButtonTypes.YesNoButtonType)
-                if result == 0 or result == 2:  # yes
-                    pass
-                else:  # no
-                    self.progressBar.hide()
-                    return
-
-        start = time.perf_counter()
-
-        self.progressBar.message = "Reading list of fusion components..."
-        self.progressBar.maximumValue = len(document.design.allComponents) + 1
-
-        self.gltf.scene = self.exportScene(rootComponent)  # export the current fusion document
-
-        # Clean tags
-        for mesh in self.gltf.meshes:
-            for prim in mesh.primitives:
-                if self.MAT_OVERRIDEABLE_TAG in prim.extras:  # if material is overrideable
-                    prim.extras.pop(self.MAT_OVERRIDEABLE_TAG)
-
-        self.progressBar.message = "Serializing data to file..."
-        self.progressBar.progressValue = self.progressBar.maximumValue - 1
-
-        # convert gltf to json and serialize
-        self.gltf.buffers[self.primaryBufferIndex].byteLength = calculateAlignment(self.primaryBufferStream.seek(0, io.SEEK_END))  # must calculate before encoding JSON
-
-        # ==== do NOT make changes to the glTF object beyond this point ====
-        # add padding bytes to the end of each chunk data
-        alignBytesIOToBoundary(self.primaryBufferStream)
-
-        # get the memoryView of the primary buffer stream
-        primaryBufferData = self.primaryBufferStream.getbuffer()
-
-        if fileType == FileType.GLB:
-            writeGlbToFile(self.gltf, primaryBufferData, filepath)
-        else:
-            writeGltfToFile(self.gltf, primaryBufferData, filepath)
-
-        self.progressBar.hide()
 
         stats = [f"scenes: {len(self.gltf.scenes)}",
                  f"nodes: {len(self.gltf.nodes)}",
@@ -319,6 +324,7 @@ class FusionGltfExporter(object):
         node.name = rootComponent.name
         node.mesh = self.exportMeshWithOverrideCached(rootComponent, -1)
         node.scale = [self.DESIGN_SCALE] * 3
+        node.rotation = pyQuatToGltf(calculateViewCubeRotation(self.ao.app))
         node.children = [index for index in [self.exportNode(occur, -1) for occur in rootComponent.occurrences] if index is not None]
 
         if "" in self.jointedOccurrencePaths:

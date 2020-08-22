@@ -1,4 +1,6 @@
 from typing import List
+import numpy as np
+from pyquaternion import Quaternion
 
 IDENTITY_MATRIX_3D = (
     1, 0, 0, 0,
@@ -25,3 +27,30 @@ def isIdentityMatrix3D(flatMatrix: List[float], tolerance: float = 0.00001) -> b
 
 def transposeFlatMatrix3D(flatMatrix: List[float]):
     return [flatMatrix[i + j * 4] for i in range(4) for j in range(4)]
+
+
+def normalized(a, axis=-1, order=2):
+    l2 = np.atleast_1d(np.linalg.norm(a, order, axis))
+    l2[l2 == 0] = 1
+    return (a / np.expand_dims(l2, axis))[0]
+
+def forwardUpVectorsToRotation(forward, up):
+    zAxis = normalized(forward)
+    xAxis = normalized(np.cross(up, forward))
+    yAxis = normalized(np.cross(forward, xAxis))
+
+    m1 = np.array([
+        xAxis.tolist(),
+        yAxis.tolist(),
+        zAxis.tolist(),
+    ])
+
+    quaternion = Quaternion(matrix=m1.transpose()).conjugate
+    return quaternion.normalised
+
+def gltfQuatToPy(rotation):
+    return Quaternion(rotation[3:4] + rotation[0:3])
+
+def pyQuatToGltf(pyQuat):
+    normalized = pyQuat.normalised.elements.tolist()
+    return normalized[1:4] + normalized[0:1]

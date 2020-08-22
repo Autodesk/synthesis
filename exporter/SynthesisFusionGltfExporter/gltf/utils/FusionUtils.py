@@ -1,9 +1,45 @@
 import traceback
 from typing import *
 
+import time
+
+from pyquaternion import Quaternion
+
 import adsk
 import adsk.core
 import adsk.fusion
+
+from .MathUtils import forwardUpVectorsToRotation
+
+def calculateViewCubeRotation(app: adsk.core.Application):
+    viewport = app.activeViewport
+    initialCam = viewport.camera
+    initialCam.isSmoothTransition = False
+
+    forwardVector = getViewVector(viewport, adsk.core.ViewOrientations.FrontViewOrientation)
+    upVector = getViewVector(viewport, adsk.core.ViewOrientations.TopViewOrientation)
+
+    viewport.camera = initialCam
+    adsk.doEvents()
+    viewport.refresh()
+
+    print(forwardVector)
+    print(upVector)
+
+    return forwardUpVectorsToRotation(forwardVector, upVector)
+
+
+def getViewVector(viewport, orientation):
+    forwardCam = viewport.camera
+    forwardCam.isSmoothTransition = False
+    forwardCam.viewOrientation = orientation  # TODO: Bug report: view orientation changes don't respect isSmoothTransition
+    viewport.camera = forwardCam
+    for i in range(50):  # TODO: Please add view cube api so I don't have to do this
+        adsk.doEvents()
+        viewport.refresh()
+    forwardCam = viewport.camera
+    forwardVector = forwardCam.target.vectorTo(forwardCam.eye).asArray()
+    return forwardVector
 
 
 def reportErrorToUser(message):
