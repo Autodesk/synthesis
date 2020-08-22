@@ -31,6 +31,7 @@ namespace SynthesisCore.UI
 
             jointsWindow.SetStyleProperty("position", "absolute");
             jointsWindow.SetStyleProperty("left", "0");
+            jointsWindow.SetStyleProperty("top", "70");
 
             JointList = (ListView) Window.Get("joint-list");
             LoadWindowContents();   
