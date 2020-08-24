@@ -20,11 +20,9 @@ def calculateViewCubeRotation(app: adsk.core.Application):
     upVector = getViewVector(viewport, adsk.core.ViewOrientations.TopViewOrientation)
 
     viewport.camera = initialCam
+    # noinspection PyUnresolvedReferences
     adsk.doEvents()
     viewport.refresh()
-
-    print(forwardVector)
-    print(upVector)
 
     return forwardUpVectorsToRotation(forwardVector, upVector).conjugate
 
@@ -35,6 +33,7 @@ def getViewVector(viewport, orientation):
     tempCam.viewOrientation = orientation  # TODO: Bug report: view orientation changes don't respect isSmoothTransition
     viewport.camera = tempCam
     for i in range(50):  # TODO: Please add view cube api so I don't have to do this
+        # noinspection PyUnresolvedReferences
         adsk.doEvents()
         viewport.refresh()
     tempCam = viewport.camera
@@ -42,7 +41,7 @@ def getViewVector(viewport, orientation):
     return forwardVector
 
 
-def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[adsk.fusion.TriangleMesh, Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]:
+def calculateMeshForBRep(fusionBRep: Union[adsk.fusion.BRepBody, adsk.fusion.BRepFace], meshQuality) -> Tuple[Optional[adsk.fusion.TriangleMesh], Union[adsk.fusion.BRepFace, adsk.fusion.BRepBody]]:
     meshCalculator = fusionBRep.meshManager.createMeshCalculator()
     if meshCalculator is None:
         return None, fusionBRep
@@ -57,7 +56,7 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportW
 
     Args:
         fusionAppearance: The fusion appearance to read from.
-        warnings: A list of warnings to append onto.
+        exportWarnings: A list of warnings to append onto.
 
     Returns: None if the material is unrecognized, otherwise returns RGBA base color, RGB emissive factor, metallic factor, roughness factor, and whether the material is transparent.
 

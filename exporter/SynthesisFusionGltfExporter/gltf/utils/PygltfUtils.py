@@ -18,10 +18,14 @@ def exportAccessor(gltf: GLTF2, primaryBufferIndex: GLTFIndex, primaryBufferStre
     """Creates an accessor to store an array of data.
 
     Args:
+        gltf: Gltf object on which to append the new accessor.
+        primaryBufferIndex: Gltf index of the primary buffer.
+        primaryBufferStream: Stream on which to write accessor data.
         array: The array of data to store in a flat array, eg. [x, y, x, y] NOT [[x, y], [x, y]].
         dataType: The glTF data type to store.
         componentType: The glTF component type to store the data. Set to None to autodetect the smallest necessary unsigned integer type (for indices)
         calculateLimits: Whether or not it is necessary to calculate the limits of the data. If the componentType must be auto-detected, the limits will be calculated anyways.
+        exportWarnings: List of string warnings to append onto.
 
     Returns: The index of the exported accessor in the glTF accessors list.
 
@@ -83,6 +87,8 @@ def exportBufferView(gltf: GLTF2, primaryBufferIndex: int, byteOffset: int, byte
     """Creates a glTF bufferView with the specified offset and length, referencing the default glB buffer.
 
     Args:
+        gltf: Gltf object to append new buffer onto.
+        primaryBufferIndex: Index of the primary glb buffer.
         byteOffset: Index of the starting byte in the referenced buffer.
         byteLength: Length in bytes of the bufferView.
 

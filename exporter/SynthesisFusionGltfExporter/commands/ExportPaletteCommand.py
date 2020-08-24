@@ -53,7 +53,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             quality = int(settings['quality'])
             includeSynthesis = settings['includeSynthesis']
             useGlb = FileType.fromString(settings['useGlb'])
-            self.exporter.exportDesignUI(self.ao.app.activeDocument, showFileDialog=True, enableMaterials=materials, enableFaceMaterials=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, quality=quality, includeSynthesisData=includeSynthesis)
+            self.exporter.exportDesignUI(self.ao.app.activeDocument, showFileDialog=True, enableAppearances=materials, enableFaceAppearances=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, meshQuality=quality, includeSynthesisData=includeSynthesis)
 
 
     # Handle any extra cleanup when user closes palette here

@@ -1,5 +1,5 @@
 from typing import *
 
-def appendGetIndex(list: List[any], value: any) -> int:
-    list.append(value)
-    return len(list) - 1
+def appendGetIndex(inList: List[any], value: any) -> int:
+    inList.append(value)
+    return len(inList) - 1

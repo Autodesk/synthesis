@@ -51,5 +51,5 @@ def gltfQuatToPy(rotation):
     return Quaternion(rotation[3:4] + rotation[0:3])
 
 def pyQuatToGltf(pyQuat):
-    normalized = pyQuat.normalised.elements.tolist()
-    return normalized[1:4] + normalized[0:1]
+    normalizedQuat = pyQuat.normalised.elements.tolist()
+    return normalizedQuat[1:4] + normalizedQuat[0:1]

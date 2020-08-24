@@ -20,6 +20,7 @@ my_addin = None
 
 
 def reportErrorToUser(message):
+    # noinspection PyArgumentList
     app = adsk.core.Application.get()
     ui = app.userInterface
     if ui:  # TODO: Automatic error reporting
@@ -45,6 +46,7 @@ def tryInstallDeps():
     if areDepsInstalled():
         return True
 
+    # noinspection PyArgumentList
     app = adsk.core.Application.get()
     ui = app.userInterface
 
@@ -56,6 +58,7 @@ def tryInstallDeps():
     progressBar.isCancelButtonShown = False
     progressBar.reset()
     progressBar.show("Synthesis glTF Exporter", f"Installing dependencies...", 0, 4, 0)
+    # noinspection PyUnresolvedReferences
     adsk.doEvents()
 
     system = platform.system()
@@ -66,6 +69,7 @@ def tryInstallDeps():
     elif system == "Darwin":  # macos
         pythonFolder = Path(os.__file__).parents[2] / "bin"
         progressBar.message = f"Installing pip..."
+        # noinspection PyUnresolvedReferences
         adsk.doEvents()
         subprocess.run(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"", shell=True)
         subprocess.run(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"", shell=True)
@@ -76,6 +80,7 @@ def tryInstallDeps():
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
+        # noinspection PyUnresolvedReferences
         adsk.doEvents()
         subprocess.run(f"\"{pythonFolder / 'python'}\" -m pip install {depName}", shell=True)
 
@@ -83,6 +88,7 @@ def tryInstallDeps():
         pipAntiDeps = ["dataclasses", "typing"]
         for depName in pipAntiDeps:
             progressBar.message = f"Uninstalling {depName}..."
+            # noinspection PyUnresolvedReferences
             adsk.doEvents()
             subprocess.run(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y", shell=True)
 
@@ -143,10 +149,12 @@ def createExporterAddin():
 handlers = []
 
 
+# noinspection PyUnresolvedReferences
 class DocumentActivatedHandler(adsk.core.DocumentEventHandler):
     def __init__(self):
         super().__init__()
 
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def notify(self, args):
         createAndStartAddin()
 
@@ -164,6 +172,7 @@ def createAndStartAddin():
 
 def run(context):  # Called by Fusion API
     if context.get("IsApplicationStartup", False):
+        # noinspection PyArgumentList
         app = adsk.core.Application.get()
         onDocumentActivated = DocumentActivatedHandler()
         app.documentActivated.add(onDocumentActivated)
@@ -172,9 +181,11 @@ def run(context):  # Called by Fusion API
         createAndStartAddin()
 
 
+# noinspection PyUnusedLocal
 def stop(context):  # Called by Fusion API
     global my_addin
     if my_addin is not None:
+        # noinspection PyUnresolvedReferences
         my_addin.stop_app()
         my_addin = None
     sys.path.pop(0)

@@ -34,7 +34,7 @@ class Stopwatch(object):
     return self._elapsed
 
   def reset(self):
-    self.elapsed = 0
+    self._elapsed = 0
     self._started = -1
 
   def run(self):
@@ -58,6 +58,7 @@ class RelayStopwatch(object):
                         It does include time elapsed during sleep and is system-wide.
     """
     self.sections = []
+    self.__active_section_name = ""
     self.__active_section_start = -1
     self._time_fn = time_fn
 
