@@ -3,13 +3,13 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
+import traceback
 
 import adsk
 import adsk.core
 import adsk.fusion
 
 from .config import *
-from .gltf.utils.FusionUtils import reportErrorToUser
 
 app_path = os.path.dirname(__file__)
 
@@ -17,6 +17,14 @@ sys.path.insert(0, app_path)
 sys.path.insert(0, os.path.join(app_path, 'apper'))
 
 my_addin = None
+
+
+def reportErrorToUser(message):
+    app = adsk.core.Application.get()
+    ui = app.userInterface
+    if ui:  # TODO: Automatic error reporting
+        ui.messageBox(f'{message}\nPlease screenshot and send this error report to frc@autodesk.com.\n\nReport:\n{traceback.format_exc()}')
+
 
 def areDepsInstalled():
     # noinspection PyBroadException
@@ -131,7 +139,9 @@ def createExporterAddin():
 
     return fusionGltfExporterApp
 
+
 handlers = []
+
 
 class DocumentActivatedHandler(adsk.core.DocumentEventHandler):
     def __init__(self):

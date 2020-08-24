@@ -45,8 +45,7 @@ def forwardUpVectorsToRotation(forward, up):
         zAxis.tolist(),
     ])
 
-    quaternion = Quaternion(matrix=m1.transpose())
-    return quaternion.normalised
+    return Quaternion(matrix=m1.transpose()).unit
 
 def gltfQuatToPy(rotation):
     return Quaternion(rotation[3:4] + rotation[0:3])
