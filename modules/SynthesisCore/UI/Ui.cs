@@ -1,8 +1,11 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -28,15 +31,9 @@ namespace SynthesisCore.UI
 
             EngineToolbar.CreateToolbar();
             
-            var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
-            
+            UIManager.AddPanel(new SettingsWindow().Panel);
             UIManager.AddPanel(new ModuleWindow().Panel);
-
-            Panel settingsWindow = new Panel("Settings", settingsAsset,
-                element => Utilities.RegisterOKCloseButtons(element, "Settings"));
             
-            UIManager.AddPanel(settingsWindow);
-
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
                 hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
@@ -45,9 +42,6 @@ namespace SynthesisCore.UI
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
-            
-            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
-            settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
