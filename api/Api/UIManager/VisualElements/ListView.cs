@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
 using _SelectionType = UnityEngine.UIElements.SelectionType;
@@ -82,7 +83,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void ScrollTo(VisualElement visualElement) => Element.ScrollTo(visualElement.UnityVisualElement);
         public void ScrollToItem(int index) => Element.ScrollToItem(index);
 
-        public string SelectedEventTag => $"button/{Element.name}";
+        public string SelectedEventTag => $"listview-button/{Element.name}";
         public string ItemChosenEventTag => $"item-chosen/{Element.name}";
 
         public class SelectionChangedEvent: IEvent
@@ -114,7 +115,7 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public void SubscribeOnItemChosen(Action<IEvent> callback)
         {
-            EventBus.EventBus.RemoveTagListener(SelectedEventTag, _callback);
+            EventBus.EventBus.RemoveTagListener(ItemChosenEventTag, _callback);
             _callback = e => callback(e);
             EventBus.EventBus.NewTagListener(ItemChosenEventTag, _callback);
 
@@ -123,13 +124,11 @@ namespace SynthesisAPI.UIManager.VisualElements
 
         public override IEnumerable<Object> PostUxmlLoad()
         {
-            
-            if (PopulateParams.Source.Count < 1)
-                return null!;
             Element.makeItem = () => PopulateParams.MakeItem().UnityVisualElement;
             Type t = PopulateParams.MakeItem().GetType();
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             Element.bindItem = (element, index) => PopulateParams.BindItem(
-                (VisualElement)Activator.CreateInstance(t, new object[] { element }), 
+                (VisualElement)Activator.CreateInstance(t, flags, null, new object[] { element }, null),
                 index);
             Element.itemsSource = PopulateParams.Source;
             base.PostUxmlLoad();
