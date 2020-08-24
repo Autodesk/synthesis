@@ -16,6 +16,8 @@ namespace SynthesisCore.UI
         private VisualElementAsset JointAsset;
         private ListView JointList;
 
+        internal static Entity? jointHighlightEntity = null;
+
         public JointsWindow()
         {
             JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
@@ -38,15 +40,26 @@ namespace SynthesisCore.UI
             RegisterButtons();
         }
 
+        private void OnWindowClose()
+        {
+            if (JointsWindow.jointHighlightEntity?.RemoveEntity() ?? false)
+                JointsWindow.jointHighlightEntity = null;
+            UIManager.ClosePanel(Panel.Name);
+        }
+
         private void LoadWindowContents()
         {
             foreach (var entity in SynthesisCoreData.ModelsDict.Values)
             {
                 if (entity.GetComponent<Joints>() != null)
                 {
-                    foreach (var joint in entity.GetComponent<Joints>().AllJoints)
+                    var jointComponent = entity.GetComponent<Joints>();
+                    foreach (var joint in jointComponent.AllJoints)
                     {
-                        JointList.Add(new JointItem(JointAsset, joint).JointElement);
+                        if (joint is HingeJoint)
+                        {
+                            JointList.Add(new JointItem(JointAsset, jointComponent, joint).JointElement);
+                        }
                     }
                 }
             }
@@ -55,10 +68,10 @@ namespace SynthesisCore.UI
         private void RegisterButtons()
         {        
             Button okButton = (Button) Window.Get("ok-button");
-            okButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
+            okButton?.Subscribe(_ => OnWindowClose());
 
             Button closeButton = (Button) Window.Get("close-button");
-            closeButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
+            closeButton?.Subscribe(_ => OnWindowClose());
         }
     }
 }

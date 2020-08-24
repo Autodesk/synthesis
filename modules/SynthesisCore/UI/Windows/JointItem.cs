@@ -12,13 +12,13 @@ namespace SynthesisCore.UI
     public class JointItem
     {
         public VisualElement JointElement { get; }
-        public JointItem(VisualElementAsset jointAsset, IJoint joint)
+        public JointItem(VisualElementAsset jointAsset, Joints jointComponent, IJoint joint)
         {
             JointElement = jointAsset.GetElement("joint");
-            RegisterJointButtons(joint);
+            RegisterJointButtons(jointComponent, joint);
         }
 
-        private void RegisterJointButtons(IJoint j)
+        private void RegisterJointButtons(Joints jointComponent, IJoint j)
         {
             Button highlightButton = (Button)JointElement.Get("highlight-button");
             Button motorButton = (Button)JointElement.Get("motor-type-button");
@@ -27,61 +27,47 @@ namespace SynthesisCore.UI
 
             motorButton.Subscribe(x =>
             {
-                Logger.Log("To Do: Motor Type Dropdown");
+                Logger.Log("To Do: Motor Type Dropdown", LogLevel.Debug);
             });
 
             gearButton.Subscribe(x =>
             {
-                Logger.Log("To Do: Motor Gear Dropdown");
+                Logger.Log("To Do: Motor Gear Dropdown", LogLevel.Debug);
             });
 
             countButton.Subscribe(x =>
             {
-                Logger.Log("To Do: Motor Count Dropdown");
+                Logger.Log("To Do: Motor Count Dropdown", LogLevel.Debug);
             });
 
             highlightButton.Subscribe(x =>
             {
-                Logger.Log("Highlight Joint");
-                //HighlightJoint(j);
+                Logger.Log("Highlight Joint", LogLevel.Debug);
 
-                Entity jointTest = EnvironmentManager.AddEntity();
-                Bundle b = new Bundle();
+                if (JointsWindow.jointHighlightEntity == null)
+                {
+                    JointsWindow.jointHighlightEntity = EnvironmentManager.AddEntity();
+                    JointsWindow.jointHighlightEntity?.AddComponent<Transform>();
+                    JointsWindow.jointHighlightEntity?.AddComponent<Mesh>();
+                }
 
-                var t = jointTest.AddComponent<Transform>();
+                var jointPosition = jointComponent.Entity?.GetComponent<Transform>()?.GlobalPosition ?? new Vector3D();
+                jointPosition += j.Anchor;
+                var parentPosition = jointComponent.Entity?.GetComponent<Parent>()?.ParentEntity.GetComponent<Transform>()?.Position ?? new Vector3D();
+                var dir = (jointPosition - parentPosition).Normalize();
 
-                Mesh m = jointTest.AddComponent<Mesh>();
-                jointTest.AddComponent<MeshCollider>();
+                var t = JointsWindow.jointHighlightEntity?.GetComponent<Transform>();
+                t.Position = jointPosition; //joint anchor position
 
-                t.Position = j.Anchor; //joint anchor position
-                CameraController.Instance.SetNewFocus(t.Position, true);
-                b.Components.Add(t);
+                Mesh m = JointsWindow.jointHighlightEntity?.GetComponent<Mesh>();
+                cube(m);
+                
+                CameraController.Instance.cameraTransform.Position = t.Position + dir;
+                CameraController.Instance.cameraTransform.LookAt(t.Position);
 
-                b.Components.Add(cube(m)); //replace the cube function with your mesh creation
-                jointTest.AddBundle(b);
-                //when done
-                jointTest.RemoveEntity();
+                if (JointsWindow.jointHighlightEntity?.RemoveEntity() ?? false) // TODO
+                    JointsWindow.jointHighlightEntity = null;
             });
-        }
-
-        private void HighlightJoint(IJoint joint)
-        {
-            Entity jointTest = EnvironmentManager.AddEntity();
-            Bundle b = new Bundle();
-
-            var t = jointTest.AddComponent<Transform>();
-
-            Mesh m = jointTest.AddComponent<Mesh>();
-            jointTest.AddComponent<MeshCollider>();
-
-            t.Position = joint.Anchor; //joint anchor position
-            CameraController.Instance.SetNewFocus(t.Position, true);
-            b.Components.Add(t);
-
-            b.Components.Add(cube(m)); //replace the cube function with your mesh creation
-            jointTest.AddBundle(b);
-            //when done
-            jointTest.RemoveEntity();
         }
 
         private Mesh cube(Mesh m)
