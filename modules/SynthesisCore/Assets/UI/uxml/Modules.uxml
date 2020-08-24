@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="window" class="window" style="height: 400px; width: 500px;">
+        <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
+        <Style src="/modules/synthesis_core/UI/uss/Modules.uss" />
+        <ui:VisualElement name="header" class="window-header-container">
+            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
+            <ui:Label text="Modules" name="title" class="window-header-title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content" class="window-content">
+            <ui:ListView focusable="True" name="module-list" style="height: 300px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
+            <ui:VisualElement name="left" class="button-panel-left-container">
+                <ui:Button text="Import..." name="import-button" class="window-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="right" class="button-panel-right-container">
+                <ui:Button text="OK" name="ok-button" class="window-button-blue" />
+                <ui:Button text="Close" name="close-button" class="window-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,7 +1,7 @@
 #!/bin/bash
 #sed -i -e 's/\r$//' LinuxInstaller.sh
 
-VERSION="4.3.3"
+VERSION="5.0.0"
 source ./ProgressBar.sh
 sudo echo "Installing Autodesk Synthesis $VERSION For Linux"
 echo "This software is licensed under the terms and conditions of the Apache 2.0 License."
@@ -22,8 +22,8 @@ draw_progress_bar 30
 echo "Copying Robot Files..."
 sudo rsync -a --info=progress2 Robots $HOME/.config/Autodesk/Synthesis
 draw_progress_bar 40
-echo "Copying Field Files..."
-sudo rsync -a --info=progress2 Fields $HOME/.config/Autodesk/Synthesis
+echo "Copying Environment Files..."
+sudo rsync -a --info=progress2 Environments $HOME/.config/Autodesk/Synthesis
 draw_progress_bar 50
 echo "Copying Program Files..."
 sudo rsync -a --info=progress2 Synthesis $ROOT/usr/share/Autodesk

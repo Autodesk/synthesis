@@ -7,4 +7,6 @@ assignees: ''
 
 ---
 
-
+|    DOD    | Done |    Asignees    | Branch | PR |
+|-----------|------|----------------|-------|-----|
+| Status    | ❌ | <assignee> | <branchName> | <number> |

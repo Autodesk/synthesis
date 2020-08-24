@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="entity" class="item-container">
+        <Style src="/modules/synthesis_core/UI/uss/Entity.uss" />
+        <ui:Label name="icon" class="icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/cad-icon.png&apos;);" />
+        <ui:Label text="%name%" name="name" class="name-label" />
+        <ui:Label text="last modified %time%" name="last-modified-date" class="last-modified-label" />
+        <ui:VisualElement name="buttons" class="buttons-container">
+            <ui:Button name="delete-button" class="button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/delete-entity-icon.png&apos;);" />
+            <ui:Button name="spawn-button" class="button" style="background-image: url(&apos;/modules/synthesis_core/UI/images/add-entity-icon.png&apos;);" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

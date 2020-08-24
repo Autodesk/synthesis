@@ -1,0 +1,24 @@
+[package]
+name = "controller_sys"
+version = "0.1.0"
+authors = ["Nicholas Burrell <nicholas.burrell@protonmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+jsonrpc-client-core = "0.5.0"
+jsonrpc-client-http = "0.5.0"
+lazy_static = "1.4.0"
+c_string = "0.7.0"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+name = "controller_sys"
+path = "src/lib.rs"
+
+#[[bin]]
+#name = "controller_test"
+#path = "src/bin.rs"

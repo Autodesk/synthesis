@@ -1,0 +1,8 @@
+.test-button-styling {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    background-color: rgba(96, 102, 214, 255);
+    color: rgba(255, 255, 255, 255);
+}
