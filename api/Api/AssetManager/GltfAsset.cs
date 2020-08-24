@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
-using System.Collections.Specialized;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.IO;
 using SynthesisAPI.VirtualFileSystem;
@@ -9,11 +6,8 @@ using SharpGLTF.Schema2;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.EnvironmentManager;
 using System.Linq;
-using SharpGLTF.Memory;
 using MathNet.Spatial.Euclidean;
-using SynthesisAPI.Runtime;
 using SharpGLTF.IO;
-using Newtonsoft.Json.Linq;
 
 namespace SynthesisAPI.AssetManager
 {
@@ -47,7 +41,7 @@ namespace SynthesisAPI.AssetManager
             }
             catch (Exception)
             {
-                Logger.Log("GLTF file cannot be read", LogLevel.Warning);
+                Logger.Log($"GLTF asset \"{Name}\" either could not be read or could not be interpretted", LogLevel.Error);
             }
         }
 
@@ -127,10 +121,10 @@ namespace SynthesisAPI.AssetManager
             {
                 var sc = node.LocalTransform.Scale;
                 bundle.Components.Add(ParseMesh(node.Mesh, new Vector3D(sc.X, sc.Y, sc.Z)));
-                bundle.Components.Add(ParseMeshCollider());
+                bundle.Components.Add(ParseMeshCollider(node.Mesh));
 
                 if ((node.Extras as JsonDictionary)?.ContainsKey("uuid") ?? false) {
-                    var rigid = ParseRigidbody();
+                    var rigid = ParseRigidbody(node.Mesh);
                     bundle.Components.Add(rigid);
                     var uuid = (node.Extras as JsonDictionary)?.Get<string>("uuid");
                     rigid.ExportedJointUuid = uuid;
@@ -150,12 +144,12 @@ namespace SynthesisAPI.AssetManager
                         Logger.Log("Not rigidbody???", LogLevel.Warning);
                     }
                 } else if (parent == null) {
-                    var rigid = ParseRigidbody();
+                    var rigid = ParseRigidbody(node.Mesh);
                     bundle.Components.Add(rigid);
                     return;
                 }
             } else if (parent == null) {
-                var rigid = ParseRigidbody();
+                var rigid = ParseRigidbody(null);
                 bundle.Components.Add(rigid);
             }
         }
@@ -169,13 +163,30 @@ namespace SynthesisAPI.AssetManager
                 return GetSeniorRigidbody(b.ParentBundle);
         }
 
-        private EnvironmentManager.Components.Rigidbody ParseRigidbody() // TODO: Get physical properties (Mass)
+        private EnvironmentManager.Components.Rigidbody ParseRigidbody(Mesh nodeMesh)
         {
             EnvironmentManager.Components.Rigidbody rigidbody = new EnvironmentManager.Components.Rigidbody();
+            if (nodeMesh != null)
+            {
+                if ((nodeMesh.Extras as JsonDictionary).TryGetValue("physicalProperties", out object physicalProperties))
+                {
+                    if ((physicalProperties as JsonDictionary).TryGetValue("mass", out object massStr))
+                    {
+                        if (float.TryParse(massStr.ToString(), out float mass))
+                        {
+                            rigidbody.mass = mass;
+                        }
+                        else
+                        {
+                            rigidbody.mass = 1;
+                        }
+                    }
+                }
+            }
             return rigidbody;
         }
 
-        private EnvironmentManager.Components.MeshCollider ParseMeshCollider()
+        private EnvironmentManager.Components.MeshCollider ParseMeshCollider(Mesh nodeMesh)
         {
             EnvironmentManager.Components.MeshCollider collider = new EnvironmentManager.Components.MeshCollider();
             return collider;

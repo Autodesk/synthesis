@@ -121,6 +121,23 @@ class ControllerSys:
             raise RpcError(error_code, error_message, error_data)
 
         return ret
+    
+    def set_motor_percent(self, channel, motor_index, percent):
+        error_code = c_int()
+        error_message = c_char_p()
+        error_data = c_char_p()
+        per = c_float()
+        per.value = percent
+
+        ret: int = self._controller_sys.set_motor_percent(channel, motor_index, per, byref(error_code), byref(error_message), byref(error_data))
+
+        error_code = error_code.value
+        if error_code != 0:
+            error_message = "" if error_message.value is None else error_message.value.decode("utf-8")
+            error_data = "" if error_data.value is None else error_data.value.decode("utf-8")
+            raise RpcError(error_code, error_message, error_data)
+
+        return ret
 
 
 def test(controller_sys):
@@ -164,6 +181,22 @@ def messages(controller_sys):
         i += 1
 
 
+def drive(controller_sys):
+    i = 0
+    while(i < 20):
+        controller_sys.set_motor_percent(5, 3, 1)
+        controller_sys.set_motor_percent(5, 4, 1)
+        controller_sys.set_motor_percent(5, 1, 1)
+        controller_sys.set_motor_percent(5, 2, 1)
+        time.sleep(1)
+        i += 1
+	
+    controller_sys.set_motor_percent(5, 3, 0)
+    controller_sys.set_motor_percent(5, 4, 0)
+    controller_sys.set_motor_percent(5, 1, 0)
+    controller_sys.set_motor_percent(5, 2, 0)
+
+
 def main():
     controller_sys = ControllerSys()
 
@@ -173,7 +206,9 @@ def main():
 
     # box(controller_sys)
 
-    messages(controller_sys)
+    #messages(controller_sys)
+   
+    drive(controller_sys)
 
 
 main()

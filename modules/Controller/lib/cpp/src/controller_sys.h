@@ -16,5 +16,6 @@ void right(unsigned channel, double distance, int* error_code, const char** erro
 void up(unsigned channel, double distance, int* error_code, const char** error_message, const char** error_data);
 void down(unsigned channel, double distance, int* error_code, const char** error_message, const char** error_data);
 int test(int value, int* error_code, const char** error_message, const char** error_data);
+int set_motor_percent(unsigned channel, int motor_index, float percent, int* error_code, const char** error_message, const char** error_data);
 
 #endif

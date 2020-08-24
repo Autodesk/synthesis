@@ -1,7 +1,22 @@
 .main-screen {
-
 }
 
 #toast-scroll-view.unity-scroll-view {
     flex-shrink: 0;
+}
+
+.dialog-free-roam {
+    position: absolute;
+    width: 0%;
+    height: 0%;
+    background-color: rgba(29, 29, 29, 0.62);
+}
+
+.panel-center {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
