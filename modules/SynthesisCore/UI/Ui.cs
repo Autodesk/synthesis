@@ -1,11 +1,8 @@
-﻿using System;
-using SynthesisAPI.AssetManager;
+﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -40,25 +37,7 @@ namespace SynthesisCore.UI
             
             UIManager.AddPanel(settingsWindow);
 
-            // DialogInfo dialogInfo = new DialogInfo();
-            // dialogInfo.Title = "Update Available";
-            // dialogInfo.Prompt = "An update is available for Synthesis.";
-            // dialogInfo.Description =
-            //     "Would you like to automatically upgrade your current Synthesis installation and restart?";
-            // dialogInfo.SubmitButtonText = "Update";
-            // dialogInfo.CloseButtonText = "Close";
-            // dialogInfo.SubmitButtonAction = ev =>
-            // {
-            //     Logger.Log("Submit button clicked");
-            // };
-            // dialogInfo.CloseButtonAction = ev =>
-            // {
-            //     Logger.Log("Close button clicked");
-            // };
-            // Dialog.SendDialog(dialogInfo);
-            // to be used when updater is added
-
-            Button hideToolbarButton = (Button) UIManager.RootElement.Get("hide-toolbar-button");
+            Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
                 hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
                     "/modules/synthesis_core/UI/images/toolbar-show-icon.png" : 
