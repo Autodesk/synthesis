@@ -33,6 +33,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
         palette.setMinimumSize(300, 300)
         palette.setSize(300, 300)
 
+        # noinspection PyBroadException
         try:  # Sometimes the url resets itself on macos, idk why, it might be a bug  #TODO investigate this
             self.palette.htmlFileURL = pathlib.Path(self.palette.htmlFileURL).as_uri()
         except:
@@ -53,7 +54,7 @@ class ExportPaletteShowCommand(apper.PaletteCommandBase):
             quality = int(settings['quality'])
             includeSynthesis = settings['includeSynthesis']
             useGlb = FileType.fromString(settings['useGlb'])
-            self.exporter.exportDesignUI(self.ao.app.activeDocument, showFileDialog=True, enableAppearances=materials, enableFaceAppearances=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, meshQuality=quality, includeSynthesisData=includeSynthesis)
+            self.exporter.exportDesignUI(self.ao.app.activeDocument, enableAppearances=materials, enableFaceAppearances=faceMaterials, exportVisibleBodiesOnly=exportHidden, fileType=useGlb, meshQuality=quality, includeSynthesisData=includeSynthesis)
 
 
     # Handle any extra cleanup when user closes palette here
@@ -75,6 +76,7 @@ class ExportPaletteSendCommand(apper.Fusion360CommandBase):
     def on_execute(self, command: adsk.core.Command, command_inputs: adsk.core.CommandInputs, args, input_values):
 
         # Get Reference to Palette
+        # noinspection PyUnresolvedReferences
         ao = apper.AppObjects()
         palette = ao.ui.palettes.itemById(self.palette_id)
 
