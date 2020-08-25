@@ -20,12 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d26a3dd-41f1-44f8-bbc5-07e14f8d476b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/FusionGltfExporter.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/FusionGltfExporter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +49,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/77/JContainer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7577A63E-E5FE-4166-BE63-9617CBE2525E/b8/6c6a35eb/Control.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/F/JsonReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/49/0a6fc899/ProgressBarObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/27/c175b7bf/HashSet`1.cs" root0="SKIP_HIGHLIGHTING" />
@@ -95,6 +93,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/87/eadf671a/ExtraProperties.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/2e/193df0c0/VertexPositionNormal.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7577A63E-E5FE-4166-BE63-9617CBE2525E/32/affd6d8f/Button.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///GltfExportSettings.Designer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/d9/2af9e9c0/MaterialBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/4e/1168f540/WriteSettings.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b5/5521415d/ReadSettings.cs" root0="SKIP_HIGHLIGHTING" />
@@ -172,10 +171,10 @@
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -272,7 +271,7 @@
       <workItem from="1597947881757" duration="1442000" />
       <workItem from="1598114609720" duration="5215000" />
       <workItem from="1598298938364" duration="7085000" />
-      <workItem from="1598329058337" duration="2846000" />
+      <workItem from="1598329058337" duration="5522000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -498,7 +497,14 @@
       <option name="project" value="LOCAL" />
       <updated>1598137643386</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Move export btn location, add tooltips, minor form settings, edit todo">
+      <created>1598332104369</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1598332104369</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -521,7 +527,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Export joint motion and limits" />
     <MESSAGE value="Update gitignore" />
     <MESSAGE value="Add simple settings window" />
     <MESSAGE value="Add export settings and progress bar" />
@@ -546,7 +551,8 @@
     <MESSAGE value="Fix export button tooltip" />
     <MESSAGE value="Rename view vector getter variable name" />
     <MESSAGE value="Add view cube rotation calculation to Inv exporter" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add view cube rotation calculation to Inv exporter" />
+    <MESSAGE value="Move export btn location, add tooltips, minor form settings, edit todo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Move export btn location, add tooltips, minor form settings, edit todo" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597280129386">
@@ -561,10 +567,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="890" y="503" key="Assembly removing confirmation dialog/0.0.2048.1112@0.0.2048.1112" timestamp="1598330251706" />
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1598137642578">
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1598376220543">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1598137642578" />
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1598376220543" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596865560941">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -573,86 +579,86 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1596175004049" />
-    <state width="2005" height="279" key="GridCell.Tab.0.bottom" timestamp="1598331681419">
+    <state width="2005" height="279" key="GridCell.Tab.0.bottom" timestamp="1598332124780">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
-    <state width="2005" height="279" key="GridCell.Tab.0.center" timestamp="1598331681419">
+    <state width="2005" height="279" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124780" />
+    <state width="2005" height="279" key="GridCell.Tab.0.center" timestamp="1598332124780">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
-    <state width="2005" height="279" key="GridCell.Tab.0.left" timestamp="1598331681419">
+    <state width="2005" height="279" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124780" />
+    <state width="2005" height="279" key="GridCell.Tab.0.left" timestamp="1598332124780">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
-    <state width="2005" height="279" key="GridCell.Tab.0.right" timestamp="1598331681419">
+    <state width="2005" height="279" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124780" />
+    <state width="2005" height="279" key="GridCell.Tab.0.right" timestamp="1598332124780">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
-    <state width="2005" height="279" key="GridCell.Tab.1.bottom" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124780" />
+    <state width="2005" height="279" key="GridCell.Tab.1.bottom" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.1.center" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.1.center" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.1.left" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.1.left" timestamp="1598332124633">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.1.right" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124633" />
+    <state width="2005" height="279" key="GridCell.Tab.1.right" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.2.bottom" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.2.bottom" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.2.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.2.center" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.2.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.2.center" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.2.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.2.left" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.2.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.2.left" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.2.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.2.right" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.2.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.2.right" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.2.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.3.bottom" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.2.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.3.bottom" timestamp="1598332124635">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.3.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.3.center" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.3.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124635" />
+    <state width="2005" height="279" key="GridCell.Tab.3.center" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.3.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.3.left" timestamp="1598331677957">
+    <state width="2005" height="279" key="GridCell.Tab.3.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.3.left" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.3.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
-    <state width="2005" height="279" key="GridCell.Tab.3.right" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.3.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.3.right" timestamp="1598332124634">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.3.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.4.bottom" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.3.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124634" />
+    <state width="2005" height="279" key="GridCell.Tab.4.bottom" timestamp="1598332124635">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.4.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.4.center" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.4.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124635" />
+    <state width="2005" height="279" key="GridCell.Tab.4.center" timestamp="1598332124635">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.4.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.4.left" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.4.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124635" />
+    <state width="2005" height="279" key="GridCell.Tab.4.left" timestamp="1598332124635">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.4.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
-    <state width="2005" height="279" key="GridCell.Tab.4.right" timestamp="1598331677958">
+    <state width="2005" height="279" key="GridCell.Tab.4.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124635" />
+    <state width="2005" height="279" key="GridCell.Tab.4.right" timestamp="1598332124635">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="279" key="GridCell.Tab.4.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.4.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598332124635" />
     <state x="814" y="273" key="RiderGenerateDialog" timestamp="1596600857317">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -669,10 +675,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1597266352404" />
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1598137645223">
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1598332105607">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1598137645223" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1598332105607" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>

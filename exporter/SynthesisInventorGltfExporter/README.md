@@ -40,3 +40,6 @@ Changes to the exporter code aren't taking effect / The exporter add-in won't st
 - Delete all of the files at `C:\Program Files\Autodesk\Synthesis\SynthesisInventorGltfExporter`
 - Clean and build the solution, and ensure the built files are getting copied to `C:\Program Files\Autodesk\Synthesis\SynthesisInventorGltfExporter`
 - Ensure the `Autodesk.SynthesisInventorGltfExporter.Inventor.addin` file is getting copied to `%AppData%\Autodesk\ApplicationPlugins\SynthesisInventorGltfExporter`
+
+Visual Studio shows a "System.NullReferenceException: 'Object variable or With block variable not set'" and/or "Microsoft.VisualBasic.pdb not loaded":
+- Cause is currently unknown, but the exporter seems to work anyways if you uncheck "Break when this exception type is thrown" on the exception window and press continue.

@@ -141,7 +141,7 @@ namespace SynthesisInventorGltfExporter
 
                 sw.Stop();
 
-                MessageBox.Show("glTF export completed successfully in " + sw.Elapsed.TotalSeconds.ToString("N2") + " seconds.\nFile saved to: " + filePath);
+                MessageBox.Show("glTF export completed successfully.\nFile saved to: " + filePath);
             }
             catch
             {
