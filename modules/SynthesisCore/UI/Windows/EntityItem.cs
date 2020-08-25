@@ -2,7 +2,7 @@
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 
-namespace SynthesisCore.UI
+namespace SynthesisCore.UI.Windows
 {
     public class EntityItem
     {

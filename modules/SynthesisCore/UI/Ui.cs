@@ -6,6 +6,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.UI.Windows;
 
 namespace SynthesisCore.UI
 {
@@ -34,6 +35,7 @@ namespace SynthesisCore.UI
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             
             UIManager.AddPanel(new ModuleWindow().Panel);
+            UIManager.AddPanel(new HelpWindow().Panel);
 
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => Utilities.RegisterOKCloseButtons(element, "Settings"));
@@ -69,9 +71,6 @@ namespace SynthesisCore.UI
             
             Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
-
-            Button helpButton = (Button) UIManager.RootElement.Get("help-button");
-            helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
         }
 
         public override void OnPhysicsUpdate() { }
