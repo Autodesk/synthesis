@@ -37,7 +37,6 @@ namespace SynthesisCore.UI
             Window.SetStyleProperty("left", "0");
             Window.SetStyleProperty("top", "70");
 
-
             JointList = (ListView) Window.Get("joint-list");
             LoadWindowContents();   
             RegisterButtons();
@@ -45,6 +44,7 @@ namespace SynthesisCore.UI
 
         private void OnWindowClose()
         {
+            JointItem.UnHighlightAllButtons();
             if (jointHighlightEntity?.RemoveEntity() ?? false)
                 jointHighlightEntity = null;
             UIManager.ClosePanel(Panel.Name);

@@ -7,15 +7,22 @@ using SynthesisAPI.Utilities;
 using SynthesisCore.Meshes;
 using SynthesisCore.Simulation;
 using SynthesisCore.Systems;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace SynthesisCore.UI
 {
     public class JointItem
     {
+        private static List<JointItem> jointItems = new List<JointItem>();
+        private bool IsHighlighted = false;
+        private Button highlightButton;
+
         public VisualElement JointElement { get; }
+        
         public JointItem(VisualElementAsset jointAsset, MotorAssembly assembly)
         {
+            jointItems.Add(this);
             JointElement = jointAsset.GetElement("joint");
             RegisterJointButtons(assembly);
         }
@@ -25,7 +32,7 @@ namespace SynthesisCore.UI
             var j = assembly.Joint;
             var jointEntity = assembly.Entity;
 
-            Button highlightButton = (Button)JointElement.Get("highlight-button");
+            highlightButton = (Button)JointElement.Get("highlight-button");
             Button motorTypeButton = (Button)JointElement.Get("motor-type-button");
             TextField gearField = (TextField)JointElement.Get("motor-gear-field");
             TextField countField = (TextField)JointElement.Get("motor-count-field");
@@ -83,8 +90,22 @@ namespace SynthesisCore.UI
                 }
             });
 
+            highlightButton.OnMouseEnter(() =>
+            {
+                HighlightButton();
+            });
+
+            highlightButton.OnMouseLeave(() =>
+            {
+                if(!IsHighlighted)
+                    UnHighlightButton();
+            });
+
             highlightButton.Subscribe(x =>
             {
+                UnHighlightAllButtons();
+                HighlightButton(true);
+
                 if (JointsWindow.jointHighlightEntity == null)
                 {
                     JointsWindow.jointHighlightEntity = EnvironmentManager.AddEntity();
@@ -118,6 +139,27 @@ namespace SynthesisCore.UI
                 CameraController.Instance.cameraTransform.LookAt(jointHighlightTransform.GlobalPosition);
                 CameraController.Instance.SetNewFocus(jointHighlightTransform.GlobalPosition, false);
             });
+        }
+
+        private void HighlightButton(bool stick = false)
+        {
+            if (stick)
+                IsHighlighted = true;
+            highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 1)");
+        }
+
+        private void UnHighlightButton()
+        {
+            IsHighlighted = false;
+            highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 0)");
+        }
+
+        public static void UnHighlightAllButtons()
+        {
+            foreach(var i in jointItems)
+            {
+                i.UnHighlightButton();
+            }
         }
     }
 

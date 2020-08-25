@@ -38,6 +38,8 @@
     <string>UI/uss/TitleBar.uss</string>
     <string>UI/uss/Dialog.uss</string>
     <string>UI/uss/Joint.uss</string>
+    <string>UI/images/joint-icon.png</string>
+    <string>UI/images/motor-icon.png</string>
     <string>UI/images/add-icon.png</string>
     <string>UI/images/cad-icon.png</string>
     <string>UI/images/add-entity-icon.png</string>

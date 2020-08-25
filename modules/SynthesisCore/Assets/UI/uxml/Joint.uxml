@@ -28,7 +28,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="right" style="justify-content: center; align-items: center; width: 65px; height: 100%; padding-right: 5px;">
-            <ui:Button name="highlight-button" style="height: 55px; width: 55px; white-space: normal; background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
+            <ui:Button name="highlight-button" style="height: 55px; width: 55px; white-space: normal; background-image: url(&apos;/modules/synthesis_core/UI/images/motor-icon.png&apos;);" />
             <ui:Label text="Highlight" name="name" style="margin-top: 3px;" />
         </ui:VisualElement>
     </ui:VisualElement>

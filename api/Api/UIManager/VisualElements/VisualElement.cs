@@ -48,8 +48,23 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => _visualElement.SetEnabled(value);
         }
 
-        public IStyle style {
+        internal IStyle style {
             get => _visualElement.style;
+        }
+
+        public void OnMouseEnter(Action onEnter)
+        {
+            _visualElement.RegisterCallback<MouseEnterEvent>(_ => onEnter());
+        }
+
+        public void OnMouseLeave(Action onLeave)
+        {
+            _visualElement.RegisterCallback<MouseLeaveEvent>(_ => onLeave());
+        }
+
+        public void OnMouseDown(Action onMouseDown)
+        {
+            _visualElement.RegisterCallback<MouseDownEvent>(_ => onMouseDown());
         }
 
         internal _UnityVisualElement UnityVisualElement {
