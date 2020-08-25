@@ -37,10 +37,16 @@ namespace SynthesisCore.UI.Windows
             
             Button communityForumButton = (Button)Window.Get("community-forum-button");
             communityForumButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://forums.autodesk.com/t5/bxd-synthesis-forum/bd-p/99"));
+
+            Button gitHubButton = (Button)Window.Get("github-button");
+            gitHubButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://github.com/Autodesk/synthesis"));
             
+            Button reportAnIssueButton = (Button)Window.Get("report-an-issue-button");
+            reportAnIssueButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://github.com/Autodesk/synthesis/issues/new/choose"));
+
             Button submitAnIdeaButton = (Button)Window.Get("submit-an-idea-button");
             submitAnIdeaButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://forums.autodesk.com/t5/bxd-synthesis-ideas/idb-p/104"));
-            
+
             Button aboutButton = (Button)Window.Get("about-button");
             aboutButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://synthesis.autodesk.com/about.html"));
         }

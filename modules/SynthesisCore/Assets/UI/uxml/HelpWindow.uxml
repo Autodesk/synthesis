@@ -10,6 +10,8 @@
             <ui:ListView focusable="True" name="help-list" style="height: 300px;">
 				<ui:Button text="Getting Started" name="getting-started-button" class="help-button" />
 				<ui:Button text="Community Forum" name="community-forum-button" class="help-button" />
+				<ui:Button text="GitHub Repository" name="github-button" class="help-button" />
+				<ui:Button text="Report an Issue" name="report-an-issue-button" class="help-button" />
 				<ui:Button text="Submit an Idea" name="submit-an-idea-button" class="help-button" />
 				<ui:VisualElement class="vertical-divider" />
 				<ui:Button text="About" name="about-button" class="help-button" />
