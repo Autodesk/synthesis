@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -32,12 +33,12 @@ namespace SynthesisInventorGltfExporter
                 ribbonTabs = partRibbon.RibbonTabs;
 
                 RibbonTab exporterRibbonTab;
-                exporterRibbonTab = ribbonTabs.Add("Synthesis glTF Exporter", "SynthesisGltfExporter:RibbonTab", clientId);
+                exporterRibbonTab = ribbonTabs["id_TabEnvironments"];
 
                 RibbonPanels ribbonPanels;
                 ribbonPanels = exporterRibbonTab.RibbonPanels;
 
-                var exportPanel = ribbonPanels.Add("Export", "SynthesisGltfExporter:ExportPanel", clientId);
+                var exportPanel = ribbonPanels.Add("Synthesis Exporter", "SynthesisGltfExporter:ExportPanel", clientId);
 
                 exportPanel.CommandControls.AddButton(exportButton, true);
             }

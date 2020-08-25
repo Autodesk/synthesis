@@ -26,10 +26,12 @@ Using the add-in:
 - protoc.exe from the Google Protobuf library (add the folder with the protoc executable to your system path) https://github.com/protocolbuffers/protobuf/releases/latest
 
 ### Installation
+- Install the inventor DeveloperTools.msi and UserTools.msi at `C:\Users\Public\Documents\Autodesk\Inventor <version>\SDK`. (more info: http://help.autodesk.com/view/INVNTOR/2019/ENU/?guid=GUID-6FD7AA08-1E43-43FC-971B-5F20E56C8846)
 - `git clone https://github.com/Autodesk/synthesis --recursive`
-- Open the solution in Visual Studio 2019 or Jetbrains Rider.
+- Open the solution as an Administrator in Visual Studio 2019 or Jetbrains Rider.
 - Ensure the run configuration has the correct path to your Inventor installation. The default is `C:/Program Files/Autodesk/Inventor 2020/Bin/Inventor.exe`
-- Run or Debug the solution using the `Debug | Any CPU` configuration.
+- Create the directory `C:\Program Files\Autodesk\Synthesis\SynthesisInventorGltfExporter` if it doesn't exist.
+- Build > Clean, then Run or Debug the solution using the `Debug | Any CPU` configuration.
 
 ## Troubleshooting
 Changes to the exporter code aren't taking effect / The exporter add-in won't start:

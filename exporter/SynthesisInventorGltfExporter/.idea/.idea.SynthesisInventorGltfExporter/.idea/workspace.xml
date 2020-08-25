@@ -20,10 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d26a3dd-41f1-44f8-bbc5-07e14f8d476b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/utils/FusionUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/utils/FusionUtils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/FusionGltfExporter.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/gltf/FusionGltfExporter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,94 +37,90 @@
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/GltfExtras.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2676A2DA-6EDC-420E-890E-D28AA4572EE5/d3/1b9d4e06/JsonWriter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/2e/c2f5bade/ChoiceAssetValue.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/b3/b678430d/Quaternion.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/RibbonAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/39127FBF-1F81-4A50-B5F7-3B605990F650/56/b2feddff/FloatingAccessor.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/05/079523fa/Guid.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/PictureDispConverter.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/packages.config" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/de/bc0d2078/Camera.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/54/JsonProperty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/2c/cf8b0267/SurfaceBody.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/EC52DBAB-7E86-4B26-AFC2-F1371F352867/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/AppData/Roaming/NuGet/NuGet.Config" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/10/JsonParser.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/17/547c7f00/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/42/6dcda8f0/ChannelBuilder.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/77/JContainer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/d4/46accba9/TextReader.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/15/6b556950/ComponentOccurrence.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/AppearanceDebugging.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b1/7100e338/AffineTransform.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c4/a2442617/JsonSerializable.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2BFEA3BB-4283-49D3-BCB1-8A005490A230/8e/1898b988/SceneBuilder.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/9c/23cf366b/Scene.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7C/JProperty.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/7e/ae62bedc/RuntimeMethodInfo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/ed/06959432/Face.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/0b/1f8a8c10/AssetReader.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/46/02d43613/Matrix.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/87/eadf671a/ExtraProperties.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7577A63E-E5FE-4166-BE63-9617CBE2525E/32/affd6d8f/Button.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/4e/1168f540/WriteSettings.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b5/5521415d/ReadSettings.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/86/3554f98e/ModelRoot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.resx" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/15/JsonTextReader.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/d9/2af9e9c0/MaterialBuilder.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/cd/d12cc001/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c1/564b2df0/JsonList.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/42/39f569b3/AssemblyJointTypeEnum.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7F/JRaw.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/b1/6ace38d9/MeshBuilder`4.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f6/cc89fc94/GeometryIntent.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/9a/1ce488c8/NodeBuilder.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/10/eef9642d/PrimitiveBuilder`4.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/8a/308e086f/MeshBuilder`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/2e/193df0c0/VertexPositionNormal.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/6e/be45c5ee/AssemblyJointDefinition.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f0/939ff9b9/ApplicationAddInServer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/UnusedUtilities.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/dc/3991ee87/Guard.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/39127FBF-1F81-4A50-B5F7-3B605990F650/56/b2feddff/FloatingAccessor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/89/2d26daa9/Attribute.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/GltfExtras.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/54/JsonProperty.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/3c/45f4ca90/JsonDictionary.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/UnusedUtilities.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/2c/cf8b0267/SurfaceBody.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/AppearanceDebugging.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/EC52DBAB-7E86-4B26-AFC2-F1371F352867/46/MessageDescriptor.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b9/c7d1c620/Material.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/EC52DBAB-7E86-4B26-AFC2-F1371F352867/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../Program Files (x86)/NuGet/Config/Microsoft.VisualStudio.Offline.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/77/JContainer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7577A63E-E5FE-4166-BE63-9617CBE2525E/b8/6c6a35eb/Control.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/F/JsonReader.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/0f/ee483e44/MaterialPBRMetallicRoughness.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/49/0a6fc899/ProgressBarObject.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/AssemblyInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/27/c175b7bf/HashSet`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/12/a3eda2c4/KnownChannel.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/ec/e443d7a1/RuntimeType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/df/82c76b1d/FileDialog.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/41/606534ca/Schema2Toolkit.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/89/d7d27ff5/FileInfo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/87/753483da/Matrix4x4.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/39127FBF-1F81-4A50-B5F7-3B605990F650/bd/13f63dbc/WriteContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/da/77bf8b07/Path.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/2b/b243e58f/Path.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/10/JsonParser.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/bd/d5cf516a/Type.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/0/JsonToken.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/b2/62203023/UpdateDelegates.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/05/079523fa/Guid.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/17/547c7f00/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/15/6b556950/ComponentOccurrence.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/d4/46accba9/TextReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b1/7100e338/AffineTransform.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/ec/e443d7a1/RuntimeType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c4/a2442617/JsonSerializable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/42/6dcda8f0/ChannelBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2BFEA3BB-4283-49D3-BCB1-8A005490A230/8e/1898b988/SceneBuilder.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/41/606534ca/Schema2Toolkit.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/9c/23cf366b/Scene.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7C/JProperty.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/app.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b9/c7d1c620/Material.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/packages.config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/7e/ae62bedc/RuntimeMethodInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/PictureDispConverter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/0f/ee483e44/MaterialPBRMetallicRoughness.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/ed/06959432/Face.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/12/a3eda2c4/KnownChannel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/0b/1f8a8c10/AssetReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/RibbonAddInServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/46/02d43613/Matrix.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/87/eadf671a/ExtraProperties.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/2e/193df0c0/VertexPositionNormal.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7577A63E-E5FE-4166-BE63-9617CBE2525E/32/affd6d8f/Button.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/d9/2af9e9c0/MaterialBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/4e/1168f540/WriteSettings.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b5/5521415d/ReadSettings.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/11BD515F-D2A0-4526-8509-D23726DE0F46/b0/f57e333b/RuntimeType.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/86/3554f98e/ModelRoot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/10/eef9642d/PrimitiveBuilder`4.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/15/JsonTextReader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Roaming/NuGet/NuGet.Config" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/9a/1ce488c8/NodeBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/c1/564b2df0/JsonList.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/de/bc0d2078/Camera.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/42/39f569b3/AssemblyJointTypeEnum.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2676A2DA-6EDC-420E-890E-D28AA4572EE5/7F/JRaw.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/b3/b678430d/Quaternion.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/b1/6ace38d9/MeshBuilder`4.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.Designer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/cd/d12cc001/Vector3.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f6/cc89fc94/GeometryIntent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.resx" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0407DE5D-F4C4-4A08-AE36-0A547FBE6429/8a/308e086f/MeshBuilder`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/31D305FA-AF06-4CEE-A3E8-553B56953C7D/87/753483da/Matrix4x4.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/6e/be45c5ee/AssemblyJointDefinition.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2676A2DA-6EDC-420E-890E-D28AA4572EE5/d3/1b9d4e06/JsonWriter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/f0/939ff9b9/ApplicationAddInServer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/2e/c2f5bade/ChoiceAssetValue.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -165,19 +163,19 @@
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.json" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/proto/gltf_extras.proto" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.settings" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Settings.settings" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/Unused/UnusedUtilities.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
+        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.cs" />
         <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GUI/GltfExportSettings.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
-        <option value="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" />
       </list>
     </option>
   </component>
@@ -272,7 +270,9 @@
       <workItem from="1597260190705" duration="6258000" />
       <workItem from="1597270178974" duration="14461000" />
       <workItem from="1597947881757" duration="1442000" />
-      <workItem from="1598114609720" duration="4516000" />
+      <workItem from="1598114609720" duration="5215000" />
+      <workItem from="1598298938364" duration="7085000" />
+      <workItem from="1598329058337" duration="2846000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -484,7 +484,21 @@
       <option name="project" value="LOCAL" />
       <updated>1597948668221</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Rename view vector getter variable name">
+      <created>1598137600982</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1598137600982</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Add view cube rotation calculation to Inv exporter">
+      <created>1598137643386</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1598137643386</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -507,8 +521,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Add gitignore" />
-    <MESSAGE value="Add basic joint data export" />
     <MESSAGE value="Export joint motion and limits" />
     <MESSAGE value="Update gitignore" />
     <MESSAGE value="Add simple settings window" />
@@ -532,7 +544,9 @@
     <MESSAGE value="Fix joint bug and add setting to disable synthesis metadata" />
     <MESSAGE value="Fix vertex normals" />
     <MESSAGE value="Fix export button tooltip" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix export button tooltip" />
+    <MESSAGE value="Rename view vector getter variable name" />
+    <MESSAGE value="Add view cube rotation calculation to Inv exporter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add view cube rotation calculation to Inv exporter" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597280129386">
@@ -543,10 +557,14 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="675" y="194" width="488" height="482" key="#xdebugger.evaluate/0.0.2048.1112@0.0.2048.1112" timestamp="1596587208646" />
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1597949376954">
+    <state x="890" y="503" key="Assembly removing confirmation dialog" timestamp="1598330251706">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1597949376954" />
+    <state x="890" y="503" key="Assembly removing confirmation dialog/0.0.2048.1112@0.0.2048.1112" timestamp="1598330251706" />
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1598137642578">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1598137642578" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596865560941">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -555,86 +573,86 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1596175004049" />
-    <state width="2005" height="454" key="GridCell.Tab.0.bottom" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.0.bottom" timestamp="1598331681419">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.0.center" timestamp="1598137251006">
+    <state width="2005" height="279" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
+    <state width="2005" height="279" key="GridCell.Tab.0.center" timestamp="1598331681419">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251006" />
-    <state width="2005" height="454" key="GridCell.Tab.0.left" timestamp="1598137251006">
+    <state width="2005" height="279" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
+    <state width="2005" height="279" key="GridCell.Tab.0.left" timestamp="1598331681419">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251006" />
-    <state width="2005" height="454" key="GridCell.Tab.0.right" timestamp="1598137251006">
+    <state width="2005" height="279" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
+    <state width="2005" height="279" key="GridCell.Tab.0.right" timestamp="1598331681419">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251006" />
-    <state width="2005" height="454" key="GridCell.Tab.1.bottom" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331681419" />
+    <state width="2005" height="279" key="GridCell.Tab.1.bottom" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.1.center" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.1.center" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.1.left" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.1.left" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.1.right" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.1.right" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.2.bottom" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.2.bottom" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.2.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.2.center" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.2.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.2.center" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.2.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.2.left" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.2.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.2.left" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.2.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.2.right" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.2.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.2.right" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.2.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.3.bottom" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.2.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.3.bottom" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.3.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.3.center" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.3.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.3.center" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.3.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.3.left" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.3.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.3.left" timestamp="1598331677957">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.3.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.3.right" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.3.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677957" />
+    <state width="2005" height="279" key="GridCell.Tab.3.right" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.3.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.4.bottom" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.3.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.4.bottom" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.4.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.4.center" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.4.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.4.center" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.4.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.4.left" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.4.center/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.4.left" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.4.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
-    <state width="2005" height="454" key="GridCell.Tab.4.right" timestamp="1598137251008">
+    <state width="2005" height="279" key="GridCell.Tab.4.left/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
+    <state width="2005" height="279" key="GridCell.Tab.4.right" timestamp="1598331677958">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="454" key="GridCell.Tab.4.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598137251008" />
+    <state width="2005" height="279" key="GridCell.Tab.4.right/0.0.2048.1112@0.0.2048.1112" timestamp="1598331677958" />
     <state x="814" y="273" key="RiderGenerateDialog" timestamp="1596600857317">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -651,10 +669,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1597266352404" />
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1597949391077">
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1598137645223">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1597949391077" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1598137645223" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -675,14 +693,14 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="412" y="334" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2048.1112@0.0.2048.1112" timestamp="1597294346596" />
-    <state x="683" y="289" width="882" height="534" key="find.popup" timestamp="1598132091432">
+    <state x="683" y="289" width="882" height="534" key="find.popup" timestamp="1598330985140">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="683" y="289" width="882" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598132091432" />
-    <state x="681" y="259" key="run.anything.popup" timestamp="1596859321091">
+    <state x="683" y="289" width="882" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598330985140" />
+    <state x="681" y="259" key="run.anything.popup" timestamp="1598330209902">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="681" y="259" key="run.anything.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1596859321091" />
+    <state x="681" y="259" key="run.anything.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598330209902" />
     <state x="687" y="243" width="672" height="678" key="search.everywhere.popup" timestamp="1598136682771">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>

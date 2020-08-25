@@ -31,11 +31,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GltfExportSettings));
             this.MainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.includeSynth = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.fileTypeLabel = new System.Windows.Forms.Label();
             this.checkMaterials = new System.Windows.Forms.CheckBox();
             this.checkFace = new System.Windows.Forms.CheckBox();
             this.checkHidden = new System.Windows.Forms.CheckBox();
-            this.ChildLabel = new System.Windows.Forms.Label();
+            this.meshToleranceLabel = new System.Windows.Forms.Label();
             this.comboFileType = new System.Windows.Forms.ComboBox();
             this.numericTolerance = new System.Windows.Forms.NumericUpDown();
             this.cancelButton = new System.Windows.Forms.Button();
@@ -51,11 +51,11 @@
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 183F));
             this.MainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 151F));
             this.MainLayout.Controls.Add(this.includeSynth, 0, 4);
-            this.MainLayout.Controls.Add(this.label1, 0, 5);
+            this.MainLayout.Controls.Add(this.fileTypeLabel, 0, 5);
             this.MainLayout.Controls.Add(this.checkMaterials, 0, 0);
             this.MainLayout.Controls.Add(this.checkFace, 0, 1);
             this.MainLayout.Controls.Add(this.checkHidden, 0, 2);
-            this.MainLayout.Controls.Add(this.ChildLabel, 0, 3);
+            this.MainLayout.Controls.Add(this.meshToleranceLabel, 0, 3);
             this.MainLayout.Controls.Add(this.comboFileType, 1, 5);
             this.MainLayout.Controls.Add(this.numericTolerance, 1, 3);
             this.MainLayout.Location = new System.Drawing.Point(5, 7);
@@ -85,18 +85,18 @@
             this.includeSynth.Text = "Include Synthesis Data: ";
             this.includeSynth.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // fileTypeLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(4, 168);
-            this.label1.Margin = new System.Windows.Forms.Padding(4);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(102, 26);
-            this.label1.TabIndex = 19;
-            this.label1.Text = "glTF File Type:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.fileTypeLabel.AutoSize = true;
+            this.fileTypeLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.fileTypeLabel.ForeColor = System.Drawing.Color.Black;
+            this.fileTypeLabel.Location = new System.Drawing.Point(4, 168);
+            this.fileTypeLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.fileTypeLabel.Name = "fileTypeLabel";
+            this.fileTypeLabel.Size = new System.Drawing.Size(102, 26);
+            this.fileTypeLabel.TabIndex = 19;
+            this.fileTypeLabel.Text = "glTF File Type:";
+            this.fileTypeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // checkMaterials
             // 
@@ -138,18 +138,18 @@
             this.checkHidden.Text = "Export Hidden Components:";
             this.checkHidden.UseVisualStyleBackColor = true;
             // 
-            // ChildLabel
+            // meshToleranceLabel
             // 
-            this.ChildLabel.AutoSize = true;
-            this.ChildLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ChildLabel.ForeColor = System.Drawing.Color.Black;
-            this.ChildLabel.Location = new System.Drawing.Point(4, 88);
-            this.ChildLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.ChildLabel.Name = "ChildLabel";
-            this.ChildLabel.Size = new System.Drawing.Size(157, 41);
-            this.ChildLabel.TabIndex = 6;
-            this.ChildLabel.Text = "Mesh Tolerance (cm):\r\n(lower -> higher quality)\r\n";
-            this.ChildLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.meshToleranceLabel.AutoSize = true;
+            this.meshToleranceLabel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.meshToleranceLabel.ForeColor = System.Drawing.Color.Black;
+            this.meshToleranceLabel.Location = new System.Drawing.Point(4, 88);
+            this.meshToleranceLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.meshToleranceLabel.Name = "meshToleranceLabel";
+            this.meshToleranceLabel.Size = new System.Drawing.Size(157, 41);
+            this.meshToleranceLabel.TabIndex = 6;
+            this.meshToleranceLabel.Text = "Mesh Tolerance (cm):\r\n(lower -> higher quality)\r\n";
+            this.meshToleranceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // comboFileType
             // 
@@ -157,7 +157,7 @@
             this.comboFileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboFileType.FormattingEnabled = true;
             this.comboFileType.Items.AddRange(new object[] {"Binary (.glb)", "JSON (.gltf)"});
-            this.comboFileType.Location = new System.Drawing.Point(186, 168);
+            this.comboFileType.Location = new System.Drawing.Point(186, 169);
             this.comboFileType.Name = "comboFileType";
             this.comboFileType.Size = new System.Drawing.Size(145, 24);
             this.comboFileType.TabIndex = 18;
@@ -207,11 +207,13 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.MainLayout);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GltfExportSettings";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "glTF Export Settings";
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
@@ -223,11 +225,11 @@
         private System.Windows.Forms.CheckBox checkFace;
         private System.Windows.Forms.CheckBox checkHidden;
         private System.Windows.Forms.CheckBox checkMaterials;
-        private System.Windows.Forms.Label ChildLabel;
         private System.Windows.Forms.ComboBox comboFileType;
+        private System.Windows.Forms.Label fileTypeLabel;
         private System.Windows.Forms.CheckBox includeSynth;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel MainLayout;
+        private System.Windows.Forms.Label meshToleranceLabel;
         private System.Windows.Forms.NumericUpDown numericTolerance;
         private System.Windows.Forms.Button okButton;
 

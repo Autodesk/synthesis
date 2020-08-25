@@ -24,6 +24,28 @@ namespace SynthesisInventorGltfExporter.GUI
             InitializeComponent();
             LoadSettings();
             
+            // Create the ToolTip and associate with the Form container.
+            ToolTip toolTip = new ToolTip();
+
+            // Set up the delays for the ToolTip.
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 1000;
+            toolTip.ReshowDelay = 500;
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            toolTip.ShowAlways = true;
+      
+            // Set up the ToolTip text for the Button and Checkbox.
+            toolTip.SetToolTip(checkMaterials, "Include visual appearances in the exported model.");
+            toolTip.SetToolTip(checkFace, "Include visual appearances assigned to faces in the exported model.");
+            toolTip.SetToolTip(checkHidden, "Export components even if they are not visible in the viewport.");
+            var toleranceLabel = "Allowed tolerance distance between true curved surfaces and their generated triangular mesh approximations. Lower distances result in higher quality.";
+            toolTip.SetToolTip(numericTolerance, toleranceLabel);
+            toolTip.SetToolTip(meshToleranceLabel, toleranceLabel);
+            toolTip.SetToolTip(includeSynth, "Include Synthesis-specific metadata about joints and physical properties.");
+            var extLabel = "File extension of the exported glTF file.";
+            toolTip.SetToolTip(fileTypeLabel, extLabel);
+            toolTip.SetToolTip(comboFileType, extLabel);
+            
             okButton.Click += (sender, args) =>
             {
                 var assemblyDocument = application.ActiveDocument as AssemblyDocument;
