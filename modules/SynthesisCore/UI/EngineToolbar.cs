@@ -3,6 +3,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.UI.Windows;
 
 namespace SynthesisCore.UI
 {

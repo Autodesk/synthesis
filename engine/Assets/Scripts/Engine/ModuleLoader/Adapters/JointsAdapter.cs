@@ -87,6 +87,8 @@ namespace Engine.ModuleLoader.Adapters
                 _unityJoint.breakTorque = _joint.breakTorque;
                 _unityJoint.connectedBody = ((RigidbodyAdapter)_joint.connectedChild?.Adapter).unityRigidbody;
                 _unityJoint.enableCollision = _joint.enableCollision;
+
+                _unityJoint.massScale = _joint.connectedParent.mass / _joint.connectedChild.mass;
             }
             public void Update()
             {
@@ -151,6 +153,8 @@ namespace Engine.ModuleLoader.Adapters
                 _unityJoint.limits = _joint.limits.GetUnity();
                 _unityJoint.useMotor = _joint.useMotor;
                 _unityJoint.motor = _joint.motor.GetUnity();
+
+                _unityJoint.massScale = _joint.connectedParent.mass / _joint.connectedChild.mass;
             }
             public void Update()
             {

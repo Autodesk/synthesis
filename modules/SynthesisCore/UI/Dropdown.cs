@@ -55,8 +55,13 @@ namespace SynthesisCore.UI
 
         public Dropdown(string name)
         {
-            Selected = null;
             _options = new List<string>();
+            Init(name);
+        }
+
+        public Dropdown(string name, List<string> options)
+        {
+            _options = options;
             Init(name);
         }
 
@@ -75,20 +80,12 @@ namespace SynthesisCore.UI
             _button = (Button)_visualElement.Get("selected-button");
             _buttonIcon = _button.Get("dropdown-icon");
             //default properties
+            Selected = null;
             _button.Text = " "; //default start text
-            _buttonIcon.SetStyleProperty("background-image", "/modules/synthesis_core/UI/images/toolbar-show-icon.png"); //add arrow icon
+            ToggleIcon();
             _button.Subscribe(x =>
             {
-                //toggle icon
-                _buttonIcon.SetStyleProperty("background-image", _isListViewVisible ?
-                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png" :
-                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
-                //toggle list view
-                if (_isListViewVisible)
-                    _visualElement.Remove(_listView); //hides list view
-                else
-                    _visualElement.Add(_listView); //shows list view
-                _isListViewVisible = !_isListViewVisible;
+                ToggleListView();
             });
         }
 
@@ -133,6 +130,7 @@ namespace SynthesisCore.UI
             }
             Selected = _tmp;
             RefreshButton();
+            ToggleListView();
             OnValueChanged?.Invoke(Selected);
         }
 
@@ -147,6 +145,7 @@ namespace SynthesisCore.UI
             } else
             {
                 _options.Add(option);
+                ToggleIcon();
                 RefreshListView();
             }
             return true;
@@ -160,29 +159,58 @@ namespace SynthesisCore.UI
                 return true;
             } else if (_options.Remove(option))
             {
+                ToggleIcon();
                 RefreshListView();
                 return true;
             }
             return false;
         }
+
         private void RefreshButton()
         {
             _button.Text = Selected == null ? " " : Selected;           
         }
+
         private void RefreshListView()
         {
             _listView.Refresh();
             UpdateContainerHeight();
         }
+
         private void RefreshAll()
         {
             RefreshButton();
             RefreshListView();
         }
+
         private void UpdateContainerHeight()
         {
             int listViewHeight = _options.Count *_listView.ItemHeight;
             _listView.SetStyleProperty("height", listViewHeight.ToString() + "px");
+        }
+
+        private void ToggleListView()
+        {
+            ToggleIcon();
+            //toggle list view
+            if (_isListViewVisible)
+                _visualElement.Remove(_listView); //hides list view
+            else
+                _visualElement.Add(_listView); //shows list view
+            _isListViewVisible = !_isListViewVisible;
+        }
+        private void ToggleIcon()
+        {
+            //toggle icon
+            if (_options.Count > 0)
+            {
+                _buttonIcon.SetStyleProperty("visibility", "visible");
+                _buttonIcon.SetStyleProperty("background-image", _isListViewVisible ?
+                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png" :
+                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
+            }
+            else
+                _buttonIcon.SetStyleProperty("visibility", "hidden");
         }
     }
 }

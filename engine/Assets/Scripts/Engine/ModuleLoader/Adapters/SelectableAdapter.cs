@@ -7,6 +7,7 @@ using static Engine.ModuleLoader.Api;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager.InputEvents;
+using System.Linq;
 
 namespace Engine.ModuleLoader.Adapters
 {
@@ -101,14 +102,26 @@ namespace Engine.ModuleLoader.Adapters
 				var renderer = GetComponent<MeshRenderer>();
 				if (renderer != null)
 				{
-					materials.AddRange(GetComponent<MeshRenderer>().materials);
+					foreach (var material in renderer.materials)
+					{
+						if (!materials.Any(m => ReferenceEquals(m, material)))
+						{
+							materials.Add(material);
+						}
+					}
 				}
 			}
 			else
 			{
-				foreach (var m in GetComponentsInChildren<MeshRenderer>())
+				foreach (var ms in GetComponentsInChildren<MeshRenderer>())
 				{
-					materials.AddRange(m.materials);
+					foreach (var material in ms.materials)
+					{
+						if (!materials.Any(m => ReferenceEquals(m, material)))
+						{
+							materials.Add(material);
+						}
+					}
 				}
 			}
 			InputManager.AssignDigitalInput($"_internal selectable select", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
