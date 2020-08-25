@@ -54,6 +54,7 @@
     border-bottom-left-radius: 3px;
 	margin-left: 10px;
 	margin-right: 10px;
+	flex-shrink: 0;
 }
 
 .toolbar-button-container {
@@ -69,6 +70,7 @@
 	padding-right: 2px;
 	padding-top: 2px;
 	padding-bottom: 2px;
+	flex-shrink: 0;
 }
 
 .toolbar-button {

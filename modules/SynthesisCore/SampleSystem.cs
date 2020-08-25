@@ -11,6 +11,7 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Simulation;
+using SynthesisCore.Meshes;
 
 namespace SynthesisCore
 {
@@ -29,9 +30,9 @@ namespace SynthesisCore
         {
             Entity cube = EnvironmentManager.AddEntity();
 
-            cube.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
+            cube.AddComponent<Transform>().Position = new Vector3D(0, 5, 5);
             Mesh m = cube.AddComponent<Mesh>();
-            MakeCube(m);
+            Cube.Make(m);
             cube.AddComponent<MeshCollider>();
             cube.AddComponent<Rigidbody>();
             var cubeSelectable = cube.AddComponent<Selectable>();
@@ -56,11 +57,11 @@ namespace SynthesisCore
             var body = testBody.GetComponent<Joints>().AllJoints;
 
             var selectable = testBody.AddComponent<Selectable>();
-            cubeSelectable.OnSelect = () =>
+            selectable.OnSelect = () =>
             {
-                EntityToolbar.Open(cubeSelectable.Entity.Value);
+                EntityToolbar.Open(selectable.Entity.Value);
             };
-            cubeSelectable.OnDeselect = () =>
+            selectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
@@ -148,39 +149,6 @@ namespace SynthesisCore
                 arm.SetVoltage(powerSupply.VoltagePercent(-0.25));
             else
                 arm.SetVoltage(powerSupply.VoltagePercent(0));
-        }
-        private Mesh MakeCube(Mesh m)
-        {
-            if (m == null)
-                m = new Mesh();
-
-            m.Vertices = new List<Vector3D>()
-            {
-                new Vector3D(-0.5,-0.5,-0.5),
-                new Vector3D(0.5,-0.5,-0.5),
-                new Vector3D(0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,0.5),
-                new Vector3D(0.5,0.5,0.5),
-                new Vector3D(0.5,-0.5,0.5),
-                new Vector3D(-0.5,-0.5,0.5)
-            };
-            m.Triangles = new List<int>()
-            {
-                0, 2, 1, //face front
-			    0, 3, 2,
-                2, 3, 4, //face top
-			    2, 4, 5,
-                1, 2, 5, //face right
-			    1, 5, 6,
-                0, 7, 4, //face left
-			    0, 4, 3,
-                5, 4, 7, //face back
-			    5, 7, 6,
-                0, 6, 7, //face bottom
-			    0, 1, 6
-            };
-            return m;
         }
 
         public override void Teardown() { }

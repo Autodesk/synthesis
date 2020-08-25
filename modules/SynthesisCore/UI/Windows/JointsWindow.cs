@@ -56,9 +56,9 @@ namespace SynthesisCore.UI
                     var jointComponent = entity.GetComponent<Joints>();
                     foreach (var joint in jointComponent.AllJoints)
                     {
-                        if (joint is HingeJoint)
+                        if (joint is HingeJoint hingeJoint)
                         {
-                            JointList.Add(new JointItem(JointAsset, jointComponent, joint).JointElement);
+                            JointList.Add(new JointItem(JointAsset, jointComponent, hingeJoint).JointElement);
                         }
                     }
                 }

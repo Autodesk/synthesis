@@ -250,7 +250,7 @@ namespace SynthesisCore.Systems
             }
         }
 
-        private void SetNewFocus(Vector3D newFocusPoint, bool moveToPoint)
+        public void SetNewFocus(Vector3D newFocusPoint, bool moveToPoint)
         {
             focusPoint = newFocusPoint;
             

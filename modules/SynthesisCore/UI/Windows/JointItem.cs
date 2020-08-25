@@ -4,6 +4,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Meshes;
 using SynthesisCore.Systems;
 using System.Collections.Generic;
 
@@ -12,13 +13,13 @@ namespace SynthesisCore.UI
     public class JointItem
     {
         public VisualElement JointElement { get; }
-        public JointItem(VisualElementAsset jointAsset, Joints jointComponent, IJoint joint)
+        public JointItem(VisualElementAsset jointAsset, Joints jointComponent, HingeJoint joint)
         {
             JointElement = jointAsset.GetElement("joint");
             RegisterJointButtons(jointComponent, joint);
         }
 
-        private void RegisterJointButtons(Joints jointComponent, IJoint j)
+        private void RegisterJointButtons(Joints jointComponent, HingeJoint j)
         {
             Button highlightButton = (Button)JointElement.Get("highlight-button");
             Button motorButton = (Button)JointElement.Get("motor-type-button");
@@ -42,66 +43,39 @@ namespace SynthesisCore.UI
 
             highlightButton.Subscribe(x =>
             {
-                Logger.Log("Highlight Joint", LogLevel.Debug);
-
                 if (JointsWindow.jointHighlightEntity == null)
                 {
                     JointsWindow.jointHighlightEntity = EnvironmentManager.AddEntity();
                     JointsWindow.jointHighlightEntity?.AddComponent<Transform>();
                     JointsWindow.jointHighlightEntity?.AddComponent<Mesh>();
+                    
+                    // Create mesh
+                    Mesh m = JointsWindow.jointHighlightEntity?.GetComponent<Mesh>();
+                    m.Color = (1f, 1f, 0f, 0.5f);
+                    Cylinder.Make(m, 16, 0.01, 0.25);
                 }
 
-                var jointPosition = jointComponent.Entity?.GetComponent<Transform>()?.GlobalPosition ?? new Vector3D();
-                jointPosition += j.Anchor;
-                var parentPosition = jointComponent.Entity?.GetComponent<Parent>()?.ParentEntity.GetComponent<Transform>()?.Position ?? new Vector3D();
-                var dir = (jointPosition - parentPosition).Normalize();
+                // Set highlight entity parent
+                var parentComponent = JointsWindow.jointHighlightEntity?.GetComponent<Parent>();
+                parentComponent.ParentEntity = jointComponent.Entity.Value;
 
-                var t = JointsWindow.jointHighlightEntity?.GetComponent<Transform>();
-                t.Position = jointPosition; //joint anchor position
-
-                Mesh m = JointsWindow.jointHighlightEntity?.GetComponent<Mesh>();
-                cube(m);
+                // Set highlight entity transform
+                var jointHighlightTransform = JointsWindow.jointHighlightEntity?.GetComponent<Transform>();
+                jointHighlightTransform.Position = j.Anchor;
                 
-                CameraController.Instance.cameraTransform.Position = t.Position + dir;
-                CameraController.Instance.cameraTransform.LookAt(t.Position);
+                var axis = j.Axis.Normalize();
+                jointHighlightTransform.Rotation = MathUtil.LookAt(
+                    axis.IsParallelTo(UnitVector3D.XAxis) ? axis.CrossProduct(UnitVector3D.YAxis) : axis.CrossProduct(UnitVector3D.XAxis), 
+                    axis);
 
-                if (JointsWindow.jointHighlightEntity?.RemoveEntity() ?? false) // TODO
-                    JointsWindow.jointHighlightEntity = null;
+                // Move camera to look at the joint
+                var parentPosition = jointComponent.Entity?.GetComponent<Parent>()?.ParentEntity.GetComponent<Transform>()?.GlobalPosition ?? new Vector3D();
+                var cameraOffset = (jointHighlightTransform.GlobalPosition - parentPosition).Normalize();
+                CameraController.Instance.cameraTransform.GlobalPosition = jointHighlightTransform.GlobalPosition + cameraOffset;
+                
+                CameraController.Instance.cameraTransform.LookAt(jointHighlightTransform.GlobalPosition);
+                CameraController.Instance.SetNewFocus(jointHighlightTransform.GlobalPosition, false);
             });
-        }
-
-        private Mesh cube(Mesh m)
-        {
-            if (m == null)
-                m = new Mesh();
-
-            m.Vertices = new List<Vector3D>()
-            {
-                new Vector3D(-0.5,-0.5,-0.5),
-                new Vector3D(0.5,-0.5,-0.5),
-                new Vector3D(0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,0.5),
-                new Vector3D(0.5,0.5,0.5),
-                new Vector3D(0.5,-0.5,0.5),
-                new Vector3D(-0.5,-0.5,0.5)
-            };
-            m.Triangles = new List<int>()
-            {
-                0, 2, 1, //face front
-			    0, 3, 2,
-                2, 3, 4, //face top
-			    2, 4, 5,
-                1, 2, 5, //face right
-			    1, 5, 6,
-                0, 7, 4, //face left
-			    0, 4, 3,
-                5, 4, 7, //face back
-			    5, 7, 6,
-                0, 6, 7, //face bottom
-			    0, 1, 6
-            };
-            return m;
         }
     }
 
