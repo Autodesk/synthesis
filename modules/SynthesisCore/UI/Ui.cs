@@ -1,7 +1,9 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using System.Collections.Generic;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
@@ -22,6 +24,23 @@ namespace SynthesisCore.UI
             ToolbarAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Toolbar.uxml");
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
+            
+            Dictionary<string, string> defaultControls = new Dictionary<string, string>
+            {
+                {"Camera Forward", "W"},
+                {"Camera Backward", "S"},
+                {"Camera Left", "A"},
+                {"Camera Right", "D"},
+                {"Camera Up", "Space"},
+                {"Camera Down", "Left Shift"},
+                {"Entity Forward", "Up Arrow"},
+                {"Entity Backward", "Down Arrow"},
+                {"Entity Left", "Left Arrow"},
+                {"Entity Right", "Right Arrow"}
+            };
+            
+            PreferenceManager.SetPreferences("SynthesisCore", defaultControls);
+            PreferenceManager.Save();
             
             var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             UIManager.SetBlankTabAsset(blankTabAsset);
@@ -45,6 +64,8 @@ namespace SynthesisCore.UI
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
+            
+
         }
 
         public override void OnPhysicsUpdate() { }

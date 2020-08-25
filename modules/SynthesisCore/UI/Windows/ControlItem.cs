@@ -1,36 +1,42 @@
 ﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.UI
 {
     public class ControlItem
     {
-        public VisualElement ControlElement { get; }
+        public VisualElement Element { get; }
+        private ControlInfo ControlInfo;
+        private Label NameLabel;
+        private Button KeyButton;
 
         public ControlItem(VisualElementAsset controlAsset, ControlInfo controlInfo)
         {
-            ControlElement = controlAsset.GetElement("control");
+            Element = controlAsset.GetElement("control");
+            ControlInfo = controlInfo;
             
-            SetInformation(controlInfo);
+            NameLabel = (Label) Element.Get("name");
+            KeyButton = (Button) Element.Get("change-key");
+            
+            SetInformation();
             RegisterButtons();
         }
 
-        private void SetInformation(ControlInfo controlInfo)
+        private void SetInformation()
         {
-            Label nameLabel = (Label) ControlElement.Get("name");
-            Button keyButton = (Button) ControlElement.Get("change-key");
-            
-            nameLabel.Text = nameLabel.Text.Replace("%name%", controlInfo.Name);
-            keyButton.Text = keyButton.Text.Replace("%key%", controlInfo.Key);
+            NameLabel.Text = NameLabel.Text.Replace("%name%", ControlInfo.Name);
+            KeyButton.Text = KeyButton.Text.Replace("%key%", ControlInfo.Key);
         }
 
         private void RegisterButtons()
         {
-            Button keyButton = (Button) ControlElement.Get("change-key");
-            keyButton.Subscribe(x =>
+            KeyButton.Subscribe(x =>
             {
-                keyButton.Text = "Press Any Key";
-                // wait for key press, make sure only one control key can be changed at a time
+                KeyButton.Text = "Press Any Key";
+                // wait for key press
+                // PreferenceManager.SetPreference("SynthesisCore", ControlInfo.Name, /* updated key button */);
+                // PreferenceManager.Save();
             });
         }
     }

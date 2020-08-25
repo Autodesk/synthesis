@@ -9,15 +9,19 @@ namespace SynthesisCore.UI
     {
         public Panel Panel { get; }
         private VisualElement Window;
-        private VisualElementAsset GeneralAsset;
-        private VisualElementAsset GraphicsAsset;
-        private VisualElementAsset ControlsAsset;
+        private GeneralPage GeneralPage;
+        private GraphicsPage GraphicsPage;
+        private ControlsPage ControlsPage;
 
         public SettingsWindow()
         {
-            GeneralAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/General.uxml");
-            GraphicsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Graphics.uxml");
-            ControlsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Controls.uxml");
+            var generalAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/General.uxml");
+            var graphicsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Graphics.uxml");
+            var controlsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Controls.uxml");
+            
+            GeneralPage = new GeneralPage(generalAsset);
+            GraphicsPage = new GraphicsPage(graphicsAsset);
+            ControlsPage = new ControlsPage(controlsAsset);
             
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             Panel = new Panel("Settings", settingsAsset, OnWindowOpen);
@@ -36,7 +40,7 @@ namespace SynthesisCore.UI
 
         private void LoadWindowContent()
         {
-            SetPageContent(new GeneralPage(GeneralAsset).Page);
+            SetPageContent(GeneralPage.Page);
         }
 
         private void RegisterButtons()
@@ -46,19 +50,19 @@ namespace SynthesisCore.UI
             Button generalSettingsButton = (Button) Window.Get("general-settings-button");
             generalSettingsButton?.Subscribe(x =>
             {
-                SetPageContent(new GeneralPage(GeneralAsset).Page);
+                SetPageContent(GeneralPage.Page);
             });
             
             Button graphicsSettingsButton = (Button) Window.Get("graphics-settings-button");
             graphicsSettingsButton?.Subscribe(x =>
             {
-                SetPageContent(new GraphicsPage(GraphicsAsset).Page);
+                SetPageContent(GraphicsPage.Page);
             });
             
             Button controlsSettingsButton = (Button) Window.Get("controls-settings-button");
             controlsSettingsButton?.Subscribe(x =>
             {
-                SetPageContent(new ControlsPage(ControlsAsset).ControlsElement);
+                SetPageContent(ControlsPage.Page);
             });
             
             Button okButton = (Button) Window.Get("ok-button");
