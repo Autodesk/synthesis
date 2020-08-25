@@ -7,6 +7,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
+using SynthesisAPI.UIManager;
 
 #nullable enable
 
@@ -270,7 +271,7 @@ namespace SynthesisCore.Systems
 
         private void UpdateMouseInput()
         {
-            zMod = InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
+            zMod = UIManager.CursorBlockedByUI ? 0 : InputManager.GetAxisValue("ZoomCamera") * SensitivityZoom;
 
             if (zMod != 0 && Math.SameSign(zMod, lastZMod))
                 zMod += lastZMod * 0.5f;

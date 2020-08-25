@@ -268,6 +268,8 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
+            public bool CursorBlockedByUI { get; private set; }
+
             private bool[] nonUIMouseDown = new bool[3];
             private bool nonUIMouseForwardingSetup = false;
 
@@ -277,6 +279,14 @@ namespace SynthesisAPI.UIManager
                 {
                     nonUIMouseDown[e.button] = true;
                     SendNonUIMouseEvent(e.button, DigitalState.Down);
+                });
+                visualElement.UnityVisualElement.RegisterCallback<MouseEnterEvent>(e =>
+                {
+                    CursorBlockedByUI = false;
+                });
+                visualElement.UnityVisualElement.RegisterCallback<MouseLeaveEvent>(e =>
+                {
+                    CursorBlockedByUI = true;
                 });
                 if (!nonUIMouseForwardingSetup)
                 {
@@ -400,5 +410,7 @@ namespace SynthesisAPI.UIManager
             get => Instance.BlankTabAsset;
             set => Instance.BlankTabAsset = value;
         }
+
+        public static bool CursorBlockedByUI => Instance.CursorBlockedByUI;
     }
 }
