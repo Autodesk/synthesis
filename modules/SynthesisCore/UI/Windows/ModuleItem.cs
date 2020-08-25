@@ -2,7 +2,7 @@
 using SynthesisAPI.Modules;
 using SynthesisAPI.UIManager.VisualElements;
 
-namespace SynthesisCore.UI
+namespace SynthesisCore.UI.Windows
 {
     public class ModuleItem
     {

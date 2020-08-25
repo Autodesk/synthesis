@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
+using SynthesisCore.UI.Windows;
 
 namespace SynthesisCore.UI
 {

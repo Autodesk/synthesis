@@ -7,7 +7,7 @@
 
 .module-container {
     height: 50px;
-    width: 100%;
+    width: 99%;
     flex-direction: row;
     background-color: rgba(237, 237, 237, 255);
     border-top-left-radius: 5px;
