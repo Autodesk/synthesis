@@ -2,7 +2,7 @@
     <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row; width: 350px; height: auto;">
         <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
         <ui:VisualElement name="left" style="height: 75px; width: 275px; margin-top: 5px; margin-bottom: 5px; margin-left: 5px; margin-right: 5px;">
-            <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto; margin-left: 0;">
+            <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto">
                 <ui:VisualElement name="details" class="details-label" style="width: 90px;">
                     <ui:Label text="Motor Type" name="name" />
                 </ui:VisualElement>
@@ -12,10 +12,10 @@
             </ui:VisualElement>
             <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto;">
                 <ui:VisualElement name="details" class="details-label" style="width: 90px;">
-                    <ui:Label text="Motor Gear" name="name" />
+                    <ui:Label text="Gear Ratio" name="name" />
                 </ui:VisualElement>
                 <ui:VisualElement name="description" class="description-container">
-                    <ui:Button text="Gear Dropdown" name="motor-gear-button" />
+					<ui:TextField label="" name="motor-gear-field"  />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto;">
@@ -23,13 +23,13 @@
                     <ui:Label text="Motor Count" name="name" />
                 </ui:VisualElement>
                 <ui:VisualElement name="description" class="description-container">
-                    <ui:Button text="Count Dropdown" name="motor-count-button" />
+					<ui:TextField label="" name="motor-count-field"  />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="right" style="justify-content: center; align-items: center; height: 75px; width: 108px;">
-            <ui:Button name="highlight-button" style="height: 45px; width: 56.66666px; white-space: normal; background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
-            <ui:Label text="HIGHLIGHT" name="name" style="font-size: 8px; margin-top: 3px;" />
+        <ui:VisualElement name="right" style="justify-content: center; align-items: center; width: 65px; height: 100%; padding-right: 5px;">
+            <ui:Button name="highlight-button" style="height: 55px; width: 55px; white-space: normal; background-image: url(&apos;/modules/synthesis_core/UI/images/modules-icon.png&apos;);" />
+            <ui:Label text="Highlight" name="name" style="margin-top: 3px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

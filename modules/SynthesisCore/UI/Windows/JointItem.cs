@@ -23,22 +23,14 @@ namespace SynthesisCore.UI
         {
             Button highlightButton = (Button)JointElement.Get("highlight-button");
             Button motorButton = (Button)JointElement.Get("motor-type-button");
-            Button gearButton = (Button)JointElement.Get("motor-gear-button");
-            Button countButton = (Button)JointElement.Get("motor-count-button");
+            TextField gearField = (TextField)JointElement.Get("motor-gear-field");
+            TextField countField = (TextField)JointElement.Get("motor-count-field");
+            gearField.IsReadOnly = false;
+            countField.IsReadOnly = false;
 
             motorButton.Subscribe(x =>
             {
                 Logger.Log("To Do: Motor Type Dropdown", LogLevel.Debug);
-            });
-
-            gearButton.Subscribe(x =>
-            {
-                Logger.Log("To Do: Motor Gear Dropdown", LogLevel.Debug);
-            });
-
-            countButton.Subscribe(x =>
-            {
-                Logger.Log("To Do: Motor Count Dropdown", LogLevel.Debug);
             });
 
             highlightButton.Subscribe(x =>
