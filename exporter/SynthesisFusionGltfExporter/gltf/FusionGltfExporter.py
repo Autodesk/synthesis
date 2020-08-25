@@ -140,10 +140,8 @@ class FusionGltfExporter(object):
                                     f"==== Warnings ====\n"
                                     f"{warningsString}\n"
                                     )
-            finishedMessage = (f"glTF export completed in {duration} seconds.\n"
-                                    f"File saved to {filePath}\n\n"
-                                    f"==== Warnings ====\n"
-                                    f"{warningsString}\n"
+            finishedMessage = (f"glTF export completed.\n"
+                                    f"File saved to {filePath}"
                                     )
             print(finishedMessageDebug)
             self.ao.ui.messageBox(finishedMessageDebug if EXPORTER_DEBUG else finishedMessage, "Synthesis glTF Exporter")

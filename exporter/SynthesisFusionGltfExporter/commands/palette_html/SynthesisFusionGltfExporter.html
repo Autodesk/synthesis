@@ -9,17 +9,17 @@
 <div class="fusion-content">
     <b>glTF Export Settings:</b>
     <br><br>
-    <label for="materials">Export Appearances</label>
-    <input class="setting" id="materials" type="checkbox" onchange="validateForm(this)" checked>
+    <label title="Include visual appearances in the exported model." for="materials">Export Appearances</label>
+    <input title="Include visual appearances in the exported model." class="setting" id="materials" type="checkbox" onchange="validateForm(this)" checked>
     <br><br>
-    <label for="faceMaterials">Export Face Appearances</label>
-    <input class="setting" id="faceMaterials" type="checkbox" onchange="validateForm(this)" checked>
+    <label title="Include visual appearances assigned to faces in the exported model." for="faceMaterials">Export Face Appearances</label>
+    <input title="Include visual appearances assigned to faces in the exported model." class="setting" id="faceMaterials" type="checkbox" onchange="validateForm(this)" checked>
     <br><br>
-    <label for="exportHidden">Export Hidden Components</label>
-    <input class="setting" id="exportHidden" type="checkbox" onchange="validateForm(this)">
+    <label title="Export co mponents even if they are not visible in the viewport." for="exportHidden">Export Hidden Components</label>
+    <input title="Export components even if they are not visible in the viewport." class="setting" id="exportHidden" type="checkbox" onchange="validateForm(this)">
     <br><br>
-    <label class="field-label">Mesh Quality</label>
-    <span class="field-select">
+    <label title="Quality of exported triangle meshes." class="field-label">Mesh Quality</label>
+    <span title="Quality of exported triangle meshes." class="field-select">
         <select class="setting" id="quality" style="width: initial" onchange="validateForm(this)">
             <option value=8 selected="selected">Low</option>
             <option value=11>Normal</option>
@@ -28,11 +28,11 @@
         </select>
     </span>
     <br><br>
-    <label for="includeSynthesis">Include Synthesis Data</label>
-    <input class="setting" id="includeSynthesis" type="checkbox" onchange="validateForm(this)" checked>
+    <label title="Include Synthesis-specific metadata about joints and physical properties." for="includeSynthesis">Include Synthesis Data</label>
+    <input title="Include Synthesis-specific metadata about joints and physical properties." class="setting" id="includeSynthesis" type="checkbox" onchange="validateForm(this)" checked>
     <br><br>
-    <label class="field-label">glTF File Type</label>
-    <span class="field-select">
+    <label title="File extension of the exported glTF file." class="field-label">glTF File Type</label>
+    <span title="File extension of the exported glTF file." class="field-select">
         <select class="setting" id="useGlb" style="width: initial" onchange="validateForm(this)">
             <option value="glb" selected="selected">Binary (.glb)</option>
             <option value="gltf">JSON (.gltf)</option>
