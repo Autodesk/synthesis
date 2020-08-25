@@ -1,19 +1,9 @@
-﻿using MathNet.Spatial.Euclidean;
-using SynthesisAPI.AssetManager;
-using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.EnvironmentManager.Components;
-using SynthesisAPI.UIManager;
+﻿using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
-using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
-using SynthesisCore.Systems;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace SynthesisCore.UI
 {
-    public class EngineToolbar
+    public static class EngineToolbar
     {
         private static bool toolbarCreated = false;
 

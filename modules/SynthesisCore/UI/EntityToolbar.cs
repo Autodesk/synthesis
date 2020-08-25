@@ -7,7 +7,7 @@ using SynthesisCore.Systems;
 
 namespace SynthesisCore.UI
 {
-    public class EntityToolbar
+    public static class EntityToolbar
     {
         private static Tab entityTab;
         private static Entity selectedEntity;

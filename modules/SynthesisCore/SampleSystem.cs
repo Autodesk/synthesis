@@ -70,11 +70,11 @@ namespace SynthesisCore
 
             motorManager = testBody.AddComponent<MotorAssemblyManager>();
 
-            frontLeft = motorManager.AllGearBoxes[3];
-            frontRight = motorManager.AllGearBoxes[4];
-            backLeft = motorManager.AllGearBoxes[1];
-            backRight = motorManager.AllGearBoxes[2];
-            arm = motorManager.AllGearBoxes[0];
+            frontLeft = motorManager.AllMotorAssemblies[3];
+            frontRight = motorManager.AllMotorAssemblies[4];
+            backLeft = motorManager.AllMotorAssemblies[1];
+            backRight = motorManager.AllMotorAssemblies[2];
+            arm = motorManager.AllMotorAssemblies[0];
 
             frontLeft.Configure(MotorTypes.CIMMotor, 9.29);
             frontRight.Configure(MotorTypes.CIMMotor, 9.29);

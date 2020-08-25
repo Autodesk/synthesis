@@ -116,7 +116,7 @@ namespace Controller
             foreach (var e in EnvironmentManager.GetEntitiesWhere(
                 e => e.GetComponent<Moveable>()?.Channel == channel && e.GetComponent<MotorAssemblyManager>() != null))
             {
-                e.GetComponent<MotorAssemblyManager>().AllGearBoxes[motorIndex].SetVoltage((float)percent * 12f);
+                e.GetComponent<MotorAssemblyManager>().AllMotorAssemblies[motorIndex].SetVoltage((float)percent * 12f);
             }
         }
     }

@@ -4,9 +4,7 @@ using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
-using SynthesisCore.Systems;
-using System;
+using SynthesisCore.Simulation;
 
 namespace SynthesisCore.UI
 {
@@ -56,15 +54,12 @@ namespace SynthesisCore.UI
         {
             foreach (var entity in SynthesisCoreData.ModelsDict.Values)
             {
-                var joints = entity.GetComponent<Joints>();
-                if (joints != null)
+                var motorAssemblyManager = entity.GetComponent<MotorAssemblyManager>();
+                if (motorAssemblyManager != null)
                 {
-                    foreach (var joint in joints.AllJoints)
+                    foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
                     {
-                        if (joint is HingeJoint hingeJoint)
-                        {
-                            JointList.Add(new JointItem(JointAsset, joints, hingeJoint).JointElement);
-                        }
+                            JointList.Add(new JointItem(JointAsset, assembly).JointElement);
                     }
                 }
             }
