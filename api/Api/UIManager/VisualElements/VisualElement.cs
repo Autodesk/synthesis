@@ -116,6 +116,30 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
         }
 
+        private bool isDraggable = false;
+        private Manipulator dragManipulator = null;
+        public bool IsDraggable
+        {
+            get => isDraggable;
+            set
+            {
+                if (value != isDraggable)
+                {
+                    isDraggable = value;
+                    if (isDraggable)
+                    {
+                        dragManipulator = new DragManipulator();
+                        _visualElement.AddManipulator(dragManipulator);
+                    }
+                    else if (dragManipulator != null)
+                    {
+                        _visualElement.RemoveManipulator(dragManipulator);
+                        dragManipulator = null;
+                    }
+                }
+            }
+        }
+
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
         public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
         public void RemoveAt(int index) => _visualElement.RemoveAt(index);

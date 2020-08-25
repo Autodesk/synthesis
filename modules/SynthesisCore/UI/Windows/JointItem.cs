@@ -70,7 +70,7 @@ namespace SynthesisCore.UI
 
                 // Move camera to look at the joint
                 var parentPosition = jointComponent.Entity?.GetComponent<Parent>()?.ParentEntity.GetComponent<Transform>()?.GlobalPosition ?? new Vector3D();
-                var cameraOffset = (jointHighlightTransform.GlobalPosition - parentPosition).Normalize();
+                var cameraOffset = (jointHighlightTransform.GlobalPosition - parentPosition).Normalize().ScaleBy(3);
                 CameraController.Instance.cameraTransform.GlobalPosition = jointHighlightTransform.GlobalPosition + cameraOffset;
                 
                 CameraController.Instance.cameraTransform.LookAt(jointHighlightTransform.GlobalPosition);

@@ -6,6 +6,7 @@ using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Systems;
+using System;
 
 namespace SynthesisCore.UI
 {
@@ -13,14 +14,15 @@ namespace SynthesisCore.UI
     {
         public Panel Panel { get; }
         private VisualElement Window;
-        private VisualElementAsset JointAsset;
+        private VisualElementAsset JointAsset = null;
         private ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
-
+        
         public JointsWindow()
         {
-            JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
+            if(JointAsset == null)
+                JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
 
             var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
@@ -31,9 +33,12 @@ namespace SynthesisCore.UI
         {
             Window = jointsWindow;
 
-            jointsWindow.SetStyleProperty("position", "absolute");
-            jointsWindow.SetStyleProperty("left", "0");
-            jointsWindow.SetStyleProperty("top", "70");
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+
+            Window.SetStyleProperty("left", "0");
+            Window.SetStyleProperty("top", "70");
+
 
             JointList = (ListView) Window.Get("joint-list");
             LoadWindowContents();   
@@ -42,8 +47,8 @@ namespace SynthesisCore.UI
 
         private void OnWindowClose()
         {
-            if (JointsWindow.jointHighlightEntity?.RemoveEntity() ?? false)
-                JointsWindow.jointHighlightEntity = null;
+            if (jointHighlightEntity?.RemoveEntity() ?? false)
+                jointHighlightEntity = null;
             UIManager.ClosePanel(Panel.Name);
         }
 
@@ -51,14 +56,14 @@ namespace SynthesisCore.UI
         {
             foreach (var entity in SynthesisCoreData.ModelsDict.Values)
             {
-                if (entity.GetComponent<Joints>() != null)
+                var joints = entity.GetComponent<Joints>();
+                if (joints != null)
                 {
-                    var jointComponent = entity.GetComponent<Joints>();
-                    foreach (var joint in jointComponent.AllJoints)
+                    foreach (var joint in joints.AllJoints)
                     {
                         if (joint is HingeJoint hingeJoint)
                         {
-                            JointList.Add(new JointItem(JointAsset, jointComponent, hingeJoint).JointElement);
+                            JointList.Add(new JointItem(JointAsset, joints, hingeJoint).JointElement);
                         }
                     }
                 }
