@@ -10,7 +10,7 @@
     padding-top: 8px;
     padding-bottom: 8px;
     flex-direction: row;
-    width: 99%;
+    width: 480px;
     margin-bottom: 10px;
 }
 
