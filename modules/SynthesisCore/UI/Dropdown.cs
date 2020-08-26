@@ -25,11 +25,13 @@ namespace SynthesisCore.UI
 
         public static implicit operator VisualElement(Dropdown d) => d._visualElement;
 
-        private List<string> _options = new List<string>();;
+        private List<string> _options = new List<string>();
 
         private bool _isListViewVisible = false;
 
         #region Properties
+
+        public string Name { get; private set; }
 
         public int Count { get => Selected == null ? _options.Count : _options.Count+1; }
 
@@ -83,6 +85,7 @@ namespace SynthesisCore.UI
 
         private void Init(string name)
         {
+            Name = name;
             if (_dropdownAsset == null)
                 _dropdownAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Dropdown.uxml");
             _visualElement = _dropdownAsset.GetElement(name);
