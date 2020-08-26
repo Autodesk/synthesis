@@ -20,9 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d26a3dd-41f1-44f8-bbc5-07e14f8d476b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../SynthesisFusionGltfExporter/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SynthesisInventorGltfExporter/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/GLTFDesignExporter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Autodesk.SynthesisInventorGltfExporter.Inventor.addin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/Properties/Resources.resx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/SynthesisInventorGltfExporter/SynthesisInventorGltfExporter.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +72,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/05/079523fa/Guid.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/21BBF68D-61D6-4A2A-A5C3-E180E6B6706D/17/547c7f00/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/E6452A3A-05D0-4143-BAFD-16E320714D4A/15/6b556950/ComponentOccurrence.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///GLTFDesignExporter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/d4/46accba9/TextReader.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/858F1A58-708D-4935-887E-D65BF63A43F2/F/JsonFormatter.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/CCA32044-9234-4EC8-BDF7-147CCD953BC3/b1/7100e338/AffineTransform.cs" root0="SKIP_HIGHLIGHTING" />
@@ -271,7 +277,7 @@
       <workItem from="1597947881757" duration="1442000" />
       <workItem from="1598114609720" duration="5215000" />
       <workItem from="1598298938364" duration="7085000" />
-      <workItem from="1598329058337" duration="5522000" />
+      <workItem from="1598329058337" duration="9022000" />
     </task>
     <task id="LOCAL-00001" summary="Rename project">
       <created>1595282319715</created>
@@ -504,7 +510,14 @@
       <option name="project" value="LOCAL" />
       <updated>1598332104369</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Add troubleshooting message about VisualBasic.pdb and update export complete message string">
+      <created>1598376560909</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1598376560909</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -527,7 +540,6 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Update gitignore" />
     <MESSAGE value="Add simple settings window" />
     <MESSAGE value="Add export settings and progress bar" />
     <MESSAGE value="Add gltf file type options and fix joint origin scale" />
@@ -552,7 +564,8 @@
     <MESSAGE value="Rename view vector getter variable name" />
     <MESSAGE value="Add view cube rotation calculation to Inv exporter" />
     <MESSAGE value="Move export btn location, add tooltips, minor form settings, edit todo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Move export btn location, add tooltips, minor form settings, edit todo" />
+    <MESSAGE value="Add troubleshooting message about VisualBasic.pdb and update export complete message string" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add troubleshooting message about VisualBasic.pdb and update export complete message string" />
   </component>
   <component name="WindowStateProjectService">
     <state x="479" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597280129386">
@@ -567,10 +580,10 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="890" y="503" key="Assembly removing confirmation dialog/0.0.2048.1112@0.0.2048.1112" timestamp="1598330251706" />
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1598376220543">
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2" timestamp="1598376560218">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1598376220543" />
+    <state x="207" y="0" width="1791" height="1092" key="CommitChangelistDialog2/0.0.2048.1112@0.0.2048.1112" timestamp="1598376560218" />
     <state x="93" y="93" width="1862" height="926" key="DiffContextDialog" timestamp="1596865560941">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -671,14 +684,14 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="874" y="471" key="VCS.ChangelistChooser/0.0.2048.1112@0.0.2048.1112" timestamp="1596865541543" />
-    <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog" timestamp="1597266352404">
+    <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog" timestamp="1598480906677">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1597266352404" />
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1598332105607">
+    <state x="93" y="93" width="1862" height="926" key="VCS.FileHistoryDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1598480906677" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2" timestamp="1598376567365">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1598332105607" />
+    <state x="617" y="289" key="Vcs.Push.Dialog.v2/0.0.2048.1112@0.0.2048.1112" timestamp="1598376567365" />
     <state width="1031" height="563" key="XDebugger.FullValuePopup" timestamp="1595542214153">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -699,18 +712,18 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="412" y="334" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2048.1112@0.0.2048.1112" timestamp="1597294346596" />
-    <state x="683" y="289" width="882" height="534" key="find.popup" timestamp="1598330985140">
+    <state x="683" y="289" width="882" height="534" key="find.popup" timestamp="1598481609631">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="683" y="289" width="882" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598330985140" />
+    <state x="683" y="289" width="882" height="534" key="find.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598481609631" />
     <state x="681" y="259" key="run.anything.popup" timestamp="1598330209902">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="681" y="259" key="run.anything.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598330209902" />
-    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup" timestamp="1598136682771">
+    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup" timestamp="1598481598156">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598136682771" />
+    <state x="687" y="243" width="672" height="678" key="search.everywhere.popup/0.0.2048.1112@0.0.2048.1112" timestamp="1598481598156" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

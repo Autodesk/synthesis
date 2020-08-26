@@ -129,7 +129,7 @@
   </data>
   <data name="FirstLaunchMessage" xml:space="preserve">
     <value>The glTF exporter for Synthesis add-in has been installed.
-To access the exporter, select the "glTF Export" button under the "Synthesis glTF Exporter" tab.</value>
+To access the exporter, select the "glTF Export" button under the "Environments" tab.</value>
   </data>
   <data name="FirstLaunchMessageTitle" xml:space="preserve">
     <value>glTF Exporter for Synthesis</value>

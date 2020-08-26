@@ -4,7 +4,7 @@
   <ClientId>{fd06cbaa-b8e9-4c50-b78e-601cc74766fb}</ClientId>
   <DisplayName>Synthesis glTF Exporter</DisplayName>
   <Description>Export Inventor Assemblies to glTF files</Description>
-  <Assembly>C:\Program Files\Autodesk\Synthesis\SynthesisInventorGltfExporter\SynthesisInventorGltfExporter.dll</Assembly>
+  <Assembly>SynthesisInventorGltfExporter.dll</Assembly>
   <LoadOnStartUp>1</LoadOnStartUp>
   <UserUnloadable>1</UserUnloadable>
   <SupportedSoftwareVersionGreaterThan>20..</SupportedSoftwareVersionGreaterThan>

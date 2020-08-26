@@ -92,7 +92,7 @@ namespace SynthesisInventorGltfExporter.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to The glTF exporter for Synthesis add-in has been installed.
-        ///To access the exporter, select the &quot;glTF Export&quot; button under the &quot;Synthesis glTF Exporter&quot; tab..
+        ///To access the exporter, select the &quot;glTF Export&quot; button under the &quot;Environments&quot; tab..
         /// </summary>
         internal static string FirstLaunchMessage {
             get {
