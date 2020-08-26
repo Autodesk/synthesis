@@ -17,7 +17,9 @@ namespace SynthesisCore.UI
 
         private void LoadPageContent()
         {
-            
+            Dropdown units = new Dropdown("units");
+            units.Add("Metric");
+            units.Add("Imperial");
         }
         
         private void RegisterButtons()
