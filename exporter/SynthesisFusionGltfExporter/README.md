@@ -1,11 +1,12 @@
 # SynthesisFusionGltfExporter
-A Fusion 360 add-in to export assemblies into the glTF file format.
+A cross-platform Autodesk® Fusion 360™ add-in to export assemblies into the glTF file format.
 Synthesis-specific data like mechanical joints and physics properties are serialized in the exported glTF files using the “extras” tag, a feature in the glTF spec for including miscellaneous data. 
 
 ## Usage
 The SynthesisFusionGltfExporter add-in is installed into Fusion 360 automatically by the Synthesis installer.
 
-To start the add-in:
+The add-in should run automatically, adding a tab labeled "Synthesis glTF Exporter" after an assembly has been opened.
+If not, here's how to start the add-in manually:
 - Navigate to the "Tools" menu in the Design workspace.
 - Click on the "Add-Ins" button.
 - In the window that appears, navigate to the "Add-Ins" tab.
@@ -28,7 +29,7 @@ Using the add-in:
 - Fusion 360
 - protoc.exe from the Google Protobuf library (add the folder with the protoc executable to your system path) https://github.com/protocolbuffers/protobuf/releases/latest
 
-#### Optional
+_Optional_
 
 - Jetbrains PyCharm
 - Fusion 360 Scripting plugin for PyCharm https://plugins.jetbrains.com/plugin/11343-fusion-360-scripting
@@ -44,7 +45,17 @@ Using the add-in:
 - Click the "Edit" button to open the VSCode editor
 - To debug the Add-in, go back to Fusion and click on the dropdown next to the "Run" button, then click "Debug"
 
-## Troubleshooting
+### Releasing
+- Open Fusion and test the add-in functionality.
+- Zip up the project directory `SynthesisInventorGltfExporter`
+
+#### Installer (Windows)
+- The installer should place all the files in zipped release folder at `%AppData%\Autodesk\Autodesk Fusion 360\API\AddIns\SynthesisInventorGltfExporter`
+
+#### Installer (Macos)
+- The installer should place all the files in zipped release folder at `$HOME/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/SynthesisInventorGltfExporter`
+
+### Troubleshooting
 Protobuf-related error:
 
 - Restart Fusion 360
