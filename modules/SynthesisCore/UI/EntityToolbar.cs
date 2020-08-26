@@ -31,6 +31,10 @@ namespace SynthesisCore.UI
                     });
                 ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
                     _ => EnvironmentManager.RemoveEntity(selectedEntity));
+
+                var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
+                ToolbarTools.AddButton(jointCategory, "joints-button", "/modules/synthesis_core/UI/images/joint-icon.png", 
+                    _ => UIManager.TogglePanel("Joints"));
             });
             toolbarCreated = true;
         }

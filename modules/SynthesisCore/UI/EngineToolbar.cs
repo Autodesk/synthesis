@@ -23,10 +23,6 @@ namespace SynthesisCore.UI
                     _ => UIManager.TogglePanel("Entities"));
                 ToolbarTools.AddButton(designCategory, "change-environment-button", "/modules/synthesis_core/UI/images/environments-icon.png",
                     _ => UIManager.TogglePanel("Environments"));
-
-                var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
-                ToolbarTools.AddButton(jointCategory, "joints-button", "/modules/synthesis_core/UI/images/joint-icon.png",
-                   _ => UIManager.TogglePanel("Joints"));
             });
 
             UIManager.AddTab(engineTab);
