@@ -76,13 +76,14 @@
 }
 
 .window-header-container {
-    height: 50px;
+    height: 40px;
     width: 100%;
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 4px;
     padding-bottom: 4px;
     flex-direction: row;
+	background-color: rgb(210, 210, 210);
 }
 
 .window-header-title {
@@ -101,6 +102,14 @@
 .window-header-icon {
     width: 30px;
     height: 30px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .window-bottom-button-panel {

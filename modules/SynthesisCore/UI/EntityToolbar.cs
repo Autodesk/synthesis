@@ -23,8 +23,11 @@ namespace SynthesisCore.UI
                 var modifyCategory = ToolbarTools.AddButtonCategory(toolbarElement, "MODIFY");
                 ToolbarTools.AddButton(modifyCategory, "move-entity-button", "/modules/synthesis_core/UI/images/move-entity-icon.png",
                     _ => {
-                        openedMoveArrows = true;
-                        MoveArrows.MoveEntity(selectedEntity);
+                        openedMoveArrows = !openedMoveArrows;
+                        if(openedMoveArrows)
+                            MoveArrows.MoveEntity(selectedEntity);
+                        else
+                            MoveArrows.StopMovingEntity();
                     });
                 ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "/modules/synthesis_core/UI/images/delete-icon.png",
                     _ => EnvironmentManager.RemoveEntity(selectedEntity));
