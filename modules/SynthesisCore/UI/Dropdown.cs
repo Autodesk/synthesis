@@ -25,7 +25,7 @@ namespace SynthesisCore.UI
 
         public static implicit operator VisualElement(Dropdown d) => d._visualElement;
 
-        private List<string> _options;
+        private List<string> _options = new List<string>();;
 
         private bool _isListViewVisible = false;
 
@@ -55,13 +55,29 @@ namespace SynthesisCore.UI
 
         public Dropdown(string name)
         {
-            _options = new List<string>();
             Init(name);
         }
 
         public Dropdown(string name, List<string> options)
         {
-            _options = options;
+            for(int i = 0; i < options.Count; i++){
+                if (i == 0)
+                    Selected = options[i];
+                else
+                    _options.Add(options[i]);
+            }
+            Init(name);
+        }
+
+        public Dropdown(string name, params string[] options)
+        {
+            for (int i = 0; i < options.Length; i++)
+            {
+                if (i == 0)
+                    Selected = options[i];
+                else
+                    _options.Add(options[i]);
+            }
             Init(name);
         }
 
@@ -191,13 +207,13 @@ namespace SynthesisCore.UI
 
         private void ToggleListView()
         {
-            ToggleIcon();
             //toggle list view
             if (_isListViewVisible)
                 _visualElement.Remove(_listView); //hides list view
             else
                 _visualElement.Add(_listView); //shows list view
             _isListViewVisible = !_isListViewVisible;
+            ToggleIcon();
         }
         private void ToggleIcon()
         {
@@ -206,8 +222,8 @@ namespace SynthesisCore.UI
             {
                 _buttonIcon.SetStyleProperty("visibility", "visible");
                 _buttonIcon.SetStyleProperty("background-image", _isListViewVisible ?
-                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png" :
-                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
+                    "/modules/synthesis_core/UI/images/toolbar-hide-icon.png" :
+                    "/modules/synthesis_core/UI/images/toolbar-show-icon.png");
             }
             else
                 _buttonIcon.SetStyleProperty("visibility", "hidden");
