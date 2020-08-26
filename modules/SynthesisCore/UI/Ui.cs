@@ -26,7 +26,7 @@ namespace SynthesisCore.UI
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
             
-            Dictionary<string, string> defaultControls = new Dictionary<string, string>
+            Dictionary<string, object> defaultControls = new Dictionary<string, object>
             {
                 {"Camera Forward", "W"},
                 {"Camera Backward", "S"},
