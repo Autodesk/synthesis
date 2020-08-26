@@ -37,7 +37,7 @@ namespace SynthesisAPI.PreferenceManager
             UnsavedChanges = true;
         }
 
-        public static void SetPreferences(string moduleName, Dictionary<string, string> preferences)
+        public static void SetPreferences(string moduleName, Dictionary<string, object> preferences)
         {
             foreach (string key in preferences.Keys)
             {

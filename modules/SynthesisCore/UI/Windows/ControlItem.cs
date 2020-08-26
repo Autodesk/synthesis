@@ -1,6 +1,11 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using Api.InputManager;
+using SynthesisAPI.AssetManager;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -33,10 +38,24 @@ namespace SynthesisCore.UI
         {
             KeyButton.Subscribe(x =>
             {
-                KeyButton.Text = "Press Any Key";
-                // wait for key press
-                // PreferenceManager.SetPreference("SynthesisCore", ControlInfo.Name, /* updated key button */);
-                // PreferenceManager.Save();
+                void Callback(IEvent e)
+                {
+                    PreferenceManager.SetPreference("SynthesisCore", ControlInfo.Name, ((KeyEvent) e).KeyString);
+                    KeyButton.Text = ((KeyEvent) e).KeyString;
+                    PreferenceManager.Save();
+                    
+                    InputManager.UnassignDigitalInput("");
+                    
+                    InputSystem.IsAwaitingKey = false;
+                    
+                    EventBus.RemoveTypeListener<KeyEvent>(Callback);
+                } 
+                if (!InputSystem.IsAwaitingKey)
+                {
+                    KeyButton.Text = "Press Any Key";
+                    EventBus.NewTypeListener<KeyEvent>(Callback);
+                    InputSystem.IsAwaitingKey = true;
+                }
             });
         }
     }

@@ -8,6 +8,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.UI.Windows;
 
 namespace SynthesisCore.UI
 {
@@ -38,9 +39,14 @@ namespace SynthesisCore.UI
                 {"Entity Left", "Left Arrow"},
                 {"Entity Right", "Right Arrow"}
             };
-            
-            PreferenceManager.SetPreferences("SynthesisCore", defaultControls);
-            PreferenceManager.Save();
+
+            PreferenceManager.Load();
+
+            if (!PreferenceManager.ContainsPreference("SynthesisCore", "Camera Forward"))
+            {
+                PreferenceManager.SetPreferences("SynthesisCore", defaultControls);
+                PreferenceManager.Save();
+            }
             
             var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             UIManager.SetBlankTabAsset(blankTabAsset);
@@ -64,8 +70,6 @@ namespace SynthesisCore.UI
 
             Button helpButton = (Button) UIManager.RootElement.Get("help-button");
             helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
-            
-
         }
 
         public override void OnPhysicsUpdate() { }
