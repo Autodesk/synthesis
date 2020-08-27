@@ -1,8 +1,10 @@
 ﻿using SynthesisAPI.EnvironmentManager;
-using SynthesisAPI.EventBus;
+using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 using SynthesisCore.Systems;
 
 namespace SynthesisCore.UI
@@ -10,61 +12,121 @@ namespace SynthesisCore.UI
     public static class EntityToolbar
     {
         private static Tab entityTab;
-        private static Entity selectedEntity;
-
         private static bool toolbarCreated = false;
+        private static bool isToolbarBound = false;
+
         private static bool openedMoveArrows = false;
-        private static bool isOpen = false;
-        
-        private static void CreateToolbar()
+        private static bool openedJointEditor = false;
+
+        private static bool isEntitySelected => Selectable.Selected != null;
+
+        private static VisualElement moveEntityButton = null;
+        private const string MoveEntityButtonIcon = "/modules/synthesis_core/UI/images/move-entity-icon.png";
+        private const string MoveEntityButtonIconDisabled = "/modules/synthesis_core/UI/images/move-entity-icon-disabled.png";
+
+        private static VisualElement deleteEntityButton = null;
+        private const string DeleteEntityButtonIcon = "/modules/synthesis_core/UI/images/delete-icon.png";
+        private const string DeleteEntityButtonIconDisabled = "/modules/synthesis_core/UI/images/delete-icon-disabled.png";
+
+        private static VisualElement editJointsButton = null;
+        private const string EditJointsButtonIcon = "/modules/synthesis_core/UI/images/joint-icon.png";
+        private const string EditJointsButtonIconDisabled = "/modules/synthesis_core/UI/images/joint-icon-disabled.png";
+
+        public static void CreateToolbar()
         {
+            if (toolbarCreated)
+                return;
+
             entityTab = new Tab("Entity", Ui.ToolbarAsset, toolbarElement => {
                 // Populate tabs of toolbar
                 var modifyCategory = ToolbarTools.AddButtonCategory(toolbarElement, "MODIFY");
-                ToolbarTools.AddButton(modifyCategory, "move-entity-button", "Move Entity", "/modules/synthesis_core/UI/images/move-entity-icon.png",
+                moveEntityButton = ToolbarTools.AddButton(modifyCategory, "move-entity-button", "Move Entity", MoveEntityButtonIconDisabled,
                     _ => {
-                        openedMoveArrows = !openedMoveArrows;
-                        if(openedMoveArrows)
-                            MoveArrows.MoveEntity(selectedEntity);
-                        else
-                            MoveArrows.StopMovingEntity();
+                        if (isEntitySelected)
+                        {
+                            openedMoveArrows = !openedMoveArrows;
+                            if (openedMoveArrows)
+                                MoveArrows.MoveEntity(Selectable.Selected.Entity.Value);
+                            else
+                                MoveArrows.StopMovingEntity();
+                        }
                     });
-                ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", "/modules/synthesis_core/UI/images/delete-icon.png",
-                    _ => EnvironmentManager.RemoveEntity(selectedEntity));
+                deleteEntityButton = ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", DeleteEntityButtonIconDisabled,
+                    _ => {
+                        if (isEntitySelected) {
+                            EnvironmentManager.RemoveEntity(Selectable.Selected.Entity.Value);
+                        }
+                    });
 
                 var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
-                ToolbarTools.AddButton(jointCategory, "joints-button", "Edit Joints", "/modules/synthesis_core/UI/images/joint-icon.png", 
+                editJointsButton = ToolbarTools.AddButton(jointCategory, "joints-button", "Edit Joints", EditJointsButtonIconDisabled, 
                     _ => {
-                        JointsWindow.GetUpdatedJointList(selectedEntity);
-                        UIManager.TogglePanel("Joints");
+                        if (isEntitySelected)
+                        {
+                            openedJointEditor = !openedJointEditor;
+                            if (openedJointEditor)
+                                UIManager.ShowPanel("Joints");
+                            else
+                                UIManager.ClosePanel("Joints");
+                        }
                     });
+
+                isToolbarBound = true;
+                UpdateIcons();
             });
+
+            UIManager.AddTab(entityTab);
+
             toolbarCreated = true;
         }
 
-        public static void Open(Entity entity)
+        private static void UpdateIcons()
         {
-            if (!toolbarCreated)
-                CreateToolbar();
+            if (!toolbarCreated || !isToolbarBound)
+                return;
 
-            selectedEntity = entity;
-            
-            if(!isOpen)
-                UIManager.AddTab(entityTab);
-            
-            UIManager.SelectTab(entityTab.Name);
-            
-            isOpen = true;
+            if (isEntitySelected)
+            {
+                moveEntityButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", MoveEntityButtonIcon);
+                deleteEntityButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", DeleteEntityButtonIcon);
+                editJointsButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", EditJointsButtonIcon);
+            }
+            else
+            {
+                moveEntityButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", MoveEntityButtonIconDisabled);
+                deleteEntityButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", DeleteEntityButtonIconDisabled);
+                editJointsButton.Get(className: "toolbar-button-icon").SetStyleProperty("background-image", EditJointsButtonIconDisabled);
+            }
         }
 
-        public static void Close()
+        public class EntityToolbarCallbacks
         {
-            if (openedMoveArrows)
+            [Callback]
+            public void OnSelectionChange(Selectable.SelectionChangeEvent _)
             {
-                MoveArrows.StopMovingEntity();
+                if (!toolbarCreated || !isToolbarBound)
+                    return;
+
+                UpdateIcons();
+
+                if (isEntitySelected)
+                {
+
+                }
+                else
+                {
+                    if (openedJointEditor)
+                    {
+                        UIManager.ClosePanel("Joints");
+                        openedJointEditor = false;
+                    }
+                    if (openedMoveArrows)
+                    {
+                        MoveArrows.StopMovingEntity();
+                        openedMoveArrows = false;
+                    }
+                }
             }
-            UIManager.RemoveTab(entityTab.Name);
-            isOpen = false;
         }
     }
 }

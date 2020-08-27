@@ -16,7 +16,7 @@ namespace SynthesisCore.UI
             return category.Get(className: "toolbar-category-inner");
         }
 
-        public static void AddButton(VisualElement toolbarCategory, string buttonName, string tooltipText, string iconPath, Action<IEvent> callback)
+        public static VisualElement AddButton(VisualElement toolbarCategory, string buttonName, string tooltipText, string iconPath, Action<IEvent> callback)
         {
             var buttonContainer = Ui.ToolbarButtonAsset.GetElement(buttonName);
             toolbarCategory.Get(className: "toolbar-category-inner").Add(buttonContainer);
@@ -27,6 +27,8 @@ namespace SynthesisCore.UI
             iconContainer.SetStyleProperty("background-image", iconPath);
 
             buttonContainer.Tooltip = tooltipText;
+
+            return buttonContainer;
         }
     }
 }

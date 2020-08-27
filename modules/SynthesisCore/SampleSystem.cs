@@ -36,14 +36,6 @@ namespace SynthesisCore
             cube.AddComponent<MeshCollider>();
             cube.AddComponent<Rigidbody>();
             var cubeSelectable = cube.AddComponent<Selectable>();
-            cubeSelectable.OnSelect = () =>
-            {
-                EntityToolbar.Open(cubeSelectable.Entity.Value);
-            };
-            cubeSelectable.OnDeselect = () =>
-            {
-                EntityToolbar.Close();
-            };
             //e.AddComponent<Moveable>().Channel = 5;
 
             powerSupply = new PowerSupply(12); // V
@@ -57,14 +49,6 @@ namespace SynthesisCore
             var body = testBody.GetComponent<Joints>().AllJoints;
 
             var selectable = testBody.AddComponent<Selectable>();
-            selectable.OnSelect = () =>
-            {
-                EntityToolbar.Open(selectable.Entity.Value);
-            };
-            selectable.OnDeselect = () =>
-            {
-                EntityToolbar.Close();
-            };
 
             testBody.AddComponent<Moveable>().Channel = 5;
 

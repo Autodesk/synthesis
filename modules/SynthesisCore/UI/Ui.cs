@@ -28,6 +28,7 @@ namespace SynthesisCore.UI
             UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
 
             EngineToolbar.CreateToolbar();
+            EntityToolbar.CreateToolbar();
             
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             

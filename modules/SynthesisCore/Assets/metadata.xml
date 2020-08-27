@@ -41,6 +41,7 @@
     <string>UI/uss/Dialog.uss</string>
     <string>UI/uss/Joint.uss</string>
     <string>UI/images/joint-icon.png</string>
+    <string>UI/images/joint-icon-disabled.png</string>
     <string>UI/images/motor-icon.png</string>
     <string>UI/images/add-icon.png</string>
     <string>UI/images/cad-icon.png</string>
@@ -65,7 +66,9 @@
     <string>UI/images/module-icon.png</string>
     <string>UI/images/settings-icon.png</string>
     <string>UI/images/move-entity-icon.png</string>
+    <string>UI/images/move-entity-icon-disabled.png</string>
     <string>UI/images/delete-icon.png</string>
+    <string>UI/images/delete-icon-disabled.png</string>
     <string>UI/images/toolbar-hide-icon.png</string>
     <string>UI/images/toolbar-show-icon.png</string>
     <string>UI/images/information-icon.png</string>

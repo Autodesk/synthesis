@@ -61,7 +61,7 @@ namespace SynthesisAPI.UIManager
             var diff = e.localMousePosition.Map() - startPosition;
 
             var newTop = target.worldBound.y + diff.Y;
-            var newLeft = target.layout.x + diff.X;
+            var newLeft = target.worldBound.x + diff.X;
 
             if (newTop > -e.localMousePosition.y && (newTop + e.localMousePosition.y) < UnityEngine.Screen.height)
                 target.style.top = (StyleLength)(target.layout.y + diff.Y);

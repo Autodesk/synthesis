@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
@@ -16,7 +17,6 @@ namespace SynthesisCore.UI
         private ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
-        internal static Entity SelectedJointEntity;
 
         public JointsWindow()
         {
@@ -26,11 +26,6 @@ namespace SynthesisCore.UI
             var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
             Panel = new Panel("Joints", jointsAssset, OnWindowOpen, false);
-        }
-
-        public static void GetUpdatedJointList(Entity entity)
-        {
-            SelectedJointEntity = entity;
         }
 
         private void OnWindowOpen(VisualElement jointsWindow)
@@ -59,20 +54,23 @@ namespace SynthesisCore.UI
 
         private void LoadWindowContents()
         {
-            foreach (var entity in SynthesisCoreData.ModelsDict.Values)
+            if (Selectable.Selected != null)
             {
-                var motorAssemblyManager = entity.GetComponent<MotorAssemblyManager>();
-                if (MotorAssemblyManager.IsDescendant(SelectedJointEntity, entity))
+                foreach (var entity in SynthesisCoreData.ModelsDict.Values)
                 {
-                    if (motorAssemblyManager != null)
+                    var motorAssemblyManager = entity.GetComponent<MotorAssemblyManager>();
+                    if (MotorAssemblyManager.IsDescendant(Selectable.Selected.Entity.Value, entity))
                     {
-                        foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
+                        if (motorAssemblyManager != null)
                         {
-                            JointList.Add(new JointItem(JointAsset, assembly).JointElement);
+                            foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
+                            {
+                                JointList.Add(new JointItem(JointAsset, assembly).JointElement);
+                            }
                         }
                     }
+                    else Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
                 }
-                else Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
             }
         }
 

@@ -8,12 +8,18 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.InputManager.InputEvents;
 using System.Linq;
+using SynthesisAPI.EventBus;
 
 namespace Engine.ModuleLoader.Adapters
 {
-    public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
+	public class SelectableAdapter : MonoBehaviour, IApiAdapter<Selectable>
 	{
 		private Selectable instance;
+		private static int selectableAdapterCount = 0;
+
+		private static int selectableAdapterIndex = 0; // Used for InputManager control name
+		private int myIndex = 0; // Used for InputManager control name // TODO make this unnecessary
+
 		private List<Material> materials = new List<Material>();
 		public const float FlashSelectedTime = 0.1f; // sec
 		private long lastClickTime = 0; // ms
@@ -22,6 +28,9 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			instance = obj;
 			gameObject.SetActive(true);
+			myIndex = selectableAdapterIndex;
+			selectableAdapterIndex++;
+			selectableAdapterCount++;
 		}
 
 		public static Selectable NewInstance()
@@ -49,11 +58,13 @@ namespace Engine.ModuleLoader.Adapters
 		{
 			// Debug.Log("Select()");
 			var currentClickTime = System.DateTimeOffset.Now.ToUnixTimeMilliseconds();
+			var lastSelected = Selectable.Selected;
 			if (!instance.IsSelected)
 			{
 				Deselect();
 				instance.SetSelected((currentClickTime - lastClickTime) <= 400 ? Selectable.SelectionType.ExtendedSelection : Selectable.SelectionType.ExtendedSelectionPending);
 				instance.OnSelect();
+				EventBus.Push(new Selectable.SelectionChangeEvent(Selectable.Selected, lastSelected));
 
 				StartCoroutine(FlashYellow());
 			}
@@ -124,20 +135,36 @@ namespace Engine.ModuleLoader.Adapters
 					}
 				}
 			}
-			InputManager.AssignDigitalInput($"_internal selectable select", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
-			InputManager.AssignDigitalInput($"_internal selectable deselect", new Digital($"mouse 1"), e =>
+			InputManager.AssignDigitalInput($"_internal SelectableAdapter select {myIndex}", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
+
+			if (selectableAdapterCount == 0)
 			{
-				if (Selectable.Selected != null)
+				InputManager.AssignDigitalInput($"_internal SelectableAdapter deselect", new Digital($"mouse 1"), e =>
 				{
-					Deselect();
-				}
-			});
+					if (Selectable.Selected != null)
+					{
+						var lastSelected = Selectable.Selected;
+						Deselect();
+						EventBus.Push(new Selectable.SelectionChangeEvent(Selectable.Selected, lastSelected));
+					}
+				});
+			}
 		}
 
 		public void OnDestroy()
 		{
-			InputManager.UnassignDigitalInput($"_internal SelectableAdapter select");
-			InputManager.UnassignDigitalInput($"_internal SelectableAdapter deselect");
+			InputManager.UnassignDigitalInput($"_internal SelectableAdapter select {myIndex}");
+			if (selectableAdapterCount == 0)
+			{
+				InputManager.UnassignDigitalInput($"_internal SelectableAdapter deselect {myIndex}");
+			}
+			if (Selectable.Selected?.Entity != null && Selectable.Selected?.Entity == instance.Entity)
+			{
+				var lastSelected = Selectable.Selected;
+				Deselect();
+				EventBus.Push(new Selectable.SelectionChangeEvent(Selectable.Selected, lastSelected));
+			}
+			selectableAdapterCount--;
 		}
 
 		public void ProcessInput(DigitalEvent mouseDownEvent)
