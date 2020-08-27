@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SynthesisAPI.AssetManager;
-using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager.VisualElements;
-using static SynthesisAPI.UIManager.VisualElements.ListView;
 
 namespace SynthesisCore.UI
 {
@@ -33,11 +30,14 @@ namespace SynthesisCore.UI
 
         public string Name { get; private set; }
 
-        public int Count { get => Selected == null ? _options.Count : _options.Count+1; }
+        public int Count { get => Selected == null ? _options.Count : _options.Count + 1; }
 
         public string Selected { get; private set; }
 
-        public IEnumerable<string> Options { get {
+        public IEnumerable<string> Options
+        {
+            get
+            {
                 if (Selected == null)
                     return _options;
                 else
@@ -45,9 +45,11 @@ namespace SynthesisCore.UI
                     List<string> lst = new List<string>(_options);
                     lst.Add(Selected);
                     return lst;
-                } } }
+                }
+            }
+        }
 
-        public int ItemHeight { get => _listView.ItemHeight; set { _listView.ItemHeight = value; RefreshListView(); } }
+        public int ItemHeight { get => _listView.ItemHeight; set { _listView.ItemHeight = value; RefreshListView(); SetButtonHeight(); } }
 
         public delegate void SubscribeEvent(string s);
 
@@ -62,7 +64,8 @@ namespace SynthesisCore.UI
 
         public Dropdown(string name, List<string> options)
         {
-            for(int i = 0; i < options.Count; i++){
+            for (int i = 0; i < options.Count; i++)
+            {
                 if (i == 0)
                     Selected = options[i];
                 else
@@ -91,6 +94,8 @@ namespace SynthesisCore.UI
             _visualElement = _dropdownAsset.GetElement(name);
             CreateButton();
             CreateListView();
+            //default height property
+            ItemHeight = 30;
         }
 
         private void CreateButton()
@@ -98,9 +103,7 @@ namespace SynthesisCore.UI
             //init visual elements
             _button = (Button)_visualElement.Get("selected-button");
             _buttonIcon = _button.Get("dropdown-icon");
-            //default properties
-            Selected = null;
-            _button.Text = " "; //default start text
+            RefreshButton();
             ToggleIcon();
             _button.Subscribe(x =>
             {
@@ -114,8 +117,6 @@ namespace SynthesisCore.UI
             _listView = (ListView)_visualElement.Get("options-list");
             //hide list view on start
             _listView.RemoveFromHierarchy();
-            //default height property
-            _listView.ItemHeight = 30;
             //link list view population
             _listView.Populate(_options,
                                 () => new Button(),
@@ -124,7 +125,7 @@ namespace SynthesisCore.UI
                                     var button = element as Button;
                                     button.Name = $"{_listView.Name}-{_options[index]}";
                                     button.Text = _options[index];
-                                    button.Subscribe(x => OnOptionClick(button,index));
+                                    button.Subscribe(x => OnOptionClick(button, index));
                                     button.SetStyleProperty("border-top-width", "0");
                                     button.SetStyleProperty("border-bottom-width", "0");
                                     button.SetStyleProperty("border-right-width", "0");
@@ -134,15 +135,17 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("border-bottom-left-radius", "0");
                                     button.SetStyleProperty("border-bottom-right-radius", "0");
                                 });
+            RefreshListView();
         }
-        private void OnOptionClick(Button button,int index)
+        private void OnOptionClick(Button button, int index)
         {
             var _tmp = button.Text;
             if (Selected == null)
             {
                 _options.RemoveAt(index);
                 RefreshListView();
-            } else
+            }
+            else
             {
                 _options[index] = Selected;
                 button.Text = Selected;
@@ -161,7 +164,8 @@ namespace SynthesisCore.UI
             {
                 Selected = option;
                 RefreshButton();
-            } else
+            }
+            else
             {
                 _options.Add(option);
                 ToggleIcon();
@@ -176,7 +180,8 @@ namespace SynthesisCore.UI
                 Selected = null;
                 RefreshButton();
                 return true;
-            } else if (_options.Remove(option))
+            }
+            else if (_options.Remove(option))
             {
                 ToggleIcon();
                 RefreshListView();
@@ -187,13 +192,18 @@ namespace SynthesisCore.UI
 
         private void RefreshButton()
         {
-            _button.Text = Selected == null ? " " : Selected;           
+            _button.Text = Selected == null ? " " : Selected;
+        }
+
+        private void SetButtonHeight()
+        {
+            _button.SetStyleProperty("height", ItemHeight.ToString());
         }
 
         private void RefreshListView()
         {
             _listView.Refresh();
-            UpdateContainerHeight();
+            UpdateListViewHeight();
         }
 
         private void RefreshAll()
@@ -202,9 +212,10 @@ namespace SynthesisCore.UI
             RefreshListView();
         }
 
-        private void UpdateContainerHeight()
+        private void UpdateListViewHeight()
         {
-            int listViewHeight = _options.Count *_listView.ItemHeight;
+            int listViewHeight = _options.Count * _listView.ItemHeight;
+            _listView.SetStyleProperty("top", ItemHeight.ToString());
             _listView.SetStyleProperty("height", listViewHeight.ToString() + "px");
         }
 
