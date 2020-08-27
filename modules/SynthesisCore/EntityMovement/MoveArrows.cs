@@ -3,10 +3,10 @@ using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
-using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Systems;
 
-namespace SynthesisCore.Systems
+namespace SynthesisCore.EntityMovement
 {
     /// <summary>
     /// System that controls arrows to move entities around
