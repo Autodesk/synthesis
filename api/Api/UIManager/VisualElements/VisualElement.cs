@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.Runtime;
+﻿using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
@@ -124,6 +126,8 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
         public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
+        public Vector2D Position { get => _visualElement.worldBound.position.Map(); }
+        public Vector2D Size { get => _visualElement.worldBound.size.Map(); }
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)
