@@ -234,7 +234,6 @@ namespace SynthesisAPI.UIManager
         {
             Instance.SetupCatchAllMouseDown(RootElement.Get("catch-all-mouse-down"));
             Instance.PanelContainer.Enabled = false;
-            RootElement.Get("tooltip-container").Enabled = false;
         }
 
         private class Inner

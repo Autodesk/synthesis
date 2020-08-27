@@ -10,6 +10,5 @@
         <ui:VisualElement name="title-bar-container" style="overflow: visible;" />
         <ui:VisualElement name="panel-center" class="panel-center" />
         <ui:VisualElement name="dialog-free-roam" class="dialog-free-roam" />
-        <ui:VisualElement name="tooltip-container" class="tooltip-container" />
     </ui:VisualElement>
 </ui:UXML>

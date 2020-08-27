@@ -16,21 +16,12 @@ namespace SynthesisAPI.UIManager
         private static bool isTooltipOpen;
         private static IEnumerator timerCoroutine = null;
 
-        private static VisualElements.VisualElement tooltipContainer = null;
         private static VisualElements.Label tooltip = null;
 
         public string Text;
 
         public TooltipManipulator(string text = "")
         {
-            if (tooltipContainer == null)
-            {
-                tooltipContainer = UIManager.RootElement.Get("tooltip-container");
-                tooltipContainer.UnityVisualElement.RegisterCallback<MouseMoveEvent>(_ => CancelTooltips());
-                tooltipContainer.UnityVisualElement.RegisterCallback<MouseLeaveEvent>(_ => CancelTooltips());
-                tooltipContainer.UnityVisualElement.RegisterCallback<MouseDownEvent>(_ => CancelTooltips());
-            }
-
             isTooltipOpen = false;
             Text = text;
         }
@@ -49,10 +40,7 @@ namespace SynthesisAPI.UIManager
 
         private void OnMouseLeave(MouseLeaveEvent e)
         {
-            if (!tooltipContainer.Enabled)
-            {
-                CancelTooltips();
-            }
+            CancelTooltips();
         }
 
         private void OnMouseMove(MouseMoveEvent e)
@@ -99,8 +87,7 @@ namespace SynthesisAPI.UIManager
                 double width = tooltip.Text.Length * 6.3;
                 tooltip.SetStyleProperty("width", $"{(int)width}px");
                 
-                tooltipContainer.Add(tooltip);
-                tooltipContainer.Enabled = true;
+                UIManager.RootElement.Add(tooltip);
             }
         }
 
@@ -109,7 +96,6 @@ namespace SynthesisAPI.UIManager
             if (isTooltipOpen)
             {
                 tooltip.RemoveFromHierarchy();
-                tooltipContainer.Enabled = false;
                 isTooltipOpen = false;
             }
         }
