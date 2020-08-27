@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
@@ -40,6 +41,11 @@ namespace SynthesisAPI.Runtime
 		public static void AddComponentToScene(Entity entity, Component component) => Instance?.AddComponentToScene(entity, component);
 
 		public static void RemoveComponentFromScene(Entity entity, Type t) => Instance?.RemoveComponentFromScene(entity, t);
+
+		public static void EnqueueTaskForMainThread(Action task) => Instance?.EnqueueTaskForMainThread(task);
+
+		public static UnityEngine.Coroutine? StartCoroutine(IEnumerator routine) => Instance?.StartCoroutine(routine);
+		public static void StopCoroutine(IEnumerator routine) => Instance?.StopCoroutine(routine);
 
 		public static T? CreateUnityType<T>(params object[] args) where T : class => Instance?.CreateUnityType<T>(args);
 

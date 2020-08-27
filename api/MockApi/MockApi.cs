@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,7 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace MockApi
@@ -109,13 +111,13 @@ namespace MockApi
             }
 
 #nullable enable
-            public Component? AddComponentToScene(Entity entity, Type t)
+            public SynthesisAPI.EnvironmentManager.Component? AddComponentToScene(Entity entity, Type t)
             {
                 LogAction("Add Component", $"Adding {t} to {entity}");
-                return (Component?)Activator.CreateInstance(t);
+                return (SynthesisAPI.EnvironmentManager.Component?)Activator.CreateInstance(t);
             }
 
-            public void AddComponentToScene(Entity entity, Component component)
+            public void AddComponentToScene(Entity entity, SynthesisAPI.EnvironmentManager.Component component)
             {
                 LogAction("Add Component", $"Adding instance of {component.GetType()} to {entity}");
             }
@@ -173,6 +175,21 @@ namespace MockApi
             // }
 
             public VisualElement GetRootVisualElement()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void EnqueueTaskForMainThread(Action task)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Coroutine StartCoroutine(IEnumerator routine)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void StopCoroutine(IEnumerator routine)
             {
                 throw new NotImplementedException();
             }
