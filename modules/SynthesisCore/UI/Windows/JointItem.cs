@@ -37,11 +37,9 @@ namespace SynthesisCore.UI
             TextField gearField = (TextField)JointElement.Get("motor-gear-field");
             TextField countField = (TextField)JointElement.Get("motor-count-field");
             
-            gearField.IsReadOnly = false;
             gearField.SetValueWithoutNotify(assembly.GearReduction.ToString());
 
-            countField.SetValueWithoutNotify("1"); // TODO
-            countField.IsReadOnly = true; // TODO
+            countField.SetValueWithoutNotify(assembly.MotorCount.ToString());
 
             motorTypeButton.Subscribe(x =>
             {
@@ -86,7 +84,13 @@ namespace SynthesisCore.UI
             {
                 if (e is TextField.TextFieldFocusLeaveEvent leaveEvent)
                 {
-                    // TODO
+                    if (countField.Value != "")
+                    {
+                        if (uint.Parse(countField.Value) == 0)
+                            countField.SetValueWithoutNotify(assembly.MotorCount.ToString());
+                        else
+                            assembly.MotorCount = uint.Parse(countField.Value);
+                    }
                 }
             });
 
