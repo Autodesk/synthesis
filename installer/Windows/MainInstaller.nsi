@@ -167,8 +167,8 @@ SubSection "Engine" Engine
    SectionEnd
   
    Section "Environments" Environments
-	; Set extraction path for field files
-	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
+	; Set extraction path for environment files
+	SetOutPath $APPDATA\Autodesk\Synthesis\Environments
 	File /r "Environments\*"
    SectionEnd
 
