@@ -4,6 +4,9 @@ package synthesis.gltfextras;
 
 import "google/protobuf/any.proto";
 
+/*
+Each glTF "mesh" object optionally contains one PhysicalProperties in its extras.
+*/
 message PhysicalProperties {
     double mass = 2; // kg
     double volume = 3; //cm^3
@@ -14,6 +17,7 @@ message PhysicalProperties {
 //<editor-fold desc="Joints">
 
 /*
+The root glTF object contains an array of Joint objects in its extras.
 We're choosing not to include info about the joint geometry, such as Joint.angle, Joint.isFlipped, Joint.offset, etc. as raw brep data is not encoded anyways
 */
 message Joint {
@@ -22,6 +26,7 @@ message Joint {
     bool isLocked = 3;
     bool isSuppressed = 4;
 
+    // There is guaranteed to be a glTF "node" with a matching uuid in the "uuid" property of its extras for each of these.
     string occurrenceOneUUID = 5;
     string occurrenceTwoUUID = 6;
 
