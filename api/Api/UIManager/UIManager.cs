@@ -162,7 +162,7 @@ namespace SynthesisAPI.UIManager
             }
             else if(LoadedTabs.ContainsKey(SelectedTabName)) // Add toolbar
             {
-                if (LoadedTabs[SelectedTabName].ToolbarElement == null)
+                if (!LoadedTabs[SelectedTabName].CacheToolbar || LoadedTabs[SelectedTabName].ToolbarElement == null)
                 {
                     var toolbar = LoadedTabs[SelectedTabName].ToobarAsset.GetElement("active-toolbar");
                     LoadedTabs[SelectedTabName].BindToolbar(toolbar);
@@ -194,7 +194,7 @@ namespace SynthesisAPI.UIManager
             {
                 Instance.PanelContainer.Enabled = true;
                 var elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}");
-                if (LoadedPanels[panelName].PanelElement == null)
+                if (!LoadedPanels[panelName].CachePanel || LoadedPanels[panelName].PanelElement == null)
                 {
                     LoadedPanels[panelName].BindPanel(elm);
                     var x = LoadedPanels[panelName];
