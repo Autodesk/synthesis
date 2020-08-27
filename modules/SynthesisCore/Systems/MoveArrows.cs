@@ -18,14 +18,19 @@ namespace SynthesisCore.Systems
         private static Entity? targetEntity = null;
         private static Transform targetTransform = null;
 
-        private static readonly Arrow[] arrows = new Arrow[3];
+        private static readonly ArrowBase[] arrows = new ArrowBase[3];
         private static UnitVector3D? selectedArrowDirection = null;
         private static bool IsMovingEntity => targetEntity != null;
+
+        public abstract class ArrowBase
+        {
+            public abstract void Update();
+        }
 
         /// <summary>
         /// Represents an arrow for movement along an axis
         /// </summary>
-        public class Arrow
+        public class AxisArrow: ArrowBase
         {
             public Entity ArrowEntity { get; private set; }
             public Transform Transform;
@@ -36,7 +41,7 @@ namespace SynthesisCore.Systems
             private bool hasSetSpritePivot = false;
             private readonly Sprite sprite;
 
-            public Arrow(UnitVector3D direction)
+            public AxisArrow(UnitVector3D direction)
             {
                 Direction = direction;
 
@@ -62,8 +67,11 @@ namespace SynthesisCore.Systems
                         CameraController.EnableCameraPan = false;
                         foreach (var i in arrows)
                         {
-                            i.sprite.SetSprite(arrowSpriteAsset);
-                            i.sprite.Color = System.Drawing.Color.FromArgb(175, 255, 255, 255);
+                            if (i is AxisArrow axisArrow)
+                            {
+                                axisArrow.sprite.SetSprite(arrowSpriteAsset);
+                                axisArrow.sprite.Color = System.Drawing.Color.FromArgb(175, 255, 255, 255);
+                            }
                         }
                         sprite.SetSprite(selectedArrowSpriteAsset);
                         sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
@@ -77,15 +85,18 @@ namespace SynthesisCore.Systems
                         CameraController.EnableCameraPan = true;
                         foreach (var i in arrows)
                         {
-                            i.sprite.SetSprite(arrowSpriteAsset);
-                            i.sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+                            if (i is AxisArrow axisArrow)
+                            {
+                                axisArrow.sprite.SetSprite(arrowSpriteAsset);
+                                axisArrow.sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+                            }
                         }
                         selectedArrowDirection = null;
                     }
                 };
             }
 
-            public void Update()
+            public override void Update()
             {
                 if (!hasSetSpritePivot)
                 {
@@ -109,6 +120,11 @@ namespace SynthesisCore.Systems
                     if (!sprite.Visible)
                         sprite.Visible = true;
                 }
+
+                // Make arrow face camera
+                var forward = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
+                forward -= forward.ProjectOn(Direction);
+                Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), Direction);
             }
         }
 
@@ -125,10 +141,6 @@ namespace SynthesisCore.Systems
                 arrowsTransform.Position = targetTransform.GlobalPosition;
                 foreach (var arrow in arrows)
                 {
-                    // Make arrow face camera
-                    var forward = CameraController.Instance.cameraTransform.Position - arrowsTransform.GlobalPosition;
-                    forward -= forward.ProjectOn(arrow.Direction);
-                    arrow.Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), arrow.Direction);
                     arrow.Update();
                 }
 
@@ -156,9 +168,9 @@ namespace SynthesisCore.Systems
                 // Create arrows
                 arrowsEntity = EnvironmentManager.AddEntity();
                 arrowsTransform = arrowsEntity.AddComponent<Transform>();
-                arrows[0] = new Arrow(UnitVector3D.XAxis);
-                arrows[1] = new Arrow(UnitVector3D.YAxis);
-                arrows[2] = new Arrow(UnitVector3D.ZAxis);
+                arrows[0] = new AxisArrow(UnitVector3D.XAxis);
+                arrows[1] = new AxisArrow(UnitVector3D.YAxis);
+                arrows[2] = new AxisArrow(UnitVector3D.ZAxis);
             }
             
             targetEntity = entity;
