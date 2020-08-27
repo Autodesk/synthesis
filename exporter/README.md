@@ -23,3 +23,5 @@ Synthesis-specific metadata about mechanical joints and physics properties are s
 Google's Protobuf library is used to standardize the JSON serialization of the Synthesis metadata. The proto file defining the standard used for each of the exporters is `gltf_extras.proto`, located in this directory. It may be compiled with `compile_gltf_extras.bat` once you have installed the protobuf compiler and added `protoc.exe` to your system path.
 
 See the README in each exporter directory for specific development instructions.
+
+See the [wiki](https://github.com/Autodesk/synthesis/wiki/exp-overview) for a more detailed overview of the exporters and links to relevant documentation.

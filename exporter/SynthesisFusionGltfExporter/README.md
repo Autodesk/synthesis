@@ -22,6 +22,10 @@ Using the add-in:
 
 ## Development Installation (Windows)
 
+### Getting Started
+
+See the [wiki](https://github.com/Autodesk/synthesis/wiki/fus-gltf-overview) for an overview of the exporter and links to relevant documentation.
+
 ### Requirements
 
 - Visual Studio Code: https://code.visualstudio.com/

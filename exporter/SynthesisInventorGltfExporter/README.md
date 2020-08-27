@@ -20,6 +20,10 @@ Using the add-in:
 
 ## Development Installation (Windows)
 
+### Getting Started
+
+See the [wiki](https://github.com/Autodesk/synthesis/wiki/inv-gltf-overview) for an overview of the exporter and links to relevant documentation.
+
 ### Requirements
 - Visual Studio 2019 or Jetbrains Rider
 - Inventor 2020+ (Tested with 2020 and 2021)
