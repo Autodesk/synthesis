@@ -138,6 +138,8 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("border-bottom-right-radius", "0");
                                 });
             RefreshListView();
+            //lose focus
+            _listView.OnLoseFocus(() => OnLoseFocus());
         }
         private void OnOptionClick(Button button, int index)
         {
@@ -205,6 +207,7 @@ namespace SynthesisCore.UI
         private void RefreshListView()
         {
             _listView.Refresh();
+            UpdateListView();
         }
 
         private void RefreshAll()
@@ -236,6 +239,7 @@ namespace SynthesisCore.UI
             {
                 UpdateListView();
                 UIManager.RootElement.Add(_listView); //shows list view
+                _listView.Focus();
             }
             _isListViewVisible = !_isListViewVisible;
             ToggleIcon();
@@ -253,6 +257,11 @@ namespace SynthesisCore.UI
             }
             else
                 _buttonIcon.SetStyleProperty("visibility", "hidden");
+        }
+        private void OnLoseFocus()
+        {
+            if (_isListViewVisible)
+                ToggleListView();
         }
     }
 }
