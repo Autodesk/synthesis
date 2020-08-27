@@ -12,18 +12,18 @@ namespace SynthesisCore.EntityMovement
     /// </summary>
     public class AxisArrow : ArrowBase
     {
-        public Entity ArrowEntity { get; private set; }
-        public Transform Transform;
-        public UnitVector3D Direction { get; private set; }
+        private Entity ArrowEntity;
+        private Transform Transform;
+        public UnitVector3D AxisDirection { get; private set; }
 
         private Entity arrowSpriteEntity;
         private readonly MeshCollider2D collider;
         private bool hasSetSpritePivot = false;
         private readonly Sprite sprite;
 
-        public AxisArrow(UnitVector3D direction)
+        public AxisArrow(UnitVector3D axisDirection)
         {
-            Direction = direction;
+            AxisDirection = axisDirection;
 
             ArrowEntity = EnvironmentManager.AddEntity();
             ArrowEntity.GetComponent<Parent>().ParentEntity = MoveArrows.arrowsEntity;
@@ -55,7 +55,7 @@ namespace SynthesisCore.EntityMovement
                     }
                     sprite.SetSprite(selectedArrowSpriteAsset);
                     sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-                    MoveArrows.selectedArrowDirection = Direction;
+                    MoveArrows.selectedArrowDirection = AxisDirection;
                 }
             };
             collider.OnMouseUp = () =>
@@ -81,7 +81,7 @@ namespace SynthesisCore.EntityMovement
             if (!hasSetSpritePivot)
             {
                 // Move sprite pivot point from center of image to base of arrow
-                var len = sprite.Bounds.Extents.ProjectOn(Direction).Length;
+                var len = sprite.Bounds.Extents.ProjectOn(AxisDirection).Length;
                 if (len != 0)
                 {
                     var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
@@ -103,8 +103,8 @@ namespace SynthesisCore.EntityMovement
 
             // Make arrow face camera
             var forward = CameraController.Instance.cameraTransform.Position - MoveArrows.arrowsTransform.GlobalPosition;
-            forward -= forward.ProjectOn(Direction);
-            Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), Direction);
+            forward -= forward.ProjectOn(AxisDirection);
+            Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), AxisDirection);
         }
     }
 }
