@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.Runtime;
+﻿using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
@@ -116,6 +118,9 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
         }
 
+        public void OnLoseFocus(Action onLose) => _visualElement.RegisterCallback<FocusOutEvent>(_ => onLose());
+        public void Focus() => _visualElement.Focus();
+
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
         public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
         public void RemoveAt(int index) => _visualElement.RemoveAt(index);
@@ -124,10 +129,15 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
         public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
-        public void BringToFront() => _visualElement.BringToFront();
-        public void SendToBack() => _visualElement.SendToBack();
-        public void PlaceBehind(VisualElement visualElement) => _visualElement.PlaceBehind(visualElement._visualElement);
-        public void PlaceInFront(VisualElement visualElement) => _visualElement.PlaceInFront(visualElement._visualElement);
+
+        //public void BringToFront() => _visualElement.BringToFront();
+        //public void SendToBack() => _visualElement.SendToBack();
+        //public void PlaceBehind(VisualElement visualElement) => _visualElement.PlaceBehind(visualElement._visualElement);
+        //public void PlaceInFront(VisualElement visualElement) => _visualElement.PlaceInFront(visualElement._visualElement);
+
+        public Vector2D Position { get => _visualElement.worldBound.position.Map(); }
+        public Vector2D Size { get => _visualElement.worldBound.size.Map(); }
+
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)

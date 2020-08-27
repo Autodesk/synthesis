@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.UI
@@ -136,9 +138,10 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("border-bottom-right-radius", "0");
                                     button.SetStyleProperty("left", "-10px");
                                     button.SetStyleProperty("width", "110%");
-                                    button.BringToFront();
                                 });
             RefreshListView();
+            //lose focus
+            _listView.OnLoseFocus(() => OnLoseFocus());
         }
         private void OnOptionClick(Button button, int index)
         {
@@ -206,7 +209,7 @@ namespace SynthesisCore.UI
         private void RefreshListView()
         {
             _listView.Refresh();
-            UpdateListViewHeight();
+            UpdateListView();
         }
 
         private void RefreshAll()
@@ -215,10 +218,17 @@ namespace SynthesisCore.UI
             RefreshListView();
         }
 
-        private void UpdateListViewHeight()
+        private void UpdateListView()
         {
+            //position
+            Vector2D position = _visualElement.Position;
+            _listView.SetStyleProperty("top", (position.Y + ItemHeight).ToString() + "px");
+            _listView.SetStyleProperty("left", position.X.ToString() + "px");
+            //width
+            Vector2D size = _visualElement.Size;
+            _listView.SetStyleProperty("width", size.X.ToString() + "px");
+            //height
             int listViewHeight = _options.Count * _listView.ItemHeight;
-            _listView.SetStyleProperty("top", ItemHeight.ToString());
             _listView.SetStyleProperty("height", listViewHeight.ToString() + "px");
         }
 
@@ -226,15 +236,16 @@ namespace SynthesisCore.UI
         {
             //toggle list view
             if (_isListViewVisible)
-                _visualElement.Remove(_listView); //hides list view
+                _listView.RemoveFromHierarchy(); //hides list view
             else
             {
-                _visualElement.Add(_listView); //shows list view
-                _listView.BringToFront();
+                UpdateListView();
+                UIManager.RootElement.Add(_listView); //shows list view
+                _listView.Focus();
             }
-                
             _isListViewVisible = !_isListViewVisible;
             ToggleIcon();
+
         }
         private void ToggleIcon()
         {
@@ -248,6 +259,11 @@ namespace SynthesisCore.UI
             }
             else
                 _buttonIcon.SetStyleProperty("visibility", "hidden");
+        }
+        private void OnLoseFocus()
+        {
+            if (_isListViewVisible)
+                ToggleListView();
         }
     }
 }
