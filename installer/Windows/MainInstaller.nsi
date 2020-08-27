@@ -166,7 +166,7 @@ SubSection "Engine" Engine
    Section "Environments" Environments
 	; Set extraction path for field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
-	File /r "Fields\*"
+	File /r "Environments\*"
    SectionEnd
 
 SubSectionEnd
@@ -174,21 +174,15 @@ SubSectionEnd
 SubSection "Exporter" Exporter
 
   Section "Inventor Addin" iExporter
-    ; Set extraction path to Inventor addin directory
-    SetOutPath $INSTDIR\Exporter
-    File /r "InventorExporter\*"
-  
+    ; Set extraction path to Inventor addin directory  
     SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-    File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
+	File /r SynthesisInventorGltfExporter
 SectionEnd
 
   Section "Fusion Addin" fExporter
     ; Set extraction path to Fusion addin directories
-	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
-    File /r "FusionExporter\*"
-  
-    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
-    File /r "FusionExporter\FusionRobotExporter.dll"
+	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns"
+    File /r SynthesisFusionGltfExporter
   SectionEnd
 
 SubSectionEnd
