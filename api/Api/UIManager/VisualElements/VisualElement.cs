@@ -1,4 +1,6 @@
-﻿using SynthesisAPI.Runtime;
+﻿using MathNet.Spatial.Euclidean;
+using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
@@ -14,7 +16,7 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             _visualElement = ApiProvider.CreateUnityType<_UnityVisualElement>()!;
             if (_visualElement == null)
-                throw new Exception("Failed to instantiate VisualElement");
+                throw new SynthesisException("Failed to instantiate VisualElement");
         }
 
         internal VisualElement(_UnityVisualElement visualElement)
@@ -31,15 +33,6 @@ namespace SynthesisAPI.UIManager.VisualElements
         {
             get => _visualElement.focusable;
             set => _visualElement.focusable = value;
-        }
-
-        /// <summary>
-        /// TODO: tooltips do not seem to be supported by Unity yet
-        /// </summary>
-        public string Tooltip
-        {
-            get => _visualElement.tooltip;
-            set => _visualElement.tooltip = value;
         }
 
         public bool Enabled
@@ -131,6 +124,40 @@ namespace SynthesisAPI.UIManager.VisualElements
             }
         }
 
+        private Manipulator tooltipManipulator = null;
+        
+        private string tooltip;
+
+        public string Tooltip
+        {
+            get => tooltip;
+            set
+            {
+                if (value != tooltip)
+                {
+                    tooltip = value;
+                    if (tooltip != "")
+                    {
+                        if (tooltipManipulator == null)
+                        {
+                            tooltipManipulator = new TooltipManipulator(tooltip);
+                            _visualElement.AddManipulator(tooltipManipulator);
+                        }
+                        else
+                        {
+                            ((TooltipManipulator)tooltipManipulator).Text = tooltip;
+                        }
+                    }
+                    else if (tooltipManipulator != null)
+                    {
+                        _visualElement.RemoveManipulator(tooltipManipulator);
+                        tooltipManipulator = null;
+                    }
+
+                }
+            }
+        }
+        
         private bool isDraggable = false;
         private Manipulator dragManipulator = null;
         public bool IsDraggable

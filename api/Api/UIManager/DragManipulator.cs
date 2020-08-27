@@ -60,8 +60,14 @@ namespace SynthesisAPI.UIManager
 
             var diff = e.localMousePosition.Map() - startPosition;
 
-            target.style.top = (StyleLength)Math.Clamp(target.layout.y + diff.Y, 0, target.parent.layout.height - target.layout.height);
-            target.style.left = (StyleLength)Math.Clamp(target.layout.x + diff.X, 0, target.parent.layout.width - target.layout.width);
+            var newTop = target.worldBound.y + diff.Y;
+            var newLeft = target.layout.x + diff.X;
+
+            if (newTop > -e.localMousePosition.y && (newTop + e.localMousePosition.y) < UnityEngine.Screen.height)
+                target.style.top = (StyleLength)(target.layout.y + diff.Y);
+
+            if (newLeft > -e.localMousePosition.x && (newLeft + e.localMousePosition.x) < UnityEngine.Screen.width)
+                target.style.left = (StyleLength)newLeft;
 
             e.StopPropagation();
         }

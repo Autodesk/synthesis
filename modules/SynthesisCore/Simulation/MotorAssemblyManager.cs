@@ -47,7 +47,7 @@ namespace SynthesisCore.Simulation
             set => _allMotorAssemblies = value;
         }
 
-        private bool IsDescendant(Entity ancestor, Entity test)
+        public static bool IsDescendant(Entity ancestor, Entity test)
         {
             if (test == ancestor)
                 return true;

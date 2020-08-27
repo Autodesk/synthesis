@@ -16,17 +16,23 @@ namespace SynthesisCore.UI
         private ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
-        
+        internal static Entity SelectedJointEntity;
+
         public JointsWindow()
         {
-            if(JointAsset == null)
+            if (JointAsset == null)
                 JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
 
             var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
-            Panel = new Panel("Joints", jointsAssset, OnWindowOpen);
+            Panel = new Panel("Joints", jointsAssset, OnWindowOpen, false);
         }
-        
+
+        public static void GetUpdatedJointList(Entity entity)
+        {
+            SelectedJointEntity = entity;
+        }
+
         private void OnWindowOpen(VisualElement jointsWindow)
         {
             Window = jointsWindow;
@@ -37,8 +43,8 @@ namespace SynthesisCore.UI
             Window.SetStyleProperty("left", "0");
             Window.SetStyleProperty("top", "70");
 
-            JointList = (ListView) Window.Get("joint-list");
-            LoadWindowContents();   
+            JointList = (ListView)Window.Get("joint-list");
+            LoadWindowContents();
             RegisterButtons();
         }
 
@@ -48,6 +54,7 @@ namespace SynthesisCore.UI
             if (jointHighlightEntity?.RemoveEntity() ?? false)
                 jointHighlightEntity = null;
             UIManager.ClosePanel(Panel.Name);
+            RemoveWindowsContents();
         }
 
         private void LoadWindowContents()
@@ -55,22 +62,33 @@ namespace SynthesisCore.UI
             foreach (var entity in SynthesisCoreData.ModelsDict.Values)
             {
                 var motorAssemblyManager = entity.GetComponent<MotorAssemblyManager>();
-                if (motorAssemblyManager != null)
+                if (MotorAssemblyManager.IsDescendant(SelectedJointEntity, entity))
                 {
-                    foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
+                    if (motorAssemblyManager != null)
                     {
+                        foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
+                        {
                             JointList.Add(new JointItem(JointAsset, assembly).JointElement);
+                        }
                     }
                 }
             }
         }
 
+        private void RemoveWindowsContents()
+        {
+            foreach (var jointChild in JointList.GetChildren())
+            {
+                JointList.Remove(jointChild);
+            }
+        }
+
         private void RegisterButtons()
-        {        
-            Button okButton = (Button) Window.Get("ok-button");
+        {
+            Button okButton = (Button)Window.Get("ok-button");
             okButton?.Subscribe(_ => OnWindowClose());
 
-            Button closeButton = (Button) Window.Get("close-button");
+            Button closeButton = (Button)Window.Get("close-button");
             closeButton?.Subscribe(_ => OnWindowClose());
         }
     }

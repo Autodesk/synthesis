@@ -19,9 +19,9 @@ namespace SynthesisCore.UI
 
             var engineTab = new Tab("Engine", Ui.ToolbarAsset, toolbarElement => {
                 var designCategory = ToolbarTools.AddButtonCategory(toolbarElement, "ENVIRONMENT");
-                ToolbarTools.AddButton(designCategory, "add-entity-button", "/modules/synthesis_core/UI/images/add-entity-icon-2.png",
+                ToolbarTools.AddButton(designCategory, "add-entity-button", "Add Entity", "/modules/synthesis_core/UI/images/add-entity-icon-2.png",
                     _ => UIManager.TogglePanel("Entities"));
-                ToolbarTools.AddButton(designCategory, "change-environment-button", "/modules/synthesis_core/UI/images/environments-icon.png",
+                ToolbarTools.AddButton(designCategory, "change-environment-button", "Change Environment", "/modules/synthesis_core/UI/images/environments-icon.png",
                     _ => UIManager.TogglePanel("Environments"));
             });
 
