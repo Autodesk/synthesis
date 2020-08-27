@@ -3,6 +3,7 @@ using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 using SynthesisCore.Simulation;
 
 namespace SynthesisCore.UI
@@ -71,6 +72,7 @@ namespace SynthesisCore.UI
                         }
                     }
                 }
+                else Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
             }
         }
 
