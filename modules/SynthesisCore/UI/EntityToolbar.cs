@@ -35,7 +35,7 @@ namespace SynthesisCore.UI
                 var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
                 ToolbarTools.AddButton(jointCategory, "joints-button", "Edit Joints", "/modules/synthesis_core/UI/images/joint-icon.png", 
                     _ => {
-                        JointsWindow.SelectedJointEntity = selectedEntity;
+                        JointsWindow.GetUpdatedJointList(selectedEntity);
                         UIManager.TogglePanel("Joints");
                     });
             });
