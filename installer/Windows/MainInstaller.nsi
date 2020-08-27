@@ -67,6 +67,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         DeleteRegKey HKLM SOFTWARE\Synthesis
 		
 		; Remove fusion plugins
+		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\SynthesisFusionGltfExporter"
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
 		RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
 		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
@@ -78,6 +79,8 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
 	    Delete "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
 	    Delete "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
 	    Delete "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\InventorRobotExporter"
+		RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\SynthesisInventorGltfExporter"
   
 		; Remove deprecated bxd inventor plugins
 		Delete "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
@@ -166,7 +169,7 @@ SubSection "Engine" Engine
    Section "Environments" Environments
 	; Set extraction path for field files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Fields
-	File /r "Fields\*"
+	File /r "Environments\*"
    SectionEnd
 
 SubSectionEnd
@@ -174,21 +177,15 @@ SubSectionEnd
 SubSection "Exporter" Exporter
 
   Section "Inventor Addin" iExporter
-    ; Set extraction path to Inventor addin directory
-    SetOutPath $INSTDIR\Exporter
-    File /r "InventorExporter\*"
-  
+    ; Set extraction path to Inventor addin directory  
     SetOutPath $APPDATA\Autodesk\ApplicationPlugins
-    File /r "InventorExporter\Autodesk.InventorRobotExporter.Inventor.addin"
+	File /r SynthesisInventorGltfExporter
 SectionEnd
 
   Section "Fusion Addin" fExporter
     ; Set extraction path to Fusion addin directories
-	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
-    File /r "FusionExporter\*"
-  
-    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle\Contents\"
-    File /r "FusionExporter\FusionRobotExporter.dll"
+	SetOutPath "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns"
+    File /r SynthesisFusionGltfExporter
   SectionEnd
 
 SubSectionEnd
@@ -250,6 +247,7 @@ Section "Uninstall"
   RMDir /r /REBOOTOK $APPDATA\SynthesisTEMP
   
   ; Remove fusion plugins
+  RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\SynthesisFusionGltfExporter"
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionRobotExporter"
   RMDir /r "$APPDATA\Autodesk\Autodesk Fusion 360\API\AddIns\FusionExporter"
   RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\FusionRobotExporter.bundle"
@@ -261,6 +259,8 @@ Section "Uninstall"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2018\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2017\Addins\Autodesk.InventorRobotExporter.Inventor.addin"
   Delete /REBOOTOK "$APPDATA\Autodesk\ApplicationPlugins\Autodesk.InventorRobotExporter.Inventor.addin"
+  RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\InventorRobotExporter"
+  RMDir /r "$APPDATA\Autodesk\ApplicationPlugins\SynthesisInventorGltfExporter"
   
   ; Remove deprecated bxd inventor plugins
   Delete /REBOOTOK "$APPDATA\Autodesk\Inventor 2020\Addins\autodesk.BxDRobotExporter.inventor.addin"
