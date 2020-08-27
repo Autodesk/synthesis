@@ -136,6 +136,10 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("border-top-right-radius", "0");
                                     button.SetStyleProperty("border-bottom-left-radius", "0");
                                     button.SetStyleProperty("border-bottom-right-radius", "0");
+                                    button.SetStyleProperty("margin-left", "0");
+                                    button.SetStyleProperty("margin-right", "0");
+                                    button.SetStyleProperty("margin-top", "0");
+                                    button.SetStyleProperty("margin-bottom", "0");
                                 });
             RefreshListView();
             //lose focus
