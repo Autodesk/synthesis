@@ -1,8 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="Dropdown" style="height: auto; width: 100%;">
-        <ui:Button text="Button" name="selected-button" style="height: 30px; width: 100%; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-bottom-color: rgb(255, 255, 255); border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255);">
-            <ui:VisualElement name="dropdown-icon" style="width: 20px; height: 100%; position: absolute; top: 0; right: 10px;" />
+    <ui:VisualElement name="dropdown" style="height: auto; width: 100%;">
+        <Style src="/modules/synthesis_core/UI/uss/Dropdown.uss" />
+        <ui:Button text="Button" name="selected-button" class="dropdown-button" >
+            <ui:VisualElement name="dropdown-icon" class="dropdown-icon" />
         </ui:Button>
-        <ui:ListView focusable="True" name="options-list" style="height: 0; width: 100%; visibility: hidden; position: absolute; top: 30px;" />
+        <ui:ListView focusable="True" name="options-list" class="dropdown-options-list" />
     </ui:VisualElement>
 </ui:UXML>

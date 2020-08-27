@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="page">
-        <ui:Label text="Graphics page" name="sample-text" />
     </ui:VisualElement>
 </ui:UXML>

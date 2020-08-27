@@ -124,6 +124,10 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
         public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
+        public void BringToFront() => _visualElement.BringToFront();
+        public void SendToBack() => _visualElement.SendToBack();
+        public void PlaceBehind(VisualElement visualElement) => _visualElement.PlaceBehind(visualElement._visualElement);
+        public void PlaceInFront(VisualElement visualElement) => _visualElement.PlaceInFront(visualElement._visualElement);
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)

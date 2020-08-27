@@ -20,10 +20,21 @@ namespace SynthesisCore.UI
 
         private void LoadPageContent()
         {
-            Page.Add(new DropdownItem(OptionAsset, new Dropdown("screen-mode", 
-                "Borderless Window", "Windowed", "Maximized Window", "Fullscreen")).Element);
+            Dropdown screenMode = new Dropdown("screen-mode",
+                "Borderless Window", "Windowed", "Maximized Window", "Fullscreen");
+            screenMode.ItemHeight = 20;
+            Page.Add(new DropdownItem(OptionAsset, screenMode, "Screen Mode").Element);
+            
+            Dropdown qualityLevel = new Dropdown("quality",
+                "Low", "Medium", "High", "Ultra");
+            qualityLevel.ItemHeight = 20;
+            Page.Add(new DropdownItem(OptionAsset, qualityLevel, "Quality").Element);
 
-            //Page.Add(new Dropdown("test", "df", "sdfd", "dfdf"));
+            Dropdown resolution = new Dropdown("resolution",
+                "1280x720", "1280x768", "1280x800", "1280x1024", "1360x768", "1366x768",
+                            "1400x1050", "1440x900", "1600x900", "1680x1050", "1920x1080");
+            resolution.ItemHeight = 20;
+            Page.Add(new DropdownItem(OptionAsset, resolution, "Resolution").Element);
         }
         
         private void RegisterButtons()

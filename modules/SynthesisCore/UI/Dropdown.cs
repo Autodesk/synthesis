@@ -134,6 +134,9 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("border-top-right-radius", "0");
                                     button.SetStyleProperty("border-bottom-left-radius", "0");
                                     button.SetStyleProperty("border-bottom-right-radius", "0");
+                                    button.SetStyleProperty("left", "-10px");
+                                    button.SetStyleProperty("width", "110%");
+                                    button.BringToFront();
                                 });
             RefreshListView();
         }
@@ -225,7 +228,11 @@ namespace SynthesisCore.UI
             if (_isListViewVisible)
                 _visualElement.Remove(_listView); //hides list view
             else
+            {
                 _visualElement.Add(_listView); //shows list view
+                _listView.BringToFront();
+            }
+                
             _isListViewVisible = !_isListViewVisible;
             ToggleIcon();
         }

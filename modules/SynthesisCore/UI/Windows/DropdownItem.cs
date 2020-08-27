@@ -11,14 +11,16 @@ namespace SynthesisCore.UI.Windows
         private Dropdown Dropdown;
         private Label NameLabel;
         private VisualElement ModifierContainer;
+        private string OptionName;
 
-        public DropdownItem(VisualElementAsset optionAsset, Dropdown dropdown)
+        public DropdownItem(VisualElementAsset optionAsset, Dropdown dropdown, string optionName)
         {
             Element = optionAsset.GetElement("option");
             Dropdown = dropdown;
             
             NameLabel = (Label) Element.Get("option-name");
             ModifierContainer = Element.Get("modifier-container");
+            OptionName = optionName;
             
             SetInformation();
             RegisterButtons();
@@ -26,7 +28,7 @@ namespace SynthesisCore.UI.Windows
 
         private void SetInformation()
         {
-            NameLabel.Text = NameLabel.Text.Replace("%name%", Dropdown.Name);
+            NameLabel.Text = NameLabel.Text.Replace("%name%", OptionName);
             ModifierContainer.Add(Dropdown);
         }
 
@@ -36,8 +38,6 @@ namespace SynthesisCore.UI.Windows
             {
                 PreferenceManager.SetPreference("SynthesisCore", Dropdown.Name, value);
                 PreferenceManager.Save();
-                
-                Logger.Log("Preference [" + Dropdown.Name + "] set to [" + value + "]");
             };
         }
     }
