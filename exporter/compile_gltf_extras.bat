@@ -1,0 +1,1 @@
+protoc --csharp_out=./SynthesisInventorGltfExporter/SynthesisInventorGltfExporter/proto/ --python_out=./SynthesisFusionGltfExporter/gltf/extras/proto/ ./gltf_extras.proto

@@ -140,7 +140,7 @@ SectionEnd
 
 Section "Environments" Environments
 
-	; Extract field files
+	; Set extraction path for environment files
 	SetOutPath $APPDATA\Autodesk\Synthesis\Environments
 	File /r "Environments\*"
 	
