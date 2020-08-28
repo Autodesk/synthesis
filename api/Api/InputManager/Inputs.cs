@@ -1,5 +1,7 @@
 ﻿using System;
+using MathNet.Spatial.Euclidean;
 using SynthesisAPI.Runtime;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.InputManager.Inputs
 {
@@ -40,7 +42,7 @@ namespace SynthesisAPI.InputManager.Inputs
             State = DigitalState.None;
         }
 
-        public bool Update()
+        public virtual bool Update()
         {
             if (UnityEngine.Input.GetKey(Name))
             {
@@ -60,5 +62,17 @@ namespace SynthesisAPI.InputManager.Inputs
     public enum DigitalState
     {
         None = 0, Down = 1, Held = 2, Up = 3
+    }
+
+    public class MouseDown: Digital
+    {
+        public Vector2D MousePosition { get; private set; }
+        public MouseDown(string name): base(name) { }
+        public override bool Update()
+        {
+            var r = base.Update();
+            MousePosition = ((UnityEngine.Vector2)UnityEngine.Input.mousePosition).Map();
+            return r;
+        }
     }
 }
