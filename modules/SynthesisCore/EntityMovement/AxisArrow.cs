@@ -10,16 +10,13 @@ namespace SynthesisCore.EntityMovement
     /// <summary>
     /// Represents an arrow for movement along an axis
     /// </summary>
-    public class AxisArrow : ArrowBase
+    public class AxisArrow : MarkerBase
     {
         private Entity ArrowEntity;
         private Transform Transform;
         public UnitVector3D AxisDirection { get; private set; }
 
-        private Entity arrowSpriteEntity;
         private readonly MeshCollider2D collider;
-        private bool hasSetSpritePivot = false;
-        private readonly Sprite sprite;
 
         public AxisArrow(UnitVector3D axisDirection)
         {
@@ -29,82 +26,68 @@ namespace SynthesisCore.EntityMovement
             ArrowEntity.GetComponent<Parent>().ParentEntity = MoveArrows.arrowsEntity;
             Transform = ArrowEntity.AddComponent<Transform>();
 
-            arrowSpriteEntity = EnvironmentManager.AddEntity();
-            arrowSpriteEntity.GetComponent<Parent>().ParentEntity = ArrowEntity;
-
             var arrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow.png");
             var selectedArrowSpriteAsset = AssetManager.GetAsset<SpriteAsset>("/modules/synthesis_core/sprites/arrow-selected.png");
-            sprite = arrowSpriteEntity.AddComponent<Sprite>();
-            sprite.Visible = false;
-            sprite.SetSprite(arrowSpriteAsset);
-            arrowSpriteEntity.AddComponent<AlwaysOnTop>();
+            Sprite = ArrowEntity.AddComponent<Sprite>();
+            Sprite.SetSprite(arrowSpriteAsset);
+            ArrowEntity.AddComponent<AlwaysOnTop>();
 
-            collider = arrowSpriteEntity.AddComponent<MeshCollider2D>();
+            collider = ArrowEntity.AddComponent<MeshCollider2D>();
             collider.OnMouseDown = () =>
             {
-                if (MoveArrows.selectedArrowDirection == null)
+                if (MoveArrows.selectedMarker == null)
                 {
                     CameraController.EnableCameraPan = false;
                     foreach (var i in MoveArrows.arrows)
                     {
-                        if (i is AxisArrow axisArrow)
+                        if (i != this)
                         {
-                            axisArrow.sprite.SetSprite(arrowSpriteAsset);
-                            axisArrow.sprite.Color = System.Drawing.Color.FromArgb(175, 255, 255, 255);
+                            i.Sprite.Color = System.Drawing.Color.FromArgb(175, 255, 255, 255);
                         }
                     }
-                    sprite.SetSprite(selectedArrowSpriteAsset);
-                    sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-                    MoveArrows.selectedArrowDirection = AxisDirection;
+                    Sprite.SetSprite(selectedArrowSpriteAsset);
+                    Sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+                    MoveArrows.selectedMarker = this;
                 }
             };
             collider.OnMouseUp = () =>
             {
-                if (MoveArrows.selectedArrowDirection != null)
+                if (MoveArrows.selectedMarker == this)
                 {
                     CameraController.EnableCameraPan = true;
                     foreach (var i in MoveArrows.arrows)
                     {
-                        if (i is AxisArrow axisArrow)
+                        if (i != this)
                         {
-                            axisArrow.sprite.SetSprite(arrowSpriteAsset);
-                            axisArrow.sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
+                            i.Sprite.Color = System.Drawing.Color.FromArgb(255, 255, 255, 255);
                         }
                     }
-                    MoveArrows.selectedArrowDirection = null;
+                    Sprite.SetSprite(arrowSpriteAsset);
+                    MoveArrows.selectedMarker = null;
                 }
             };
         }
 
         public override void Update()
         {
-            if (!hasSetSpritePivot)
-            {
-                // Move sprite pivot point from center of image to base of arrow
-                var len = sprite.Bounds.Extents.ProjectOn(AxisDirection).Length;
-                if (len != 0)
-                {
-                    var arrowSpriteTransform = arrowSpriteEntity.AddComponent<Transform>();
-                    arrowSpriteTransform.Position = new Vector3D(0, len * 2, 0);
-                    hasSetSpritePivot = true;
-                }
-            }
-            else
-            {
-                // Update size of arrows so they always look the same size as they move
-                var vectorToCamera = CameraController.Instance.cameraTransform.Position - MoveArrows.arrowsTransform.GlobalPosition;
-
-                var size = vectorToCamera.Length * 0.01;
-                MoveArrows.arrowsTransform.Scale = new Vector3D(size, size, size);
-
-                if (!sprite.Visible)
-                    sprite.Visible = true;
-            }
-
             // Make arrow face camera
             var forward = CameraController.Instance.cameraTransform.Position - MoveArrows.arrowsTransform.GlobalPosition;
             forward -= forward.ProjectOn(AxisDirection);
             Transform.GlobalRotation = MathUtil.LookAt(forward.Normalize(), AxisDirection);
+        }
+
+        public override void MoveEntityTransform(Transform targetTransform, float xMod, float yMod)
+        {
+            var horizontalDir = UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
+            var mouseDir = new Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+            var deltaDir = mouseDir.ProjectOn(AxisDirection);
+            if (deltaDir.Length > float.Epsilon)
+            {
+                var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 0.2;
+
+                var unitDeltaDir = deltaDir.Normalize();
+                targetTransform.GlobalPosition += unitDeltaDir.ScaleBy(magnitude);
+            }
         }
     }
 }

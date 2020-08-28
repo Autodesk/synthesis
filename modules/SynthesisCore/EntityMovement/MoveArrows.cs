@@ -17,8 +17,8 @@ namespace SynthesisCore.EntityMovement
         private static Entity? targetEntity = null;
         private static Transform targetTransform = null;
 
-        internal static ArrowBase[] arrows { get; private set; } = new ArrowBase[3];
-        internal static UnitVector3D? selectedArrowDirection { get; set; } = null;
+        internal static MarkerBase[] arrows { get; private set; } = new MarkerBase[7];
+        internal static MarkerBase selectedMarker { get; set; } = null;
         private static bool IsMovingEntity => targetEntity != null;
 
         public override void OnPhysicsUpdate() { }
@@ -31,12 +31,19 @@ namespace SynthesisCore.EntityMovement
             }
             if (IsMovingEntity)
             {
+                // Move the arrows to target position
                 arrowsTransform.Position = targetTransform.GlobalPosition;
+
+                // Update size of arrows so they always look the same size as they move
+                var vectorToCamera = CameraController.Instance.cameraTransform.GlobalPosition - arrowsTransform.GlobalPosition;
+                var size = vectorToCamera.Length * 0.01;
+                arrowsTransform.Scale = new Vector3D(size, size, size);
+
                 foreach (var arrow in arrows)
                 {
                     arrow.Update();
                 }
-
+                
                 MoveEntityTransform();
             }
         }
@@ -64,6 +71,10 @@ namespace SynthesisCore.EntityMovement
                 arrows[0] = new AxisArrow(UnitVector3D.XAxis);
                 arrows[1] = new AxisArrow(UnitVector3D.YAxis);
                 arrows[2] = new AxisArrow(UnitVector3D.ZAxis);
+                arrows[3] = new RotateArrow(UnitVector3D.XAxis, UnitVector3D.YAxis);
+                arrows[4] = new RotateArrow(UnitVector3D.YAxis, UnitVector3D.ZAxis);
+                arrows[5] = new RotateArrow(UnitVector3D.ZAxis, UnitVector3D.XAxis);
+                arrows[6] = new PointMarker();
             }
             
             targetEntity = entity;
@@ -85,7 +96,7 @@ namespace SynthesisCore.EntityMovement
             {
                 EnvironmentManager.RemoveEntity(arrowsEntity);
                 targetEntity = null;
-                selectedArrowDirection = null;
+                selectedMarker = null;
                 foreach (var selectedRigidBody in EnvironmentManager.GetComponentsWhere<Rigidbody>(_ => true))
                 {
                     // Re-enable all physics
@@ -100,23 +111,14 @@ namespace SynthesisCore.EntityMovement
         /// </summary>
         private void MoveEntityTransform()
         {
-            if (selectedArrowDirection.HasValue)
+            if (selectedMarker != null)
             {
                 var xMod = InputManager.GetAxisValue("Mouse X");
                 var yMod = InputManager.GetAxisValue("Mouse Y");
 
                 if (xMod != 0 || yMod != 0)
                 {
-                    var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 0.2;
-
-                    var horizontalDir = UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
-                    var mouseDir = new Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
-                    var deltaDir = mouseDir.ProjectOn(selectedArrowDirection.Value);
-                    if (deltaDir.Length > float.Epsilon)
-                    {
-                        var unitDeltaDir = deltaDir.Normalize();
-                        targetTransform.GlobalPosition += unitDeltaDir.ScaleBy(magnitude);
-                    }
+                    selectedMarker.MoveEntityTransform(targetTransform, xMod, yMod);
                 }
             }
         }

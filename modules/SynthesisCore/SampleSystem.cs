@@ -54,11 +54,11 @@ namespace SynthesisCore
             testBody.AddBundle(o);
 
             var selectable = testBody.AddComponent<Selectable>();
-            cubeSelectable.OnSelect = () =>
+            selectable.OnSelect = () =>
             {
-                EntityToolbar.Open(cubeSelectable.Entity.Value);
+                EntityToolbar.Open(selectable.Entity.Value);
             };
-            cubeSelectable.OnDeselect = () =>
+            selectable.OnDeselect = () =>
             {
                 EntityToolbar.Close();
             };
