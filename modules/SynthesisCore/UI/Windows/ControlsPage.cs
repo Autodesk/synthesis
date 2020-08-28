@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using SynthesisAPI.AssetManager;
+﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -12,7 +9,6 @@ namespace SynthesisCore.UI
         public VisualElement Page { get; }
         private VisualElementAsset ControlAsset;
         private ListView ControlList;
-        private TextInfo TextHelper;
 
         public ControlsPage(VisualElementAsset controlsAsset)
         {
@@ -21,8 +17,6 @@ namespace SynthesisCore.UI
             
             ControlAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Control.uxml");
             ControlList = (ListView) Page.Get("controls");
-
-            TextHelper = new CultureInfo("en-US", false).TextInfo;
 
             LoadPageContent();
         }
@@ -43,23 +37,18 @@ namespace SynthesisCore.UI
 
         private void AddControl(string controlName)
         {
-            string key = GetPreference(controlName);
+            string key = GetFormattedPreference(controlName);
             ControlList.Add(new ControlItem(ControlAsset, new ControlInfo(controlName, key)).Element);
         }
 
-        private string GetPreference(string controlName)
+        private string GetFormattedPreference(string controlName)
         {
             var controlKey = PreferenceManager.GetPreference("SynthesisCore", controlName);
             if (controlKey is string)
             {
-                return ReformatKeyName((string) controlKey);
+                return Utilities.ReformatCondensedString((string) controlKey);
             }
             return "Unassigned";
-        }
-
-        private string ReformatKeyName(string controlName)
-        {
-            return TextHelper.ToTitleCase(controlName);
         }
     }
 }

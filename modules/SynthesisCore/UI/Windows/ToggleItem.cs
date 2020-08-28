@@ -1,5 +1,4 @@
 ﻿using SynthesisAPI.AssetManager;
-using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.UI.Windows
@@ -21,6 +20,9 @@ namespace SynthesisCore.UI.Windows
             ModifierContainer = Element.Get("modifier-container");
             PreferenceName = preferenceName;
             
+            NameLabel.SetStyleProperty("width", "280px");
+            ModifierContainer.SetStyleProperty("width", "20px");
+            
             SetInformation();
             RegisterButtons();
         }
@@ -35,8 +37,7 @@ namespace SynthesisCore.UI.Windows
         {
             Toggle.OnValueChanged += value =>
             {
-                PreferenceManager.SetPreference("SynthesisCore", PreferenceName, value);
-                PreferenceManager.Save();
+                SettingsWindow.AddPendingChange(PreferenceName, value);
             };
         }
     }

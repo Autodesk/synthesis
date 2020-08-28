@@ -16,18 +16,11 @@ namespace SynthesisAPI.PreferenceManager
         private static readonly (string Directory, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
         private static JsonAsset? _asset;
-        private static void ImportPreferencesAsset(bool create = false)
+        private static void ImportPreferencesAsset()
         {
-            try
-            {
-                _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", create, VirtualFilePath.Directory,
+            _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", true, VirtualFilePath.Directory,
                     VirtualFilePath.Name, Permissions.PublicReadWrite,
                     $"{VirtualFilePath.Directory}/{VirtualFilePath.Name}");
-            }
-            catch (Exception e)
-            {
-                
-            }
         }
 
         /// <summary>
@@ -164,7 +157,7 @@ namespace SynthesisAPI.PreferenceManager
                 }
             }
 
-            _preferences = _asset!.DeserializeInner<Dictionary<string, Dictionary<string, object>>>(offset: 0, retainPosition: true);
+            _preferences = _asset!.DeserializeInner<Dictionary<string, Dictionary<string, object>>>(offset: 0, retainPosition: true) ?? new Dictionary<string, Dictionary<string, object>>();
 
             UnsavedChanges = false;
 
@@ -192,7 +185,7 @@ namespace SynthesisAPI.PreferenceManager
         internal static bool SaveInner()
         {
             if(_asset == null)
-                ImportPreferencesAsset(true);
+                ImportPreferencesAsset();
             
             _asset.SerializeInner(_preferences);
             _asset.SaveToFileInner();

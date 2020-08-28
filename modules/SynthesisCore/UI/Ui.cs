@@ -33,15 +33,16 @@ namespace SynthesisCore.UI
                 {"Camera Left", "A"},
                 {"Camera Right", "D"},
                 {"Camera Up", "Space"},
-                {"Camera Down", "Left Shift"},
-                {"Entity Forward", "Up Arrow"},
-                {"Entity Backward", "Down Arrow"},
-                {"Entity Left", "Left Arrow"},
-                {"Entity Right", "Right Arrow"},
+                {"Camera Down", "LeftShift"},
+                {"Entity Forward", "UpArrow"},
+                {"Entity Backward", "DownArrow"},
+                {"Entity Left", "LeftArrow"},
+                {"Entity Right", "RightArrow"},
                 {"Quality", "Low"},
                 {"Screen Resolution", "1920x1080"},
                 {"Screen Mode", "Windowed"},
-                {"Analytics", "True"}
+                {"Analytics", "True"},
+                {"Measurement Units", "Metric"}
             };
 
             PreferenceManager.Load();

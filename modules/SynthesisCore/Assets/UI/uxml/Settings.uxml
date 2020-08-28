@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="window" class="window" style="width: 500px; height: 350px;">
+    <ui:VisualElement name="window" class="window" style="width: 500px; height: 400px;">
         <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
         <Style src="/modules/synthesis_core/UI/uss/Settings.uss" />
         <ui:VisualElement name="header" class="window-header-container">
@@ -11,10 +11,6 @@
                 <ui:Button name="general-settings-button" class="category-button">
                     <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/general-settings-icon.png&apos;);" />
                     <ui:Label text="General" name="name" />
-                </ui:Button>
-                <ui:Button name="graphics-settings-button" class="category-button">
-                    <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/graphics-icon.png&apos;);" />
-                    <ui:Label text="Graphics" name="name" />
                 </ui:Button>
                 <ui:Button name="controls-settings-button" class="category-button">
                     <ui:VisualElement name="icon" class="category-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/controls-icon.png&apos;);" />

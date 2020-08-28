@@ -45,11 +45,10 @@ namespace SynthesisCore.UI
                 
                 void Callback(IEvent e)
                 {
-                    PreferenceManager.SetPreference("SynthesisCore", ControlInfo.Name, ((KeyEvent) e).KeyString);
-                    PreferenceManager.Save();
-                    KeyButton.Text = ((KeyEvent) e).KeyString;
-                    
-                    // InputManager.UnassignDigitalInput(""); TODO unassign previous input
+                    SettingsWindow.AddPendingChange(ControlInfo.Name, ((KeyEvent) e).KeyString);
+                    KeyButton.Text = Utilities.ReformatCondensedString(((KeyEvent) e).KeyString);
+
+                    // InputManager.UnassignDigitalInput(""); TODO unassign previous input, assign new one
                     InputSystem.IsAwaitingKey = false;
                     EventBus.RemoveTypeListener<KeyEvent>(Callback);
                 }

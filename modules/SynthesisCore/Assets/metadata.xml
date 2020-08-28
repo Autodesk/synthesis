@@ -16,7 +16,6 @@
     <string>UI/uxml/Environment.uxml</string>
 	<string>UI/uxml/Environments.uxml</string>
     <string>UI/uxml/General.uxml</string>
-    <string>UI/uxml/Graphics.uxml</string>
     <string>UI/uxml/Modules.uxml</string>
     <string>UI/uxml/Module.uxml</string>
     <string>UI/uxml/Settings.uxml</string>
@@ -41,6 +40,8 @@
     <string>UI/uss/Control.uss</string>
     <string>UI/uss/Page.uss</string>
     <string>UI/uss/Option.uss</string>
+    <string>UI/uss/Dropdown.uss</string>
+    <string>UI/uss/Toggle.uss</string>
     <string>UI/images/add-icon.png</string>
     <string>UI/images/cad-icon.png</string>
     <string>UI/images/add-entity-icon.png</string>
@@ -57,7 +58,6 @@
     <string>UI/images/controls-icon.png</string>
     <string>UI/images/environments-icon.png</string>
     <string>UI/images/general-settings-icon.png</string>
-    <string>UI/images/graphics-icon.png</string>
     <string>UI/images/help-icon.png</string>
     <string>UI/images/modules-icon.png</string>
     <string>UI/images/module-icon.png</string>

@@ -129,15 +129,10 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
         public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
-
-        //public void BringToFront() => _visualElement.BringToFront();
-        //public void SendToBack() => _visualElement.SendToBack();
-        //public void PlaceBehind(VisualElement visualElement) => _visualElement.PlaceBehind(visualElement._visualElement);
-        //public void PlaceInFront(VisualElement visualElement) => _visualElement.PlaceInFront(visualElement._visualElement);
-
         public Vector2D Position { get => _visualElement.worldBound.position.Map(); }
         public Vector2D Size { get => _visualElement.worldBound.size.Map(); }
-
+        public bool ContainsLocalPoint(Vector2D localPoint) => _visualElement.ContainsPoint(localPoint.Map());
+        public bool ContainsPoint(Vector2D worldPoint) => _visualElement.ContainsPoint((worldPoint - Position).Map());
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)
