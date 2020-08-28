@@ -131,6 +131,8 @@ namespace SynthesisAPI.UIManager.VisualElements
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
         public Vector2D Position { get => _visualElement.worldBound.position.Map(); }
         public Vector2D Size { get => _visualElement.worldBound.size.Map(); }
+        public bool ContainsLocalPoint(Vector2D localPoint) => _visualElement.ContainsPoint(localPoint.Map());
+        public bool ContainsPoint(Vector2D worldPoint) => _visualElement.ContainsPoint((worldPoint - Position).Map());
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)

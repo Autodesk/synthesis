@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -27,6 +31,8 @@ namespace SynthesisCore.UI
         private List<string> _options = new List<string>();
 
         private bool _isListViewVisible = false;
+
+        private static bool _isDeselectDropdownAssigned = false;
 
         #region Properties
 
@@ -98,6 +104,22 @@ namespace SynthesisCore.UI
             CreateListView();
             //default height property
             ItemHeight = 30;
+
+            if (!_isDeselectDropdownAssigned)
+            {
+                InputManager.AssignDigitalInput("_deselect dropdown", new MouseDown("mouse 0"), e =>
+                {
+                    if (e is MouseDownEvent downEvent && downEvent.State == DigitalState.Down)
+                    {
+                        var point = new Vector2D(downEvent.MousePosition.X, ApplicationWindow.Height - downEvent.MousePosition.Y);
+                        if (_isListViewVisible && !_listView.ContainsPoint(point) && !_button.ContainsPoint(point))
+                        {
+                            CloseListView();
+                        }
+                    }
+                });
+                _isDeselectDropdownAssigned = true;
+            }
         }
 
         private void CreateButton()
@@ -109,7 +131,10 @@ namespace SynthesisCore.UI
             ToggleIcon();
             _button.Subscribe(x =>
             {
-                ToggleListView();
+                if (_isListViewVisible)
+                    CloseListView();
+                else
+                    OpenListView();
             });
         }
 
@@ -143,7 +168,6 @@ namespace SynthesisCore.UI
                                 });
             RefreshListView();
             //lose focus
-            _listView.OnLoseFocus(() => OnLoseFocus());
         }
         private void OnOptionClick(Button button, int index)
         {
@@ -160,7 +184,7 @@ namespace SynthesisCore.UI
             }
             Selected = _tmp;
             RefreshButton();
-            ToggleListView();
+            CloseListView();
             OnValueChanged?.Invoke(Selected);
         }
 
@@ -234,21 +258,27 @@ namespace SynthesisCore.UI
             _listView.SetStyleProperty("height", listViewHeight.ToString() + "px");
         }
 
-        private void ToggleListView()
+        private void OpenListView()
         {
-            //toggle list view
-            if (_isListViewVisible)
-                _listView.RemoveFromHierarchy(); //hides list view
-            else
+            if (!_isListViewVisible)
             {
                 UpdateListView();
                 UIManager.RootElement.Add(_listView); //shows list view
-                _listView.Focus();
+                _isListViewVisible = true;
+                ToggleIcon();
             }
-            _isListViewVisible = !_isListViewVisible;
-            ToggleIcon();
-
         }
+
+        private void CloseListView()
+        {
+            if (_isListViewVisible)
+            {
+                _listView.RemoveFromHierarchy(); //hides list view
+                _isListViewVisible = false;
+                ToggleIcon();
+            }
+        }
+
         private void ToggleIcon()
         {
             //toggle icon
@@ -261,11 +291,6 @@ namespace SynthesisCore.UI
             }
             else
                 _buttonIcon.SetStyleProperty("visibility", "hidden");
-        }
-        private void OnLoseFocus()
-        {
-            if (_isListViewVisible)
-                ToggleListView();
         }
     }
 }
