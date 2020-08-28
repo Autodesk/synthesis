@@ -33,17 +33,26 @@ namespace SynthesisCore.UI
             var jointEntity = assembly.Entity;
 
             highlightButton = (Button)JointElement.Get("highlight-button");
-            Button motorTypeButton = (Button)JointElement.Get("motor-type-button");
+            Dropdown motorTypeDropdown = new Dropdown("motor-type-dropdown-container", MotorTypes.AllTypeNames.IndexOf(assembly.Motor.Name), MotorTypes.AllTypeNames)
+            {
+                ItemHeight = 15
+            };
+            JointElement.Get("motor-type-dropdown-container").Add(motorTypeDropdown);
             TextField gearField = (TextField)JointElement.Get("motor-gear-field");
             TextField countField = (TextField)JointElement.Get("motor-count-field");
             
             gearField.SetValueWithoutNotify(assembly.GearReduction.ToString());
-
             countField.SetValueWithoutNotify(assembly.MotorCount.ToString());
 
-            motorTypeButton.Subscribe(x =>
+            motorTypeDropdown.Subscribe(e =>
             {
-                Logger.Log("To Do: Motor Type Dropdown", LogLevel.Debug);
+                if (e is Dropdown.SelectionEvent selectionEvent)
+                {
+                    if (MotorTypes.Contains(selectionEvent.SelectionName))
+                    {
+                        assembly.Motor = MotorTypes.Get(selectionEvent.SelectionName);
+                    }
+                }
             });
 
             gearField.SubscribeOnChange(e =>

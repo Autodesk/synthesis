@@ -8,6 +8,7 @@ namespace SynthesisCore.Simulation
     /// </summary>
     public class DCMotor
     {
+        public string Name { get; set; }
         /// <summary>
         /// Internal motor resistance in Ohms
         /// </summary>
@@ -53,6 +54,17 @@ namespace SynthesisCore.Simulation
         public double Current => lastCurrent;
 
         /// <summary>
+        /// Set a constant load torque in N m used to calculate motor performace
+        /// 
+        /// Recommended to choose a value experimentally in Synthesis
+        /// 
+        /// This is used when updating the motor velocity in place of an actual load torque on the motor,
+        /// which currently cannot be calculated easily from Unity's physics
+        /// </summary>
+        /// <param name="loadTorque"></param>
+        public readonly double OptionalConstantLoadTorque; // TODO make obsolete
+
+        /// <summary>
         /// Construct a new DC motor
         /// </summary>
         /// <param name="internalResistance">Internal motor resistance in Ohms</param>
@@ -60,7 +72,7 @@ namespace SynthesisCore.Simulation
         /// <param name="electricalConstant">The motor's electircal constant in V / rad / sec</param>
         /// <param name="momentOfInertia">The motor's moment of inertia in kg m^2</param>
         /// <param name="frictionalCoefficient">The motor's frictional coefficient in N m s</param>
-        public DCMotor(double internalResistance, double torqueConstant, double electricalConstant, double momentOfInertia, double frictionalCoefficient)
+        public DCMotor(double internalResistance, double torqueConstant, double electricalConstant, double momentOfInertia, double frictionalCoefficient, double optionalConstantLoadTorque)
         {
             InternalResistance = internalResistance;
             TorqueConstant = torqueConstant;
@@ -83,6 +95,15 @@ namespace SynthesisCore.Simulation
             lastTorque = 0;
             lastCurrent = 0;
             lastTime = 0;
+
+            OptionalConstantLoadTorque = optionalConstantLoadTorque;
+        }
+
+        public DCMotor Clone()
+        {
+            var r = new DCMotor(InternalResistance, TorqueConstant, ElectricalConstant, MomentOfInertia, FrictionalCoefficient, OptionalConstantLoadTorque);
+            r.Name = Name;
+            return r;
         }
 
         private double BackEMF() => ElectricalConstant * lastAngularVelocity.RadiansPerSec;

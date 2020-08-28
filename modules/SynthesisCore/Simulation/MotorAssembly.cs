@@ -15,7 +15,7 @@ namespace SynthesisCore.Simulation
         public readonly Entity Entity;
         public readonly HingeJoint Joint;
         // public List<DCMotor> Motors { get; private set; }
-        public DCMotor Motor { get; private set; } // TODO replace with Motors list above (allow multiple motors in an assembly)
+        public DCMotor Motor; // TODO replace with Motors list above (allow multiple motors in an assembly)
 
         private uint motorCount;
 
@@ -44,7 +44,6 @@ namespace SynthesisCore.Simulation
 
 
         private double voltage;
-        private double constantLoadTorque;
 
         public bool FreeSpin
         {
@@ -76,25 +75,11 @@ namespace SynthesisCore.Simulation
         }
 
         /// <summary>
-        /// Set a constant load torque in N m used to calculate motor performace
-        /// 
-        /// Recommended to provide half of the motor's maximum torque
-        /// 
-        /// This is used when updating the motor velocity in place of an actual load torque on the motor,
-        /// which currently cannot be calculated easily from Unity's physics
-        /// </summary>
-        /// <param name="loadTorque"></param>
-        public void SetConstantLoadTorque(double loadTorque)
-        {
-            constantLoadTorque = loadTorque; // TODO make this unnecessary. Will require significant physics changes.
-        }
-
-        /// <summary>
         /// Update the motor velocity
         /// </summary>
         public void Update()
         {
-            Update(constantLoadTorque);
+            Update(Motor.OptionalConstantLoadTorque);
         }
 
         private double CalculatePerMotorTorque(double loadTorque)

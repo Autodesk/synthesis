@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
@@ -38,6 +40,9 @@ namespace SynthesisCore.UI
 
         public string Name { get; private set; }
 
+        private int id;
+        private static int Id = 0;
+
         public int Count { get => Selected == null ? _options.Count : _options.Count + 1; }
 
         public string Selected { get; private set; }
@@ -57,11 +62,26 @@ namespace SynthesisCore.UI
             }
         }
 
-        public int ItemHeight { get => _listView.ItemHeight; set { _listView.ItemHeight = value; RefreshListView(); SetButtonHeight(); } }
+        public int ItemHeight { 
+            get => _listView.ItemHeight; 
+            set { 
+                _listView.ItemHeight = value; 
+                RefreshListView(); 
+                SetButtonHeight(); 
+            }
+        }
 
-        public delegate void SubscribeEvent(string s);
-
-        public event SubscribeEvent OnValueChanged;
+        public string EventTag => $"dropdown-selection/{Name}-{id}";
+        public class SelectionEvent : IEvent
+        {
+            public readonly string DropdownName;
+            public readonly string SelectionName;
+            public SelectionEvent(string name, string selection)
+            {
+                DropdownName = name;
+                SelectionName = selection;
+            }
+        }
 
         #endregion
 
@@ -70,11 +90,11 @@ namespace SynthesisCore.UI
             Init(name);
         }
 
-        public Dropdown(string name, List<string> options)
+        public Dropdown(string name, int defaultValueIndex, List<string> options)
         {
             for (int i = 0; i < options.Count; i++)
             {
-                if (i == 0)
+                if (i == defaultValueIndex)
                     Selected = options[i];
                 else
                     _options.Add(options[i]);
@@ -82,11 +102,11 @@ namespace SynthesisCore.UI
             Init(name);
         }
 
-        public Dropdown(string name, params string[] options)
+        public Dropdown(string name, int defaultValueIndex, params string[] options)
         {
             for (int i = 0; i < options.Length; i++)
             {
-                if (i == 0)
+                if (i == defaultValueIndex)
                     Selected = options[i];
                 else
                     _options.Add(options[i]);
@@ -97,6 +117,8 @@ namespace SynthesisCore.UI
         private void Init(string name)
         {
             Name = name;
+            id = Id;
+            Id++;
             if (_dropdownAsset == null)
                 _dropdownAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Dropdown.uxml");
             _visualElement = _dropdownAsset.GetElement(name);
@@ -185,7 +207,13 @@ namespace SynthesisCore.UI
             Selected = _tmp;
             RefreshButton();
             CloseListView();
-            OnValueChanged?.Invoke(Selected);
+            
+            EventBus.Push(EventTag, new SelectionEvent(Name, Selected));
+        }
+
+        public void Subscribe(Action<IEvent> action)
+        {
+            EventBus.NewTagListener(EventTag, e => action(e));
         }
 
         public bool Add(string option)
@@ -230,6 +258,8 @@ namespace SynthesisCore.UI
         private void SetButtonHeight()
         {
             _button.SetStyleProperty("height", ItemHeight.ToString());
+            _buttonIcon.SetStyleProperty("width", ItemHeight.ToString());
+            _buttonIcon.SetStyleProperty("height", ItemHeight.ToString());
         }
 
         private void RefreshListView()

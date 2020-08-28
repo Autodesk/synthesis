@@ -60,17 +60,11 @@ namespace SynthesisCore
             backRight = motorManager.AllMotorAssemblies[2];
             arm = motorManager.AllMotorAssemblies[0];
 
-            frontLeft.Configure(MotorTypes.CIMMotor, gearReduction: 9.29);
-            frontRight.Configure(MotorTypes.CIMMotor, gearReduction: 9.29);
-            backLeft.Configure(MotorTypes.CIMMotor, gearReduction: 9.29);
-            backRight.Configure(MotorTypes.CIMMotor, gearReduction: 9.29);
-            arm.Configure(MotorTypes.CIMMotor, gearReduction: 9.29);
-
-            frontLeft.SetConstantLoadTorque(0.6050985);
-            frontRight.SetConstantLoadTorque(0.6050985);
-            backLeft.SetConstantLoadTorque(0.6050985);
-            backRight.SetConstantLoadTorque(0.6050985);
-            arm.SetConstantLoadTorque(0.6050985);
+            frontLeft.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            frontRight.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            backLeft.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            backRight.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            arm.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
