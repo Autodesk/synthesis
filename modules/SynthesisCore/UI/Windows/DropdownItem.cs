@@ -29,7 +29,7 @@ namespace SynthesisCore.UI.Windows
         private void SetInformation()
         {
             NameLabel.Text = NameLabel.Text.Replace("%name%", PreferenceName);
-            Dropdown.Selected = GetSelectedOption();
+            Dropdown.Selected = GetPreference();
             ModifierContainer.Add(Dropdown);
         }
 
@@ -42,7 +42,7 @@ namespace SynthesisCore.UI.Windows
             };
         }
 
-        private string GetSelectedOption()
+        private string GetPreference()
         {
             return PreferenceManager.GetPreference<string>("SynthesisCore", PreferenceName);
         }

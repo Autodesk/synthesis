@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
 
 namespace SynthesisCore.UI.Windows
@@ -30,6 +31,7 @@ namespace SynthesisCore.UI.Windows
         private void SetInformation()
         {
             NameLabel.Text = NameLabel.Text.Replace("%name%", PreferenceName);
+            Toggle.Enabled = GetPreference();
             ModifierContainer.Add(Toggle);
         }
 
@@ -40,5 +42,11 @@ namespace SynthesisCore.UI.Windows
                 SettingsWindow.AddPendingChange(PreferenceName, value);
             };
         }
+
+        private bool GetPreference()
+        {
+            return PreferenceManager.GetPreference<bool>("SynthesisCore", PreferenceName);
+        }
+        
     }
 }
