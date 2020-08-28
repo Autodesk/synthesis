@@ -15,7 +15,6 @@ namespace SynthesisCore.UI
 
             UIManager.AddPanel(new EntitiesWindow().Panel);
             UIManager.AddPanel(new EnvironmentsWindow().Panel);
-            UIManager.AddPanel(new JointsWindow().Panel);
 
             var engineTab = new Tab("Engine", Ui.ToolbarAsset, toolbarElement => {
                 var designCategory = ToolbarTools.AddButtonCategory(toolbarElement, "ENVIRONMENT");

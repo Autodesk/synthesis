@@ -9,16 +9,16 @@ using SynthesisCore.Simulation;
 
 namespace SynthesisCore.UI
 {
-    public class JointsWindow
+    public static class JointsWindow
     {
-        public Panel Panel { get; }
-        private VisualElement Window;
-        private VisualElementAsset JointAsset = null;
-        private ListView JointList;
+        public static Panel Panel { get; private set; }
+        private static VisualElement Window;
+        private static VisualElementAsset JointAsset = null;
+        private static ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
 
-        public JointsWindow()
+        public static void CreateWindow()
         {
             if (JointAsset == null)
                 JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
@@ -28,7 +28,7 @@ namespace SynthesisCore.UI
             Panel = new Panel("Joints", jointsAssset, OnWindowOpen, false);
         }
 
-        private void OnWindowOpen(VisualElement jointsWindow)
+        private static void OnWindowOpen(VisualElement jointsWindow)
         {
             Window = jointsWindow;
 
@@ -43,7 +43,7 @@ namespace SynthesisCore.UI
             RegisterButtons();
         }
 
-        private void OnWindowClose()
+        public static void OnWindowClose()
         {
             JointItem.UnHighlightAllButtons();
             if (jointHighlightEntity?.RemoveEntity() ?? false)
@@ -52,7 +52,7 @@ namespace SynthesisCore.UI
             RemoveWindowsContents();
         }
 
-        private void LoadWindowContents()
+        private static void LoadWindowContents()
         {
             if (Selectable.Selected != null)
             {
@@ -74,7 +74,7 @@ namespace SynthesisCore.UI
             }
         }
 
-        private void RemoveWindowsContents()
+        private static void RemoveWindowsContents()
         {
             foreach (var jointChild in JointList.GetChildren())
             {
@@ -82,7 +82,7 @@ namespace SynthesisCore.UI
             }
         }
 
-        private void RegisterButtons()
+        private static void RegisterButtons()
         {
             Button okButton = (Button)Window.Get("ok-button");
             okButton?.Subscribe(_ => OnWindowClose());

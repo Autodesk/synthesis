@@ -77,6 +77,9 @@ namespace SynthesisCore.UI
 
             UIManager.AddTab(entityTab);
 
+            JointsWindow.CreateWindow();
+            UIManager.AddPanel(JointsWindow.Panel);
+
             toolbarCreated = true;
         }
 
@@ -117,6 +120,7 @@ namespace SynthesisCore.UI
                 {
                     if (openedJointEditor)
                     {
+                        JointsWindow.OnWindowClose();
                         UIManager.ClosePanel("Joints");
                         openedJointEditor = false;
                     }
