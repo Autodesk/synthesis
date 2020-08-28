@@ -88,7 +88,7 @@ namespace SynthesisCore.EntityMovement
 
                 var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
 
-                targetTransform.Rotate(RotationAxisDirection, sign* magnitude);
+                targetTransform.Rotate(RotationAxisDirection, sign* magnitude, true);
                 Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
             }
         }
