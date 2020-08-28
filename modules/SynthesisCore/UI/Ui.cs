@@ -26,7 +26,7 @@ namespace SynthesisCore.UI
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
             
-            Dictionary<string, object> defaultControls = new Dictionary<string, object>
+            Dictionary<string, object> defaultPreferences = new Dictionary<string, object>
             {
                 {"Camera Forward", "W"},
                 {"Camera Backward", "S"},
@@ -37,17 +37,24 @@ namespace SynthesisCore.UI
                 {"Entity Forward", "Up Arrow"},
                 {"Entity Backward", "Down Arrow"},
                 {"Entity Left", "Left Arrow"},
-                {"Entity Right", "Right Arrow"}
+                {"Entity Right", "Right Arrow"},
+                {"Quality", "Low"},
+                {"Screen Resolution", "1920x1080"},
+                {"Screen Mode", "Windowed"},
+                {"Analytics", "True"}
             };
 
             PreferenceManager.Load();
 
-            if (!PreferenceManager.ContainsPreference("SynthesisCore", "Camera Forward"))
+            foreach (string option in defaultPreferences.Keys)
             {
-                PreferenceManager.SetPreferences("SynthesisCore", defaultControls);
-                PreferenceManager.Save();
+                if (!PreferenceManager.ContainsPreference("SynthesisCore", option))
+                {
+                    PreferenceManager.SetPreference("SynthesisCore", option, defaultPreferences[option]);
+                }
             }
-            
+            PreferenceManager.Save();
+
             var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             UIManager.SetBlankTabAsset(blankTabAsset);
             

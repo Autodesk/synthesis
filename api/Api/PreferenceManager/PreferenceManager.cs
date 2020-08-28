@@ -18,7 +18,16 @@ namespace SynthesisAPI.PreferenceManager
         private static JsonAsset? _asset;
         private static void ImportPreferencesAsset(bool create = false)
         {
-            _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", create, VirtualFilePath.Directory, VirtualFilePath.Name, Permissions.PublicReadWrite, $"{VirtualFilePath.Directory}/{VirtualFilePath.Name}");
+            try
+            {
+                _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", create, VirtualFilePath.Directory,
+                    VirtualFilePath.Name, Permissions.PublicReadWrite,
+                    $"{VirtualFilePath.Directory}/{VirtualFilePath.Name}");
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         /// <summary>

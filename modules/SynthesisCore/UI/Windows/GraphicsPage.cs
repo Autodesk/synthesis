@@ -34,7 +34,7 @@ namespace SynthesisCore.UI
                 "1280x720", "1280x768", "1280x800", "1280x1024", "1360x768", "1366x768",
                             "1400x1050", "1440x900", "1600x900", "1680x1050", "1920x1080");
             resolution.ItemHeight = 20;
-            Page.Add(new DropdownItem(OptionAsset, resolution, "Resolution").Element);
+            Page.Add(new DropdownItem(OptionAsset, resolution, "Screen Resolution").Element);
         }
         
         private void RegisterButtons()

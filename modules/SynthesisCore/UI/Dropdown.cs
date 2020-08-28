@@ -32,7 +32,7 @@ namespace SynthesisCore.UI
 
         public int Count { get => Selected == null ? _options.Count : _options.Count + 1; }
 
-        public string Selected { get; private set; }
+        public string Selected { get; set; }
 
         public IEnumerable<string> Options
         {

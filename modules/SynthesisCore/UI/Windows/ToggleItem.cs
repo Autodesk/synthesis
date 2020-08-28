@@ -1,23 +1,22 @@
 ﻿using SynthesisAPI.AssetManager;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI.Windows
 {
-    public class DropdownItem
+    public class ToggleItem
     {
-        public VisualElement Element { get; }
-        private Dropdown Dropdown;
+        public VisualElement Element;
+        private Toggle Toggle;
         private Label NameLabel;
         private VisualElement ModifierContainer;
         private string PreferenceName;
-
-        public DropdownItem(VisualElementAsset optionAsset, Dropdown dropdown, string preferenceName)
+        
+        public ToggleItem(VisualElementAsset optionAsset, Toggle toggle, string preferenceName)
         {
             Element = optionAsset.GetElement("option");
-            Dropdown = dropdown;
-            
+            Toggle = toggle;
+
             NameLabel = (Label) Element.Get("option-name");
             ModifierContainer = Element.Get("modifier-container");
             PreferenceName = preferenceName;
@@ -29,22 +28,16 @@ namespace SynthesisCore.UI.Windows
         private void SetInformation()
         {
             NameLabel.Text = NameLabel.Text.Replace("%name%", PreferenceName);
-            Dropdown.Selected = GetSelectedOption();
-            ModifierContainer.Add(Dropdown);
+            ModifierContainer.Add(Toggle);
         }
 
         private void RegisterButtons()
         {
-            Dropdown.OnValueChanged += value =>
+            Toggle.OnValueChanged += value =>
             {
                 PreferenceManager.SetPreference("SynthesisCore", PreferenceName, value);
                 PreferenceManager.Save();
             };
-        }
-
-        private string GetSelectedOption()
-        {
-            return PreferenceManager.GetPreference<string>("SynthesisCore", PreferenceName);
         }
     }
 }
