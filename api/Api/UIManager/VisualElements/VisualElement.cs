@@ -181,6 +181,9 @@ namespace SynthesisAPI.UIManager.VisualElements
                 }
             }
         }
+        
+		public void OnLoseFocus(Action onLose) => _visualElement.RegisterCallback<FocusOutEvent>(_ => onLose());
+        public void Focus() => _visualElement.Focus();
 
         public void Add(VisualElement element) => _visualElement.Add(element._visualElement);
         public void Remove(VisualElement element) => _visualElement.Remove(element._visualElement);
@@ -190,6 +193,10 @@ namespace SynthesisAPI.UIManager.VisualElements
         public void RemoveFromClassList(string className) => _visualElement.RemoveFromClassList(className);
         public void RemoveFromHierarchy() => _visualElement.RemoveFromHierarchy();
         public IEnumerable<string> GetClasses() => _visualElement.GetClasses();
+        public Vector2D Position { get => _visualElement.worldBound.position.Map(); }
+        public Vector2D Size { get => _visualElement.worldBound.size.Map(); }
+        public bool ContainsLocalPoint(Vector2D localPoint) => _visualElement.ContainsPoint(localPoint.Map());
+        public bool ContainsPoint(Vector2D worldPoint) => _visualElement.ContainsPoint((worldPoint - Position).Map());
         public bool ClassesContains(string className) => _visualElement.ClassListContains(className);
 
         public void SetStyleProperty(string name, string value)

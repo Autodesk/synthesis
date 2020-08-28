@@ -29,6 +29,7 @@
     <string>UI/uxml/Dialog.uxml</string>
     <string>UI/uxml/Joints.uxml</string> 
     <string>UI/uxml/Joint.uxml</string>
+    <string>UI/uxml/Dropdown.uxml</string>
     <string>UI/uss/Entity.uss</string>
     <string>UI/uss/HelpWindow.uss</string>
     <string>UI/uss/Modules.uss</string>

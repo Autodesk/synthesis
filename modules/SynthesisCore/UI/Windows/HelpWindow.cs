@@ -24,7 +24,7 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement helpWindow)
         {
             Window = helpWindow;
-            HelpList = (ListView)Window.Get("module-list");
+            HelpList = (ListView)Window.Get("help-list");
 
             LoadWindowContents();
             RegisterButtons();

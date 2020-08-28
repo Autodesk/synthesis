@@ -292,7 +292,7 @@ namespace SynthesisAPI.UIManager
 
             public void SetupCatchAllMouseDown(VisualElement visualElement)
             {
-                visualElement.UnityVisualElement.RegisterCallback<MouseDownEvent>(e =>
+                visualElement.UnityVisualElement.RegisterCallback<UnityEngine.UIElements.MouseDownEvent>(e =>
                 {
                     nonUIMouseDown[e.button] = true;
                     SendNonUIMouseEvent(e.button, DigitalState.Down);
