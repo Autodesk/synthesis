@@ -1,0 +1,24 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="window" class="window" style="height: 400px; width: 300px;">
+        <Style src="/modules/synthesis_core/UI/uss/Window.uss" />
+        <Style src="/modules/synthesis_core/UI/uss/Help.uss" />
+        <ui:VisualElement name="header" class="window-header-container">
+            <ui:VisualElement name="icon" class="window-header-icon" style="background-image: url(&apos;/modules/synthesis_core/UI/images/help-icon.png&apos;);" />
+            <ui:Label text="Help" name="title" class="window-header-title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content" class="window-content">
+            <ui:ListView focusable="True" name="help-list" style="height: 300px;">
+                <ui:Button text="Getting Started" name="getting-started-button" class="help-button" />
+                <ui:Button text="Community Forum" name="community-forum-button" class="help-button" />
+                <ui:Button text="GitHub Repository" name="github-button" class="help-button" />
+                <ui:Button text="Report an Issue" name="report-an-issue-button" class="help-button" />
+                <ui:Button text="Submit an Idea" name="submit-an-idea-button" class="help-button" />
+                <ui:VisualElement class="vertical-divider" />
+                <ui:Button text="About" name="about-button" class="help-button" />
+            </ui:ListView>
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel" style="flex-direction: row-reverse;">
+            <ui:Button text="Close" name="close-button" class="window-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

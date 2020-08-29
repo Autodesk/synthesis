@@ -66,6 +66,7 @@ namespace SynthesisCore.UI
             
             UIManager.AddPanel(new SettingsWindow().Panel);
             UIManager.AddPanel(new ModuleWindow().Panel);
+            UIManager.AddPanel(new HelpWindow().Panel);
             
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
@@ -75,9 +76,6 @@ namespace SynthesisCore.UI
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
-
-            Button helpButton = (Button) UIManager.RootElement.Get("help-button");
-            helpButton.Subscribe(x => System.Diagnostics.Process.Start("https://synthesis.autodesk.com"));
         }
 
         public override void OnPhysicsUpdate() { }

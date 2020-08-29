@@ -14,7 +14,7 @@ namespace SynthesisCore.UI.Windows
 
         public HelpWindow()
         {
-            var helpWindowAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/HelpWindow.uxml");
+            var helpWindowAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Help.uxml");
             Panel = new Panel("Help", helpWindowAsset, OnWindowOpen);
 
             Button helpButton = (Button)UIManager.RootElement.Get("help-button");
