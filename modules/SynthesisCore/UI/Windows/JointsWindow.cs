@@ -14,6 +14,7 @@ namespace SynthesisCore.UI
         public static Panel Panel { get; private set; }
         private static VisualElement Window;
         private static VisualElementAsset JointAsset = null;
+        private static VisualElementAsset NoJointsAsset = null;
         private static ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
@@ -22,6 +23,9 @@ namespace SynthesisCore.UI
         {
             if (JointAsset == null)
                 JointAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joint.uxml");
+
+            if (NoJointsAsset == null)
+                NoJointsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/JointNone.uxml");
 
             var jointsAssset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Joints.uxml");
 
@@ -69,7 +73,11 @@ namespace SynthesisCore.UI
                             }
                         }
                     }
-                    else Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
+                    else
+                    {
+                        JointList.Add(new JointItem(NoJointsAsset).JointElement);
+                        Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
+                    }
                 }
             }
         }

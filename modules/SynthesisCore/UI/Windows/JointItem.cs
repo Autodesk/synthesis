@@ -27,6 +27,12 @@ namespace SynthesisCore.UI
             RegisterJointButtons(assembly);
         }
 
+        public JointItem(VisualElementAsset jointAsset)
+        {
+            jointItems.Add(this);
+            JointElement = jointAsset.GetElement("joint");
+        }
+
         private void RegisterJointButtons(MotorAssembly assembly)
         {
             var j = assembly.Joint;
