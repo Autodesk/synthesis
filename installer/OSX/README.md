@@ -4,9 +4,11 @@
 
 1. Get signed Synthesis.app
 
-2.  Synthesis.app ` cp [Synthesis.app] [synthesis/installer/OSX/App/payload] `
+2. Zip Synthesis.app
 
-    - Remove the Synthesis.app placeholder ` rm [synthesis/installer/OSX/App/payload/README.md] `
+3. Copy Synthesis.zip to file system ` cp [Synthesis.zip] [synthesis/installer/OSX/App/payload/Contents] `
+
+    - Remove the Synthesis.zip placeholder ` rm [synthesis/installer/OSX/App/payload/Contents/README.md] `
 
 3. Add data files to synthesis/installer/OSX/Assets/payload/Contents/Synthesis
 
