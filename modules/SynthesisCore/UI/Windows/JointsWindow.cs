@@ -18,6 +18,7 @@ namespace SynthesisCore.UI
         private static ListView JointList;
 
         internal static Entity? jointHighlightEntity = null;
+        private static bool hasJoints = false;
 
         public static void CreateWindow()
         {
@@ -49,9 +50,13 @@ namespace SynthesisCore.UI
 
         public static void OnWindowClose()
         {
-            JointItem.UnHighlightAllButtons();
-            if (jointHighlightEntity?.RemoveEntity() ?? false)
-                jointHighlightEntity = null;
+            if (hasJoints)
+            {
+                JointItem.UnHighlightAllButtons();
+                if (jointHighlightEntity?.RemoveEntity() ?? false)
+                    jointHighlightEntity = null;
+            }
+
             UIManager.ClosePanel(Panel.Name);
             RemoveWindowsContents();
         }
@@ -65,6 +70,7 @@ namespace SynthesisCore.UI
                     var motorAssemblyManager = entity.GetComponent<MotorAssemblyManager>();
                     if (MotorAssemblyManager.IsDescendant(Selectable.Selected.Entity.Value, entity))
                     {
+                        hasJoints = true;
                         if (motorAssemblyManager != null)
                         {
                             foreach (var assembly in motorAssemblyManager.AllMotorAssemblies)
@@ -75,6 +81,7 @@ namespace SynthesisCore.UI
                     }
                     else
                     {
+                        hasJoints = false;
                         JointList.Add(new JointItem(NoJointsAsset).JointElement);
                         Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
                     }
