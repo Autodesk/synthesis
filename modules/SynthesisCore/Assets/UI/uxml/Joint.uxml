@@ -7,7 +7,7 @@
                     <ui:Label text="Motor Type" name="name" />
                 </ui:VisualElement>
                 <ui:VisualElement name="description" class="description-container">
-                    <ui:Button text="Motor Dropdown" name="motor-type-button" />
+                    <ui:VisualElement name="motor-type-dropdown-container" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto;">
