@@ -83,7 +83,6 @@ namespace SynthesisCore.UI
                     {
                         hasJoints = false;
                         JointList.Add(new JointItem(NoJointsAsset).JointElement);
-                        Logger.Log("No joints are associated with this entity.", LogLevel.Debug);
                     }
                 }
             }
