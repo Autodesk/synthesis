@@ -5,10 +5,12 @@
     <conclusion file="conclusion.html" mime-type="text/html" />
     <pkg-ref id="org.autodesk.synthesis.app"/>
     <pkg-ref id="org.autodesk.synthesis.assets"/>
+    <pkg-ref id="org.autodesk.synthesis.exporter"/>
     <options customize="allow" require-scripts="false"/>
     <choices-outline>
         <line choice="org.autodesk.synthesis.app"/>
         <line choice="org.autodesk.synthesis.assets"/>
+	<line choice="org.autodesk.synthesis.exporter"/>
     </choices-outline>
     <choice id="default"/>
     <choice id="org.autodesk.synthesis.app" visible="true" title="Synthesis">
@@ -19,4 +21,8 @@
         <pkg-ref id="org.autodesk.synthesis.assets"/>
     </choice>
     <pkg-ref id="org.autodesk.synthesis.assets" version="0" onConclusion="none">Assets.pkg</pkg-ref>
+    <choice id="org.autodesk.synthesis.exporter" visible="true" title="Synthesis Exporter">
+	<pkg-ref id="org.autodesk.synthesis.exporter"/>
+    </choice>
+    <pkg-ref id="org.autodesk.synthesis.exporter" version="0" onConclusion="none">Exporter.pkg</pkg-ref>
 </installer-gui-script>

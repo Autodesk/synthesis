@@ -13,10 +13,14 @@
 3. Add data files to synthesis/installer/OSX/Assets/payload/Contents/Synthesis
 
     - Remove the data file placeholder ` rm [synthesis/installer/OSX/Assets/payload/Contents/Synthesis/README.md] `	
-  
-4. Change directories to the osx installer directory ` cd synthesis/installer/OSX `
 
-5. Run the pkginstall script ` ./pkginstall `
+4. Add unzipped exporter files to synthesis/installer/OSX/Exporter/payload/Contents/SynthesisFusionGltfExporter
+  
+    - Remove the exporter file placeholder ` rm [synthesis/installer/OSX/Exporter/payload/Contents/SynthesisFusionGltfExporter/README.md] `	
+
+5. Change directories to the osx installer directory ` cd synthesis/installer/OSX `
+
+6. Run the pkginstall script ` ./pkginstall `
 
 ### Optional Build Steps
 

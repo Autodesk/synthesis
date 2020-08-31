@@ -5,6 +5,8 @@ chmod -R 777 ./Assets/payload/Contents/Synthesis
 pkgbuild --install-location ~/.config/Autodesk/SynthesisAppInstall --root ./App/payload/ --scripts ./App/scripts/ --identifier org.autodesk.synthesis.app ./Installer/App.pkg
 #Build data files
 pkgbuild --install-location ~/.config/Autodesk/SynthesisAssetsInstall --root ./Assets/payload/ --scripts ./Assets/scripts/ --identifier org.autodesk.synthesis.assets ./Installer/Assets.pkg
+#Build exporter
+pkgbuild --install-location ~/.config/Autodesk/SynthesisExporterInstall --root ./Exporter/payload/ --scripts ./Exporter/scripts/ --identifier org.autodesk.synthesis.exporter ./Installer/Exporter.pkg
 #Build installer
 cd Installer
 productbuild --distribution Distribution.xml --resources Resources/ ../Synthesis.pkg
