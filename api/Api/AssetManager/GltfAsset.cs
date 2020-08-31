@@ -148,6 +148,15 @@ namespace SynthesisAPI.AssetManager
                     bundle.Components.Add(rigid);
                     return;
                 }
+                else
+                {
+
+                    var seniorRB = GetSeniorRigidbody(bundle.ParentBundle);
+                    if(seniorRB != null)
+                    {
+                        seniorRB.mass += ParseMass(node.Mesh) ?? 0;
+                    }
+                }
             } else if (parent == null) {
                 var rigid = ParseRigidbody(null);
                 bundle.Components.Add(rigid);
@@ -163,9 +172,8 @@ namespace SynthesisAPI.AssetManager
                 return GetSeniorRigidbody(b.ParentBundle);
         }
 
-        private EnvironmentManager.Components.Rigidbody ParseRigidbody(Mesh nodeMesh)
+        private static float? ParseMass(Mesh nodeMesh, float defaultMass = 1)
         {
-            EnvironmentManager.Components.Rigidbody rigidbody = new EnvironmentManager.Components.Rigidbody();
             if (nodeMesh != null)
             {
                 if ((nodeMesh.Extras as JsonDictionary).TryGetValue("physicalProperties", out object physicalProperties))
@@ -174,15 +182,19 @@ namespace SynthesisAPI.AssetManager
                     {
                         if (float.TryParse(massStr.ToString(), out float mass))
                         {
-                            rigidbody.mass = mass;
-                        }
-                        else
-                        {
-                            rigidbody.mass = 1;
+                            return mass;
                         }
                     }
                 }
+                return null;
             }
+            return defaultMass;
+        }
+
+        private EnvironmentManager.Components.Rigidbody ParseRigidbody(Mesh nodeMesh)
+        {
+            EnvironmentManager.Components.Rigidbody rigidbody = new EnvironmentManager.Components.Rigidbody();
+            rigidbody.mass = ParseMass(nodeMesh) ?? throw new SynthesisException($"Failed to parse mass of rigidbody in GLTF asset: {Name}");
             return rigidbody;
         }
 
