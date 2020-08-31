@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="joint" class="joint-container" style="flex-direction: row; width: 350px; height: auto;">
+        <Style src="/modules/synthesis_core/UI/uss/Joint.uss" />
+        <ui:VisualElement name="left" style="height: 75px; width: 275px; margin-top: 5px; margin-bottom: 5px; margin-left: 5px; margin-right: 5px;">
+            <ui:VisualElement name="motor-type" class="joint-detail" style="height: auto; width: auto;">
+                <ui:VisualElement name="details" class="details-label" style="width: 90px;">
+                    <ui:Label text="There are no joints for this entity." name="name" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
