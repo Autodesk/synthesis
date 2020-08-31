@@ -20,10 +20,8 @@ namespace SynthesisCore.UI
 
         public VisualElement JointElement { get; }
         
-        public JointItem(VisualElementAsset jointAsset, MotorAssembly assembly)
+        public JointItem(VisualElementAsset jointAsset, MotorAssembly assembly) : this(jointAsset)
         {
-            jointItems.Add(this);
-            JointElement = jointAsset.GetElement("joint");
             RegisterJointButtons(assembly);
         }
 
@@ -164,13 +162,15 @@ namespace SynthesisCore.UI
         {
             if (stick)
                 IsHighlighted = true;
-            highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 1)");
+            if(highlightButton != null)
+                highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 1)");
         }
 
         private void UnHighlightButton()
         {
             IsHighlighted = false;
-            highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 0)");
+            if (highlightButton != null)
+                highlightButton.SetStyleProperty("background-color", "rgba(255, 255, 0, 0)");
         }
 
         public static void UnHighlightAllButtons()
