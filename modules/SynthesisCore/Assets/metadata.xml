@@ -10,6 +10,9 @@
     <string>SynthesisCore.dll</string>
     <string>sprites/arrow.png</string>
     <string>sprites/arrow-selected.png</string>
+    <string>sprites/rotate-arrow.png</string>
+    <string>sprites/rotate-arrow-selected.png</string>
+    <string>sprites/point-marker.png</string>
 	<string>UI/uxml/TitleBar.uxml</string>
     <string>UI/uxml/Entity.uxml</string>
     <string>UI/uxml/Entities.uxml</string>

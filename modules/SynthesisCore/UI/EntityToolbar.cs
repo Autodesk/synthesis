@@ -3,6 +3,7 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisCore.EntityMovement;
 using SynthesisCore.Systems;
 
 namespace SynthesisCore.UI

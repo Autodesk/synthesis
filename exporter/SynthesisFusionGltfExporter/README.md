@@ -51,13 +51,13 @@ _Optional_
 
 ### Releasing
 - Open Fusion and test the add-in functionality.
-- Zip up the project directory `SynthesisInventorGltfExporter`
+- Zip up the project directory `SynthesisFusionGltfExporter`
 
 #### Installer (Windows)
-- The installer should place all the files in zipped release folder at `%AppData%\Autodesk\Autodesk Fusion 360\API\AddIns\SynthesisInventorGltfExporter`
+- The installer should place all the files in zipped release folder at `%AppData%\Autodesk\Autodesk Fusion 360\API\AddIns\SynthesisFusionGltfExporter`
 
 #### Installer (Macos)
-- The installer should place all the files in zipped release folder at `$HOME/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/SynthesisInventorGltfExporter`
+- The installer should place all the files in zipped release folder at `$HOME/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/SynthesisFusionGltfExporter`
 
 ### Troubleshooting
 Protobuf-related error:
