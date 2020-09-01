@@ -45,7 +45,8 @@ namespace SynthesisCore.UI
 
         public int Count { get => Selected == null ? _options.Count : _options.Count + 1; }
 
-        public string Selected { get; private set; }
+        private string _selected;
+        public string Selected { get => _selected; set => Select(value); }
 
         public IEnumerable<string> Options
         {
@@ -95,7 +96,7 @@ namespace SynthesisCore.UI
             for (int i = 0; i < options.Count; i++)
             {
                 if (i == defaultValueIndex)
-                    Selected = options[i];
+                    _selected = options[i];
                 else
                     _options.Add(options[i]);
             }
@@ -107,7 +108,7 @@ namespace SynthesisCore.UI
             for (int i = 0; i < options.Length; i++)
             {
                 if (i == defaultValueIndex)
-                    Selected = options[i];
+                    _selected = options[i];
                 else
                     _options.Add(options[i]);
             }
@@ -127,21 +128,22 @@ namespace SynthesisCore.UI
             //default height property
             ItemHeight = 30;
 
+            //assign button once for all dropdowns
             if (!_isDeselectDropdownAssigned)
+                InputManager.AssignDigitalInput("_deselect dropdown", new MouseDown("mouse 0"));
+
+            //mouse click listener to close dropdown
+            EventBus.NewTagListener("input/_deselect dropdown", e =>
             {
-                InputManager.AssignDigitalInput("_deselect dropdown", new MouseDown("mouse 0"), e =>
+                if (e is MouseDownEvent downEvent && downEvent.State == DigitalState.Down)
                 {
-                    if (e is MouseDownEvent downEvent && downEvent.State == DigitalState.Down)
-                    {
-                        var point = new Vector2D(downEvent.MousePosition.X, ApplicationWindow.Height - downEvent.MousePosition.Y);
-                        if (_isListViewVisible && !_listView.ContainsPoint(point) && !_button.ContainsPoint(point))
-                        {
-                            CloseListView();
-                        }
-                    }
-                });
-                _isDeselectDropdownAssigned = true;
-            }
+                    var point = new Vector2D(downEvent.MousePosition.X, ApplicationWindow.Height - downEvent.MousePosition.Y);
+                    if (_isListViewVisible && !_listView.ContainsPoint(point) && !_button.ContainsPoint(point)) //auto close if clicked anywhere but dropdown
+                        CloseListView();
+                }
+            });
+
+            _isDeselectDropdownAssigned = true;
         }
 
         private void CreateButton()
@@ -189,7 +191,6 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("margin-bottom", "0");
                                 });
             RefreshListView();
-            //lose focus
         }
         private void OnOptionClick(Button button, int index)
         {
@@ -204,7 +205,7 @@ namespace SynthesisCore.UI
                 _options[index] = Selected;
                 button.Text = Selected;
             }
-            Selected = _tmp;
+            _selected = _tmp;
             RefreshButton();
             CloseListView();
             
@@ -222,7 +223,7 @@ namespace SynthesisCore.UI
                 return false;
             if (Selected == null)
             {
-                Selected = option;
+                _selected = option;
                 RefreshButton();
             }
             else
@@ -237,7 +238,7 @@ namespace SynthesisCore.UI
         {
             if (Selected == option)
             {
-                Selected = null;
+                _selected = null;
                 RefreshButton();
                 return true;
             }
@@ -248,6 +249,25 @@ namespace SynthesisCore.UI
                 return true;
             }
             return false;
+        }
+
+        private void Select(string option)
+        {
+            if (Selected != option)
+            {
+                int index = _options.IndexOf(option);
+                if (index == -1) //does not exist
+                {
+                    Add(option);
+                    Select(option);
+                }
+                else
+                {
+                    _options[index] = _selected;
+                    _selected = option;
+                    RefreshAll();
+                }
+            }
         }
 
         private void RefreshButton()
