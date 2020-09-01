@@ -1,6 +1,8 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using System.Collections.Generic;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -8,7 +10,8 @@ namespace SynthesisCore.UI
     {
         public VisualElement Page { get; }
         private VisualElementAsset ControlAsset;
-        private ListView ControlList;
+        private List<ControlItem> ControlsList = new List<ControlItem>();
+        private ListView ControlListView;
 
         public ControlsPage(VisualElementAsset controlsAsset)
         {
@@ -16,7 +19,7 @@ namespace SynthesisCore.UI
             Page.SetStyleProperty("height", "100%");
             
             ControlAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Control.uxml");
-            ControlList = (ListView) Page.Get("controls");
+            ControlListView = (ListView) Page.Get("controls");
 
             LoadPageContent();
         }
@@ -33,22 +36,18 @@ namespace SynthesisCore.UI
             AddControl("Entity Backward");
             AddControl("Entity Left");
             AddControl("Entity Right");
+            
+            ControlsList.ForEach(control => ControlListView.Add(control.Element));
         }
 
         private void AddControl(string controlName)
         {
-            string key = GetFormattedPreference(controlName);
-            ControlList.Add(new ControlItem(ControlAsset, new ControlInfo(controlName, key)).Element);
+            ControlsList.Add(new ControlItem(ControlAsset, controlName));
         }
 
-        private string GetFormattedPreference(string controlName)
+        public void RefreshPreferences()
         {
-            var controlKey = PreferenceManager.GetPreference("SynthesisCore", controlName);
-            if (controlKey is string)
-            {
-                return Utilities.ReformatCondensedString((string) controlKey);
-            }
-            return "Unassigned";
+            ControlsList.ForEach(control => control.UpdateInformation());
         }
     }
 }

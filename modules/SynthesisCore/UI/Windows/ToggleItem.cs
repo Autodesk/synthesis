@@ -12,7 +12,7 @@ namespace SynthesisCore.UI.Windows
         private VisualElement ModifierContainer;
         private string PreferenceName;
         
-        public ToggleItem(VisualElementAsset optionAsset, Toggle toggle, string preferenceName)
+        public ToggleItem(VisualElementAsset optionAsset, string preferenceName, Toggle toggle)
         {
             Element = optionAsset.GetElement("option");
             Toggle = toggle;
@@ -46,6 +46,11 @@ namespace SynthesisCore.UI.Windows
         private bool GetPreference()
         {
             return PreferenceManager.GetPreference<bool>("SynthesisCore", PreferenceName);
+        }
+
+        public void UpdateInformation()
+        {
+            SetInformation();
         }
         
     }

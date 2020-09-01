@@ -4,20 +4,21 @@ using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
     public class ControlItem
     {
         public VisualElement Element { get; }
-        private ControlInfo ControlInfo;
+        private string ControlName;
         private Label NameLabel;
         private Button KeyButton;
 
-        public ControlItem(VisualElementAsset controlAsset, ControlInfo controlInfo)
+        public ControlItem(VisualElementAsset controlAsset, string controlName)
         {
             Element = controlAsset.GetElement("control");
-            ControlInfo = controlInfo;
+            ControlName = controlName;
             
             NameLabel = (Label) Element.Get("name");
             KeyButton = (Button) Element.Get("change-key");
@@ -28,8 +29,8 @@ namespace SynthesisCore.UI
 
         private void SetInformation()
         {
-            NameLabel.Text = NameLabel.Text.Replace("%name%", ControlInfo.Name);
-            KeyButton.Text = KeyButton.Text.Replace("%key%", ControlInfo.Key);
+            NameLabel.Text = ControlName;
+            KeyButton.Text = GetFormattedPreference(ControlName);
         }
 
         private void RegisterButtons()
@@ -45,7 +46,7 @@ namespace SynthesisCore.UI
                 
                 void Callback(IEvent e)
                 {
-                    SettingsWindow.AddPendingChange(ControlInfo.Name, ((KeyEvent) e).KeyString);
+                    SettingsWindow.AddPendingChange(ControlName, ((KeyEvent) e).KeyString);
                     KeyButton.Text = Utilities.ReformatCondensedString(((KeyEvent) e).KeyString);
 
                     // InputManager.UnassignDigitalInput(""); TODO unassign previous input, assign new one
@@ -53,6 +54,21 @@ namespace SynthesisCore.UI
                     EventBus.RemoveTypeListener<KeyEvent>(Callback);
                 }
             });
+        }
+
+        private string GetFormattedPreference(string controlName)
+        {
+            var controlKey = PreferenceManager.GetPreference("SynthesisCore", controlName);
+            if (controlKey is string)
+            {
+                return Utilities.ReformatCondensedString((string) controlKey);
+            }
+            return "Unassigned";
+        }
+        
+        public void UpdateInformation()
+        {
+            SetInformation();
         }
     }
 }

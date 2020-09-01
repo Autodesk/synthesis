@@ -9,30 +9,52 @@ namespace SynthesisCore.UI
         public VisualElement Page { get; }
         private VisualElementAsset OptionAsset;
 
+        private ToggleItem AnalyticsToggle;
+        private DropdownItem UnitsDropdown;
+        private DropdownItem QualityDropdown;
+        private DropdownItem ResolutionDropdown;
+        
         public GeneralPage(VisualElementAsset generalAsset)
         {
             Page = generalAsset.GetElement("page");
             OptionAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Option.uxml");
             
+            CreateElements();
             LoadPageContent();
+        }
+
+        private void CreateElements()
+        {
+            AnalyticsToggle = new ToggleItem(OptionAsset, "Analytics",
+                new Toggle("analytics"));
+            
+            UnitsDropdown = new DropdownItem(OptionAsset, "Measurement Units",
+                new Dropdown("measurement-units", "Metric", "Imperial"));
+            
+            QualityDropdown = new DropdownItem(OptionAsset, "Quality",
+                new Dropdown("quality", "Low", "Medium", "High", "Ultra"));
+            
+            ResolutionDropdown = new DropdownItem(OptionAsset, "Screen Resolution",
+                new Dropdown("resolution", "1280x720", "1280x768", "1280x800",
+                    "1280x1024", "1360x768", "1366x768", "1400x1050", "1440x900", "1600x900",
+                    "1680x1050", "1920x1080"));
         }
 
         private void LoadPageContent()
         {
-            Page.Add(new ToggleItem(OptionAsset, new Toggle("analytics"), "Analytics").Element);
-            
-            Page.Add(new DropdownItem(OptionAsset,
-                new Dropdown("measurement-units", "Metric", "Imperial"), "Measurement Units").Element);
-            
-            Dropdown qualityLevel = new Dropdown("quality",
-                "Low", "Medium", "High", "Ultra");
-            Page.Add(new DropdownItem(OptionAsset, qualityLevel, "Quality").Element);
-
-            Dropdown resolution = new Dropdown("resolution",
-                "1280x720", "1280x768", "1280x800", "1280x1024", "1360x768", "1366x768",
-                "1400x1050", "1440x900", "1600x900", "1680x1050", "1920x1080");
-            Page.Add(new DropdownItem(OptionAsset, resolution, "Screen Resolution").Element);
-            
+            Page.Add(AnalyticsToggle.Element);
+            Page.Add(UnitsDropdown.Element);
+            Page.Add(QualityDropdown.Element);
+            Page.Add(ResolutionDropdown.Element);
         }
+
+        public void RefreshPreferences()
+        {
+            AnalyticsToggle.UpdateInformation();
+            UnitsDropdown.UpdateInformation();
+            QualityDropdown.UpdateInformation();
+            ResolutionDropdown.UpdateInformation();
+        }
+        
     }
 }
