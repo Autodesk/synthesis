@@ -33,7 +33,7 @@ Did you add a feature to Synthesis? Learn how to use a specific feature? Write a
 ### Share a Use Case Story
 Hearing how you use Synthesis is valuable feedback to our team. Share your stories by tagging us @synthesis.adsk or @synthesis_adsk or send them to frc@autodesk.com with a reference to this link.
 
-### Module Development Utilziing the Synthesis API
+### Module Development Utilzing the Synthesis API
 With the 2020 release, Synthesis now provides a [public API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) in which developers can use to write their own modules. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
 
 **Expand Programming Languages**
