@@ -22,24 +22,24 @@ Join a Synthesis code challenge or contest. Follow us @synthesis.adsk and @synth
 Submit your team's CAD model to be added to the Synthesis robot and field libraries. Fill out this form for submissions [ADD GOOGLE FORM].
 
 ### Write Tutorials, Increase Documentation
-We are always interested in ways to make our tutorials and documentation more clear to our end users. If there is content missing or could be refined, please follow our [contribution guidelines](#How-to-Contribute)
+We are always interested in ways to make our tutorials and documentation more clear to our end users. If there is content missing or could be refined, please follow our [contribution guidelines](#How-to-Contribute) to submitting a change.
 
 ### Translate our Tutorials and Documentation
-If you or someone you know can speak and write in another language, we would like to translate our text-based resources to make available in more languages. Spanish and French?
+If you or someone you know can speak and write in another language, we would like to translate our text-based resources to make available in more languages. Contact frc@autodesk.com for more details.
 
 ### Create How-To or Project DIY and Inspiration Guides
-Did you add a feature to Synthesis? Learn how to use a specific feature? Write a how-to guide [ask matt about submitting issues] or share your project with us frc@autodesk.com. [ASK PAM IF SYNTHESIS INSTRUCTABLES PAGE WOULD BE GOOD, NOTE KIRA WILL CREATE A HOW-TO GUIDE FOR ADDING UI FEATURE]
+Did you add a feature to Synthesis? Learn how to use a specific feature? Write a how-to guide or share your project with us frc@autodesk.com and @synthesis.adsk. 
 
 ### Share a Use Case Story
 Hearing how you use Synthesis is valuable feedback to our team. Share your stories by tagging us @synthesis.adsk or @synthesis_adsk or send them to frc@autodesk.com with a reference to this link.
 
 ### Module Development Utilziing the Synthesis API
-With the 2020 release, Synthesis now provides a public API [LINK NUGET PACKAGE] in which developers can use to write their own modules [ADD LINK ABOUT MODULES]. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
+With the 2020 release, Synthesis now provides a [public API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) in which developers can use to write their own modules. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
 
-## Expand Programming Languages
+**Expand Programming Languages**
 Currently, Synthesis supports C++ and Python code emulation. We recognize that teams use different languages for their robot code so being able to expand our emulation support is one of our goals. Learn more about contributing development here. 
 
-## Expand FIRST Support 
+**Expand FIRST Support** 
 FIRST control systems and essentials like sensors, cameras, various motors, etc. would greatly increase simulation support. Learn more about contributing development here. 
 
 
