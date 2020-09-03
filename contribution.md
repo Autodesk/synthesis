@@ -11,9 +11,9 @@ Synthesis is 100% open source and relies on the FIRST community to help make it 
 ### Found a bug? Have an idea for a feature?
 Submit your bug report or idea to our [GitHub issues](https://github.com/Autodesk/synthesis/issues/new/choose).
 
-*A Note to Developers* When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
+*A Note to Developers* When contributing to this repository and making large changes, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com and feel free to send us a [pull request.](https://github.com/Autodesk/synthesis/pulls)
 
-When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
+For smaller changes, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
 
 ### Participate in a Code & Creativity Challenges or Contest
 Join a Synthesis code challenge or contest. Follow us @synthesis.adsk and @synthesis_adsk on social media or check out Chief Delphi to stay up to date with our latest activity.
@@ -36,13 +36,16 @@ Hearing how you use Synthesis is valuable feedback to our team. Share your stori
 ### Module Development Utilzing the Synthesis API
 With the 2020 release, Synthesis now provides a [public API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) in which developers can use to write their own modules. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
 
+**Create Your Own Modules (or Expand Existing)**
+If you believe your module could benefit the Synthesis official release, ou can submit a PR to contribute to existing modules or new modules. Learn more about [contributing development here.](#How-to-Contribute)
+
 **Expand Programming Languages**
-Currently, Synthesis supports C++ and Python code emulation. We recognize that teams use different languages for their robot code so being able to expand our emulation support is one of our goals. Learn more about contributing development here. 
+Currently, Synthesis supports C++ and Python code emulation. We recognize that teams use different languages for their robot code so being able to expand our emulation support is one of our goals. Learn more about [contributing development here.](#How-to-Contribute)
 
 **Expand FIRST Support** 
-FIRST control systems and essentials like sensors, cameras, various motors, etc. would greatly increase simulation support. Learn more about contributing development here. 
+FIRST control systems and essentials like sensors, cameras, various motors, etc. would greatly increase simulation support. Learn more about [contributing development here.](#How-to-Contribute)
 
-
+Perhaps also mention that people can submit a PR to contribute to existing modules or new modules if they believe it would be beneficial to ship with the official release. We'd have to evaluate if it's worthy of course.
 ### Beta Testing
 Help us try and break Synthesis! At the end of summer development, we provide a Synthesis beta for users to test and sometimes in exchange for your time we offer incentives to users. 
 
