@@ -37,7 +37,7 @@ Hearing how you use Synthesis is valuable feedback to our team. Share your stori
 With the 2020 release, Synthesis now provides a [public API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) in which developers can use to write their own modules. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
 
 **Create Your Own Modules (or Expand Existing)**
-If you believe your module could benefit the Synthesis official release, ou can submit a PR to contribute to existing modules or new modules. Learn more about [contributing development here.](#How-to-Contribute)
+If you believe your module could benefit the Synthesis official release, feel free to submit a PR to contribute to existing modules or new modules. Learn more about [contributing development here.](#How-to-Contribute)
 
 **Expand Programming Languages**
 Currently, Synthesis supports C++ and Python code emulation. We recognize that teams use different languages for their robot code so being able to expand our emulation support is one of our goals. Learn more about [contributing development here.](#How-to-Contribute)
@@ -45,7 +45,6 @@ Currently, Synthesis supports C++ and Python code emulation. We recognize that t
 **Expand FIRST Support** 
 FIRST control systems and essentials like sensors, cameras, various motors, etc. would greatly increase simulation support. Learn more about [contributing development here.](#How-to-Contribute)
 
-Perhaps also mention that people can submit a PR to contribute to existing modules or new modules if they believe it would be beneficial to ship with the official release. We'd have to evaluate if it's worthy of course.
 ### Beta Testing
 Help us try and break Synthesis! At the end of summer development, we provide a Synthesis beta for users to test and sometimes in exchange for your time we offer incentives to users. 
 
