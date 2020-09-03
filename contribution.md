@@ -28,10 +28,10 @@ We are always interested in ways to make our tutorials and documentation more cl
 If you or someone you know can speak and write in another language, we would like to translate our text-based resources to make available in more languages. Contact frc@autodesk.com for more details.
 
 ### Create How-To or Project DIY and Inspiration Guides
-Did you add a feature to Synthesis? Learn how to use a specific feature? Write a how-to guide or share your project with us frc@autodesk.com and @synthesis.adsk. 
+Did you add a feature to Synthesis? Learn how to use a specific feature? Write a how-to guide or share your project with us frc@autodesk.com and [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/). 
 
 ### Share a Use Case Story
-Hearing how you use Synthesis is valuable feedback to our team. Share your stories by tagging us @synthesis.adsk or @synthesis_adsk or send them to frc@autodesk.com with a reference to this link.
+Hearing how you use Synthesis is valuable feedback to our team. Share your stories by tagging us [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/) or [@synthesis_adsk](https://twitter.com/synthesis_adsk) or send them to frc@autodesk.com with a reference to this guide.
 
 ### Module Development Utilzing the Synthesis API
 With the 2020 release, Synthesis now provides a [public API](https://www.nuget.org/packages/Autodesk.Synthesis.Module.API/) in which developers can use to write their own modules. Creating your own modules allows you to customize your experience by adding features or expanding existing features, like expanding programming languages.
