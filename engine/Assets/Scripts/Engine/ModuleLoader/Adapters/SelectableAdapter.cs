@@ -139,7 +139,7 @@ namespace Engine.ModuleLoader.Adapters
 
 			if (selectableAdapterCount == 0)
 			{
-				InputManager.AssignDigitalInput($"_internal SelectableAdapter deselect", new Digital($"mouse 1"), e =>
+				InputManager.AssignDigitalInput($"_internal SelectableAdapter deselect", new Digital($"mouse 1 non-ui"), e =>
 				{
 					if (Selectable.Selected != null)
 					{
