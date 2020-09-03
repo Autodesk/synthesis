@@ -2,7 +2,7 @@
 Synthesis is 100% open source and relies on the FIRST community to help make it better. The Synthesis Contribution Guide suggests ways in which you can get involved through development and non-development avenues. 
 
 # Why Contribute? Benefits to Contributing
-* Prepare for an internship; share your contributions when applying to the Synthesis Summer Internship.
+* Prepare for an internship - share your contributions when applying to the [Synthesis Summer Internship.](https://synthesis.autodesk.com/internship.html)
 * Add your contributions to Synthesis: An Autodesk Technology to your portfolio
 * Meet other members in the FIRST community
 * Get involved and learn more about Autodesk products
@@ -19,7 +19,7 @@ When ready to contribute, just submit a pull request and be sure to include a cl
 Join a Synthesis code challenge or contest. Follow us @synthesis.adsk and @synthesis_adsk on social media or check out Chief Delphi to stay up to date with our latest activity.
 
 ### Submit a CAD Model
-Submit your team's CAD model to be added to the Synthesis robot and field libraries. Fill out this form for submissions [ADD GOOGLE FORM].
+Submit your team's CAD model to be added to the Synthesis robot and field libraries by emailing your designs to frc@autodesk.com.
 
 ### Write Tutorials, Increase Documentation
 We are always interested in ways to make our tutorials and documentation more clear to our end users. If there is content missing or could be refined, please follow our [contribution guidelines](#How-to-Contribute) to submitting a change.
