@@ -24,6 +24,9 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement environmentsWindow)
         {
             Window = environmentsWindow;
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
             EnvironmentList = (ListView) Window.Get("environment-list");
             
             LoadWindowContents();   

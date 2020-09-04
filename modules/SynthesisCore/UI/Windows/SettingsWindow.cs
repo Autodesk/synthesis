@@ -27,7 +27,7 @@ namespace SynthesisCore.UI
             
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             Panel = new Panel("Settings", settingsAsset, OnWindowCreate);
-            
+
             Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
             
@@ -37,7 +37,9 @@ namespace SynthesisCore.UI
         private void OnWindowCreate(VisualElement settingsWindow)
         {
             Window = settingsWindow;
-
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
             RegisterButtons();
             LoadWindowContent();
         }

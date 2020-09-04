@@ -24,6 +24,9 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement helpWindow)
         {
             Window = helpWindow;
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
             HelpList = (ListView)Window.Get("help-list");
 
             LoadWindowContents();

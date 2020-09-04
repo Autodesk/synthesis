@@ -24,6 +24,9 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement entitiesWindow)
         {
             Window = entitiesWindow;
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
             EntityList = (ListView) Window.Get("entity-list");
             
             LoadWindowContents();
