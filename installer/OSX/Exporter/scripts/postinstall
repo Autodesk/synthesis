@@ -1,0 +1,4 @@
+#!/bin/bash
+mv $2/Contents/SynthesisFusionGltfExporter ~/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/
+rm -rf $2
+exit 0
