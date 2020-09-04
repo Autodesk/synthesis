@@ -1,0 +1,43 @@
+.item-container {
+    height: 30px;
+    background-color: rgb(237, 237, 237);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    flex-direction: row;
+    width: 99%;
+    margin-bottom: 10px;
+}
+
+.buttons-container {
+    flex-direction: row;
+}
+
+.button {
+    width: 15px;
+    height: 15px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    background-color: rgba(237, 237, 237, 255);
+}
+
+.name-label {
+    width: 245px;
+}
+
+.last-modified-label {
+    width: 140px;
+}
+
+.icon {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
