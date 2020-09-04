@@ -35,10 +35,13 @@ namespace SynthesisCore.UI.Windows
 
         private void RegisterButtons()
         {
-            Dropdown.OnValueChanged += value =>
+            Dropdown.Subscribe(e =>
             {
-                SettingsWindow.AddPendingChange(PreferenceName, value);
-            };
+                if (e is Dropdown.SelectionEvent selectionEvent)
+                {
+                    SettingsWindow.AddPendingChange(PreferenceName, selectionEvent.SelectionName);
+                }
+            });
         }
 
         private string GetPreference()

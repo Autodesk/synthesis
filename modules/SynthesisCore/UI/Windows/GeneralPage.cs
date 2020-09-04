@@ -29,13 +29,13 @@ namespace SynthesisCore.UI
                 new Toggle("analytics"));
             
             UnitsDropdown = new DropdownItem(OptionAsset, "Measurement Units",
-                new Dropdown("measurement-units", "Metric", "Imperial"));
+                new Dropdown("measurement-units", 0, "Metric", "Imperial"));
             
             QualityDropdown = new DropdownItem(OptionAsset, "Quality",
-                new Dropdown("quality", "Low", "Medium", "High", "Ultra"));
+                new Dropdown("quality", 0, "Low", "Medium", "High", "Ultra"));
             
             ResolutionDropdown = new DropdownItem(OptionAsset, "Screen Resolution",
-                new Dropdown("resolution", "1280x720", "1280x768", "1280x800",
+                new Dropdown("resolution", 0, "1280x720", "1280x768", "1280x800",
                     "1280x1024", "1360x768", "1366x768", "1400x1050", "1440x900", "1600x900",
                     "1680x1050", "1920x1080"));
         }

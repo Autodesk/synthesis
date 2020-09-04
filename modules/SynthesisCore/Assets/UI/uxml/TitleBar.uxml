@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-	<ui:VisualElement name="title-bar">
+	<ui:VisualElement name="title-bar" class="title-bar">
 		<Style src="/modules/synthesis_core/UI/uss/TitleBar.uss" />
 		<ui:VisualElement name="top" class="top">
 			<ui:VisualElement name="left-buttons" style="flex-direction: row;">

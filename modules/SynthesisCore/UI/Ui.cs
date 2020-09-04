@@ -63,11 +63,12 @@ namespace SynthesisCore.UI
             UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
 
             EngineToolbar.CreateToolbar();
+            EntityToolbar.CreateToolbar();
             
             UIManager.AddPanel(new SettingsWindow().Panel);
             UIManager.AddPanel(new ModuleWindow().Panel);
             UIManager.AddPanel(new HelpWindow().Panel);
-            
+
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
                 hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
@@ -77,7 +78,6 @@ namespace SynthesisCore.UI
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
         }
-
         public override void OnPhysicsUpdate() { }
 
         public override void OnUpdate() { }

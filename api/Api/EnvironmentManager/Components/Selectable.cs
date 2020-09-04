@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿using SynthesisAPI.EventBus;
+
+#nullable enable
 
 namespace SynthesisAPI.EnvironmentManager.Components
 {
@@ -40,9 +42,21 @@ namespace SynthesisAPI.EnvironmentManager.Components
         public Selectable()
         {
             UsingChildren = false;
-            State = Selectable.SelectionType.Unselected;
+            State = SelectionType.Unselected;
             OnSelect = () => { };
             OnDeselect = () => { };
+        }
+
+        public class SelectionChangeEvent: IEvent
+        {
+            public readonly Selectable? NewSelection;
+            public readonly Selectable? LastSelection;
+
+            public SelectionChangeEvent(Selectable? newSelection, Selectable? lastSelection)
+            {
+                NewSelection = newSelection;
+                LastSelection = lastSelection;
+            }
         }
 
         internal void SetSelected(SelectionType state)

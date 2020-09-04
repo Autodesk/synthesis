@@ -127,11 +127,9 @@ SubSection "Engine" Engine
 	SectionIn RO
 
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\Synthesis
+	SetOutPath $INSTDIR
 
 	File /r "Synthesis\*"
-
-	SetOutPath $INSTDIR
   
 	CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
 	CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"

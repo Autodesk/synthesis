@@ -17,7 +17,7 @@ namespace SynthesisAPI.Utilities
 
         public static T Clamp<T>(T value, T min, T max) where T : IComparable
         {
-            return Min(Max(value, max), min);
+            return Max(Min(value, max), min);
         }
 
         public static bool ApproxEquals(double a, double b)

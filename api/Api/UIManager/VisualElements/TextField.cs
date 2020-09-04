@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Runtime;
 using _UnityTextField = UnityEngine.UIElements.TextField;
 
@@ -20,6 +22,16 @@ namespace SynthesisAPI.UIManager.VisualElements
         }
         */
 
+        private EventBus.EventBus.EventCallback _changeCallback;
+        private EventBus.EventBus.EventCallback _focusCallback;
+        private bool _isChangeCallbackRegistered = false;
+        private bool _isFocusCallbackRegistered = false;
+
+        private static int Id = 0;
+        private int id;
+
+        public string ChangeEventTag => $"text-field-change/{Element.name}-{id}";
+        public string FocusLeaveEventTag => $"text-field-focus-leave/{Element.name}-{id}";
 
         private protected _UnityTextField Element
         {
@@ -62,9 +74,69 @@ namespace SynthesisAPI.UIManager.VisualElements
             set => Element.multiline = value;
         }
 
+        public bool IsDelayed
+        {
+            get => Element.isDelayed;
+            set => Element.isDelayed = value;
+        }
+
         public void SetValueWithoutNotify(string value)
         {
             Element.SetValueWithoutNotify(value);
+        }
+
+        public void SubscribeOnChange(Action<IEvent> action)
+        {
+            _changeCallback = e => action(e);
+            EventBus.EventBus.NewTagListener(ChangeEventTag, _changeCallback);
+
+            if (!_isChangeCallbackRegistered)
+            {
+                Element.RegisterCallback<UnityEngine.UIElements.ChangeEvent<string>>(e =>
+                {
+                    EventBus.EventBus.Push(ChangeEventTag, new TextFieldChangeEvent(Name, e.previousValue, e.newValue));
+                });
+                _isChangeCallbackRegistered = true;
+            }
+        }
+
+        public void SubscribeOnFocusLeave(Action<IEvent> action)
+        {
+            _focusCallback = e => action(e);
+            EventBus.EventBus.NewTagListener(FocusLeaveEventTag, _focusCallback);
+
+            if (!_isFocusCallbackRegistered)
+            {
+                Element.RegisterCallback<UnityEngine.UIElements.FocusOutEvent>(_ =>
+                {
+                    EventBus.EventBus.Push(FocusLeaveEventTag, new TextFieldFocusLeaveEvent(Name));
+                });
+                _isFocusCallbackRegistered = true;
+            }
+        }
+
+        public class TextFieldChangeEvent : IEvent
+        {
+            public readonly string Name;
+            public readonly string PreviousValue;
+            public readonly string NewValue;
+
+            public TextFieldChangeEvent(string name, string previousValue, string newValue)
+            {
+                Name = name;
+                PreviousValue = previousValue;
+                NewValue = newValue;
+            }
+        }
+
+        public class TextFieldFocusLeaveEvent : IEvent
+        {
+            public readonly string Name;
+
+            public TextFieldFocusLeaveEvent(string name)
+            {
+                Name = name;
+            }
         }
 
         public TextField()
@@ -72,11 +144,15 @@ namespace SynthesisAPI.UIManager.VisualElements
             Element = ApiProvider.CreateUnityType<_UnityTextField>()!;
             if (Element == null)
                 throw new Exception();
+            id = Id;
+            Id++;
         }
 
         internal TextField(_UnityTextField element)
         {
             Element = element;
+            id = Id;
+            Id++;
         }
     }
 }
