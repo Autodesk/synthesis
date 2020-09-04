@@ -42,6 +42,7 @@ namespace SynthesisAPI.UIManager
                 Instance.TitleBarContainer.Remove(i);
             }
             Instance.TitleBarContainer.Add(titleBarElement);
+            Instance.TitleBarContainer.style.height = titleBarElement.UnityVisualElement.style.height;
         }
         public static void AddTab(Tab tab)
         {
@@ -148,13 +149,22 @@ namespace SynthesisAPI.UIManager
             {
                 var existingToolbar = toolbarContainer.Get(name: "active-toolbar");
                 if (existingToolbar != null)
+                {
+                    float height = 0;
+                    foreach (var i in existingToolbar.GetChildren())
+                    {
+                        height += i.UnityVisualElement.style.height.value.value;
+                    }
+                    toolbarContainer.UnityVisualElement.style.height = 0;
+                    Instance.TitleBarContainer.UnityVisualElement.style.height = Instance.TitleBarContainer.UnityVisualElement.style.height.value.value - height;
                     toolbarContainer.Remove(existingToolbar);
+                }
             }
             else if(LoadedTabs.ContainsKey(SelectedTabName)) // Add toolbar
             {
-                var toolbar = LoadedTabs[SelectedTabName].ToobarAsset.GetElement("active-toolbar");
-                if (LoadedTabs[SelectedTabName].ToolbarElement == null)
+                if (!LoadedTabs[SelectedTabName].CacheToolbar || LoadedTabs[SelectedTabName].ToolbarElement == null)
                 {
+                    var toolbar = LoadedTabs[SelectedTabName].ToobarAsset.GetElement("active-toolbar");
                     LoadedTabs[SelectedTabName].BindToolbar(toolbar);
                     var x = LoadedTabs[SelectedTabName];
                     x.ToolbarElement = toolbar;
@@ -162,6 +172,13 @@ namespace SynthesisAPI.UIManager
                 }
                 // toolbar.VisualElement.AddToClassList("custom-toolbar"); // May cause some kind of error
                 toolbarContainer.Add(LoadedTabs[SelectedTabName].ToolbarElement);
+                float height = 0;
+                foreach(var i in LoadedTabs[SelectedTabName].ToolbarElement.GetChildren())
+                {
+                    height += i.UnityVisualElement.style.height.value.value;
+                }
+                toolbarContainer.UnityVisualElement.style.height = height;
+                Instance.TitleBarContainer.UnityVisualElement.style.height = Instance.TitleBarContainer.UnityVisualElement.style.height.value.value + height;
             }
         }
 
@@ -177,7 +194,7 @@ namespace SynthesisAPI.UIManager
             {
                 Instance.PanelContainer.Enabled = true;
                 var elm = LoadedPanels[panelName].Ui.GetElement($"panel-{panelName}");
-                if (LoadedPanels[panelName].PanelElement == null)
+                if (!LoadedPanels[panelName].CachePanel || LoadedPanels[panelName].PanelElement == null)
                 {
                     LoadedPanels[panelName].BindPanel(elm);
                     var x = LoadedPanels[panelName];
@@ -268,6 +285,8 @@ namespace SynthesisAPI.UIManager
                 }
             }
 
+            public bool CursorBlockedByUI { get; private set; }
+
             private bool[] nonUIMouseDown = new bool[3];
             private bool nonUIMouseForwardingSetup = false;
 
@@ -277,6 +296,14 @@ namespace SynthesisAPI.UIManager
                 {
                     nonUIMouseDown[e.button] = true;
                     SendNonUIMouseEvent(e.button, DigitalState.Down);
+                });
+                visualElement.UnityVisualElement.RegisterCallback<MouseEnterEvent>(e =>
+                {
+                    CursorBlockedByUI = false;
+                });
+                visualElement.UnityVisualElement.RegisterCallback<MouseLeaveEvent>(e =>
+                {
+                    CursorBlockedByUI = true;
                 });
                 if (!nonUIMouseForwardingSetup)
                 {
@@ -400,5 +427,7 @@ namespace SynthesisAPI.UIManager
             get => Instance.BlankTabAsset;
             set => Instance.BlankTabAsset = value;
         }
+
+        public static bool CursorBlockedByUI => Instance.CursorBlockedByUI;
     }
 }

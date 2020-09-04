@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
-using UnityEngine;
 using ILogger = SynthesisAPI.Utilities.ILogger;
 
 namespace Engine
@@ -64,7 +63,7 @@ namespace Engine
         }
 
         private bool debugLogsEnabled = true;
-        private static bool initialized = false;
+        public static bool IsInitialized { get; private set; } = false;
         private static bool currentlyLogging = false;
         private static bool scrollToBottom = false;
 
@@ -78,17 +77,16 @@ namespace Engine
 
         private static void SendToast(Toast toast)
         {
-            if (!initialized)
-                Setup();
-
             toastList.Add(toast);
+            if (!IsInitialized)
+                Setup();
 
             #region MakeElement
 
             // Create a toast visual element
 
             var toastElement = new VisualElement();
-            
+
             toastElement.SetStyleProperty("flex-direction", "row");
             toastElement.SetStyleProperty("align-content", "center");
             toastElement.SetStyleProperty("padding-top", "5px");
@@ -105,7 +103,6 @@ namespace Engine
             toastElement.SetStyleProperty("min-height", height.ToString() + "px");
 
             #region MakeIcon
-
             var icon = new VisualElement();
             icon.SetStyleProperty("height", "25px");
             icon.SetStyleProperty("min-height", "25px");
@@ -212,7 +209,6 @@ namespace Engine
             toastElement.Add(closeButton);
 
             #endregion
-
             toastFeed.Add(toastElement);
 
             #endregion
@@ -224,9 +220,10 @@ namespace Engine
 
         private static void Setup()
         {
-            if (initialized)
+            if (IsInitialized)
                 return;
 
+            
             // Load icons into virtual file system
             var closeIconStream = File.OpenRead("Assets/Resources/UI/Toasts/close-icon-white.png");
             AssetManager.Import<SpriteAsset>("image/sprite", closeIconStream, "/runtime", "close-icon-white.png", Permissions.PublicReadOnly, "");
@@ -236,10 +233,9 @@ namespace Engine
             AssetManager.Import<SpriteAsset>("image/sprite", warningStream, "/runtime", "warning-icon-white-solid.png", Permissions.PublicReadOnly, "");
             var errorStream = File.OpenRead("Assets/Resources/UI/Toasts/error-icon-white-solid.png");
             AssetManager.Import<SpriteAsset>("image/sprite", errorStream, "/runtime", "error-icon-white-solid.png", Permissions.PublicReadOnly, "");
-            var infoStream = File.OpenRead("Assets/Resources/UI/Toasts/info-icon-white-solid.png");
-            
+            var infoStream = File.OpenRead("Assets/Resources/UI/Toasts/info-icon-white-solid.png"); 
             AssetManager.Import<SpriteAsset>("image/sprite", infoStream, "/runtime", "info-icon-white-solid.png", Permissions.PublicReadOnly, "");
-
+           
             toastContainer = UIManager.RootElement.Get("toast-notification-container");
             toastFeed = UIManager.RootElement.Get("toast-feed");
             toastScrollView = (ScrollView)UIManager.RootElement.Get("toast-scroll-view");
@@ -251,7 +247,7 @@ namespace Engine
             toastScrollViewBottom.SetStyleProperty("background-color", "rgba(0, 0, 0, 0)");
             toastScrollView.Add(toastScrollViewBottom);
 
-            initialized = true;
+            IsInitialized = true;
         }
 
         private static void UpdateContainerHeight()
@@ -281,7 +277,7 @@ namespace Engine
 
         public void Log(object o, LogLevel logLevel = LogLevel.Info, [CallerMemberName] string memberName = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0)
         {
-            if (!currentlyLogging)
+            if (!currentlyLogging && ModuleLoader.Api.IsMainThread)
             {
                 currentlyLogging = true;
                 if (logLevel != LogLevel.Debug || debugLogsEnabled)
@@ -293,6 +289,7 @@ namespace Engine
                 }
                 currentlyLogging = false;
             }
+
         }
 
         public void SetEnableDebugLogs(bool enable)

@@ -11,23 +11,23 @@ namespace SynthesisCore.Simulation
     {
         public void AddMotor(MotorAssembly controller)
         {
-            AllGearBoxes.Add(controller);
+            AllMotorAssemblies.Add(controller);
         }
 
         public void RemoveMotor(int index)
         {
-            AllGearBoxes.RemoveAt(index);
+            AllMotorAssemblies.RemoveAt(index);
         }
 
-        private List<MotorAssembly> _allGearBoxes = null;
+        private List<MotorAssembly> _allMotorAssemblies = null;
 
-        public List<MotorAssembly> AllGearBoxes
+        public List<MotorAssembly> AllMotorAssemblies
         {
             get
             {
-                if (_allGearBoxes == null)
+                if (_allMotorAssemblies == null)
                 {
-                    _allGearBoxes = new List<MotorAssembly>();
+                    _allMotorAssemblies = new List<MotorAssembly>();
 
                     foreach (var entity in EnvironmentManager.GetEntitiesWhere(
                         e => IsDescendant(Entity.Value, e) &&
@@ -37,17 +37,17 @@ namespace SynthesisCore.Simulation
                         {
                             if (j is HingeJoint hingeJoint)
                             {
-                                _allGearBoxes.Add(new MotorAssembly(entity, hingeJoint));
+                                _allMotorAssemblies.Add(new MotorAssembly(entity, hingeJoint));
                             }
                         }
                     }
                 }
-                return _allGearBoxes;
+                return _allMotorAssemblies;
             }
-            set => _allGearBoxes = value;
+            set => _allMotorAssemblies = value;
         }
 
-        private bool IsDescendant(Entity ancestor, Entity test)
+        public static bool IsDescendant(Entity ancestor, Entity test)
         {
             if (test == ancestor)
                 return true;

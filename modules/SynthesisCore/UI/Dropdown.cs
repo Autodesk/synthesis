@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MathNet.Spatial.Euclidean;
 using SynthesisAPI.AssetManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.InputManager;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
@@ -38,9 +40,13 @@ namespace SynthesisCore.UI
 
         public string Name { get; private set; }
 
+        private int id;
+        private static int Id = 0;
+
         public int Count { get => Selected == null ? _options.Count : _options.Count + 1; }
 
-        public string Selected { get; private set; }
+        private string _selected;
+        public string Selected { get => _selected; set => Select(value); }
 
         public IEnumerable<string> Options
         {
@@ -57,11 +63,26 @@ namespace SynthesisCore.UI
             }
         }
 
-        public int ItemHeight { get => _listView.ItemHeight; set { _listView.ItemHeight = value; RefreshListView(); SetButtonHeight(); } }
+        public int ItemHeight { 
+            get => _listView.ItemHeight; 
+            set { 
+                _listView.ItemHeight = value; 
+                RefreshListView(); 
+                SetButtonHeight(); 
+            }
+        }
 
-        public delegate void SubscribeEvent(string s);
-
-        public event SubscribeEvent OnValueChanged;
+        public string EventTag => $"dropdown-selection/{Name}-{id}";
+        public class SelectionEvent : IEvent
+        {
+            public readonly string DropdownName;
+            public readonly string SelectionName;
+            public SelectionEvent(string name, string selection)
+            {
+                DropdownName = name;
+                SelectionName = selection;
+            }
+        }
 
         #endregion
 
@@ -70,24 +91,24 @@ namespace SynthesisCore.UI
             Init(name);
         }
 
-        public Dropdown(string name, List<string> options)
+        public Dropdown(string name, int defaultValueIndex, List<string> options)
         {
             for (int i = 0; i < options.Count; i++)
             {
-                if (i == 0)
-                    Selected = options[i];
+                if (i == defaultValueIndex)
+                    _selected = options[i];
                 else
                     _options.Add(options[i]);
             }
             Init(name);
         }
 
-        public Dropdown(string name, params string[] options)
+        public Dropdown(string name, int defaultValueIndex, params string[] options)
         {
             for (int i = 0; i < options.Length; i++)
             {
-                if (i == 0)
-                    Selected = options[i];
+                if (i == defaultValueIndex)
+                    _selected = options[i];
                 else
                     _options.Add(options[i]);
             }
@@ -97,6 +118,8 @@ namespace SynthesisCore.UI
         private void Init(string name)
         {
             Name = name;
+            id = Id;
+            Id++;
             if (_dropdownAsset == null)
                 _dropdownAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Dropdown.uxml");
             _visualElement = _dropdownAsset.GetElement(name);
@@ -105,21 +128,22 @@ namespace SynthesisCore.UI
             //default height property
             ItemHeight = 30;
 
+            //assign button once for all dropdowns
             if (!_isDeselectDropdownAssigned)
+                InputManager.AssignDigitalInput("_deselect dropdown", new MouseDown("mouse 0"));
+
+            //mouse click listener to close dropdown
+            EventBus.NewTagListener("input/_deselect dropdown", e =>
             {
-                InputManager.AssignDigitalInput("_deselect dropdown", new MouseDown("mouse 0"), e =>
+                if (e is MouseDownEvent downEvent && downEvent.State == DigitalState.Down)
                 {
-                    if (e is MouseDownEvent downEvent && downEvent.State == DigitalState.Down)
-                    {
-                        var point = new Vector2D(downEvent.MousePosition.X, ApplicationWindow.Height - downEvent.MousePosition.Y);
-                        if (_isListViewVisible && !_listView.ContainsPoint(point) && !_button.ContainsPoint(point))
-                        {
-                            CloseListView();
-                        }
-                    }
-                });
-                _isDeselectDropdownAssigned = true;
-            }
+                    var point = new Vector2D(downEvent.MousePosition.X, ApplicationWindow.Height - downEvent.MousePosition.Y);
+                    if (_isListViewVisible && !_listView.ContainsPoint(point) && !_button.ContainsPoint(point)) //auto close if clicked anywhere but dropdown
+                        CloseListView();
+                }
+            });
+
+            _isDeselectDropdownAssigned = true;
         }
 
         private void CreateButton()
@@ -167,7 +191,6 @@ namespace SynthesisCore.UI
                                     button.SetStyleProperty("margin-bottom", "0");
                                 });
             RefreshListView();
-            //lose focus
         }
         private void OnOptionClick(Button button, int index)
         {
@@ -182,10 +205,16 @@ namespace SynthesisCore.UI
                 _options[index] = Selected;
                 button.Text = Selected;
             }
-            Selected = _tmp;
+            _selected = _tmp;
             RefreshButton();
             CloseListView();
-            OnValueChanged?.Invoke(Selected);
+            
+            EventBus.Push(EventTag, new SelectionEvent(Name, Selected));
+        }
+
+        public void Subscribe(Action<IEvent> action)
+        {
+            EventBus.NewTagListener(EventTag, e => action(e));
         }
 
         public bool Add(string option)
@@ -194,7 +223,7 @@ namespace SynthesisCore.UI
                 return false;
             if (Selected == null)
             {
-                Selected = option;
+                _selected = option;
                 RefreshButton();
             }
             else
@@ -209,7 +238,7 @@ namespace SynthesisCore.UI
         {
             if (Selected == option)
             {
-                Selected = null;
+                _selected = null;
                 RefreshButton();
                 return true;
             }
@@ -222,6 +251,25 @@ namespace SynthesisCore.UI
             return false;
         }
 
+        private void Select(string option)
+        {
+            if (Selected != option)
+            {
+                int index = _options.IndexOf(option);
+                if (index == -1) //does not exist
+                {
+                    Add(option);
+                    Select(option);
+                }
+                else
+                {
+                    _options[index] = _selected;
+                    _selected = option;
+                    RefreshAll();
+                }
+            }
+        }
+
         private void RefreshButton()
         {
             _button.Text = Selected == null ? " " : Selected;
@@ -230,6 +278,8 @@ namespace SynthesisCore.UI
         private void SetButtonHeight()
         {
             _button.SetStyleProperty("height", ItemHeight.ToString());
+            _buttonIcon.SetStyleProperty("width", ItemHeight.ToString());
+            _buttonIcon.SetStyleProperty("height", ItemHeight.ToString());
         }
 
         private void RefreshListView()

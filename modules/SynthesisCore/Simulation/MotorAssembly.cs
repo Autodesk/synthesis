@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.Utilities;
 using System.Collections.Generic;
 
 namespace SynthesisCore.Simulation
@@ -14,8 +15,18 @@ namespace SynthesisCore.Simulation
         public readonly Entity Entity;
         public readonly HingeJoint Joint;
         // public List<DCMotor> Motors { get; private set; }
-        public DCMotor Motor { get; private set; } // TODO replace with Motors list above (allow multiple motors in an assembly)
+        public DCMotor Motor; // TODO replace with Motors list above (allow multiple motors in an assembly)
 
+        private uint motorCount;
+
+        public uint MotorCount
+        {
+            get => motorCount;
+            set
+            {
+                motorCount = System.Math.Max(value, 1);
+            }
+        }
         public double GearReduction;
 
         /// <summary>
@@ -29,11 +40,10 @@ namespace SynthesisCore.Simulation
         /// <summary>
         /// Torque in N m
         /// </summary>
-        public double Torque => Motor.Torque * GearReduction;
+        public double Torque => Motor.Torque * GearReduction * MotorCount;
 
 
         private double voltage;
-        private double constantLoadTorque;
 
         public bool FreeSpin
         {
@@ -49,12 +59,13 @@ namespace SynthesisCore.Simulation
 
             // Motors = new List<DCMotor>();
             GearReduction = 1;
+            MotorCount = 1;
         }
 
-        public void Configure(DCMotor motor, /*IEnumerable<DCMotor> motors, */ double gearReduction = 1)
+        public void Configure(DCMotor motor, uint motorCount = 1, double gearReduction = 1)
         {
-            // Motors = (List<DCMotor>) motors;
             Motor = motor;
+            MotorCount = motorCount;
             GearReduction = gearReduction;
         }
 
@@ -64,25 +75,16 @@ namespace SynthesisCore.Simulation
         }
 
         /// <summary>
-        /// Set a constant load torque in N m used to calculate motor performace
-        /// 
-        /// Recommended to provide half of the motor's maximum torque
-        /// 
-        /// This is used when updating the motor velocity in place of an actual load torque on the motor,
-        /// which currently cannot be calculated easily from Unity's physics
-        /// </summary>
-        /// <param name="loadTorque"></param>
-        public void SetConstantLoadTorque(double loadTorque)
-        {
-            constantLoadTorque = loadTorque; // TODO make this unnecessary. Will require significant physics changes.
-        }
-
-        /// <summary>
         /// Update the motor velocity
         /// </summary>
         public void Update()
         {
-            Update(constantLoadTorque);
+            Update(Motor.OptionalConstantLoadTorque);
+        }
+
+        private double CalculatePerMotorTorque(double loadTorque)
+        {
+            return loadTorque / (GearReduction * MotorCount);
         }
 
         /// <summary>
@@ -91,7 +93,7 @@ namespace SynthesisCore.Simulation
         /// <param name="loadTorque">The load on the motor in N m</param>
         public void Update(double loadTorque)
         {
-            Motor.Update(voltage, loadTorque / GearReduction);
+            Motor.Update(voltage, CalculatePerMotorTorque(loadTorque));
             var motor = Joint.Motor;
             motor.TargetVelocity = (float)(Motor.AngularSpeed.DegreesPerSec / GearReduction);
             motor.Force = float.PositiveInfinity;

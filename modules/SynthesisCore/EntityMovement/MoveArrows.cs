@@ -2,6 +2,7 @@
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.InputManager;
+using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Systems;
 
@@ -19,7 +20,7 @@ namespace SynthesisCore.EntityMovement
 
         internal static MarkerBase[] arrows { get; private set; } = new MarkerBase[7];
         internal static MarkerBase selectedMarker { get; set; } = null;
-        private static bool IsMovingEntity => targetEntity != null;
+        public static bool IsMovingEntity => targetEntity != null;
 
         public override void OnPhysicsUpdate() { }
 
@@ -48,7 +49,11 @@ namespace SynthesisCore.EntityMovement
             }
         }
 
-        public override void Setup() { }
+        public override void Setup()
+        {
+            Digital[] closeButtons = { new Digital("return"), new Digital("escape") };
+            InputManager.AssignDigitalInputs("close move arrows", closeButtons, x => StopMovingEntity());
+        }
 
         public override void Teardown() { }
 

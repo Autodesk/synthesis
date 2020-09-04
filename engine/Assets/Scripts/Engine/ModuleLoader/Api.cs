@@ -19,19 +19,31 @@ using Logger = SynthesisAPI.Utilities.Logger;
 using Component = SynthesisAPI.EnvironmentManager.Component;
 using Debug = UnityEngine.Debug;
 using SynthesisAPI.UIManager;
+using System.Collections;
 
 namespace Engine.ModuleLoader
 {
 	public class Api : MonoBehaviour
 	{
+		private static Api Instance = null;
+
 		private static readonly string ModulesSourcePath = FileSystem.BasePath + "modules";
 		private static readonly string BaseModuleTargetPath = SynthesisAPI.VirtualFileSystem.Directory.DirectorySeparatorChar + "modules";
 
 		private static MemoryStream _newConsoleStream = new MemoryStream();
 		private static long _lastConsoleStreamPos = 0;
 
+		private static int mainThreadId;
+		internal static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == mainThreadId;
+
+		private static Queue<Action> MainThreadTasks = new Queue<Action>();
+
+
 		public void Start() // Must happen after ResourceLedger is initialized (in Awake)
 		{
+			if (Instance == null)
+				Instance = this;
+
 			SetupApplication(); // Always do this first
 
 			DontDestroyOnLoad(gameObject); // Do not destroy this game object when loading a new scene
@@ -50,32 +62,38 @@ namespace Engine.ModuleLoader
 		public void Update()
 		{
 			ToastLogger.ScrollToBottom();
+
+			if (IsMainThread && MainThreadTasks.Count > 0)
+				MainThreadTasks.Dequeue()();
 		}
 
 		private void SetupApplication()
 		{
+			mainThreadId = Thread.CurrentThread.ManagedThreadId;
+
 			Application.logMessageReceivedThreaded +=
 				(condition, stackTrace, type) =>
 				{
 					if (type == LogType.Exception)
 					{
 						Logger.Log($"Unhandled exception: {condition}\n{stackTrace}", LogLevel.Error);
-						// TODO show some module-independent error screen
+						/*
 						if (!ModuleManager.IsFinishedLoading)
 						{
 							Task.Run(() =>
 							{
-								while (Application.isPlaying)
+								while (Application.isPlaying) // Wait until module manager loads
 								{
 									Thread.Sleep(250);
 									if (ModuleManager.IsFinishedLoading)
 									{
-										Logger.Log($"Unhandled exception: {condition}\n{stackTrace}", LogLevel.Error);
+										// TODO show some module-independent error screen
 										break;
 									}
 								}
 							});
 						}
+						*/
 					}
 				};
 			Screen.fullScreen = false;
@@ -313,8 +331,18 @@ namespace Engine.ModuleLoader
 				Destroy(gameObject.GetComponent(type));
 			}
 
-			public T CreateUnityType<T>(params object[] args) where T : class =>
-				(T)Activator.CreateInstance(typeof(T), args);
+			public T CreateUnityType<T>(params object[] args) where T : class
+			{
+				if (!IsMainThread)
+				{
+					EnqueueTaskForMainThread(() =>
+					{
+						Logger.Log("Cannot make VisualElement outside of main thread", LogLevel.Error);
+					});
+					return null;
+				}
+				return (T)Activator.CreateInstance(typeof(T), args);
+			}
 
 			public TUnityType InstantiateFocusable<TUnityType>() where TUnityType : Focusable =>
 				(TUnityType)Activator.CreateInstance(typeof(TUnityType));
@@ -323,6 +351,24 @@ namespace Engine.ModuleLoader
 			{
 				// TODO: Re-evaluate this
 				return PanelRenderer.visualTree;
+			}
+
+			public void EnqueueTaskForMainThread(Action task)
+			{
+				int loopDelay = 100; // ms
+				MainThreadTasks.Enqueue(task);
+				while (MainThreadTasks.Contains(task))
+					Thread.Sleep(loopDelay);
+			}
+
+			public Coroutine StartCoroutine(IEnumerator routine)
+			{
+				return Instance.StartCoroutine(routine);
+			}
+
+			public void StopCoroutine(IEnumerator routine)
+			{
+				Instance.StopCoroutine(routine);
 			}
 		}
 	}

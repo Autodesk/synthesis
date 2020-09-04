@@ -1,6 +1,7 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine.UIElements;
 using Component = SynthesisAPI.EnvironmentManager.Component;
@@ -19,6 +20,11 @@ namespace SynthesisAPI.Runtime
 		void AddComponentToScene(Entity entity, Component component);
 
 		void RemoveComponentFromScene(Entity entity, Type t);
+
+		void EnqueueTaskForMainThread(Action task);
+
+        UnityEngine.Coroutine StartCoroutine(IEnumerator routine);
+		void StopCoroutine(IEnumerator routine);
 
 		T CreateUnityType<T>(params object[] args) where T : class;
 

@@ -28,6 +28,7 @@ namespace SynthesisCore.UI
             UIManager.SetTitleBar(titleBarAsset.GetElement("").Get(name: "title-bar"));
 
             EngineToolbar.CreateToolbar();
+            EntityToolbar.CreateToolbar();
             
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             
@@ -36,7 +37,7 @@ namespace SynthesisCore.UI
 
             Panel settingsWindow = new Panel("Settings", settingsAsset,
                 element => Utilities.RegisterOKCloseButtons(element, "Settings"));
-            
+
             UIManager.AddPanel(settingsWindow);
 
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
@@ -51,7 +52,6 @@ namespace SynthesisCore.UI
             Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
             settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
         }
-
         public override void OnPhysicsUpdate() { }
 
         public override void OnUpdate() { }

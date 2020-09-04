@@ -1,3 +1,7 @@
+.title-bar {
+	height: 30px;
+}
+
 .title-bar-button {
     width: 30px;
     height: 30px;
@@ -71,6 +75,8 @@
 
 .top {
     flex-direction: row;
+	height: 100%;
+	flex-shrink: 0;
     background-color: rgb(204, 204, 204);
 }
 
@@ -82,5 +88,5 @@
 }
 
 .bottom {
-    height: 40px;
+    height: 0px;
 }
