@@ -38,7 +38,7 @@ namespace SynthesisCore.UI
                 {"Entity Backward", "DownArrow"},
                 {"Entity Left", "LeftArrow"},
                 {"Entity Right", "RightArrow"},
-                {"Quality", "Low"},
+                {"Graphics Quality", "Low"},
                 {"Screen Resolution", "1920x1080"},
                 {"Screen Mode", "Windowed"},
                 {"Analytics", "True"},

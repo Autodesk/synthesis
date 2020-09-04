@@ -31,8 +31,8 @@ namespace SynthesisCore.UI
             UnitsDropdown = new DropdownItem(OptionAsset, "Measurement Units",
                 new Dropdown("measurement-units", 0, "Metric", "Imperial"));
             
-            QualityDropdown = new DropdownItem(OptionAsset, "Quality",
-                new Dropdown("quality", 0, "Low", "Medium", "High", "Ultra"));
+            QualityDropdown = new DropdownItem(OptionAsset, "Graphics Quality",
+                new Dropdown("graphics-quality", 0, "Low", "Medium", "High", "Ultra"));
             
             ResolutionDropdown = new DropdownItem(OptionAsset, "Screen Resolution",
                 new Dropdown("resolution", 0, "1280x720", "1280x768", "1280x800",
