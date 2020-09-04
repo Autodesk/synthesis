@@ -1,6 +1,6 @@
 # OSX packager
 
-## Build steps :
+## Build Steps :
 
 1. Get signed Synthesis.app
 
@@ -18,13 +18,13 @@
   
     - Remove the exporter file placeholder ` rm [synthesis/installer/OSX/Exporter/payload/Contents/SynthesisFusionGltfExporter/README.md] `	
 
-5. Change directories to the osx installer directory ` cd synthesis/installer/OSX `
+5. Change directories to the OSX installer directory ` cd synthesis/installer/OSX `
 
 6. Run the pkginstall script ` ./pkginstall `
 
 ### Optional Build Steps
 
-Update the license, welcome and conclusion installer menus located in synthesis/installer/OSX/Installer/Resources
+Update the license, welcome and conclusion installer menus located in ` [synthesis/installer/OSX/Installer/Resources] `
 
 ## Package
 
