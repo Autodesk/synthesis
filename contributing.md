@@ -48,7 +48,7 @@ FIRST control systems and essentials like sensors, cameras, various motors, etc.
 ### Beta Testing
 Help us try and break Synthesis! At the end of summer development, we provide a Synthesis beta for users to test and sometimes in exchange for your time we offer incentives to users. 
 
-**What does the Synthesis Beta program look ike?**
+**What does the Synthesis Beta program look like?**
 * 1-2 webinar or self-paced testing sessions
 	* Users will be given testing instructions during this time.
 	* Users will be requested to follow testing guidance and document findings.
