@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.Runtime;
+using Input = SynthesisAPI.InputManager.Inputs.Input;
 
 namespace SynthesisAPI.InputManager
 {

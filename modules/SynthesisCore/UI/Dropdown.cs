@@ -8,7 +8,6 @@ using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.VisualElements;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -126,7 +125,7 @@ namespace SynthesisCore.UI
             CreateButton();
             CreateListView();
             //default height property
-            ItemHeight = 30;
+            ItemHeight = 20;
 
             //assign button once for all dropdowns
             if (!_isDeselectDropdownAssigned)

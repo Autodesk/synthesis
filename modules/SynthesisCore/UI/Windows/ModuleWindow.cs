@@ -28,6 +28,9 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement modulesWindow)
         {
             Window = modulesWindow;
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
             ModuleList = (ListView) Window.Get("module-list");
             
             LoadWindowContents();

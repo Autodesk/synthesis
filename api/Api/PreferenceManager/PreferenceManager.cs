@@ -16,9 +16,11 @@ namespace SynthesisAPI.PreferenceManager
         private static readonly (string Directory, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
         private static JsonAsset? _asset;
-        private static void ImportPreferencesAsset(bool create = false)
+        private static void ImportPreferencesAsset()
         {
-            _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", create, VirtualFilePath.Directory, VirtualFilePath.Name, Permissions.PublicReadWrite, $"{VirtualFilePath.Directory}/{VirtualFilePath.Name}");
+            _asset = AssetManager.AssetManager.Import<JsonAsset>("text/json", true, VirtualFilePath.Directory,
+                    VirtualFilePath.Name, Permissions.PublicReadWrite,
+                    $"{VirtualFilePath.Directory}/{VirtualFilePath.Name}");
         }
 
         /// <summary>
@@ -37,6 +39,14 @@ namespace SynthesisAPI.PreferenceManager
             UnsavedChanges = true;
         }
 
+        public static void SetPreferences(string moduleName, Dictionary<string, object> preferences)
+        {
+            foreach (string key in preferences.Keys)
+            {
+                SetPreference(moduleName, key, preferences[key]);
+            }
+        }
+        
         /// <summary>
         /// This function will return a specific preference that has loaded in and/or
         /// set using the <see cref="SetPreference{TValueType}(string, string, TValueType)"/> method
@@ -47,14 +57,21 @@ namespace SynthesisAPI.PreferenceManager
         [ExposedApi]
         public static object GetPreference(string moduleName, string key)
         {
+            return ContainsPreference(moduleName, key) ? _preferences[moduleName][key] : null;
+        }
+
+        public static bool ContainsPreference(string moduleName, string key)
+        {
             if (_preferences.ContainsKey(moduleName))
             {
                 if (_preferences[moduleName].ContainsKey(key))
-                    return _preferences[moduleName][key];
-                Logger.Log($"There is no key of value \"{key}\" for module \"{moduleName}\"");
+                {
+                    return true;
+                }
+                //Logger.Log($"There is no key of value \"{key}\" for module \"{moduleName}\"");
             }
-            Logger.Log($"There is no module with name \"{moduleName}\"");
-            return null;
+            //Logger.Log($"There is no module with name \"{moduleName}\"");
+            return false;
         }
 
         /// <summary>
@@ -140,7 +157,7 @@ namespace SynthesisAPI.PreferenceManager
                 }
             }
 
-            _preferences = _asset!.DeserializeInner<Dictionary<string, Dictionary<string, object>>>(offset: 0, retainPosition: true);
+            _preferences = _asset!.DeserializeInner<Dictionary<string, Dictionary<string, object>>>(offset: 0, retainPosition: true) ?? new Dictionary<string, Dictionary<string, object>>();
 
             UnsavedChanges = false;
 
@@ -168,7 +185,7 @@ namespace SynthesisAPI.PreferenceManager
         internal static bool SaveInner()
         {
             if(_asset == null)
-                ImportPreferencesAsset(true);
+                ImportPreferencesAsset();
             
             _asset.SerializeInner(_preferences);
             _asset.SaveToFileInner();

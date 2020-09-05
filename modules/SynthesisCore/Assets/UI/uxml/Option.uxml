@@ -1,0 +1,7 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="option" class="option-container" >
+        <Style src="/modules/synthesis_core/UI/uss/Option.uss" />
+        <ui:Label text="%name%" name="option-name" class="option-name" />
+        <ui:VisualElement name="modifier-container" class="modifier-container" />
+    </ui:VisualElement>
+</ui:UXML>

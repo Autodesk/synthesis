@@ -1,8 +1,13 @@
-﻿using SynthesisAPI.AssetManager;
+﻿using System.Collections.Generic;
+using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EventBus;
+using SynthesisAPI.InputManager.InputEvents;
+using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.Utilities;
 using SynthesisCore.UI.Windows;
 
 namespace SynthesisCore.UI
@@ -21,6 +26,36 @@ namespace SynthesisCore.UI
             ToolbarButtonAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarButton.uxml");
             ToolbarCategoryAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/ToolbarCategory.uxml");
             
+            Dictionary<string, object> defaultPreferences = new Dictionary<string, object>
+            {
+                {"Camera Forward", "W"},
+                {"Camera Backward", "S"},
+                {"Camera Left", "A"},
+                {"Camera Right", "D"},
+                {"Camera Up", "Space"},
+                {"Camera Down", "LeftShift"},
+                {"Entity Forward", "UpArrow"},
+                {"Entity Backward", "DownArrow"},
+                {"Entity Left", "LeftArrow"},
+                {"Entity Right", "RightArrow"},
+                {"Graphics Quality", "Low"},
+                {"Screen Resolution", "1920x1080"},
+                {"Screen Mode", "Windowed"},
+                {"Analytics", "True"},
+                {"Measurement Units", "Metric"}
+            };
+
+            PreferenceManager.Load();
+
+            foreach (string option in defaultPreferences.Keys)
+            {
+                if (!PreferenceManager.ContainsPreference("SynthesisCore", option))
+                {
+                    PreferenceManager.SetPreference("SynthesisCore", option, defaultPreferences[option]);
+                }
+            }
+            PreferenceManager.Save();
+
             var blankTabAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Tab.uxml");
             UIManager.SetBlankTabAsset(blankTabAsset);
             
@@ -30,15 +65,9 @@ namespace SynthesisCore.UI
             EngineToolbar.CreateToolbar();
             EntityToolbar.CreateToolbar();
             
-            var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
-            
+            UIManager.AddPanel(new SettingsWindow().Panel);
             UIManager.AddPanel(new ModuleWindow().Panel);
             UIManager.AddPanel(new HelpWindow().Panel);
-
-            Panel settingsWindow = new Panel("Settings", settingsAsset,
-                element => Utilities.RegisterOKCloseButtons(element, "Settings"));
-
-            UIManager.AddPanel(settingsWindow);
 
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
@@ -48,9 +77,6 @@ namespace SynthesisCore.UI
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
-            
-            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
-            settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
         }
         public override void OnPhysicsUpdate() { }
 

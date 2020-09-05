@@ -1,0 +1,18 @@
+.control-container {
+    width: 300px;
+    height: 20px;
+    flex-direction: row;
+}
+
+.name {
+    width: 200px;
+}
+
+.key-button {
+    height: 15px;
+    width: 100px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}

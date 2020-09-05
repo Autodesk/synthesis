@@ -131,7 +131,7 @@ namespace SynthesisAPI.UIManager
             }
             else
             {
-                Utilities.Logger.Log($"Cannot set default tab to non-existent tab {tabName}", Utilities.LogLevel.Warning);
+                Logger.Log($"Cannot set default tab to non-existent tab {tabName}", Utilities.LogLevel.Warning);
             }
         }
 
@@ -202,6 +202,7 @@ namespace SynthesisAPI.UIManager
                     LoadedPanels[panelName] = x;
                 }
                 Instance.PanelContainer.Add(LoadedPanels[panelName].PanelElement);
+                EventBus.EventBus.Push("ui/show-panel", new ShowPanelEvent(LoadedPanels[panelName]));
             }
             
             // TODO: Maybe some event
@@ -212,6 +213,7 @@ namespace SynthesisAPI.UIManager
             var existingPanel = Instance.PanelContainer.Get(name: $"panel-{panelName}");
             if (existingPanel != null)
             {
+                EventBus.EventBus.Push("ui/close-panel", new ClosePanelEvent(LoadedPanels[panelName]));
                 Instance.PanelContainer.Remove(existingPanel);
                 Instance.PanelContainer.Enabled = ((List<VisualElement>)Instance.PanelContainer.GetChildren()).Count > 0;
             }

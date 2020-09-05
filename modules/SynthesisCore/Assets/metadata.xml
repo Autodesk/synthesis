@@ -19,8 +19,6 @@
     <string>UI/uxml/Environment.uxml</string>
 	<string>UI/uxml/Environments.uxml</string>
     <string>UI/uxml/General.uxml</string>
-    <string>UI/uxml/Graphics.uxml</string>
-    <string>UI/uxml/HelpWindow.uxml</string>
     <string>UI/uxml/Modules.uxml</string>
     <string>UI/uxml/Module.uxml</string>
     <string>UI/uxml/Settings.uxml</string>
@@ -29,13 +27,16 @@
     <string>UI/uxml/Toolbar.uxml</string>
     <string>UI/uxml/ToolbarButton.uxml</string>
     <string>UI/uxml/ToolbarCategory.uxml</string>
-    <string>UI/uxml/Dialog.uxml</string>
+    <string>UI/uxml/Controls.uxml</string>
+    <string>UI/uxml/Control.uxml</string>
     <string>UI/uxml/Joints.uxml</string> 
     <string>UI/uxml/Joint.uxml</string>
     <string>UI/uxml/JointNone.uxml</string>
     <string>UI/uxml/Dropdown.uxml</string>
+    <string>UI/uxml/Option.uxml</string>
+    <string>UI/uxml/Toggle.uxml</string>
+    <string>UI/uxml/Help.uxml</string>
     <string>UI/uss/Entity.uss</string>
-    <string>UI/uss/HelpWindow.uss</string>
     <string>UI/uss/Modules.uss</string>
     <string>UI/uss/Module.uss</string>
     <string>UI/uss/Settings.uss</string>
@@ -43,6 +44,12 @@
     <string>UI/uss/ProgressBar.uss</string>
     <string>UI/uss/Toolbar.uss</string>
     <string>UI/uss/TitleBar.uss</string>
+    <string>UI/uss/Control.uss</string>
+    <string>UI/uss/Page.uss</string>
+    <string>UI/uss/Option.uss</string>
+    <string>UI/uss/Dropdown.uss</string>
+    <string>UI/uss/Toggle.uss</string>
+    <string>UI/uss/Help.uss</string>
     <string>UI/uss/Dialog.uss</string>
     <string>UI/uss/Joint.uss</string>
     <string>UI/images/joint-icon.png</string>
@@ -65,7 +72,6 @@
     <string>UI/images/controls-icon.png</string>
     <string>UI/images/environments-icon.png</string>
     <string>UI/images/general-settings-icon.png</string>
-    <string>UI/images/graphics-icon.png</string>
     <string>UI/images/help-icon.png</string>
     <string>UI/images/modules-icon.png</string>
     <string>UI/images/module-icon.png</string>
@@ -76,7 +82,8 @@
     <string>UI/images/delete-icon-disabled.png</string>
     <string>UI/images/toolbar-hide-icon.png</string>
     <string>UI/images/toolbar-show-icon.png</string>
-    <string>UI/images/information-icon.png</string>
+    <string>UI/images/toggle-off-icon.png</string>
+    <string>UI/images/toggle-on-icon.png</string>
     <string>Test.glb</string>
   </FileManifest>
 </ModuleMetadata>
