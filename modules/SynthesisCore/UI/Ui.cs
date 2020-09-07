@@ -69,6 +69,23 @@ namespace SynthesisCore.UI
             UIManager.AddPanel(new ModuleWindow().Panel);
             UIManager.AddPanel(new HelpWindow().Panel);
 
+            DialogInfo dialogInfo = new DialogInfo();
+            dialogInfo.Title = "Update Available";
+            dialogInfo.Prompt = "An update is available for Synthesis.";
+            dialogInfo.Description =
+                "Would you like to automatically upgrade your current Synthesis installation and restart?";
+            dialogInfo.SubmitButtonText = "Update";
+            dialogInfo.CloseButtonText = "Close";
+            dialogInfo.SubmitButtonAction = ev =>
+            {
+                Logger.Log("Submit button clicked");
+            };
+            dialogInfo.CloseButtonAction = ev =>
+            {
+                Logger.Log("Close button clicked");
+            };
+            Dialog.SendDialog(dialogInfo);
+            
             Button hideToolbarButton = (Button)UIManager.RootElement.Get("hide-toolbar-button");
             hideToolbarButton.Subscribe(x => {
                 hideToolbarButton.SetStyleProperty("background-image", IsToolbarVisible ? 
