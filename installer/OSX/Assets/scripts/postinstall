@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -rf ~/.config/Autodesk/Synthesis
+mv $2/Contents/Synthesis ~/.config/Autodesk/
+rm -rf $2
+exit 0

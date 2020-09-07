@@ -11,6 +11,7 @@ using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.Utilities;
 using SynthesisCore.Simulation;
+using SynthesisCore.Meshes;
 
 namespace SynthesisCore
 {
@@ -29,64 +30,45 @@ namespace SynthesisCore
         {
             Entity cube = EnvironmentManager.AddEntity();
 
-            cube.AddComponent<Transform>().Position = new Vector3D(0, .5, 5);
+            cube.AddComponent<Transform>().Position = new Vector3D(0, 5, 5);
             Mesh m = cube.AddComponent<Mesh>();
-            MakeCube(m);
+            Cube.Make(m);
             cube.AddComponent<MeshCollider>();
             cube.AddComponent<Rigidbody>();
             var cubeSelectable = cube.AddComponent<Selectable>();
-            cubeSelectable.OnSelect = () =>
-            {
-                EntityToolbar.Open(cubeSelectable.Entity.Value);
-            };
-            cubeSelectable.OnDeselect = () =>
-            {
-                EntityToolbar.Close();
-            };
             //e.AddComponent<Moveable>().Channel = 5;
 
             powerSupply = new PowerSupply(12); // V
             
-
             testBody = EnvironmentManager.AddEntity();
+
             GltfAsset g = AssetManager.GetAsset<GltfAsset>("/modules/synthesis_core/Test.glb");
             Bundle o = g.Parse();
             testBody.AddBundle(o);
+            SynthesisCoreData.ModelsDict.Add("TestBody", testBody);
+            var body = testBody.GetComponent<Joints>().AllJoints;
 
             var selectable = testBody.AddComponent<Selectable>();
-            cubeSelectable.OnSelect = () =>
-            {
-                EntityToolbar.Open(cubeSelectable.Entity.Value);
-            };
-            cubeSelectable.OnDeselect = () =>
-            {
-                EntityToolbar.Close();
-            };
 
             testBody.AddComponent<Moveable>().Channel = 5;
 
             motorManager = testBody.AddComponent<MotorAssemblyManager>();
 
-            frontLeft = motorManager.AllGearBoxes[3];
-            frontRight = motorManager.AllGearBoxes[4];
-            backLeft = motorManager.AllGearBoxes[1];
-            backRight = motorManager.AllGearBoxes[2];
-            arm = motorManager.AllGearBoxes[0];
+            frontLeft = motorManager.AllMotorAssemblies[3];
+            frontRight = motorManager.AllMotorAssemblies[4];
+            backLeft = motorManager.AllMotorAssemblies[1];
+            backRight = motorManager.AllMotorAssemblies[2];
+            arm = motorManager.AllMotorAssemblies[0];
 
-            frontLeft.Configure(MotorTypes.CIMMotor, 9.29);
-            frontRight.Configure(MotorTypes.CIMMotor, 9.29);
-            backLeft.Configure(MotorTypes.CIMMotor, 9.29);
-            backRight.Configure(MotorTypes.CIMMotor, 9.29);
-            arm.Configure(MotorTypes.CIMMotor, 9.29);
-
-            frontLeft.SetConstantLoadTorque(0.6050985);
-            frontRight.SetConstantLoadTorque(0.6050985);
-            backLeft.SetConstantLoadTorque(0.6050985);
-            backRight.SetConstantLoadTorque(0.6050985);
-            arm.SetConstantLoadTorque(0.6050985);
+            frontLeft.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            frontRight.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            backLeft.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            backRight.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
+            arm.Configure(MotorTypes.Get("CIM"), gearReduction: 9.29);
 
             InputManager.AssignAxis("vert", new Analog("Vertical"));
             InputManager.AssignAxis("hori", new Analog("Horizontal"));
+
             InputManager.AssignDigitalInput("move_arm_up", new Digital("t"));
             InputManager.AssignDigitalInput("move_arm_down", new Digital("y"));
 
@@ -94,6 +76,18 @@ namespace SynthesisCore
             {
                 i.AngularDrag = 0;
             }
+
+            //Entity jointTest = EnvironmentManager.AddEntity();
+            //Mesh m = new Mesh();
+            //Bundle b = new Bundle();
+            //b.Components.Add(selectable);
+            //Transform t = new Transform();
+            //t.Position = new Vector3D(10, 10, 10); //joint anchor position
+            //b.Components.Add(t);
+            //b.Components.Add(cube(m)); //replace the cube function with your mesh creation
+            //jointTest.AddBundle(b);
+            ////when done
+            //jointTest.RemoveEntity();
         }
 
         public override void OnUpdate()
@@ -133,39 +127,6 @@ namespace SynthesisCore
                 arm.SetVoltage(powerSupply.VoltagePercent(-0.25));
             else
                 arm.SetVoltage(powerSupply.VoltagePercent(0));
-        }
-        private Mesh MakeCube(Mesh m)
-        {
-            if (m == null)
-                m = new Mesh();
-
-            m.Vertices = new List<Vector3D>()
-            {
-                new Vector3D(-0.5,-0.5,-0.5),
-                new Vector3D(0.5,-0.5,-0.5),
-                new Vector3D(0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,-0.5),
-                new Vector3D(-0.5,0.5,0.5),
-                new Vector3D(0.5,0.5,0.5),
-                new Vector3D(0.5,-0.5,0.5),
-                new Vector3D(-0.5,-0.5,0.5)
-            };
-            m.Triangles = new List<int>()
-            {
-                0, 2, 1, //face front
-			    0, 3, 2,
-                2, 3, 4, //face top
-			    2, 4, 5,
-                1, 2, 5, //face right
-			    1, 5, 6,
-                0, 7, 4, //face left
-			    0, 4, 3,
-                5, 4, 7, //face back
-			    5, 7, 6,
-                0, 6, 7, //face bottom
-			    0, 1, 6
-            };
-            return m;
         }
 
         public override void Teardown() { }

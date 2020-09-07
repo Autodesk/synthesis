@@ -268,6 +268,7 @@ namespace SynthesisAPI.UIManager
         internal static StyleBackground ToStyleBackground(string str)
         {
             string path = str.Replace(" ", "");
+
             if (path.StartsWith("url(\"") || path.StartsWith("url('"))
                 path = path.Remove(0, 5);
             if (path.EndsWith("\")") || path.EndsWith("')"))

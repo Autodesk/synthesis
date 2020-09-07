@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="Dropdown" style="height: auto; width: 100%;">
+        <Style src="/modules/synthesis_core/UI/uss/Dropdown.uss" />
+        <ui:Button text="Button" name="selected-button" class="selected-button">
+            <ui:VisualElement name="dropdown-icon" class="dropdown-icon" />
+        </ui:Button>
+        <ui:ListView focusable="True" name="options-list" class="options-list" />
+    </ui:VisualElement>
+</ui:UXML>

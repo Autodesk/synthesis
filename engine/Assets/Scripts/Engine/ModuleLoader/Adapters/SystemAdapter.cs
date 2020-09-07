@@ -23,6 +23,16 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void FixedUpdate() => _system.OnPhysicsUpdate();
 
+		public void OnGUI()
+		{
+			_system.OnGUI();
+			var e = Event.current;
+			if (e.isKey)
+			{
+				_system.OnKeyPress(e.keyCode.ToString());
+			}
+		}
+
 		public void OnDestroy() => _system.Teardown();
 
 		public void SetInstance(SystemBase instance)

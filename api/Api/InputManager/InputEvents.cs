@@ -1,6 +1,7 @@
 ﻿using System;
 using SynthesisAPI.InputManager.Inputs;
 using SynthesisAPI.EventBus;
+using MathNet.Spatial.Euclidean;
 
 namespace SynthesisAPI.InputManager.InputEvents
 {
@@ -28,6 +29,15 @@ namespace SynthesisAPI.InputManager.InputEvents
         {
             Name = name;
             State = state;
+        }
+    }
+
+    public class MouseDownEvent : DigitalEvent
+    {
+        public Vector2D MousePosition { get; private set; }
+        public MouseDownEvent(string name, DigitalState state, Vector2D mousePosition) : base(name, state)
+        {
+            MousePosition = mousePosition;
         }
     }
 }

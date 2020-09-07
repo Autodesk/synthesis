@@ -14,7 +14,7 @@ namespace SynthesisCore.UI.Windows
 
         public HelpWindow()
         {
-            var helpWindowAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/HelpWindow.uxml");
+            var helpWindowAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Help.uxml");
             Panel = new Panel("Help", helpWindowAsset, OnWindowOpen);
 
             Button helpButton = (Button)UIManager.RootElement.Get("help-button");
@@ -24,7 +24,10 @@ namespace SynthesisCore.UI.Windows
         private void OnWindowOpen(VisualElement helpWindow)
         {
             Window = helpWindow;
-            HelpList = (ListView)Window.Get("module-list");
+            Window.SetStyleProperty("position", "absolute");
+            Window.IsDraggable = true;
+            
+            HelpList = (ListView)Window.Get("help-list");
 
             LoadWindowContents();
             RegisterButtons();

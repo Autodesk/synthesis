@@ -17,6 +17,16 @@
 		/// </summary>
 		public abstract void OnPhysicsUpdate();
 
+		public virtual void OnGUI()
+		{
+			
+		}
+
+		public virtual void OnKeyPress(string kc)
+		{
+			
+		}
+
 		/// <summary>
 		/// Called once to teardown the SystemBase
 		/// </summary>

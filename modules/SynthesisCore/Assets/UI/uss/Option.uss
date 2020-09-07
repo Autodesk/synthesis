@@ -1,0 +1,14 @@
+﻿.option-container {
+    width: 300px;
+    height: 20px;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.option-name {
+    width: 150px;
+}
+
+.modifier-container {
+    width: 150px;
+}

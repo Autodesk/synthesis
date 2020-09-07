@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="page">
-        <ui:Toggle label="Track analytics" name="analytics-enabled" />
     </ui:VisualElement>
 </ui:UXML>

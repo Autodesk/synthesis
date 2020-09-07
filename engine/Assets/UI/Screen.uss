@@ -1,22 +1,33 @@
 .main-screen {
+
 }
 
 #toast-scroll-view.unity-scroll-view {
     flex-shrink: 0;
 }
 
-.dialog-free-roam {
-    position: absolute;
-    width: 0%;
-    height: 0%;
-    background-color: rgba(29, 29, 29, 0.62);
-}
-
-.panel-center {
-    flex-grow: 1;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
+.tooltip {
+	position: absolute;
+	background-color: rgb(239, 239, 239);
+	color: rgb(91, 91, 91);	
+	-unity-text-align: middle-center;
+	
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+	
+	
+    border-left-color: rgb(144, 146, 149);
+    border-right-color: rgb(144, 146, 149);
+    border-top-color: rgb(144, 146, 149);
+    border-bottom-color: rgb(144, 146, 149);
+    border-left-width: 0.5px;
+    border-right-width: 0.5px;
+    border-top-width: 0.5px;
+    border-bottom-width: 0.5px;
 }

@@ -1,0 +1,3 @@
+#!/bin/bash
+mkdir -p ~/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/
+exit 0

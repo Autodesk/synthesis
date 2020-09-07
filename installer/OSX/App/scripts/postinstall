@@ -1,0 +1,7 @@
+#!/bin/bash
+mv $2/Contents/Synthesis.zip /Applications/
+rm -rf $2
+cd /Applications/
+unzip /Applications/Synthesis.zip
+rm -rf Synthesis.zip
+exit 0

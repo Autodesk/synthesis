@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SynthesisAPI.InputManager.InputEvents;
 using SynthesisAPI.InputManager.Inputs;
-using SynthesisAPI.Runtime;
+using Input = SynthesisAPI.InputManager.Inputs.Input;
 
 namespace SynthesisAPI.InputManager
 {
@@ -42,9 +42,16 @@ namespace SynthesisAPI.InputManager
             {
                 foreach(Input input in _mappedDigitalInputs[name])
                 {
-                    if(!input.Name.EndsWith("non-ui") && input is Digital digitalInput && digitalInput.Update())
+                    if (!input.Name.EndsWith("non-ui") && input.Update())
                     {
-                        EventBus.EventBus.Push($"input/{name}", new DigitalEvent(name, digitalInput.State));
+                        if (input is MouseDown mouseDown)
+                        {
+                            EventBus.EventBus.Push($"input/{name}", new MouseDownEvent(name, mouseDown.State, mouseDown.MousePosition));
+                        }
+                        else if (input is Digital digitalInput)
+                        {
+                            EventBus.EventBus.Push($"input/{name}", new DigitalEvent(name, digitalInput.State));
+                        }
                     }
                 }
             }
