@@ -106,19 +106,7 @@ namespace Engine.ModuleLoader.Adapters
 
         public void OnCollisionEnter(Collision collision)
         {
-            /*TagAdapter tagA, tagB;
-            if ((tagA = collision.gameObject.GetComponent<TagAdapter>()) != null && (tagB = collision.gameObject.GetComponent<TagAdapter>()))
-            {
-                if (tagA.instance.tagName != "Untagged" && tagB.instance.tagName != "Untagged")
-                {
-                    if (tagA.instance.tagName == tagB.instance.tagName)
-                    {
-                        Physics.IgnoreCollision(collision.collider, unityCollider);
-                        Logger.Log("Ignoring collision");
-                    }
-                }
-            }
-            else */if(instance != null && instance.OnCollisionEnter != null)
+            if(instance != null && instance.OnCollisionEnter != null)
             {
                 instance.OnCollisionEnter(MapCollision(collision));
             }
