@@ -382,6 +382,8 @@ namespace SynthesisAPI.EventBus
         {
             public const string
 
+                EntityTab = "Entities Tab",
+                
                 // Main Menu has been deprecated. May consider removing or archiving MainMenu code.
                 MainSimMenu = "Main Menu",
                 MixAndMatchMenu = "Mix and Match Menu",
