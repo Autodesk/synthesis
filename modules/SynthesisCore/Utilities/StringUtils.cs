@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SynthesisCore
+namespace SynthesisCore.Utilities
 {
-    public class Utilities
+    public class StringUtils
     {
         /**
          * Converts ThisIsAnExample to This Is An Example using regex
