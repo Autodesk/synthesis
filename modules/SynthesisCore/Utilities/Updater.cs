@@ -19,8 +19,7 @@ namespace SynthesisCore.Utilities
             {
                 ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
                 var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
-                
-                SynthesisVersion synthesisUpdate = System.Text.Json.JsonSerializer.Deserialize<SynthesisVersion>(json);
+                SynthesisVersion synthesisUpdate = Toolkit.DeserializeJson<SynthesisVersion>(json);
                 if (synthesisUpdate != null)
                 {
                     _updateUrl = synthesisUpdate.Url;
@@ -33,7 +32,7 @@ namespace SynthesisCore.Utilities
 
                     if (versionComparison < 0)
                     {
-                        Logger.Log("[Updater] Update available");
+                        //Logger.Log("[Updater] Update available");
                         IsUpdateAvailable = true;
                     }
                 }
@@ -49,13 +48,13 @@ namespace SynthesisCore.Utilities
 
                 using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
                 {
-                    Logger.Log("[Updater] Connection to version checker established");
+                    //Logger.Log("[Updater] Connection to version checker established");
                     return true;
                 }
             }
             catch
             {
-                Logger.Log("[Updater] Connection to version checker failed");
+                Logger.Log("[Updater] Connection to version checker failed", LogLevel.Warning);
                 return false;
             }
         }

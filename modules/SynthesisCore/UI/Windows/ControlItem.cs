@@ -49,7 +49,7 @@ namespace SynthesisCore.UI
                 {
                     SettingsWindow.AddPendingChange(ControlName, ((KeyEvent) e).KeyString);
                     KeyButton.Text = StringUtils.ReformatCondensedString(((KeyEvent) e).KeyString);
-
+                    
                     // InputManager.UnassignDigitalInput(""); TODO unassign previous input, assign new one
                     InputSystem.IsAwaitingKey = false;
                     EventBus.RemoveTypeListener<KeyEvent>(Callback);
