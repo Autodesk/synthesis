@@ -2,7 +2,6 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
-using Newtonsoft.Json;
 using SynthesisAPI.Utilities;
 
 namespace SynthesisCore.Utilities
@@ -20,19 +19,23 @@ namespace SynthesisCore.Utilities
             {
                 ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
                 var json = new WebClient().DownloadString("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json");
-                SynthesisVersion synthesisUpdate = Json.DeserializeObject<SynthesisVersion>(json);
-                _updateUrl = synthesisUpdate.Url;
-                _updateVersion = synthesisUpdate.Version;
                 
-                var localVersion = new Version(CurrentVersion);
-                var globalVersion = new Version(synthesisUpdate.Version);
-
-                var versionComparison = localVersion.CompareTo(globalVersion);
-
-                if (versionComparison < 0)
+                SynthesisVersion synthesisUpdate = System.Text.Json.JsonSerializer.Deserialize<SynthesisVersion>(json);
+                if (synthesisUpdate != null)
                 {
-                    Logger.Log("[Updater] Update available");
-                    IsUpdateAvailable = true;
+                    _updateUrl = synthesisUpdate.Url;
+                    _updateVersion = synthesisUpdate.Version;
+
+                    var localVersion = new Version(CurrentVersion);
+                    var globalVersion = new Version(synthesisUpdate.Version);
+
+                    var versionComparison = localVersion.CompareTo(globalVersion);
+
+                    if (versionComparison < 0)
+                    {
+                        Logger.Log("[Updater] Update available");
+                        IsUpdateAvailable = true;
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="4.11.0" />
     <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0-preview.8.20407.11" />
   </ItemGroup>
 
   <ItemGroup>
