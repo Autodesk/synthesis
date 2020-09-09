@@ -46,7 +46,6 @@ namespace SynthesisCore.UI
             };
 
             PreferenceManager.Load();
-            Analytics.UploadDump();
 
             foreach (string option in defaultPreferences.Keys)
             {

@@ -39,9 +39,6 @@ namespace SynthesisCore.UI
             UIManager.AddTab(engineTab);
             UIManager.SetDefaultTab(engineTab.Name);
 
-            // Start analytics timer for current tab
-            Analytics.StartTime(Analytics.TimingLabel.EngineTab, Analytics.TimingVariable.Customizing, 0); 
-
             toolbarCreated = true;
         }
     }

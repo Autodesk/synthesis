@@ -49,12 +49,18 @@ namespace SynthesisCore.UI
                             else
                                 MoveArrows.StopMovingEntity();
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Move Entity Button", 10);
+                        Analytics.UploadDump();
                     });
                 deleteEntityButton = ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", DeleteEntityButtonIconDisabled,
                     _ => {
                         if (isEntitySelected) {
                             EnvironmentManager.RemoveEntity(Selectable.Selected.Entity.Value);
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Delete Entity Button", 10);
+                        Analytics.UploadDump();
                     });
 
                 var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
@@ -68,6 +74,9 @@ namespace SynthesisCore.UI
                             else
                                 UIManager.ClosePanel("Joints");
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Joints Button", 10);
+                        Analytics.UploadDump();
                     });
 
                 isToolbarBound = true;
@@ -75,12 +84,6 @@ namespace SynthesisCore.UI
             });
 
             UIManager.AddTab(entityTab);
-
-            // log any timing events from switching tabs
-            //Analytics.GetElapsedTime(Analytics.TimingLabel.EngineTab, Analytics.TimingVariable.Customizing, Analytics.);
-            //        Analytics.LogTimingAsync(Analytics.TimingCatagory.SensorTab,
-            //AnalyticsLedger.TimingVarible.Customizing,
-            //AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
 
             JointsWindow.CreateWindow();
             UIManager.AddPanel(JointsWindow.Panel);
