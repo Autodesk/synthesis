@@ -22,7 +22,7 @@ namespace SynthesisCore.Utilities
                 SynthesisVersion synthesisUpdate = Toolkit.DeserializeJson<SynthesisVersion>(json);
                 if (synthesisUpdate != null)
                 {
-                    _updateUrl = synthesisUpdate.Url;
+                    _updateUrl = synthesisUpdate.URL;
                     _updateVersion = synthesisUpdate.Version;
 
                     var localVersion = new Version(CurrentVersion);
@@ -85,18 +85,18 @@ namespace SynthesisCore.Utilities
 
         public static SynthesisVersion GetUpdateVersion()
         {
-            return new SynthesisVersion {Version = _updateVersion, Url = _updateUrl};
+            return new SynthesisVersion {Version = _updateVersion, URL = _updateUrl};
         }
 
         public static SynthesisVersion GetCurrentVersion()
         {
-            return new SynthesisVersion { Version = CurrentVersion, Url = "" };
+            return new SynthesisVersion { Version = CurrentVersion, URL = "" };
         }
 
         public class SynthesisVersion
         {
             public string Version { get; set; }
-            public string Url { get; set; }
+            public string URL { get; set; }
         }
 
     }

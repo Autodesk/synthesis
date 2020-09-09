@@ -92,7 +92,10 @@ namespace SynthesisCore.UI
                         "You are currently running v" + Updater.GetCurrentVersion().Version + ", would you like to " +
                         "open the download link to v" + Updater.GetUpdateVersion().Version + " in your browser?",
                     SubmitButtonText = "Update",
-                    SubmitButtonAction = ev => { Process.Start(Updater.GetUpdateVersion().Url); },
+                    SubmitButtonAction = ev =>
+                    {
+                        Process.Start(Updater.GetUpdateVersion().URL);
+                    },
                 };
                 Dialog.SendDialog(dialogInfo);
             }
