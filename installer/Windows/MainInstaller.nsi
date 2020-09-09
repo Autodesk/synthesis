@@ -131,8 +131,8 @@ SubSection "Engine" Engine
 
 	File /r "Synthesis\*"
   
-	CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
-	CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis\Synthesis.exe"
+	CreateShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
+	CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
 
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis"
