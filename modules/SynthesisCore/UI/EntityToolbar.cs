@@ -1,5 +1,6 @@
 ﻿using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
@@ -74,6 +75,12 @@ namespace SynthesisCore.UI
             });
 
             UIManager.AddTab(entityTab);
+
+            // log any timing events from switching tabs
+            //Analytics.GetElapsedTime(Analytics.TimingLabel.EngineTab, Analytics.TimingVariable.Customizing, Analytics.);
+            //        Analytics.LogTimingAsync(Analytics.TimingCatagory.SensorTab,
+            //AnalyticsLedger.TimingVarible.Customizing,
+            //AnalyticsLedger.TimingLabel.MainSimulator); // log any timing events from switching tabs
 
             JointsWindow.CreateWindow();
             UIManager.AddPanel(JointsWindow.Panel);

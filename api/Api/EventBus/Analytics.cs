@@ -376,19 +376,16 @@ namespace SynthesisAPI.EventBus
 
         /// <summary>
         /// Categories group multiple objects together. Each main category is grouped by the tabs
-        /// in the simulator. Most events will fall into one of the tab categories (e.g. HomeTab.)
+        /// in the simulator. Most events will fall into one of the tab categories (e.g. Engine or Entity tab.)
         /// </summary>
         public static class EventCategory
         {
             public const string
-
+                EngineTab = "Engine Tab",
                 EntityTab = "Entities Tab",
-                
-                // Main Menu has been deprecated. May consider removing or archiving MainMenu code.
-                MainSimMenu = "Main Menu",
-                MixAndMatchMenu = "Mix and Match Menu",
-                MultiplayerMenu = "LAN Multiplayer Menu",
-                MixAndMatchSimulator = "Mix and Match Simulator",
+
+                ExporterType = "Exported Generator",
+                ExporterVersion = "Exporter Version",
 
                 // Start of analytics tracking
                 MainSimulator = "Main Simulator",
@@ -419,6 +416,7 @@ namespace SynthesisAPI.EventBus
         public static class EventAction
         {
             public const string
+                
                 StartSim = "Started Simulator",
                 TutorialRequest = "Requested Tutorial",
                 BackedOut = "Back",
@@ -455,6 +453,9 @@ namespace SynthesisAPI.EventBus
         public static class TimingCategory
         {
             public const string
+                EngineTab = "Engine Tab",
+                EntityTab = "Entity Tab",
+                
                 Main = "Main Menu",
                 MixMatch = "Mix and Match",
                 Multiplater = "Multiplayer",
@@ -476,7 +477,7 @@ namespace SynthesisAPI.EventBus
         {
             public const string
                 Loading = "Loading",
-                Playing = "Playing",
+                Interacting = "Interacting",
                 Customizing = "Customizing",
                 Viewing = "Viewing",
                 Starting = "Starting";
@@ -488,6 +489,9 @@ namespace SynthesisAPI.EventBus
         public static class TimingLabel
         {
             public const string
+                EngineTab = "Engine Tab",
+                EntityTab = "Entity Tab",
+                
                 MixAndMatchMenu = "Mix and Match Menu",
                 MainSimMenu = "Main Menu",
                 MultiplayerLobbyMenu = "Multiplayer Lobby Menu",
