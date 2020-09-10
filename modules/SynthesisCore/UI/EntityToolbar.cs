@@ -50,7 +50,7 @@ namespace SynthesisCore.UI
                                 MoveArrows.StopMovingEntity();
                         }
 
-                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Move Entity Button", 10);
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Move Entity Button", 10);
                         Analytics.UploadDump();
                     });
                 deleteEntityButton = ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", DeleteEntityButtonIconDisabled,
@@ -59,7 +59,7 @@ namespace SynthesisCore.UI
                             EnvironmentManager.RemoveEntity(Selectable.Selected.Entity.Value);
                         }
 
-                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Delete Entity Button", 10);
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Delete Entity Button", 10);
                         Analytics.UploadDump();
                     });
 
@@ -75,7 +75,7 @@ namespace SynthesisCore.UI
                                 UIManager.ClosePanel("Joints");
                         }
 
-                        Analytics.LogEvent(Analytics.EventCategory.EntityTab, Analytics.EventAction.Clicked, "Joints Button", 10);
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Joints Button", 10);
                         Analytics.UploadDump();
                     });
 

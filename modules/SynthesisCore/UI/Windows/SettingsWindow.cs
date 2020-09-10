@@ -47,9 +47,6 @@ namespace SynthesisCore.UI
 
             RegisterButtons();
             LoadWindowContent();
-
-            Analytics.LogEvent(Analytics.EventCategory.EngineTab, Analytics.EventAction.Clicked, "Environments Panel", 10);
-            Analytics.UploadDump();
         }
 
         private void OnWindowClose()

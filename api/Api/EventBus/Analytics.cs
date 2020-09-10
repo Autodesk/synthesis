@@ -11,7 +11,8 @@ namespace SynthesisAPI.EventBus
 
         private const string URL_COLLECT = "https://www.google-analytics.com/collect";
         private const string URL_BATCH = "https://www.google-analytics.com/batch";
-        private const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
+        public const string OFFICIAL_TRACKING_ID = "UA-81892961-7";
+        private const string SYNTHESIS_UNITY_PROJECT_ID = "UA-81892961-3";
         public static string GUID { get; private set; } = "not-set";
         public static bool DataCollection { get; private set; } = true;
 

@@ -25,14 +25,14 @@ namespace SynthesisCore.UI
                     _ =>
                     {
                         UIManager.TogglePanel("Entities");
-                        Analytics.LogEvent(Analytics.EventCategory.EngineTab, Analytics.EventAction.Clicked, "Add Entity Panel", 10);
+                        Analytics.LogEvent(Analytics.EventCategory.EngineToolbar, Analytics.EventAction.Clicked, "Add Entity Panel", 10);
                         Analytics.UploadDump();
                     });
                 ToolbarTools.AddButton(designCategory, "change-environment-button", "Change Environment", "/modules/synthesis_core/UI/images/environments-icon.png",
                     _ =>
                     {
                         UIManager.TogglePanel("Environments");
-                        Analytics.LogEvent(Analytics.EventCategory.EngineTab, Analytics.EventAction.Clicked, "Environments Panel", 10);
+                        Analytics.LogEvent(Analytics.EventCategory.EngineToolbar, Analytics.EventAction.Clicked, "Environments Panel", 10);
                         Analytics.UploadDump();
                     });
 
