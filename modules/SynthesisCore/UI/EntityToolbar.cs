@@ -81,7 +81,6 @@ namespace SynthesisCore.UI
 
                 isToolbarBound = true;
                 UpdateIcons();
-                Analytics.StartTime(Analytics.TimingCategory.EntityTab, Analytics.TimingVariable.Interacting, Time.TimeMilliseconds);
             });
 
             UIManager.AddTab(entityTab);
@@ -120,9 +119,6 @@ namespace SynthesisCore.UI
                     return;
 
                 UpdateIcons();
-
-                //Analytics.LogElapsedTime(Analytics.TimingCategory.EntityTab, Analytics.TimingVariable.Interacting, Analytics.TimingLabel.EngineTab, Time.TimeMilliseconds);
-                //Analytics.UploadDump();
 
                 if (isEntitySelected)
                 {

@@ -35,8 +35,6 @@ namespace SynthesisCore.UI
                         Analytics.LogEvent(Analytics.EventCategory.EngineToolbar, Analytics.EventAction.Clicked, "Environments Panel", 10);
                         Analytics.UploadDump();
                     });
-
-                //Analytics.StartTime(Analytics.TimingCategory.EngineTab, Analytics.TimingVariable.Interacting, Time.TimeMilliseconds);
             });
 
             UIManager.AddTab(engineTab);
