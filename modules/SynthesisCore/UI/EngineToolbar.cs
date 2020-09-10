@@ -1,4 +1,5 @@
-﻿using SynthesisAPI.EventBus;
+﻿using SynthesisAPI.EnvironmentManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisCore.UI.Windows;
@@ -34,6 +35,8 @@ namespace SynthesisCore.UI
                         Analytics.LogEvent(Analytics.EventCategory.EngineTab, Analytics.EventAction.Clicked, "Environments Panel", 10);
                         Analytics.UploadDump();
                     });
+
+                //Analytics.StartTime(Analytics.TimingCategory.EngineTab, Analytics.TimingVariable.Interacting, Time.TimeMilliseconds);
             });
 
             UIManager.AddTab(engineTab);

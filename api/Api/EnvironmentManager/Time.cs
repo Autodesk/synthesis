@@ -13,5 +13,7 @@ namespace SynthesisAPI.EnvironmentManager
         }
         public static float TimeSinceLastFrameUpdate => UnityTime.deltaTime;
         public static float TimeSinceLastPhysicsUpdate => UnityTime.fixedDeltaTime;
+
+        public static float TimeMilliseconds => (UnityTime.time);
     }
 }

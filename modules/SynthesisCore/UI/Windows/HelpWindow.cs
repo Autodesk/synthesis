@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
@@ -18,7 +19,13 @@ namespace SynthesisCore.UI.Windows
             Panel = new Panel("Help", helpWindowAsset, OnWindowOpen);
 
             Button helpButton = (Button)UIManager.RootElement.Get("help-button");
-            helpButton.Subscribe(x => UIManager.TogglePanel("Help"));
+            helpButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Help");
+                Analytics.LogEvent(Analytics.EventCategory.Help, Analytics.EventAction.Clicked, "Help Panel", 10);
+                Analytics.UploadDump();
+            });
+
         }
 
         private void OnWindowOpen(VisualElement helpWindow)
