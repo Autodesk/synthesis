@@ -8,6 +8,8 @@ using System.ComponentModel;
 using System;
 using SynthesisAPI.Utilities;
 
+using Logger = SynthesisAPI.Utilities.Logger;
+
 namespace Engine.ModuleLoader.Adapters
 {
     public class JointsAdapter : MonoBehaviour, IApiAdapter<Joints>
@@ -81,7 +83,7 @@ namespace Engine.ModuleLoader.Adapters
                 //TODO: Add parent and child body connections
                 _unityJoint = Api.ApiProviderData.GameObjects[_joint.connectedParent.Entity.Value].AddComponent<UnityEngine.FixedJoint>();
                 
-                _unityJoint.anchor = _joint.anchor.Map();
+                _unityJoint.anchor = _joint.anchor.Map() - _unityJoint.transform.position;
                 _unityJoint.axis = _joint.axis.Map();
                 _unityJoint.breakForce = _joint.breakForce;
                 _unityJoint.breakTorque = _joint.breakTorque;
@@ -105,7 +107,7 @@ namespace Engine.ModuleLoader.Adapters
                 switch (args.PropertyName.ToLower())
                 {
                     case "axis":
-                        _unityJoint.axis = _joint.axis.Map();
+                        _unityJoint.axis = _joint.axis.Map() - _unityJoint.transform.position;
                         break;
                     case "anchor":
                         _unityJoint.anchor = _joint.anchor.Map();
@@ -141,8 +143,10 @@ namespace Engine.ModuleLoader.Adapters
                 //init all properties
                 //TODO: Add parent and child body connections
                 _unityJoint = GameObject.Find($"Entity {_joint.connectedParent.Entity?.Index}").AddComponent<UnityEngine.HingeJoint>();
+
+                // Logger.Log($"Creating Joint on \"{_unityJoint.gameObject.name}\""); // Useful for debugging
                 
-                _unityJoint.anchor = _joint.anchor.Map();
+                _unityJoint.anchor = _joint.anchor.Map() - _unityJoint.transform.position;
                 _unityJoint.axis = _joint.axis.Map();
                 _unityJoint.breakForce = _joint.breakForce;
                 _unityJoint.breakTorque = _joint.breakTorque;
@@ -173,7 +177,7 @@ namespace Engine.ModuleLoader.Adapters
                 switch (args.PropertyName.ToLower())
                 {
                     case "anchor":
-                        _unityJoint.anchor = _joint.anchor.Map();
+                        _unityJoint.anchor = _joint.anchor.Map() - _unityJoint.transform.position;
                         break;
                     case "axis":
                         _unityJoint.axis = _joint.axis.Map();

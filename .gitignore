@@ -1,8 +1,6 @@
 .vs/
 .DS_Store
 **/*/.idea/
-!engine/CoreEngine/Assets/Api.dll
-!engine/CoreEngine/Assets/Api.dll.meta
 
 # Binary
 *.exe
@@ -11,3 +9,6 @@
 *.dll
 *.dll.meta
 *.so
+
+!engine/CoreEngine/Assets/Api.dll
+!engine/CoreEngine/Assets/Api.dll.meta
