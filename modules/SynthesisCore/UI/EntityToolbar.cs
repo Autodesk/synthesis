@@ -53,6 +53,7 @@ namespace SynthesisCore.UI
                     _ => {
                         if (isEntitySelected) {
                             EnvironmentManager.RemoveEntity(Selectable.Selected.Entity.Value);
+                            Selectable.ResetSelected();
                         }
                     });
 

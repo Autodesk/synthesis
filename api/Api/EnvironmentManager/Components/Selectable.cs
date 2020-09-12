@@ -68,7 +68,7 @@ namespace SynthesisAPI.EnvironmentManager.Components
             }
         }
 
-        internal static void ResetSelected()
+        public static void ResetSelected()
         {
             Selected = null;
         }
