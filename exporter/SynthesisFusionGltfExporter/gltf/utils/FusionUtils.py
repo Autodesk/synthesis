@@ -65,9 +65,14 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportW
 
     transparent = False
     emissiveColorFactor = None
-    metallicFactor = 0.0
-    roughnessProp = props.itemById("surface_roughness")
-    roughnessFactor = roughnessProp.value if roughnessProp is not None else 0.1
+    metallicFactor = 0.1 # never 0 and certainly never 1
+    roughnessFactor = 0.1
+
+    try:
+        roughnessProp = props.itemById("surface_roughness")
+        roughnessFactor = roughnessProp.value
+    except: # This is a pass-through (usually bad practice but it looks like this might be a fusion bug of some kind)
+        pass 
 
     baseColor = None
 
@@ -76,12 +81,13 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportW
         return None
     matModelType = modelItem.value
 
+
     if matModelType == 0:  # Opaque
         baseColor = props.itemById("opaque_albedo").value
         if props.itemById("opaque_emission").value:
             emissiveColorFactor = fusionColorToRGBAArray(props.itemById("opaque_luminance_modifier").value)[:3]
-    elif matModelType == 1:  # Metal
-        metallicFactor = 1.0
+    elif matModelType == 1:  # Metal - even metal should be set at most to about .2-.5
+        metallicFactor = 0.3
         baseColor = props.itemById("metal_f0").value
     elif matModelType == 2:  # Layered
         baseColor = props.itemById("layered_diffuse").value
