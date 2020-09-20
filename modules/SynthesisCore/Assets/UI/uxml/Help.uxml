@@ -15,6 +15,7 @@
                 <ui:Button text="Submit an Idea" name="submit-an-idea-button" class="help-button" />
                 <ui:VisualElement class="vertical-divider" />
                 <ui:Button text="About" name="about-button" class="help-button" />
+                <ui:Label text=" " name="version-label" style="margin-left: 10px;" />
             </ui:ListView>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel" style="flex-direction: row-reverse;">
