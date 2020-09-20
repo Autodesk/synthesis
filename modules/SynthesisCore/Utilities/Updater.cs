@@ -48,13 +48,13 @@ namespace SynthesisCore.Utilities
 
                 using (client.OpenRead("https://raw.githubusercontent.com/Autodesk/synthesis/master/VersionManager.json"))
                 {
-                    //Logger.Log("[Updater] Connection to version checker established");
+                    //Logger.Log("[Updater] Connection to update server established");
                     return true;
                 }
             }
             catch
             {
-                Logger.Log("[Updater] Connection to version checker failed", LogLevel.Warning);
+                Logger.Log("[Updater] Connection to update servers failed", LogLevel.Warning);
                 return false;
             }
         }
