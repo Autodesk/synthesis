@@ -68,12 +68,8 @@ def getPBRSettingsFromAppearance(fusionAppearance: adsk.core.Appearance, exportW
     metallicFactor = 0.1 # never 0 and certainly never 1
     roughnessFactor = 0.1
 
-    try:
-        roughnessProp = props.itemById("surface_roughness")
-        roughnessFactor = roughnessProp.value
-    except: # This is a pass-through (usually bad practice but it looks like this might be a fusion bug of some kind)
-        pass 
-
+    roughnessProp = props.itemById("surface_roughness")
+    roughnessFactor = roughnessProp.value
     baseColor = None
 
     modelItem = props.itemById("interior_model")
