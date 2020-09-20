@@ -11,7 +11,7 @@ namespace SynthesisCore.Utilities
         public static bool IsUpdateAvailable { get; private set; }
         private static string _updateUrl;
         private static string _updateVersion;
-        private const string CurrentVersion = "5.0.0";
+        private const string CurrentVersion = "4.9.0";
 
         public static void CheckForUpdate()
         {
