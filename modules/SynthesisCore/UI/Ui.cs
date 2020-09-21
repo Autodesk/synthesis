@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EventBus;
@@ -9,6 +10,7 @@ using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
 using SynthesisCore.UI.Windows;
+using SynthesisCore.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -77,6 +79,27 @@ namespace SynthesisCore.UI
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
             });
+            
+            // Updater
+            Updater.CheckForUpdate();
+            if (Updater.IsUpdateAvailable)
+            {
+                DialogInfo dialogInfo = new DialogInfo
+                {
+                    Title = "Update Available",
+                    Prompt = "An update is available for Synthesis.",
+                    Description =
+                        "You are currently running v" + Updater.GetCurrentVersion().Version + ", would you like to " +
+                        "open the download link to v" + Updater.GetUpdateVersion().Version + " in your browser?",
+                    SubmitButtonText = "Update",
+                    SubmitButtonAction = ev =>
+                    {
+                        Process.Start(Updater.GetUpdateVersion().URL);
+                    },
+                };
+                Dialog.SendDialog(dialogInfo);
+            }
+            
         }
         public override void OnPhysicsUpdate() { }
 

@@ -3,13 +3,13 @@ using SynthesisAPI.EventBus;
 
 namespace SynthesisCore.UI
 {
-    public struct DialogInfo
+    public class DialogInfo
     {
-        public string Title;
+        public string Title = "Notification";
         public string Prompt;
         public string Description;
-        public string SubmitButtonText;
-        public string CloseButtonText;
+        public string SubmitButtonText = "Submit";
+        public string CloseButtonText = "Close";
         public Action<IEvent> SubmitButtonAction;
         public Action<IEvent> CloseButtonAction;
     }
