@@ -63,6 +63,14 @@ namespace SynthesisAPI.EnvironmentManager.Components
                 OnPropertyChanged();
             }
         }
+        internal string collisionLayer = string.Empty;
+        public string CollisionLayer {
+            get => collisionLayer;
+            set {
+                collisionLayer = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
