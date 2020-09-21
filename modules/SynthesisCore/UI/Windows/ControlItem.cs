@@ -5,6 +5,7 @@ using SynthesisAPI.InputManager;
 using SynthesisAPI.PreferenceManager;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Utilities;
 
 namespace SynthesisCore.UI
 {
@@ -47,8 +48,8 @@ namespace SynthesisCore.UI
                 void Callback(IEvent e)
                 {
                     SettingsWindow.AddPendingChange(ControlName, ((KeyEvent) e).KeyString);
-                    KeyButton.Text = Utilities.ReformatCondensedString(((KeyEvent) e).KeyString);
-
+                    KeyButton.Text = StringUtils.ReformatCondensedString(((KeyEvent) e).KeyString);
+                    
                     // InputManager.UnassignDigitalInput(""); TODO unassign previous input, assign new one
                     InputSystem.IsAwaitingKey = false;
                     EventBus.RemoveTypeListener<KeyEvent>(Callback);
@@ -61,7 +62,7 @@ namespace SynthesisCore.UI
             var controlKey = PreferenceManager.GetPreference("SynthesisCore", controlName);
             if (controlKey is string)
             {
-                return Utilities.ReformatCondensedString((string) controlKey);
+                return StringUtils.ReformatCondensedString((string) controlKey);
             }
             return "Unassigned";
         }
