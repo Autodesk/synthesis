@@ -396,6 +396,7 @@ namespace SynthesisAPI.EventBus
                 // Help and tutorials remain their own category based on the importance of tracking users utilizing these assets
                 Help = "Help Panel",
                 Tutorials = "Tutorials",
+                Versioning = "Synthesis Version",
 
                 // Global categories
                 AddRobot = "Add Robot",

@@ -78,6 +78,9 @@ namespace SynthesisCore.UI
                     "/modules/synthesis_core/UI/images/toolbar-hide-icon.png");
                 IsToolbarVisible = !IsToolbarVisible;
                 UIManager.SetToolbarVisible(IsToolbarVisible);
+
+                Analytics.LogEvent(Analytics.EventCategory.MainSimulator, Analytics.EventAction.Clicked, "Hide Toolbar Button", 10);
+                Analytics.UploadDump();
             });
             
             // Updater
@@ -95,6 +98,8 @@ namespace SynthesisCore.UI
                     SubmitButtonAction = ev =>
                     {
                         Process.Start(Updater.GetUpdateVersion().URL);
+                        Analytics.LogEvent(Analytics.EventCategory.Versioning, Analytics.EventAction.Clicked, "Auto-Updater Synthesis Button", 10);
+                        Analytics.UploadDump();
                     },
                 };
                 Dialog.SendDialog(dialogInfo);
