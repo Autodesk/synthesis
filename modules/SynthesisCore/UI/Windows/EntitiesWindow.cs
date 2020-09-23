@@ -46,17 +46,28 @@ namespace SynthesisCore.UI.Windows
 
         private void RegisterButtons()
         {
-            // TODO: save / apply changes implementation?
+            string Entities = "Robots";
 
             Button importButton = (Button) Window.Get("import-button");
             importButton?.Subscribe(x =>
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                try
                 {
-                    FileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Robots",
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + Entities,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                }
+                catch(System.ComponentModel.Win32Exception)
+                {
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + Entities);
+                }
+                catch(Exception)
+                {
+                    Logger.Log(Entities + " directory not found", LogLevel.Warning);
+                }
             });
             
             Button okButton = (Button) Window.Get("ok-button");
