@@ -24,7 +24,7 @@ namespace SynthesisAPI.Runtime
 			Inner.Instance = provider;
 		}
 
-		public static SynthesisAPI.Runtime.RuntimeInfo GetRuntimeInfo()
+		public static RuntimeInfo GetRuntimeInfo()
         {
 			return new RuntimeInfo(
 #if UNITY_EDITOR

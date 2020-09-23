@@ -19,7 +19,7 @@ namespace SynthesisAPI.EventBus
 
         static Analytics()
         {
-            SynthesisAPI.Runtime.RuntimeInfo info = Runtime.ApiProvider.GetRuntimeInfo();
+            Runtime.RuntimeInfo info = Runtime.ApiProvider.GetRuntimeInfo();
 
             if (info.IsUnityEditor)
             {
