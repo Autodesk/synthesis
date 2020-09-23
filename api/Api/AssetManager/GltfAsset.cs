@@ -11,12 +11,13 @@ using SharpGLTF.IO;
 using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager.Components;
 using Mesh = SharpGLTF.Schema2.Mesh;
+using System.Diagnostics;
 
 namespace SynthesisAPI.AssetManager
 {
     public class GltfAsset : Asset
     {
-        private string OFFICIAL_TRACKING_CODE = "228533714";
+        //private string OFFICIAL_TRACKING_CODE = "228533714";
         //private string SYNTHESIS_UNITY_TRACKING_CODE = "223495763";
 
         private ModelRoot model = null;
@@ -105,7 +106,7 @@ namespace SynthesisAPI.AssetManager
         }
         private void ExportInfoGathering()
         {
-            Analytics.SetUnityPrefs(OFFICIAL_TRACKING_CODE, true);
+            Analytics.SetUnityPrefs(Analytics.GUID, true);
             string generator = model.Asset.Generator;
             Analytics.LogEventAsync(Analytics.EventCategory.ExporterType, Analytics.EventAction.Load, generator, 10);
             Analytics.UploadDump();

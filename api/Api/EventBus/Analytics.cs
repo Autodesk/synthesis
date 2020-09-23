@@ -4,9 +4,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Api.Runtime;
-using SynthesisAPI.Runtime;
-using SynthesisAPI.Utilities;
 
 namespace SynthesisAPI.EventBus
 {
@@ -16,19 +13,24 @@ namespace SynthesisAPI.EventBus
         private const string URL_BATCH = "https://www.google-analytics.com/batch";
         //private const string SYNTHESIS_UNITY_PROJECT_ID = "UA-81892961-3";
         //public const string OFFICIAL_TRACKING_ID = "UA-81892961-7";
-        public static string OFFICIAL_TRACKING_ID { get; private set; } = "";
+        public static string OFFICIAL_TRACKING_ID { get; private set; } = "not-set";
         public static string GUID { get; private set; } = "not-set";
         public static bool DataCollection { get; private set; } = true;
 
-        public static RuntimeInfo info = ApiProvider.GetRuntimeInfo();
-
-        public Analytics()
+        static Analytics()
         {
+            SynthesisAPI.Runtime.RuntimeInfo info = Runtime.ApiProvider.GetRuntimeInfo();
+
             if (info.IsUnityEditor)
             {
-                OFFICIAL_TRACKING_ID = "UA-81892961-7";
+                OFFICIAL_TRACKING_ID = "UA-81892961-6";
+                GUID = "223495763";
             }
-            else OFFICIAL_TRACKING_ID = "UA-81892961-6"; 
+            else
+            {
+                OFFICIAL_TRACKING_ID = "UA-81892961-7";
+                GUID = "228533714";
+            }
         }
 
 

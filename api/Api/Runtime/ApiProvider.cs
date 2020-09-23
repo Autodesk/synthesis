@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
-using Api.Runtime;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.Utilities;
 using UnityEngine.UIElements;
@@ -25,7 +24,7 @@ namespace SynthesisAPI.Runtime
 			Inner.Instance = provider;
 		}
 
-		public static RuntimeInfo GetRuntimeInfo()
+		public static SynthesisAPI.Runtime.RuntimeInfo GetRuntimeInfo()
         {
 			return new RuntimeInfo(
 #if UNITY_EDITOR
