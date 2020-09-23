@@ -3,6 +3,8 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using System;
+using System.IO;
 
 namespace SynthesisCore.UI.Windows
 {
@@ -47,7 +49,15 @@ namespace SynthesisCore.UI.Windows
             // TODO: save / apply changes implementation?
 
             Button importButton = (Button) Window.Get("import-button");
-            importButton?.Subscribe(x => Logger.Log("TODO: Import"));
+            importButton?.Subscribe(x =>
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + "Environments",
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            });
             
             Button okButton = (Button) Window.Get("ok-button");
             okButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
