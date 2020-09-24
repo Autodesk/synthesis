@@ -8,11 +8,10 @@ namespace SynthesisAPI.EventBus
 {
     public static class Analytics
     {
-
         private const string URL_COLLECT = "https://www.google-analytics.com/collect";
         private const string URL_BATCH = "https://www.google-analytics.com/batch";
-        public const string OFFICIAL_TRACKING_ID = "UA-81892961-7";
-        private const string SYNTHESIS_UNITY_PROJECT_ID = "UA-81892961-3";
+        public const string OFFICIAL_TRACKING_ID = "UA-81892961-7"; // actual analytics tracking
+        //private const string TESTING_ID = "UA-81892961-3"; // test project id
         public static string GUID { get; private set; } = "not-set";
         public static bool DataCollection { get; private set; } = true;
 

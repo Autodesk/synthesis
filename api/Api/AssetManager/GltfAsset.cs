@@ -17,7 +17,6 @@ namespace SynthesisAPI.AssetManager
     public class GltfAsset : Asset
     {
         private string OFFICIAL_TRACKING_CODE = "228533714";
-        private string SYNTHESIS_UNITY_TRACKING_CODE = "177922339";
 
         private ModelRoot model = null;
         private static int modelCounter = 0;
