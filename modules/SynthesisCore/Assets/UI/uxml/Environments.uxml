@@ -10,7 +10,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="bottom-button-panel" class="window-bottom-button-panel">
             <ui:VisualElement name="left" class="button-panel-left-container">
-                <ui:Button text="Import..." name="import-button" class="window-button" />
+                <ui:Button text="Open Files" name="import-button" class="window-button" />
             </ui:VisualElement>
             <ui:VisualElement name="right" class="button-panel-right-container">
                 <ui:Button text="OK" name="ok-button" class="window-button-blue" />
