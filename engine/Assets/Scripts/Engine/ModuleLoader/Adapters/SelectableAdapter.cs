@@ -24,6 +24,8 @@ namespace Engine.ModuleLoader.Adapters
 		public const float FlashSelectedTime = 0.1f; // sec
 		private long lastClickTime = 0; // ms
 
+		private bool isDestroyed = false;
+
 		public void SetInstance(Selectable obj)
 		{
 			instance = obj;
@@ -135,7 +137,10 @@ namespace Engine.ModuleLoader.Adapters
 					}
 				}
 			}
-			InputManager.AssignDigitalInput($"_internal SelectableAdapter select {myIndex}", new Digital($"mouse 0 non-ui"), e => ProcessInput((DigitalEvent)e)); // TODO use preference manager for this
+			InputManager.AssignDigitalInput($"_internal SelectableAdapter select {myIndex}", new Digital($"mouse 0 non-ui"), e => {
+				if (!isDestroyed)
+					ProcessInput((DigitalEvent)e);
+			}); // TODO use preference manager for this
 
 			if (selectableAdapterCount == 0)
 			{
@@ -153,6 +158,7 @@ namespace Engine.ModuleLoader.Adapters
 
 		public void OnDestroy()
 		{
+			isDestroyed = true;
 			InputManager.UnassignDigitalInput($"_internal SelectableAdapter select {myIndex}");
 			if (selectableAdapterCount == 0)
 			{
