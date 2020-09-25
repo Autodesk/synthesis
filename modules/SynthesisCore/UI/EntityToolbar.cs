@@ -1,9 +1,11 @@
-﻿using SynthesisAPI.EnvironmentManager;
+﻿using System.Reflection;
+using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
+using SynthesisAPI.EventBus;
 using SynthesisCore.EntityMovement;
 
 namespace SynthesisCore.UI
@@ -52,8 +54,10 @@ namespace SynthesisCore.UI
                 deleteEntityButton = ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", DeleteEntityButtonIconDisabled,
                     _ => {
                         if (isEntitySelected) {
+                            var prev = Selectable.Selected;
                             EnvironmentManager.RemoveEntity(Selectable.Selected.Entity.Value);
                             Selectable.ResetSelected();
+                            EventBus.Push(new Selectable.SelectionChangeEvent(null, prev));
                         }
                     });
 
