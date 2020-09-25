@@ -3,6 +3,7 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using SynthesisCore.Utilities;
 
 namespace SynthesisCore.UI.Windows
 {
@@ -29,11 +30,11 @@ namespace SynthesisCore.UI.Windows
             
             HelpList = (ListView)Window.Get("help-list");
 
-            LoadWindowContents();
+            LoadWindowContent();
             RegisterButtons();
         }
 
-        private void LoadWindowContents()
+        private void LoadWindowContent()
         {
             Button gettingStartedButton = (Button)Window.Get("getting-started-button");
             gettingStartedButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://synthesis.autodesk.com/tutorials.html"));
@@ -52,12 +53,15 @@ namespace SynthesisCore.UI.Windows
 
             Button aboutButton = (Button)Window.Get("about-button");
             aboutButton?.Subscribe(_ => System.Diagnostics.Process.Start("https://synthesis.autodesk.com/about.html"));
+
+            Label versionLabel = (Label) Window.Get("version-label");
+            versionLabel.Text = "Synthesis v" + Updater.GetCurrentVersion().Version;
         }
 
         private void RegisterButtons()
         {
             Button closeButton = (Button)Window.Get("close-button");
             closeButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
-        }
+        } 
     }
 }

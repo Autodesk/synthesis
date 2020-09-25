@@ -3,6 +3,8 @@ using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
 using SynthesisAPI.UIManager.VisualElements;
 using SynthesisAPI.Utilities;
+using System;
+using System.IO;
 
 namespace SynthesisCore.UI.Windows
 {
@@ -44,10 +46,26 @@ namespace SynthesisCore.UI.Windows
 
         private void RegisterButtons()
         {
-            // TODO: save / apply changes implementation?
+            string Entities = "Robots";
 
             Button importButton = (Button) Window.Get("import-button");
-            importButton?.Subscribe(x => Logger.Log("TODO: Import"));
+            importButton?.Subscribe(x =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + Entities);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + Path.DirectorySeparatorChar + "Autodesk" + Path.DirectorySeparatorChar + "Synthesis" + Path.DirectorySeparatorChar + Entities,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                }
+                catch(Exception)
+                {
+                    Logger.Log(Entities + " directory not found", LogLevel.Warning);
+                }
+            });
             
             Button okButton = (Button) Window.Get("ok-button");
             okButton?.Subscribe(x => UIManager.ClosePanel(Panel.Name));
