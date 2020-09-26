@@ -8,10 +8,10 @@ namespace SynthesisAPI.EventBus
 {
     public static class Analytics
     {
-   
         private const string URL_COLLECT = "https://www.google-analytics.com/collect";
         private const string URL_BATCH = "https://www.google-analytics.com/batch";
-        private const string OFFICIAL_TRACKING_ID = "UA-81892961-3";
+        public const string OFFICIAL_TRACKING_ID = "UA-81892961-7"; // actual analytics tracking
+        //private const string TESTING_ID = "UA-81892961-3"; // test project id
         public static string GUID { get; private set; } = "not-set";
         public static bool DataCollection { get; private set; } = true;
 
@@ -376,29 +376,26 @@ namespace SynthesisAPI.EventBus
 
         /// <summary>
         /// Categories group multiple objects together. Each main category is grouped by the tabs
-        /// in the simulator. Most events will fall into one of the tab categories (e.g. HomeTab.)
+        /// in the simulator. Most events will fall into one of the tab categories (e.g. Engine or Entity tab.)
         /// </summary>
         public static class EventCategory
         {
             public const string
-
-                // Main Menu has been deprecated. May consider removing or archiving MainMenu code.
-                MainSimMenu = "Main Menu",
-                MixAndMatchMenu = "Mix and Match Menu",
-                MultiplayerMenu = "LAN Multiplayer Menu",
-                MixAndMatchSimulator = "Mix and Match Simulator",
-
                 // Start of analytics tracking
                 MainSimulator = "Main Simulator",
 
-                // Toolbar tabs
-                MenuTab = "Menu Tab",
-                HomeTab = "Home Tab",
-                DPMTab = "Gamepiece Tab",
-                ScoringTab = "Scoring Tab",
-                SensorTab = "Sensor Tab",
-                EmulationTab = "Emulation Tab",
-                ExitTab = "Exit Tab",
+                // Toolbars
+                EngineToolbar = "Engine Toolbar",
+                EntityToolbar = "Entity Toolbar",
+
+                // Exporter analytics
+                ExporterType = "Exported Generator", // determines if model is from Fusion or Inventor
+                ExporterVersion = "Exporter Version", // export version?
+
+                // Help and tutorials remain their own category based on the importance of tracking users utilizing these assets
+                Help = "Help Panel",
+                Tutorials = "Tutorials",
+                Versioning = "Synthesis Version",
 
                 // Global categories
                 AddRobot = "Add Robot",
@@ -406,9 +403,7 @@ namespace SynthesisAPI.EventBus
                 LoadRobot = "Load Robot",
                 ChangeField = "Change Field",
                 Reset = "Reset",
-                CameraView = "Camera View",
-                Help = "Help Menu",
-                Tutorials = "Tutorials";
+                CameraView = "Camera View";
         }
 
         /// <summary>
@@ -417,6 +412,7 @@ namespace SynthesisAPI.EventBus
         public static class EventAction
         {
             public const string
+
                 StartSim = "Started Simulator",
                 TutorialRequest = "Requested Tutorial",
                 BackedOut = "Back",
@@ -453,6 +449,9 @@ namespace SynthesisAPI.EventBus
         public static class TimingCategory
         {
             public const string
+                EngineTab = "Engine Tab",
+                EntityTab = "Entity Tab",
+
                 Main = "Main Menu",
                 MixMatch = "Mix and Match",
                 Multiplater = "Multiplayer",
@@ -474,7 +473,7 @@ namespace SynthesisAPI.EventBus
         {
             public const string
                 Loading = "Loading",
-                Playing = "Playing",
+                Interacting = "Interacting",
                 Customizing = "Customizing",
                 Viewing = "Viewing",
                 Starting = "Starting";
@@ -486,6 +485,9 @@ namespace SynthesisAPI.EventBus
         public static class TimingLabel
         {
             public const string
+                EngineTab = "Engine Tab",
+                EntityTab = "Entity Tab",
+
                 MixAndMatchMenu = "Mix and Match Menu",
                 MainSimMenu = "Main Menu",
                 MultiplayerLobbyMenu = "Multiplayer Lobby Menu",

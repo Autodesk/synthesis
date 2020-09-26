@@ -8,6 +8,7 @@ using SynthesisAPI.EnvironmentManager;
 using System.Linq;
 using MathNet.Spatial.Euclidean;
 using SharpGLTF.IO;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.EnvironmentManager.Components;
 using Mesh = SharpGLTF.Schema2.Mesh;
 
@@ -15,6 +16,8 @@ namespace SynthesisAPI.AssetManager
 {
     public class GltfAsset : Asset
     {
+        private string OFFICIAL_TRACKING_CODE = "228533714";
+
         private ModelRoot model = null;
         private static int modelCounter = 0;
         private static long triangleCount = 0;
@@ -56,6 +59,7 @@ namespace SynthesisAPI.AssetManager
         private Dictionary<string, List<string>> preprocessedJoints;
         private Dictionary<string, EnvironmentManager.Components.Rigidbody> rigidbodies;
         private List<(EnvironmentManager.Components.Rigidbody, EnvironmentManager.Components.Rigidbody)> defaultRigidjoints;
+        private List<SharpGLTF.Schema2.Asset> exporterType;
         private bool rigidbodyPresent;
         public Bundle Parse()
         {
@@ -66,9 +70,11 @@ namespace SynthesisAPI.AssetManager
             preprocessedJoints = new Dictionary<string, List<string>>();
             rigidbodies = new Dictionary<string, EnvironmentManager.Components.Rigidbody>();
             defaultRigidjoints = new List<(EnvironmentManager.Components.Rigidbody, EnvironmentManager.Components.Rigidbody)>();
+            exporterType = new List<SharpGLTF.Schema2.Asset>();
             rigidbodyPresent = false;
 
             PreprocessJoints();
+            ExportInfoGathering();
 
             var bundle = CreateBundle(model.DefaultScene.VisualChildren.First());
 
@@ -93,6 +99,17 @@ namespace SynthesisAPI.AssetManager
             }
             foreach (Node child in root.VisualChildren)
                 RecursiveUuidGathering(child);
+        }
+        private void ExportInfoGathering()
+        {
+            Analytics.SetUnityPrefs(OFFICIAL_TRACKING_CODE, true);
+            string generator = model.Asset.Generator;
+            Analytics.LogEventAsync(Analytics.EventCategory.ExporterType, Analytics.EventAction.Load, generator, 10);
+            Analytics.UploadDump();
+
+            var version = model.Asset.MinVersion;
+            Analytics.LogEventAsync(Analytics.EventCategory.ExporterVersion, Analytics.EventAction.Load, version.ToString(), 10);
+            Analytics.UploadDump();
         }
 
         private Bundle CreateBundle(Node node, Node parentNode = null, Bundle parentBundle = null)
@@ -155,10 +172,10 @@ namespace SynthesisAPI.AssetManager
                 {
 
                     var seniorRB = GetSeniorRigidbody(bundle.ParentBundle);
-                    if(seniorRB != null)
-                    {
-                        seniorRB.mass += ParseMass(node.Mesh) ?? 0;
-                    }
+                    //if(seniorRB != null)
+                    //{
+                    //    seniorRB.mass += ParseMass(node.Mesh) ?? 0;
+                    //}
                 }
             } else if (parent == null) {
                 var rigid = ParseRigidbody(null);

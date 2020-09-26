@@ -16,21 +16,26 @@ namespace SynthesisCore.UI
         private ControlsPage ControlsPage;
 
         private static Dictionary<string, object> PendingChanges = new Dictionary<string, object>();
-        
+
         public SettingsWindow()
         {
             var generalAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/General.uxml");
             var controlsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Controls.uxml");
-            
+
             GeneralPage = new GeneralPage(generalAsset);
             ControlsPage = new ControlsPage(controlsAsset);
-            
+
             var settingsAsset = AssetManager.GetAsset<VisualElementAsset>("/modules/synthesis_core/UI/uxml/Settings.uxml");
             Panel = new Panel("Settings", settingsAsset, OnWindowCreate);
 
-            Button settingsButton = (Button) UIManager.RootElement.Get("settings-button");
-            settingsButton.Subscribe(x => UIManager.TogglePanel("Settings"));
-            
+            Button settingsButton = (Button)UIManager.RootElement.Get("settings-button");
+            settingsButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Settings");
+                Analytics.LogEvent(Analytics.EventCategory.MainSimulator, Analytics.EventAction.Clicked, "Settings Panel", 10);
+                Analytics.UploadDump();
+            });
+
             OnWindowClose();
         }
 
@@ -39,7 +44,7 @@ namespace SynthesisCore.UI
             Window = settingsWindow;
             Window.SetStyleProperty("position", "absolute");
             Window.IsDraggable = true;
-            
+
             RegisterButtons();
             LoadWindowContent();
         }
@@ -48,14 +53,14 @@ namespace SynthesisCore.UI
         {
             EventBus.NewTypeListener<ClosePanelEvent>(info =>
             {
-                if (info != null && ((ClosePanelEvent) info).Panel.Name.Equals("Settings"))
+                if (info != null && ((ClosePanelEvent)info).Panel.Name.Equals("Settings"))
                 {
                     GeneralPage.RefreshPreferences();
                     ControlsPage.RefreshPreferences();
                 }
             });
         }
-        
+
         private void LoadWindowContent()
         {
             SetPageContent(GeneralPage.Page);
@@ -63,19 +68,19 @@ namespace SynthesisCore.UI
 
         private void RegisterButtons()
         {
-            Button generalSettingsButton = (Button) Window.Get("general-settings-button");
+            Button generalSettingsButton = (Button)Window.Get("general-settings-button");
             generalSettingsButton?.Subscribe(x =>
             {
                 SetPageContent(GeneralPage.Page);
             });
-            
-            Button controlsSettingsButton = (Button) Window.Get("controls-settings-button");
+
+            Button controlsSettingsButton = (Button)Window.Get("controls-settings-button");
             controlsSettingsButton?.Subscribe(x =>
             {
                 SetPageContent(ControlsPage.Page);
             });
 
-            Button okButton = (Button) Window.Get("ok-button");
+            Button okButton = (Button)Window.Get("ok-button");
             okButton?.Subscribe(x =>
             {
                 if (PendingChanges.Count > 0)
@@ -86,15 +91,15 @@ namespace SynthesisCore.UI
                     }
                 }
                 PreferenceManager.Save();
-                
+
                 UIManager.ClosePanel(Panel.Name);
             });
 
-            Button closeButton = (Button) Window.Get("close-button");
+            Button closeButton = (Button)Window.Get("close-button");
             closeButton?.Subscribe(x =>
             {
                 PendingChanges.Clear();
-                
+
                 UIManager.ClosePanel(Panel.Name);
             });
         }

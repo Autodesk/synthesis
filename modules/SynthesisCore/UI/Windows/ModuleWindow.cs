@@ -1,4 +1,5 @@
 ﻿using SynthesisAPI.AssetManager;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
@@ -24,7 +25,12 @@ namespace SynthesisCore.UI.Windows
             Panel = new Panel("Modules", modulesAsset, OnWindowOpen);
             
             Button modulesButton = (Button) UIManager.RootElement.Get("modules-button");
-            modulesButton.Subscribe(x => UIManager.TogglePanel("Modules"));
+            modulesButton.Subscribe(x =>
+            {
+                UIManager.TogglePanel("Modules");
+                Analytics.LogEvent(Analytics.EventCategory.MainSimulator, Analytics.EventAction.Clicked, "Modules Panel", 10);
+                Analytics.UploadDump();
+            });
         }
         
         private void OnWindowOpen(VisualElement modulesWindow)

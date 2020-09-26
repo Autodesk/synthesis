@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using SynthesisAPI.EnvironmentManager;
 using SynthesisAPI.EnvironmentManager.Components;
+using SynthesisAPI.EventBus;
 using SynthesisAPI.Modules.Attributes;
 using SynthesisAPI.UIManager;
 using SynthesisAPI.UIManager.UIComponents;
@@ -50,6 +51,9 @@ namespace SynthesisCore.UI
                             else
                                 MoveArrows.StopMovingEntity();
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Move Entity Button", 10);
+                        Analytics.UploadDump();
                     });
                 deleteEntityButton = ToolbarTools.AddButton(modifyCategory, "delete-entity-button", "Delete Entity", DeleteEntityButtonIconDisabled,
                     _ => {
@@ -59,6 +63,9 @@ namespace SynthesisCore.UI
                             Selectable.ResetSelected();
                             EventBus.Push(new Selectable.SelectionChangeEvent(null, prev));
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Delete Entity Button", 10);
+                        Analytics.UploadDump();
                     });
 
                 var jointCategory = ToolbarTools.AddButtonCategory(toolbarElement, "JOINTS");
@@ -72,6 +79,9 @@ namespace SynthesisCore.UI
                             else
                                 UIManager.ClosePanel("Joints");
                         }
+
+                        Analytics.LogEvent(Analytics.EventCategory.EntityToolbar, Analytics.EventAction.Clicked, "Joints Button", 10);
+                        Analytics.UploadDump();
                     });
 
                 isToolbarBound = true;
