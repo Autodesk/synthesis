@@ -100,7 +100,6 @@ namespace Engine.ModuleLoader.Adapters
             {
                 if (_unityJoint == null)
                 {
-                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Error);
                     return;
                 }
 
@@ -170,7 +169,6 @@ namespace Engine.ModuleLoader.Adapters
                 if (_unityJoint == null)
                 {
                     // TODO: Need to do something else if joint breaks
-                    SynthesisAPI.Utilities.Logger.Log("Joint is broken, cannot set", LogLevel.Error);
                     return;
                 }
 

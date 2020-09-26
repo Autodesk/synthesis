@@ -80,8 +80,6 @@ namespace SynthesisAPI.AssetManager
 
             bundle.Components.Add(ParseJoints());
 
-            Logger.Log($"Parsed model with {triangleCount} triangles", LogLevel.Debug);
-
             modelCounter++;
             return bundle;
         }

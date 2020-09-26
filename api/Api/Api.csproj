@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8</LangVersion>
         <PackageId>Autodesk.Synthesis.Module.API</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.1.0</Version>
         <Authors>Autodesk Inc</Authors>
         <Company>Autodesk</Company>
         <Product>Synthesis</Product>
@@ -15,7 +15,16 @@
         <RepositoryUrl>https://github.com/Autodesk/synthesis/tree/master/api</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>Autodesk, Synthesis, FRC, Robotics, Simulator</PackageTags>
-        <PackageReleaseNotes>A pre-release of the Synthesis API NuGet package</PackageReleaseNotes>
+        <PackageReleaseNotes>An experimental release of the Synthesis Module API.
+
+This release is for those looking to kickstart their module development for the Synthesis platform early before the release of version 5.0.0. 
+To get started with this API, you'll need to acquire a development build of Synthesis from either one of the following outlets:
+- Clone from Git into your local Unity environment: https://github.com/Autodesk/synthesis.git
+- Download an Engine build from our CI build artifacts: https://github.com/Autodesk/synthesis/actions
+
+Please note that this release is EXPERIMENTAL and still in development. More documentation will be available soon.
+
+For support contact frc@autodesk.com</PackageReleaseNotes>
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
