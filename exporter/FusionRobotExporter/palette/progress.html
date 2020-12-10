@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/fusion360.css" rel="stylesheet" type="text/css">
+        <script src="js/progress.js"></script>
+
+        <style>
+            p
+            {
+                text-align: center;
+                white-space: pre-line;
+            }
+
+            #progress[value]
+            {
+                -webkit-appearance: none;
+                width: 100%;
+            }
+
+            /* Partial credit to https://css-tricks.com/html5-progress-element/ */
+            #progress[value]::-webkit-progress-bar
+            {
+                background-color: #eee;
+                border-radius: 2px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+            }
+
+            #progress[value]::-webkit-progress-value
+            {
+                background-color: rgb(242, 144, 0);
+                border-radius: 2px;
+            }
+
+            #progress[value].error::-webkit-progress-value
+            {
+                background-color: rgb(255, 0, 0);
+            }
+
+            #progress[value].notransition::-webkit-progress-value
+            {
+                transition: none;
+            }
+
+            #progress[value]:not(.notransition)::-webkit-progress-value
+            {
+                transition: width 0.25s, background-color 0.25s;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="status">Exporting robot...<br><br> Please do not leave the Synthesis workspace or close Fusion 360.</p>
+        <p id="error"></p>
+        <progress id="progress" value="0" max="100">
+        </progress>
+    </body>
+</html>
