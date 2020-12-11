@@ -11,30 +11,14 @@ Developed solely by FIRST students, Synthesis is built with a direct focus on th
 
 For more information on the product itself or the team, visit http://synthesis.autodesk.com/
 
-Documentation visit https://hices.github.io/synthesis/
-
-## Engine
-
-The engine code is based in Unity, more info on how to build and dependency listings can be found in the engine subdirectory that is comprised of the following files:
-
-## Exporters 
-
-The exporters are split up in primarily 2 different ways, first is by the product they are exporting from and second is by the type of exporter, field or robot. You can find more info in the exporter directory.
-
-
-## Emulation
-
-Emulaton will require a significant amount of setup and resources to configure and build properly. More info can be found in the emulation directory. Here is the file structure:
-
-
 ## Getting Started
 
 Synthesis is comprised of 4 separate components that are mostly developed independently of each other. You will want to clone the entire repository first, then follow a different set of steps depending on which component you wish to work on. The links below will lead you to specific instructions that will get you a copy of that component up and running on your local machine for development and testing purposes.
 
 * [Simulation Engine](/engine)
-* [Inventor Robot Exporter (Inventor Plugin)](/exporters/InventorRobotExporter/)
-* [Fusion Robot Exporter (Fusion 360 Plugin)](/exporters/FusionRobotExporter/)
-* [Code Emulator](/emulation/)
+* [Inventor Robot Exporter (Inventor Plugin)](/exporter/SynthesisInventorGltfExporter/)
+* [Fusion Robot Exporter (Fusion 360 Plugin)](/exporter/SynthesisFusionGltfExporter/)
+* [Controller API](/modules/Controller/)
 
 
 
@@ -42,4 +26,4 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
 
-When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge.
+When ready to contribute, just submit a pull request and be sure to include a clear and detailed description of the changes you've made so that we can verify them and eventually merge. Feel free to check out our [contributing guidlines](contributing.md) to learn more.
