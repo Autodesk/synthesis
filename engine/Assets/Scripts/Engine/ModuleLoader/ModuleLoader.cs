@@ -202,6 +202,8 @@ namespace Engine.ModuleLoader
 
 			var metadataPath = GetPath(moduleInfo.archive.Entries.First(e => e.Name == ModuleMetadata.MetadataFilename).FullName);
 
+			List<(Assembly assembly, string owningModule)> loadedAssemblies = new List<(Assembly assembly, string owningModule)>();
+
 			foreach (var entry in moduleInfo.archive.Entries.Where(e =>
 			{
 				var name = RemovePath(metadataPath, e.FullName);
@@ -213,7 +215,7 @@ namespace Engine.ModuleLoader
 				var stream = entry.Open();
 				if (extension == ".dll")
 				{
-					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name))
+					if (!LoadModuleAssembly(stream, moduleInfo.metadata.Name, loadedAssemblies))
 					{
 						throw new LoadModuleException($"Failed to load assembly: {entry.Name}");
 					}
@@ -236,6 +238,7 @@ namespace Engine.ModuleLoader
 					}
 				}
 			}
+			ProcessLoadedAssemblies(loadedAssemblies);
 			foreach (var file in fileManifest)
 			{
 				Logger.Log($"Module \"{moduleInfo.metadata.Name}\" is missing file from manifest: {file}", LogLevel.Warning);
@@ -300,13 +303,19 @@ namespace Engine.ModuleLoader
 
 			return true;
 		}
-		public static bool LoadModuleAssembly(Stream stream, string owningModule)
+		public static bool LoadModuleAssembly(Stream stream, string owningModule, List<(Assembly assembly, string owningModule)> loadedAssemblies)
 			{
 			// Load module assembly
 			var memStream = new MemoryStream();
 			stream.CopyTo(memStream);
 			stream.Close();
 			var assembly = Assembly.Load(memStream.ToArray());
+
+			// Logger.Log(assembly.FullName);
+
+			loadedAssemblies.Add((assembly, owningModule));
+
+			return true;
 
 			// Set up module
 			Type[] types;
@@ -401,6 +410,106 @@ namespace Engine.ModuleLoader
 			}
 
 			ModuleManager.RegisterModuleAssemblyName(assembly.GetName().Name, owningModule);
+			return true;
+		}
+
+		private static bool ProcessLoadedAssemblies(List<(Assembly assembly, string owningModule)> assemblies)
+        {
+			foreach (var loadedAssembly in assemblies)
+			{
+				Type[] types;
+				try
+				{
+					types = loadedAssembly.assembly.GetTypes();
+				}
+				catch (ReflectionTypeLoadException e)
+				{
+					if (e is ReflectionTypeLoadException reflectionTypeLoadException)
+					{
+						foreach (var inner in reflectionTypeLoadException.LoaderExceptions)
+						{
+							Logger.Log($"Loading module {loadedAssembly.owningModule} resulted in type errors\n{inner}", LogLevel.Error);
+						}
+					}
+					return false;
+				}
+				catch (Exception e)
+				{
+					Logger.Log($"Failed to get types from module {loadedAssembly.owningModule}\n{e}", LogLevel.Error);
+					return false;
+				}
+
+				var exportedModuleClasses =
+					types.Where(t => t.GetCustomAttribute<ModuleOmitAttribute>() == null &&
+						(t.IsSubclassOf(typeof(SystemBase))
+						 || t.GetMethods().Any(
+							 m => m.GetCustomAttribute<CallbackAttribute>() != null
+								  || m.GetCustomAttribute<TaggedCallbackAttribute>() != null))).ToList();
+				var prioritizedInitializations = ResolveInitializationOrder(exportedModuleClasses, loadedAssembly.owningModule);
+				var instances = new Dictionary<Type, object>();
+
+				foreach (var (initializer, system, callback) in prioritizedInitializations)
+				{
+					try
+					{
+						if (initializer != null)
+						{
+							var init = initializer.GetMethod("Initialize");
+							if (init != null)
+							{
+								init.Invoke(null, null);
+							}
+							else
+							{
+								Logger.Log($"Initializer for module {loadedAssembly.owningModule} does not have a valid Initialize method", LogLevel.Warning);
+							}
+						}
+						else if (system != null)
+						{
+							var entity = EnvironmentManager.AddEntity();
+							instances[system] = entity.AddComponent(system);
+						}
+						else
+						{
+							object instance = null;
+							var declaringType = callback.DeclaringType;
+							if (instances.ContainsKey(declaringType))
+							{
+								instance = instances[declaringType];
+							}
+							else
+							{
+								instance = Activator.CreateInstance(declaringType);
+								instances[declaringType] = instance;
+							}
+
+							if (callback.GetCustomAttribute<TaggedCallbackAttribute>() != null)
+							{
+								RegisterTagCallback(callback, instance);
+							}
+
+							if (callback.GetCustomAttribute<CallbackAttribute>() != null)
+							{
+								RegisterTypeCallback(callback, instance);
+							}
+						}
+					}
+					catch (TypeLoadException e)
+					{
+						var errorSource = system == null ? callback.DeclaringType : system;
+						Logger.Log($"Module loader failed to process type {errorSource} from module {loadedAssembly.owningModule}\nType: {e.TypeName}, Site: {e.TargetSite}\n{e}", LogLevel.Error);
+					}
+					catch (Exception e)
+					{
+						var errorSource = system == null ? callback.DeclaringType : system;
+						Logger.Log($"Module loader failed to process type {errorSource} from module {loadedAssembly.owningModule}\n{e}", LogLevel.Error);
+						// TODO unload assembly? return false?
+						continue;
+					}
+				}
+
+				ModuleManager.RegisterModuleAssemblyName(loadedAssembly.assembly.GetName().Name, loadedAssembly.owningModule);
+			}
 			return true;
 		}
 
