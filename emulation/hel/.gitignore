@@ -1,0 +1,52 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+
+# vim backup files
+*.swp
+*.swn
+*~
+
+# Misc
+*.exe.stackdump
+
+# Specific Files
+
+# Output folders
+lib/*
+bin/*
+user-code/*
+build/*
+
+# CMake related stuff
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/CMakeFiles/*
+**/CMakeDoxyfile.in
+**/CMakeDoxygenDefaults.cmake
+
+# Exceptions to gitignore
+!build/lib/libwpi.so
+!build/lib/libwpi-x86.so
+
+# Doxygen
+docs/html
+docs/latex
+
+# Editor files
+GTAGS
+GPATH
+GRTAGS
+
+# VM Files
+vm-package.tar.gz
+vm-package.zip
+vm-package/*
