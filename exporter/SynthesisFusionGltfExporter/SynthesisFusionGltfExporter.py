@@ -79,7 +79,7 @@ def tryInstallDeps():
     else:
         raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
 
-    pipDeps = ["pygltflib", "numpy=1.18.5", "protobuf", "pyquaternion"]
+    pipDeps = ["pygltflib", "numpy==1.18.5", "protobuf", "pyquaternion"]
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
