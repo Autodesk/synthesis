@@ -172,7 +172,7 @@ EXTERNALPROJECT_ADD(wpilib
   INSTALL_COMMAND "")
 
 ADD_CUSTOM_TARGET(wpilibc
-  COMMAND ${SCRIPTS_DIR}/check_if_built.sh WPILib ${WPILIB_DIR} "${WPILIB_DIR}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so" "./gradlew :wpilibc:wpilibcAthenaReleaseSharedLibrary"
+  COMMAND ${SCRIPTS_DIR}/check_if_built.sh WPILib ${WPILIB_DIR} "${WPILIB_DIR}/wpilibc/build/libs/wpilibc/shared/athena/release/libwpilibc.so" "./gradlew wpilibcLinuxathenaReleaseSharedLibrary"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMENT "Build WPILib for C++"
   VERBATIM)
