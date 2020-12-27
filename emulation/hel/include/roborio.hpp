@@ -80,6 +80,12 @@ namespace hel{
 
         bool user_button;
 
+	/**
+	 * \brief Interrupt Force Number -- Usage TBD.
+	 */
+
+	uint8_t interrupt_force_number;
+
         /**
          * \brief Represents the state of the oboard accelerometer
          */

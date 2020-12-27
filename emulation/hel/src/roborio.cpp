@@ -1,11 +1,12 @@
 #include "roborio.hpp"
 
 namespace hel{
-    RoboRIO::RoboRIO()noexcept:user_button(false), accelerometer(), accumulators(Accumulator()), alarm(), analog_inputs(), analog_outputs(), can_motor_controllers(), counters(Counter()), digital_system(), ds_errors(), match_info(), encoder_managers(Maybe<EncoderManager>()), fpga_encoders(FPGAEncoder()), global(), joysticks(Joystick()), net_comm(), power(), pwm_system(), relay_system(), robot_mode(), pcm(), pdp(), spi_system(), watchdog(){}
+    RoboRIO::RoboRIO()noexcept:user_button(false), interrupt_force_number(0), accelerometer(), accumulators(Accumulator()), alarm(), analog_inputs(), analog_outputs(), can_motor_controllers(), counters(Counter()), digital_system(), ds_errors(), match_info(), encoder_managers(Maybe<EncoderManager>()), fpga_encoders(FPGAEncoder()), global(), joysticks(Joystick()), net_comm(), power(), pwm_system(), relay_system(), robot_mode(), pcm(), pdp(), spi_system(), watchdog(){}
 
     RoboRIO::RoboRIO(const RoboRIO& source)noexcept:RoboRIO(){
 #define COPY(NAME) NAME = source.NAME
         COPY(user_button);
+        COPY(interrupt_force_number);
         COPY(accelerometer);
         COPY(accumulators);
         COPY(alarm);
@@ -35,6 +36,7 @@ namespace hel{
         if(this != &source){
 #define COPY(NAME) NAME = source.NAME
             COPY(user_button);
+            COPY(interrupt_force_number);
             COPY(accelerometer);
             COPY(accumulators);
             COPY(alarm);

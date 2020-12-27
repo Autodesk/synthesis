@@ -387,6 +387,45 @@ namespace hel{
             //TODO
             return 0;
         }
+	
+	void writeStallConfig(tSPI::tStallConfig /*value*/, tRioStatusCode* /*status*/) {
+	    //TODO
+	    return;
+	}
+	
+	void writeStallConfig_Pow2BytesPerRead(uint8_t /*value*/, tRioStatusCode* /*status*/) {
+	    //TODO
+	    return;
+	}
+	
+	void writeStallConfig_StallTicks(uint16_t /*value*/, tRioStatusCode* /*status*/) {
+	    //TODO
+	    return;
+	}
+	void writeStallConfig_CsToSclkTicks(uint8_t /*value*/, tRioStatusCode* /*status*/) {
+	    //TODO
+	    return;
+	}
+
+	tSPI::tStallConfig readStallConfig(tRioStatusCode* /*status*/) {
+	    //TODO
+	    return tSPI::tStallConfig{};	
+	}
+
+	uint16_t readStallConfig_StallTicks(tRioStatusCode* /*status*/) {
+	    //TODO
+	    return 0;
+	}	
+
+	uint8_t readStallConfig_Pow2BytesPerRead(tRioStatusCode* /*status*/) {
+	    //TODO
+	    return 0;
+	}
+
+	uint8_t readStallConfig_CsToSclkTicks(tRioStatusCode* /*status*/) {
+	    //TODO
+	    return 0;
+	}
     };
 }
 namespace nFPGA{

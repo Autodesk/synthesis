@@ -49,6 +49,10 @@ namespace hel{
 			// TODO
 		}
 
+		void writeSourceSelect_DutyCycle(bool /*value*/, tRioStatusCode* /*status*/) {
+			// TODO
+		}
+
 		tSourceSelect readSourceSelect(tRioStatusCode* /*status*/){
 			return {}; // TODO
 		}
@@ -71,6 +75,10 @@ namespace hel{
 
 		int16_t readSourceSelect_RolloverLimit(tRioStatusCode* /*status*/){
 			return 0; // TODO
+		}
+
+		bool readSourceSelect_DutyCycle(tRioStatusCode* /*status*/) {
+			return false;	
 		}
 
 		void writeUpperLimit(int32_t /*value*/, tRioStatusCode* /*status*/){

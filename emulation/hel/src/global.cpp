@@ -99,6 +99,22 @@ struct GlobalManager : public tGlobal {
 		tRioStatusCode* /*status*/) {  // unnecessary for emulation
 		return 0;
 	}
+	void strobeInterruptForceOnce(tRioStatusCode* /*status*/) {
+		return;
+	}
+	void writeInterruptForceNumber(uint8_t value, tRioStatusCode* /*status*/) {
+		auto instance = RoboRIOManager::getInstance();
+		instance.first->interrupt_force_number = value;
+		instance.second.unlock();
+		return;
+	}
+
+	uint8_t readInterruptForceNumber(tRioStatusCode* /*status*/) {
+		auto instance = RoboRIOManager::getInstance();
+		instance.second.unlock();
+		return instance.first->interrupt_force_number;
+	}
+
 };
 }  // namespace hel
 

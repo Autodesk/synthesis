@@ -511,13 +511,13 @@ namespace hel{
             return 0;//unnecessary for emulation
         }
 
-        void writePulseLength(uint8_t value, tRioStatusCode* /*status*/){
+        void writePulseLength(uint16_t value, tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.first->digital_system.setPulseLength(value);
             instance.second.unlock();
         }
 
-        uint8_t readPulseLength(tRioStatusCode* /*status*/){
+        uint16_t readPulseLength(tRioStatusCode* /*status*/){
             auto instance = RoboRIOManager::getInstance();
             instance.second.unlock();
             return instance.first->digital_system.getPulseLength();

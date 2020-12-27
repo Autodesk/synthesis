@@ -31,8 +31,9 @@ OPTION(BUILD_DOC "Enable building of documentation" OFF)
 
 SET(DEFAULT_BUILD_TYPE "Release")
 SET(DEFAULT_GRPC_VERSION "v1.21.4")
-SET(DEFAULT_WPILIB_VERSION "v2019.4.1")
-SET(DEFAULT_NILIB_VERSION "v2019-12")
+SET(DEFAULT_WPILIB_VERSION "v2020.3.2")
+#SET(DEFAULT_NILIB_VERSION "v2019-12")
+SET(DEFAULT_NILIB_VERSION "master")
 
 IF(NOT CMAKE_CONFIGURATION_TYPES)
   SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
@@ -91,15 +92,15 @@ if(CMAKE_BUILD_TYPE MATCHES "^MINSIZEREL$")
 endif()
 
 if(NOT X86)
-  SET(CMAKE_C_COMPILER arm-frc2019-linux-gnueabi-gcc)
-  SET(CMAKE_CXX_COMPILER arm-frc2019-linux-gnueabi-g++)
+  SET(CMAKE_C_COMPILER arm-frc2021-linux-gnueabi-gcc)
+  SET(CMAKE_CXX_COMPILER arm-frc2021-linux-gnueabi-g++)
 
   ExternalProject_ADD(grpc
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG ${GRPC_VERSION}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND TOOLCHAIN=arm-frc2019-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
+    BUILD_COMMAND TOOLCHAIN=arm-frc2021-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
 
   LINK_DIRECTORIES(
