@@ -5,6 +5,7 @@
 
 #include <array>
 #include <functional>
+#include <stdexcept>
 
 namespace hel{
 

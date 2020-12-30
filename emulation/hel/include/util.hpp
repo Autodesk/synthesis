@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <string>
 
 #define NYI {                                             \
         printf("NYI:" + __FILE__ + ":" __LINE__ + "\n");  \
