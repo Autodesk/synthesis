@@ -102,6 +102,7 @@ IfFileExists "$APPDATA\Autodesk\Synthesis" +1 +28
         Delete "$DESKTOP\BXD Synthesis.lnk"
 		Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
         Delete "$DESKTOP\Autodesk Synthesis.lnk"
+		Delete "$DESKTOP\FieldExporter.lnk"
         
         ; Remove obsolete directories
 		RMDir /r $INSTDIR
@@ -224,6 +225,12 @@ Section "Code Emulator" Emulator
 		
 SectionEnd
 
+Section /o "Field Exporter" FieldExporter
+	SetOutPath $INSTDIR\FieldExporter
+	File /r "FieldExporter\*"
+	CreateShortCut "$DESKTOP\FieldExporter.lnk" "$INSTDIR\FieldExporter\FieldExporter.exe"
+SectionEnd
+
 ;--------------------------------
 ;Component Descriptions
 
@@ -233,6 +240,7 @@ SectionEnd
   LangString DESC_fExporter ${LANG_ENGLISH} "The Fusion360 Exporter Plugin is a Fusion addin used to export Autodesk Fusion Assemblies directly into the simulator"
   LangString DESC_RobotFiles ${LANG_ENGLISH} "A library of sample robots pre-loaded into the simulator"
   LangString DESC_Emulator ${LANG_ENGLISH} "The Robot Code Emulator allows you to emulate your C++ & JAVA robot code in the simulator"
+  LangString DESC_FieldExporter ${LANG_ENGLISH} "A standalone exporter for exporting field environments into the simulator"
 
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Synthesis} $(DESC_Synthesis)
@@ -241,6 +249,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${fExporter} $(DESC_fExporter)
   !insertmacro MUI_DESCRIPTION_TEXT ${RobotFiles} $(DESC_RobotFiles)
   !insertmacro MUI_DESCRIPTION_TEXT ${Emulator} $(DESC_Emulator)
+  !insertmacro MUI_DESCRIPTION_TEXT ${FieldExporter} $(DESC_FieldExporter)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
   
 ;--------------------------------
@@ -296,6 +305,7 @@ Section "Uninstall"
   Delete "$DESKTOP\BXD Synthesis.lnk"
   Delete "$SMPROGRAMS\Autodesk Synthesis.lnk"
   Delete "$DESKTOP\Autodesk Synthesis.lnk"
+  Delete "$DESKTOP\FieldExporter.lnk"
   
   ; Execute QEMU uninstaller
   IfFileExists "$PROGRAMFILES64\qemu" file_found uninstall_complete
