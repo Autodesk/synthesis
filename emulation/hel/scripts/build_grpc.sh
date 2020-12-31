@@ -20,13 +20,17 @@ if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     SCRIPT=$(realpath $0)
     SCRIPTPATH=$(dirname $SCRIPT)
     patch -p1 < $SCRIPTPATH/../external_configs/grpc.patch # This is necessary for installing v1.21.4 for x86
-    
+
+    find -name log_linux.cc
+
+    cat -n src/core/lib/gpr/log_linux.cc
+
+    git diff
+
     make -j10 && \
         ${SUDO} make install && \
         ${SUDO} ldconfig
     make clean
-
-    git restore \* # Undo patch
 else
     printf "Native gRPC installed. Skipping native build.\n\n"
 fi
@@ -34,6 +38,8 @@ fi
 export GRPC_CROSS_COMPILE=true # TODO probably move this into if statement below
 if [[ ${TOOLCHAIN} != "" ]] ; then 
     printf "Cross-compiling and installing gRPC\n\n"
+
+    # TODO Undo patch?
 
     export GRPC_CROSS_AROPTS="cr --target=elf32-little"
 fi
