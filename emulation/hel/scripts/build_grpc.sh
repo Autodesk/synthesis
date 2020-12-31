@@ -16,10 +16,17 @@ TARGET_TRIPLE=$(${TOOLCHAIN}gcc -dumpmachine)
 
 if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     printf "Installing native gRPC\n\n"
+    
+    SCRIPT=$(realpath $0)
+    SCRIPTPATH=$(dirname $SCRIPT)
+    patch -p1 < $SCRIPTPATH/../external_configs/grpc.patch # This is necessary for installing v1.21.4 for x86
+    
     make -j10 && \
         ${SUDO} make install && \
         ${SUDO} ldconfig
     make clean
+
+    git restore \* # Undo patch
 else
     printf "Native gRPC installed. Skipping native build.\n\n"
 fi
@@ -29,10 +36,6 @@ if [[ ${TOOLCHAIN} != "" ]] ; then
     printf "Cross-compiling and installing gRPC\n\n"
 
     export GRPC_CROSS_AROPTS="cr --target=elf32-little"
-else
-    SCRIPT=$(realpath $0)
-    SCRIPTPATH=$(dirname $SCRIPT)
-    patch -p1 < $SCRIPTPATH/../external_configs/grpc.patch # This is necessary for v1.21.4 for x86
 fi
 
 make plugins -j10 \
