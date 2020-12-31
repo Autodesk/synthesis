@@ -1,0 +1,10 @@
+--- ./hal/src/main/native/sim/AddressableLED.cpp	2020-12-30 00:32:36.018687627 -0500
++++ ./hal/src/main/native/sim/AddressableLED2.cpp	2020-12-30 00:58:43.198649607 -0500
+@@ -184,7 +184,6 @@
+ 
+   std::memcpy(led->ledBuffer, data, length * sizeof(HAL_AddressableLEDData));
+ 
+-  asm("dmb");
+ 
+   led->led->strobeLoad(status);
+ }

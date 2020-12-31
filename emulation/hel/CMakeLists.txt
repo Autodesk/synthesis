@@ -99,6 +99,7 @@ if(NOT X86)
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG ${GRPC_VERSION}
+    GIT_SHALLOW 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND TOOLCHAIN=arm-frc2021-linux-gnueabi- ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" " ${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
@@ -126,6 +127,7 @@ else()
     PREFIX lib/grpc
     GIT_REPOSITORY https://github.com/grpc/grpc.git
     GIT_TAG ${GRPC_VERSION}
+    GIT_SHALLOW 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ${SCRIPTS_DIR}/check_if_built.sh GRPC ${GRPC_DIR} "${GRPC_DIR}/libs/opt/protobuf/libprotobuf.a ${GRPC_DIR}/libs/opt/libgrpc.a ${GRPC_DIR}/libs/opt/libgrpc++.a" "${SCRIPTS_DIR}/build_grpc.sh ${GRPC_DIR}"
     INSTALL_COMMAND "")
@@ -159,6 +161,7 @@ EXTERNALPROJECT_ADD(ni-libraries
   PREFIX lib/ni-libraries
   GIT_REPOSITORY https://github.com/wpilibsuite/ni-libraries.git
   GIT_TAG ${NILIB_VERSION}
+  GIT_SHALLOW 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
@@ -167,6 +170,7 @@ EXTERNALPROJECT_ADD(wpilib
   PREFIX lib/wpilib
   GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
   GIT_TAG ${WPILIB_VERSION}
+  GIT_SHALLOW 1
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND "")
@@ -301,6 +305,7 @@ if(NOT NO_TESTING AND DEBUG)
       PREFIX lib/google_test
       DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
       GIT_REPOSITORY https://www.github.com/google/googletest
+      GIT_SHALLOW 1
       CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/external_configs/gtest_arm.cmake -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   else()
     MESSAGE(WARNING "HAL- and CTRE-based tests are not supported with the x86_64 architecture compiler flag.")
@@ -308,6 +313,7 @@ if(NOT NO_TESTING AND DEBUG)
       PREFIX lib/google_test
       DOWNLOAD_DIR ${EXTERNAL_INSTALL_LOCATION}
       GIT_REPOSITORY https://www.github.com/google/googletest
+      GIT_SHALLOW 1
       CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   endif()
   MESSAGE("Disovering test files:")
@@ -367,6 +373,7 @@ if(BENCH AND DEBUG)
     EXTERNALPROJECT_ADD(GoogleBench
       PREFIX lib/GoogleBench
       GIT_REPOSITORY https://github.com/google/benchmark
+      GIT_SHALLOW 1
       CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION})
   endif()
 
