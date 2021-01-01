@@ -1,13 +1,14 @@
-FROM ubuntu:19.04 AS builder
+FROM ubuntu:21.04 AS builder
 
-ENV WPILIB_VERSION v2019.4.1
-ENV SYNTHESIS_BRANCH 953-java-emulation
-ENV GOPATH /go
-ENV GO111MODULE=on
-ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH
-ENV ENTER_HEL cd $GOPATH/src/github.com/autodesk/synthesis/hel
+ENV WPILIB_VERSION v2020.3.2
+ENV SYNTHESIS_BRANCH emulator-restore
+ENV TEMPPATH /temp
+ENV PATH $TEMPPATH/bin:$PATH
 
-RUN mkdir /go
+RUN mkdir $TEMPPATH
+
+# This avoids issues with an interactive configuration step for tzdata
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get install -y --no-install-recommends tzdata
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -24,70 +25,65 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jre \
     cmake \
     curl \
-    unzip && \
+    unzip \
+    patch && \
     rm -rf /var/lib/apt/lists/*
 
 RUN cd /root && \
-    git clone https://github.com/protocolbuffers/protobuf.git --branch v3.7.0 && \
+    git clone https://github.com/protocolbuffers/protobuf.git --branch v3.7.0 --depth=1 && \
     cd protobuf && \
     git submodule update --init --recursive && \
     ./autogen.sh && \
     ./configure && \
-    make -j12 && make check && \
+    make -j12 && \
+    make check && \
     make install && \
     ldconfig
 
-RUN curl -O https://storage.googleapis.com/golang/go1.12.7.linux-amd64.tar.gz && \
-    tar -xvf go1.12.7.linux-amd64.tar.gz && \
-    mv go /usr/local
-
-RUN mkdir -p $GOPATH/src/github.com/autodesk && \ 
-    cd $GOPATH/src/github.com/autodesk/ && \
+RUN mkdir -p $TEMPPATH/src/github.com/autodesk && \ 
+    cd $TEMPPATH/src/github.com/autodesk/ && \
     git clone https://github.com/Autodesk/synthesis.git --branch ${SYNTHESIS_BRANCH} --depth=1
 
-ENV ENTER_HEL cd $GOPATH/src/github.com/autodesk/synthesis/emulation/hel
+ENV ENTER_HEL cd $TEMPPATH/src/github.com/autodesk/synthesis/emulation/hel
 
 RUN ${ENTER_HEL} && \
-    cmake . -DARCH=X86_64 -DWPILIB=${WPILIB_VERSION} && \
-    make hel -j12
+    mkdir build && \
+    cd build && \
+    cmake .. -DX86=ON -DWPILIB_VERSION=${WPILIB_VERSION} && \
+    make hel
 
-RUN ${ENTER_HEL}/../wpi_cross && \
+RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     git clone https://github.com/wpilibsuite/allwpilib --branch ${WPILIB_VERSION} --depth=1 && \
     cd allwpilib && \
     rm -rf hal/src/main/native/sim && \
-    cp ../../hel/lib/ni-libraries/src/ni-libraries/src/include hal/src/main/native/ -r && \
+    cp ../../../hel/build/lib/ni-libraries/src/ni-libraries/src/include hal/src/main/native/ -r && \
     cp wpiutil/src/main/native/include hal/src/main/native/ -r && \
     mv hal/src/main/native/athena hal/src/main/native/sim && \
     cat ../shim_hal.cpp >> hal/src/main/native/sim/HAL.cpp && \
     cat ../shim_jni.cpp >> hal/src/main/native/cpp/jni/HALUtil.cpp && \
-    ./gradlew halBaseReleaseSharedLibrary halJNISharedReleaseSharedLibrary :wpilibj:assemble && \
-    (./gradlew wpilibj:build || true) 
-
-
-RUN go get github.com/golang/protobuf/protoc-gen-go
-RUN find / -name protoc-gen-go
-RUN cd ${GOPATH}/src/github.com/autodesk/synthesis/emulation/bridge && \
-    mkdir -p pkg/api/v1 && \
-    make build-protobuf && \
-    go build -o bridge ./cmd/main.go && \
-    cp ./bridge ~
+    patch -p0 < ../AddressableLED.patch && \
+    patch -p0 < ../FRCDriverStation.patch && \
+    ./gradlew halBaseLinuxx86-64ReleaseSharedLibrary halJNILinuxx86-64ReleaseSharedLibrary :wpilibj:assemble && \
+    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay
 
 #A hack but it works
 
-FROM ubuntu:19.04
+FROM ubuntu:21.04
 
-ENV WPILIB_VERSION v2019.4.1
-ENV SYNTHESIS_BRANCH 953-java-emulation
+ENV WPILIB_VERSION v2020.3.2
+ENV SYNTHESIS_BRANCH emulator-restore
+ENV TEMPPATH /temp
+
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get install -y --no-install-recommends tzdata
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jre \
-    qemu \
-    qemu-system-arm \
     openssh-server \
     curl \
     wget \
-    unzip && \
+    unzip \
+    make && \
     rm -rf /var/lib/apt/lists/*
 
 RUN sed -i '#s/PermitRootLogin\ prohibit-password/PermitRootLogin\ yes/' /etc/ssh/sshd_config && \
@@ -101,30 +97,25 @@ RUN adduser --disabled-password --gecos "" lvuser && \
 
 WORKDIR /home/lvuser
 
+# Copy protobuf dir
 COPY --from=builder /root /home/lvuser
-COPY --from=builder /go/src/github.com/autodesk /home/lvuser
+# Copy synthesis dir
+COPY --from=builder $TEMPPATH/src/github.com/autodesk /home/lvuser
 
-RUN ls /home/lvuser/synthesis
-
-RUN pwd
-RUN cd protobuf make install && ldconfig
+# RUN cd protobuf && make install && ldconfig
 
 RUN mkdir scripts && \
-    cp synthesis/emulation/hel/scripts/download_vm.sh ./scripts && \
-    cp synthesis/emulation/hel/scripts/docker_runner.sh ./scripts && \
-    cp synthesis/emulation/hel/run_vm.sh . && \
-    scripts/download_vm.sh 
+    cp synthesis/emulation/hel/scripts/docker_runner.sh ./scripts
 
 RUN find . -regex ".*\.\(so\|jar\)\(\.[0-9]*\)*" -exec mv {} . \;
 
 RUN cd /home/lvuser && \
-    ln -s libhel.so /lib/libFRC_NetworkCommunication.so.19.0.0 && \
-    ln -s libhel.so /lib/libNiFpga.18.0.0 && \
-    ln -s libhel.so /lib/libniriodevenum.so.18.0.0 && \
-    ln -s libhel.so /lib/libniriosessions.so.18.0.0 && \
+    ln -s libhel.so /lib/libFRC_NetworkCommunication.so.20 && \
+    ln -s libhel.so /lib/libNiFpga.13 && \
+    ln -s libhel.so /lib/libniriodevenum.so.19.0.0 && \
+    ln -s libhel.so /lib/libniriosessions.so.19.0.0 && \
     ln -s libhel.so /lib/libvisa.so && \
     ln -s libhel.so /lib/libNiRioSrv.so.19.0.0 && \
-    ls && \
     mv -n ./*.so* /lib
 
 RUN rm -rf ./protobuf && \
@@ -137,5 +128,4 @@ EXPOSE 10023
 RUN mkdir /run/sshd
 
 CMD /usr/sbin/sshd && \
-    nohup ./run_vm.sh && \
     scripts/docker_runner.sh
