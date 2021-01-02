@@ -64,7 +64,13 @@ RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     patch -p0 < ../AddressableLED.patch && \
     patch -p0 < ../FRCDriverStation.patch && \
     ./gradlew halBaseLinuxx86-64ReleaseSharedLibrary halJNILinuxx86-64ReleaseSharedLibrary :wpilibj:assemble && \
-    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay
+    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay 
+
+RUN mkdir $TEMPPATH/to_copy && \
+    ${ENTER_HEL}/../ && \
+    find . -regex ".*\.\(so\)\(\.[0-9]*\)*" -exec mv {} $TEMPPATH/to_copy \; && \
+    cp hel/scripts/frc_program_runner.sh $TEMPPATH/to_copy && \
+    cp hel/scripts/docker_runner.sh $TEMPPATH/to_copy
 
 #A hack but it works
 
@@ -97,29 +103,21 @@ RUN adduser --disabled-password --gecos "" lvuser && \
 
 WORKDIR /home/lvuser
 
-# Copy protobuf dir
-COPY --from=builder /root /home/lvuser
 # Copy synthesis dir
-COPY --from=builder $TEMPPATH/src/github.com/autodesk /home/lvuser
+COPY --from=builder $TEMPPATH/to_copy/* /home/lvuser/
 
-# RUN cd protobuf && make install && ldconfig
+RUN  mv -n ./libhel.so \
+    ./libwpiHaljni.so \
+    ./libwpiHald.so \
+    ./libwpiutild.so \
+    ./libcscorejni.so \
+    ./libcscored.so \
+    ./libopencv*.so* \
+    ./libntcorejni.so \
+    ./libntcored.so \
+    /lib/
 
-RUN mkdir scripts && \
-    cp synthesis/emulation/hel/scripts/docker_runner.sh ./scripts
-
-RUN find . -regex ".*\.\(so\|jar\)\(\.[0-9]*\)*" -exec mv {} . \;
-
-RUN cd /home/lvuser && \
-    ln -s libhel.so /lib/libFRC_NetworkCommunication.so.20 && \
-    ln -s libhel.so /lib/libNiFpga.13 && \
-    ln -s libhel.so /lib/libniriodevenum.so.19.0.0 && \
-    ln -s libhel.so /lib/libniriosessions.so.19.0.0 && \
-    ln -s libhel.so /lib/libvisa.so && \
-    ln -s libhel.so /lib/libNiRioSrv.so.19.0.0 && \
-    mv -n ./*.so* /lib
-
-RUN rm -rf ./protobuf && \
-    rm -rf ./synthesis
+RUN rm -rf *.so*
 
 EXPOSE 50051
 EXPOSE 10022
@@ -127,5 +125,12 @@ EXPOSE 10023
 
 RUN mkdir /run/sshd
 
+RUN mkdir /tmp/frc_versions && \
+    touch /tmp/frc_versions/FRC_Lib_Version.ini
+
+RUN printf "2.0\n\
+v2020.3.2\n\
+2020v10-image" > /home/lvuser/.vminfo
+
 CMD /usr/sbin/sshd && \
-    scripts/docker_runner.sh
+    ./docker_runner.sh
