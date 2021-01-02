@@ -86,10 +86,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get install -y --no-i
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jre \
     openssh-server \
-    curl \
-    wget \
-    unzip \
-    make && \
+    vim && \
     rm -rf /var/lib/apt/lists/*
 
 RUN sed -i '#s/PermitRootLogin\ prohibit-password/PermitRootLogin\ yes/' /etc/ssh/sshd_config && \
@@ -133,4 +130,4 @@ v2020.3.2\n\
 2020v10-image" > /home/lvuser/.vminfo
 
 CMD /usr/sbin/sshd && \
-    ./docker_runner.sh
+    while true; do echo ""; done
