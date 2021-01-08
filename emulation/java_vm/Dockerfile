@@ -64,7 +64,7 @@ RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     patch -p0 < ../AddressableLED.patch && \
     patch -p0 < ../FRCDriverStation.patch && \
     ./gradlew halBaseLinuxx86-64ReleaseSharedLibrary halJNILinuxx86-64ReleaseSharedLibrary :wpilibj:assemble && \
-    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay 
+    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay
 
 RUN mkdir $TEMPPATH/to_copy && \
     ${ENTER_HEL}/../ && \
@@ -80,25 +80,35 @@ ENV WPILIB_VERSION v2020.3.2
 ENV SYNTHESIS_BRANCH emulator-restore
 ENV TEMPPATH /temp
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get install -y --no-install-recommends tzdata
+RUN echo 'root:root' | chpasswd
+
+RUN apt-get -y update
+
+RUN apt-get -y install --no-install-recommends \
+    linux-image-generic:amd64
+
+RUN apt-get -y install --no-install-recommends \
+    systemd-sysv
+
+RUN apt-get -y install --no-install-recommends \
+    dbus
+
+RUN adduser --disabled-password --gecos "" lvuser && \
+    passwd -d lvuser
+
+WORKDIR /home/lvuser
 
 # WPILib ignores most gradle tasks if you don't have the toolchain installed
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jre \
     openssh-server \
-    vim && \
-    rm -rf /var/lib/apt/lists/*
+    vim
 
 RUN sed -i '#s/PermitRootLogin\ prohibit-password/PermitRootLogin\ yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication/PasswordAuthentication/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitEmptyPasswords\ no/PermitEmptyPasswords\ yes/' /etc/ssh/sshd_config && \ 
     sed -i 's/#Port\ 22/Port\ 10023/' /etc/ssh/sshd_config && \
     sed -i 's/pam_unix.so nullok_secure/pam_unix.so nullok/' /etc/pam.d/common-auth
-
-RUN adduser --disabled-password --gecos "" lvuser && \
-    passwd -d lvuser
-
-WORKDIR /home/lvuser
 
 # Copy synthesis dir
 COPY --from=builder $TEMPPATH/to_copy/* /home/lvuser/
@@ -129,5 +139,8 @@ RUN printf "2.0\n\
 v2020.3.2\n\
 2020v10-image" > /home/lvuser/.vminfo
 
+RUN rm -rf /var/lib/apt/lists/*
+
 CMD /usr/sbin/sshd && \
     while true; do echo ""; done
+
