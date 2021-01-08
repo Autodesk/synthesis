@@ -1,7 +1,7 @@
 # FRC Robot Code Emulation
 
 ## Overview
-The emulator is the Synthesis tool designed to help users test their FRC robot code ([Getting started with FRC control system](https://wpilib.screenstepslive.com/s/currentCS "FRC Control System")). Users can upload their own user code as the FRC user programs they would normally deploy to the RoboRIO. Its normal communication with hardware is then redirected to the [engine](../engine "Engine Source") for simulation and testing.
+The emulator is the Synthesis tool designed to help users test their FRC robot code ([Getting started with FRC control system](https://docs.wpilib.org "FRC Control System")). Users can upload their own user code as the FRC user programs they would normally deploy to the RoboRIO. Its normal communication with hardware is then redirected to the [engine](../engine "Engine Source") for simulation and testing.
 
 ## HEL - Hardware Emulation Layer
 The core of Synthesis's emulator is HEL. HEL is a reimplementation of the NI FPGA, which normally runs on the RoboRIO, that instead runs in an [ARM](./emulator_building.md "Building the Emulator") or x86 virtual environment and interfaces with a simulation. This allows robot code to run on users' computers as a normal application and to communicates with Synthesis. Emulating this low layer of robot code runtime enables compatibility across new releases of WPILib and other external solutions. Read more [here](./hel/README.md "HEL README").
