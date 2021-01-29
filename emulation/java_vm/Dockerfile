@@ -150,6 +150,12 @@ RUN printf "2.0\n\
 v2020.3.2\n\
 2020v10-image" > /home/lvuser/.vminfo
 
+# Login as lvuser automatically
+RUN mkdir -p /etc/systemd/system/getty@tty1.service.d/ && \
+	printf "[Service]\n\
+ExecStart=\n\
+ExecStart=/usr/sbin/agetty --autologin lvuser --noclear %%I $TERM" > /etc/systemd/system/getty@tty1.service.d/override.conf
+
 # Remove apt lists to reclaim space
 RUN rm -rf /var/lib/apt/lists/*
 
