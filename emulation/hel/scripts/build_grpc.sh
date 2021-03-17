@@ -19,7 +19,7 @@ if [[ $(which grpc_cpp_plugin) == "" || $(which protoc) == "" ]] ; then
     
     SCRIPT=$(realpath $0)
     SCRIPTPATH=$(dirname $SCRIPT)
-    patch -p1 < $SCRIPTPATH/../external_configs/grpc.patch # This is necessary for installing v1.21.4 for x86
+    #patch -p1 < $SCRIPTPATH/../external_configs/grpc.patch # This is necessary for installing v1.21.4 for x86
 
     find -name log_linux.cc
 
