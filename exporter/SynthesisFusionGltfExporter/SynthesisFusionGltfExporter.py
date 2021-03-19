@@ -43,6 +43,9 @@ def areDepsInstalled():
 def tryInstallDeps():
     # TODO: Figure out a better way to install python deps
 
+    # USE THIS FOR TESTING NUMPY ISSUE
+    # subprocess.run(f"\"{Path(os.__file__).parents[1] / 'python'}\" -m pip uninstall numpy -y", shell=True)
+
     if areDepsInstalled():
         return True
 
@@ -76,7 +79,7 @@ def tryInstallDeps():
     else:
         raise ImportError(f"Unsupported platform! This add-in only supports windows and macos")
 
-    pipDeps = ["pygltflib", "numpy", "protobuf", "pyquaternion"]
+    pipDeps = ["pygltflib", "numpy==1.18.5", "protobuf", "pyquaternion"]
     for depName in pipDeps:
         progressBar.progressValue += 1
         progressBar.message = f"Installing {depName}..."
