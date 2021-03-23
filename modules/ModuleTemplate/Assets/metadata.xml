@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ModuleMetadata xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Module</Name>
+  <Version>0.0.1</Version>
+  <TargetPath>module</TargetPath>
+  <Dependencies/>
+  <FileManifest>
+    <string>Module.dll</string>
+  </FileManifest>
+</ModuleMetadata>

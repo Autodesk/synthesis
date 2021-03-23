@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controller", "Controller\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthesisCore", "SynthesisCore\SynthesisCore.csproj", "{40F79ADF-D341-4600-91C0-51B886D27DA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleTemplate", "ModuleTemplate\ModuleTemplate.csproj", "{BF138BB5-4E2B-4FCB-8622-4B3617A19316}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{40F79ADF-D341-4600-91C0-51B886D27DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40F79ADF-D341-4600-91C0-51B886D27DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40F79ADF-D341-4600-91C0-51B886D27DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF138BB5-4E2B-4FCB-8622-4B3617A19316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF138BB5-4E2B-4FCB-8622-4B3617A19316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF138BB5-4E2B-4FCB-8622-4B3617A19316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF138BB5-4E2B-4FCB-8622-4B3617A19316}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
