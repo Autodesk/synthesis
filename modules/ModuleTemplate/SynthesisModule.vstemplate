@@ -1,7 +1,7 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name>Synthesis Module</Name>
-    <Description>A template for creating Synthesis modules</Description>
+    <Description>A project for creating modules for Synthesis: An Autodesk Technology</Description>
     <ProjectType>CSharp</ProjectType>
     <ProjectSubType>
     </ProjectSubType>
