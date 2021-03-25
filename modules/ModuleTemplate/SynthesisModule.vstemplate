@@ -23,7 +23,7 @@
       <Folder Name="Assets" TargetFolderName="Assets">
         <ProjectItem ReplaceParameters="true" TargetFileName="metadata.xml">metadata.xml</ProjectItem>
       </Folder>
-      <ProjectItem ReplaceParameters="true" TargetFileName="ModuleCode.cs">ModuleCode.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Class1.cs">Class1.cs</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>
