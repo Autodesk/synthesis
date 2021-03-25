@@ -7,9 +7,9 @@
   <ItemGroup>
     <PackageReference Include="Autodesk.Synthesis.Module.API" Version="0.1.0" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="MKDIR $(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)&#xD;&#xA;&#xD;&#xA;COPY $(ProjectDir)\Assets\* $(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)&#xD;&#xA;&#xD;&#xA;COPY $(TargetPath) $(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)" />
+    <Exec Command='MKDIR "$(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)"' />
+    <Exec Command='COPY "$(ProjectDir)Assets\*" "$(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)"'/>
+    <Exec Command='COPY "$(TargetPath)" "$(APPDATA)\Autodesk\Synthesis\modules\$(ProjectName)"' />
   </Target>
-
 </Project>
