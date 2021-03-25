@@ -3,7 +3,7 @@ using SynthesisAPI;
 
 namespace ModuleTemplate
 {
-    public class ModuleCode
+    class Class1
     {
     }
 }
