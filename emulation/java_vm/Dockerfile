@@ -1,6 +1,6 @@
 # Builder Docker build stage
 
-FROM ubuntu:21.04 AS builder
+FROM ubuntu:18.04 AS builder
 
 ENV WPILIB_VERSION v2020.3.2
 ENV SYNTHESIS_BRANCH emulator-restore
@@ -80,7 +80,7 @@ RUN mkdir $TEMPPATH/to_copy && \
 
 # Final build Docker build stage
 
-FROM ubuntu:21.04
+FROM ubuntu:18.04
 
 ENV WPILIB_VERSION v2020.3.2
 ENV SYNTHESIS_BRANCH emulator-restore
