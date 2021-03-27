@@ -1,17 +1,18 @@
---- ./hal/src/main/native/sim/FRCDriverStation.cpp	2021-03-27 13:59:17.168114269 -0700
-+++ ./hal/src/main/native/sim/FRCDriverStation2.cpp	2021-03-27 13:59:07.044780609 -0700
-@@ -288,6 +288,10 @@
+--- ./hal/src/main/native/sim/FRCDriverStation.cpp	2021-03-27 16:47:26.558444755 -0700
++++ ./hal/src/main/native/sim/FRCDriverStation2.cpp	2021-03-27 16:47:13.921777667 -0700
+@@ -288,6 +288,11 @@
    }
  }
  
 +#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wstringop-truncation"
-+#pragma GCC diagnostic ignored "-Wstringop-overflow"
-+
++#if defined(__GNUC__) && (__GNUC__ > 8)
++	#pragma GCC diagnostic ignored "-Wstringop-truncation"
++	#pragma GCC diagnostic ignored "-Wstringop-overflow"
++#endif
  char* HAL_GetJoystickName(int32_t joystickNum) {
    HAL_JoystickDescriptor joystickDesc;
    if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
-@@ -303,6 +307,8 @@
+@@ -303,6 +308,8 @@
    }
  }
  
