@@ -1,22 +1,22 @@
---- ./hal/src/main/native/sim/FRCDriverStation.cpp	2020-12-30 02:01:20.371892128 -0500
-+++ ./hal/src/main/native/sim/FRCDriverStation2.cpp	2020-12-30 02:02:19.458557374 -0500
-@@ -292,6 +292,10 @@
+--- ./hal/src/main/native/sim/FRCDriverStation.cpp	2021-03-27 13:59:17.168114269 -0700
++++ ./hal/src/main/native/sim/FRCDriverStation2.cpp	2021-03-27 13:59:07.044780609 -0700
+@@ -288,6 +288,10 @@
    }
  }
  
-+#pragma GCC diagnostic push 
++#pragma GCC diagnostic push
 +#pragma GCC diagnostic ignored "-Wstringop-truncation"
 +#pragma GCC diagnostic ignored "-Wstringop-overflow"
 +
  char* HAL_GetJoystickName(int32_t joystickNum) {
    HAL_JoystickDescriptor joystickDesc;
    if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
-@@ -307,6 +311,8 @@
+@@ -303,6 +307,8 @@
    }
  }
  
 +#pragma GCC diagnostic pop
 +
- void HAL_FreeJoystickName(char* name) { std::free(name); }
- 
- int32_t HAL_GetJoystickAxisType(int32_t joystickNum, int32_t axis) {
+ void HAL_FreeJoystickName(char* name) {
+   std::free(name);
+ }
