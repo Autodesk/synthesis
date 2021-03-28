@@ -3,7 +3,7 @@
 FROM ubuntu:18.04 AS builder
 
 ENV WPILIB_VERSION v2021.2.2
-ENV SYNTHESIS_BRANCH emulator-restore
+ENV SYNTHESIS_BRANCH wpilib-2021
 ENV TEMPPATH /temp
 ENV PATH $TEMPPATH/bin:$PATH
 
@@ -43,6 +43,9 @@ RUN cd /root && \
     make install && \
     ldconfig
 
+RUN pwd
+RUN pwd
+
 # Build Synthesis
 RUN mkdir -p $TEMPPATH/src/github.com/autodesk && \ 
     cd $TEMPPATH/src/github.com/autodesk/ && \
@@ -69,7 +72,25 @@ RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     patch -p0 < ../AddressableLED.patch && \
     patch -p0 < ../FRCDriverStation.patch && \
     ./gradlew halBaseLinuxx86-64ReleaseSharedLibrary halJNILinuxx86-64ReleaseSharedLibrary :wpilibj:assemble && \
-    (./gradlew wpilibj:build || true)  # This gradle build step will fail, but that's okay
+    (./gradlew wpilibj:build || true) && \ 
+    cp wpilibc/src/main/native/include/frc wpilibOldCommands/src/main/native/include -r -f && \
+    cp wpilibc/src/main/native/include/frc2 wpilibOldCommands/src/main/native/include -r -f && \
+    cp wpiutil/src/main/native/include/wpi wpilibOldCommands/src/main/native/include -r -f && \
+    cp ntcore/src/main/native/include/* wpilibOldCommands/src/main/native/include -r -f && \
+    cp hal/src/main/native/include/* wpilibOldCommands/src/main/native/include -r -f && \
+    cp wpimath/src/main/native/include/* wpilibOldCommands/src/main/native/include -r -f && \
+    cp hal/build/generated/headers/* wpilibOldCommands/src/main/native/include -r -f && \
+    ./gradlew wpilibOldCommandsBaseLinuxx86-64DebugSharedLibrary && \
+    cp wpilibc/src/main/native/include/frc wpilibNewCommands/src/main/native/include -r -f && \
+    cp wpilibc/src/main/native/include/frc2 wpilibNewCommands/src/main/native/include -r -f && \
+    cp wpiutil/src/main/native/include/wpi wpilibNewCommands/src/main/native/include -r -f && \
+    cp ntcore/src/main/native/include/* wpilibNewCommands/src/main/native/include -r -f && \
+    cp hal/src/main/native/include/* wpilibNewCommands/src/main/native/include -r -f && \
+    cp wpimath/src/main/native/include/* wpilibNewCommands/src/main/native/include -r -f && \
+    cp wpimath/src/main/native/eigeninclude/Eigen wpilibNewCommands/src/main/native/include -r -f && \
+    cp hal/build/generated/headers/* wpilibNewCommands/src/main/native/include -r -f && \
+    ./gradlew wpilibNewCommandsBaseLinuxx86-64DebugSharedLibrary
+
 
 # Move needed files into one location
 RUN mkdir $TEMPPATH/to_copy && \
@@ -90,9 +111,9 @@ RUN echo 'root:root' | chpasswd
 
 RUN apt-get -y update
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends tzdata
+RUN DEBIAN_FRONTEND="noninteractive" apt install -y --no-install-recommends tzdata
 
-RUN apt-get -y install --no-install-recommends \
+RUN apt -y install --no-install-recommends \
     linux-image-generic:amd64 \
     systemd-sysv \
     dbus \
@@ -135,6 +156,7 @@ RUN  mv -n ./libhel.so \
     ./libcscorejni.so \
     ./libcscored.so \
     ./libopencv*.so* \
+    ./libwpilib*Commands*.so* \
     ./libntcorejni.so \
     ./libntcored.so \
     /lib/
