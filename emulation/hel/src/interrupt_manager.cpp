@@ -24,9 +24,11 @@ namespace nFPGA{
 		}).detach();
     }
 
-    uint32_t tInterruptManager::watch(int32_t /*timeoutInMs*/, bool /*ignorePrevious*/, tRioStatusCode* /*status*/){
-        hel::warnUnsupportedFeature("Function call tInterruptManager::watch");
-        return 0;
+    uint32_t tInterruptManager::watch(int32_t timeoutInMs, bool ignorePrevious, tRioStatusCode* /*status*/){
+        // hel::warnUnsupportedFeature("Function call tInterruptManager::watch");
+        if(timeoutInMs == 10000 && ignorePrevious == false) 
+		return !0;
+	return 0;
     }
 
     void tInterruptManager::enable(tRioStatusCode* /*status*/){
