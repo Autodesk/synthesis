@@ -43,9 +43,6 @@ RUN cd /root && \
     make install && \
     ldconfig
 
-RUN pwd
-RUN pwd
-
 # Build Synthesis
 RUN mkdir -p $TEMPPATH/src/github.com/autodesk && \ 
     cd $TEMPPATH/src/github.com/autodesk/ && \
@@ -72,7 +69,8 @@ RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     patch -p0 < ../AddressableLED.patch && \
     patch -p0 < ../FRCDriverStation.patch && \
     ./gradlew halBaseLinuxx86-64ReleaseSharedLibrary halJNILinuxx86-64ReleaseSharedLibrary :wpilibj:assemble && \
-    (./gradlew wpilibj:build || true) && \ 
+    (./gradlew wpilibj:build || true)
+RUN ${ENTER_HEL}/../java_vm/wpi_cross/allwpilib && \
     cp wpilibc/src/main/native/include/frc wpilibOldCommands/src/main/native/include -r -f && \
     cp wpilibc/src/main/native/include/frc2 wpilibOldCommands/src/main/native/include -r -f && \
     cp wpiutil/src/main/native/include/wpi wpilibOldCommands/src/main/native/include -r -f && \
@@ -80,8 +78,9 @@ RUN ${ENTER_HEL}/../java_vm/wpi_cross && \
     cp hal/src/main/native/include/* wpilibOldCommands/src/main/native/include -r -f && \
     cp wpimath/src/main/native/include/* wpilibOldCommands/src/main/native/include -r -f && \
     cp hal/build/generated/headers/* wpilibOldCommands/src/main/native/include -r -f && \
-    ./gradlew wpilibOldCommandsBaseLinuxx86-64DebugSharedLibrary && \
-    cp wpilibc/src/main/native/include/frc wpilibNewCommands/src/main/native/include -r -f && \
+    ./gradlew wpilibOldCommandsBaseLinuxx86-64DebugSharedLibrary
+RUN ${ENTER_HEL}/../java_vm/wpi_cross/allwpilib && \
+cp wpilibc/src/main/native/include/frc wpilibNewCommands/src/main/native/include -r -f && \
     cp wpilibc/src/main/native/include/frc2 wpilibNewCommands/src/main/native/include -r -f && \
     cp wpiutil/src/main/native/include/wpi wpilibNewCommands/src/main/native/include -r -f && \
     cp ntcore/src/main/native/include/* wpilibNewCommands/src/main/native/include -r -f && \
