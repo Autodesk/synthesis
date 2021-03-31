@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <fstream>
 
+#include <FRC_NetworkCommunication/LoadOut.h>
+
 #define LIBHEL_VERSION "1.1.0" // Major, minor, patch
 #define VIRTUAL_MACHINE_INFO_PATH "/home/lvuser/.vminfo"
 #define SERVER_CONFIG_PATH "/home/lvuser/.grpc_config"
@@ -50,5 +52,11 @@ namespace hel{
 namespace nFPGA {
     namespace nRoboRIO_FPGANamespace {
         unsigned int g_currentTargetClass; //Ni FPGA declares this as extern, so define it here
+    }
+}
+
+namespace nLoadOut {
+    tTargetClass EXPORT_FUNC getTargetClass() {
+        return (tTargetClass) nFPGA::nRoboRIO_FPGANamespace::g_currentTargetClass;
     }
 }
