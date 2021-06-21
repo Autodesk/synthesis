@@ -1273,6 +1273,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 630691998}
+  - component: {fileID: 630691997}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -1280,6 +1281,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &630691997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630691996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ebfe18782b14c0ba6f67f439ffcbdf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &630691998
 Transform:
   m_ObjectHideFlags: 0
@@ -2293,6 +2306,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa56850c73962407fa8b4cd1cd94099c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _target: {fileID: 0}
+  _distance: 50
+  _zoomSensitivity: 0.1
+  _orbitSpeed: 2
+  _rotationSensitvity: 4
+  _yawLimit: 180
+  _pitchLimit: 90
+  _freeze: 0
 --- !u!1001 &964960048
 PrefabInstance:
   m_ObjectHideFlags: 0
