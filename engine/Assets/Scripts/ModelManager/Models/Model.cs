@@ -1,34 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Synthesis.ModelManager.Models
 {
-    public class Model : MonoBehaviour
+    public class Model
     {
-        public string ObjectName { get; set; }
-        public string InstanceName { get => gameObject.name; set => gameObject.name = value; }
+        public string Name { get; set; }
 
-        public float Mass { get; private set; }
+        public GameObject GameObject { get; set; }
 
         protected HashSet<Motor> motors = new HashSet<Motor>();
-        public IEnumerable<Motor> Motors => gameObject.GetComponents<Motor>();
+        public HashSet<Motor> Motors { get => motors; } // TODO: This bad, go back and fix
+        public List<GearboxData> GearboxMeta = new List<GearboxData>();
 
-        void Awake()
+        public DrivetrainMeta DrivetrainMeta;
+
+        public static implicit operator GameObject(Model model) => model.GameObject;
+
+        public Model()
         {
-            if (gameObject.GetComponent<Motor>() != null)
-                return;
-            foreach (Transform t in gameObject.transform)
-            {
-                if (t.GetComponent<Rigidbody>() != null)
-                    Mass += t.GetComponent<Rigidbody>().mass;
-                if (t.GetComponent<HingeJoint>() != null)
-                    gameObject.AddComponent<Motor>().Joint = t.GetComponent<HingeJoint>();
-            }
+
         }
 
-        public void Show() => gameObject.SetActive(true);
+        public Model(string filePath)
+        {
+            Parse.AsModel(filePath, this);
+        }
 
         private static int counter = 0;
         public bool AddMotor(HingeJoint joint)
@@ -40,6 +38,18 @@ namespace Synthesis.ModelManager.Models
             joint.name = m.Meta.Name;
             return motors.Add(m);
         }
-        public void Hide() => gameObject.SetActive(false);
+    }
+
+    public struct DrivetrainMeta
+    {
+        public DrivetrainType Type;
+        public GearboxData[] SelectedGearboxes;
+    }
+
+    public enum DrivetrainType
+    {
+        NotSelected = 0, // Default
+        Arcade = 1,
+        Tank = 2
     }
 }
