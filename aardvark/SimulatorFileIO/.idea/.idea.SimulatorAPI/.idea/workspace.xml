@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8c615ee3-8fcd-4f65-8d93-ab8f5185ba02" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../engine/Assets/Scenes/MainScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/../../engine/Assets/Scenes/MainScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../engine/Assets/Scripts/Camera/Camera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../engine/Assets/Scripts/Camera/Camera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../engine/Assets/Scripts/EntityManager/Entity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../engine/Assets/Scripts/EntityManager/Entity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../engine/Assets/Scripts/PTL.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../engine/Assets/Scripts/PTL.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../importer/EngineImporter/Translator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../importer/EngineImporter/Translator.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <changedPaths>
+      <option value="$PROJECT_DIR$/IO/BXDF/BXDFProperties.cs" />
+    </changedPaths>
+  </component>
+  <component name="ProjectId" id="1sPnfoIrEK8nqiFUAGKxVKTv1T4" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8c615ee3-8fcd-4f65-8d93-ab8f5185ba02" name="Default Changelist" comment="" />
+      <created>1620783202828</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1620783202828</updated>
+      <workItem from="1620783208184" duration="2020000" />
+      <workItem from="1623100722868" duration="1208000" />
+      <workItem from="1623807502558" duration="1431000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>

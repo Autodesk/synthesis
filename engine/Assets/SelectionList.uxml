@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="background" style="height: 546px; width: 478px; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgb(11, 32, 60); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
-        <ui:ListView focusable="True" name="selections" style="flex-grow: 1; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgb(0, 2, 19); margin-bottom: 10px;" />
-        <ui:VisualElement name="buttons" style="height: 56px; flex-direction: row; justify-content: space-between;">
-            <ui:Button text="Exit" name="close-button" style="width: 100px; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgb(10, 15, 34); -unity-font-style: bold; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; font-size: 21px; color: rgba(255, 255, 255, 255);" />
-            <ui:Button text="Select" name="select-button" style="width: 100px; background-image: url(&apos;/Assets/Textures/Blank.png&apos;); -unity-background-image-tint-color: rgb(11, 16, 34); -unity-font-style: bold; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; font-size: 20px; color: rgba(255, 255, 255, 255);" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>

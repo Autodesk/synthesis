@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\hunte\\git\\synthesis-ugh\\aardvark\\SimulatorFileIO\\SimulatorAPI.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\hunte\\git\\synthesis-ugh\\aardvark\\SimulatorFileIO\\SimulatorAPI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hunte\\git\\synthesis-ugh\\aardvark\\SimulatorFileIO\\SimulatorAPI.csproj",
+        "projectName": "SimulatorAPI",
+        "projectPath": "C:\\Users\\hunte\\git\\synthesis-ugh\\aardvark\\SimulatorFileIO\\SimulatorAPI.csproj",
+        "packagesPath": "C:\\Users\\hunte\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hunte\\git\\synthesis-ugh\\aardvark\\SimulatorFileIO\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\hunte\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net35"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net35": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net35": {
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.2, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

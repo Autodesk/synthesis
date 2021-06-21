@@ -1,0 +1,14 @@
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.csprojAssemblyReference.cache
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.AssemblyInfoInputs.cache
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.AssemblyInfo.cs
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.csproj.CoreCompileInputs.cache
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\EngineImporter.deps.json
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\EngineImporter.dll
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\EngineImporter.pdb
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\SimulatorAPI.dll
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\UnityEngine.dll
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\SimulatorAPI.pdb
+C:\Users\hunte\git\synthesis\importer\EngineImporter\bin\Debug\netstandard2.1\UnityEngine.xml
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.csproj.CopyComplete
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.dll
+C:\Users\hunte\git\synthesis\importer\EngineImporter\obj\Debug\netstandard2.1\EngineImporter.pdb

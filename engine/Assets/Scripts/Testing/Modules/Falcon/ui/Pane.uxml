@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement style="background-color: rgb(255, 254, 0); height: 103px; width: 100%;">
-        <ui:Label text="Falcon test module pane" />
-    </ui:VisualElement>
-</ui:UXML>

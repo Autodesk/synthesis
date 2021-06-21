@@ -1,0 +1,8 @@
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\bin\Debug\SimulatorAPI.dll
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\bin\Debug\SimulatorAPI.pdb
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\bin\Debug\Newtonsoft.Json.dll
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\obj\Debug\SimulatorAPI.csprojAssemblyReference.cache
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\obj\Debug\SimulatorAPI.csproj.CoreCompileInputs.cache
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\obj\Debug\SimulatorAPI.csproj.CopyComplete
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\obj\Debug\SimulatorAPI.dll
+C:\Users\hunte\git\matthew_synthesis\exporters\Aardvark-Libraries\SimulatorFileIO\obj\Debug\SimulatorAPI.pdb
