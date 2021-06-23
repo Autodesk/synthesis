@@ -40,8 +40,8 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
       <PackageReference Include="MathNet.Numerics" Version="4.11.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-      <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0018" />
       <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+      <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>

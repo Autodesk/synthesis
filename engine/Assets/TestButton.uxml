@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="container">
-        <ui:Button text="Do a Flip" name="button1" style="height: 263px; width: 300px; background-image: url(&apos;/temp/test.jpeg&apos;); font-size: 58px;" />
-        <ui:Button text="Do another&#10;flip" name="button2" style="height: 263px; width: 300px; font-size: 58px; white-space: normal;" />
-    </ui:VisualElement>
-</ui:UXML>

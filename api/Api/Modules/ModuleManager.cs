@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
+using Zippo = System.IO.Compression.ZipFile;
+
 [assembly: InternalsVisibleTo("CoreEngine")]
 [assembly: InternalsVisibleTo("MockApi")]
 [assembly: InternalsVisibleTo("TestApi")]

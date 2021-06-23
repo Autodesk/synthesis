@@ -1,29 +1,19 @@
-# Engine
+# Synthesis Engine
+This is the main Simulator aspect to Synthesis. We take the robots and fields that have been exported using our exporter, and simulate them with realtime physics within Unity.
 
-## Setup Instructions
-
+# Building
 ### Requirements
-- Unity Hub with Unity 2019.4.0f1 (Required)
-- Visual Studio 2019 (Recommended)
-
-### Downloading Synthesis
-1. Use git to clone Synthesis from our repository.
-
-### Compiling the Synthesis API
-1. Navigate to your local copy of Synthesis, and enter the `api` folder.
-2. Open `api.sln` in Visual Studio.
-3. Build the solution from the Visual Studio toolbar.
-
-### Setting Up Modules
-1. Navigate to your local copy of Synthesis, and enter the `modules` folder.
-2. Open `modules.sln` in Visual Studio.
-3. Build the solution from the Visual Studio toolbar.
-4. Set up the modules by running one of the following scripts:
-	- For Windows users, run `update_modules.ps1` using PowerShell.
-	- Linux and Mac scripts are under construction.
-
-### Setting Up the Unity Project
-1. Open Unity Hub, click the Add button, and navigate to your local copy of Synthesis. Enter the `engine` folder, and click "Select Folder."
-2. Open the engine project that has been added to your Unity Hub.
-3. From the Project Window within the Unity Editor, navigate to `Assets/Scenes` and open the `MainSim` scene.
-4. Play the scene by hitting the play button at the top of the Editor. 
+- Unity 2020.3.12f1
+## Prerequisites
+### Engine Importer & Simulator API
+1. Navigate to the [README](/importer/README.md) located inside of the [importer](/importer/) directory and follow the Building and Post Build steps.
+## Compiling
+1. Open the [engine](/engine/) directory with Unity.
+2. Navigate to the top bar and open the NuGet package manager by going to `NuGet -> Manage NuGet Packages`
+3. Use the package manager to install the following packages:
+    1. MathNet.Numerics
+    2. MathNet.Spatial
+    3. Google.Protobuf
+4. Navigate inside Unity to the `Assets/Scenes` directory.
+5. Double-click `MainScene` to open the main scene inside of Unity.
+6. Either click the play button above to play within the Unity Editor or locate the build menu under `File -> Build Settings...`

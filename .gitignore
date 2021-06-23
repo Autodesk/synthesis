@@ -1,6 +1,23 @@
+/engine/[Ll]ibrary/
+/engine/[Tt]emp/
+/engine/[Oo]bj/
+/engine/[Bb]uild/
+/engine/[Bb]uilds/
+/engine/[Ll]ogs/
+/engine/[Mm]emoryCaptures/
+/engine/Assets/Packages
+/engine/Packages/*
+
+!/engine/Packages/manifest.json
+!/engine/[Aa]ssets/**/*.meta
+!/engine/Packages/packages-lock.json
+
+/engine/[Aa]ssets/AssetStoreTools*
+
 .vs/
 .DS_Store
 **/*/.idea/
+.gradle/
 
 # Binary
 *.exe
@@ -9,6 +26,16 @@
 *.dll
 *.dll.meta
 *.so
+*.log
 
-!engine/CoreEngine/Assets/Api.dll
-!engine/CoreEngine/Assets/Api.dll.meta
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+sysinfo.txt
+
+!/engine/Assets/Packages/Api.dll
+!/engine/Assets/Packages/EngineImporter.dll
+!/engine/Assets/Packages/SimulatorAPI.dll
+!/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
+

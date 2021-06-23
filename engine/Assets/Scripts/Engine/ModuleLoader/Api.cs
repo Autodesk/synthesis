@@ -11,7 +11,6 @@ using SynthesisAPI.Modules;
 using SynthesisAPI.Runtime;
 using SynthesisAPI.Utilities;
 using SynthesisAPI.VirtualFileSystem;
-using Unity.UIElements.Runtime;
 using UnityEngine.UIElements;
 using UnityEngine;
 using Engine.ModuleLoader.Adapters;
@@ -98,7 +97,7 @@ namespace Engine.ModuleLoader
 				};
 			Screen.fullScreen = false;
 
-			GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
+			// GameObject.Find("Screen").GetComponent<PanelScaler>().scaleMode = PanelScaler.ScaleMode.ConstantPhysicalSize;
 
 			Task.Run(() =>
 			{
@@ -109,7 +108,7 @@ namespace Engine.ModuleLoader
 					Thread.Sleep(200);
 				}
 
-				UIManager.Setup();
+				// UIManager.Setup();
 			});
 		}
 
@@ -350,7 +349,7 @@ namespace Engine.ModuleLoader
 			public VisualElement GetRootVisualElement()
 			{
 				// TODO: Re-evaluate this
-				return PanelRenderer.visualTree;
+				return null; // PanelRenderer.visualTree;
 			}
 
 			public void EnqueueTaskForMainThread(Action task)
