@@ -19,4 +19,4 @@ The PTL has designed to provide support for legacy exported data such as the BXD
 3. Build the solution from the Visual Studio toolbar.
 
 ## Post Build
-To add the [EngineImporter.dll](/engine/Assets/Packages/EngineImport.dll) to the engine, run [post_build.bat](/importer/post_build.bat) located inside of the [importer](/importer/) directory.
+To add the [EngineImporter.dll](/engine/Assets/Packages/EngineImporter.dll) to the engine, run [post_build.bat](/importer/post_build.bat) located inside of the [importer](/importer/) directory.
