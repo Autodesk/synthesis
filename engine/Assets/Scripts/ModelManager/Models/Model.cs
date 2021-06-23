@@ -25,7 +25,7 @@ namespace Synthesis.ModelManager.Models
 
         public Model(string filePath)
         {
-            Parse.AsModel(filePath, this);
+            // Parse.AsModel(filePath, this);
         }
 
         private static int counter = 0;

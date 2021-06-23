@@ -6,8 +6,9 @@ namespace SynthesisAPI.Utilities
     {
         public static T DeserializeJson<T>(string jsonString)
         {
-            object result = System.Text.Json.JsonSerializer.Deserialize<T>(jsonString);
-            return (T) Convert.ChangeType(result, typeof(T));
+            // object result = System.Text.Json.JsonSerializer.Deserialize<T>(jsonString);
+            // return (T) Convert.ChangeType(result, typeof(T));
+            return default;
         }
     }
 }

@@ -1,4 +1,5 @@
 .idea/
 .vs/
 packages/
+!libs/UnityEngine.dll
 

@@ -12,12 +12,15 @@
 
 .vs/
 .DS_Store
+**/*/.idea/
 .gradle/
 
 # Binary
 *.exe
 *.exe.stackdump
 *.a
+*.dll
+*.dll.meta
 *.so
 *.log
 
@@ -26,3 +29,8 @@
 *.mdb.meta
 
 sysinfo.txt
+
+!./engine/Assets/Packages/Api.dll
+!./engine/Assets/Packages/EngineImporter.dll
+!./engine/Assets/Packages/SimulatorAPI.dll
+

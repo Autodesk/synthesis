@@ -369,13 +369,13 @@ namespace SynthesisAPI.AssetManager
                         return new VisualElementAsset(name, perm, sourcePath);
                     });
 
-                RegisterAssetType("text/gltf", new[] { ".gltf", ".glb" },
-                     (name, perm, sourcePath, args) =>
-                     {
-                       if (args.Length != 0)
-                           throw new Exception("Import of text/gltf asset: wrong number of arguments");
-                       return new GltfAsset(name, perm, sourcePath);
-                   });
+                // RegisterAssetType("text/gltf", new[] { ".gltf", ".glb" },
+                //      (name, perm, sourcePath, args) =>
+                //      {
+                //        if (args.Length != 0)
+                //            throw new Exception("Import of text/gltf asset: wrong number of arguments");
+                //        return new GltfAsset(name, perm, sourcePath);
+                //    });
                 RegisterAssetType("audio/wav", new[] { ".wav" },
                     (name, perm, sourcePath, args) =>
                     {

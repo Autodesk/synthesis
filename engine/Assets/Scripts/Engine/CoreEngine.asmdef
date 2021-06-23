@@ -7,13 +7,10 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "System.IO.Compression.ZipFile.dll",
         "Api.dll",
         "MathNet.Spatial.dll",
         "MathNet.Numerics.dll",
-        "System.Drawing.dll",
-        "System.IO.Compression.dll",
-        "System.IO.Compression.FileSystem.dll"
+        "System.Drawing.Common.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

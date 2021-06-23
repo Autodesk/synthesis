@@ -1,3 +1,5 @@
 ./Builds/
 .idea/
 .vscode/
+Assets/Packages/*
+
