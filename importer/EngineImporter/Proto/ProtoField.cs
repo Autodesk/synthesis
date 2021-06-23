@@ -17,11 +17,11 @@ namespace Synthesis.Proto {
                 string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
                 if (!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
-                outputPath = tempPath + Path.AltDirectorySeparatorChar + $"{Name}.spf";
+                outputPath = tempPath + Path.AltDirectorySeparatorChar + $"{Object.Name}.{Importer.SourceType.PROTOBUF_FIELD.FileEnding}";
             } else {
                 if (!Directory.Exists(outputDir))
                     Directory.CreateDirectory(outputDir);
-                outputPath = outputDir + Path.AltDirectorySeparatorChar + $"{Name}.spf";
+                outputPath = outputDir + Path.AltDirectorySeparatorChar + $"{Object.Name}.{Importer.SourceType.PROTOBUF_FIELD.FileEnding}";
             }
             var stream = File.Create(outputPath);
             this.WriteTo(stream); // Try just using any old stream???

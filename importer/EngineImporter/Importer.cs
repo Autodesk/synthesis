@@ -140,7 +140,7 @@ namespace Synthesis.Import {
         /// <param name="protoField">ProtoField data</param>
         /// <returns>Root GameObject of the imported ProtoField</returns>
         public static GameObject ProtoFieldImport(ProtoField protoField) {
-            var dynoUnity = DynamicObjectImport(protoField.Object, protoField.Name);
+            var dynoUnity = DynamicObjectImport(protoField.Object);
             var gamepieces = GamepiecesImport(protoField.Gamepieces);
             gamepieces.transform.parent = dynoUnity.transform;
             return dynoUnity;
@@ -171,7 +171,7 @@ namespace Synthesis.Import {
         /// <param name="protoRobot">ProtoRobot data</param>
         /// <returns>Root GameObject of the imported ProtoRobot</returns>
         public static GameObject ProtoRobotImport(ProtoRobot protoRobot) {
-            var dynoUnity = DynamicObjectImport(protoRobot.Object, protoRobot.Name);
+            var dynoUnity = DynamicObjectImport(protoRobot.Object);
             return dynoUnity;
         }
         
@@ -179,45 +179,46 @@ namespace Synthesis.Import {
         
         /// <summary>
         /// Import assist function for a DynamicObject
-        /// TODO: Make the name apart of the DynamicObject
         /// </summary>
         /// <param name="dyno">Deserialized DynamicObject</param>
-        /// <param name="name">Name of the DynamicObject</param>
         /// <returns>Root GameObject of the imported DynamicObject</returns>
         /// <exception cref="Exception"></exception>
-        public static GameObject DynamicObjectImport(DynamicObject dyno, string name) {
+        public static GameObject DynamicObjectImport(DynamicObject dyno) {
             var dynoUnity = new GameObject();
             var dynamicObjectMeta = dynoUnity.AddComponent<DynamicObjectMeta>();
 
-            Dictionary<Guid, GameObject> nodeDict = new Dictionary<Guid, GameObject>();
-
-            List<Collider> ignoreCollisions = new List<Collider>();
+            var nodeDict = new Dictionary<Guid, GameObject>();
+            var nodeSources = new Dictionary<Guid, Node>();
+            var ignoreCollisions = new List<Collider>();
 
             try {
 
                 Logger.Log("Starting Dynamic Object import");
-                dynoUnity.name = name;
+                dynoUnity.name = dyno.Name;
                 for (int i = 0; i < dyno.Nodes.Count; i++) {
                     Logger.Log($"Node {i + 1} Started");
-                    Node node = dyno.Nodes[i];
-                    GameObject gNode = new GameObject($"node_{i}");
+                    var node = dyno.Nodes[i];
+                    var gNode = new GameObject($"node_{i}");
                     gNode.transform.parent = dynoUnity.transform;
 
                     #region Visual Mesh
+                    
+                    // Create the Filter and Renderer and add the mesh and material data
                     var filter = gNode.AddComponent<MeshFilter>();
                     var renderer = gNode.AddComponent<MeshRenderer>();
                     filter.mesh = node.VisualMesh;
-                    List<UMaterial> materials = new List<UMaterial>();
+                    var materials = new List<UMaterial>();
                     for (int j = 0; j < node.VisualMaterials.Count; j++) {
-                        var mat = node.VisualMaterials[j];
-                        // materials.Add(node.VisualMaterials[j]);
-                        materials.Add(mat);
+                        materials.Add(node.VisualMaterials[j]);
                     }
                     renderer.materials = materials.ToArray();
+                    
                     #endregion
                     Logger.Log($"Created Visual Mesh for Node {i + 1}");
 
                     #region Colliders
+                    
+                    // To reduce lag when verifying colliders in Unity, colliders are added to child GameObjects
                     foreach (var mesh in node.MeshColliders) {
                         var colObj = new GameObject("Mesh_Collider");
                         var col = colObj.AddComponent<MeshCollider>();
@@ -225,9 +226,12 @@ namespace Synthesis.Import {
                         col.sharedMesh = mesh;
                         ignoreCollisions.Add(col);
                         colObj.transform.parent = gNode.transform;
-                        col.material = new PhysicMaterial() { staticFriction = node.PhysicalProperties.Friction, dynamicFriction = node.PhysicalProperties.Friction };
+                        col.material = new PhysicMaterial() { 
+                            staticFriction = node.PhysicalProperties.StaticFriction, 
+                            dynamicFriction = node.PhysicalProperties.DynamicFriction
+                        };
                     }
-                    // TODO: Box collider support. Rotations be wack
+                    // TODO: Box collider support. I can't get rotations to be true
                     foreach (var sphere in node.SphereColliders) {
                         var colObj = new GameObject("Sphere_Collider");
                         var col = colObj.AddComponent<SphereCollider>();
@@ -235,11 +239,17 @@ namespace Synthesis.Import {
                         col.radius = sphere.Radius;
                         ignoreCollisions.Add(col);
                         colObj.transform.parent = gNode.transform;
-                        col.material = new PhysicMaterial() { staticFriction = node.PhysicalProperties.Friction, dynamicFriction = node.PhysicalProperties.Friction };
+                        col.material = new PhysicMaterial() {
+                            staticFriction = node.PhysicalProperties.StaticFriction,
+                            dynamicFriction = node.PhysicalProperties.DynamicFriction
+                        };
                     }
+                    
                     #endregion
                     Logger.Log($"Created Colliders for Node {i + 1}");
 
+                    #region Physics Data
+                    
                     var rb = gNode.AddComponent<Rigidbody>();
                     rb.mass = node.IsStatic ? 0 : node.PhysicalProperties.Mass;
                     rb.centerOfMass = node.PhysicalProperties.CenterOfMass;
@@ -247,69 +257,51 @@ namespace Synthesis.Import {
                         rb.isKinematic = true;
                         rb.constraints = RigidbodyConstraints.FreezeAll;
                     }
-                    Logger.Log($"Phys done for {i + 1}");
+                    
+                    #endregion
+                    Logger.Log($"Phys done for Node {i + 1}");
 
-                    var nodeSrc = gNode.AddComponent<DynamicObjectMeta.NodeSource>();
-                    nodeSrc.SourceNode = node;
-                    nodeSrc.collectiveMass = node.PhysicalProperties.CollectiveMass;
+                    // nodeSrc.collectiveMass = node.PhysicalProperties.CollectiveMass;
                     nodeDict.Add(node.Guid, gNode);
+                    nodeSources.Add(node.Guid, node);
                 }
 
+                // Joints need to be added after all the rigidbodies have been created
                 for (int i = 0; i < dyno.Nodes.Count; i++) {
                     #region Joint
 
                     if (dyno.Nodes[i].ParentGuid == null)
                         continue;
-                    Rigidbody parent = nodeDict[dyno.Nodes[i].ParentGuid].GetComponent<Rigidbody>();
-                    Rigidbody current = nodeDict[dyno.Nodes[i].Guid].GetComponent<Rigidbody>();
+                    var parent = nodeDict[dyno.Nodes[i].ParentGuid].GetComponent<Rigidbody>();
+                    var current = nodeDict[dyno.Nodes[i].Guid].GetComponent<Rigidbody>();
 
                     switch (dyno.Nodes[i].JointCase) {
                         case Node.JointOneofCase.RotationalJoint:
 
                             var rotJoint = dyno.Nodes[i].RotationalJoint;
-                            float min = rotJoint.CurrentAngle - rotJoint.UpperLimit;
-                            float max = rotJoint.CurrentAngle - rotJoint.LowerLimit;
-                            float mid = (max + min) / 2.0f;
-                            Logger.Log($"Upper {rotJoint.UpperLimit}\nLower {rotJoint.LowerLimit}\nCurrent {rotJoint.CurrentAngle}\nMin {min}\nMax {max}\nMid {mid}");
+                            var minAngle = rotJoint.CurrentAngle - rotJoint.UpperLimit;
+                            var maxAngle = rotJoint.CurrentAngle - rotJoint.LowerLimit;
+                            var midAngle = (maxAngle + minAngle) / 2.0f;
+                            Logger.Log($"Upper {rotJoint.UpperLimit}\nLower {rotJoint.LowerLimit}\nCurrent {rotJoint.CurrentAngle}\nMin {minAngle}\nMax {maxAngle}\nMid {midAngle}");
                             if (dyno.Nodes[i].RotationalJoint.UseLimits)
-                                current.transform.RotateAround(rotJoint.Anchor, rotJoint.Axis, mid);
+                                current.transform.RotateAround(rotJoint.Anchor, rotJoint.Axis, midAngle);
 
-                            CreateHingeJoint(current, dyno.Nodes[i].RotationalJoint, parent, angleRange: mid);
-                            CreateHingeJoint(parent, dyno.Nodes[i].RotationalJoint, current, useConnectedMassScale: true, angleRange: mid);
-                            var req = current.gameObject.AddComponent<DynamicObjectMeta.ComponentRequest>();
-                            req.ComponentName = "moveable"; // Am I spelling movable wrong? Probably...
-                            req.ComponentProperties = new Dictionary<string, object>();
-                            req.ComponentProperties.Add("forward", KeyCode.A);
-                            req.ComponentProperties.Add("backward", KeyCode.D);
+                            CreateHingeJoint(current, dyno.Nodes[i].RotationalJoint, parent, angleRange: midAngle);
+                            CreateHingeJoint(parent, dyno.Nodes[i].RotationalJoint, current, useConnectedMassScale: true, angleRange: midAngle);
                             
                             dynamicObjectMeta.AddFlag(dyno.Nodes[i].Guid, EntityFlag.Hinge);
+                            // Wheels are the same hinge joint, but their colliders are spheres and the engine associates them separately
                             if (rotJoint.IsWheel) {
                                 dynamicObjectMeta.AddFlag(dyno.Nodes[i].Guid, EntityFlag.Wheel);
                             }
-
-                            //RotationalJoint rotationalJoint = dyno.Nodes[i].RotationalJoint;
-                            //var hinge = nodeDict[dyno.Nodes[i].Guid].AddComponent<HingeJoint>();
-                            //hinge.connectedBody = parent;
-                            //hinge.anchor = rotationalJoint.Anchor;
-                            //hinge.axis = ((Vector3)rotationalJoint.Axis).normalized;
-                            //hinge.useLimits = true;
-                            //hinge.limits = new JointLimits() { // TODO: Bounciness?
-                            //    min = rotationalJoint.CurrentAngle - rotationalJoint.UpperLimit,
-                            //    max = rotationalJoint.CurrentAngle - rotationalJoint.LowerLimit
-                            //};
-                            //hinge.massScale = rotationalJoint.MassScale;
-                            // TODO: ComponentRequest for driver support
                             break;
                         case Node.JointOneofCase.OtherJoint:
                             CreateFixedJoint(current, dyno.Nodes[i].OtherJoint, parent);
                             CreateFixedJoint(current, dyno.Nodes[i].OtherJoint, parent, true);
-                            //OtherJoint otherJoint = dyno.Nodes[i].OtherJoint;
-                            //var joint = current.gameObject.AddComponent<FixedJoint>();
-                            //joint.connectedBody = parent;
-                            //joint.massScale = otherJoint.MassScale;
                             break;
                             // TODO: Linear joints
                     }
+                    
                     #endregion
                     Logger.Log($"Created joint for Node {i + 1}");
                 }
@@ -320,20 +312,21 @@ namespace Synthesis.Import {
                 throw new Exception();
             }
 
+            // Ignore collisions between all the colliders within the Dynamic Object
             for (int i = 0; i < ignoreCollisions.Count - 1; i++) {
                 for (int j = i + 1; j < ignoreCollisions.Count; j++) {
                     Physics.IgnoreCollision(ignoreCollisions[i], ignoreCollisions[j], true);
                 }
             }
-
-            foreach (var kvp in nodeDict) {
-                Node n = kvp.Value.GetComponent<DynamicObjectMeta.NodeSource>().SourceNode;
-                if (n.ParentGuid != null)
-                    kvp.Value.transform.parent = nodeDict[n.ParentGuid].transform;
-            }
-
+            
             // DynamicObjectMeta
-            dynamicObjectMeta.Init(name, nodeDict);
+            dynamicObjectMeta.Init(dyno.Name, nodeDict, nodeSources);
+
+            // Parent all the nodes correctly
+            foreach (var kvp in nodeSources) {
+                if (kvp.Value.ParentGuid != null)
+                    nodeDict[kvp.Key].transform.parent = nodeDict[kvp.Value.ParentGuid].transform;
+            }
 
             return dynoUnity;
         }
@@ -344,38 +337,38 @@ namespace Synthesis.Import {
         /// <param name="gps">A collection of the Gamepiece instances</param>
         /// <returns>Root GameObject containing all the imported Gamepieces</returns>
         public static GameObject GamepiecesImport(IEnumerable<Gamepiece> gps) {
-            GameObject container = new GameObject("Gamepieces");
+            
+            var container = new GameObject("Gamepieces");
+            
             foreach (var gp in gps) {
-                var obj = new GameObject(gp.Definition.Name);
                 
+                var obj = new GameObject(gp.Definition.Name);
                 var tag = obj.AddComponent<GamepieceTag>();
                 tag.Definition = gp.Definition;
+                
+                #region Visual Mesh
                 
                 var filter = obj.AddComponent<MeshFilter>();
                 var renderer = obj.AddComponent<MeshRenderer>();
                 filter.mesh = gp.VisualMesh;
-                List<UMaterial> materials = new List<UMaterial>();
+                var materials = new List<UMaterial>();
                 for (int j = 0; j < gp.VisualMaterials.Count; j++) {
-                    var mat = gp.VisualMaterials[j];
-                    // materials.Add(node.VisualMaterials[j]);
-                    materials.Add(mat);
+                    materials.Add(gp.VisualMaterials[j]);
                 }
                 renderer.materials = materials.ToArray();
+                
+                #endregion
 
                 switch (gp.ColliderCase) {
                     case Gamepiece.ColliderOneofCase.MeshCollider:
                         var meshCol = obj.AddComponent<MeshCollider>();
                         meshCol.convex = true;
                         meshCol.sharedMesh = gp.MeshCollider;
-                        // meshCol.material.dynamicFriction = gp.PhysicalProperties.Friction / 100.0f;
-                        // ignoreCollisions.Add(col);
                         break;
                     case Gamepiece.ColliderOneofCase.SphereCollider:
                         var sphereCol = obj.AddComponent<SphereCollider>();
                         sphereCol.center = gp.SphereCollider.Center;
                         sphereCol.radius = gp.SphereCollider.Radius;
-                        // sphereCol.material.dynamicFriction = gp.PhysicalProperties.Friction / 100.0f;
-                        // ignoreCollisions.Add(col);
                         break;
                 }
 
@@ -422,7 +415,7 @@ namespace Synthesis.Import {
             if (jointData.UseLimits) {
                 hinge.useLimits = true;
                 float min, max;
-                if (angleRange == float.NaN) {
+                if (float.IsNaN(angleRange)) {
                     min = jointData.CurrentAngle - jointData.UpperLimit;
                     max = jointData.CurrentAngle - jointData.LowerLimit;
                 } else {
@@ -443,13 +436,9 @@ namespace Synthesis.Import {
         #endregion
 
         /// <summary>
-        /// Stock source type definitions.
-        /// NOTE: The source type keys are also used as the file extensions for the serialized data atm
-        /// TODO: Stop doing what I described above
+        /// Stock source type definitions
         /// </summary>
         public struct SourceType {
-            // public const string PROTOBUF_ROBOT = "spr";
-            // public const string PROTOBUF_FIELD = "spf";
 
             public static readonly SourceType PROTOBUF_ROBOT = new SourceType("proto_robot", "spr");
             public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", "spf");

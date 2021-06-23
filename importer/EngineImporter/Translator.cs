@@ -112,10 +112,7 @@ namespace Synthesis.Import {
             var myTask = new Task<string>(() => {
 
                 var protoField = new ProtoField();
-                Node protoNode = new Node(); // TODO
-
-                #region Meta
-                #endregion
+                var protoNode = new Node();
 
                 BXDAMesh mesh = new BXDAMesh();
                 mesh.ReadFromFile(source + Path.AltDirectorySeparatorChar + "mesh.bxda");
@@ -136,34 +133,26 @@ namespace Synthesis.Import {
                             instances[node.SubMeshID] = new List<(FieldNode node, BXDVector3 position, BXDQuaternion rotation)>();
 
                         instances[node.SubMeshID].Add((node, node.Position, node.Rotation));
-
-                        // mods[node.SubMeshID] = (node.Position, node.Rotation);
-                        // Logger.Log($"ID: {node.SubMeshID}");
-                        // Logger.Log($"ID: {node.Rotation.X}, {node.Rotation.Y}, {node.Rotation.Z}, {node.Rotation.W}");
-                        // c += node.SubMeshID;
                     }
                 }
 
                 #region VisualMesh & Colliders
-                List<Gamepiece> gamepieces = new List<Gamepiece>();
 
-                List<Mesh> meshColliders = new List<Mesh>();
-                List<Box> boxColliders = new List<Box>();
-                List<Sphere> sphereColliders = new List<Sphere>();
-                // List<Node.Types.ColliderType> colliderTypes = new List<Node.Types.ColliderType>();
-                List<Vec3> v = new List<Vec3>();
-                List<int> t = new List<int>();
-                List<Material> materials = new List<Material>();
-                List<SubMeshDescription> subMeshes = new List<SubMeshDescription>();
-                Dictionary<Material, List<(int start, int length)>> materialsAndSubMeshes =
-                    new Dictionary<Material, List<(int start, int length)>>();
+                var meshColliders = new List<Mesh>();
+                // var boxColliders = new List<Box>(); // TODO: Box collider support
+                var sphereColliders = new List<Sphere>();
+                var v = new List<Vec3>();
+                var t = new List<int>();
+                var materials = new List<Material>();
+                var subMeshes = new List<SubMeshDescription>();
+                var materialsAndSubMeshes = new Dictionary<Material, List<(int start, int length)>>();
                 for (int j = 0; j < mesh.meshes.Count; j++) {
                     var sub = mesh.meshes[j];
 
                     for (int h = 0; h < instances[j].Count; h++) {
 
-                        List<Vec3> colV = new List<Vec3>();
-                        List<int> colT = new List<int>();
+                        var colV = new List<Vec3>();
+                        var colT = new List<int>();
                         var gpMats = new List<Material>();
                         var gpSubMeshes = new List<SubMeshDescription>();
 
@@ -171,26 +160,23 @@ namespace Synthesis.Import {
 
                         for (int k = 0; k < sub.surfaces.Count; k++) {
                             var surf = sub.surfaces[k];
-                            int[] cpy = new int[surf.indicies.Length];
+                            var cpy = new int[surf.indicies.Length];
                             Array.Copy(surf.indicies, cpy, cpy.Length);
                             Array.Reverse(cpy);
-                            int start = t.Count + colT.Count;
+                            var start = t.Count + colT.Count;
                             foreach (int a in cpy) {
-                                // t.Add(a + v.Count);
                                 colT.Add(a);
                             }
 
-                            Material mat = (Material)surf;
+                            var mat = (Material)surf;
                             if (CPU_OPTIMIZE) {
                                 if (!materialsAndSubMeshes.ContainsKey(mat))
                                     materialsAndSubMeshes[mat] = new List<(int start, int length)>();
-                                materialsAndSubMeshes[mat].Add((start, (t.Count + colT.Count) - start)); // TODO: Doesn't work anymore cuz of Gamepieces
+                                materialsAndSubMeshes[mat].Add((start, (t.Count + colT.Count) - start));
                             }
 
                             var subMesh = new SubMeshDescription() { Start = start, Count = (t.Count + colT.Count) - start };
-                            // subMeshes.Add(subMesh);
                             gpSubMeshes.Add(subMesh);
-                            // materials.Add(mat);
                             gpMats.Add(mat);
                         }
 
@@ -199,18 +185,12 @@ namespace Synthesis.Import {
                                 x = (float)sub.verts[k], y = (float)sub.verts[k + 1], z = (float)sub.verts[k + 2]
                             };
                             var moddedVec = ModVec(instances[j][h].rotation, vec, instances[j][h].position);
-                            // v.Add(moddedVec);
                             colV.Add(moddedVec);
                         }
-
-                        // var propSet = fieldDef.GetPropertySets()[instances[j][h].node.PropertySetID];
-                        // instances[j][h].node.
-                        // fieldDef.
 
                         Gamepiece gamepiece = null;
                         var isGamepiece = false;
 
-                        // TODO: Use this for other data like friction
                         if (fieldDef.GetPropertySets().ContainsKey(instances[j][h].node.PropertySetID)) {
                             var propertySet = fieldDef.GetPropertySets()[instances[j][h].node.PropertySetID];
                             var colliderType = propertySet
@@ -235,8 +215,8 @@ namespace Synthesis.Import {
                                 vm.SubMeshes.AddRange(gpSubMeshes);
                                 gamepiece.VisualMesh = vm;
                                 gamepiece.PhysicalProperties = new PhysProps {
-                                    Mass = propertySet.Mass, CollectiveMass = propertySet.Mass,
-                                    Friction = propertySet.Friction, CenterOfMass = new Vec3()
+                                    Mass = propertySet.Mass, DynamicFriction = (propertySet.Friction / 100.0f),
+                                    StaticFriction = (propertySet.Friction / 100.0f), CenterOfMass = new Vec3()
                                 };
 
                                 Logger.Log("Found Existing Gamepiece");
@@ -319,12 +299,10 @@ namespace Synthesis.Import {
                 protoNode.VisualMesh = m;
 
                 protoNode.MeshColliders.AddRange(meshColliders);
-                protoNode.BoxColliders.AddRange(boxColliders);
                 protoNode.SphereColliders.AddRange(sphereColliders);
 
                 Logger.Log($"{meshColliders.Count} Mesh Colliders");
                 Logger.Log($"{sphereColliders.Count} Sphere Colliders");
-                Logger.Log($"{boxColliders.Count} Box Colliders");
                 #endregion
 
                 protoNode.PhysicalProperties = new PhysProps { Mass = 1, CenterOfMass = new Vec3() };
@@ -335,31 +313,15 @@ namespace Synthesis.Import {
                 #region Serialization
                 DynamicObject dyno = new DynamicObject();
                 dyno.Nodes.Add(protoNode);
+                string name = source.Substring(source.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+                dyno.Name = name;
 
                 protoField.Object = dyno;
                 protoField.SerializerSignature = SERIALIZER_SIGNATURE;
-                string name = source.Substring(source.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
-                protoField.Name = name;
 
                 return protoField.Serialize(output);
-
-                //string outputPath;
-                //if (output == null) {
-                //    string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
-                //    if (!Directory.Exists(tempPath))
-                //        Directory.CreateDirectory(tempPath);
-                //    outputPath = tempPath + Path.AltDirectorySeparatorChar + $"{dyno.Name}.dyno";
-                //} else {
-                //    if (!Directory.Exists(output))
-                //        Directory.CreateDirectory(output);
-                //    outputPath = output + Path.AltDirectorySeparatorChar + $"{dyno.Name}.dyno";
-                //}
-                //var stream = File.Create(outputPath);
-                //dyno.WriteTo(stream); // Try just using any old stream???
-                //stream.Close();
+                
                 #endregion
-
-                // return string.Empty;
             });
             return myTask;
         }
@@ -373,22 +335,22 @@ namespace Synthesis.Import {
                 var rootNode = ReadSkeletonSafe(source + Path.AltDirectorySeparatorChar + "skeleton");
                 var nodes = rootNode.ListAllNodes();
 
-                Node[] protoNodes = new Node[nodes.Count];
-                List<Task> nodeTasks = new List<Task>();
+                var protoNodes = new Node[nodes.Count];
+                var nodeTasks = new List<Task>();
 
-                Dictionary<Guid, BXDAMesh> bxdMeshes = new Dictionary<Guid, BXDAMesh>();
-                Dictionary<Guid, PhysProps> collectivePhysProps = new Dictionary<Guid, PhysProps>();
-                Dictionary<Guid, List<Guid>> childrenDirectory = new Dictionary<Guid, List<Guid>>();
+                var bxdMeshes = new Dictionary<Guid, BXDAMesh>();
+                var collectivePhysProps = new Dictionary<Guid, PhysProps>();
+                var childrenDirectory = new Dictionary<Guid, List<Guid>>();
+                var collectiveMasses = new Dictionary<Guid, float>();
 
-                // Maybe multi-thread?
                 for (int i = 0; i < nodes.Count; i++) {
-                    BXDAMesh mesh = new BXDAMesh();
+                    var mesh = new BXDAMesh();
                     mesh.ReadFromFile(source + Path.AltDirectorySeparatorChar + nodes[i].ModelFileName);
                     bxdMeshes.Add(nodes[i].GUID, mesh);
 
-                    PhysProps physProps = new PhysProps();
-                    physProps.Mass = mesh.physics.mass;
-                    physProps.CenterOfMass = mesh.physics.centerOfMass;
+                    var physProps = new PhysProps {
+                        Mass = mesh.physics.mass, CenterOfMass = mesh.physics.centerOfMass
+                    };
 
                     if (nodes[i].GetParent() != null) {
                         if (childrenDirectory.ContainsKey(nodes[i].GetParent().GUID))
@@ -400,9 +362,9 @@ namespace Synthesis.Import {
                     collectivePhysProps.Add(nodes[i].GUID, physProps);
                     Logger.Log($"All physical properties saved for node {i + 1}");
                 }
-                for (int i = 0; i < nodes.Count; i++) {
-                    float collectMass = bxdMeshes[nodes[i].GUID].physics.mass + GetCollectiveMass(nodes[i].GUID, bxdMeshes, childrenDirectory);
-                    collectivePhysProps[nodes[i].GUID].CollectiveMass = collectMass;
+                foreach (var n in nodes) {
+                    float collectMass = bxdMeshes[n.GUID].physics.mass + GetCollectiveMass(n.GUID, bxdMeshes, childrenDirectory);
+                    collectiveMasses[n.GUID] = collectMass;
                 }
                 Logger.Log("Cached all mesh data");
 
@@ -416,10 +378,11 @@ namespace Synthesis.Import {
 
                         try {
 
-                            BXDAMesh mesh = bxdMeshes.Values.ElementAt(i);
+                            var mesh = bxdMeshes.Values.ElementAt(i);
                             Logger.Log($"Starting node {i + 1} translation");
-                            Node protoNode = new Node();
-                            protoNode.Guid = nodes[i].GUID;
+                            var protoNode = new Node {
+                                Guid = nodes[i].GUID
+                            };
                             if (nodes[i].GetParent() == null)
                                 protoNode.ParentGuid = null;
                             else
@@ -428,28 +391,26 @@ namespace Synthesis.Import {
                             protoNode.PhysicalProperties = collectivePhysProps[nodes[i].GUID];
 
                             #region Visual Mesh
-                            // Visual mesh merging
-                            List<Vec3> v = new List<Vec3>();
-                            List<int> t = new List<int>();
-                            List<Material> materials = new List<Material>();
-                            List<SubMeshDescription> subMeshes = new List<SubMeshDescription>();
+                            
+                            var v = new List<Vec3>();
+                            var t = new List<int>();
+                            var materials = new List<Material>();
+                            var subMeshes = new List<SubMeshDescription>();
                             for (int j = 0; j < mesh.meshes.Count; j++) {
                                 var sub = mesh.meshes[j];
 
                                 for (int k = 0; k < sub.surfaces.Count; k++) {
                                     var surf = sub.surfaces[k];
-                                    int[] cpy = new int[surf.indicies.Length];
+                                    var cpy = new int[surf.indicies.Length];
                                     Array.Copy(surf.indicies, cpy, cpy.Length);
                                     Array.Reverse(cpy);
-                                    int start = t.Count;
+                                    var start = t.Count;
                                     foreach (int a in cpy) {
                                         t.Add(a + v.Count);
                                     }
                                     subMeshes.Add(new SubMeshDescription() { Start = start, Count = t.Count - start });
 
-                                    // Parse material
-                                    Material mat = (Material)surf;
-                                    materials.Add(mat);
+                                    materials.Add((Material)surf);
                                 }
                                 for (int k = 0; k < sub.verts.Length; k += 3) {
                                     v.Add(new Vec3 { X = (float)(sub.verts[k] * -0.01), Y = (float)(sub.verts[k + 1] * 0.01), Z = (float)(sub.verts[k + 2] * 0.01) });
@@ -465,8 +426,8 @@ namespace Synthesis.Import {
                             Logger.Log($"Completed Visual Mesh for node {i + 1}");
 
                             #region Collision Meshes
-                            // Collision Meshes
-                            List<Mesh> colliders = new List<Mesh>();
+                            
+                            var colliders = new List<Mesh>();
                             for (int j = 0; j < mesh.colliders.Count; j++) {
                                 var sub = mesh.colliders[j];
                                 v.Clear();
@@ -474,10 +435,10 @@ namespace Synthesis.Import {
                                 subMeshes.Clear();
 
                                 for (int k = 0; k < sub.surfaces.Count; k++) {
-                                    int[] cpy = new int[sub.surfaces[k].indicies.Length];
+                                    var cpy = new int[sub.surfaces[k].indicies.Length];
                                     Array.Copy(sub.surfaces[k].indicies, cpy, cpy.Length);
                                     Array.Reverse(cpy);
-                                    int start = t.Count;
+                                    var start = t.Count;
                                     t.AddRange(cpy);
                                     subMeshes.Add(new SubMeshDescription() { Start = start, Count = t.Count - start });
                                 }
@@ -505,7 +466,7 @@ namespace Synthesis.Import {
                                     case SkeletalJointType.ROTATIONAL:
 
                                         var jointData = skeletalJoint as RotationalJoint_Base;
-                                        RotationalJoint rotationalJoint = new RotationalJoint();
+                                        var rotationalJoint = new RotationalJoint();
                                         rotationalJoint.ConnectedBody = nodes[i].GetParent().GUID;
                                         rotationalJoint.Anchor = jointData.basePoint;
                                         rotationalJoint.Axis = ((Vec3)jointData.axis).Normalize();
@@ -517,7 +478,7 @@ namespace Synthesis.Import {
                                         } else {
                                             rotationalJoint.UseLimits = false;
                                         }
-                                        rotationalJoint.MassScale = collectivePhysProps[nodes[i].GetParent().GUID].CollectiveMass / collectivePhysProps[nodes[i].GUID].CollectiveMass;
+                                        rotationalJoint.MassScale = collectiveMasses[nodes[i].GetParent().GUID] / collectiveMasses[nodes[i].GUID];
 
                                         rotationalJoint.IsWheel = HasDriverMeta<WheelDriverMeta>(nodes[i]) && GetDriverMeta<WheelDriverMeta>(nodes[i]).type != WheelType.NOT_A_WHEEL;
                                         if (rotationalJoint.IsWheel) {
@@ -538,11 +499,12 @@ namespace Synthesis.Import {
                                             }
 
                                             var bounds = protoNode.VisualMesh.Vertices.Bounds();
-                                            Vec3 center = (bounds.min + bounds.max) / 2;
-                                            float radius = (bounds.max - bounds.min).Magnitude / 2;
+                                            var center = (bounds.min + bounds.max) / 2;
+                                            var radius = (bounds.max - bounds.min).Magnitude / 2;
                                             protoNode.MeshColliders.Clear();
                                             protoNode.SphereColliders.Add(new Sphere() {Center = center, Radius = radius});
-                                            protoNode.PhysicalProperties.Friction = 1.2f;
+                                            protoNode.PhysicalProperties.StaticFriction = 2.2f;
+                                            protoNode.PhysicalProperties.DynamicFriction = 0.9f;
 
                                             lock (wheelAxisLock) {
                                                 if (wheelAxis == null) {
@@ -564,7 +526,7 @@ namespace Synthesis.Import {
                                     default:
                                         protoNode.OtherJoint = new OtherJoint() {
                                             ConnectedBody = nodes[i].GetParent().GUID,
-                                            MassScale = collectivePhysProps[nodes[i].GetParent().GUID].CollectiveMass / collectivePhysProps[nodes[i].GUID].CollectiveMass
+                                            MassScale = collectiveMasses[nodes[i].GetParent().GUID] / collectiveMasses[nodes[i].GUID]
                                         };
                                         break;
                                 }
@@ -590,19 +552,20 @@ namespace Synthesis.Import {
                 Logger.Log("Finished all node task");
 
                 #region Serialization
-                DynamicObject dyno = new DynamicObject();
+                
+                var dyno = new DynamicObject();
                 dyno.Nodes.AddRange(protoNodes);
+                dyno.Name = source.Substring(source.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
 
                 var protoRobot = new ProtoRobot();
                 protoRobot.Object = dyno;
                 protoRobot.SerializerSignature = SERIALIZER_SIGNATURE;
-                string name = source.Substring(source.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
-                protoRobot.Name = name;
 
                 var o = protoRobot.Serialize(output);
+                
                 #endregion
 
-                Logger.Log(" === BXD to Proto translation complete === ");
+                Logger.Log(" === BXDJ to Proto translation complete === ");
                 return o;
             });
 
@@ -615,9 +578,6 @@ namespace Synthesis.Import {
             
             Logger.Log(doc.OuterXml);
 
-            // var generalNode = root.ChildNodes.Find(x => x.Name.ToLower() == "general");
-            // var gpsNode = generalNode.ChildNodes.Find(x => x.Name.ToLower() == "gamepieces");
-            // var gamepieceXmls = gpsNode.ChildNodes.FindAll(x => x.Name.ToLower() == "gamepiece");
             var gamepieceXmls = doc.SelectNodes("/FieldData/General/Gamepieces/gamepiece").ToList();
 
             var gamepieceDefinitions = new List<GamepieceDefinition>();
@@ -636,10 +596,6 @@ namespace Synthesis.Import {
             });
             return gamepieceDefinitions;
         }
-
-        // private void FixWheelAxis(Vec3 axis) {
-        //     if ()
-        // }
 
         public static Vec3 ModVec(BXDQuaternion q, BXDVector3 original, BXDVector3 offset) {
             var uvec = new UVec3(original.x * -0.01f, original.y * 0.01f, original.z * 0.01f);
@@ -686,11 +642,12 @@ namespace Synthesis.Import {
             return GetDriverMeta<T>(node) != null;
         }
         #endregion
+        
+        #region Misc
+        
         public static float RadiansToDegrees(float a) => (a * 180.0f) / (float)Math.PI;
 
         public struct TranslationType {
-            // public const string BXDJ_TO_PROTO_ROBOT = "bxdj_proto_robot";
-            // public const string BXDF_TO_PROTO_FIELD = "bxdf_proto_field";
 
             public static readonly TranslationType BXDJ_TO_PROTO_ROBOT = new TranslationType("bxdj_proto_robot");
             public static readonly TranslationType BXDF_TO_PROTO_FIELD = new TranslationType("bxdf_proto_field");
@@ -715,6 +672,8 @@ namespace Synthesis.Import {
         /// <param name="content">Content to hash</param>
         /// <returns>Hash</returns>
         public static byte[] TempFileHash(byte[] content) => sha.ComputeHash(content);
+        
+        #endregion
 
     }
 }
