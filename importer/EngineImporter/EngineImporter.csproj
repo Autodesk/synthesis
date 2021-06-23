@@ -18,9 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SimulatorAPI">
-      <HintPath>..\..\aardvark\SimulatorFileIO\bin\Debug\SimulatorAPI.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\aardvark\SimulatorFileIO\SimulatorAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>..\libs\UnityEngine.dll</HintPath>
     </Reference>
