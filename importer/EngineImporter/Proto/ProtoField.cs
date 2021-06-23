@@ -29,7 +29,7 @@ namespace Synthesis.Proto {
             return outputPath;
         }
         
-        public static GameObject ImportFromFile(string path, Translator.TranslationFunc transFunc = null, bool forceTranslation = false)
+        public static GameObject ImportFromFile(string path, Translator.TranslationFuncString transFunc = null, bool forceTranslation = false)
             => Importer.Import(path, Importer.SourceType.PROTOBUF_FIELD, transFunc, forceTranslation);
     }
 }

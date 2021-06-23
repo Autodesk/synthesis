@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Synthesis.Proto;
@@ -13,23 +14,25 @@ using UMaterial = UnityEngine.Material;
 using UMesh = UnityEngine.Mesh;
 
 namespace Synthesis.Import {
-    
+
     /// <summary>
     /// The Importer class connected functions with string parameters to import an Entity/Model into the Engine
     /// NOTE: This may be moved into the Engine instead of in it's own project.
     /// </summary>
-    public class Importer {
+    public static class Importer {
 
         #region Importer Framework
         
-        public delegate GameObject ImportFunc(string path);
+        public delegate GameObject ImportFuncString(string path);
+        public delegate GameObject ImportFuncBuffer(byte[] buffer);
 
         /// <summary>
         /// Default Importers that come stock with Synthesis. Leaves ability to add one post release
         /// </summary>
-        public static Dictionary<string, ImportFunc> Importers = new Dictionary<string, ImportFunc>() {
-            { SourceType.PROTOBUF_ROBOT, ProtoRobotImport },
-            { SourceType.PROTOBUF_FIELD, ProtoFieldImport }
+        public static Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)> Importers
+            = new Dictionary<SourceType, (ImportFuncString strFunc, ImportFuncBuffer bufFunc)>() {
+            { SourceType.PROTOBUF_ROBOT, (ProtoRobotImport, ProtoRobotImport) },
+            { SourceType.PROTOBUF_FIELD, (ProtoFieldImport, ProtoFieldImport) }
         };
 
         /// <summary>
@@ -40,8 +43,17 @@ namespace Synthesis.Import {
         /// <param name="transType">Optional translation type to use before importing</param>
         /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
         /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, string type, string transType, bool forceTranslate = false)
-            => Import(path, type, Translator.Translations[transType], forceTranslate);
+        public static GameObject Import(string path, SourceType type, Translator.TranslationType transType, bool forceTranslate = false)
+            => Import(path, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].strFunc : null, forceTranslate);
+        /// <summary>
+        /// Import a serialized DynamicObject into a Unity Environment
+        /// </summary>
+        /// <param name="buf">Serialized data</param>
+        /// <param name="type">Type of import to conduct</param>
+        /// <param name="transType">Optional translation type to use before importing</param>
+        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
+        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationType transType)
+            => Import(buf, type, Translator.Translations.ContainsKey(transType) ? Translator.Translations[transType].bufFunc : null);
 
         /// <summary>
         /// Import an Entity/Model into the Engine
@@ -51,26 +63,27 @@ namespace Synthesis.Import {
         /// <param name="translation">Optional translation to use before importing</param>
         /// <param name="forceTranslate">Force a translation of source data regardless if a temp file exists. TODO: Probably remove in the future</param>
         /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
-        public static GameObject Import(string path, string type, Translator.TranslationFunc translation = null, bool forceTranslate = false) {
-
+        public static GameObject Import(string path, SourceType type, Translator.TranslationFuncString translation = null, bool forceTranslate = false) {
+            
             Logger.Init();
 
             if (!Importers.ContainsKey(type))
                 throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
 
             if (translation == null) {
-                return Importers[type](path);
+                return Importers[type].strFunc(path);
             } else {
                 if (!forceTranslate) {
                     Debug.Log("Checking for cached translation");
                     string newPath = path;
-                    string name = newPath.Substring(newPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+                    // string name = newPath.Substring(newPath.LastIndexOf(Path.AltDirectorySeparatorChar) + 1);
+                    string name = Translator.TempFileHash(path).ToHexString();
                     string tempPath = Path.GetTempPath() + Path.AltDirectorySeparatorChar + "synth_temp";
                     if (Directory.Exists(tempPath)) {
-                        newPath = tempPath + Path.AltDirectorySeparatorChar + $"{name}.{type}";
+                        newPath = tempPath + Path.AltDirectorySeparatorChar + $"{name}.{type.FileEnding}";
                         if (File.Exists(newPath)) {
                             Debug.Log("Importing from cache");
-                            return Importers[type](newPath);
+                            return Importers[type].strFunc(newPath);
                         } else {
                             Debug.Log($"No file: {newPath}");
                         }
@@ -78,7 +91,28 @@ namespace Synthesis.Import {
                         Debug.Log($"No directory: {tempPath}");
                     }
                 }
-                return Importers[type](Translator.Translate(path, translation));
+                return Importers[type].strFunc(Translator.Translate(path, translation));
+            }
+        }
+        
+        /// <summary>
+        /// Import an Entity/Model into the Engine
+        /// </summary>
+        /// <param name="buf">Serialized data (this could be a directory or a file depending on your import/translate function)</param>
+        /// <param name="type">Type of import to conduct</param>
+        /// <param name="translation">Optional translation to use before importing</param>
+        /// <returns>Root GameObject of whatever Entity/Model you imported</returns>
+        public static GameObject Import(byte[] buf, SourceType type, Translator.TranslationFuncBuffer translation = null) {
+            
+            Logger.Init();
+
+            if (!Importers.ContainsKey(type))
+                throw new Exception($"{Enum.GetName(type.GetType(), type)} importer doesn't exist");
+
+            if (translation == null) {
+                return Importers[type].bufFunc(buf);
+            } else {
+                return Importers[type].bufFunc(Translator.Translate(buf, translation));
             }
         }
 
@@ -86,33 +120,63 @@ namespace Synthesis.Import {
         
         #region ProtoBuf Importer
 
+        #region ProtoField
+        
         /// <summary>
         /// Import function for importing a ProtoField
         /// </summary>
         /// <param name="path">Path to the serialized ProtoField</param>
         /// <returns>Root GameObject of the imported ProtoField</returns>
-        public static GameObject ProtoFieldImport(string path) {
-            var protoField = ProtoField.Parser.ParseFrom(File.ReadAllBytes(path));
+        public static GameObject ProtoFieldImport(string path) => ProtoFieldImport(File.ReadAllBytes(path));
+        /// <summary>
+        /// Import function for importing a ProtoField
+        /// </summary>
+        /// <param name="buf">Serialized ProtoField</param>
+        /// <returns>Root GameObject of the imported ProtoField</returns>
+        public static GameObject ProtoFieldImport(byte[] buf) => ProtoFieldImport(ProtoField.Parser.ParseFrom(buf));
+        /// <summary>
+        /// Import function for importing a ProtoField
+        /// </summary>
+        /// <param name="protoField">ProtoField data</param>
+        /// <returns>Root GameObject of the imported ProtoField</returns>
+        public static GameObject ProtoFieldImport(ProtoField protoField) {
             var dynoUnity = DynamicObjectImport(protoField.Object, protoField.Name);
             var gamepieces = GamepiecesImport(protoField.Gamepieces);
             gamepieces.transform.parent = dynoUnity.transform;
             return dynoUnity;
         }
+        
+        #endregion
 
+        #region ProtoRobot
+        
+        /// <summary>
+        /// Import function for importing a ProtoRobot
+        /// </summary>
+        /// <param name="path">Path to the serialized ProtoRobot</param>
+        /// <returns>Root GameObject of the imported ProtoRobot</returns>
+        public static GameObject ProtoRobotImport(string path) => ProtoRobotImport(File.ReadAllBytes(path));
+        /// <summary>
+        /// Import function for importing a ProtoRobot
+        /// </summary>
+        /// <param name="buffer">Serialized ProtoRobot</param>
+        /// <returns>Root GameObject of the imported ProtoRobot</returns>
+        public static GameObject ProtoRobotImport(byte[] buffer) => ProtoRobotImport(ProtoRobot.Parser.ParseFrom(buffer));
         /// <summary>
         /// Import function for importing a ProtoRobot
         /// TODO:
         ///     1) Get rid of massScale and collectiveMass
         ///     2) Add Meta components
         /// </summary>
-        /// <param name="path">Path to the serialized ProtoRobot</param>
+        /// <param name="protoRobot">ProtoRobot data</param>
         /// <returns>Root GameObject of the imported ProtoRobot</returns>
-        public static GameObject ProtoRobotImport(string path) {
-            var protoRobot = ProtoRobot.Parser.ParseFrom(File.ReadAllBytes(path));
+        public static GameObject ProtoRobotImport(ProtoRobot protoRobot) {
             var dynoUnity = DynamicObjectImport(protoRobot.Object, protoRobot.Name);
             return dynoUnity;
         }
-
+        
+        #endregion
+        
         /// <summary>
         /// Import assist function for a DynamicObject
         /// TODO: Make the name apart of the DynamicObject
@@ -383,9 +447,20 @@ namespace Synthesis.Import {
         /// NOTE: The source type keys are also used as the file extensions for the serialized data atm
         /// TODO: Stop doing what I described above
         /// </summary>
-        public static class SourceType {
-            public const string PROTOBUF_ROBOT = "spr";
-            public const string PROTOBUF_FIELD = "spf";
+        public struct SourceType {
+            // public const string PROTOBUF_ROBOT = "spr";
+            // public const string PROTOBUF_FIELD = "spf";
+
+            public static readonly SourceType PROTOBUF_ROBOT = new SourceType("proto_robot", "spr");
+            public static readonly SourceType PROTOBUF_FIELD = new SourceType("proto_field", "spf");
+            
+            public string FileEnding { get; private set; }
+            public string Indentifier { get; private set; }
+
+            public SourceType(string indentifier, string fileEnding) {
+                Indentifier = indentifier;
+                FileEnding = fileEnding;
+            }
         }
 
     }

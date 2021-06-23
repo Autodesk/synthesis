@@ -7,6 +7,7 @@ using Google.Protobuf;
 using Synthesis.Proto;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Xml;
 using Google.Protobuf.Reflection;
@@ -26,32 +27,53 @@ namespace Synthesis.Import {
 
         public const string SERIALIZER_SIGNATURE = "PTL";
 
-        public delegate Task<string> TranslationFunc(string source, string output = null);
+        public delegate Task<string> TranslationFuncString(string path, string output = null);
+        public delegate Task<byte[]> TranslationFuncBuffer(byte[] buf);
 
-        public static Dictionary<string, TranslationFunc> Translations = new Dictionary<string, TranslationFunc>() {
-            { TranslationType.BXDF_TO_PROTO_FIELD, BXDFToProtoFieldAsync },
-            { TranslationType.BXDJ_TO_PROTO_ROBOT, BXDJToProtoRobotAsync }
+        public static Dictionary<TranslationType, (TranslationFuncString strFunc, TranslationFuncBuffer bufFunc)> Translations
+            = new Dictionary<TranslationType, (TranslationFuncString strFunc, TranslationFuncBuffer bufFunc)>() {
+            { TranslationType.BXDF_TO_PROTO_FIELD, (BXDFToProtoFieldAsync, null) },
+            { TranslationType.BXDJ_TO_PROTO_ROBOT, (BXDJToProtoRobotAsync, null) }
         };
 
+        #region Waited Functions
+        
         /// <summary>
         /// Loads serialized file and translates it to a different format
         /// </summary>
         /// <param name="source">Path to original file</param>
         /// <param name="output">Optional path to where to write the new data to</param>
         /// <returns>Path to the newly translated file</returns>
-        public static string Translate(string path, string transType, string output = null) {
+        public static string Translate(string path, TranslationType transType, string output = null) {
             var a = TranslateAsync(path, transType, output);
             a.Start();
             a.Wait();
             return a.Result;
         }
 
-        public static string Translate(string path, TranslationFunc transFunc, string output = null) {
+        public static string Translate(string path, TranslationFuncString transFunc, string output = null) {
             var a = TranslateAsync(path, transFunc, output);
             a.Start();
             a.Wait();
             return a.Result;
         }
+        public static byte[] Translate(byte[] buf, TranslationType transType) {
+            var a = TranslateAsync(buf, transType);
+            a.Start();
+            a.Wait();
+            return a.Result;
+        }
+
+        public static byte[] Translate(byte[] buf, TranslationFuncBuffer transFunc) {
+            var a = TranslateAsync(buf, transFunc);
+            a.Start();
+            a.Wait();
+            return a.Result;
+        }
+        
+        #endregion
+
+        #region Asynchronous Functions
 
         /// <summary>
         /// Loads serialized file and translates it to a different format
@@ -59,16 +81,29 @@ namespace Synthesis.Import {
         /// <param name="source">Path to original file</param>
         /// <param name="output">Optional path to where to write the new data to</param>
         /// <returns>Task that results in a path to the newly translated file</returns>
-        public static Task<string> TranslateAsync(string path, string transType, string output = null) {
+        public static Task<string> TranslateAsync(string path, TranslationType transType, string output = null) {
             if (!Translations.ContainsKey(transType))
                 return Task.FromResult(string.Empty);
 
-            return TranslateAsync(path, Translations[transType], output);
+            return TranslateAsync(path, Translations[transType].strFunc, output);
         }
 
-        public static Task<string> TranslateAsync(string path, TranslationFunc transFunc, string output = null) {
+        public static Task<string> TranslateAsync(string path, TranslationFuncString transFunc, string output = null) {
             return transFunc(path, output);
         }
+        
+        public static Task<byte[]> TranslateAsync(byte[] buf, TranslationType transType) {
+            if (!Translations.ContainsKey(transType))
+                return Task.FromResult(new byte[0]);
+
+            return TranslateAsync(buf, Translations[transType].bufFunc);
+        }
+
+        public static Task<byte[]> TranslateAsync(byte[] buf, TranslationFuncBuffer transFunc) {
+            return transFunc(buf);
+        }
+        
+        #endregion
 
         #region ToProto
         private static bool CPU_OPTIMIZE = false;
@@ -188,8 +223,8 @@ namespace Synthesis.Import {
                                 gamepiece.Definition = gamepieceDefinitions.Find(x => x.Name == propertySet.PropertySetID);
                                 var bounds = colV.Bounds();
                                 gamepiece.Position = (bounds.min + bounds.max) / 2;
-                                colV = colV.Map(x => x - gamepiece.Position);
-                                gpSubMeshes = gpSubMeshes.Map(x => new SubMeshDescription() {
+                                colV = colV.Map<Vec3>(x => x - gamepiece.Position);
+                                gpSubMeshes = gpSubMeshes.Map<SubMeshDescription>(x => new SubMeshDescription() {
                                     Start = x.Start - t.Count,
                                     Count = x.Count
                                 });
@@ -236,7 +271,7 @@ namespace Synthesis.Import {
                             protoField.Gamepieces.Add(gamepiece);
                         } else {
                             v.AddRange(colV);
-                            t.AddRange(colT.Map(x => x + initVertCount));
+                            t.AddRange(colT.Map<int>(x => x + initVertCount));
                             subMeshes.AddRange(gpSubMeshes);
                             materials.AddRange(gpMats);
                         }
@@ -653,10 +688,33 @@ namespace Synthesis.Import {
         #endregion
         public static float RadiansToDegrees(float a) => (a * 180.0f) / (float)Math.PI;
 
-        public static class TranslationType {
-            public const string BXDJ_TO_PROTO_ROBOT = "bxdj_proto_robot";
-            public const string BXDF_TO_PROTO_FIELD = "bxdf_proto_field";
+        public struct TranslationType {
+            // public const string BXDJ_TO_PROTO_ROBOT = "bxdj_proto_robot";
+            // public const string BXDF_TO_PROTO_FIELD = "bxdf_proto_field";
+
+            public static readonly TranslationType BXDJ_TO_PROTO_ROBOT = new TranslationType("bxdj_proto_robot");
+            public static readonly TranslationType BXDF_TO_PROTO_FIELD = new TranslationType("bxdf_proto_field");
+            
+            public string Indentifier { get; private set; }
+
+            public TranslationType(string indentifier) {
+                Indentifier = indentifier;
+            }
         }
+
+        private static HashAlgorithm sha = SHA256.Create();
+        /// <summary>
+        /// Hashes the contents of a file at a path
+        /// </summary>
+        /// <param name="path">Path to file to generate hash</param>
+        /// <returns>Hash</returns>
+        public static byte[] TempFileHash(string path) => sha.ComputeHash(File.ReadAllBytes(path));
+        /// <summary>
+        /// Hashes the contents of a file at a path
+        /// </summary>
+        /// <param name="content">Content to hash</param>
+        /// <returns>Hash</returns>
+        public static byte[] TempFileHash(byte[] content) => sha.ComputeHash(content);
 
     }
 }

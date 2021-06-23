@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Synthesis.Import;
 using System;
 using System.IO;
+using System.Text;
 using NuGet.Frameworks;
 using Synthesis.Proto;
 
@@ -71,6 +72,30 @@ namespace Synthesis.Test {
             Assert.IsFalse(mat1.Equals(mat3));
             Assert.IsTrue(mat1.GetHashCode() == mat2.GetHashCode());
             Assert.IsFalse(mat1.GetHashCode() == mat3.GetHashCode());
+        }
+
+        [Test]
+        public void ByteToHexTest() {
+            byte[] buf = {
+                0x00,
+                0xa5,
+                0x0f,
+                0x9e
+            };
+
+            string singleByte = buf[1].ToHexString();
+            string fullBuffer = buf.ToHexString();
+            char nibble = buf[2].ToHexCharacter();
+            
+            Assert.IsTrue(singleByte == "a5");
+            Assert.IsTrue(fullBuffer == "00a50f9e");
+            Assert.IsTrue(nibble == 'f');
+        }
+
+        [Test]
+        public void TempFileHashTest() {
+            byte[] buf = Encoding.ASCII.GetBytes("Hello World!");
+            Assert.IsTrue(Translator.TempFileHash(buf).ToHexString() == "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069");
         }
     }
 }

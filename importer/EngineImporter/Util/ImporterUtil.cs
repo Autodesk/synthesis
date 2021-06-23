@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using Synthesis.Proto;
 
 /// <summary>
 /// Utility class defined in the main scope
 /// </summary>
+
+[assembly: InternalsVisibleTo(assemblyName: "TranslatorTest")]
+
 internal static class ImporterUtil {
     public static XmlNode Find(this XmlNodeList nodes, Predicate<XmlNode> condition) {
         var enumerator = nodes.GetEnumerator();
@@ -59,6 +63,14 @@ internal static class ImporterUtil {
         }
         return modCollection;
     }
+    
+    public static List<U> Map<T, U>(this IEnumerable<T> collection, Func<T, U> modification) {
+        List<U> modCollection = new List<U>();
+        foreach (var x in collection) {
+            modCollection.Add(modification(x));
+        }
+        return modCollection;
+    }
 
     public static List<XmlNode> ToList(this XmlNodeList nodes) {
         var nodeList = new List<XmlNode>();
@@ -66,5 +78,35 @@ internal static class ImporterUtil {
             nodeList.Add(n);
         }
         return nodeList;
+    }
+
+    public static string ToHexString(this byte[] buf) {
+        List<string> strs = buf.Map<byte, string>(x => x.ToHexString());
+        string res = string.Empty;
+        foreach (var s in strs) {
+            res += s;
+        }
+        return res;
+    }
+    public static string ToHexString(this byte b)
+        => ((byte)((b & 0xF0) >> 4)).ToHexCharacter().ToString()
+           + ((byte)(b & 0x0F)).ToHexCharacter();
+    public static char ToHexCharacter(this byte b) {
+        switch (b) {
+            case 10:
+                return 'a';
+            case 11:
+                return 'b';
+            case 12:
+                return 'c';
+            case 13:
+                return 'd';
+            case 14:
+                return 'e';
+            case 15:
+                return 'f';
+            default:
+                return b.ToString()[0];
+        }
     }
 }
