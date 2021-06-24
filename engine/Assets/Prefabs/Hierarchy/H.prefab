@@ -557,9 +557,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1425986011407370354}
     m_Modifications:
+    - target: {fileID: 421144837884072978, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
+      propertyPath: m_text
+      value: Hello World
+      objectReference: {fileID: 0}
     - target: {fileID: 2433658143286957086, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
       propertyPath: m_Name
-      value: FolderItem
+      value: Hello World
       objectReference: {fileID: 0}
     - target: {fileID: 6311115756550467798, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
       propertyPath: m_RootOrder
@@ -584,6 +588,10 @@ PrefabInstance:
     - target: {fileID: 6311115756550467798, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6350817422448592654, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
+      propertyPath: ContextMenuUID
+      value: Hello World
       objectReference: {fileID: 0}
     - target: {fileID: 6836150914096245063, guid: fb793939443f7234cb816a0a701b4a8a, type: 3}
       propertyPath: m_SizeDelta.x
