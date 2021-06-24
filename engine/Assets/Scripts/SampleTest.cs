@@ -28,7 +28,6 @@ public class SampleTest : MonoBehaviour
             });
 
         });
-
         threadTest.Name = "new thread";
         threadTest.Start();
     }
