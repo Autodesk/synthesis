@@ -11,6 +11,7 @@ namespace Synthesis.Import {
     /// </summary>
     public static class Logger {
 
+        public static bool Enabled = false;
         public static void Init() => Inner.InnerInstance.Init();
         public static void Log(string m) => Inner.InnerInstance.Log(m);
 
@@ -31,6 +32,7 @@ namespace Synthesis.Import {
 
             public void Init() {
 
+                Enabled = true;
                 path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + Path.AltDirectorySeparatorChar + "SynLog.txt";
 
                 if (File.Exists(path))
@@ -40,6 +42,9 @@ namespace Synthesis.Import {
             }
 
             public void Log(string m) {
+                if (!Enabled)
+                    return;
+                
                 lock (threadLock) {
                     
                     if (path == string.Empty)
