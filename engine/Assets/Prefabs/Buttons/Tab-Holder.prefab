@@ -177,6 +177,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2648401859620317458, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
+      propertyPath: m_text
+      value: Tools
+      objectReference: {fileID: 0}
     - target: {fileID: 4973976302278241174, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
       propertyPath: m_Name
       value: Tools-Button
@@ -278,6 +282,10 @@ PrefabInstance:
     - target: {fileID: 1317475173347511649, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2648401859620317458, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
+      propertyPath: m_text
+      value: Emulation
       objectReference: {fileID: 0}
     - target: {fileID: 4973976302278241174, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
       propertyPath: m_Name
@@ -486,6 +494,10 @@ PrefabInstance:
     - target: {fileID: 1317475173347511649, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2648401859620317458, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
+      propertyPath: m_text
+      value: Multiplayer
       objectReference: {fileID: 0}
     - target: {fileID: 4973976302278241174, guid: 4e2e49d94d79ca34abb73d3179b7ae5d, type: 3}
       propertyPath: m_Name
