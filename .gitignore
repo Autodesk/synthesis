@@ -39,3 +39,7 @@ sysinfo.txt
 !/engine/Assets/Packages/SimulatorAPI.dll
 !/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
 
+importer/Backup/
+importer/Backup1/
+importer/UpgradeLog.htm
+importer/UpgradeLog2.htm
