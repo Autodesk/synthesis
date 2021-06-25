@@ -25,75 +25,75 @@ namespace Synthesis.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CidFbmdpbmVJbXBvcnRlci9wcm90b2NvbHMvUHJvdG9Cb3QucHJvdG8SD1N5",
-            "bnRoZXNpcy5Qcm90byJnCgpQcm90b1JvYm90Ei4KBm9iamVjdBgBIAEoCzIe",
+            "bnRoZXNpcy5Qcm90byJZCgpQcm90b1JvYm90Ei4KBm9iamVjdBgBIAEoCzIe",
             "LlN5bnRoZXNpcy5Qcm90by5EeW5hbWljT2JqZWN0EhsKE3NlcmlhbGl6ZXJT",
-            "aWduYXR1cmUYAiABKAkSDAoEbmFtZRgDIAEoCSLbAQoKUHJvdG9GaWVsZBIu",
-            "CgZvYmplY3QYASABKAsyHi5TeW50aGVzaXMuUHJvdG8uRHluYW1pY09iamVj",
-            "dBIbChNzZXJpYWxpemVyU2lnbmF0dXJlGAIgASgJEgwKBG5hbWUYAyABKAkS",
-            "QgoUZ2FtZXBpZWNlRGVmaW5pdGlvbnMYBCADKAsyJC5TeW50aGVzaXMuUHJv",
-            "dG8uR2FtZXBpZWNlRGVmaW5pdGlvbhIuCgpnYW1lcGllY2VzGAUgAygLMhou",
-            "U3ludGhlc2lzLlByb3RvLkdhbWVwaWVjZSLzAgoJR2FtZXBpZWNlEikKCnZp",
-            "c3VhbE1lc2gYASABKAsyFS5TeW50aGVzaXMuUHJvdG8uTWVzaBItCgxtZXNo",
-            "Q29sbGlkZXIYAiABKAsyFS5TeW50aGVzaXMuUHJvdG8uTWVzaEgAEjEKDnNw",
-            "aGVyZUNvbGxpZGVyGAMgASgLMhcuU3ludGhlc2lzLlByb3RvLlNwaGVyZUgA",
-            "EjIKD3Zpc3VhbE1hdGVyaWFscxgEIAMoCzIZLlN5bnRoZXNpcy5Qcm90by5N",
-            "YXRlcmlhbBInCghwb3NpdGlvbhgFIAEoCzIVLlN5bnRoZXNpcy5Qcm90by5W",
-            "ZWMzEjgKCmRlZmluaXRpb24YBiABKAsyJC5TeW50aGVzaXMuUHJvdG8uR2Ft",
-            "ZXBpZWNlRGVmaW5pdGlvbhI2ChJwaHlzaWNhbFByb3BlcnRpZXMYByABKAsy",
-            "Gi5TeW50aGVzaXMuUHJvdG8uUGh5c1Byb3BzQgoKCGNvbGxpZGVyIlEKE0dh",
-            "bWVwaWVjZURlZmluaXRpb24SDAoEbmFtZRgBIAEoCRIsCg1zcGF3bkxvY2F0",
-            "aW9uGAIgASgLMhUuU3ludGhlc2lzLlByb3RvLlZlYzMiNQoNRHluYW1pY09i",
-            "amVjdBIkCgVub2RlcxgBIAMoCzIVLlN5bnRoZXNpcy5Qcm90by5Ob2RlIroE",
-            "CgROb2RlEigKBGd1aWQYASABKAsyGi5TeW50aGVzaXMuUHJvdG8uUHJvdG9H",
-            "dWlkEikKCnZpc3VhbE1lc2gYAiABKAsyFS5TeW50aGVzaXMuUHJvdG8uTWVz",
-            "aBIsCg1tZXNoQ29sbGlkZXJzGAMgAygLMhUuU3ludGhlc2lzLlByb3RvLk1l",
-            "c2gSOwoPcm90YXRpb25hbEpvaW50GAQgASgLMiAuU3ludGhlc2lzLlByb3Rv",
-            "LlJvdGF0aW9uYWxKb2ludEgAEjEKCm90aGVySm9pbnQYByABKAsyGy5TeW50",
-            "aGVzaXMuUHJvdG8uT3RoZXJKb2ludEgAEjYKEnBoeXNpY2FsUHJvcGVydGll",
-            "cxgFIAEoCzIaLlN5bnRoZXNpcy5Qcm90by5QaHlzUHJvcHMSLgoKcGFyZW50",
-            "R3VpZBgGIAEoCzIaLlN5bnRoZXNpcy5Qcm90by5Qcm90b0d1aWQSMgoPdmlz",
-            "dWFsTWF0ZXJpYWxzGAggAygLMhkuU3ludGhlc2lzLlByb3RvLk1hdGVyaWFs",
-            "EhAKCGlzU3RhdGljGAkgASgIEioKBW1vdG9yGAogASgLMhsuU3ludGhlc2lz",
-            "LlByb3RvLkpvaW50TW90b3ISKgoMYm94Q29sbGlkZXJzGAsgAygLMhQuU3lu",
-            "dGhlc2lzLlByb3RvLkJveBIwCg9zcGhlcmVDb2xsaWRlcnMYDCADKAsyFy5T",
-            "eW50aGVzaXMuUHJvdG8uU3BoZXJlQgcKBWpvaW50InoKBE1lc2gSJwoIdmVy",
-            "dGljZXMYASADKAsyFS5TeW50aGVzaXMuUHJvdG8uVmVjMxIRCgl0cmlhbmds",
-            "ZXMYAiADKAUSNgoJc3ViTWVzaGVzGAMgAygLMiMuU3ludGhlc2lzLlByb3Rv",
-            "LlN1Yk1lc2hEZXNjcmlwdGlvbiKjAQoDQm94EiUKBmNlbnRlchgBIAEoCzIV",
-            "LlN5bnRoZXNpcy5Qcm90by5WZWMzEiMKBHNpemUYAiABKAsyFS5TeW50aGVz",
-            "aXMuUHJvdG8uVmVjMxInCghwb3NpdGlvbhgDIAEoCzIVLlN5bnRoZXNpcy5Q",
-            "cm90by5WZWMzEicKCHJvdGF0aW9uGAQgASgLMhUuU3ludGhlc2lzLlByb3Rv",
-            "LlF1YXQiPwoGU3BoZXJlEiUKBmNlbnRlchgBIAEoCzIVLlN5bnRoZXNpcy5Q",
-            "cm90by5WZWMzEg4KBnJhZGl1cxgCIAEoAiIyChJTdWJNZXNoRGVzY3JpcHRp",
-            "b24SDQoFc3RhcnQYASABKAUSDQoFY291bnQYAiABKAUi/gIKD1JvdGF0aW9u",
-            "YWxKb2ludBIjCgRheGlzGAEgASgLMhUuU3ludGhlc2lzLlByb3RvLlZlYzMS",
-            "JQoGYW5jaG9yGAIgASgLMhUuU3ludGhlc2lzLlByb3RvLlZlYzMSFAoMY3Vy",
-            "cmVudEFuZ2xlGAMgASgCEhIKCmxvd2VyTGltaXQYBCABKAISEgoKdXBwZXJM",
-            "aW1pdBgFIAEoAhIxCg1jb25uZWN0ZWRCb2R5GAYgASgLMhouU3ludGhlc2lz",
-            "LlByb3RvLlByb3RvR3VpZBIRCgltYXNzU2NhbGUYByABKAISEQoJdXNlTGlt",
-            "aXRzGAggASgIEg8KB2lzV2hlZWwYCSABKAgSQgoJd2hlZWxUeXBlGAogASgO",
-            "Mi8uU3ludGhlc2lzLlByb3RvLlJvdGF0aW9uYWxKb2ludC5Qcm90b1doZWVs",
-            "VHlwZSIzCg5Qcm90b1doZWVsVHlwZRIKCgZOT1JNQUwQABIICgRPTU5JEAES",
-            "CwoHTUVDQU5VTRACIkAKCkpvaW50TW90b3ISEAoIbWF4U3BlZWQYASABKAIS",
-            "DgoGdG9ycXVlGAIgASgCEhAKCHVzZUJyZWFrGAMgASgIIlIKCk90aGVySm9p",
-            "bnQSMQoNY29ubmVjdGVkQm9keRgBIAEoCzIaLlN5bnRoZXNpcy5Qcm90by5Q",
-            "cm90b0d1aWQSEQoJbWFzc1NjYWxlGAIgASgCInAKCVBoeXNQcm9wcxIMCgRt",
-            "YXNzGAEgASgCEisKDGNlbnRlck9mTWFzcxgCIAEoCzIVLlN5bnRoZXNpcy5Q",
-            "cm90by5WZWMzEhYKDmNvbGxlY3RpdmVNYXNzGAMgASgCEhAKCGZyaWN0aW9u",
-            "GAQgASgCImcKCE1hdGVyaWFsEgsKA3JlZBgBIAEoBRINCgVncmVlbhgCIAEo",
-            "BRIMCgRibHVlGAMgASgFEg0KBWFscGhhGAQgASgFEhAKCHNwZWN1bGFyGAUg",
-            "ASgCEhAKCGVtaXNzaXZlGAYgASgIIicKBFZlYzMSCQoBeBgBIAEoAhIJCgF5",
-            "GAIgASgCEgkKAXoYAyABKAIiMgoEUXVhdBIJCgF4GAEgASgCEgkKAXkYAiAB",
-            "KAISCQoBehgDIAEoAhIJCgF3GAQgASgCIhYKCVByb3RvR3VpZBIJCgFiGAEg",
-            "ASgMYgZwcm90bzM="));
+            "aWduYXR1cmUYAiABKAkizQEKClByb3RvRmllbGQSLgoGb2JqZWN0GAEgASgL",
+            "Mh4uU3ludGhlc2lzLlByb3RvLkR5bmFtaWNPYmplY3QSGwoTc2VyaWFsaXpl",
+            "clNpZ25hdHVyZRgCIAEoCRJCChRnYW1lcGllY2VEZWZpbml0aW9ucxgEIAMo",
+            "CzIkLlN5bnRoZXNpcy5Qcm90by5HYW1lcGllY2VEZWZpbml0aW9uEi4KCmdh",
+            "bWVwaWVjZXMYBSADKAsyGi5TeW50aGVzaXMuUHJvdG8uR2FtZXBpZWNlIvMC",
+            "CglHYW1lcGllY2USKQoKdmlzdWFsTWVzaBgBIAEoCzIVLlN5bnRoZXNpcy5Q",
+            "cm90by5NZXNoEi0KDG1lc2hDb2xsaWRlchgCIAEoCzIVLlN5bnRoZXNpcy5Q",
+            "cm90by5NZXNoSAASMQoOc3BoZXJlQ29sbGlkZXIYAyABKAsyFy5TeW50aGVz",
+            "aXMuUHJvdG8uU3BoZXJlSAASMgoPdmlzdWFsTWF0ZXJpYWxzGAQgAygLMhku",
+            "U3ludGhlc2lzLlByb3RvLk1hdGVyaWFsEicKCHBvc2l0aW9uGAUgASgLMhUu",
+            "U3ludGhlc2lzLlByb3RvLlZlYzMSOAoKZGVmaW5pdGlvbhgGIAEoCzIkLlN5",
+            "bnRoZXNpcy5Qcm90by5HYW1lcGllY2VEZWZpbml0aW9uEjYKEnBoeXNpY2Fs",
+            "UHJvcGVydGllcxgHIAEoCzIaLlN5bnRoZXNpcy5Qcm90by5QaHlzUHJvcHNC",
+            "CgoIY29sbGlkZXIiUQoTR2FtZXBpZWNlRGVmaW5pdGlvbhIMCgRuYW1lGAEg",
+            "ASgJEiwKDXNwYXduTG9jYXRpb24YAiABKAsyFS5TeW50aGVzaXMuUHJvdG8u",
+            "VmVjMyJDCg1EeW5hbWljT2JqZWN0EiQKBW5vZGVzGAEgAygLMhUuU3ludGhl",
+            "c2lzLlByb3RvLk5vZGUSDAoEbmFtZRgCIAEoCSK6BAoETm9kZRIoCgRndWlk",
+            "GAEgASgLMhouU3ludGhlc2lzLlByb3RvLlByb3RvR3VpZBIpCgp2aXN1YWxN",
+            "ZXNoGAIgASgLMhUuU3ludGhlc2lzLlByb3RvLk1lc2gSLAoNbWVzaENvbGxp",
+            "ZGVycxgDIAMoCzIVLlN5bnRoZXNpcy5Qcm90by5NZXNoEjsKD3JvdGF0aW9u",
+            "YWxKb2ludBgEIAEoCzIgLlN5bnRoZXNpcy5Qcm90by5Sb3RhdGlvbmFsSm9p",
+            "bnRIABIxCgpvdGhlckpvaW50GAcgASgLMhsuU3ludGhlc2lzLlByb3RvLk90",
+            "aGVySm9pbnRIABI2ChJwaHlzaWNhbFByb3BlcnRpZXMYBSABKAsyGi5TeW50",
+            "aGVzaXMuUHJvdG8uUGh5c1Byb3BzEi4KCnBhcmVudEd1aWQYBiABKAsyGi5T",
+            "eW50aGVzaXMuUHJvdG8uUHJvdG9HdWlkEjIKD3Zpc3VhbE1hdGVyaWFscxgI",
+            "IAMoCzIZLlN5bnRoZXNpcy5Qcm90by5NYXRlcmlhbBIQCghpc1N0YXRpYxgJ",
+            "IAEoCBIqCgVtb3RvchgKIAEoCzIbLlN5bnRoZXNpcy5Qcm90by5Kb2ludE1v",
+            "dG9yEioKDGJveENvbGxpZGVycxgLIAMoCzIULlN5bnRoZXNpcy5Qcm90by5C",
+            "b3gSMAoPc3BoZXJlQ29sbGlkZXJzGAwgAygLMhcuU3ludGhlc2lzLlByb3Rv",
+            "LlNwaGVyZUIHCgVqb2ludCJ6CgRNZXNoEicKCHZlcnRpY2VzGAEgAygLMhUu",
+            "U3ludGhlc2lzLlByb3RvLlZlYzMSEQoJdHJpYW5nbGVzGAIgAygFEjYKCXN1",
+            "Yk1lc2hlcxgDIAMoCzIjLlN5bnRoZXNpcy5Qcm90by5TdWJNZXNoRGVzY3Jp",
+            "cHRpb24iowEKA0JveBIlCgZjZW50ZXIYASABKAsyFS5TeW50aGVzaXMuUHJv",
+            "dG8uVmVjMxIjCgRzaXplGAIgASgLMhUuU3ludGhlc2lzLlByb3RvLlZlYzMS",
+            "JwoIcG9zaXRpb24YAyABKAsyFS5TeW50aGVzaXMuUHJvdG8uVmVjMxInCghy",
+            "b3RhdGlvbhgEIAEoCzIVLlN5bnRoZXNpcy5Qcm90by5RdWF0Ij8KBlNwaGVy",
+            "ZRIlCgZjZW50ZXIYASABKAsyFS5TeW50aGVzaXMuUHJvdG8uVmVjMxIOCgZy",
+            "YWRpdXMYAiABKAIiMgoSU3ViTWVzaERlc2NyaXB0aW9uEg0KBXN0YXJ0GAEg",
+            "ASgFEg0KBWNvdW50GAIgASgFIv4CCg9Sb3RhdGlvbmFsSm9pbnQSIwoEYXhp",
+            "cxgBIAEoCzIVLlN5bnRoZXNpcy5Qcm90by5WZWMzEiUKBmFuY2hvchgCIAEo",
+            "CzIVLlN5bnRoZXNpcy5Qcm90by5WZWMzEhQKDGN1cnJlbnRBbmdsZRgDIAEo",
+            "AhISCgpsb3dlckxpbWl0GAQgASgCEhIKCnVwcGVyTGltaXQYBSABKAISMQoN",
+            "Y29ubmVjdGVkQm9keRgGIAEoCzIaLlN5bnRoZXNpcy5Qcm90by5Qcm90b0d1",
+            "aWQSEQoJbWFzc1NjYWxlGAcgASgCEhEKCXVzZUxpbWl0cxgIIAEoCBIPCgdp",
+            "c1doZWVsGAkgASgIEkIKCXdoZWVsVHlwZRgKIAEoDjIvLlN5bnRoZXNpcy5Q",
+            "cm90by5Sb3RhdGlvbmFsSm9pbnQuUHJvdG9XaGVlbFR5cGUiMwoOUHJvdG9X",
+            "aGVlbFR5cGUSCgoGTk9STUFMEAASCAoET01OSRABEgsKB01FQ0FOVU0QAiJA",
+            "CgpKb2ludE1vdG9yEhAKCG1heFNwZWVkGAEgASgCEg4KBnRvcnF1ZRgCIAEo",
+            "AhIQCgh1c2VCcmVhaxgDIAEoCCJSCgpPdGhlckpvaW50EjEKDWNvbm5lY3Rl",
+            "ZEJvZHkYASABKAsyGi5TeW50aGVzaXMuUHJvdG8uUHJvdG9HdWlkEhEKCW1h",
+            "c3NTY2FsZRgCIAEoAiJ3CglQaHlzUHJvcHMSDAoEbWFzcxgBIAEoAhIrCgxj",
+            "ZW50ZXJPZk1hc3MYAiABKAsyFS5TeW50aGVzaXMuUHJvdG8uVmVjMxIXCg9k",
+            "eW5hbWljRnJpY3Rpb24YBCABKAISFgoOc3RhdGljRnJpY3Rpb24YBSABKAIi",
+            "ZwoITWF0ZXJpYWwSCwoDcmVkGAEgASgFEg0KBWdyZWVuGAIgASgFEgwKBGJs",
+            "dWUYAyABKAUSDQoFYWxwaGEYBCABKAUSEAoIc3BlY3VsYXIYBSABKAISEAoI",
+            "ZW1pc3NpdmUYBiABKAgiJwoEVmVjMxIJCgF4GAEgASgCEgkKAXkYAiABKAIS",
+            "CQoBehgDIAEoAiIyCgRRdWF0EgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6",
+            "GAMgASgCEgkKAXcYBCABKAIiFgoJUHJvdG9HdWlkEgkKAWIYASABKAxiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.ProtoRobot), global::Synthesis.Proto.ProtoRobot.Parser, new[]{ "Object", "SerializerSignature", "Name" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.ProtoField), global::Synthesis.Proto.ProtoField.Parser, new[]{ "Object", "SerializerSignature", "Name", "GamepieceDefinitions", "Gamepieces" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.ProtoRobot), global::Synthesis.Proto.ProtoRobot.Parser, new[]{ "Object", "SerializerSignature" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.ProtoField), global::Synthesis.Proto.ProtoField.Parser, new[]{ "Object", "SerializerSignature", "GamepieceDefinitions", "Gamepieces" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Gamepiece), global::Synthesis.Proto.Gamepiece.Parser, new[]{ "VisualMesh", "MeshCollider", "SphereCollider", "VisualMaterials", "Position", "Definition", "PhysicalProperties" }, new[]{ "Collider" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.GamepieceDefinition), global::Synthesis.Proto.GamepieceDefinition.Parser, new[]{ "Name", "SpawnLocation" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.DynamicObject), global::Synthesis.Proto.DynamicObject.Parser, new[]{ "Nodes" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.DynamicObject), global::Synthesis.Proto.DynamicObject.Parser, new[]{ "Nodes", "Name" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Node), global::Synthesis.Proto.Node.Parser, new[]{ "Guid", "VisualMesh", "MeshColliders", "RotationalJoint", "OtherJoint", "PhysicalProperties", "ParentGuid", "VisualMaterials", "IsStatic", "Motor", "BoxColliders", "SphereColliders" }, new[]{ "Joint" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Mesh), global::Synthesis.Proto.Mesh.Parser, new[]{ "Vertices", "Triangles", "SubMeshes" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Box), global::Synthesis.Proto.Box.Parser, new[]{ "Center", "Size", "Position", "Rotation" }, null, null, null, null),
@@ -102,7 +102,7 @@ namespace Synthesis.Proto {
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.RotationalJoint), global::Synthesis.Proto.RotationalJoint.Parser, new[]{ "Axis", "Anchor", "CurrentAngle", "LowerLimit", "UpperLimit", "ConnectedBody", "MassScale", "UseLimits", "IsWheel", "WheelType" }, null, new[]{ typeof(global::Synthesis.Proto.RotationalJoint.Types.ProtoWheelType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.JointMotor), global::Synthesis.Proto.JointMotor.Parser, new[]{ "MaxSpeed", "Torque", "UseBreak" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.OtherJoint), global::Synthesis.Proto.OtherJoint.Parser, new[]{ "ConnectedBody", "MassScale" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.PhysProps), global::Synthesis.Proto.PhysProps.Parser, new[]{ "Mass", "CenterOfMass", "CollectiveMass", "Friction" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.PhysProps), global::Synthesis.Proto.PhysProps.Parser, new[]{ "Mass", "CenterOfMass", "DynamicFriction", "StaticFriction" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Material), global::Synthesis.Proto.Material.Parser, new[]{ "Red", "Green", "Blue", "Alpha", "Specular", "Emissive" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Vec3), global::Synthesis.Proto.Vec3.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Synthesis.Proto.Quat), global::Synthesis.Proto.Quat.Parser, new[]{ "X", "Y", "Z", "W" }, null, null, null, null),
@@ -144,7 +144,6 @@ namespace Synthesis.Proto {
     public ProtoRobot(ProtoRobot other) : this() {
       object_ = other.object_ != null ? other.object_.Clone() : null;
       serializerSignature_ = other.serializerSignature_;
-      name_ = other.name_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -175,17 +174,6 @@ namespace Synthesis.Proto {
       }
     }
 
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 3;
-    private string name_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ProtoRobot);
@@ -201,7 +189,6 @@ namespace Synthesis.Proto {
       }
       if (!object.Equals(Object, other.Object)) return false;
       if (SerializerSignature != other.SerializerSignature) return false;
-      if (Name != other.Name) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -210,7 +197,6 @@ namespace Synthesis.Proto {
       int hash = 1;
       if (object_ != null) hash ^= Object.GetHashCode();
       if (SerializerSignature.Length != 0) hash ^= SerializerSignature.GetHashCode();
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -235,10 +221,6 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteString(SerializerSignature);
       }
-      if (Name.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Name);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -256,10 +238,6 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteString(SerializerSignature);
       }
-      if (Name.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Name);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -274,9 +252,6 @@ namespace Synthesis.Proto {
       }
       if (SerializerSignature.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SerializerSignature);
-      }
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -297,9 +272,6 @@ namespace Synthesis.Proto {
       }
       if (other.SerializerSignature.Length != 0) {
         SerializerSignature = other.SerializerSignature;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -326,10 +298,6 @@ namespace Synthesis.Proto {
             SerializerSignature = input.ReadString();
             break;
           }
-          case 26: {
-            Name = input.ReadString();
-            break;
-          }
         }
       }
     #endif
@@ -353,10 +321,6 @@ namespace Synthesis.Proto {
           }
           case 18: {
             SerializerSignature = input.ReadString();
-            break;
-          }
-          case 26: {
-            Name = input.ReadString();
             break;
           }
         }
@@ -397,7 +361,6 @@ namespace Synthesis.Proto {
     public ProtoField(ProtoField other) : this() {
       object_ = other.object_ != null ? other.object_.Clone() : null;
       serializerSignature_ = other.serializerSignature_;
-      name_ = other.name_;
       gamepieceDefinitions_ = other.gamepieceDefinitions_.Clone();
       gamepieces_ = other.gamepieces_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -427,17 +390,6 @@ namespace Synthesis.Proto {
       get { return serializerSignature_; }
       set {
         serializerSignature_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 3;
-    private string name_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -476,7 +428,6 @@ namespace Synthesis.Proto {
       }
       if (!object.Equals(Object, other.Object)) return false;
       if (SerializerSignature != other.SerializerSignature) return false;
-      if (Name != other.Name) return false;
       if(!gamepieceDefinitions_.Equals(other.gamepieceDefinitions_)) return false;
       if(!gamepieces_.Equals(other.gamepieces_)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -487,7 +438,6 @@ namespace Synthesis.Proto {
       int hash = 1;
       if (object_ != null) hash ^= Object.GetHashCode();
       if (SerializerSignature.Length != 0) hash ^= SerializerSignature.GetHashCode();
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
       hash ^= gamepieceDefinitions_.GetHashCode();
       hash ^= gamepieces_.GetHashCode();
       if (_unknownFields != null) {
@@ -514,10 +464,6 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteString(SerializerSignature);
       }
-      if (Name.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Name);
-      }
       gamepieceDefinitions_.WriteTo(output, _repeated_gamepieceDefinitions_codec);
       gamepieces_.WriteTo(output, _repeated_gamepieces_codec);
       if (_unknownFields != null) {
@@ -537,10 +483,6 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteString(SerializerSignature);
       }
-      if (Name.Length != 0) {
-        output.WriteRawTag(26);
-        output.WriteString(Name);
-      }
       gamepieceDefinitions_.WriteTo(ref output, _repeated_gamepieceDefinitions_codec);
       gamepieces_.WriteTo(ref output, _repeated_gamepieces_codec);
       if (_unknownFields != null) {
@@ -557,9 +499,6 @@ namespace Synthesis.Proto {
       }
       if (SerializerSignature.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SerializerSignature);
-      }
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
       size += gamepieceDefinitions_.CalculateSize(_repeated_gamepieceDefinitions_codec);
       size += gamepieces_.CalculateSize(_repeated_gamepieces_codec);
@@ -582,9 +521,6 @@ namespace Synthesis.Proto {
       }
       if (other.SerializerSignature.Length != 0) {
         SerializerSignature = other.SerializerSignature;
-      }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
       }
       gamepieceDefinitions_.Add(other.gamepieceDefinitions_);
       gamepieces_.Add(other.gamepieces_);
@@ -611,10 +547,6 @@ namespace Synthesis.Proto {
           }
           case 18: {
             SerializerSignature = input.ReadString();
-            break;
-          }
-          case 26: {
-            Name = input.ReadString();
             break;
           }
           case 34: {
@@ -648,10 +580,6 @@ namespace Synthesis.Proto {
           }
           case 18: {
             SerializerSignature = input.ReadString();
-            break;
-          }
-          case 26: {
-            Name = input.ReadString();
             break;
           }
           case 34: {
@@ -1386,6 +1314,7 @@ namespace Synthesis.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public DynamicObject(DynamicObject other) : this() {
       nodes_ = other.nodes_.Clone();
+      name_ = other.name_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1404,6 +1333,17 @@ namespace Synthesis.Proto {
       get { return nodes_; }
     }
 
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 2;
+    private string name_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as DynamicObject);
@@ -1418,6 +1358,7 @@ namespace Synthesis.Proto {
         return true;
       }
       if(!nodes_.Equals(other.nodes_)) return false;
+      if (Name != other.Name) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1425,6 +1366,7 @@ namespace Synthesis.Proto {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= nodes_.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1442,6 +1384,10 @@ namespace Synthesis.Proto {
       output.WriteRawMessage(this);
     #else
       nodes_.WriteTo(output, _repeated_nodes_codec);
+      if (Name.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Name);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1452,6 +1398,10 @@ namespace Synthesis.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       nodes_.WriteTo(ref output, _repeated_nodes_codec);
+      if (Name.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Name);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1462,6 +1412,9 @@ namespace Synthesis.Proto {
     public int CalculateSize() {
       int size = 0;
       size += nodes_.CalculateSize(_repeated_nodes_codec);
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -1474,6 +1427,9 @@ namespace Synthesis.Proto {
         return;
       }
       nodes_.Add(other.nodes_);
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -1492,6 +1448,10 @@ namespace Synthesis.Proto {
             nodes_.AddEntriesFrom(input, _repeated_nodes_codec);
             break;
           }
+          case 18: {
+            Name = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -1508,6 +1468,10 @@ namespace Synthesis.Proto {
             break;
           case 10: {
             nodes_.AddEntriesFrom(ref input, _repeated_nodes_codec);
+            break;
+          }
+          case 18: {
+            Name = input.ReadString();
             break;
           }
         }
@@ -4125,8 +4089,8 @@ namespace Synthesis.Proto {
     public PhysProps(PhysProps other) : this() {
       mass_ = other.mass_;
       centerOfMass_ = other.centerOfMass_ != null ? other.centerOfMass_.Clone() : null;
-      collectiveMass_ = other.collectiveMass_;
-      friction_ = other.friction_;
+      dynamicFriction_ = other.dynamicFriction_;
+      staticFriction_ = other.staticFriction_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -4157,25 +4121,25 @@ namespace Synthesis.Proto {
       }
     }
 
-    /// <summary>Field number for the "collectiveMass" field.</summary>
-    public const int CollectiveMassFieldNumber = 3;
-    private float collectiveMass_;
+    /// <summary>Field number for the "dynamicFriction" field.</summary>
+    public const int DynamicFrictionFieldNumber = 4;
+    private float dynamicFriction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float CollectiveMass {
-      get { return collectiveMass_; }
+    public float DynamicFriction {
+      get { return dynamicFriction_; }
       set {
-        collectiveMass_ = value;
+        dynamicFriction_ = value;
       }
     }
 
-    /// <summary>Field number for the "friction" field.</summary>
-    public const int FrictionFieldNumber = 4;
-    private float friction_;
+    /// <summary>Field number for the "staticFriction" field.</summary>
+    public const int StaticFrictionFieldNumber = 5;
+    private float staticFriction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Friction {
-      get { return friction_; }
+    public float StaticFriction {
+      get { return staticFriction_; }
       set {
-        friction_ = value;
+        staticFriction_ = value;
       }
     }
 
@@ -4194,8 +4158,8 @@ namespace Synthesis.Proto {
       }
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Mass, other.Mass)) return false;
       if (!object.Equals(CenterOfMass, other.CenterOfMass)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CollectiveMass, other.CollectiveMass)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Friction, other.Friction)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DynamicFriction, other.DynamicFriction)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(StaticFriction, other.StaticFriction)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -4204,8 +4168,8 @@ namespace Synthesis.Proto {
       int hash = 1;
       if (Mass != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Mass);
       if (centerOfMass_ != null) hash ^= CenterOfMass.GetHashCode();
-      if (CollectiveMass != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CollectiveMass);
-      if (Friction != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Friction);
+      if (DynamicFriction != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DynamicFriction);
+      if (StaticFriction != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(StaticFriction);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -4230,13 +4194,13 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteMessage(CenterOfMass);
       }
-      if (CollectiveMass != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(CollectiveMass);
-      }
-      if (Friction != 0F) {
+      if (DynamicFriction != 0F) {
         output.WriteRawTag(37);
-        output.WriteFloat(Friction);
+        output.WriteFloat(DynamicFriction);
+      }
+      if (StaticFriction != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(StaticFriction);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -4255,13 +4219,13 @@ namespace Synthesis.Proto {
         output.WriteRawTag(18);
         output.WriteMessage(CenterOfMass);
       }
-      if (CollectiveMass != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(CollectiveMass);
-      }
-      if (Friction != 0F) {
+      if (DynamicFriction != 0F) {
         output.WriteRawTag(37);
-        output.WriteFloat(Friction);
+        output.WriteFloat(DynamicFriction);
+      }
+      if (StaticFriction != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(StaticFriction);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -4278,10 +4242,10 @@ namespace Synthesis.Proto {
       if (centerOfMass_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CenterOfMass);
       }
-      if (CollectiveMass != 0F) {
+      if (DynamicFriction != 0F) {
         size += 1 + 4;
       }
-      if (Friction != 0F) {
+      if (StaticFriction != 0F) {
         size += 1 + 4;
       }
       if (_unknownFields != null) {
@@ -4304,11 +4268,11 @@ namespace Synthesis.Proto {
         }
         CenterOfMass.MergeFrom(other.CenterOfMass);
       }
-      if (other.CollectiveMass != 0F) {
-        CollectiveMass = other.CollectiveMass;
+      if (other.DynamicFriction != 0F) {
+        DynamicFriction = other.DynamicFriction;
       }
-      if (other.Friction != 0F) {
-        Friction = other.Friction;
+      if (other.StaticFriction != 0F) {
+        StaticFriction = other.StaticFriction;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -4335,12 +4299,12 @@ namespace Synthesis.Proto {
             input.ReadMessage(CenterOfMass);
             break;
           }
-          case 29: {
-            CollectiveMass = input.ReadFloat();
+          case 37: {
+            DynamicFriction = input.ReadFloat();
             break;
           }
-          case 37: {
-            Friction = input.ReadFloat();
+          case 45: {
+            StaticFriction = input.ReadFloat();
             break;
           }
         }
@@ -4368,12 +4332,12 @@ namespace Synthesis.Proto {
             input.ReadMessage(CenterOfMass);
             break;
           }
-          case 29: {
-            CollectiveMass = input.ReadFloat();
+          case 37: {
+            DynamicFriction = input.ReadFloat();
             break;
           }
-          case 37: {
-            Friction = input.ReadFloat();
+          case 45: {
+            StaticFriction = input.ReadFloat();
             break;
           }
         }

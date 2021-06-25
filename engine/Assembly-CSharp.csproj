@@ -346,18 +346,6 @@
      <Reference Include="UnityEditor.UnityConnectModule">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
      </Reference>
-     <Reference Include="EngineImporter">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/EngineImporter.dll</HintPath>
-     </Reference>
-     <Reference Include="Api">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Api.dll</HintPath>
-     </Reference>
-     <Reference Include="Newtonsoft.Json">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
-     </Reference>
-     <Reference Include="SimulatorAPI">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/SimulatorAPI.dll</HintPath>
-     </Reference>
      <Reference Include="System.Memory">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll</HintPath>
      </Reference>
@@ -373,11 +361,23 @@
      <Reference Include="MathNet.Spatial">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
      </Reference>
+     <Reference Include="EngineImporter">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/EngineImporter.dll</HintPath>
+     </Reference>
      <Reference Include="System.Runtime.CompilerServices.Unsafe">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Runtime.CompilerServices.Unsafe.4.5.2/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
      </Reference>
+     <Reference Include="Api">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Api.dll</HintPath>
+     </Reference>
      <Reference Include="System.Buffers">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
+     </Reference>
+     <Reference Include="SimulatorAPI">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/SimulatorAPI.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
