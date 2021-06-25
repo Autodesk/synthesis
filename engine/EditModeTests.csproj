@@ -12,11 +12,11 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{b5a8759e-0364-3356-928d-1a35a0a8a237}</ProjectGuid>
+    <ProjectGuid>{03aa75bb-fbc0-7460-e634-7afe38ec939b}</ProjectGuid>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>EditModeTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -41,89 +41,8 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
-     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
-     <Compile Include="Assets\Scripts\Interactable3DDetector.cs" />
-     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Parse.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
-     <Compile Include="Assets\Scripts\PTL.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
-     <Compile Include="Assets\Scripts\MouseTracker.cs" />
-     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
-     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxConfigPanel.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
-     <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
-     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeSystem.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
-     <Compile Include="Assets\Scripts\Camera\Camera.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxItem.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Controllables\Controllable.cs" />
-     <Compile Include="Assets\Scripts\UI\Bars\Bar.cs" />
-     <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
-     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
-     <Compile Include="Assets\Scripts\UtilExtensions.cs" />
-     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
-     <Compile Include="Assets\Scripts\Physics\PhysicsManager.cs" />
-     <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
-     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
-     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
-     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
-     <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Controllables\TestControllable.cs" />
-     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
-     <Compile Include="Assets\Scripts\EntityManager\Entity.cs" />
-     <Compile Include="Assets\Scripts\MyTest.cs" />
-     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
-     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
-     <None Include="Assets\Packages\MathNet.Spatial.0.6.0\lib\net461\MathNet.Spatial.xml" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
-     <None Include="Assets\Packages\System.Runtime.CompilerServices.Unsafe.4.5.2\version.txt" />
-     <None Include="Assets\Packages\System.Memory.4.5.3\useSharedDesignerContext.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
-     <None Include="Assets\Packages\MathNet.Numerics.4.15.0\lib\net461\MathNet.Numerics.xml" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Targets.1.1.3\runtime.json" />
-     <None Include="Assets\Packages\System.Drawing.Common.5.0.2\useSharedDesignerContext.txt" />
-     <None Include="Assets\Packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.xml" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Targets.1.1.3\ThirdPartyNotices.txt" />
-     <None Include="Assets\Packages\System.Memory.4.5.3\version.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Platforms.1.1.1\runtime.json" />
-     <None Include="Assets\Packages\Google.Protobuf.3.17.3\lib\net45\Google.Protobuf.xml" />
-     <None Include="Assets\Packages\System.Drawing.Common.5.0.2\version.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
-     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
-     <None Include="Assets\Packages\System.Buffers.4.4.0\version.txt" />
-     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
-     <None Include="Assets\Packages\System.Buffers.4.4.0\useSharedDesignerContext.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Targets.1.1.3\dotnet_library_license.txt" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Platforms.1.1.1\dotnet_library_license.txt" />
-     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-     <None Include="Assets\Packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.xml" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
-     <None Include="Assets\Packages\System.Runtime.CompilerServices.Unsafe.4.5.2\useSharedDesignerContext.txt" />
-     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
-     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne.json" />
-     <None Include="Assets\Packages\Microsoft.NETCore.Platforms.1.1.1\ThirdPartyNotices.txt" />
-     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
-     <None Include="Assets\Packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.xml" />
+     <Compile Include="Assets\EditModeTests\SampleTest.cs" />
+     <None Include="Assets\EditModeTests\EditModeTests.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
@@ -346,38 +265,20 @@
      <Reference Include="UnityEditor.UnityConnectModule">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
      </Reference>
-     <Reference Include="System.Memory">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll</HintPath>
+     <Reference Include="UnityEditor.Graphs">
+     <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
      </Reference>
-     <Reference Include="Google.Protobuf">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Google.Protobuf.3.17.3/lib/net45/Google.Protobuf.dll</HintPath>
+     <Reference Include="UnityEditor.OSXStandalone.Extensions">
+     <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
      </Reference>
-     <Reference Include="MathNet.Numerics">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
+     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+     <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
      </Reference>
-     <Reference Include="System.Drawing.Common">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
+     <Reference Include="UnityEditor.LinuxStandalone.Extensions">
+     <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
      </Reference>
-     <Reference Include="MathNet.Spatial">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
-     </Reference>
-     <Reference Include="EngineImporter">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/EngineImporter.dll</HintPath>
-     </Reference>
-     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Runtime.CompilerServices.Unsafe.4.5.2/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-     </Reference>
-     <Reference Include="Api">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/Api.dll</HintPath>
-     </Reference>
-     <Reference Include="System.Buffers">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
-     </Reference>
-     <Reference Include="Newtonsoft.Json">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
-     </Reference>
-     <Reference Include="SimulatorAPI">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Assets/Packages/SimulatorAPI.dll</HintPath>
+     <Reference Include="nunit.framework">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -727,51 +628,20 @@
      <Reference Include="System.Xml.XPath.XDocument">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.VSCode.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+     <Reference Include="UnityEngine.TestRunner">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.TextMeshPro.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.VisualStudio.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Sysroot.Linux_x86_64">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.Sysroot.Linux_x86_64.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Toolchain.Win-x86_64-Linux-x86_64">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.Toolchain.Win-x86_64-Linux-x86_64.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Timeline.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Timeline">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.TextMeshPro">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+     <Reference Include="UnityEditor.TestRunner">
+     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.UI">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.PlasticSCM.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.PlasticSCM.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Rider.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.UI">
      <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.SysrootPackage.Editor">
-     <HintPath>C:/Users/hunte/git/synthesis/engine/Library/ScriptAssemblies/Unity.SysrootPackage.Editor.dll</HintPath>
-     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CoreEngine.csproj">
-      <Project>{28740e66-4b28-d1ee-7ffd-ca276d12197b}</Project>
-      <Name>CoreEngine</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
