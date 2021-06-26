@@ -35,7 +35,7 @@ public class PTL : MonoBehaviour {
         // field.transform.position = position;
     }
 
-    public void SpawnRobot(string botPath, Vector3 pos, string srcType, string transType = null) {
+    public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
         var robot = Importer.Import(botPath, srcType, transType, true);
         robot.transform.position = pos;
         var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
