@@ -38,11 +38,11 @@ jobs:
             Library-
       - uses: game-ci/unity-builder@v2
         with:
-          customParameters: -quit -batchmode -projectPath ${{ matrix.projectPath }} -executeMethod NugetForUnity.NugetHelper.Restore
           buildName: Synthesis
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
+          customParameters: -quit -batchmode -projectPath ${{ matrix.projectPath }} -executeMethod NugetForUnity.NugetHelper.Restore
       - uses: actions/upload-artifact@v1
         with:
           name: Synthesis
