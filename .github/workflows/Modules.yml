@@ -1,4 +1,4 @@
-name: Modules
+name: API
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   buildApiSolution:
-    name: Build ModuleAPI
+    name: Build API
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,9 +22,10 @@ jobs:
       run: dotnet build api/api.sln --configuration Release --no-restore
     - name: Test API Solution
       run: dotnet test api/api.sln --no-restore --verbosity normal
-    - name: Install Module Dependencies
-      run: dotnet restore modules/modules.sln
-    - name: Build Module Solution
-      run: dotnet build modules/modules.sln --configuration Release --no-restore
-    - name: Test Module Solution
-      run: dotnet test modules/modules.sln --no-restore --verbosity normal
+      
+#    - name: Install Module Dependencies
+#      run: dotnet restore modules/modules.sln
+#    - name: Build Module Solution
+#      run: dotnet build modules/modules.sln --configuration Release --no-restore
+#    - name: Test Module Solution
+#      run: dotnet test modules/modules.sln --no-restore --verbosity normal
