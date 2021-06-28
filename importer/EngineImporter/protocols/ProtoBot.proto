@@ -5,13 +5,11 @@ package Synthesis.Proto;
 message ProtoRobot {
     DynamicObject object = 1;
     string serializerSignature = 2;
-    string name = 3;
 }
 
 message ProtoField {
     DynamicObject object = 1;
     string serializerSignature = 2;
-    string name = 3;
     repeated GamepieceDefinition gamepieceDefinitions = 4;
     repeated Gamepiece gamepieces = 5;
 }
@@ -36,6 +34,7 @@ message GamepieceDefinition {
 
 message DynamicObject {
     repeated Node nodes = 1;
+    string name = 2;
 }
 
 message Node {
@@ -124,8 +123,8 @@ message OtherJoint {
 message PhysProps {
     float mass = 1;
     Vec3 centerOfMass = 2;
-    float collectiveMass = 3;
-    float friction = 4;
+    float dynamicFriction = 4;
+    float staticFriction = 5;
 }
 
 message Material {
