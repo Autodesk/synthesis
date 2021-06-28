@@ -15,11 +15,13 @@ namespace Synthesis.Import {
 
         public string Name;
         public Dictionary<Guid, GameObject> Nodes;
+        public Dictionary<Guid, Node> NodeSources;
         public Dictionary<Guid, EntityFlag> Flags = new Dictionary<Guid, EntityFlag>();
 
-        public void Init(string name, Dictionary<Guid, GameObject> nodes) {
+        public void Init(string name, Dictionary<Guid, GameObject> nodes, Dictionary<Guid, Node> nodeSources) {
             Name = name;
             Nodes = nodes;
+            NodeSources = nodeSources;
         }
 
         public void AddFlag(Guid guid, EntityFlag flag) {
@@ -46,11 +48,6 @@ namespace Synthesis.Import {
         public class ComponentRequest : MonoBehaviour {
             public string ComponentName;
             public Dictionary<string, object> ComponentProperties = new Dictionary<string, object>();
-        }
-
-        public class NodeSource : MonoBehaviour {
-            public Node SourceNode;
-            public float collectiveMass;
         }
     }
     
