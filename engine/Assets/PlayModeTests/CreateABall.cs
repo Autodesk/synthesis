@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using NUnit.Framework;
+using Synthesis.Util;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,6 +20,30 @@ public class CreateABall
         g.AddComponent<Rigidbody>();
         yield return new WaitForSeconds(0.25f);
         Assert.IsFalse(g.transform.position == startPos);
+        yield return null;
+    }
+
+
+    [UnityTest]
+    public IEnumerator UnityResyncerTest()
+    {
+        GameObject resyncerComponent = new GameObject("Unity Resyncer");
+        var resyncer = resyncerComponent.AddComponent<UnityResyncerComponent>();
+        yield return new WaitForSeconds(0.1f);
+        if(!Thread.CurrentThread.Name.Equals("main"))
+            Thread.CurrentThread.Name = "main";
+
+        Thread threadTest = new Thread(() =>
+        {
+            Assert.IsFalse(Thread.CurrentThread.Name=="main");
+            var r = UnityResyncer.Resync(() =>
+            {
+                Assert.IsTrue(Thread.CurrentThread.Name.Equals("main"));
+            });
+        });
+        threadTest.Name = "new thread";
+        threadTest.Start();
+        yield return new WaitForSeconds(0.1f);
         yield return null;
     }
 }
