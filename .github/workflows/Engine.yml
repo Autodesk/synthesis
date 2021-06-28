@@ -36,7 +36,7 @@ jobs:
           restore-keys: |
             Library-${{ matrix.projectPath }}-
             Library-
-      - uses: webbertakken/unity-builder@v1.0
+      - uses: game-ci/unity-builder@v2
         with:
           buildName: Synthesis
           projectPath: ${{ matrix.projectPath }}
