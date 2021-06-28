@@ -30,7 +30,7 @@ public class CreateABall
         GameObject resyncerComponent = new GameObject("Unity Resyncer");
         var resyncer = resyncerComponent.AddComponent<UnityResyncerComponent>();
         yield return new WaitForSeconds(0.1f);
-        if(!Thread.CurrentThread.Name.Equals("main"))
+        if(Thread.CurrentThread.Name==null||!Thread.CurrentThread.Name.Equals("main"))
             Thread.CurrentThread.Name = "main";
 
         Thread threadTest = new Thread(() =>
