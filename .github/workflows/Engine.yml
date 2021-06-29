@@ -42,7 +42,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
-          customParameters: -quit -batchmode -projectPath ${{ matrix.projectPath }} -executeMethod NugetForUnity.NugetHelper.Restore
+          customParameters: -quit -batchmode -projectPath "${{ matrix.projectPath }}" -executeMethod NugetForUnity.NugetHelper.Restore
       - uses: actions/upload-artifact@v1
         with:
           name: Synthesis
