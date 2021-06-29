@@ -5,12 +5,14 @@
 /engine/[Bb]uilds/
 /engine/[Ll]ogs/
 /engine/[Mm]emoryCaptures/
-/engine/Assets/Packages
 /engine/Packages/*
 
 !/engine/Packages/manifest.json
 !/engine/[Aa]ssets/**/*.meta
 !/engine/Packages/packages-lock.json
+
+/engine/Assets/Packages/*
+/engine/Assets/Packages/*.meta
 
 /engine/[Aa]ssets/AssetStoreTools*
 
