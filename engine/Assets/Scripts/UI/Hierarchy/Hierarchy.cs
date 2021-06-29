@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Synthesis.UI.Hierarchy.HierarchyItems;
 using UnityEngine;
 using Synthesis.UI.ContextMenus;
-using Synthesis.Util;
+using Synthesis.Util; 
 
 using ContextMenu = Synthesis.UI.ContextMenus.ContextMenu;
 
@@ -37,13 +37,10 @@ namespace Synthesis.UI.Hierarchy
             // ContextMenu.Show()
             // ContextMenu.Show(new Vector2(500, -500), "Test Menu", new string[]{"Hello", "There"});
 
-            rootFolder.Init("Scene ajsdf;lajsd;lfajs", null);
+            rootFolder.Init("Scene", null);
 
-            var robots = rootFolder.CreateFolder("Robotssssssss j;lka");
-            var fields = rootFolder.CreateFolder("Fields ajsdflajs;dlf ");
-
-            robots.CreateItem("997 Spartan Robotics");
-            robots.CreateItem("1425 Error Code");
+            var robots = rootFolder.CreateFolder("Robots");
+            var fields = rootFolder.CreateFolder("Fields");
 
             fields.CreateItem("2020 Infinite Recharge");
 
