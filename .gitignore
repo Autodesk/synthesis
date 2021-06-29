@@ -5,12 +5,14 @@
 /engine/[Bb]uilds/
 /engine/[Ll]ogs/
 /engine/[Mm]emoryCaptures/
-/engine/Assets/Packages
 /engine/Packages/*
 
 !/engine/Packages/manifest.json
 !/engine/[Aa]ssets/**/*.meta
 !/engine/Packages/packages-lock.json
+
+/engine/Assets/Packages/*
+/engine/Assets/Packages/*.meta
 
 /engine/[Aa]ssets/AssetStoreTools*
 
@@ -39,3 +41,7 @@ sysinfo.txt
 !/engine/Assets/Packages/SimulatorAPI.dll
 !/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
 
+importer/Backup/
+importer/Backup1/
+importer/UpgradeLog.htm
+importer/UpgradeLog2.htm
