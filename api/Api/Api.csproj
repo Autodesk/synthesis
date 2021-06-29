@@ -31,12 +31,6 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>libs\UnityEngine.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="MathNet.Numerics" Version="4.11.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -50,6 +44,12 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\..\importer\libs\UnityEngine.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
