@@ -43,33 +43,6 @@ namespace Synthesis.UI.Hierarchy
             var fields = rootFolder.CreateFolder("Fields");
 
             fields.CreateItem("2020 Infinite Recharge");
-
-            /*
-            RootFolder
-                Folder A
-                    Item AA
-                    Folder AA
-                        Item AAA
-                    Item AB
-                Item A
-                Folder B
-                    Item BA
-            */
-
-            // Big Test
-            /*var folderA = RootFolder.CreateFolder("Folder A");
-            var itemA = RootFolder.CreateItem("Item A");
-            var folderB = RootFolder.CreateFolder("Folder B");
-            var itemAA = folderA.CreateItem("Item AA");
-            var folderAA = folderA.CreateFolder("Folder AA");
-            var itemAB = folderA.CreateFolder("Item AB");
-            var itemAAA = folderAA.CreateItem("Item AAA");
-            var itemBA = folderB.CreateItem("Item BA");*/
-
-            // folderB.Remove();
-            // folderAA.Add(folderB);
-
-            // RootFolder.DebugPrint();
         }
 
         public void Update()
@@ -107,6 +80,8 @@ namespace Synthesis.UI.Hierarchy
                         heightAccum += t.rect.height + Padding;
                     }
                 }
+                var contentRect = contentContainer.GetComponent<RectTransform>();
+                contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, heightAccum);
             }
         }
     }

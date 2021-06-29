@@ -655,10 +655,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ScriptAssembly.csproj">
-      <Project>{06924D17-B6A0-1397-6D32-4031AAFB7CF0}</Project>
-      <Name>ScriptAssembly</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
