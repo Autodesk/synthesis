@@ -106,6 +106,10 @@ namespace Synthesis.Camera
         {
             _yaw = _yaw * Quaternion.Euler(0, yawDelta, 0);
             _pitch = _pitch * Quaternion.Euler(pitchDelta, 0, 0);
+
+            _yaw = _yaw.normalized;
+            _pitch = _pitch.normalized;
+            
             ApplyConstraints();
         }
 

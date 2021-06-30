@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package SynthesisAPI.Proto;
+
+message ProtoRobot {
+    DynamicObject object = 1;
+    string serializerSignature = 2;
+}
+
+message ProtoField {
+    DynamicObject object = 1;
+    string serializerSignature = 2;
+    repeated GamepieceDefinition gamepieceDefinitions = 4;
+    repeated Gamepiece gamepieces = 5;
+}
+
+message Gamepiece {
+    Mesh visualMesh = 1;
+    oneof collider {
+        Mesh meshCollider = 2;
+        Sphere sphereCollider = 3;
+    }
+
+    repeated Material visualMaterials = 4;
+    Vec3 position = 5;
+    GamepieceDefinition definition = 6;
+    PhysProps physicalProperties = 7;
+}
+
+message GamepieceDefinition {
+    string name = 1;
+    Vec3 spawnLocation = 2;
+}
+
+message DynamicObject {
+    repeated Node nodes = 1;
+    string name = 2;
+}
+
+message Node {
+    ProtoGuid guid = 1;
+    Mesh visualMesh = 2;
+    repeated Mesh meshColliders = 3;
+
+    oneof joint {
+        RotationalJoint rotationalJoint = 4;
+        OtherJoint otherJoint = 7;
+    }
+
+    PhysProps physicalProperties = 5;
+    ProtoGuid parentGuid = 6;
+    repeated Material visualMaterials = 8;
+    bool isStatic = 9;
+    JointMotor motor = 10;
+
+    // enum ColliderType {
+    //     MESH = 0;
+    //     SPHERE = 1;
+    //     BOX = 2;
+    //     NONE = 3;
+    // }
+
+    // repeated ColliderType colliderTypes = 11;
+
+    repeated Box boxColliders = 11;
+    repeated Sphere sphereColliders = 12;
+}
+
+message Mesh {
+    repeated Vec3 vertices = 1;
+    repeated int32 triangles = 2;
+    repeated SubMeshDescription subMeshes = 3;
+}
+
+message Box {
+    Vec3 center = 1;
+    Vec3 size = 2;
+    Vec3 position = 3;
+    Quat rotation = 4;
+}
+
+message Sphere {
+    Vec3 center = 1;
+    float radius = 2;
+}
+
+message SubMeshDescription {
+    int32 start = 1;
+    int32 count = 2;
+}
+
+message RotationalJoint {
+    Vec3 axis = 1;
+    Vec3 anchor = 2;
+    float currentAngle = 3;
+    float lowerLimit = 4;
+    float upperLimit = 5;
+    ProtoGuid connectedBody = 6;
+    float massScale = 7;
+    bool useLimits = 8;
+    bool isWheel = 9;
+
+    enum ProtoWheelType {
+        NORMAL = 0;
+        OMNI = 1;
+        MECANUM = 2;
+    }
+
+    ProtoWheelType wheelType = 10;
+}
+
+message JointMotor {
+    float maxSpeed = 1;
+    float torque = 2;
+    bool useBreak = 3;
+}
+
+message OtherJoint {
+    ProtoGuid connectedBody = 1;
+    float massScale = 2;
+}
+
+message PhysProps {
+    float mass = 1;
+    Vec3 centerOfMass = 2;
+    float dynamicFriction = 4;
+    float staticFriction = 5;
+}
+
+message Material {
+    int32 red = 1;
+    int32 green = 2;
+    int32 blue = 3;
+    int32 alpha = 4;
+    float specular = 5;
+    bool emissive = 6;
+}
+
+message Vec3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message Quat {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float w = 4;
+}
+
+message ProtoGuid {
+    bytes b = 1;
+}

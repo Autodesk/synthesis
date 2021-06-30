@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
-using Synthesis.Util;
+using SynthesisAPI.Utilities;
 using UnityEngine;
 using UnityEngine.TestTools;
 

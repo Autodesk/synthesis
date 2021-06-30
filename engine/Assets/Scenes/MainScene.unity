@@ -1126,6 +1126,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1205,19 +1206,38 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa56850c73962407fa8b4cd1cd94099c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _distance: 50
+  _distance: 5
   _zoomSensitivity: 0.1
   _orbitSpeed: 2
   _rotationSensitvity: 4
   _yawLimit: 180
   _pitchLimit: 90
   _freeze: 0
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72bd9fc32d95451d90530109dceeae75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PitchSensitivity: 2.65
+  YawSensitivity: 4.16
+  PitchLowerLimit: 1
+  PitchUpperLimit: 80
+  OrbitDistance: 5
+  OrbitalAcceleration: 0.7
+  FollowTransform: {fileID: 0}
 --- !u!1 &1040913155
 GameObject:
   m_ObjectHideFlags: 0
@@ -1520,7 +1540,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1922399205}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -912005741, guid: b2f5be82cba866942ba995d4b541b39d, type: 3}
+  m_Script: {fileID: -1697314111, guid: 8d2ce475689b146408c149dc6206be7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MaxExecuteTimeS: 0.1

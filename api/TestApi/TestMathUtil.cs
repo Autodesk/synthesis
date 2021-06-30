@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using SynthesisAPI.Utilities;
