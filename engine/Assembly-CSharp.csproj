@@ -61,11 +61,11 @@
      <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeSystem.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
      <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
-     <Compile Include="Assets\Scripts\Camera\Camera.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxItem.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Controllables\Controllable.cs" />
      <Compile Include="Assets\Scripts\UI\Bars\Bar.cs" />
      <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
+     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
      <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
      <Compile Include="Assets\Scripts\UtilExtensions.cs" />
@@ -87,7 +87,6 @@
      <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
      <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
      <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <None Include="Assets\Packages\MathNet.Spatial.0.6.0\lib\net461\MathNet.Spatial.xml" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
