@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApi", "TestApi\TestApi.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenchmarkApi", "BenchmarkApi\BenchmarkApi.csproj", "{AC669A38-8C1C-4A3B-AFB8-368620018AA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "aardvark\SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
