@@ -25,28 +25,52 @@ namespace TestApi {
 
         [Test]
         public static void TranslateDozerTest() {
-            Translator.Translate(BaseRobotPath + "Dozer", Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+            string path = BaseRobotPath + "Dozer";
+            if (!File.Exists(path)) {
+                Assert.Warn("File doesn't exist");
+                return;
+            }
+
+            Translator.Translate(path, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
 
             Assert.Pass();
         }
         
         [Test]
         public static void TranslateMeanMachineTest() {
-            Translator.Translate(BaseRobotPath + "2018 - 2471 Mean Machine", Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+            string path = BaseRobotPath + "2018 - 2471 Mean Machine";
+            if (!File.Exists(path)) {
+                Assert.Warn("File doesn't exist");
+                return;
+            }
+            
+            Translator.Translate(path, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
 
             Assert.Pass();
         }
 
         [Test]
         public static void TranslateAerialAssistTest() {
-            Translator.Translate(BaseFieldPath + "2014 Aerial Assist", Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+            string path = BaseFieldPath + "2014 Aerial Assist";
+            if (!File.Exists(path)) {
+                Assert.Warn("File doesn't exist");
+                return;
+            }
+            
+            Translator.Translate(path, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
 
             Assert.Pass();
         }
         
         [Test]
         public static void TranslateDestinationDeepSpaceTest() {
-            Translator.Translate(BaseFieldPath + "2019 Destination Deep Space", Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+            string path = BaseFieldPath + "2019 Destination Deep Space";
+            if (!File.Exists(path)) {
+                Assert.Warn("File doesn't exist");
+                return;
+            }
+            
+            Translator.Translate(path, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
 
             Assert.Pass();
         }
