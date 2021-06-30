@@ -1229,10 +1229,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PitchSensitivity: 2.65
   YawSensitivity: 4.16
+  ZoomSensitivity: 0.52
   PitchLowerLimit: 1
   PitchUpperLimit: 80
-  OrbitDistance: 5
+  ZoomLowerLimit: 0.5
+  ZoomUpperLimit: 50
   OrbitalAcceleration: 0.491
+  ZoomAcceleration: 0.255
   FollowTransform: {fileID: 0}
 --- !u!1 &1040913155
 GameObject:
