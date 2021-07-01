@@ -11,6 +11,7 @@ public class AddItem : MonoBehaviour
     private string _fullPath;
     private Panel _parentPanel;
     GameObject p;
+    private bool _isRobot;
 
     public void AddModel()
     {
@@ -21,7 +22,7 @@ public class AddItem : MonoBehaviour
 
     public void AddField()
     {
-        ModelManager.SetField(_fullPath);
+        p.GetComponent<PTL>().SpawnField(_fullPath);
         _parentPanel.Close();
     }
 

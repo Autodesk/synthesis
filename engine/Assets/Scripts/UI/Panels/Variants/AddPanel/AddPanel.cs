@@ -20,7 +20,6 @@ namespace Synthesis.UI.Panels.Variant
         void Start()
         {
             _root = ParsePath(Path.Combine("$appdata/Autodesk/Synthesis", Folder),'/');
-            UnityEngine.Debug.Log(_root);
             ShowDirectory(_root);
         }
 

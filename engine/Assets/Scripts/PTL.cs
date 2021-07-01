@@ -10,7 +10,6 @@ using Synthesis.ModelManager.Models;
 // using Zippo = System.IO.Compression.Z
 
 public class PTL : MonoBehaviour {
-
     private string DOZER;
     private string MEAN_MACHINE;
     private string AERIAL_ASSIST;
@@ -34,6 +33,15 @@ public class PTL : MonoBehaviour {
         // var position = field.transform.position;
         // position = new Vector3(position.x, position.y + 0.5f, position.z);
         // field.transform.position = position;
+    }
+    public void SpawnField(string fieldPath)
+    {
+        SpawnRobot(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+    }
+    public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
+    {
+        var field = Importer.Import(fieldPath, srcType, transType, true);
+        field.transform.position = pos;
     }
     public void SpawnRobot(string botPath)//overloaded
     {
@@ -60,6 +68,8 @@ public class PTL : MonoBehaviour {
 
         Camera.main.GetComponent<Synthesis.Camera.Camera>().Target = robot.transform;
     }
+
+
 
     public void Update() {
         // if (Input.GetKeyDown(KeyCode.Alpha1)) {
