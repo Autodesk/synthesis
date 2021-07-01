@@ -21,11 +21,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 346712921957891044, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 128.98999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 346712921957891044, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 610539319865841744, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
+      propertyPath: m_ScrollSensitivity
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 891413367229048811, guid: 59f5090a391f849308ddb7d3474ca136, type: 3}
       propertyPath: m_AnchorMax.x

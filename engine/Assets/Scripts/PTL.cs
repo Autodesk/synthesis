@@ -14,6 +14,7 @@ public class PTL : MonoBehaviour {
     private string DOZER;
     private string MEAN_MACHINE;
     private string AERIAL_ASSIST;
+    private string SIMBOTICS;
     private string SYNTHEPARK;
     private string DESTINATION_DEEP_SPACE;
     private string POWER_UP;
@@ -21,18 +22,22 @@ public class PTL : MonoBehaviour {
     private void Start() {
         DOZER = ParsePath("$appdata/Autodesk/Synthesis/Robots/Dozer");
         MEAN_MACHINE = ParsePath("$appdata/Autodesk/Synthesis/Robots/2018 - 2471 Mean Machine");
+        SIMBOTICS = ParsePath("$appdata/Autodesk/Synthesis/Robots/2014 - 1114 Simbotics");
         AERIAL_ASSIST = ParsePath("$appdata/Autodesk/Synthesis/Fields/2014 Aerial Assist");
         SYNTHEPARK = ParsePath("$appdata/Autodesk/Synthesis/Fields/SynthePark");
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
 
-        SpawnRobot(MEAN_MACHINE, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
-
+        SpawnRobot(MEAN_MACHINE);
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
         // var position = field.transform.position;
         // position = new Vector3(position.x, position.y + 0.5f, position.z);
         // field.transform.position = position;
+    }
+    public void SpawnRobot(string botPath)//overloaded
+    {
+        SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
 
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
