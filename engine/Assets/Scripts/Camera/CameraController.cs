@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
     
@@ -22,6 +23,7 @@ public class CameraController : MonoBehaviour {
     private float _actualZoom = 5.0f;
     private float _actualPitch = 0.0f;
     private float _actualYaw = 0.0f;
+    private bool _useOrbit = false;
     
     public void Update() {
         if (FollowTransform != null && transform.parent != FollowTransform)
@@ -35,17 +37,27 @@ public class CameraController : MonoBehaviour {
 
         float p = 0.0f;
         float y = 0.0f;
-        // Maybe check for if mouse is over UI
-        float z = ZoomSensitivity * -Input.mouseScrollDelta.y;
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        } else if (Input.GetKey(KeyCode.Mouse0)) {
-            p = -PitchSensitivity * Input.GetAxis("Mouse Y");
-            y = YawSensitivity * Input.GetAxis("Mouse X");
-        } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+        float z = 0.0f;
+        
+        bool isOverUI = EventSystem.current.IsPointerOverGameObject();
+        if (!isOverUI) {
+            z = ZoomSensitivity * -Input.mouseScrollDelta.y;
+            if (Input.GetKeyDown(KeyCode.Mouse0)) {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
+
+        if (!Input.GetKey(KeyCode.Mouse0)) {
+            _useOrbit = !isOverUI;
+        } else {
+            if (_useOrbit) {
+                p = -PitchSensitivity * Input.GetAxis("Mouse Y");
+                y = YawSensitivity * Input.GetAxis("Mouse X");
+            }
         }
 
         _targetPitch = Mathf.Clamp(_targetPitch + p, PitchLowerLimit, PitchUpperLimit);

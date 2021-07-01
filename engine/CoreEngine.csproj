@@ -41,32 +41,32 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleException.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ParentAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\TransformAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Api.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
+     <Compile Include="Assets\Scripts\Engine\Utilities\IOHandler.cs" />
+     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\JointsAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\DeflateStreamWrapper.cs" />
+     <Compile Include="Assets\Scripts\Engine\Utilities\ObjectLedger.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\RigidbodyAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ToastLogger.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SystemAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\ModuleLoader.cs" />
+     <Compile Include="Assets\Scripts\Engine\Utilities\IEnumerableExtensions.cs" />
+     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleEvent.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\Misc.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
-     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
-     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
-     <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleException.cs" />
-     <Compile Include="Assets\Scripts\Engine\Utilities\IOHandler.cs" />
-     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\JointsAdapter.cs" />
-     <Compile Include="Assets\Scripts\Engine\Utilities\ObjectLedger.cs" />
-     <Compile Include="Assets\Scripts\Engine\Utilities\IEnumerableExtensions.cs" />
-     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SpriteAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\ModuleMetadata.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\CameraAdapter.cs" />
+     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\LayerAdapter.cs" />
+     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
      <None Include="Assets\Scripts\Engine\CoreEngine.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
