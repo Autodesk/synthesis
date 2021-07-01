@@ -37,9 +37,10 @@
 sysinfo.txt
 
 !/engine/Assets/Packages/Api.dll
-!/engine/Assets/Packages/EngineImporter.dll
 !/engine/Assets/Packages/SimulatorAPI.dll
 !/engine/Assets/Packages/Nuget/Editor/NugetForUnity.dll
+
+!/api/libs/UnityEngine.dll
 
 importer/Backup/
 importer/Backup1/

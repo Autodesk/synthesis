@@ -32,14 +32,16 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>libs\UnityEngine.dll</HintPath>
+        <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Google.Protobuf" Version="3.17.3" />
+      <PackageReference Include="Google.Protobuf.Tools" Version="3.17.2" />
       <PackageReference Include="MathNet.Numerics" Version="4.11.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
       <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
       <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     </ItemGroup>
@@ -49,6 +51,10 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
         <Pack>True</Pack>
         <PackagePath></PackagePath>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Aardvark\Aardvark.csproj" />
     </ItemGroup>
 
 </Project>

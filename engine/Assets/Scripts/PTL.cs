@@ -7,6 +7,8 @@ using System;
 using Synthesis.Entitys;
 using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
+using SynthesisAPI.Translation;
+
 // using Zippo = System.IO.Compression.Z
 
 public class PTL : MonoBehaviour {
@@ -53,7 +55,7 @@ public class PTL : MonoBehaviour {
         }
         ModelManager.AddModel(dynoMeta.Name, model);
 
-        Camera.main.GetComponent<Synthesis.Camera.Camera>().Target = robot.transform;
+        Camera.main.GetComponent<CameraController>().FollowTransform = robot.transform.GetChild(0);
     }
 
     public void Update() {
