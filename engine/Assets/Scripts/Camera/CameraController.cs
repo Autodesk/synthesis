@@ -26,8 +26,8 @@ public class CameraController : MonoBehaviour {
     private bool _useOrbit = false;
     
     public void Update() {
-        if (FollowTransform != null && transform.parent != FollowTransform)
-            transform.parent = FollowTransform;
+  //      if (FollowTransform != null && transform.parent != FollowTransform)
+  //          transform.parent = FollowTransform;
 
         var pitchTest = PitchUpperLimit - PitchLowerLimit;
         if (pitchTest < 0)
@@ -74,12 +74,12 @@ public class CameraController : MonoBehaviour {
     public void LateUpdate() {
         // Construct orientation of the camera
         var t = transform;
-        t.localPosition = Vector3.zero;
+        t.localPosition = FollowTransform.position;
         t.localRotation = Quaternion.identity;
 
         var up = t.up;
         t.localRotation = Quaternion.Euler(_actualPitch, 0.0f, 0.0f);
-        t.RotateAround(t.position, up, _actualYaw);
-        t.localPosition = up * 0.5f + t.forward * -_actualZoom;
+        t.RotateAround(FollowTransform.position, up, _actualYaw);
+        t.localPosition = (up * 0.5f + t.forward * -_actualZoom)+t.localPosition;
     }
 }
