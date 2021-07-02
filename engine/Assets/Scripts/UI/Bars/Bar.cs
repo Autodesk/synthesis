@@ -17,7 +17,7 @@ namespace Synthesis.UI.Bars
         public void OpenPanel(GameObject prefab)
         {
             if (prefab == null) return;
-
+            CloseAllPanels();
             GameObject panel = Instantiate(prefab, panelParent.transform.position, panelParent.transform.rotation, panelParent.transform); //create
             // panel.transform.SetParent(panelParent.transform, false); //set parent
 

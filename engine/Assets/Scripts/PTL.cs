@@ -9,6 +9,7 @@ using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
 using SynthesisAPI.Translation;
 
+
 // using Zippo = System.IO.Compression.Z
 
 public class PTL : MonoBehaviour {
@@ -28,13 +29,26 @@ public class PTL : MonoBehaviour {
         DESTINATION_DEEP_SPACE = ParsePath("$appdata/Autodesk/Synthesis/Fields/2019 Destination Deep Space");
         POWER_UP = ParsePath("$appdata/Autodesk/Synthesis/Fields/2018 Power Up");
 
-        SpawnRobot(MEAN_MACHINE, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+        SpawnRobot(MEAN_MACHINE);
 
         // var field = Importer.Import(POWER_UP, Importer.SourceType.PROTOBUF_FIELD,
         //     Translator.TranslationType.BXDF_TO_PROTO_FIELD, true);
         // var position = field.transform.position;
         // position = new Vector3(position.x, position.y + 0.5f, position.z);
         // field.transform.position = position;
+    }
+    public void SpawnField(string fieldPath)
+    {
+        SpawnRobot(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+    }
+    public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
+    {
+        var field = Importer.Import(fieldPath, srcType, transType, true);
+        field.transform.position = pos;
+    }
+    public void SpawnRobot(string botPath)//overloaded
+    {
+        SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
 
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
