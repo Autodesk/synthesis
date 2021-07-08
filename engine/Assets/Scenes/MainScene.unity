@@ -399,6 +399,7 @@ GameObject:
   - component: {fileID: 630691998}
   - component: {fileID: 630691997}
   - component: {fileID: 630691999}
+  - component: {fileID: 630692000}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -446,6 +447,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   closeIcon: {fileID: 21300000, guid: 2c6554ea211414416a1e2a8c91fb148f, type: 3}
   collapseIcon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &630692000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630691996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3adb307ceebbed6489bc07be391a19e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &683168457
 PrefabInstance:
   m_ObjectHideFlags: 0
