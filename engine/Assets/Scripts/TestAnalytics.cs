@@ -15,5 +15,7 @@ public class TestAnalytics : MonoBehaviour
         var datapage = new AnalyticsPageView("Page View");
         AnalyticsManager.LogPageView(datapage);
         AnalyticsManager.PostData(url: "https://www.google-analytics.com/collect");
+
+        var timing = new AnalyticsLogTiming(category: "test", vari: "test", label: "test", time: 10);
     }
 }
