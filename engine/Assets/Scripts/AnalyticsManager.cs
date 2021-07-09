@@ -9,7 +9,8 @@ public static class AnalyticsManager
     public const string TRACKING_ID = "UA-81892961-6";
     public const string CLIENT_ID = "667";
 
-
+    public const string URL_COLLECT = "https://www.google-analytics.com/collect";
+    public const string URL_BATCH = "https://www.google-analytics.com/batch";
 
     public static void LogEvent(AnalyticsEvent e)
     {
@@ -38,14 +39,23 @@ public static class AnalyticsManager
         AllData += $"v=1&tid={TRACKING_ID}&cid={CLIENT_ID}&{e.GetPostData()}\n";
     }
 
-    public static void PostData(string url)
-    {
+    public static PostResult PostData() {
+        bool useBatch = AllData.Split('\n').Length > 2;
         WebClient cli = new WebClient();
-        string res = cli.UploadString(url, "POST", AllData);
+        string res = cli.UploadString(useBatch ? URL_BATCH : URL_COLLECT, "POST", AllData);
+        AllData = string.Empty;
         Debug.Log(res);
+        return new PostResult() { usedBatchUrl = useBatch, result = res };
+    }
+    
+    public struct PostResult {
+        public bool usedBatchUrl;
+        public string result;
     }
 
 }
+
+
 
 public interface IAnalytics
 {
