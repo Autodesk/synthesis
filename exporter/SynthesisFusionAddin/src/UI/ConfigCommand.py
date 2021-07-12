@@ -229,6 +229,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
 
             # wheel configuration group
+            """
             wheelConfig = inputs.addGroupCommandInput("wheelconfig", "Wheel Configuration")
             wheelConfig.isExpanded = True
             wheelConfig.isEnabled = True
@@ -236,43 +237,52 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             wheel_inputs = wheelConfig.children
             
             tableCommandInput = wheel_inputs.addTableCommandInput(
-                "wheelselection", "", 2, "1:2"
+                "wheelselection", "Wheel Table", 2, "1:1"
             )
 
             # selection input
             wheelSelect = inputs.addSelectionInput("wheelselect", "Wheel Selection", "Select drive-train wheels in assembly.")
             wheelSelect.addSelectionFilter(adsk.fusion.BRepBodies) # limit selection to only bodies
             wheelSelect.setSelectionLimits(1) 
+            """
 
             # disable vr by default
-            vr = inputs.addGroupCommandInput("vrsettings", "VR Settings")
-            vr.isExpanded = False
-            vr.isEnabled = False
-            vr.tooltip = "Additional VR settings for VR mode projects, enables options for contact sets and additional data."
-            vr_inputs = vr.children
+            wheelConfig = inputs.addGroupCommandInput("wheelconfig", "Wheel Configuration")
+            wheelConfig.isExpanded = False
+            wheelConfig.isEnabled = False
+            wheelConfig.tooltip = "Specify drive-train wheel types in assembly"
+            wheel_inputs = wheelConfig.children
 
             # selection = vr_inputs.addSelectionInput('contactsets', 'Contact Sets', 'Select any Body')
             # selection.addSelectionFilter("Bodies")
 
-            tableInput = vr_inputs.addTableCommandInput(
+            tableInput = wheel_inputs.addTableCommandInput(
                 "contactsets", "Contact Sets", 3, "1:1:1"
             )
             # addRowToTable(tableInput)
 
             # Add inputs into the table.
-            addButtonInput = vr_inputs.addBoolValueInput(
+            addButtonInput = wheel_inputs.addBoolValueInput(
                 "tableAdd", "Add Body", False, "", True
             )
+            
+            wheelSelectInput = wheel_inputs.addSelectionInput("wheelselect", "Wheel Selection", "Select drive-train wheels in assembly.")
+            wheelSelectInput.addSelectionFilter("Bodies") # limit selection to only bodies
+            wheelSelectInput.setSelectionLimits(1) 
+
             tableInput.addToolbarCommandInput(addButtonInput)
-            deleteButtonInput = vr_inputs.addBoolValueInput(
+            # tableInput.addToolbarCommandInput(wheelSelect)
+
+            deleteButtonInput = wheel_inputs.addBoolValueInput(
                 "tableDelete", "Remove Body", False, "", True
             )
+
             tableInput.addToolbarCommandInput(deleteButtonInput)
 
             self.createBooleanInput(
                 "flatten",
                 "Flatten Entire Hierarchy",
-                vr_inputs,
+                wheel_inputs,
                 checked=True,
                 tooltip="Flatten the model to just bodies with no nested transforms",
                 tooltipadvanced="This may be easier to use in unity",
@@ -281,7 +291,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             self.createBooleanInput(
                 "condense",
                 "Compress Model",
-                vr_inputs,
+                wheel_inputs,
                 checked=False,
                 tooltip="Compresses model into a single mesh.",
                 tooltipadvanced="This may be easier to use in unity",
