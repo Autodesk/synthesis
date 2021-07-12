@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\EditModeTests\SampleTest.cs" />
+     <Compile Include="Assets\EditModeTests\AnalyticsTest.cs" />
      <None Include="Assets\EditModeTests\EditModeTests.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -278,7 +279,7 @@
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
      </Reference>
      <Reference Include="nunit.framework">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -629,19 +630,23 @@
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.TestRunner">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEngine.TestRunner.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.TestRunner">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor.UI">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="CoreEngine.csproj">
+      <Project>{28740e66-4b28-d1ee-7ffd-ca276d12197b}</Project>
+      <Name>CoreEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

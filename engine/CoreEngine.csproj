@@ -41,33 +41,81 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\UI\Bars\Tabs.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleException.cs" />
+     <Compile Include="Assets\Scripts\TestAnalytics.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxItem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ParentAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\TransformAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyItem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Api.cs" />
+     <Compile Include="Assets\Scripts\Interactable3DDetector.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Controllables\Controllable.cs" />
+     <Compile Include="Assets\Scripts\UI\Bars\Bar.cs" />
+     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Parse.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\IOHandler.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\JointsAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\DeflateStreamWrapper.cs" />
+     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\ObjectLedger.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
+     <Compile Include="Assets\Scripts\UtilExtensions.cs" />
+     <Compile Include="Assets\Scripts\PTL.cs" />
+     <Compile Include="Assets\Scripts\Attributes\ControllableInputAttribute.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ConfigureDrivetrainPanel.cs" />
+     <Compile Include="Assets\Scripts\Physics\PhysicsManager.cs" />
+     <Compile Include="Assets\Scripts\UI\ImageManager.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\RigidbodyAdapter.cs" />
+     <Compile Include="Assets\Scripts\AnalyticsManager.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
+     <Compile Include="Assets\Scripts\MouseTracker.cs" />
+     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
+     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
      <Compile Include="Assets\Scripts\Engine\ToastLogger.cs" />
+     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
+     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SystemAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\ModuleLoader.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\IEnumerableExtensions.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\GearboxConfigPanel.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshAdapter.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
+     <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
+     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
+     <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleEvent.cs" />
      <Compile Include="Assets\Scripts\Engine\Utilities\Misc.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshColliderAdapter.cs" />
+     <Compile Include="Assets\Scripts\Importer\EntityMeta.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SpriteAdapter.cs" />
+     <Compile Include="Assets\Scripts\Importer\DynamicObjectMeta.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\ModuleMetadata.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Controllables\TestControllable.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\IApiAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SelectableAdapter.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\CameraAdapter.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Models\Field.cs" />
+     <Compile Include="Assets\Scripts\DriverPractice\DriverPracticeSystem.cs" />
+     <Compile Include="Assets\Scripts\ModelManager\Models\GearboxData.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
+     <Compile Include="Assets\Scripts\EntityManager\Entity.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
+     <Compile Include="Assets\Scripts\MyTest.cs" />
+     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\LayerAdapter.cs" />
+     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddItem.cs" />
+     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
      <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
-     <None Include="Assets\Scripts\Engine\CoreEngine.asmdef" />
+     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
+     <None Include="Assets\Scripts\CoreEngine.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
@@ -303,16 +351,37 @@
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
      </Reference>
      <Reference Include="Api">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Assets/Packages/Api.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/Api.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Spatial">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/MathNet.Spatial.0.6.0/lib/net461/MathNet.Spatial.dll</HintPath>
      </Reference>
      <Reference Include="MathNet.Numerics">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/MathNet.Numerics.4.15.0/lib/net461/MathNet.Numerics.dll</HintPath>
      </Reference>
      <Reference Include="System.Drawing.Common">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/System.Drawing.Common.5.0.2/lib/net461/System.Drawing.Common.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/Newtonsoft.Json.13.0.1/lib/net45/Newtonsoft.Json.dll</HintPath>
+     </Reference>
+     <Reference Include="Google.Protobuf">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/Google.Protobuf.3.17.3/lib/net45/Google.Protobuf.dll</HintPath>
+     </Reference>
+     <Reference Include="Aardvark">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/Aardvark.dll</HintPath>
+     </Reference>
+     <Reference Include="System.Buffers">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/System.Buffers.4.4.0/lib/netstandard2.0/System.Buffers.dll</HintPath>
+     </Reference>
+     <Reference Include="System.Memory">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/System.Memory.4.5.3/lib/netstandard2.0/System.Memory.dll</HintPath>
+     </Reference>
+     <Reference Include="System.Runtime.CompilerServices.Unsafe">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Assets/Packages/System.Runtime.CompilerServices.Unsafe.4.5.2/lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+     </Reference>
+     <Reference Include="nunit.framework">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
      </Reference>
      <Reference Include="mscorlib">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -662,11 +731,14 @@
      <Reference Include="System.Xml.XPath.XDocument">
      <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.12f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
      </Reference>
+     <Reference Include="Unity.TextMeshPro">
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+     </Reference>
      <Reference Include="UnityEditor.UI">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
-     <HintPath>C:/Users/hunte/git/1281-spawning-items/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+     <HintPath>C:/Users/hunte/git/1286-PR/engine/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>
