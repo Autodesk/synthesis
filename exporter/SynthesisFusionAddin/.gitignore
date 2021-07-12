@@ -96,10 +96,6 @@ temp
 *.unitypackage
 *.zip
 
-# Mira
-mira/protos
-proto
-
 # PipDownlaoder
 libs
 pip-lib
