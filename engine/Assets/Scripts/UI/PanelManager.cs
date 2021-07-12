@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class UIManager
+public static class PanelManager
 {
 
     private static Panel _currentPanel = null;

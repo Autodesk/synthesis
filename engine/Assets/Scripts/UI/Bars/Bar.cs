@@ -8,11 +8,11 @@ namespace Synthesis.UI.Bars
     {
         public void OpenPanel(GameObject prefab)
         {
-            UIManager.OpenPanel(prefab, true);
+            PanelManager.OpenPanel(prefab, true);
         }
         public void CloseAllPanels()
         {
-            UIManager.ClosePanel();
+            PanelManager.ClosePanel();
         }
     }
 }
