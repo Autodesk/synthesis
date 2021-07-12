@@ -39,11 +39,12 @@ public class PTL : MonoBehaviour {
     }
     public void SpawnField(string fieldPath)
     {
-        SpawnRobot(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
+        SpawnField(fieldPath, Vector3.zero, Importer.SourceType.PROTOBUF_FIELD, Translator.TranslationType.BXDF_TO_PROTO_FIELD);
     }
     public void SpawnField(string fieldPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default)
     {
-        var field = Importer.Import(fieldPath, srcType, transType, true);
+        if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
+        var field = Importer.Import(fieldPath, srcType);
         field.transform.position = pos;
     }
     public void SpawnRobot(string botPath)//overloaded
@@ -52,7 +53,10 @@ public class PTL : MonoBehaviour {
     }
 
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
-        var robot = Importer.Import(botPath, srcType, transType, true);
+        if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
+        var robot = Importer.Import(botPath, srcType);
+
+        //var robot = Importer.Import(botPath, srcType, transType, true);
         robot.transform.position = pos;
         var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
         // var robotEntity = robot.AddComponent<RobotEntity>();
