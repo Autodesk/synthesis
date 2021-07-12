@@ -1,0 +1,22 @@
+[build-system]
+requires = ["google", "black", "pyminifier"]
+
+[tool.black]
+line-length = 90
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+    \.git
+    | \.venv
+    | build
+    | docs
+    | logs
+    | proto
+    | .vscode
+    | dist
+    | src/proto_out
+  )/
+)
+'''

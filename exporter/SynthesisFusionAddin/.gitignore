@@ -1,0 +1,112 @@
+# Prerequisites
+*.d
+*.DS_Store
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Projects 
+*.vcxproj
+*.xcodeproj
+*.filters
+*.sln
+
+# CMAKE
+CMakeFiles
+CMakeCache.txt
+include/HellionConfigure.h
+
+# Build
+grpc
+
+# 3p
+third_party/*
+!third_party/.gitkeep
+
+# Binaries
+*.dll
+*.ilk
+*.pdb
+
+# Docs
+build/windows/*
+!build/windows/windows_bootstrap.bat
+docs/latex
+
+# Package
+package
+
+# Python
+__pycache__
+**/__pycache__
+**/*/__pycache__
+
+# Styling - css is allowed now for build simplification
+# src/Resources/Palette/style/css/*
+# !src/Resources/Palette/style/css/.gitkeep
+# src/Resources/Palette/style/*/**/*.css
+*/**/*.css.map
+src/Resources/Icons/*
+
+# Virtual Issues
+venv
+
+# Logs
+*/**/*.log
+
+# bazel
+bazel-*/
+
+#VS code
+.vscode
+.vscode/*
+
+#Packaging
+Hellion
+package/*
+TemporaryOutput
+temp
+*.unitypackage
+*.zip
+
+# Mira
+mira/protos
+proto
+
+# PipDownlaoder
+libs
+pip-lib
+site-packages
+
+# Clion files
+.idea
+
+# env files
+**/.env
