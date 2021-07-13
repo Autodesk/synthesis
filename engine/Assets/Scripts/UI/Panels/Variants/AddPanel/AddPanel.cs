@@ -39,7 +39,12 @@ namespace Synthesis.UI.Panels.Variant
             }
             else if (list != null)
             {
-                foreach (string path in Directory.GetDirectories(filePath))//, "*.g*"))
+                foreach (string path in Directory.GetFiles(filePath))//TRANSLATED FILE (SPR)
+                {
+                    Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
+                        ParsePath(path, '\\'), this);
+                }
+                foreach (string path in Directory.GetDirectories(filePath))//LEGACY FORMAT
                 {
                     Instantiate(addItem, list.transform).GetComponent<AddItem>().Init(path.Substring(_root.Length + Path.DirectorySeparatorChar.ToString().Length),
                         ParsePath(path, '\\'), //apparently it only works if you replace the back slashes with forward slashes
