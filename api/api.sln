@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v1", "v1", "{69881A44-F158-
 		controller.proto = controller.proto
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aardvark", "Aardvark\Aardvark.csproj", "{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC669A38-8C1C-4A3B-AFB8-368620018AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

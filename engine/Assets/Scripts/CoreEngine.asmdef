@@ -1,0 +1,28 @@
+{
+    "name": "CoreEngine",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Api.dll",
+        "MathNet.Spatial.dll",
+        "MathNet.Numerics.dll",
+        "System.Drawing.Common.dll",
+        "Newtonsoft.Json.dll",
+        "Google.Protobuf.dll",
+        "Aardvark.dll",
+        "System.Buffers.dll",
+        "System.Memory.dll",
+        "System.Runtime.CompilerServices.Unsafe.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

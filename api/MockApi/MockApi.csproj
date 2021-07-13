@@ -11,8 +11,12 @@
 
     <ItemGroup>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\importer\libs\UnityEngine.dll</HintPath>
+        <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
 </Project>
