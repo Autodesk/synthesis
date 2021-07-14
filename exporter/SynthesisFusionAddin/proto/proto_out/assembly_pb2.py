@@ -11,9 +11,9 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from . import types_pb2 as types__pb2
-from . import joint_pb2 as joint__pb2
-from . import material_pb2 as material__pb2
+import types_pb2 as types__pb2
+import joint_pb2 as joint__pb2
+import material_pb2 as material__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'H\001',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0e\x61ssembly.proto\x12\x07mirabuf\x1a\x0btypes.proto\x1a\x0bjoint.proto\x1a\x0ematerial.proto\"3\n\nAssemblies\x12%\n\nassemblies\x18\x01 \x03(\x0b\x32\x11.mirabuf.Assembly\"\xf5\x01\n\x08\x41ssembly\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12#\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x15.mirabuf.AssemblyData\x12\x0f\n\x07\x64ynamic\x18\x03 \x01(\x08\x12*\n\rphysical_data\x18\x04 \x01(\x0b\x32\x13.PhysicalProperties\x12)\n\x10\x64\x65sign_hierarchy\x18\x05 \x01(\x0b\x32\x0f.GraphContainer\x12(\n\x0fjoint_hierarchy\x18\x06 \x01(\x0b\x32\x0f.GraphContainer\x12\x1d\n\ttransform\x18\x07 \x01(\x0b\x32\n.Transform\"e\n\x0c\x41ssemblyData\x12\x1d\n\x05parts\x18\x01 \x01(\x0b\x32\x0e.mirabuf.Parts\x12\x17\n\x06joints\x18\x02 \x01(\x0b\x32\x07.Joints\x12\x1d\n\tmaterials\x18\x03 \x01(\x0b\x32\n.Materials\"\xac\x02\n\x05Parts\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12=\n\x10part_definitions\x18\x02 \x03(\x0b\x32#.mirabuf.Parts.PartDefinitionsEntry\x12\x39\n\x0epart_instances\x18\x03 \x03(\x0b\x32!.mirabuf.Parts.PartInstancesEntry\x1aO\n\x14PartDefinitionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.mirabuf.PartDefinition:\x02\x38\x01\x1a\x43\n\x12PartInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.mirabuf.Part:\x02\x38\x01\"\x8f\x01\n\x0ePartDefinition\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12*\n\rphysical_data\x18\x02 \x01(\x0b\x32\x13.PhysicalProperties\x12\x1d\n\ttransform\x18\x03 \x01(\x0b\x32\n.Transform\x12\x1d\n\x06\x62odies\x18\x04 \x03(\x0b\x32\r.mirabuf.Body\"\x92\x01\n\x04Part\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12!\n\x19part_definition_reference\x18\x02 \x01(\t\x12\x1d\n\ttransform\x18\x03 \x01(\x0b\x32\n.Transform\x12\x11\n\tmaterials\x18\x04 \x03(\t\x12\x10\n\x08\x63hildren\x18\x05 \x03(\t\x12\x0e\n\x06joints\x18\x06 \x03(\t\"i\n\x04\x42ody\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12\x0c\n\x04part\x18\x02 \x01(\t\x12,\n\rtriangle_mesh\x18\x03 \x01(\x0b\x32\x15.mirabuf.TriangleMesh\x12\x10\n\x08material\x18\x04 \x01(\t\"\xa5\x01\n\x0cTriangleMesh\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12\x12\n\nhas_volume\x18\x02 \x01(\x08\x12\x1a\n\x12material_reference\x18\x03 \x01(\t\x12\x1d\n\x04mesh\x18\x04 \x01(\x0b\x32\r.mirabuf.MeshH\x00\x12$\n\x05\x62mesh\x18\x05 \x01(\x0b\x32\x13.mirabuf.BinaryMeshH\x00\x42\x0b\n\tmesh_type\"C\n\x04Mesh\x12\r\n\x05verts\x18\x01 \x03(\x02\x12\x0f\n\x07normals\x18\x02 \x03(\x02\x12\n\n\x02uv\x18\x03 \x03(\x05\x12\x0f\n\x07indices\x18\x04 \x03(\x05\"I\n\nBinaryMesh\x12\r\n\x05verts\x18\x01 \x01(\x0c\x12\x0f\n\x07normals\x18\x02 \x03(\x02\x12\n\n\x02uv\x18\x03 \x03(\x05\x12\x0f\n\x07indices\x18\x04 \x03(\x05\x42\x02H\x01\x62\x06proto3'
+  serialized_pb=b'\n\x0e\x61ssembly.proto\x12\x07mirabuf\x1a\x0btypes.proto\x1a\x0bjoint.proto\x1a\x0ematerial.proto\"3\n\nAssemblies\x12%\n\nassemblies\x18\x01 \x03(\x0b\x32\x11.mirabuf.Assembly\"\xf5\x01\n\x08\x41ssembly\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12#\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x15.mirabuf.AssemblyData\x12\x0f\n\x07\x64ynamic\x18\x03 \x01(\x08\x12*\n\rphysical_data\x18\x04 \x01(\x0b\x32\x13.PhysicalProperties\x12)\n\x10\x64\x65sign_hierarchy\x18\x05 \x01(\x0b\x32\x0f.GraphContainer\x12(\n\x0fjoint_hierarchy\x18\x06 \x01(\x0b\x32\x0f.GraphContainer\x12\x1d\n\ttransform\x18\x07 \x01(\x0b\x32\n.Transform\"e\n\x0c\x41ssemblyData\x12\x1d\n\x05parts\x18\x01 \x01(\x0b\x32\x0e.mirabuf.Parts\x12\x17\n\x06joints\x18\x02 \x01(\x0b\x32\x07.Joints\x12\x1d\n\tmaterials\x18\x03 \x01(\x0b\x32\n.Materials\"\xac\x02\n\x05Parts\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12=\n\x10part_definitions\x18\x02 \x03(\x0b\x32#.mirabuf.Parts.PartDefinitionsEntry\x12\x39\n\x0epart_instances\x18\x03 \x03(\x0b\x32!.mirabuf.Parts.PartInstancesEntry\x1aO\n\x14PartDefinitionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.mirabuf.PartDefinition:\x02\x38\x01\x1a\x43\n\x12PartInstancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.mirabuf.Part:\x02\x38\x01\"\x8f\x01\n\x0ePartDefinition\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12*\n\rphysical_data\x18\x02 \x01(\x0b\x32\x13.PhysicalProperties\x12\x1d\n\ttransform\x18\x03 \x01(\x0b\x32\n.Transform\x12\x1d\n\x06\x62odies\x18\x04 \x03(\x0b\x32\r.mirabuf.Body\"\x7f\n\x04Part\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12!\n\x19part_definition_reference\x18\x02 \x01(\t\x12\x1d\n\ttransform\x18\x03 \x01(\x0b\x32\n.Transform\x12\x10\n\x08\x63hildren\x18\x04 \x03(\t\x12\x0e\n\x06joints\x18\x05 \x03(\t\"i\n\x04\x42ody\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12\x0c\n\x04part\x18\x02 \x01(\t\x12,\n\rtriangle_mesh\x18\x03 \x01(\x0b\x32\x15.mirabuf.TriangleMesh\x12\x10\n\x08material\x18\x04 \x01(\t\"\xa5\x01\n\x0cTriangleMesh\x12\x13\n\x04info\x18\x01 \x01(\x0b\x32\x05.Info\x12\x12\n\nhas_volume\x18\x02 \x01(\x08\x12\x1a\n\x12material_reference\x18\x03 \x01(\t\x12\x1d\n\x04mesh\x18\x04 \x01(\x0b\x32\r.mirabuf.MeshH\x00\x12$\n\x05\x62mesh\x18\x05 \x01(\x0b\x32\x13.mirabuf.BinaryMeshH\x00\x42\x0b\n\tmesh_type\"C\n\x04Mesh\x12\r\n\x05verts\x18\x01 \x03(\x02\x12\x0f\n\x07normals\x18\x02 \x03(\x02\x12\n\n\x02uv\x18\x03 \x03(\x05\x12\x0f\n\x07indices\x18\x04 \x03(\x05\"\x0c\n\nBinaryMeshB\x02H\x01\x62\x06proto3'
   ,
   dependencies=[types__pb2.DESCRIPTOR,joint__pb2.DESCRIPTOR,material__pb2.DESCRIPTOR,])
 
@@ -386,22 +386,15 @@ _PART = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='materials', full_name='mirabuf.Part.materials', index=3,
+      name='children', full_name='mirabuf.Part.children', index=3,
       number=4, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='children', full_name='mirabuf.Part.children', index=4,
+      name='joints', full_name='mirabuf.Part.joints', index=4,
       number=5, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='joints', full_name='mirabuf.Part.joints', index=5,
-      number=6, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -418,8 +411,8 @@ _PART = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=923,
-  serialized_end=1069,
+  serialized_start=922,
+  serialized_end=1049,
 )
 
 
@@ -471,8 +464,8 @@ _BODY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1071,
-  serialized_end=1176,
+  serialized_start=1051,
+  serialized_end=1156,
 )
 
 
@@ -536,8 +529,8 @@ _TRIANGLEMESH = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1179,
-  serialized_end=1344,
+  serialized_start=1159,
+  serialized_end=1324,
 )
 
 
@@ -589,8 +582,8 @@ _MESH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1346,
-  serialized_end=1413,
+  serialized_start=1326,
+  serialized_end=1393,
 )
 
 
@@ -602,34 +595,6 @@ _BINARYMESH = _descriptor.Descriptor(
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
-    _descriptor.FieldDescriptor(
-      name='verts', full_name='mirabuf.BinaryMesh.verts', index=0,
-      number=1, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='normals', full_name='mirabuf.BinaryMesh.normals', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='uv', full_name='mirabuf.BinaryMesh.uv', index=2,
-      number=3, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='indices', full_name='mirabuf.BinaryMesh.indices', index=3,
-      number=4, type=5, cpp_type=1, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -642,8 +607,8 @@ _BINARYMESH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1415,
-  serialized_end=1488,
+  serialized_start=1395,
+  serialized_end=1407,
 )
 
 _ASSEMBLIES.fields_by_name['assemblies'].message_type = _ASSEMBLY

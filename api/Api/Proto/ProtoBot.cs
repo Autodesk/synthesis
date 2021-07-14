@@ -123,19 +123,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<ProtoRobot> _parser = new pb::MessageParser<ProtoRobot>(() => new ProtoRobot());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<ProtoRobot> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoRobot() {
       OnConstruction();
     }
@@ -143,6 +147,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoRobot(ProtoRobot other) : this() {
       object_ = other.object_ != null ? other.object_.Clone() : null;
       serializerSignature_ = other.serializerSignature_;
@@ -150,6 +155,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoRobot Clone() {
       return new ProtoRobot(this);
     }
@@ -158,6 +164,7 @@ namespace SynthesisAPI.Proto {
     public const int ObjectFieldNumber = 1;
     private global::SynthesisAPI.Proto.DynamicObject object_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.DynamicObject Object {
       get { return object_; }
       set {
@@ -169,6 +176,7 @@ namespace SynthesisAPI.Proto {
     public const int SerializerSignatureFieldNumber = 2;
     private string serializerSignature_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string SerializerSignature {
       get { return serializerSignature_; }
       set {
@@ -177,11 +185,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as ProtoRobot);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(ProtoRobot other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -195,6 +205,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (object_ != null) hash ^= Object.GetHashCode();
@@ -206,11 +217,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -231,6 +244,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (object_ != null) {
         output.WriteRawTag(10);
@@ -247,6 +261,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (object_ != null) {
@@ -262,6 +277,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(ProtoRobot other) {
       if (other == null) {
         return;
@@ -279,6 +295,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -307,6 +324,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -340,19 +358,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<ProtoField> _parser = new pb::MessageParser<ProtoField>(() => new ProtoField());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<ProtoField> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoField() {
       OnConstruction();
     }
@@ -360,6 +382,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoField(ProtoField other) : this() {
       object_ = other.object_ != null ? other.object_.Clone() : null;
       serializerSignature_ = other.serializerSignature_;
@@ -369,6 +392,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoField Clone() {
       return new ProtoField(this);
     }
@@ -377,6 +401,7 @@ namespace SynthesisAPI.Proto {
     public const int ObjectFieldNumber = 1;
     private global::SynthesisAPI.Proto.DynamicObject object_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.DynamicObject Object {
       get { return object_; }
       set {
@@ -388,6 +413,7 @@ namespace SynthesisAPI.Proto {
     public const int SerializerSignatureFieldNumber = 2;
     private string serializerSignature_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string SerializerSignature {
       get { return serializerSignature_; }
       set {
@@ -401,6 +427,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(34, global::SynthesisAPI.Proto.GamepieceDefinition.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.GamepieceDefinition> gamepieceDefinitions_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.GamepieceDefinition>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.GamepieceDefinition> GamepieceDefinitions {
       get { return gamepieceDefinitions_; }
     }
@@ -411,16 +438,19 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(42, global::SynthesisAPI.Proto.Gamepiece.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Gamepiece> gamepieces_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Gamepiece>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Gamepiece> Gamepieces {
       get { return gamepieces_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as ProtoField);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(ProtoField other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -436,6 +466,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (object_ != null) hash ^= Object.GetHashCode();
@@ -449,11 +480,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -476,6 +509,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (object_ != null) {
         output.WriteRawTag(10);
@@ -494,6 +528,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (object_ != null) {
@@ -511,6 +546,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(ProtoField other) {
       if (other == null) {
         return;
@@ -530,6 +566,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -566,6 +603,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -607,19 +645,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Gamepiece> _parser = new pb::MessageParser<Gamepiece>(() => new Gamepiece());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Gamepiece> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Gamepiece() {
       OnConstruction();
     }
@@ -627,6 +669,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Gamepiece(Gamepiece other) : this() {
       visualMesh_ = other.visualMesh_ != null ? other.visualMesh_.Clone() : null;
       visualMaterials_ = other.visualMaterials_.Clone();
@@ -646,6 +689,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Gamepiece Clone() {
       return new Gamepiece(this);
     }
@@ -654,6 +698,7 @@ namespace SynthesisAPI.Proto {
     public const int VisualMeshFieldNumber = 1;
     private global::SynthesisAPI.Proto.Mesh visualMesh_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Mesh VisualMesh {
       get { return visualMesh_; }
       set {
@@ -664,6 +709,7 @@ namespace SynthesisAPI.Proto {
     /// <summary>Field number for the "meshCollider" field.</summary>
     public const int MeshColliderFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Mesh MeshCollider {
       get { return colliderCase_ == ColliderOneofCase.MeshCollider ? (global::SynthesisAPI.Proto.Mesh) collider_ : null; }
       set {
@@ -675,6 +721,7 @@ namespace SynthesisAPI.Proto {
     /// <summary>Field number for the "sphereCollider" field.</summary>
     public const int SphereColliderFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Sphere SphereCollider {
       get { return colliderCase_ == ColliderOneofCase.SphereCollider ? (global::SynthesisAPI.Proto.Sphere) collider_ : null; }
       set {
@@ -689,6 +736,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(34, global::SynthesisAPI.Proto.Material.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Material> visualMaterials_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Material>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Material> VisualMaterials {
       get { return visualMaterials_; }
     }
@@ -697,6 +745,7 @@ namespace SynthesisAPI.Proto {
     public const int PositionFieldNumber = 5;
     private global::SynthesisAPI.Proto.Vec3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Position {
       get { return position_; }
       set {
@@ -708,6 +757,7 @@ namespace SynthesisAPI.Proto {
     public const int DefinitionFieldNumber = 6;
     private global::SynthesisAPI.Proto.GamepieceDefinition definition_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.GamepieceDefinition Definition {
       get { return definition_; }
       set {
@@ -719,6 +769,7 @@ namespace SynthesisAPI.Proto {
     public const int PhysicalPropertiesFieldNumber = 7;
     private global::SynthesisAPI.Proto.PhysProps physicalProperties_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.PhysProps PhysicalProperties {
       get { return physicalProperties_; }
       set {
@@ -735,22 +786,26 @@ namespace SynthesisAPI.Proto {
     }
     private ColliderOneofCase colliderCase_ = ColliderOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ColliderOneofCase ColliderCase {
       get { return colliderCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearCollider() {
       colliderCase_ = ColliderOneofCase.None;
       collider_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Gamepiece);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Gamepiece other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -770,6 +825,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (visualMesh_ != null) hash ^= VisualMesh.GetHashCode();
@@ -787,11 +843,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -829,6 +887,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (visualMesh_ != null) {
         output.WriteRawTag(10);
@@ -862,6 +921,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (visualMesh_ != null) {
@@ -890,6 +950,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Gamepiece other) {
       if (other == null) {
         return;
@@ -938,6 +999,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -1005,6 +1067,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1077,19 +1140,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<GamepieceDefinition> _parser = new pb::MessageParser<GamepieceDefinition>(() => new GamepieceDefinition());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<GamepieceDefinition> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GamepieceDefinition() {
       OnConstruction();
     }
@@ -1097,6 +1164,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GamepieceDefinition(GamepieceDefinition other) : this() {
       name_ = other.name_;
       spawnLocation_ = other.spawnLocation_ != null ? other.spawnLocation_.Clone() : null;
@@ -1104,6 +1172,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GamepieceDefinition Clone() {
       return new GamepieceDefinition(this);
     }
@@ -1112,6 +1181,7 @@ namespace SynthesisAPI.Proto {
     public const int NameFieldNumber = 1;
     private string name_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_; }
       set {
@@ -1123,6 +1193,7 @@ namespace SynthesisAPI.Proto {
     public const int SpawnLocationFieldNumber = 2;
     private global::SynthesisAPI.Proto.Vec3 spawnLocation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 SpawnLocation {
       get { return spawnLocation_; }
       set {
@@ -1131,11 +1202,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as GamepieceDefinition);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(GamepieceDefinition other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1149,6 +1222,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Name.Length != 0) hash ^= Name.GetHashCode();
@@ -1160,11 +1234,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -1185,6 +1261,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Name.Length != 0) {
         output.WriteRawTag(10);
@@ -1201,6 +1278,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Name.Length != 0) {
@@ -1216,6 +1294,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(GamepieceDefinition other) {
       if (other == null) {
         return;
@@ -1233,6 +1312,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -1261,6 +1341,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1294,19 +1375,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<DynamicObject> _parser = new pb::MessageParser<DynamicObject>(() => new DynamicObject());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<DynamicObject> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public DynamicObject() {
       OnConstruction();
     }
@@ -1314,6 +1399,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public DynamicObject(DynamicObject other) : this() {
       nodes_ = other.nodes_.Clone();
       name_ = other.name_;
@@ -1321,6 +1407,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public DynamicObject Clone() {
       return new DynamicObject(this);
     }
@@ -1331,6 +1418,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(10, global::SynthesisAPI.Proto.Node.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Node> nodes_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Node>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Node> Nodes {
       get { return nodes_; }
     }
@@ -1339,6 +1427,7 @@ namespace SynthesisAPI.Proto {
     public const int NameFieldNumber = 2;
     private string name_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_; }
       set {
@@ -1347,11 +1436,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as DynamicObject);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(DynamicObject other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1365,6 +1456,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= nodes_.GetHashCode();
@@ -1376,11 +1468,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -1398,6 +1492,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       nodes_.WriteTo(ref output, _repeated_nodes_codec);
       if (Name.Length != 0) {
@@ -1411,6 +1506,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       size += nodes_.CalculateSize(_repeated_nodes_codec);
@@ -1424,6 +1520,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(DynamicObject other) {
       if (other == null) {
         return;
@@ -1436,6 +1533,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -1461,6 +1559,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1491,19 +1590,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Node> _parser = new pb::MessageParser<Node>(() => new Node());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Node> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Node() {
       OnConstruction();
     }
@@ -1511,6 +1614,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Node(Node other) : this() {
       guid_ = other.guid_ != null ? other.guid_.Clone() : null;
       visualMesh_ = other.visualMesh_ != null ? other.visualMesh_.Clone() : null;
@@ -1535,6 +1639,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Node Clone() {
       return new Node(this);
     }
@@ -1543,6 +1648,7 @@ namespace SynthesisAPI.Proto {
     public const int GuidFieldNumber = 1;
     private global::SynthesisAPI.Proto.ProtoGuid guid_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.ProtoGuid Guid {
       get { return guid_; }
       set {
@@ -1554,6 +1660,7 @@ namespace SynthesisAPI.Proto {
     public const int VisualMeshFieldNumber = 2;
     private global::SynthesisAPI.Proto.Mesh visualMesh_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Mesh VisualMesh {
       get { return visualMesh_; }
       set {
@@ -1567,6 +1674,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(26, global::SynthesisAPI.Proto.Mesh.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Mesh> meshColliders_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Mesh>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Mesh> MeshColliders {
       get { return meshColliders_; }
     }
@@ -1574,6 +1682,7 @@ namespace SynthesisAPI.Proto {
     /// <summary>Field number for the "rotationalJoint" field.</summary>
     public const int RotationalJointFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.RotationalJoint RotationalJoint {
       get { return jointCase_ == JointOneofCase.RotationalJoint ? (global::SynthesisAPI.Proto.RotationalJoint) joint_ : null; }
       set {
@@ -1585,6 +1694,7 @@ namespace SynthesisAPI.Proto {
     /// <summary>Field number for the "otherJoint" field.</summary>
     public const int OtherJointFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.OtherJoint OtherJoint {
       get { return jointCase_ == JointOneofCase.OtherJoint ? (global::SynthesisAPI.Proto.OtherJoint) joint_ : null; }
       set {
@@ -1597,6 +1707,7 @@ namespace SynthesisAPI.Proto {
     public const int PhysicalPropertiesFieldNumber = 5;
     private global::SynthesisAPI.Proto.PhysProps physicalProperties_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.PhysProps PhysicalProperties {
       get { return physicalProperties_; }
       set {
@@ -1608,6 +1719,7 @@ namespace SynthesisAPI.Proto {
     public const int ParentGuidFieldNumber = 6;
     private global::SynthesisAPI.Proto.ProtoGuid parentGuid_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.ProtoGuid ParentGuid {
       get { return parentGuid_; }
       set {
@@ -1621,6 +1733,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(66, global::SynthesisAPI.Proto.Material.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Material> visualMaterials_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Material>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Material> VisualMaterials {
       get { return visualMaterials_; }
     }
@@ -1629,6 +1742,7 @@ namespace SynthesisAPI.Proto {
     public const int IsStaticFieldNumber = 9;
     private bool isStatic_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool IsStatic {
       get { return isStatic_; }
       set {
@@ -1640,6 +1754,7 @@ namespace SynthesisAPI.Proto {
     public const int MotorFieldNumber = 10;
     private global::SynthesisAPI.Proto.JointMotor motor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.JointMotor Motor {
       get { return motor_; }
       set {
@@ -1653,6 +1768,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(90, global::SynthesisAPI.Proto.Box.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Box> boxColliders_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Box>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Box> BoxColliders {
       get { return boxColliders_; }
     }
@@ -1663,6 +1779,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(98, global::SynthesisAPI.Proto.Sphere.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Sphere> sphereColliders_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Sphere>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Sphere> SphereColliders {
       get { return sphereColliders_; }
     }
@@ -1676,22 +1793,26 @@ namespace SynthesisAPI.Proto {
     }
     private JointOneofCase jointCase_ = JointOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public JointOneofCase JointCase {
       get { return jointCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearJoint() {
       jointCase_ = JointOneofCase.None;
       joint_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Node);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Node other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1716,6 +1837,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (guid_ != null) hash ^= Guid.GetHashCode();
@@ -1738,11 +1860,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -1791,6 +1915,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (guid_ != null) {
         output.WriteRawTag(10);
@@ -1835,6 +1960,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (guid_ != null) {
@@ -1872,6 +1998,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Node other) {
       if (other == null) {
         return;
@@ -1932,6 +2059,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -2022,6 +2150,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2117,19 +2246,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Mesh> _parser = new pb::MessageParser<Mesh>(() => new Mesh());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Mesh> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Mesh() {
       OnConstruction();
     }
@@ -2137,6 +2270,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Mesh(Mesh other) : this() {
       vertices_ = other.vertices_.Clone();
       triangles_ = other.triangles_.Clone();
@@ -2145,6 +2279,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Mesh Clone() {
       return new Mesh(this);
     }
@@ -2155,6 +2290,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(10, global::SynthesisAPI.Proto.Vec3.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.Vec3> vertices_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.Vec3>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.Vec3> Vertices {
       get { return vertices_; }
     }
@@ -2165,6 +2301,7 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForInt32(18);
     private readonly pbc::RepeatedField<int> triangles_ = new pbc::RepeatedField<int>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<int> Triangles {
       get { return triangles_; }
     }
@@ -2175,16 +2312,19 @@ namespace SynthesisAPI.Proto {
         = pb::FieldCodec.ForMessage(26, global::SynthesisAPI.Proto.SubMeshDescription.Parser);
     private readonly pbc::RepeatedField<global::SynthesisAPI.Proto.SubMeshDescription> subMeshes_ = new pbc::RepeatedField<global::SynthesisAPI.Proto.SubMeshDescription>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::SynthesisAPI.Proto.SubMeshDescription> SubMeshes {
       get { return subMeshes_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Mesh);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Mesh other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2199,6 +2339,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= vertices_.GetHashCode();
@@ -2211,11 +2352,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -2231,6 +2374,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       vertices_.WriteTo(ref output, _repeated_vertices_codec);
       triangles_.WriteTo(ref output, _repeated_triangles_codec);
@@ -2242,6 +2386,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       size += vertices_.CalculateSize(_repeated_vertices_codec);
@@ -2254,6 +2399,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Mesh other) {
       if (other == null) {
         return;
@@ -2265,6 +2411,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -2295,6 +2442,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2330,19 +2478,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Box> _parser = new pb::MessageParser<Box>(() => new Box());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Box> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Box() {
       OnConstruction();
     }
@@ -2350,6 +2502,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Box(Box other) : this() {
       center_ = other.center_ != null ? other.center_.Clone() : null;
       size_ = other.size_ != null ? other.size_.Clone() : null;
@@ -2359,6 +2512,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Box Clone() {
       return new Box(this);
     }
@@ -2367,6 +2521,7 @@ namespace SynthesisAPI.Proto {
     public const int CenterFieldNumber = 1;
     private global::SynthesisAPI.Proto.Vec3 center_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Center {
       get { return center_; }
       set {
@@ -2378,6 +2533,7 @@ namespace SynthesisAPI.Proto {
     public const int SizeFieldNumber = 2;
     private global::SynthesisAPI.Proto.Vec3 size_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Size {
       get { return size_; }
       set {
@@ -2389,6 +2545,7 @@ namespace SynthesisAPI.Proto {
     public const int PositionFieldNumber = 3;
     private global::SynthesisAPI.Proto.Vec3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Position {
       get { return position_; }
       set {
@@ -2400,6 +2557,7 @@ namespace SynthesisAPI.Proto {
     public const int RotationFieldNumber = 4;
     private global::SynthesisAPI.Proto.Quat rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Quat Rotation {
       get { return rotation_; }
       set {
@@ -2408,11 +2566,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Box);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Box other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2428,6 +2588,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (center_ != null) hash ^= Center.GetHashCode();
@@ -2441,11 +2602,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -2474,6 +2637,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (center_ != null) {
         output.WriteRawTag(10);
@@ -2498,6 +2662,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (center_ != null) {
@@ -2519,6 +2684,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Box other) {
       if (other == null) {
         return;
@@ -2551,6 +2717,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -2596,6 +2763,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2646,19 +2814,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Sphere> _parser = new pb::MessageParser<Sphere>(() => new Sphere());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Sphere> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Sphere() {
       OnConstruction();
     }
@@ -2666,6 +2838,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Sphere(Sphere other) : this() {
       center_ = other.center_ != null ? other.center_.Clone() : null;
       radius_ = other.radius_;
@@ -2673,6 +2846,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Sphere Clone() {
       return new Sphere(this);
     }
@@ -2681,6 +2855,7 @@ namespace SynthesisAPI.Proto {
     public const int CenterFieldNumber = 1;
     private global::SynthesisAPI.Proto.Vec3 center_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Center {
       get { return center_; }
       set {
@@ -2692,6 +2867,7 @@ namespace SynthesisAPI.Proto {
     public const int RadiusFieldNumber = 2;
     private float radius_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Radius {
       get { return radius_; }
       set {
@@ -2700,11 +2876,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Sphere);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Sphere other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2718,6 +2896,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (center_ != null) hash ^= Center.GetHashCode();
@@ -2729,11 +2908,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -2754,6 +2935,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (center_ != null) {
         output.WriteRawTag(10);
@@ -2770,6 +2952,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (center_ != null) {
@@ -2785,6 +2968,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Sphere other) {
       if (other == null) {
         return;
@@ -2802,6 +2986,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -2830,6 +3015,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2863,19 +3049,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<SubMeshDescription> _parser = new pb::MessageParser<SubMeshDescription>(() => new SubMeshDescription());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<SubMeshDescription> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SubMeshDescription() {
       OnConstruction();
     }
@@ -2883,6 +3073,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SubMeshDescription(SubMeshDescription other) : this() {
       start_ = other.start_;
       count_ = other.count_;
@@ -2890,6 +3081,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SubMeshDescription Clone() {
       return new SubMeshDescription(this);
     }
@@ -2898,6 +3090,7 @@ namespace SynthesisAPI.Proto {
     public const int StartFieldNumber = 1;
     private int start_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Start {
       get { return start_; }
       set {
@@ -2909,6 +3102,7 @@ namespace SynthesisAPI.Proto {
     public const int CountFieldNumber = 2;
     private int count_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Count {
       get { return count_; }
       set {
@@ -2917,11 +3111,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as SubMeshDescription);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(SubMeshDescription other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2935,6 +3131,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Start != 0) hash ^= Start.GetHashCode();
@@ -2946,11 +3143,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -2971,6 +3170,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Start != 0) {
         output.WriteRawTag(8);
@@ -2987,6 +3187,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Start != 0) {
@@ -3002,6 +3203,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(SubMeshDescription other) {
       if (other == null) {
         return;
@@ -3016,6 +3218,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -3041,6 +3244,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -3071,19 +3275,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<RotationalJoint> _parser = new pb::MessageParser<RotationalJoint>(() => new RotationalJoint());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<RotationalJoint> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public RotationalJoint() {
       OnConstruction();
     }
@@ -3091,6 +3299,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public RotationalJoint(RotationalJoint other) : this() {
       axis_ = other.axis_ != null ? other.axis_.Clone() : null;
       anchor_ = other.anchor_ != null ? other.anchor_.Clone() : null;
@@ -3106,6 +3315,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public RotationalJoint Clone() {
       return new RotationalJoint(this);
     }
@@ -3114,6 +3324,7 @@ namespace SynthesisAPI.Proto {
     public const int AxisFieldNumber = 1;
     private global::SynthesisAPI.Proto.Vec3 axis_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Axis {
       get { return axis_; }
       set {
@@ -3125,6 +3336,7 @@ namespace SynthesisAPI.Proto {
     public const int AnchorFieldNumber = 2;
     private global::SynthesisAPI.Proto.Vec3 anchor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 Anchor {
       get { return anchor_; }
       set {
@@ -3136,6 +3348,7 @@ namespace SynthesisAPI.Proto {
     public const int CurrentAngleFieldNumber = 3;
     private float currentAngle_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float CurrentAngle {
       get { return currentAngle_; }
       set {
@@ -3147,6 +3360,7 @@ namespace SynthesisAPI.Proto {
     public const int LowerLimitFieldNumber = 4;
     private float lowerLimit_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float LowerLimit {
       get { return lowerLimit_; }
       set {
@@ -3158,6 +3372,7 @@ namespace SynthesisAPI.Proto {
     public const int UpperLimitFieldNumber = 5;
     private float upperLimit_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float UpperLimit {
       get { return upperLimit_; }
       set {
@@ -3169,6 +3384,7 @@ namespace SynthesisAPI.Proto {
     public const int ConnectedBodyFieldNumber = 6;
     private global::SynthesisAPI.Proto.ProtoGuid connectedBody_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.ProtoGuid ConnectedBody {
       get { return connectedBody_; }
       set {
@@ -3180,6 +3396,7 @@ namespace SynthesisAPI.Proto {
     public const int MassScaleFieldNumber = 7;
     private float massScale_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MassScale {
       get { return massScale_; }
       set {
@@ -3191,6 +3408,7 @@ namespace SynthesisAPI.Proto {
     public const int UseLimitsFieldNumber = 8;
     private bool useLimits_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool UseLimits {
       get { return useLimits_; }
       set {
@@ -3202,6 +3420,7 @@ namespace SynthesisAPI.Proto {
     public const int IsWheelFieldNumber = 9;
     private bool isWheel_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool IsWheel {
       get { return isWheel_; }
       set {
@@ -3213,6 +3432,7 @@ namespace SynthesisAPI.Proto {
     public const int WheelTypeFieldNumber = 10;
     private global::SynthesisAPI.Proto.RotationalJoint.Types.ProtoWheelType wheelType_ = global::SynthesisAPI.Proto.RotationalJoint.Types.ProtoWheelType.Normal;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.RotationalJoint.Types.ProtoWheelType WheelType {
       get { return wheelType_; }
       set {
@@ -3221,11 +3441,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as RotationalJoint);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(RotationalJoint other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -3247,6 +3469,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (axis_ != null) hash ^= Axis.GetHashCode();
@@ -3266,11 +3489,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -3323,6 +3548,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (axis_ != null) {
         output.WriteRawTag(10);
@@ -3371,6 +3597,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (axis_ != null) {
@@ -3410,6 +3637,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(RotationalJoint other) {
       if (other == null) {
         return;
@@ -3457,6 +3685,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -3523,6 +3752,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -3587,6 +3817,7 @@ namespace SynthesisAPI.Proto {
     #region Nested types
     /// <summary>Container for nested types declared in the RotationalJoint message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum ProtoWheelType {
         [pbr::OriginalName("NORMAL")] Normal = 0,
@@ -3607,19 +3838,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<JointMotor> _parser = new pb::MessageParser<JointMotor>(() => new JointMotor());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<JointMotor> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public JointMotor() {
       OnConstruction();
     }
@@ -3627,6 +3862,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public JointMotor(JointMotor other) : this() {
       maxSpeed_ = other.maxSpeed_;
       torque_ = other.torque_;
@@ -3635,6 +3871,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public JointMotor Clone() {
       return new JointMotor(this);
     }
@@ -3643,6 +3880,7 @@ namespace SynthesisAPI.Proto {
     public const int MaxSpeedFieldNumber = 1;
     private float maxSpeed_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MaxSpeed {
       get { return maxSpeed_; }
       set {
@@ -3654,6 +3892,7 @@ namespace SynthesisAPI.Proto {
     public const int TorqueFieldNumber = 2;
     private float torque_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Torque {
       get { return torque_; }
       set {
@@ -3665,6 +3904,7 @@ namespace SynthesisAPI.Proto {
     public const int UseBreakFieldNumber = 3;
     private bool useBreak_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool UseBreak {
       get { return useBreak_; }
       set {
@@ -3673,11 +3913,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as JointMotor);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(JointMotor other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -3692,6 +3934,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (MaxSpeed != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MaxSpeed);
@@ -3704,11 +3947,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -3733,6 +3978,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (MaxSpeed != 0F) {
         output.WriteRawTag(13);
@@ -3753,6 +3999,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (MaxSpeed != 0F) {
@@ -3771,6 +4018,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(JointMotor other) {
       if (other == null) {
         return;
@@ -3788,6 +4036,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -3817,6 +4066,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -3851,19 +4101,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<OtherJoint> _parser = new pb::MessageParser<OtherJoint>(() => new OtherJoint());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<OtherJoint> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public OtherJoint() {
       OnConstruction();
     }
@@ -3871,6 +4125,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public OtherJoint(OtherJoint other) : this() {
       connectedBody_ = other.connectedBody_ != null ? other.connectedBody_.Clone() : null;
       massScale_ = other.massScale_;
@@ -3878,6 +4133,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public OtherJoint Clone() {
       return new OtherJoint(this);
     }
@@ -3886,6 +4142,7 @@ namespace SynthesisAPI.Proto {
     public const int ConnectedBodyFieldNumber = 1;
     private global::SynthesisAPI.Proto.ProtoGuid connectedBody_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.ProtoGuid ConnectedBody {
       get { return connectedBody_; }
       set {
@@ -3897,6 +4154,7 @@ namespace SynthesisAPI.Proto {
     public const int MassScaleFieldNumber = 2;
     private float massScale_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float MassScale {
       get { return massScale_; }
       set {
@@ -3905,11 +4163,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as OtherJoint);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(OtherJoint other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -3923,6 +4183,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (connectedBody_ != null) hash ^= ConnectedBody.GetHashCode();
@@ -3934,11 +4195,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -3959,6 +4222,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (connectedBody_ != null) {
         output.WriteRawTag(10);
@@ -3975,6 +4239,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (connectedBody_ != null) {
@@ -3990,6 +4255,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(OtherJoint other) {
       if (other == null) {
         return;
@@ -4007,6 +4273,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -4035,6 +4302,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -4068,19 +4336,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<PhysProps> _parser = new pb::MessageParser<PhysProps>(() => new PhysProps());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<PhysProps> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PhysProps() {
       OnConstruction();
     }
@@ -4088,6 +4360,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PhysProps(PhysProps other) : this() {
       mass_ = other.mass_;
       centerOfMass_ = other.centerOfMass_ != null ? other.centerOfMass_.Clone() : null;
@@ -4097,6 +4370,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PhysProps Clone() {
       return new PhysProps(this);
     }
@@ -4105,6 +4379,7 @@ namespace SynthesisAPI.Proto {
     public const int MassFieldNumber = 1;
     private float mass_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Mass {
       get { return mass_; }
       set {
@@ -4116,6 +4391,7 @@ namespace SynthesisAPI.Proto {
     public const int CenterOfMassFieldNumber = 2;
     private global::SynthesisAPI.Proto.Vec3 centerOfMass_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::SynthesisAPI.Proto.Vec3 CenterOfMass {
       get { return centerOfMass_; }
       set {
@@ -4127,6 +4403,7 @@ namespace SynthesisAPI.Proto {
     public const int DynamicFrictionFieldNumber = 4;
     private float dynamicFriction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float DynamicFriction {
       get { return dynamicFriction_; }
       set {
@@ -4138,6 +4415,7 @@ namespace SynthesisAPI.Proto {
     public const int StaticFrictionFieldNumber = 5;
     private float staticFriction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float StaticFriction {
       get { return staticFriction_; }
       set {
@@ -4146,11 +4424,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as PhysProps);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(PhysProps other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -4166,6 +4446,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Mass != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Mass);
@@ -4179,11 +4460,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -4212,6 +4495,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Mass != 0F) {
         output.WriteRawTag(13);
@@ -4236,6 +4520,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Mass != 0F) {
@@ -4257,6 +4542,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(PhysProps other) {
       if (other == null) {
         return;
@@ -4280,6 +4566,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -4316,6 +4603,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -4357,19 +4645,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Material> _parser = new pb::MessageParser<Material>(() => new Material());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Material> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Material() {
       OnConstruction();
     }
@@ -4377,6 +4669,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Material(Material other) : this() {
       red_ = other.red_;
       green_ = other.green_;
@@ -4388,6 +4681,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Material Clone() {
       return new Material(this);
     }
@@ -4396,6 +4690,7 @@ namespace SynthesisAPI.Proto {
     public const int RedFieldNumber = 1;
     private int red_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Red {
       get { return red_; }
       set {
@@ -4407,6 +4702,7 @@ namespace SynthesisAPI.Proto {
     public const int GreenFieldNumber = 2;
     private int green_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Green {
       get { return green_; }
       set {
@@ -4418,6 +4714,7 @@ namespace SynthesisAPI.Proto {
     public const int BlueFieldNumber = 3;
     private int blue_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Blue {
       get { return blue_; }
       set {
@@ -4429,6 +4726,7 @@ namespace SynthesisAPI.Proto {
     public const int AlphaFieldNumber = 4;
     private int alpha_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int Alpha {
       get { return alpha_; }
       set {
@@ -4440,6 +4738,7 @@ namespace SynthesisAPI.Proto {
     public const int SpecularFieldNumber = 5;
     private float specular_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Specular {
       get { return specular_; }
       set {
@@ -4451,6 +4750,7 @@ namespace SynthesisAPI.Proto {
     public const int EmissiveFieldNumber = 6;
     private bool emissive_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Emissive {
       get { return emissive_; }
       set {
@@ -4459,11 +4759,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Material);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Material other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -4481,6 +4783,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (Red != 0) hash ^= Red.GetHashCode();
@@ -4496,11 +4799,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -4537,6 +4842,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (Red != 0) {
         output.WriteRawTag(8);
@@ -4569,6 +4875,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (Red != 0) {
@@ -4596,6 +4903,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Material other) {
       if (other == null) {
         return;
@@ -4622,6 +4930,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -4663,6 +4972,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -4709,19 +5019,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Vec3> _parser = new pb::MessageParser<Vec3>(() => new Vec3());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Vec3> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Vec3() {
       OnConstruction();
     }
@@ -4729,6 +5043,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Vec3(Vec3 other) : this() {
       x_ = other.x_;
       y_ = other.y_;
@@ -4737,6 +5052,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Vec3 Clone() {
       return new Vec3(this);
     }
@@ -4745,6 +5061,7 @@ namespace SynthesisAPI.Proto {
     public const int XFieldNumber = 1;
     private float x_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float X {
       get { return x_; }
       set {
@@ -4756,6 +5073,7 @@ namespace SynthesisAPI.Proto {
     public const int YFieldNumber = 2;
     private float y_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Y {
       get { return y_; }
       set {
@@ -4767,6 +5085,7 @@ namespace SynthesisAPI.Proto {
     public const int ZFieldNumber = 3;
     private float z_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Z {
       get { return z_; }
       set {
@@ -4775,11 +5094,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Vec3);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Vec3 other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -4794,6 +5115,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (X != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(X);
@@ -4806,11 +5128,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -4835,6 +5159,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (X != 0F) {
         output.WriteRawTag(13);
@@ -4855,6 +5180,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (X != 0F) {
@@ -4873,6 +5199,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Vec3 other) {
       if (other == null) {
         return;
@@ -4890,6 +5217,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -4919,6 +5247,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -4953,19 +5282,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<Quat> _parser = new pb::MessageParser<Quat>(() => new Quat());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Quat> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Quat() {
       OnConstruction();
     }
@@ -4973,6 +5306,7 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Quat(Quat other) : this() {
       x_ = other.x_;
       y_ = other.y_;
@@ -4982,6 +5316,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Quat Clone() {
       return new Quat(this);
     }
@@ -4990,6 +5325,7 @@ namespace SynthesisAPI.Proto {
     public const int XFieldNumber = 1;
     private float x_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float X {
       get { return x_; }
       set {
@@ -5001,6 +5337,7 @@ namespace SynthesisAPI.Proto {
     public const int YFieldNumber = 2;
     private float y_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Y {
       get { return y_; }
       set {
@@ -5012,6 +5349,7 @@ namespace SynthesisAPI.Proto {
     public const int ZFieldNumber = 3;
     private float z_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Z {
       get { return z_; }
       set {
@@ -5023,6 +5361,7 @@ namespace SynthesisAPI.Proto {
     public const int WFieldNumber = 4;
     private float w_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float W {
       get { return w_; }
       set {
@@ -5031,11 +5370,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Quat);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Quat other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -5051,6 +5392,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (X != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(X);
@@ -5064,11 +5406,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -5097,6 +5441,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (X != 0F) {
         output.WriteRawTag(13);
@@ -5121,6 +5466,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (X != 0F) {
@@ -5142,6 +5488,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Quat other) {
       if (other == null) {
         return;
@@ -5162,6 +5509,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -5195,6 +5543,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -5233,19 +5582,23 @@ namespace SynthesisAPI.Proto {
     private static readonly pb::MessageParser<ProtoGuid> _parser = new pb::MessageParser<ProtoGuid>(() => new ProtoGuid());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<ProtoGuid> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::SynthesisAPI.Proto.ProtoBotReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoGuid() {
       OnConstruction();
     }
@@ -5253,12 +5606,14 @@ namespace SynthesisAPI.Proto {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoGuid(ProtoGuid other) : this() {
       b_ = other.b_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoGuid Clone() {
       return new ProtoGuid(this);
     }
@@ -5267,6 +5622,7 @@ namespace SynthesisAPI.Proto {
     public const int BFieldNumber = 1;
     private pb::ByteString b_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pb::ByteString B {
       get { return b_; }
       set {
@@ -5275,11 +5631,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as ProtoGuid);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(ProtoGuid other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -5292,6 +5650,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (B.Length != 0) hash ^= B.GetHashCode();
@@ -5302,11 +5661,13 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
@@ -5323,6 +5684,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       if (B.Length != 0) {
         output.WriteRawTag(10);
@@ -5335,6 +5697,7 @@ namespace SynthesisAPI.Proto {
     #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (B.Length != 0) {
@@ -5347,6 +5710,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(ProtoGuid other) {
       if (other == null) {
         return;
@@ -5358,6 +5722,7 @@ namespace SynthesisAPI.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
@@ -5379,6 +5744,7 @@ namespace SynthesisAPI.Proto {
 
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {

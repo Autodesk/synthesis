@@ -4,6 +4,8 @@ from proto.proto_out import joint_pb2, mirabuf_pb2, types_pb2
 from .. import ParseOptions
 from .Utilities import *
 
+from ...general_imports import INTERNAL_ID
+
 
 def ParseAllJoints(
     parseOptions: ParseOptions,
@@ -11,7 +13,7 @@ def ParseAllJoints(
     assembly_data: mirabuf_pb2.AssemblyData,
 ):
 
-    logger = logging.getLogger(f"HellionFusion.Parser.Joints")
+    logger = logging.getLogger(f"{INTERNAL_ID}.Parser.Joints")
 
     if parseOptions.joints:
         for joint in list(design.rootComponent.allJoints) + list(

@@ -9,7 +9,7 @@ import adsk.core, adsk.fusion, traceback
 
 
 def SaveFileDialog(
-    defaultPath="", defaultName="", ext="Synthesis Package (*.synth)"
+    defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)"
 ) -> Union[str, bool]:
     """Function to generate the Save File Dialog for the Hellion Data files
 
@@ -77,7 +77,7 @@ def generateFileName() -> str:
     # in case there are any spaces in the name replace them with friendlier characters
     name.replace(" ", "_")
 
-    return "{0}_{1}.synth".format(name, version)
+    return "{0}_{1}.mira".format(name, version)
 
 
 def OpenFileDialog():

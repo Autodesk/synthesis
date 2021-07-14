@@ -1,2 +1,3 @@
 #!/usr/bash
-protoc --csharp_out=../api/Api/Proto/ v1/ProtoBot.proto
+protoc -I=./mirabuf --csharp_out=../api/Api/Proto/ ./mirabuf/*.proto
+protoc -I=./mirabuf --python_out=../exporter/SynthesisFusionAddin/proto/proto_out ./mirabuf/*.proto
