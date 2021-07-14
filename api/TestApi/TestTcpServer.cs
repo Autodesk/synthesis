@@ -13,6 +13,8 @@ using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf;
 
 namespace TestApi {
+    
+    /*
     [TestFixture]
     public static class TestTcpServer
     {
@@ -105,5 +107,5 @@ namespace TestApi {
             client.Close();
         }
 
-    }
+    }*/
 }
