@@ -45,16 +45,8 @@ def getOS():
     """
     return platform.system()
 
-
+""" Old code I believe 
 def openFileLocation(fileLoc: str) -> bool:
-    """Opens a terminal with the file depending on operating system
-
-    Args:
-        fileLoc (str): Full file location with name and extension
-
-    Returns:
-        bool: Success
-    """
     osName = getOS()
     if osName == "Windows" or osName == "win32":
         # explorer is kinda sorta a symbolic link that can be broken if not careful so use this apparently
@@ -75,3 +67,4 @@ def openFileLocation(fileLoc: str) -> bool:
         return False
     else:
         return False
+"""
