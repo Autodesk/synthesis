@@ -59,7 +59,7 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
       <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\importer\libs\UnityEngine.dll</HintPath>
+        <HintPath>..\libs\UnityEngine.dll</HintPath>
       </Reference>
       <ProjectReference Include="..\Aardvark\Aardvark.csproj" />
     </ItemGroup>
