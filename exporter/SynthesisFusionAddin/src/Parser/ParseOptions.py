@@ -11,7 +11,7 @@ from enum import Enum
 from typing import Union
 from os import path
 
-import subprocess, os, platform
+import os, platform
 
 import adsk.core, adsk.fusion, traceback
 

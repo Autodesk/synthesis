@@ -10,7 +10,6 @@
 
 from shutil import copyfile, copytree, ignore_patterns, rmtree, copy2
 import os, sys
-import subprocess
 
 import zipfile
 
@@ -119,11 +118,14 @@ def minify():
                 fullpath = os.path.join(root, f)
                 fullpathNew = os.path.join(root_new, f)
                 command = "pyminifier --outfile={0} {1}".format(fullpathNew, fullpath)
+
+                """ Security no like my minimize work around
                 ret = os.system(command)
                 if ret == 1:
                     bad(f"Could not minify: cd {f}")
                 else:
                     good(f"Minified", f)
+                """
 
 
 def zip_file():
