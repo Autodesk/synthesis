@@ -106,3 +106,5 @@ site-packages
 
 # env files
 **/.env
+
+proto/proto_out
