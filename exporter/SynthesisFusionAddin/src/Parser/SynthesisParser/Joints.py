@@ -26,7 +26,6 @@ def ParseAllJoints(
             except:
                 logger.error("Failed:\n{}".format(traceback.format_exc()))
                 continue
-    pass
 
 
 def ExportJoint(
@@ -66,14 +65,14 @@ def ExportJoint(
         if occurrenceOne is None:
             try:
                 occurrenceOne = fus_joint.geometryOrOriginOne.entityOne.assemblyContext
-            except:
-                pass
+            except RuntimeError:
+                noop()
 
         if occurrenceTwo is None:
             try:
                 occurrenceTwo = fus_joint.geometryOrOriginTwo.entityOne.assemblyContext
-            except:
-                pass
+            except RuntimeError:
+                noop()
 
         if occurrenceTwo is None and occurrenceOne is None:
             log.error(

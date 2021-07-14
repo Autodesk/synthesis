@@ -1,4 +1,4 @@
-import os, platform, subprocess
+import os, platform
 
 
 def getOSPath(*argv) -> str:
