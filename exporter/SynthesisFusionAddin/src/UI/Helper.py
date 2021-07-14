@@ -9,6 +9,8 @@ def check_solid_open() -> bool:
     """### Checks to see if the current design open is Fusion Solid
     - Supplied as callback
     """
+    return True
+
     app = adsk.core.Application.get()
 
     try:
