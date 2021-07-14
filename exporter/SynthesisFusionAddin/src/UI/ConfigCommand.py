@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
@@ -21,7 +22,8 @@ File to generate and link the Configuration Command seen when pressing the butto
 """
 previous = None
 ui = adsk.core.UserInterface.cast(None)
-tableCommandInput = adsk.core.TabCommandInput
+tableInput = adsk.core.TableCommandInput
+wheel_inputs = adsk.core.GroupCommandInput
 selectedWheels = []
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
@@ -41,7 +43,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             if not Helper.check_solid_open():
                 return
 
-            global NOTIFIED, tableCommandInput
+            global NOTIFIED, tableInput, wheel_inputs
             if not NOTIFIED:
                 showAnalyticsAlert()
                 NOTIFIED = True
@@ -72,6 +74,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             eventArgs = adsk.core.CommandCreatedEventArgs.cast(args)
             cmd = eventArgs.command
+
+            onSelect = MySelectHandler()
+            cmd.select.add(onSelect)
+            gm.handlers.append(onSelect) 
+            
+            onUnSelect = MyUnSelectHandler()
+            cmd.unselect.add(onUnSelect)            
+            gm.handlers.append(onUnSelect)
 
             # Set to false so won't automatically export on switch context
             cmd.isAutoExecute = False
@@ -228,77 +238,43 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=False,
             )
 
-            # wheel configuration group
-            """
             wheelConfig = inputs.addGroupCommandInput("wheelconfig", "Wheel Configuration")
-            wheelConfig.isExpanded = True
+            wheelConfig.isExpanded = True # later, change back to false
             wheelConfig.isEnabled = True
-            wheelConfig.tooltip = "Specify drive-train wheel types in assembly"
+            wheelConfig.tooltip = "Select and specify drive-train wheel types in your assembly"
             wheel_inputs = wheelConfig.children
-            
-            tableCommandInput = wheel_inputs.addTableCommandInput(
-                "wheelselection", "Wheel Table", 2, "1:1"
-            )
-
-            # selection input
-            wheelSelect = inputs.addSelectionInput("wheelselect", "Wheel Selection", "Select drive-train wheels in assembly.")
-            wheelSelect.addSelectionFilter(adsk.fusion.BRepBodies) # limit selection to only bodies
-            wheelSelect.setSelectionLimits(1) 
-            """
-
-            # disable vr by default
-            wheelConfig = inputs.addGroupCommandInput("wheelconfig", "Wheel Configuration")
-            wheelConfig.isExpanded = False
-            wheelConfig.isEnabled = False
-            wheelConfig.tooltip = "Specify drive-train wheel types in assembly"
-            wheel_inputs = wheelConfig.children
-
-            # selection = vr_inputs.addSelectionInput('contactsets', 'Contact Sets', 'Select any Body')
-            # selection.addSelectionFilter("Bodies")
 
             tableInput = wheel_inputs.addTableCommandInput(
-                "contactsets", "Contact Sets", 3, "1:1:1"
+                "wheeltable", "Wheel Table", 3, "1:3:2"
             )
-            # addRowToTable(tableInput)
+            tableInput.maximumVisibleRows = 10
+            tableInput.rowSpacing = 1
 
-            # Add inputs into the table.
-            addButtonInput = wheel_inputs.addBoolValueInput(
-                "tableAdd", "Add Body", False, "", True
-            )
-            
-            wheelSelectInput = wheel_inputs.addSelectionInput("wheelselect", "Wheel Selection", "Select drive-train wheels in assembly.")
-            wheelSelectInput.addSelectionFilter("Bodies") # limit selection to only bodies
-            wheelSelectInput.setSelectionLimits(1) 
+            # tableInput.tablePresentationStyle = 1
 
-            tableInput.addToolbarCommandInput(addButtonInput)
-            # tableInput.addToolbarCommandInput(wheelSelect)
-
-            deleteButtonInput = wheel_inputs.addBoolValueInput(
-                "tableDelete", "Remove Body", False, "", True
+            addWheelInput = wheel_inputs.addBoolValueInput(
+                "wheeladd", "Add", False
             )
 
-            tableInput.addToolbarCommandInput(deleteButtonInput)
-
-            self.createBooleanInput(
-                "flatten",
-                "Flatten Entire Hierarchy",
-                wheel_inputs,
-                checked=True,
-                tooltip="Flatten the model to just bodies with no nested transforms",
-                tooltipadvanced="This may be easier to use in unity",
+            deleteWheelInput = wheel_inputs.addBoolValueInput(
+                "wheeldelete", "Remove", False
             )
 
-            self.createBooleanInput(
-                "condense",
-                "Compress Model",
-                wheel_inputs,
-                checked=False,
-                tooltip="Compresses model into a single mesh.",
-                tooltipadvanced="This may be easier to use in unity",
-            )
+            addWheelInput.tooltip = "Add a wheel component"
+            deleteWheelInput.tooltip = "Remove a wheel component"
+
+            wheelSelectInput = wheel_inputs.addSelectionInput("wheelselect", "Selection", "Select the wheels in your drive-train assembly.")
+            wheelSelectInput.addSelectionFilter("Occurrences") # limit selection to only bodies
+            wheelSelectInput.setSelectionLimits(0)
+            wheelSelectInput.isEnabled = False
+            wheelSelectInput.isVisible = False
+
+            tableInput.addToolbarCommandInput(addWheelInput)
+            tableInput.addToolbarCommandInput(deleteWheelInput)
 
             self.log.info("Created Configuration Input successfully")
 
+            
             # so I don't need to re-write the above code
             # self.previous = previous
 
@@ -500,20 +476,31 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 ).value
                 _advanced.com.checked = advancedSettingsInputs.itemById("com").value
 
-
 class MySelectHandler(adsk.core.SelectionEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
         try:
-            selectedOccurrence = adsk.fusion.Occurrence.cast(args.selection.entity) 
+            selectedOccurrence = adsk.fusion.Occurrence.cast(args.selection.entity)
+
+            """app = adsk.core.Application.get()
+            design = adsk.fusion.Design.cast(app.activeProduct)
+            selectedEdges = selectedOccurrence.edges
+            
+            if design and selectedOccurrence:
+                for i in range(selectedEdges.count): # define the graphics
+                    group = design.rootComponent.customGraphicsGroups.add()
+                    group.id = str(selectedEdges.item(i).tempId)
+                    cgcurve = group.addCurve(selectedEdges.item(i).geometry)
+                    cgcurve.color = adsk.fusion.CustomGraphicsSolidColorEffect.create(adsk.core.Color.create(255, 0, 0, 255))
+                    cgcurve.weight = 10"""
 
             if selectedOccurrence:
                 selectedWheels.append(selectedOccurrence)
                 addWheelToTable(selectedOccurrence)
         except:
-            if ui:
-                ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+            if gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
 
 class MyUnSelectHandler(adsk.core.SelectionEventHandler):
@@ -550,9 +537,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
     def notify(self, args):
         try:
+            global tableInput
+
             eventArgs = adsk.core.InputChangedEventArgs.cast(args)
             cmdInput = eventArgs.input
             inputs = cmdInput.commandInputs
+
+            wheelConfig = inputs.itemById("wheelselect")
 
             if cmdInput.id == "mode":
                 dropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
@@ -570,52 +561,97 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 gm.ui.messageBox(
                     f"Joints are currently disabled, \n\nneeds updated mapping onto the new occurrence transforms."
                 )
+            
+            if cmdInput.id == "wheeltype":
+                wheelDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
+                if wheelDropdown.selectedItem.name == "Standard":
+                    #gm.ui.messageBox(str(placeHolder))
+                    #placeHolder.classType()
+                    gm.ui.messageBox("Standard")
+                    #placeHolder.imageFile == "src\Resources\SynthesisExporter\standard-wheel-preview16x16.png"
+
+                elif wheelDropdown.selectedItem.name == "Omni":
+                    gm.ui.messageBox("Omni")
+                    #placeHolder.imageFile == "src\Resources\SynthesisExporter\omni-wheel-preview16x16.png"
+
+            if cmdInput.id == "wheeladd":
+                wheelConfig.isEnabled = True
+                #gm.ui.activeSelections.clear()
+            #else:
+                #wheelConfig.isEnabled = False
+
+            if cmdInput.id == "wheeldelete":
+                table = inputs.itemById("wheeltable")
+                #gm.ui.messageBox(str(table.id))
+                
+                if table.selectedRow == -1:
+                    gm.ui.messageBox(
+                        "Select one row to delete.")
+                else:
+                    selectedRow = table.selectedRow
+                    
+                    table.deleteRow(selectedRow)
+                    del selectedWheels[selectedRow]
+                    gm.ui.activeSelections.removeByIndex(selectedRow)
         except:
             self.log.error("Failed:\n{}".format(traceback.format_exc()))
             if A_EP:
                 A_EP.send_exception()
+            if gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
 
-def addWheelToTable(wheelOcc): # accepts a TableCommandInput
-    global tableCommandInput
+
+def addWheelToTable(wheelOcc): # accepts an occurrence (wheel)
+    global tableInput, cmdInputs
     
     try:
         # get the CommandInputs object associated with the parent command.
-        cmdInputs = adsk.core.CommandInputs.cast(tableCommandInput.commandInputs)
+        cmdInputs = adsk.core.CommandInputs.cast(tableInput.commandInputs)
 
-        # Create three new command inputs.
-        name =  cmdInputs.addTextBoxCommandInput("Occ_name", "Occ_name", wheelOcc.name, 3, True)
+        icon = cmdInputs.addImageCommandInput("placeholder", "", "src\Resources\SynthesisExporter\standard-wheel-preview16x16.png")
+        gm.ui.messageBox(str(cmdInputs.itemById("placeholder").classType()))
 
-        dropdownWheelType = cmdInputs.addDropDownCommandInput(
-            "wheelType",
+        name = cmdInputs.addTextBoxCommandInput("occ_name", "Occurrence name", wheelOcc.name, 1, True)
+        name.tooltip = (
+            "Selection set"
+        )
+        wheelType = cmdInputs.addDropDownCommandInput(
+            "wheeltype",
             "Wheel Type",
             dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
         )
-        dropdownWheelType.listItems.add(
-            "Standard", previous.general.WheelType == 0
+        wheelType.listItems.add(
+            "Standard", True, ""
         )
-        dropdownWheelType.listItems.add(
-            "Omni", previous.general.WheelType == 1
-            )
-
-        dropdownWheelType.tooltip = (
-            "Select your wheel type."
+        wheelType.listItems.add(
+            "Omni", False, ""
+        )
+        wheelType.tooltip = (
+            "Select your wheel type"
+        )
+        wheelType.tooltipDescription = (
+            "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
+        )
+        wheelType.toolClipFilename = (
+            "src\Resources\SynthesisExporter\omni-wheel-preview.PNG"
         )
 
-        # Add the inputs to the table.
-        row = tableCommandInput.rowCount
+        row = tableInput.rowCount
         
-        tableCommandInput.addCommandInput(name, row, 0)
+        tableInput.addCommandInput(icon, row, 0)
+        tableInput.addCommandInput(name, row, 1)
+        tableInput.addCommandInput(wheelType, row, 2)
     except:
         if ui:
             ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
-def removeRowFromTable(Occ):
-    global tableCommandInput
+def removeRowFromTable(wheelOcc):
+    global tableInput
     
     try:
-        index = selectedWheels.index(Occ)
-        tableCommandInput.deleteRow(index)
+        index = selectedWheels.index(wheelOcc)
+        tableInput.deleteRow(index)
     except:
         if ui:
             ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
