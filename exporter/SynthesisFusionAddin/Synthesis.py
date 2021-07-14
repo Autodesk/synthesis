@@ -63,9 +63,14 @@ def stop(context):
         import sys
 
         path = os.path.abspath(os.path.dirname(__file__))
+        
+        path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "../proto/proto_out"))
 
         if path in sys.path:
             sys.path.remove(path)
+
+        if path_proto_files in sys.path:
+            sys.path.remove(path_proto_files)
 
     except:
         logging.getLogger(f"{INTERNAL_ID}").error(

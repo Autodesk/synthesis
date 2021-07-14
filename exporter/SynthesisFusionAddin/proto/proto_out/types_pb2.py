@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0btypes.proto\"*\n\x04\x45\x64ge\x12\r\n\x05value\x18\x01 \x01(\t\x12\x13\n\x04node\x18\x02 \x01(\x0b\x32\x05.Node\".\n\x04Node\x12\r\n\x05value\x18\x01 \x01(\t\x12\x17\n\x08\x63hildren\x18\x02 \x03(\x0b\x32\x05.Edge\"&\n\x0eGraphContainer\x12\x14\n\x05nodes\x18\x01 \x03(\x0b\x32\x05.Node\"#\n\x0bVector2_i32\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"8\n\nVector_i32\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\x12\t\n\x01z\x18\x03 \x01(\x05\x12\t\n\x01w\x18\x04 \x01(\x05\".\n\x0bVector3_f32\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\".\n\x0bVector3_f64\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\"~\n\x12PhysicalProperties\x12\x10\n\x08\x66riction\x18\x01 \x01(\x05\x12\x0f\n\x07\x64\x65nsity\x18\x02 \x01(\x01\x12\x0c\n\x04mass\x18\x03 \x01(\x01\x12\x0e\n\x06volume\x18\x04 \x01(\x01\x12\x0c\n\x04\x61rea\x18\x05 \x01(\x01\x12\x19\n\x03\x63om\x18\x06 \x01(\x0b\x32\x0c.Vector3_f32\"L\n\x0bTranslation\x12\x1c\n\x06origin\x18\x01 \x01(\x0b\x32\x0c.Vector3_f32\x12\t\n\x01x\x18\x02 \x01(\x02\x12\t\n\x01y\x18\x03 \x01(\x02\x12\t\n\x01z\x18\x04 \x01(\x02\"(\n\x16SpatialTransformMatrix\x12\x0e\n\x06values\x18\x01 \x03(\x02\"|\n\tTransform\x12/\n\x0espatial_matrix\x18\x01 \x01(\x0b\x32\x17.SpatialTransformMatrix\x12!\n\x0btranslation\x18\x02 \x01(\x0b\x32\x0c.Translation\x12\x1b\n\x08rotation\x18\x03 \x01(\x0b\x32\t.Rotation\"=\n\x08Rotation\x12\x0f\n\x07\x65uler_x\x18\x01 \x01(\x05\x12\x0f\n\x07\x65uler_y\x18\x02 \x01(\x05\x12\x0f\n\x07\x65uler_z\x18\x03 \x01(\x05\"3\n\x05\x43olor\x12\t\n\x01R\x18\x01 \x01(\x05\x12\t\n\x01G\x18\x02 \x01(\x05\x12\t\n\x01\x42\x18\x03 \x01(\x05\x12\t\n\x01\x41\x18\x04 \x01(\x05\"3\n\x04Info\x12\x0c\n\x04GUID\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\r*\x1b\n\x04\x41xis\x12\x05\n\x01X\x10\x00\x12\x05\n\x01Y\x10\x01\x12\x05\n\x01Z\x10\x02\x62\x06proto3'
+  serialized_pb=b'\n\x0btypes.proto\"*\n\x04\x45\x64ge\x12\r\n\x05value\x18\x01 \x01(\t\x12\x13\n\x04node\x18\x02 \x01(\x0b\x32\x05.Node\".\n\x04Node\x12\r\n\x05value\x18\x01 \x01(\t\x12\x17\n\x08\x63hildren\x18\x02 \x03(\x0b\x32\x05.Edge\"&\n\x0eGraphContainer\x12\x14\n\x05nodes\x18\x01 \x03(\x0b\x32\x05.Node\"#\n\x0bVector2_i32\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\"8\n\nVector_i32\x12\t\n\x01x\x18\x01 \x01(\x05\x12\t\n\x01y\x18\x02 \x01(\x05\x12\t\n\x01z\x18\x03 \x01(\x05\x12\t\n\x01w\x18\x04 \x01(\x05\".\n\x0bVector3_f32\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\".\n\x0bVector3_f64\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\"~\n\x12PhysicalProperties\x12\x10\n\x08\x66riction\x18\x01 \x01(\x05\x12\x0f\n\x07\x64\x65nsity\x18\x02 \x01(\x01\x12\x0c\n\x04mass\x18\x03 \x01(\x01\x12\x0e\n\x06volume\x18\x04 \x01(\x01\x12\x0c\n\x04\x61rea\x18\x05 \x01(\x01\x12\x19\n\x03\x63om\x18\x06 \x01(\x0b\x32\x0c.Vector3_f32\"L\n\x0bTranslation\x12\x1c\n\x06origin\x18\x01 \x01(\x0b\x32\x0c.Vector3_f32\x12\t\n\x01x\x18\x02 \x01(\x02\x12\t\n\x01y\x18\x03 \x01(\x02\x12\t\n\x01z\x18\x04 \x01(\x02\"(\n\x16SpatialTransformMatrix\x12\x0e\n\x06values\x18\x01 \x03(\x02\"|\n\tTransform\x12/\n\x0espatial_matrix\x18\x01 \x01(\x0b\x32\x17.SpatialTransformMatrix\x12!\n\x0btranslation\x18\x02 \x01(\x0b\x32\x0c.Translation\x12\x1b\n\x08rotation\x18\x03 \x01(\x0b\x32\t.Rotation\"=\n\x08Rotation\x12\x0f\n\x07\x65uler_x\x18\x01 \x01(\x05\x12\x0f\n\x07\x65uler_y\x18\x02 \x01(\x05\x12\x0f\n\x07\x65uler_z\x18\x03 \x01(\x05\"3\n\x05\x43olor\x12\t\n\x01R\x18\x01 \x01(\x05\x12\t\n\x01G\x18\x02 \x01(\x05\x12\t\n\x01\x42\x18\x03 \x01(\x05\x12\t\n\x01\x41\x18\x04 \x01(\x05\"3\n\x04Info\x12\x0c\n\x04GUID\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\r\"I\n\x13\x46ileTypeInformation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x11\n\textension\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\t*\x1b\n\x04\x41xis\x12\x05\n\x01X\x10\x00\x12\x05\n\x01Y\x10\x01\x12\x05\n\x01Z\x10\x02\x62\x06proto3'
 )
 
 _AXIS = _descriptor.EnumDescriptor(
@@ -48,8 +48,8 @@ _AXIS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=881,
-  serialized_end=908,
+  serialized_start=956,
+  serialized_end=983,
 )
 _sym_db.RegisterEnumDescriptor(_AXIS)
 
@@ -696,6 +696,52 @@ _INFO = _descriptor.Descriptor(
   serialized_end=879,
 )
 
+
+_FILETYPEINFORMATION = _descriptor.Descriptor(
+  name='FileTypeInformation',
+  full_name='FileTypeInformation',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='FileTypeInformation.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='extension', full_name='FileTypeInformation.extension', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='FileTypeInformation.timestamp', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=881,
+  serialized_end=954,
+)
+
 _EDGE.fields_by_name['node'].message_type = _NODE
 _NODE.fields_by_name['children'].message_type = _EDGE
 _GRAPHCONTAINER.fields_by_name['nodes'].message_type = _NODE
@@ -718,6 +764,7 @@ DESCRIPTOR.message_types_by_name['Transform'] = _TRANSFORM
 DESCRIPTOR.message_types_by_name['Rotation'] = _ROTATION
 DESCRIPTOR.message_types_by_name['Color'] = _COLOR
 DESCRIPTOR.message_types_by_name['Info'] = _INFO
+DESCRIPTOR.message_types_by_name['FileTypeInformation'] = _FILETYPEINFORMATION
 DESCRIPTOR.enum_types_by_name['Axis'] = _AXIS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -818,6 +865,13 @@ Info = _reflection.GeneratedProtocolMessageType('Info', (_message.Message,), {
   # @@protoc_insertion_point(class_scope:Info)
   })
 _sym_db.RegisterMessage(Info)
+
+FileTypeInformation = _reflection.GeneratedProtocolMessageType('FileTypeInformation', (_message.Message,), {
+  'DESCRIPTOR' : _FILETYPEINFORMATION,
+  '__module__' : 'types_pb2'
+  # @@protoc_insertion_point(class_scope:FileTypeInformation)
+  })
+_sym_db.RegisterMessage(FileTypeInformation)
 
 
 # @@protoc_insertion_point(module_scope)

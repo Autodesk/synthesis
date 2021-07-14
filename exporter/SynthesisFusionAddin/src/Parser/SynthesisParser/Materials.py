@@ -24,7 +24,7 @@ def _MapAllAppearances(
         getMaterialAppearance(appearance, options, material)
 
 
-def setDefaultAppearance(material: material_pb2.Material) -> types_pb2.Color:
+def setDefaultAppearance(material: material_pb2.Material) -> None:
     """Get a default color for the appearance
 
     Returns:
@@ -45,14 +45,12 @@ def setDefaultAppearance(material: material_pb2.Material) -> types_pb2.Color:
     color.B = 127
     color.A = 127
 
-    return color
-
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
     options: ParseOptions,
     material: material_pb2.Material,
-) -> types_pb2.Color:
+) -> None:
     """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh
 
     Args:
@@ -105,5 +103,3 @@ def getMaterialAppearance(
                     color.B = baseColor.blue
                     color.A = baseColor.opacity
                     break
-
-    return color

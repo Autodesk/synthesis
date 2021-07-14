@@ -22,8 +22,13 @@ except ImportError as e:
 try:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+    path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "../proto/proto_out"))
+
     if not path in sys.path:
         sys.path.insert(1, path)
+
+    if not path_proto_files in sys.path:
+        sys.path.insert(2, path_proto_files)
 
     from proto import deps
 except:
