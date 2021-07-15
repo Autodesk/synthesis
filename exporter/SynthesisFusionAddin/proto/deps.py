@@ -2,7 +2,7 @@ import platform, subprocess
 from pathlib import Path, PurePath
 from os import system, chdir, __file__, getcwd
 
-import adsk.core, adsk.fusion, traceback, shlex
+import adsk.core, adsk.fusion, traceback
 
 def installCross(pipDeps: list) -> bool:
     """Attempts to fetch pip script and resolve dependencies with less user interaction
@@ -47,11 +47,11 @@ def installCross(pipDeps: list) -> bool:
         progressBar.message = f"Fetching pip..."
         adsk.doEvents()
         subprocess.call(
-            shlex.quote(f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\""),
+            f"curl https://bootstrap.pypa.io/get-pip.py -o \"{pythonFolder / 'get-pip.py'}\"",
             shell=False,
         )
         subprocess.call(
-            shlex.quote(f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\""),
+            f"\"{pythonFolder / 'python'}\" \"{pythonFolder / 'get-pip.py'}\"",
             shell=False,
         )
     else:
@@ -64,7 +64,7 @@ def installCross(pipDeps: list) -> bool:
         progressBar.message = f"Installing {depName}..."
         adsk.doEvents()
         subprocess.call(
-            shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip install {depName}"), 
+            f"\"{pythonFolder / 'python'}\" -m pip install {depName}", 
             shell=False
         )
 
@@ -74,7 +74,7 @@ def installCross(pipDeps: list) -> bool:
             progressBar.message = f"Uninstalling {depName}..."
             adsk.doEvents()
             subprocess.call(
-                shlex.quote(f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y"),
+                f"\"{pythonFolder / 'python'}\" -m pip uninstall {depName} -y",
                 shell=False,
             )
 
