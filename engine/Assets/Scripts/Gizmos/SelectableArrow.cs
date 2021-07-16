@@ -38,7 +38,6 @@ namespace Synthesis.Configuration
         {
             SendMessageUpwards("OnArrowSelected", arrowType);
         }
-
         /// <summary>
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
         /// is released.
@@ -58,6 +57,7 @@ namespace Synthesis.Configuration
             if (selectable)
                 material.color = Color.Lerp(color, Color.yellow, 0.75f);
         }
+        
 
         /// <summary>
         /// Returns the arrow to its original color when the mouse

@@ -1,12 +1,13 @@
 //using BulletUnity;
 //using Synthesis.FSM;
 //using Synthesis.States;
-using Synthesis.Utils;
+//using Synthesis.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace Synthesis.Configuration
@@ -127,6 +128,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void Update()
         {
+
             if (activeArrow == ArrowType.None)
                 return;
 
@@ -143,7 +145,7 @@ namespace Synthesis.Configuration
             if (activeArrow <= ArrowType.Z)
             {
                 Vector3 closestPointScreenRay;
-                Auxiliary.ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
+                ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
                  mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
             }
             else
@@ -157,15 +159,16 @@ namespace Synthesis.Configuration
             }
 
             //prevents move arrows from going below field
-            if (GameObject.Find("Field") != null)
+            if (GameObject.Find("Plane") != null)
             {
-                if (currentArrowPoint.y < GameObject.Find("Field").transform.position.y) { currentArrowPoint.y = GameObject.Find("Field").transform.position.y; lastArrowPoint.y = GameObject.Find("Field").transform.position.y; }
+                if (currentArrowPoint.y < GameObject.Find("Plane").transform.position.y) { currentArrowPoint.y = GameObject.Find("Plane").transform.position.y; lastArrowPoint.y = GameObject.Find("Plane").transform.position.y; }
             }
 
             if (lastArrowPoint != Vector3.zero)
-                Translate?.Invoke(currentArrowPoint );
-            Debug.Log(currentArrowPoint.ToString());
-            gameObject.transform.parent.position = currentArrowPoint;
+            {
+                //Translate?.Invoke(currentArrowPoint - lastArrowPoint);
+                gameObject.transform.parent.position += currentArrowPoint-lastArrowPoint;
+            }
             lastArrowPoint = currentArrowPoint;
         }
 
@@ -231,5 +234,46 @@ namespace Synthesis.Configuration
                     c.enabled = enabled;
             }
         }
+
+
+        /// <summary>
+        /// Based on a solution provided by the Unity Wiki (http://wiki.unity3d.com/index.php/3d_Math_functions).
+        /// Finds the closest points on two lines.
+        /// </summary>
+        /// <param name="closestPointLine1"></param>
+        /// <param name="closestPointLine2"></param>
+        /// <param name="linePoint1"></param>
+        /// <param name="lineVec1"></param>
+        /// <param name="linePoint2"></param>
+        /// <param name="lineVec2"></param>
+        /// <returns></returns>
+        private bool ClosestPointsOnTwoLines(out Vector3 closestPointLine1, out Vector3 closestPointLine2, Vector3 linePoint1, Vector3 lineVec1, Vector3 linePoint2, Vector3 lineVec2)
+        {
+            closestPointLine1 = Vector3.zero;
+            closestPointLine2 = Vector3.zero;
+
+            float a = Vector3.Dot(lineVec1, lineVec1);
+            float b = Vector3.Dot(lineVec1, lineVec2);
+            float e = Vector3.Dot(lineVec2, lineVec2);
+
+            float d = a * e - b * b;
+
+            // Check if lines are parallel
+            if (d == 0.0f)
+                return false;
+
+            Vector3 r = linePoint1 - linePoint2;
+            float c = Vector3.Dot(lineVec1, r);
+            float f = Vector3.Dot(lineVec2, r);
+
+            float s = (b * f - c * e) / d;
+            float t = (a * f - c * b) / d;
+
+            closestPointLine1 = linePoint1 + lineVec1 * s;
+            closestPointLine2 = linePoint2 + lineVec2 * t;
+
+            return true;
+        }
+
     }
 }

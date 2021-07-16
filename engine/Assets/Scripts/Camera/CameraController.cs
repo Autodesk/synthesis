@@ -41,7 +41,6 @@ public class CameraController : MonoBehaviour {
         float z = 0.0f;
         
         bool isOverUI = EventSystem.current.IsPointerOverGameObject();
-        Debug.Log(isOverUI);
         bool enableOrbit = !isOverUI && !isOverGizmo;
         if (enableOrbit) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
