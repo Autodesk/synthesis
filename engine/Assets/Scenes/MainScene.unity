@@ -1427,8 +1427,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bd9fc32d95451d90530109dceeae75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PitchSensitivity: 2.65
-  YawSensitivity: 4.16
+  PitchSensitivity: 3
+  YawSensitivity: 10
   ZoomSensitivity: 0.52
   PitchLowerLimit: 1
   PitchUpperLimit: 80

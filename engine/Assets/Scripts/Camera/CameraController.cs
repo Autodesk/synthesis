@@ -45,13 +45,16 @@ public class CameraController : MonoBehaviour {
         bool enableOrbit = !isOverUI && !isOverGizmo;
         if (enableOrbit) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
+
+            //UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
+            /*
             if (Input.GetKeyDown(KeyCode.Mouse0)) {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
-            }
+            }*/
         }
 
         if (!Input.GetKey(KeyCode.Mouse0)) {
