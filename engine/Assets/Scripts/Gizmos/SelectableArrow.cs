@@ -16,21 +16,6 @@ namespace Synthesis.Configuration
         private Color color;
         private bool selectable;
 
-        private Vector3 ArrowDirection(ArrowType direction)
-        {
-                switch (direction)
-                {
-                    case ArrowType.X:
-                        return transform.up;
-                    case ArrowType.Y:
-                        return transform.up;
-                    case ArrowType.Z:
-                        return transform.forward;
-                    default:
-                        return Vector3.zero;
-                }
-            
-        }
         /// <summary>
         /// Initializes the <see cref="ArrowType"/> and saves the assigned
         /// <see cref="Material"/>.
@@ -45,11 +30,32 @@ namespace Synthesis.Configuration
             selectable = true;
         }
 
-        /* /
-        private void LateUpdate()
-        { //LOOK AT CODE (does not work)
-            if (arrowType == ArrowType.X) transform.GetChild(0).GetComponent<Transform>().LookAt(Camera.main.transform.position, -Vector3.up);
-        }*/
+        
+        private void LateUpdate()//keeps axis arrows looking at the camera
+        { 
+            if (arrowType <= ArrowType.Z)
+            {
+                Vector3 difference = Camera.main.transform.position - transform.position;
+
+                switch (arrowType)
+                {
+                    case ArrowType.X:
+                        float rotationX = Mathf.Atan2(difference.z, difference.y) * Mathf.Rad2Deg;
+                        transform.rotation = Quaternion.Euler(rotationX + 90.0f, 0.0f, -90.0f);
+                        return;
+                    case ArrowType.Y:
+                        float rotationY = Mathf.Atan2(difference.x, difference.z) * Mathf.Rad2Deg;
+                        transform.rotation = Quaternion.Euler(0, rotationY, 0);
+                        return;
+                    case ArrowType.Z:
+                        float rotationZ = Mathf.Atan2(difference.x, difference.y) * Mathf.Rad2Deg;
+                        transform.rotation = Quaternion.Euler(rotationZ+90.0f, 90.0f, 90.0f); //z axis rotation kind of messed up but this works
+                        return;
+                    default:
+                        return;
+                }
+            }
+        }  
             /// <summary>
             /// Sends a message upwards when this <see cref="SelectableArrow"/>
             /// is selected.
