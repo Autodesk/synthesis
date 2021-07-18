@@ -16,6 +16,21 @@ namespace Synthesis.Configuration
         private Color color;
         private bool selectable;
 
+        private Vector3 ArrowDirection(ArrowType direction)
+        {
+                switch (direction)
+                {
+                    case ArrowType.X:
+                        return transform.up;
+                    case ArrowType.Y:
+                        return transform.up;
+                    case ArrowType.Z:
+                        return transform.forward;
+                    default:
+                        return Vector3.zero;
+                }
+            
+        }
         /// <summary>
         /// Initializes the <see cref="ArrowType"/> and saves the assigned
         /// <see cref="Material"/>.
@@ -30,11 +45,16 @@ namespace Synthesis.Configuration
             selectable = true;
         }
 
-        /// <summary>
-        /// Sends a message upwards when this <see cref="SelectableArrow"/>
-        /// is selected.
-        /// </summary>
-        private void OnMouseDown()
+        /* /
+        private void LateUpdate()
+        { //LOOK AT CODE (does not work)
+            if (arrowType == ArrowType.X) transform.GetChild(0).GetComponent<Transform>().LookAt(Camera.main.transform.position, -Vector3.up);
+        }*/
+            /// <summary>
+            /// Sends a message upwards when this <see cref="SelectableArrow"/>
+            /// is selected.
+            /// </summary>
+            private void OnMouseDown()
         {
             SendMessageUpwards("OnArrowSelected", arrowType);
         }

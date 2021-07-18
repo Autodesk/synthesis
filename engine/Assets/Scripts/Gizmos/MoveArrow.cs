@@ -177,7 +177,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void LateUpdate()
         {
-            Plane plane = new Plane(UnityEngine.Camera.main.transform.forward, UnityEngine.Camera.main.transform.position);
+            Plane plane = new UnityEngine.Plane(UnityEngine.Camera.main.transform.forward, UnityEngine.Camera.main.transform.position);
             float dist = plane.GetDistanceToPoint(transform.position);
             transform.localScale = initialScale * Scale * dist;
             Vector3 scaleTmp = gameObject.transform.localScale;
@@ -187,6 +187,26 @@ namespace Synthesis.Configuration
             gameObject.transform.parent = gameObject.transform.parent;
             gameObject.transform.localScale = scaleTmp;
         }
+        /*
+        public override void MoveEntityTransform(Transform targetTransform, float xMod, float yMod)
+        {
+
+            var horizontalDir = MathNet.Spatial.Euclidean.UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
+            var mouseDir = new MathNet.Spatial.Euclidean.Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+
+            var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
+
+            var deltaDir = mouseDir.ProjectOn(rotateDirVector);
+            if (deltaDir.Length > float.Epsilon)
+            {
+                var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
+
+                var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
+
+                targetTransform.Rotate(RotationAxisDirection, sign * magnitude, true);
+                Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
+            }
+        }*/
 
         /// <summary>
         /// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.

@@ -12,5 +12,8 @@ namespace Synthesis.Configuration
         YZ,
         XZ,
         XY,
+        RX,
+        RY,
+        RZ
     }
 }
