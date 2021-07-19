@@ -21,7 +21,8 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
-            public readonly object packetsLock = new object();
+            //public readonly object packetsLock = new object();
+            public ReaderWriterLockSlim packetsLock = new ReaderWriterLockSlim();
             public readonly object clientsLock = new object();
 
             private List<ClientHandler> clients;
@@ -50,6 +51,7 @@ namespace SynthesisAPI.Utilities
                     }
                 }
             }
+
 
             private class ClientHandler
             {
@@ -114,9 +116,14 @@ namespace SynthesisAPI.Utilities
                                     }
                                     else
                                     {
-                                        lock (packetsLock)
+                                        packetsLock.EnterWriteLock();
+                                        try
                                         {
                                             _packets[clients[i].inputData.Result.Id] = clients[i].inputData.Result.Fields;
+                                        }
+                                        finally
+                                        {
+                                            packetsLock.ExitWriteLock();
                                         }
                                         clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
 
@@ -158,15 +165,28 @@ namespace SynthesisAPI.Utilities
         }
 
 
-        
+        // Make sure to use the PacketsLock when reading/writing to Packets
         public static Dictionary<string, UpdateMessage.Types.ModifiedFields> Packets
         {
             get
             {
-                lock (Server.Instance.packetsLock)
+                Server.Instance.packetsLock.EnterReadLock();
+                try
                 {
                     return Server.Instance._packets;
                 }
+                finally
+                {
+                    Server.Instance.packetsLock.ExitReadLock();
+                }
+            }
+        }
+
+        public static ReaderWriterLockSlim PacketsLock
+        {
+            get
+            {
+                return Server.Instance.packetsLock;
             }
         }
 
@@ -179,7 +199,6 @@ namespace SynthesisAPI.Utilities
         {
             Server.Instance.IsRunning = false;
         }
-        
         
     }
 

@@ -13,7 +13,7 @@ namespace SynthesisAPI.Utilities.Messages
         public string Id { get; set; }
 
         [ProtoMember(2)]
-        public List<ModifiedFields> Fields { get; set; }
+        public ModifiedFields Fields { get; set; }
 
         [ProtoContract]
         public class ModifiedFields
