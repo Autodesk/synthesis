@@ -57,6 +57,7 @@ class General:
         self.joints = BooleanInput("joints", False)
         self.rigidGroups = BooleanInput("rigidgroup", False)
         #self.wheelType = 
+        self.simpleWheelExport = BooleanInput("simplewheelexport", False)
 
 
 class Advanced:

@@ -1,4 +1,6 @@
 from logging import PlaceHolder
+from os import remove
+from proto.proto_out.joint_pb2 import Joint
 from ..general_imports import *
 from ..configure import NOTIFIED, write_configuration
 from ..Analytics.alert import showAnalyticsAlert
@@ -21,10 +23,31 @@ from types import SimpleNamespace
 File to generate and link the Configuration Command seen when pressing the button from the Addins Panel
 """
 previous = None
+
 ui = adsk.core.UserInterface.cast(None)
-tableInput = adsk.core.TableCommandInput
-wheel_inputs = adsk.core.GroupCommandInput
-selectedWheels = []
+wheelTableInput = adsk.core.TableCommandInput
+jointTableInput = adsk.core.TableCommandInput
+
+# store selected wheels & joints
+_occ = {
+    "wheel": [],
+    "joint": []
+}
+
+_select = {
+    "wheel": [],
+    "joint": []
+}
+
+# easy-access image paths for icons
+iconPaths = {
+    "omni": "src/Resources/omni-wheel-preview16x16.png",
+    "standard": "src/Resources/standard-wheel-preview16x16.png",
+    "rigid": "src/Resources/rigid-preview16x16.png",
+    "revolute": "src/Resources/revolute-preview16x16.png",
+    "slider": "src/Resources/slider-preview16x16.png"
+}
+
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     """Start the Command Input Object and define all of the input groups to create our ParserOptions object.
@@ -43,7 +66,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             if not Helper.check_solid_open():
                 return
 
-            global NOTIFIED, tableInput, wheel_inputs
+            global NOTIFIED, wheelTableInput, jointTableInput
             if not NOTIFIED:
                 showAnalyticsAlert()
                 NOTIFIED = True
@@ -75,14 +98,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             eventArgs = adsk.core.CommandCreatedEventArgs.cast(args)
             cmd = eventArgs.command
 
-            onSelect = MySelectHandler()
-            cmd.select.add(onSelect)
-            gm.handlers.append(onSelect) 
-            
-            onUnSelect = MyUnSelectHandler()
-            cmd.unselect.add(onUnSelect)            
-            gm.handlers.append(onUnSelect)
-
             # Set to false so won't automatically export on switch context
             cmd.isAutoExecute = False
             cmd.isExecutedWhenPreEmpted = False
@@ -94,6 +109,18 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             onInputChanged = ConfigureCommandInputChanged()
             cmd.inputChanged.add(onInputChanged)
             gm.handlers.append(onInputChanged)
+
+            onSelect = MySelectHandler()
+            cmd.select.add(onSelect)
+            gm.handlers.append(onSelect) 
+            
+            onUnSelect = MyUnSelectHandler()
+            cmd.unselect.add(onUnSelect)            
+            gm.handlers.append(onUnSelect)
+
+            onDestroy = MyCommandDestroyHandler()
+            cmd.destroy.add(onDestroy)
+            gm.handlers.append(onDestroy)
 
             onExecute = ConfigureCommandExecuteHandler(
                 json.dumps(
@@ -129,47 +156,15 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             dropdownExportMode.tooltip = (
                 "This will be future formats and or generic / advanced objects."
             )
-
-            dropdownMaterialMode = inputs.addDropDownCommandInput(
-                "renderMode",
-                "Unity Project Type",
-                dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
-            dropdownMaterialMode.listItems.add(
-                "Standard", previous.general.RenderType == 0
-            )
-            dropdownMaterialMode.listItems.add("URP", previous.general.RenderType == 1)
-            # dropdownMaterialMode.listItems.add("HDPR", previous.general.RenderType == 2)
-            dropdownMaterialMode.tooltip = (
-                "Change this to match the renderer Unity is currently using."
-            )
-
+            
             self.createBooleanInput(
-                "materials",
-                "Materials",
+                "exportjoints",
+                "Export Additional Joints",
                 inputs,
-                checked=previous.general.material.checked,
-                tooltip="Export Fusion 360 Materials into Unity.",
-                tooltipadvanced="May be inconsistent dependening on type of material used.",
-            )
-
-            self.createBooleanInput(
-                "joints",
-                "Joints",
-                inputs,
-                checked=previous.general.joints.checked,
-                tooltip="Export Fusion 360 Joints into Unity with accessibility scripts.",
-                tooltipadvanced="May be inconsistent dependening on type of joint.",
-                enabled=False,
-            )
-
-            self.createBooleanInput(
-                "rigidGroups",
-                "RigidGroups",
-                inputs,
-                checked=previous.general.rigidGroups.checked,
-                tooltip="Export Rigidgroups into Unity",
-                tooltipadvanced="This feature is still in development",
+                #checked=previous.general.joints.checked,
+                tooltip="Export additional Fusion 360 Joints into Unity.",
+                #tooltipadvanced="May be inconsistent dependening on type of joint.",
+                enabled=True,
             )
 
             # if previous is defined it will go through and assign the booleans in a hard coded way
@@ -238,19 +233,23 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 enabled=False,
             )
 
+            """
+            Wheel Conifguration
+            """
             wheelConfig = inputs.addGroupCommandInput("wheelconfig", "Wheel Configuration")
             wheelConfig.isExpanded = True # later, change back to false
             wheelConfig.isEnabled = True
-            wheelConfig.tooltip = "Select and specify drive-train wheel types in your assembly"
+            wheelConfig.tooltip = "Select and define the drive-train wheels in your assembly."
             wheel_inputs = wheelConfig.children
 
-            tableInput = wheel_inputs.addTableCommandInput(
-                "wheeltable", "Wheel Table", 3, "1:3:2"
+            wheelTableInput = self.createTableInput(
+                "wheeltable",
+                "Wheel Table",
+                wheel_inputs,
+                3,
+                "1:3:2",
+                10,
             )
-            tableInput.maximumVisibleRows = 10
-            tableInput.rowSpacing = 1
-
-            # tableInput.tablePresentationStyle = 1
 
             addWheelInput = wheel_inputs.addBoolValueInput(
                 "wheeladd", "Add", False
@@ -269,11 +268,64 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             wheelSelectInput.isEnabled = False
             wheelSelectInput.isVisible = False
 
-            tableInput.addToolbarCommandInput(addWheelInput)
-            tableInput.addToolbarCommandInput(deleteWheelInput)
+            wheelTableInput.addToolbarCommandInput(addWheelInput)
+            wheelTableInput.addToolbarCommandInput(deleteWheelInput)
 
             self.log.info("Created Configuration Input successfully")
 
+            """
+            Simple wheel export button
+            """
+
+            self.createBooleanInput(
+                "simplewheelexport",
+                "Simple Wheel Export",
+                inputs,
+                #checked=previous.general.simpleWheelExport.checked,
+                tooltipadvanced="Export Center of Mass Vector for each body?",
+                enabled=True,
+            )
+
+            """
+            Joint Configuration
+            """
+            
+            jointConfig = inputs.addGroupCommandInput("jointconfig", "Joint Configuration")
+            jointConfig.isExpanded = True # later, change back to false
+            jointConfig.isEnabled = True
+            jointConfig.tooltip = "Select and define joint occurrences in your assembly."
+            joint_inputs = jointConfig.children
+
+            jointTableInput = self.createTableInput(
+                "jointtable",
+                "Joint Table",
+                joint_inputs,
+                3,
+                "1:3:2",
+                50,
+            )
+
+            addJointInput = joint_inputs.addBoolValueInput(
+                "jointadd", "Add", False
+            )
+
+            deleteJointInput = joint_inputs.addBoolValueInput(
+                "jointdelete", "Remove", False
+            )
+
+            addJointInput.tooltip = "Add a joint occurrence"
+            deleteJointInput.tooltip = "Remove a joint occurrence"
+
+            jointSelectInput = joint_inputs.addSelectionInput("jointselect", "Selection", "Select a joint in your drive-train assembly.")
+            jointSelectInput.addSelectionFilter("Joints") # limit selection to only joints
+            jointSelectInput.setSelectionLimits(0)
+            jointSelectInput.isEnabled = False
+            jointSelectInput.isVisible = False
+
+            jointTableInput.addToolbarCommandInput(addJointInput)
+            jointTableInput.addToolbarCommandInput(deleteJointInput)
+
+            self.log.info("Created Configuration Input successfully")
             
             # so I don't need to re-write the above code
             # self.previous = previous
@@ -282,6 +334,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             self.log.error("Failed:\n{}".format(traceback.format_exc()))
             if A_EP:
                 A_EP.send_exception()
+            elif gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
     def createBooleanInput(
         self,
@@ -312,6 +366,19 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         _input.tooltip = tooltip
         _input.tooltipDescription = tooltipadvanced
         return _input
+
+    def createTableInput(
+        self,
+        _id: str,
+        name: str,
+        inputs: adsk.core.CommandInputs,
+        columns: int,
+        ratio: str,
+        maxRows: int,
+        ) -> adsk.core.TableCommandInput: # accepts an occurrence (wheel)
+            _input = inputs.addTableCommandInput(_id, name, columns, ratio)
+            _input.maximumVisibleRows = maxRows
+            return _input
 
 
 class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
@@ -388,8 +455,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
                 adsk.doEvents()
                 # get active document
-                doc = gm.app.activeDocument
-                design = doc.design
+                design = gm.app.activeDocument.design
                 name = design.rootComponent.name.rsplit(" ", 1)[0]
                 version = design.rootComponent.name.rsplit(" ", 1)[1]
 
@@ -429,6 +495,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             self.log.error("Failed:\n{}".format(traceback.format_exc()))
             if A_EP:
                 A_EP.send_exception()
+            elif gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
     def writeConfiguration(self, rootCommandInput: adsk.core.CommandInputs):
         """Simple hard coded function to save the parameters of the export to the file
@@ -476,28 +544,24 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 ).value
                 _advanced.com.checked = advancedSettingsInputs.itemById("com").value
 
+
 class MySelectHandler(adsk.core.SelectionEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
         try:
-            selectedOccurrence = adsk.fusion.Occurrence.cast(args.selection.entity)
+            selectedWheel = adsk.fusion.Occurrence.cast(args.selection.entity)
+            selectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
 
-            """app = adsk.core.Application.get()
-            design = adsk.fusion.Design.cast(app.activeProduct)
-            selectedEdges = selectedOccurrence.edges
+            if selectedWheel: # selection kinda breaks when you select root comp. if statement here maybe?
+                #wheelOcc.append(selectedWheel)
+                _occ["wheel"].append(selectedWheel)
+                addWheelToTable(selectedWheel)
             
-            if design and selectedOccurrence:
-                for i in range(selectedEdges.count): # define the graphics
-                    group = design.rootComponent.customGraphicsGroups.add()
-                    group.id = str(selectedEdges.item(i).tempId)
-                    cgcurve = group.addCurve(selectedEdges.item(i).geometry)
-                    cgcurve.color = adsk.fusion.CustomGraphicsSolidColorEffect.create(adsk.core.Color.create(255, 0, 0, 255))
-                    cgcurve.weight = 10"""
-
-            if selectedOccurrence:
-                selectedWheels.append(selectedOccurrence)
-                addWheelToTable(selectedOccurrence)
+            elif selectedJoint:
+                #jointOcc.append(selectedJoint)
+                _occ["joint"].append(selectedJoint)
+                addJointToTable(selectedJoint)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -508,14 +572,19 @@ class MyUnSelectHandler(adsk.core.SelectionEventHandler):
         super().__init__()
     def notify(self, args):
         try:
-            selectedOccurrence = adsk.fusion.Occurrence.cast(args.selection.entity) 
-            
-            if selectedOccurrence:
-                removeRowFromTable(selectedOccurrence)
-                selectedWheels.remove(selectedOccurrence)
+            selectedWheel = adsk.fusion.Occurrence.cast(args.selection.entity) 
+            selectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
+
+            if selectedWheel:
+                removeWheelFromTable(selectedWheel)
+
+            elif selectedJoint:
+                removeJointFromTable(selectedJoint)
+        except ValueError: # replace this bad solution to value error. solve at root
+            pass
         except:
-            if ui:
-                ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+            if gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
 
 class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
@@ -537,13 +606,25 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
     def notify(self, args):
         try:
-            global tableInput
-
+            global wheelTableInput
+            
             eventArgs = adsk.core.InputChangedEventArgs.cast(args)
             cmdInput = eventArgs.input
             inputs = cmdInput.commandInputs
 
-            wheelConfig = inputs.itemById("wheelselect")
+            #gm.ui.messageBox(str(cmdInput.id))
+
+            #for i in range(inputs.itemById("wheeltable").children.count):
+            #    gm.ui.messageBox(str(inputs.itemById("wheeltable").children.item(i).id))
+
+            wheelSelect = inputs.itemById("wheelselect")
+            jointSelect = inputs.itemById("jointselect")
+
+            #wheel_select = _select["wheel"]
+            #joint_select = _select["joint"]
+            
+            #wheelAdd = inputs.itemById("wheeltable").commandInputs.children.itemById("wheeladd")
+            #jointAdd = inputs.itemById("jointtable").commandInputs.children.itemById("jointadd")
 
             if cmdInput.id == "mode":
                 dropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
@@ -557,101 +638,264 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         vr.isEnabled = False
                         vr.isExpanded = False
 
-            if cmdInput.id == "joints":
-                gm.ui.messageBox(
-                    f"Joints are currently disabled, \n\nneeds updated mapping onto the new occurrence transforms."
-                )
-            
-            if cmdInput.id == "wheeltype":
+            elif cmdInput.id == "exportjoints":
+                boolValue = adsk.core.BoolValueCommandInput.cast(cmdInput)
+                jointConfig = inputs.itemById("jointconfig")
+
+                if boolValue.value == True:
+                    if jointConfig:
+                        jointConfig.isEnabled = True
+                        jointConfig.isExpanded = True
+                else:
+                    if jointConfig:
+                        jointConfig.isEnabled = False
+                        jointConfig.isExpanded = False
+
+            #elif cmdInput.id == "placeholder" or cmdInput.id == "occ_name": # tried to disable the delete button when no row was selected...
+            #    iconFocus = adsk.core.ImageCommandInput.cast(cmdInput)
+            #    textFocus = adsk.core.TextBoxCommandInput.cast(cmdInput)
+            #    table = inputs.itemById("wheeltable")
+            #    occurrence = _occ["wheel"][table.selectedRow]#.component
+            #    if iconFocus or textFocus:
+            #        design = adsk.fusion.Design.cast(gm.app.activeProduct)
+            #        root = design.rootComponent
+            #        
+            #        #if root.customGraphicsGroups.count != 0:
+            #        for i in range(root.customGraphicsGroups.count):
+            #            root.customGraphicsGroups.item(i).deleteMe()
+            #            gm.app.activeViewport.refresh()
+            #            #return
+            #        
+            #        gm.app.activeViewport.refresh()
+            #        
+            #        graphics = root.customGraphicsGroups.add()
+            #        for i in range(occurrence.bRepBodies.count):
+            #            bodyMesh = occurrence.bRepBodies.item(i).meshManager.displayMeshes.bestMesh
+            #            coords = adsk.fusion.CustomGraphicsCoordinates.create(bodyMesh.nodeCoordinatesAsDouble)
+            #            mesh = graphics.addMesh(
+            #                coords, bodyMesh.nodeIndices, bodyMesh.normalVectorsAsDouble, bodyMesh.nodeIndices
+            #            )
+            #            # Create the color effect.
+            #            #redColor = adsk.core.Color.create(255,0,0,255)
+            #            #solidColor = adsk.fusion.CustomGraphicsSolidColorEffect.create(redColor)
+            #            #mesh.color = solidColor
+#
+            #            showThrough = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(adsk.core.Color.create(255, 0, 0, 255), 0.2)
+            #            mesh.color = showThrough
+#
+            #            # Set the mesh to be colored using the show through color effect.
+            #            #mesh.color = showThrough
+            #        #gm.ui.messageBox("focused!!!!")
+
+
+            elif cmdInput.id == "wheelconfig":
+                group1 = adsk.core.GroupCommandInput.cast(cmdInput)
+
+                if not group1.isExpanded:
+                    #wheel_select.clear()
+                    gm.ui.activeSelections.clear()
+                else:
+                    for i in range(len(_occ["wheel"])):
+                        #wheel_select.append(_occ["wheel"][i])
+                        gm.ui.activeSelections.add(_occ["wheel"][i])
+
+            elif cmdInput.id == "jointconfig":
+                group2 = adsk.core.GroupCommandInput.cast(cmdInput)
+
+                if not group2.isExpanded:
+                    #joint_select.clear()
+                    gm.ui.activeSelections.clear()
+                else:
+                    for i in range(len(_occ["joint"])):
+                        #joint_select.append(_occ["joint"][i])
+                        gm.ui.activeSelections.add(_occ["joint"][i])
+
+            elif cmdInput.id == "wheeltype":
                 wheelDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
+
                 if wheelDropdown.selectedItem.name == "Standard":
-                    #gm.ui.messageBox(str(placeHolder))
-                    #placeHolder.classType()
-                    gm.ui.messageBox("Standard")
-                    #placeHolder.imageFile == "src\Resources\SynthesisExporter\standard-wheel-preview16x16.png"
+                    getPosition = wheelTableInput.getPosition(adsk.core.DropDownCommandInput.cast(cmdInput))
+                    iconInput = wheelTableInput.getInputAtPosition(getPosition[1], 0)
+                    iconInput.imageFile = iconPaths["standard"]
+                    iconInput.tooltip = "Standard wheel"
 
                 elif wheelDropdown.selectedItem.name == "Omni":
-                    gm.ui.messageBox("Omni")
-                    #placeHolder.imageFile == "src\Resources\SynthesisExporter\omni-wheel-preview16x16.png"
+                    getPosition = wheelTableInput.getPosition(adsk.core.DropDownCommandInput.cast(cmdInput))
+                    iconInput = wheelTableInput.getInputAtPosition(getPosition[1], 0)
+                    iconInput.imageFile = iconPaths["omni"]
+                    iconInput.tooltip = "Omni wheel"
 
-            if cmdInput.id == "wheeladd":
-                wheelConfig.isEnabled = True
-                #gm.ui.activeSelections.clear()
-            #else:
-                #wheelConfig.isEnabled = False
+            elif cmdInput.id == "wheeladd":
+                #wheelAdd.isEnabled = False
+                wheelSelect.isEnabled = True
 
-            if cmdInput.id == "wheeldelete":
+            elif cmdInput.id == "wheeldelete":
                 table = inputs.itemById("wheeltable")
-                #gm.ui.messageBox(str(table.id))
                 
                 if table.selectedRow == -1:
                     gm.ui.messageBox(
                         "Select one row to delete.")
                 else:
                     selectedRow = table.selectedRow
-                    
-                    table.deleteRow(selectedRow)
-                    del selectedWheels[selectedRow]
+                    wheel = _occ["wheel"][table.selectedRow]
+                    removeWheelFromTable(wheel)
+
+                    #del wheel_select[selectedRow]
                     gm.ui.activeSelections.removeByIndex(selectedRow)
+                    #gm.ui.messageBox(str(gm.ui.activeSelections.count))
+
+            elif cmdInput.id == "wheelselect":
+                wheelSelect.isEnabled = False
+
+            elif cmdInput.id == "jointadd":
+                #jointAdd.isEnabled = False
+                jointSelect.isEnabled = True
+
+            elif cmdInput.id == "jointdelete":
+                table = inputs.itemById("jointtable")
+                
+                if table.selectedRow == -1:
+                    gm.ui.messageBox(
+                        "Select one row to delete.")
+                else:
+                    selectedRow = table.selectedRow
+                    joint = _occ["joint"][table.selectedRow]
+                    removeJointFromTable(joint)
+
+                    #del joint_select[selectedRow]
+                    gm.ui.activeSelections.removeByIndex(selectedRow)
+                    #gm.ui.messageBox(str(gm.ui.activeSelections.count))
+            
+            elif cmdInput.id == "jointselect":
+                jointSelect.isEnabled = False
+
         except:
             self.log.error("Failed:\n{}".format(traceback.format_exc()))
             if A_EP:
                 A_EP.send_exception()
-            if gm.ui:
+            elif gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
 
+# terminates the script.            
+class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
+    def __init__(self):
+        super().__init__()
+    def notify(self, args):
+        try:
+            _occ["wheel"].clear()
+            _occ["joint"].clear()
 
-def addWheelToTable(wheelOcc): # accepts an occurrence (wheel)
-    global tableInput, cmdInputs
+            _select["wheel"].clear()
+            _select["wheel"].clear()
+        except:
+            gm.ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
+
+
+def addJointToTable(joint):
+    # get the CommandInputs object associated with the parent command.
+    cmdInputs = adsk.core.CommandInputs.cast(jointTableInput.commandInputs)
+
+    if joint.jointMotion.jointType == adsk.fusion.JointTypes.RigidJointType:
+        icon = cmdInputs.addImageCommandInput("placeholder", "Rigid", iconPaths["rigid"])
+        icon.tooltip = "Rigid joint"
     
-    try:
-        # get the CommandInputs object associated with the parent command.
-        cmdInputs = adsk.core.CommandInputs.cast(tableInput.commandInputs)
+    elif joint.jointMotion.jointType == adsk.fusion.JointTypes.RevoluteJointType:
+        icon = cmdInputs.addImageCommandInput("placeholder", "Revolute", iconPaths["revolute"])
+        icon.tooltip = "Revolute joint"
 
-        icon = cmdInputs.addImageCommandInput("placeholder", "", "src\Resources\SynthesisExporter\standard-wheel-preview16x16.png")
-        gm.ui.messageBox(str(cmdInputs.itemById("placeholder").classType()))
+    elif joint.jointMotion.jointType == adsk.fusion.JointTypes.SliderJointType:
+        icon = cmdInputs.addImageCommandInput("placeholder", "Slider", iconPaths["slider"])
+        icon.tooltip = "Slider joint"
+  
+    name = cmdInputs.addTextBoxCommandInput("occ_name", "Occurrence name", joint.name, 1, True)
+    name.tooltip = (
+        "Selection set"
+    )
+    jointType = cmdInputs.addDropDownCommandInput(
+        "jointtype",
+        "Joint Type",
+        dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+    )
+    jointType.listItems.add(
+        "Root", True, ""
+    )
 
-        name = cmdInputs.addTextBoxCommandInput("occ_name", "Occurrence name", wheelOcc.name, 1, True)
-        name.tooltip = (
-            "Selection set"
+    # after each additional joint added, add joint to the dropdown of all preview rows/joints
+    for i in range(jointTableInput.rowCount):
+        dropDown = jointTableInput.getInputAtPosition(i, 2)
+        dropDown.listItems.add(
+            _occ["joint"][-1].name, False, ""
         )
-        wheelType = cmdInputs.addDropDownCommandInput(
-            "wheeltype",
-            "Wheel Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-        wheelType.listItems.add(
-            "Standard", True, ""
-        )
-        wheelType.listItems.add(
-            "Omni", False, ""
-        )
-        wheelType.tooltip = (
-            "Select your wheel type"
-        )
-        wheelType.tooltipDescription = (
-            "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
-        )
-        wheelType.toolClipFilename = (
-            "src\Resources\SynthesisExporter\omni-wheel-preview.PNG"
-        )
-
-        row = tableInput.rowCount
-        
-        tableInput.addCommandInput(icon, row, 0)
-        tableInput.addCommandInput(name, row, 1)
-        tableInput.addCommandInput(wheelType, row, 2)
-    except:
-        if ui:
-            ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-
-def removeRowFromTable(wheelOcc):
-    global tableInput
     
+    # add all parent joint options to added joint dropdown
+    for j in range(len(_occ["joint"]) - 1):
+        jointType.listItems.add(
+            _occ["joint"][j].name, True, ""
+        )
+
+    jointType.tooltip = (
+        "Select the parent joint"
+    )
+
+    row = jointTableInput.rowCount
+
+    jointTableInput.addCommandInput(icon, row, 0)
+    jointTableInput.addCommandInput(name, row, 1)
+    jointTableInput.addCommandInput(jointType, row, 2)
+
+def addWheelToTable(wheel):
+    # get the CommandInputs object associated with the parent command.
+    cmdInputs = adsk.core.CommandInputs.cast(wheelTableInput.commandInputs)
+    icon = cmdInputs.addImageCommandInput("placeholder", "Placeholder", iconPaths["standard"])
+    name = cmdInputs.addTextBoxCommandInput("occ_name", "Occurrence name", wheel.name, 1, True)
+    name.tooltip = (
+        "Selection set"
+    )
+    wheelType = cmdInputs.addDropDownCommandInput(
+        "wheeltype",
+        "Wheel Type",
+        dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+    )
+    wheelType.listItems.add(
+        "Standard", True, ""
+    )
+    wheelType.listItems.add(
+        "Omni", False, ""
+    )
+    wheelType.tooltip = (
+        "Select your wheel type"
+    )
+    wheelType.tooltipDescription = (
+        "<Br>Omni-directional wheels can be used just like regular drive wheels but they have the advantage of being able to roll freely perpendicular to the drive direction.</Br>"
+    )
+    wheelType.toolClipFilename = (
+        "src\Resources\omni-wheel-preview.png"
+    )
+    row = wheelTableInput.rowCount
+
+    wheelTableInput.addCommandInput(icon, row, 0)
+    wheelTableInput.addCommandInput(name, row, 1)
+    wheelTableInput.addCommandInput(wheelType, row, 2)
+
+def removeJointFromTable(joint):
+    index = _occ["joint"].index(joint)
+    _occ["joint"].remove(joint)
+    
+    for i in range(jointTableInput.rowCount):
+        dropDown = jointTableInput.getInputAtPosition(i, 2)
+        dropDown.listItems.item(index).deleteMe()
+    
+    jointTableInput.deleteRow(index)
+
+def removeWheelFromTable(wheel):
     try:
-        index = selectedWheels.index(wheelOcc)
-        tableInput.deleteRow(index)
+        index = _occ["wheel"].index(wheel)
+        _occ["wheel"].remove(wheel)
+        wheelTableInput.deleteRow(index)
+
+    except ValueError:
+        pass
     except:
-        if ui:
-            ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+        if gm.ui:
+                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))

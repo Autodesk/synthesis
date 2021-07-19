@@ -99,7 +99,7 @@ def unregister_all() -> None:
 
 
 def register_ui() -> None:
-    """ #### Generic Function to add all UI objects in a simple non destructive way. """
+    """ #### Generic Function to add all UI objects in a simple non destructive way."""
 
     # if A_EP:
     #     A_EP.send_view("open")
