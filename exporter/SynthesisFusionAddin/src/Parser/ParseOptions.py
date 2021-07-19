@@ -78,6 +78,31 @@ class ModelHierarchy:
 class Mode:
     Synthesis = 0
 
+"""
+
+examplec = ExampleClass("location of file", "name", "0.1.2", wheel=[Wheel(), Wheel()])
+
+class ExampleClass:
+
+    def __init__(
+        self,
+        fileLocation: str,
+        name: str,
+        version: str,
+
+        alternate_version=None,
+        materials=1,
+        mode=Mode.Synthesis,
+        wheel=List[Wheel],
+        joints=List[JointDescription]
+    ):
+        if (alternate_version):
+            this.alternate_version = alternate_version
+
+
+        pass
+"""
+
 
 class ParseOptions:
     """Options to supply to the parser object that will generate the output file"""

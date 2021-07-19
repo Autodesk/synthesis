@@ -542,9 +542,11 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                     name,
                     version,
                     materials=renderer,
-                    joints=self.current.general.joints.checked,
                     mode=mode,
+                    wheel=[],
+                    joints=[]
                 )
+                
                 if options.parse(False):
                     # success
                     pass
