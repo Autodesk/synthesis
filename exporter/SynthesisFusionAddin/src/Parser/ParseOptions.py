@@ -8,8 +8,9 @@
 """
 
 from enum import Enum
-from typing import Union
+from typing import Union, List
 from os import path
+from dataclasses import dataclass
 
 import os, platform
 
@@ -19,6 +20,39 @@ import adsk.core, adsk.fusion, traceback
 from ..general_imports import A_EP, PROTOBUF
 
 from .SynthesisParser.Parser import Parser
+
+# Contains enums for parents of joints that haver special cases
+class JointParentType:
+    ROOT = 0 # grounded root object
+    END = 1
+
+class WheelType:
+    STANDARD = 0
+    OMNI = 1
+
+# will need to be constructed in the UI Configure on Export
+@dataclass
+class Wheel:
+    occurrence: adsk.fusion.Occurrence # maybe just pass the component
+    wheelType: WheelType
+
+@dataclass
+class JointDescription:
+    joint: adsk.fusion.Joint
+    parent: Union[JointParentType, adsk.fusion.Joint] # str can be root
+
+""" EXAMPLES HOW TO USE JOINTS & WHEELZ
+    # Example
+    wheelExample = Wheel(occurrence, wheeltype)
+    # wheelExample.occurrence = ""
+    wheelExample.wheelType = WheelType.OMNI
+
+    wheelList = []
+    wheelList.append(wheelExample)
+
+    jointDesc = JointDescription()
+    jointDesc.parent = JointParentType.ROOT
+"""
 
 
 class PhysicalDepth:
@@ -71,8 +105,9 @@ class ParseOptions:
         physical=adsk.fusion.CalculationAccuracy.LowCalculationAccuracy,
         physicalDepth=PhysicalDepth.AllOccurrence,
         materials=1,
-        joints=True,
         mode=Mode.Synthesis,
+        wheel=List[Wheel],
+        joints=List[JointDescription] # [{entitytoken, wheeltype} , {tntitytoken, wheeltype}]
     ):
         """Generates the Parser Options for the given export
 
@@ -86,6 +121,7 @@ class ParseOptions:
             - physicalDepth (PhysicalDepth, optional): Enum to define the level of physical attributes exported. Defaults to PhysicalDepth.AllOccurrence.
             - materials (int, optional): Export Materials type: defaults to STANDARD 1
             - joints (bool, optional): Export Joints. Defaults to True.
+            - wheels (list (strings)): List of Occurrence.entityTokens that 
         """
         self.fileLocation = fileLocation
         self.name = name
@@ -112,12 +148,3 @@ class ParseOptions:
 
         test = Parser(self).export()
         return True
-
-""" This was for the old unity code
- 
-def runPackage(filepath):
-    if platform.system() == "Darwin":  # macOS
-        subprocess.call(("open", filepath))
-    elif platform.system() == "Windows":  # Windows
-        os.startfile(filepath)
-"""
