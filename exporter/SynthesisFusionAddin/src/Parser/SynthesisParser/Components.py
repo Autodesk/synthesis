@@ -44,14 +44,16 @@ def _MapAllComponents(
 
                 part_body = partDefinition.bodies.add()
                 fill_info(part_body, body)
+                
                 part_body.part = comp_ref
                 _ParseBRep(body, options, part_body.triangle_mesh)
 
-                if options.materials:
-                    if body.appearance.id in materials:
-                        part_body.material = body.appearance.id
-                    else:
-                        part_body.material = "default"
+
+                # this should be appearance
+                if body.appearance.id in materials.materials:
+                    part_body.material = body.appearance.id
+                else:
+                    part_body.material = "default"
 
 
 def _ParseComponentRoot(
