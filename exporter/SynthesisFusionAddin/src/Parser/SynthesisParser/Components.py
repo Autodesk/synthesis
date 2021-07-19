@@ -88,12 +88,13 @@ def _ParseComponentRoot(
             raise RuntimeError("User canceled export")
 
         if occur.isLightBulbOn:
-            part.children.append(f"{occur.entityToken}")
-            edge = types_pb2.Edge()
+            # part.children.append(f"{occur.entityToken}")
+            # edge = types_pb2.Edge()
+            child_node = types_pb2.Node()
             __parseChildOccurrence(
-                occur, progressDialog, options, partsData, material_map, edge.node
+                occur, progressDialog, options, partsData, material_map, child_node
             )
-            node.children.append(edge)
+            node.children.append(child_node)
 
 
 def __parseChildOccurrence(
@@ -131,19 +132,18 @@ def __parseChildOccurrence(
     if compRef in def_map:
         part.part_definition_reference = compRef
 
-    part.transform.spatial_matrix.values.extend(occurrence.transform.asArray())
+    part.transform.spatial_matrix.extend(occurrence.transform.asArray())
 
     for occur in occurrence.childOccurrences:
         if progressDialog.wasCancelled:
             raise RuntimeError("User canceled export")
 
         if occur.isLightBulbOn:
-            part.children.append(f"{occur.entityToken}")
-            edge = types_pb2.Edge()
+            child_node = types_pb2.Node()
             __parseChildOccurrence(
-                occur, progressDialog, options, partsData, material_map, edge.node
+                occur, progressDialog, options, partsData, material_map, child_node
             )
-            node.children.append(edge)
+            node.children.append(child_node)
 
 def _ParseBRep(
     body: adsk.fusion.BRepBody, options: ParseOptions, trimesh: assembly_pb2.TriangleMesh
