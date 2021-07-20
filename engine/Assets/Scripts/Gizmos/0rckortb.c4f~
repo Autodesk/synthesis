@@ -82,14 +82,11 @@ namespace Synthesis.Configuration
         /// </summary>
         public Action OnRelease { get; set; }
 
-        public Collider rotationCollider;
-
         /// <summary>
         /// Sets the initial position and rotation.
         /// </summary>
         private void Awake()
         {
-            rotationCollider = GameObject.Find("RY").GetComponent<Collider>();
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
 
@@ -134,26 +131,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void Update()
         {
-            Vector2 c = Camera.main.WorldToViewportPoint(Vector3.forward);
 
-            Vector2 p = Camera.main.WorldToViewportPoint(transform.parent.position + new Vector3(2.075f * Mathf.Sin(transform.parent.eulerAngles.y * Mathf.Deg2Rad), 0.607f, 2.075f * Mathf.Cos(transform.parent.eulerAngles.y * Mathf.Deg2Rad)));
-            //Get the Screen position of the mouse
-            Vector2 m = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
-            //Get the angle between the points
-
-            Vector2 o = Camera.main.WorldToViewportPoint(transform.parent.position);
-            float a = AngleBetweenTwoPoints(c, m, o);
-            /*
-            Debug.Log($"C X: {c.x} y {c.y}");
-            Debug.Log($"P X: {p.x} y {p.y}");
-            Debug.Log($"M X: {m.x} y {m.y}");
-            Debug.Log($"O X: {o.x} y {o.y}");
-            Debug.Log($"a:{a}");*/
-
-
-            Ray r = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-            Debug.DrawRay(r.origin, r.direction * 50, Color.yellow);
 
             if (activeArrow == ArrowType.None)
                 return;
@@ -191,10 +169,7 @@ namespace Synthesis.Configuration
                 //prevents move arrows from going below field
                 if (GameObject.Find("Plane") != null)
                 {
-                    if (currentArrowPoint.y < GameObject.Find("Plane").transform.position.y) 
-                    { 
-                        currentArrowPoint.y = GameObject.Find("Plane").transform.position.y; lastArrowPoint.y = GameObject.Find("Plane").transform.position.y; //FIX
-                    }
+                    if (currentArrowPoint.y < GameObject.Find("Plane").transform.position.y) { currentArrowPoint.y = GameObject.Find("Plane").transform.position.y; lastArrowPoint.y = GameObject.Find("Plane").transform.position.y; }
                 }
 
                 if (lastArrowPoint != Vector3.zero)
@@ -206,99 +181,45 @@ namespace Synthesis.Configuration
             }
             else
             {
-                /*
+                //TODO: CLEAN UP
 
-                var horizontalDir = UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
-                var mouseDir = new Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+                //Get the Screen positions of the object
+                Vector2 positionOnScreen = Camera.main.WorldToViewportPoint(transform.parent.position);
+                Vector2 position1 = transform.position;
 
-                var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
+                //Get the Screen position of the mouse
+                Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
+                Vector2 position2 = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-                var deltaDir = mouseDir.ProjectOn(rotateDirVector);
-                if (deltaDir.Length > float.Epsilon)
+                //Get the angle between the points
+
+
+                //Ta Daaa
+                float angle;
+                Debug.Log($"____________________________________");
+                Debug.Log($"x:{xDeg()},y:{yDeg()},z:{zDeg()}");
+                switch (ActiveArrow)
                 {
-                    var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
-
-                    var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
-
-                    targetTransform.Rotate(RotationAxisDirection, sign * magnitude, true);
-                    Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
-                }*/
-
-                /*
-                var horizontalDir = UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
-                var mouseDir = new Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
-
-                var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
-
-                var deltaDir = mouseDir.ProjectOn(rotateDirVector);
-                if (deltaDir.Length > float.Epsilon)
-                {
-                    var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
-
-                    var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
-
-                    targetTransform.Rotate(RotationAxisDirection, sign * magnitude, true);
-                    Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
-                }*/
-
-
-                    
-                    //TODO: CLEAN UP
-
-                    //Get the Screen positions of the object
-                  //  Vector2 positionOnScreen = Camera.main.WorldToViewportPoint(transform.parent.position + new Vector3(2.075f * Mathf.Sin(transform.parent.eulerAngles.y * Mathf.Deg2Rad), 0, 2.075f * Mathf.Cos(transform.parent.eulerAngles.y * Mathf.Deg2Rad)));
-                    //Vector2 positionOnScreen = Camera.main.WorldToViewportPoint(rotationCollider.bounds.center);
-                   // Vector2 lowPos = Camera.main.WorldToViewportPoint(RotatePointAroundPoint(rotationCollider.bounds.center, transform.parent.position, -20f));
-                   // Vector2 highPos = Camera.main.WorldToViewportPoint(RotatePointAroundPoint(rotationCollider.bounds.center, transform.parent.position, 20f));
-                    Vector2 positionOnScreen = Camera.main.WorldToViewportPoint(transform.parent.position+Vector3.forward);
-                    //  Vector2 position1 = transform.position;
-
-                    //Get the Screen position of the mouse
-                    Vector2 mouseOnScreen = (Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
-                 //   Vector2 position2 = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-                    //Get the angle between the points
-
-                    Vector2 positionOfObject = Camera.main.WorldToViewportPoint(transform.parent.position);
-
-                    float angle;
-
-                    angle = RoundTo(AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen, positionOfObject),15f);
-                   // float lowAngle = AngleBetweenTwoPoints(positionOnScreen, lowPos, positionOfObject);
-                   // float highAngle = AngleBetweenTwoPoints(positionOnScreen, highPos, positionOfObject);
-
-                  /*  if (angle > 60) transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), yDeg() - 30, zDeg()));
-
-                    else if (angle < -60) transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), yDeg() + 30, zDeg()));
-
-                    if (angle > lowAngle)
-                        transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), yDeg() - 15, zDeg()));
-                    else if (angle < highAngle)
-                        transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), yDeg() + 15, zDeg()));*/
-
-                    //Debug.Log($"____________________________________");
-                    //Debug.Log($"x:{xDeg()},y:{yDeg()},z:{zDeg()}");
-                    switch (ActiveArrow)
-                    {       //TODO: SLERP!!
-                        case ArrowType.RX:
-                        transform.parent.rotation = Quaternion.Euler(new Vector3(-angle, yDeg(), zDeg()));
-                        //transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, Quaternion.Euler(new Vector3(angle, yDeg(), zDeg())), Time.deltaTime * 5.0f);
+                    case ArrowType.RX:
+                        angle = AngleBetweenTwoPointsReversed(positionOnScreen, mouseOnScreen);
+                        transform.parent.rotation = Quaternion.Euler(new Vector3(angle, transform.parent.rotation.y, transform.parent.rotation.z));
                         break;
-                        case ArrowType.RY:
-                            transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), -angle, zDeg())); 
-                            //transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, Quaternion.Euler(new Vector3(xDeg(), yDeg()-angle, zDeg())), Time.deltaTime * 5.0f);
-                            break;
-                        case ArrowType.RZ:
-                        transform.parent.rotation = Quaternion.Euler(new Vector3(xDeg(), yDeg(),-angle));
+                    case ArrowType.RY:
+                        angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
+                        transform.parent.rotation = Quaternion.Euler(new Vector3(transform.parent.rotation.x, angle, transform.parent.rotation.z));
                         break;
-                        default:
-                            angle = 0.0f;
-                            break;
-                    }
-                    //Debug.Log($"Angle: {angle}");
-                    //Debug.Log($"POST | x:{xDeg()},y:{yDeg()},z:{zDeg()}");
-                    //Debug.Log($"____________________________________");
+                    case ArrowType.RZ:
+                        angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
+                        transform.parent.rotation = Quaternion.Euler(new Vector3(transform.parent.rotation.x, transform.parent.rotation.y, angle));
+                        break;
+                    default:
+                        angle = 0.0f;
+                        break;
                 }
+                Debug.Log($"Angle: {angle}");
+                Debug.Log($"POST | x:{xDeg()},y:{yDeg()},z:{zDeg()}");
+                Debug.Log($"____________________________________");
+            }
 
         }
 
@@ -339,22 +260,22 @@ namespace Synthesis.Configuration
         }*/
         private float xDeg()
         {
-            return transform.parent.eulerAngles.x;
+            return Mathf.Rad2Deg * transform.parent.rotation.x;
         }
         private float yDeg()
         {
-            return transform.parent.eulerAngles.y;
+            return Mathf.Rad2Deg * transform.parent.rotation.y;
         }
         private float zDeg()
         {
-            return transform.parent.eulerAngles.z;
+            return Mathf.Rad2Deg * transform.parent.rotation.z;
         }
 
-/// <summary>
-/// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
-/// </summary>
-/// <param name="arrowType"></param>
-private void OnArrowSelected(ArrowType arrowType)
+        /// <summary>
+        /// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
+        /// </summary>
+        /// <param name="arrowType"></param>
+        private void OnArrowSelected(ArrowType arrowType)
         {
             ActiveArrow = arrowType;
             lastArrowPoint = Vector3.zero;
@@ -437,21 +358,17 @@ private void OnArrowSelected(ArrowType arrowType)
             return true;
         }
 
-        float AngleBetweenTwoPoints(Vector2 a, Vector2 b, Vector2 convergence)
+        float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
         {
-            return Vector3.SignedAngle(a - convergence, b - convergence,Vector3.forward);
+            return Mathf.Atan2(b.x - a.x, b.y - a.y) * Mathf.Rad2Deg;
+        }
+        float AngleBetweenTwoPointsReversed(Vector3 a, Vector3 b)
+        {
+            return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
         }
         float RoundTo(float value, float multipleOf)
         {
             return Mathf.Round(value / multipleOf) * multipleOf;
-        }
-        Vector3 RotatePointAroundPoint(Vector3 point1, Vector3 point2, float angle)
-        {
-            angle *= Mathf.Deg2Rad;
-            var x = Mathf.Cos(angle) * (point1.z - point2.z) - Mathf.Sin(angle) * (point1.x - point2.x) + point2.z;
-            var y = Mathf.Sin(angle) * (point1.z - point2.z) + Mathf.Cos(angle) * (point1.x - point2.x) + point2.x;
-            //Debug.Log($"c:{point1},parent:{point2},x:{y},y:{x}");
-            return new Vector3(y, point1.y,x);
         }
 
     }

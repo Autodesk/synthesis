@@ -30,7 +30,6 @@ namespace Synthesis.Configuration
             selectable = true;
         }
 
-        
         private void LateUpdate()//keeps axis arrows looking at the camera
         { 
             if (arrowType <= ArrowType.Z)
@@ -42,17 +41,17 @@ namespace Synthesis.Configuration
                     case ArrowType.X:
                         float rotationX = Mathf.Atan2(difference.z, difference.y) * Mathf.Rad2Deg;
                         transform.rotation = Quaternion.Euler(rotationX + 90.0f, 0.0f, -90.0f);
-                        return;
+                        break;
                     case ArrowType.Y:
                         float rotationY = Mathf.Atan2(difference.x, difference.z) * Mathf.Rad2Deg;
                         transform.rotation = Quaternion.Euler(0, rotationY, 0);
-                        return;
+                        break;
                     case ArrowType.Z:
                         float rotationZ = Mathf.Atan2(difference.x, difference.y) * Mathf.Rad2Deg;
                         transform.rotation = Quaternion.Euler(rotationZ+90.0f, 90.0f, 90.0f); //z axis rotation kind of messed up but this works
-                        return;
+                        break;
                     default:
-                        return;
+                        break;
                 }
             }
         }  
@@ -81,7 +80,7 @@ namespace Synthesis.Configuration
         {
             CameraController.isOverGizmo = true;
             if (selectable)
-                material.color = Color.Lerp(color, Color.yellow, 0.75f);
+                material.color = Color.Lerp(color, new Color(30.0f/255.0f, 164f/255f, 212f/255f,1), 0.75f);
         }
         
 
@@ -109,7 +108,7 @@ namespace Synthesis.Configuration
             }
             else
             {
-                Color newColor = color;
+                Color newColor = material.color;
                 newColor.a = arrowType == activeArrow ? 1f : color.a * HiddenAlpha;
                 material.color = newColor;
             }
