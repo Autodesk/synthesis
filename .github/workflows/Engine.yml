@@ -38,7 +38,7 @@ jobs:
             Library-
       - uses: game-ci/unity-builder@v2
         with:
-          customParameters: -quit -batchmode -projectPath "${{ matrix.projectPath }}" -executeMethod NugetForUnity.NugetHelper.Restore
+          buildMethod: NugetForUnity.NugetHelper.Restore
           buildName: Synthesis
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
