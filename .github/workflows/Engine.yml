@@ -70,7 +70,7 @@ jobs:
           key: Library-${{ matrix.projectPath }}
           restore-keys: |
             Library-
-      - uses: webbertakken/unity-test-runner@v1.4
+      - uses: game-ci/unity-test-runner@v2.0-alpha-5
         id: tests
         with:
           projectPath: ${{ matrix.projectPath }}
