@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "8pD7Bb3/xSdFCAlN1y6LICoZcW4bjFP2YEP6kKg+uDWdj5crXFThFeneqk8O5XzxA44chxHJlYlq1KPcTfvYRw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\hunte\\git\\synthesis\\api\\aardvark\\SimulatorFileIO\\SimulatorAPI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hunte\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

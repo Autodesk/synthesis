@@ -1,5 +1,9 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Chunte_005Cgit_005Cpr_002Dtesting_005Cimporter_005Clibs_005CUnityEngine_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Chunte_005Cgit_005Csynthesis_005Capi_005Caardvark_005CSimulatorFileIO_005Cbin_005CDebug_005CSimulatorAPI_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Chunte_005Cgit_005Csynthesis_005Capi_005Caardvark_005CSimulatorFileIO_005CSimulatorAPI_002Esln/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Chunte_005Cgit_005Csynthesis_005Capi_005Clibs_005CUnityEngine_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005Cnickb_005Cgit_005Csynthesis_005Capi_005CApi_005Clibs_005CUnityEngine_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ce9c2eca_002D61b7_002D4dbe_002D91ac_002Da1bc78367a6f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ce9c2eca_002D61b7_002D4dbe_002D91ac_002Da1bc78367a6f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+message DigitalOutput {
+    string Name = 1;
+    string Type = 2;
+    google.protobuf.Value Value = 3;
+}
+
+message DigitalInput {
+    string Name = 1;
+    string Type = 2;
+    google.protobuf.Value Value = 3;
+}
+
+message AnalogOutput {
+    string Name = 1;
+    string Type = 2;
+    google.protobuf.Value Value = 3;
+}
+
+message AnalogInput {
+    string Name = 1;
+    string Type = 2;
+    google.protobuf.Value Value = 3;
+}
+
+message UpdateMessage {
+    string Id = 1;
+    message ModifiedFields {
+        map<string, DigitalOutput> DOs = 1;
+        map<string, DigitalInput> DIs = 2;
+        map<string, AnalogOutput> AOs = 3;
+        map<string, AnalogInput> AIs = 4;
+    } 
+    ModifiedFields Fields = 2;
+}

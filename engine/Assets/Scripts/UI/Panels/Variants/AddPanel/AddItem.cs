@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
 using Synthesis.ModelManager;
 using Synthesis.UI.Panels;
 using TMPro;
@@ -12,16 +10,19 @@ public class AddItem : MonoBehaviour
 
     private string _fullPath;
     private Panel _parentPanel;
+    GameObject p;
+    private bool _isRobot;
 
     public void AddModel()
     {
-        ModelManager.AddModel(_fullPath);
+        //ModelManager.AddModel(_fullPath);//importer
+        p.GetComponent<PTL>().SpawnRobot(_fullPath);
         _parentPanel.Close();
     }
 
     public void AddField()
     {
-        ModelManager.SetField(_fullPath);
+        p.GetComponent<PTL>().SpawnField(_fullPath);
         _parentPanel.Close();
     }
 
@@ -30,5 +31,6 @@ public class AddItem : MonoBehaviour
         _name.text = name;
         _fullPath = path;
         _parentPanel = parentPanel;
+        p = GameObject.Find("Tester");
     }
 }

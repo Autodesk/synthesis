@@ -11,8 +11,6 @@ public class MyTest : MonoBehaviour
 {
     [SerializeField]
     public float HighlightTime;
-    
-    public Synthesis.Camera.Camera TheCamera;
 
     [SerializeField]
     public Bar currentBar;
@@ -27,7 +25,6 @@ public class MyTest : MonoBehaviour
     private void Start()
     {
         ModelManager.OnModelSpawned += m => { Robot = m; Debug.Log($"Model \"{m.Name}\" Spawned"); };
-        TheCamera = GameObject.Find("Main Camera").GetComponent<Synthesis.Camera.Camera>();
 
         // Configure Gearboxes Test
         // currentBar.OpenPanel(configGearboxPanel);
