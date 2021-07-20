@@ -39,6 +39,7 @@ sysinfo.txt
 !/engine/Assets/Packages/Api.dll
 !/engine/Assets/Packages/Aardvark.dll
 !/engine/Assets/Editor/NugetForUnity.dll
+!/engine/Assets/Editor/NugetForUnity.dll.meta
 !/api/libs/UnityEngine.dll
 
 importer/Backup/
