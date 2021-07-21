@@ -204,6 +204,38 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             # if previous is defined it will go through and assign the booleans in a hard coded way
             # self._generateGeneral(inputs)
 
+            # advanced settings minimized by default
+            advancedSettings = inputs_root.addTabCommandInput(
+                "advancedsettings", "Advanced"
+            )
+            # advancedSettings.isExpanded = False
+            # advancedSettings.isActive = False
+            advancedSettings.tooltip = "Additional Advanced Settings to change how your model will be translated into Unity."
+            
+            a_input = advancedSettings.children
+
+            physics_advanced_group = a_input.addGroupCommandInput("advanced_physics_group", "Physics Properties").children
+
+            self.createBooleanInput(
+                "density",
+                "Density",
+                physics_advanced_group,
+                checked=True,
+                tooltipadvanced="Export Density for each physical body in kg/m^3",
+                enabled=True,
+            )
+
+            joints_advanced_group = a_input.addGroupCommandInput("advanced_joints_group", "Joints Properties").children
+
+            self.createBooleanInput(
+                "kinematic_joints",
+                "Kinematic Joints",
+                joints_advanced_group,
+                checked=True,
+                tooltipadvanced="Export Joints as Kinematic Bodies.",
+                enabled=True,
+            )
+
             """
             Wheel Conifguration
             """
@@ -692,15 +724,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             if cmdInput.id == "mode":
                 dropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
-                vr = inputs.itemById("vrsettings")
-                if dropdown.selectedItem.name == "VR":
-                    if vr:
-                        vr.isEnabled = True
-                        vr.isExpanded = True
-                else:
-                    if vr:
-                        vr.isEnabled = False
-                        vr.isExpanded = False
 
             elif cmdInput.id == "exportjoints":
                 boolValue = adsk.core.BoolValueCommandInput.cast(cmdInput)
@@ -721,9 +744,9 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 if not group1.isExpanded:
                     gm.ui.activeSelections.clear()
                 else:
-                    for i in range(len(_wheels)):
-                        gm.ui.activeSelections.add(_wheels[i])
-
+                    for i in range(len(_occ["wheel"])):
+                        #wheel_select.append(_occ["wheel"][i])
+                        gm.ui.activeSelections.add(_occ["wheel"][i])
             elif cmdInput.id == "jointconfig":
                 group2 = adsk.core.GroupCommandInput.cast(cmdInput)
 
