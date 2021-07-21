@@ -21,7 +21,7 @@ from ..general_imports import A_EP, PROTOBUF
 
 from .SynthesisParser.Parser import Parser
 
-# Contains enums for parents of joints that haver special cases
+# Contains enums for parents of joints that have special cases
 class JointParentType:
     ROOT = 0 # grounded root object
     END = 1
@@ -32,27 +32,14 @@ class WheelType:
 
 # will need to be constructed in the UI Configure on Export
 @dataclass
-class Wheel:
+class _Wheel:
     occurrence: adsk.fusion.Occurrence # maybe just pass the component
     wheelType: WheelType
 
 @dataclass
-class JointDescription:
+class _Joint:
     joint: adsk.fusion.Joint
-    parent: Union[JointParentType, adsk.fusion.Joint] # str can be root
-
-""" EXAMPLES HOW TO USE JOINTS & WHEELZ
-    # Example
-    wheelExample = Wheel(occurrence, wheeltype)
-    # wheelExample.occurrence = ""
-    wheelExample.wheelType = WheelType.OMNI
-
-    wheelList = []
-    wheelList.append(wheelExample)
-
-    jointDesc = JointDescription()
-    jointDesc.parent = JointParentType.ROOT
-"""
+    parent: Union[adsk.fusion.Joint, JointParentType] # str can be root
 
 
 class PhysicalDepth:
@@ -106,9 +93,9 @@ class ParseOptions:
         physicalDepth=PhysicalDepth.AllOccurrence,
         materials=1,
         mode=Mode.Synthesis,
-        wheel=List[Wheel],
-        joints=List[JointDescription] # [{entitytoken, wheeltype} , {tntitytoken, wheeltype}]
-    ):
+        #wheels=List[_Wheel],
+        #joints=List[_Joint] # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+        ):
         """Generates the Parser Options for the given export
 
         Args:
@@ -131,8 +118,9 @@ class ParseOptions:
         self.physical = physical
         self.physicalDepth = physicalDepth
         self.materials = materials
-        self.joints = joints
         self.mode = mode
+        self.wheels = wheels
+        self.joints = joints
 
     def parse(self, sendReq: bool) -> Union[str, bool]:
         """Parses the file given the options
