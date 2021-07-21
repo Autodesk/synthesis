@@ -1,7 +1,8 @@
-﻿using SynthesisAPI.Utilities.Messages;
+﻿using SynthesisAPI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Mirabuf;
 
 namespace SynthesisAPI.Utilities
 {
@@ -9,10 +10,11 @@ namespace SynthesisAPI.Utilities
     {
         
         private Layout? _currentLayout;
-        public Layout? CurrentLayout 
-        { 
+        private Signal? _currentSignal;
+        public Layout? CurrentLayout
+        {
             get => _currentLayout;
-            set
+            /*set
             {
                 _currentLayout = value;
                 Fields.DOs.Clear();
@@ -50,6 +52,20 @@ namespace SynthesisAPI.Utilities
                         Name = entry.Value.Name,
                         Type = entry.Value.Type
                     };
+                }
+            }
+        }
+         */
+            set
+            {
+                _currentLayout = value;
+                Fields.DOs.Clear();
+                Fields.DIs.Clear();
+                Fields.AOs.Clear();
+                Fields.AIs.Clear();
+                foreach (var signal in value.signal_map)
+                {
+
                 }
             }
         }

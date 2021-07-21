@@ -17,7 +17,7 @@ namespace SynthesisAPI.Utilities
             Robots.Clear();
         }
 
-        
+        /*
         public void Update(Dictionary<string, UpdateMessage.Types.ModifiedFields> packets, ReaderWriterLockSlim packetLock) 
         {
             packetLock.EnterWriteLock();
@@ -41,14 +41,14 @@ namespace SynthesisAPI.Utilities
                     {
                         Robots[kvp.Key].Fields.AIs[AnalogInput.Key] = AnalogInput.Value;
                     }
-
+                    
                 }
             }
             finally
             {
                 packetLock.ExitWriteLock();
             }
-            
+            */
         }
     }
 }

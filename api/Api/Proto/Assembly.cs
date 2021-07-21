@@ -33,42 +33,44 @@ namespace Mirabuf {
             "ChBkZXNpZ25faGllcmFyY2h5GAUgASgLMhcubWlyYWJ1Zi5HcmFwaENvbnRh",
             "aW5lchIwCg9qb2ludF9oaWVyYXJjaHkYBiABKAsyFy5taXJhYnVmLkdyYXBo",
             "Q29udGFpbmVyEiUKCXRyYW5zZm9ybRgHIAEoCzISLm1pcmFidWYuVHJhbnNm",
-            "b3JtInUKDEFzc2VtYmx5RGF0YRIdCgVwYXJ0cxgBIAEoCzIOLm1pcmFidWYu",
-            "UGFydHMSHwoGam9pbnRzGAIgASgLMg8ubWlyYWJ1Zi5Kb2ludHMSJQoJbWF0",
-            "ZXJpYWxzGAMgASgLMhIubWlyYWJ1Zi5NYXRlcmlhbHMitAIKBVBhcnRzEhsK",
-            "BGluZm8YASABKAsyDS5taXJhYnVmLkluZm8SPQoQcGFydF9kZWZpbml0aW9u",
-            "cxgCIAMoCzIjLm1pcmFidWYuUGFydHMuUGFydERlZmluaXRpb25zRW50cnkS",
-            "OQoOcGFydF9pbnN0YW5jZXMYAyADKAsyIS5taXJhYnVmLlBhcnRzLlBhcnRJ",
-            "bnN0YW5jZXNFbnRyeRpPChRQYXJ0RGVmaW5pdGlvbnNFbnRyeRILCgNrZXkY",
-            "ASABKAkSJgoFdmFsdWUYAiABKAsyFy5taXJhYnVmLlBhcnREZWZpbml0aW9u",
-            "OgI4ARpDChJQYXJ0SW5zdGFuY2VzRW50cnkSCwoDa2V5GAEgASgJEhwKBXZh",
-            "bHVlGAIgASgLMg0ubWlyYWJ1Zi5QYXJ0OgI4ASKsAQoOUGFydERlZmluaXRp",
-            "b24SGwoEaW5mbxgBIAEoCzINLm1pcmFidWYuSW5mbxIyCg1waHlzaWNhbF9k",
-            "YXRhGAIgASgLMhsubWlyYWJ1Zi5QaHlzaWNhbFByb3BlcnRpZXMSKgoOYmFz",
-            "ZV90cmFuc2Zvcm0YAyABKAsyEi5taXJhYnVmLlRyYW5zZm9ybRIdCgZib2Rp",
-            "ZXMYBCADKAsyDS5taXJhYnVmLkJvZHkifQoEUGFydBIbCgRpbmZvGAEgASgL",
-            "Mg0ubWlyYWJ1Zi5JbmZvEiEKGXBhcnRfZGVmaW5pdGlvbl9yZWZlcmVuY2UY",
-            "AiABKAkSJQoJdHJhbnNmb3JtGAMgASgLMhIubWlyYWJ1Zi5UcmFuc2Zvcm0S",
-            "DgoGam9pbnRzGAQgAygJInEKBEJvZHkSGwoEaW5mbxgBIAEoCzINLm1pcmFi",
-            "dWYuSW5mbxIMCgRwYXJ0GAIgASgJEiwKDXRyaWFuZ2xlX21lc2gYAyABKAsy",
-            "FS5taXJhYnVmLlRyaWFuZ2xlTWVzaBIQCghtYXRlcmlhbBgEIAEoCSKtAQoM",
-            "VHJpYW5nbGVNZXNoEhsKBGluZm8YASABKAsyDS5taXJhYnVmLkluZm8SEgoK",
-            "aGFzX3ZvbHVtZRgCIAEoCBIaChJtYXRlcmlhbF9yZWZlcmVuY2UYAyABKAkS",
-            "HQoEbWVzaBgEIAEoCzINLm1pcmFidWYuTWVzaEgAEiQKBWJtZXNoGAUgASgL",
-            "MhMubWlyYWJ1Zi5CaW5hcnlNZXNoSABCCwoJbWVzaF90eXBlIkMKBE1lc2gS",
-            "DQoFdmVydHMYASADKAISDwoHbm9ybWFscxgCIAMoAhIKCgJ1dhgDIAMoAhIP",
-            "CgdpbmRpY2VzGAQgAygFIhoKCkJpbmFyeU1lc2gSDAoEZGF0YRgBIAEoDEIC",
-            "SAFiBnByb3RvMw=="));
+            "b3JtIoQBCgxBc3NlbWJseURhdGESHQoFcGFydHMYASABKAsyDi5taXJhYnVm",
+            "LlBhcnRzEiUKBmpvaW50cxgCIAEoCzIVLm1pcmFidWYuam9pbnQuSm9pbnRz",
+            "Ei4KCW1hdGVyaWFscxgDIAEoCzIbLm1pcmFidWYubWF0ZXJpYWwuTWF0ZXJp",
+            "YWxzIrwCCgVQYXJ0cxIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEj0K",
+            "EHBhcnRfZGVmaW5pdGlvbnMYAiADKAsyIy5taXJhYnVmLlBhcnRzLlBhcnRE",
+            "ZWZpbml0aW9uc0VudHJ5EjkKDnBhcnRfaW5zdGFuY2VzGAMgAygLMiEubWly",
+            "YWJ1Zi5QYXJ0cy5QYXJ0SW5zdGFuY2VzRW50cnkaTwoUUGFydERlZmluaXRp",
+            "b25zRW50cnkSCwoDa2V5GAEgASgJEiYKBXZhbHVlGAIgASgLMhcubWlyYWJ1",
+            "Zi5QYXJ0RGVmaW5pdGlvbjoCOAEaSwoSUGFydEluc3RhbmNlc0VudHJ5EgsK",
+            "A2tleRgBIAEoCRIkCgV2YWx1ZRgCIAEoCzIVLm1pcmFidWYuUGFydEluc3Rh",
+            "bmNlOgI4ASKsAQoOUGFydERlZmluaXRpb24SGwoEaW5mbxgBIAEoCzINLm1p",
+            "cmFidWYuSW5mbxIyCg1waHlzaWNhbF9kYXRhGAIgASgLMhsubWlyYWJ1Zi5Q",
+            "aHlzaWNhbFByb3BlcnRpZXMSKgoOYmFzZV90cmFuc2Zvcm0YAyABKAsyEi5t",
+            "aXJhYnVmLlRyYW5zZm9ybRIdCgZib2RpZXMYBCADKAsyDS5taXJhYnVmLkJv",
+            "ZHkitAEKDFBhcnRJbnN0YW5jZRIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5J",
+            "bmZvEiEKGXBhcnRfZGVmaW5pdGlvbl9yZWZlcmVuY2UYAiABKAkSJQoJdHJh",
+            "bnNmb3JtGAMgASgLMhIubWlyYWJ1Zi5UcmFuc2Zvcm0SDgoGam9pbnRzGAQg",
+            "AygJEhIKCmFwcGVhcmFuY2UYBSABKAkSGQoRcGh5c2ljYWxfbWF0ZXJpYWwY",
+            "BiABKAkifAoEQm9keRIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEgwK",
+            "BHBhcnQYAiABKAkSLAoNdHJpYW5nbGVfbWVzaBgDIAEoCzIVLm1pcmFidWYu",
+            "VHJpYW5nbGVNZXNoEhsKE2FwcGVhcmFuY2Vfb3ZlcnJpZGUYBCABKAkirQEK",
+            "DFRyaWFuZ2xlTWVzaBIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEhIK",
+            "Cmhhc192b2x1bWUYAiABKAgSGgoSbWF0ZXJpYWxfcmVmZXJlbmNlGAMgASgJ",
+            "Eh0KBG1lc2gYBCABKAsyDS5taXJhYnVmLk1lc2hIABIkCgVibWVzaBgFIAEo",
+            "CzITLm1pcmFidWYuQmluYXJ5TWVzaEgAQgsKCW1lc2hfdHlwZSJDCgRNZXNo",
+            "Eg0KBXZlcnRzGAEgAygCEg8KB25vcm1hbHMYAiADKAISCgoCdXYYAyADKAIS",
+            "DwoHaW5kaWNlcxgEIAMoBSIaCgpCaW5hcnlNZXNoEgwKBGRhdGEYASABKAxC",
+            "AkgBYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Mirabuf.TypesReflection.Descriptor, global::Mirabuf.JointReflection.Descriptor, global::Mirabuf.MaterialReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Mirabuf.TypesReflection.Descriptor, global::Mirabuf.Joint.JointReflection.Descriptor, global::Mirabuf.Material.MaterialReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Assemblies), global::Mirabuf.Assemblies.Parser, new[]{ "Assemblies_" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Assembly), global::Mirabuf.Assembly.Parser, new[]{ "Info", "Data", "Dynamic", "PhysicalData", "DesignHierarchy", "JointHierarchy", "Transform" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.AssemblyData), global::Mirabuf.AssemblyData.Parser, new[]{ "Parts", "Joints", "Materials" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Parts), global::Mirabuf.Parts.Parser, new[]{ "Info", "PartDefinitions", "PartInstances" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PartDefinition), global::Mirabuf.PartDefinition.Parser, new[]{ "Info", "PhysicalData", "BaseTransform", "Bodies" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Part), global::Mirabuf.Part.Parser, new[]{ "Info", "PartDefinitionReference", "Transform", "Joints" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Body), global::Mirabuf.Body.Parser, new[]{ "Info", "Part", "TriangleMesh", "Material" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PartInstance), global::Mirabuf.PartInstance.Parser, new[]{ "Info", "PartDefinitionReference", "Transform", "Joints", "Appearance", "PhysicalMaterial" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Body), global::Mirabuf.Body.Parser, new[]{ "Info", "Part", "TriangleMesh", "AppearanceOverride" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.TriangleMesh), global::Mirabuf.TriangleMesh.Parser, new[]{ "Info", "HasVolume", "MaterialReference", "Mesh", "Bmesh" }, new[]{ "MeshType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Mesh), global::Mirabuf.Mesh.Parser, new[]{ "Verts", "Normals", "Uv", "Indices" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.BinaryMesh), global::Mirabuf.BinaryMesh.Parser, new[]{ "Data" }, null, null, null, null)
@@ -814,13 +816,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "joints" field.</summary>
     public const int JointsFieldNumber = 2;
-    private global::Mirabuf.Joints joints_;
+    private global::Mirabuf.Joint.Joints joints_;
     /// <summary>
     //// Joint Definition Set
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.Joints Joints {
+    public global::Mirabuf.Joint.Joints Joints {
       get { return joints_; }
       set {
         joints_ = value;
@@ -829,13 +831,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "materials" field.</summary>
     public const int MaterialsFieldNumber = 3;
-    private global::Mirabuf.Materials materials_;
+    private global::Mirabuf.Material.Materials materials_;
     /// <summary>
     //// Appearance and Physical Material Set
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.Materials Materials {
+    public global::Mirabuf.Material.Materials Materials {
       get { return materials_; }
       set {
         materials_ = value;
@@ -961,13 +963,13 @@ namespace Mirabuf {
       }
       if (other.joints_ != null) {
         if (joints_ == null) {
-          Joints = new global::Mirabuf.Joints();
+          Joints = new global::Mirabuf.Joint.Joints();
         }
         Joints.MergeFrom(other.Joints);
       }
       if (other.materials_ != null) {
         if (materials_ == null) {
-          Materials = new global::Mirabuf.Materials();
+          Materials = new global::Mirabuf.Material.Materials();
         }
         Materials.MergeFrom(other.Materials);
       }
@@ -995,14 +997,14 @@ namespace Mirabuf {
           }
           case 18: {
             if (joints_ == null) {
-              Joints = new global::Mirabuf.Joints();
+              Joints = new global::Mirabuf.Joint.Joints();
             }
             input.ReadMessage(Joints);
             break;
           }
           case 26: {
             if (materials_ == null) {
-              Materials = new global::Mirabuf.Materials();
+              Materials = new global::Mirabuf.Material.Materials();
             }
             input.ReadMessage(Materials);
             break;
@@ -1031,14 +1033,14 @@ namespace Mirabuf {
           }
           case 18: {
             if (joints_ == null) {
-              Joints = new global::Mirabuf.Joints();
+              Joints = new global::Mirabuf.Joint.Joints();
             }
             input.ReadMessage(Joints);
             break;
           }
           case 26: {
             if (materials_ == null) {
-              Materials = new global::Mirabuf.Materials();
+              Materials = new global::Mirabuf.Material.Materials();
             }
             input.ReadMessage(Materials);
             break;
@@ -1127,15 +1129,15 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "part_instances" field.</summary>
     public const int PartInstancesFieldNumber = 3;
-    private static readonly pbc::MapField<string, global::Mirabuf.Part>.Codec _map_partInstances_codec
-        = new pbc::MapField<string, global::Mirabuf.Part>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Part.Parser), 26);
-    private readonly pbc::MapField<string, global::Mirabuf.Part> partInstances_ = new pbc::MapField<string, global::Mirabuf.Part>();
+    private static readonly pbc::MapField<string, global::Mirabuf.PartInstance>.Codec _map_partInstances_codec
+        = new pbc::MapField<string, global::Mirabuf.PartInstance>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.PartInstance.Parser), 26);
+    private readonly pbc::MapField<string, global::Mirabuf.PartInstance> partInstances_ = new pbc::MapField<string, global::Mirabuf.PartInstance>();
     /// <summary>
     //// Map of the Exported Parts that make up the object
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::MapField<string, global::Mirabuf.Part> PartInstances {
+    public pbc::MapField<string, global::Mirabuf.PartInstance> PartInstances {
       get { return partInstances_; }
     }
 
@@ -1646,16 +1648,16 @@ namespace Mirabuf {
   /// Represents a object that does not have to be unique
   /// Can be an override for an existing definition
   /// </summary>
-  public sealed partial class Part : pb::IMessage<Part>
+  public sealed partial class PartInstance : pb::IMessage<PartInstance>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Part> _parser = new pb::MessageParser<Part>(() => new Part());
+    private static readonly pb::MessageParser<PartInstance> _parser = new pb::MessageParser<PartInstance>(() => new PartInstance());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Part> Parser { get { return _parser; } }
+    public static pb::MessageParser<PartInstance> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1671,7 +1673,7 @@ namespace Mirabuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Part() {
+    public PartInstance() {
       OnConstruction();
     }
 
@@ -1679,18 +1681,20 @@ namespace Mirabuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Part(Part other) : this() {
+    public PartInstance(PartInstance other) : this() {
       info_ = other.info_ != null ? other.info_.Clone() : null;
       partDefinitionReference_ = other.partDefinitionReference_;
       transform_ = other.transform_ != null ? other.transform_.Clone() : null;
       joints_ = other.joints_.Clone();
+      appearance_ = other.appearance_;
+      physicalMaterial_ = other.physicalMaterial_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Part Clone() {
-      return new Part(this);
+    public PartInstance Clone() {
+      return new PartInstance(this);
     }
 
     /// <summary>Field number for the "info" field.</summary>
@@ -1749,15 +1753,45 @@ namespace Mirabuf {
       get { return joints_; }
     }
 
+    /// <summary>Field number for the "appearance" field.</summary>
+    public const int AppearanceFieldNumber = 5;
+    private string appearance_ = "";
+    /// <summary>
+    //// Appearance Reference to link to `Materials->Appearance->Info->id`
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as Part);
+    public string Appearance {
+      get { return appearance_; }
+      set {
+        appearance_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "physical_material" field.</summary>
+    public const int PhysicalMaterialFieldNumber = 6;
+    private string physicalMaterial_ = "";
+    /// <summary>
+    //// Physical Material Reference to link to `Materials->PhysicalMaterial->Info->id`
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string PhysicalMaterial {
+      get { return physicalMaterial_; }
+      set {
+        physicalMaterial_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Part other) {
+    public override bool Equals(object other) {
+      return Equals(other as PartInstance);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(PartInstance other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -1768,6 +1802,8 @@ namespace Mirabuf {
       if (PartDefinitionReference != other.PartDefinitionReference) return false;
       if (!object.Equals(Transform, other.Transform)) return false;
       if(!joints_.Equals(other.joints_)) return false;
+      if (Appearance != other.Appearance) return false;
+      if (PhysicalMaterial != other.PhysicalMaterial) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1779,6 +1815,8 @@ namespace Mirabuf {
       if (PartDefinitionReference.Length != 0) hash ^= PartDefinitionReference.GetHashCode();
       if (transform_ != null) hash ^= Transform.GetHashCode();
       hash ^= joints_.GetHashCode();
+      if (Appearance.Length != 0) hash ^= Appearance.GetHashCode();
+      if (PhysicalMaterial.Length != 0) hash ^= PhysicalMaterial.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1810,6 +1848,14 @@ namespace Mirabuf {
         output.WriteMessage(Transform);
       }
       joints_.WriteTo(output, _repeated_joints_codec);
+      if (Appearance.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Appearance);
+      }
+      if (PhysicalMaterial.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(PhysicalMaterial);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1833,6 +1879,14 @@ namespace Mirabuf {
         output.WriteMessage(Transform);
       }
       joints_.WriteTo(ref output, _repeated_joints_codec);
+      if (Appearance.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(Appearance);
+      }
+      if (PhysicalMaterial.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(PhysicalMaterial);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1853,6 +1907,12 @@ namespace Mirabuf {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Transform);
       }
       size += joints_.CalculateSize(_repeated_joints_codec);
+      if (Appearance.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Appearance);
+      }
+      if (PhysicalMaterial.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(PhysicalMaterial);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -1861,7 +1921,7 @@ namespace Mirabuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Part other) {
+    public void MergeFrom(PartInstance other) {
       if (other == null) {
         return;
       }
@@ -1881,6 +1941,12 @@ namespace Mirabuf {
         Transform.MergeFrom(other.Transform);
       }
       joints_.Add(other.joints_);
+      if (other.Appearance.Length != 0) {
+        Appearance = other.Appearance;
+      }
+      if (other.PhysicalMaterial.Length != 0) {
+        PhysicalMaterial = other.PhysicalMaterial;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -1918,6 +1984,14 @@ namespace Mirabuf {
             joints_.AddEntriesFrom(input, _repeated_joints_codec);
             break;
           }
+          case 42: {
+            Appearance = input.ReadString();
+            break;
+          }
+          case 50: {
+            PhysicalMaterial = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -1953,6 +2027,14 @@ namespace Mirabuf {
           }
           case 34: {
             joints_.AddEntriesFrom(ref input, _repeated_joints_codec);
+            break;
+          }
+          case 42: {
+            Appearance = input.ReadString();
+            break;
+          }
+          case 50: {
+            PhysicalMaterial = input.ReadString();
             break;
           }
         }
@@ -2005,7 +2087,7 @@ namespace Mirabuf {
       info_ = other.info_ != null ? other.info_.Clone() : null;
       part_ = other.part_;
       triangleMesh_ = other.triangleMesh_ != null ? other.triangleMesh_.Clone() : null;
-      material_ = other.material_;
+      appearanceOverride_ = other.appearanceOverride_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2057,18 +2139,18 @@ namespace Mirabuf {
       }
     }
 
-    /// <summary>Field number for the "material" field.</summary>
-    public const int MaterialFieldNumber = 4;
-    private string material_ = "";
+    /// <summary>Field number for the "appearance_override" field.</summary>
+    public const int AppearanceOverrideFieldNumber = 4;
+    private string appearanceOverride_ = "";
     /// <summary>
-    //// Material Reference 
+    //// Override Visual Appearance for the body
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Material {
-      get { return material_; }
+    public string AppearanceOverride {
+      get { return appearanceOverride_; }
       set {
-        material_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        appearanceOverride_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -2090,7 +2172,7 @@ namespace Mirabuf {
       if (!object.Equals(Info, other.Info)) return false;
       if (Part != other.Part) return false;
       if (!object.Equals(TriangleMesh, other.TriangleMesh)) return false;
-      if (Material != other.Material) return false;
+      if (AppearanceOverride != other.AppearanceOverride) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2101,7 +2183,7 @@ namespace Mirabuf {
       if (info_ != null) hash ^= Info.GetHashCode();
       if (Part.Length != 0) hash ^= Part.GetHashCode();
       if (triangleMesh_ != null) hash ^= TriangleMesh.GetHashCode();
-      if (Material.Length != 0) hash ^= Material.GetHashCode();
+      if (AppearanceOverride.Length != 0) hash ^= AppearanceOverride.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2132,9 +2214,9 @@ namespace Mirabuf {
         output.WriteRawTag(26);
         output.WriteMessage(TriangleMesh);
       }
-      if (Material.Length != 0) {
+      if (AppearanceOverride.Length != 0) {
         output.WriteRawTag(34);
-        output.WriteString(Material);
+        output.WriteString(AppearanceOverride);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -2158,9 +2240,9 @@ namespace Mirabuf {
         output.WriteRawTag(26);
         output.WriteMessage(TriangleMesh);
       }
-      if (Material.Length != 0) {
+      if (AppearanceOverride.Length != 0) {
         output.WriteRawTag(34);
-        output.WriteString(Material);
+        output.WriteString(AppearanceOverride);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -2181,8 +2263,8 @@ namespace Mirabuf {
       if (triangleMesh_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(TriangleMesh);
       }
-      if (Material.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Material);
+      if (AppearanceOverride.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(AppearanceOverride);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -2211,8 +2293,8 @@ namespace Mirabuf {
         }
         TriangleMesh.MergeFrom(other.TriangleMesh);
       }
-      if (other.Material.Length != 0) {
-        Material = other.Material;
+      if (other.AppearanceOverride.Length != 0) {
+        AppearanceOverride = other.AppearanceOverride;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -2248,7 +2330,7 @@ namespace Mirabuf {
             break;
           }
           case 34: {
-            Material = input.ReadString();
+            AppearanceOverride = input.ReadString();
             break;
           }
         }
@@ -2285,7 +2367,7 @@ namespace Mirabuf {
             break;
           }
           case 34: {
-            Material = input.ReadString();
+            AppearanceOverride = input.ReadString();
             break;
           }
         }

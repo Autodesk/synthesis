@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Mirabuf {
+namespace Mirabuf.Material {
 
   /// <summary>Holder for reflection information generated from material.proto</summary>
   public static partial class MaterialReflection {
@@ -24,41 +24,44 @@ namespace Mirabuf {
     static MaterialReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg5tYXRlcmlhbC5wcm90bxIHbWlyYWJ1ZhoLdHlwZXMucHJvdG8iowEKCU1h",
-            "dGVyaWFscxIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEjQKCW1hdGVy",
-            "aWFscxgCIAMoCzIhLm1pcmFidWYuTWF0ZXJpYWxzLk1hdGVyaWFsc0VudHJ5",
-            "GkMKDk1hdGVyaWFsc0VudHJ5EgsKA2tleRgBIAEoCRIgCgV2YWx1ZRgCIAEo",
-            "CzIRLm1pcmFidWYuTWF0ZXJpYWw6AjgBIoUBCghNYXRlcmlhbBIbCgRpbmZv",
-            "GAEgASgLMg0ubWlyYWJ1Zi5JbmZvEicKCmFwcGVhcmFuY2UYAiABKAsyEy5t",
-            "aXJhYnVmLkFwcGVhcmFuY2USMwoQcGh5c2ljYWxNYXRlcmlhbBgDIAEoCzIZ",
-            "Lm1pcmFidWYuUGh5c2ljYWxNYXRlcmlhbCJjCgpBcHBlYXJhbmNlEh4KBmFs",
-            "YmVkbxgBIAEoCzIOLm1pcmFidWYuQ29sb3ISEQoJcm91Z2huZXNzGAIgASgC",
-            "EhAKCG1ldGFsbGljGAMgASgCEhAKCHNwZWN1bGFyGAQgASgCIswFChBQaHlz",
-            "aWNhbE1hdGVyaWFsEgwKBG5hbWUYASABKAkSEwoLZGVzY3JpcHRpb24YAiAB",
-            "KAkSMgoHdGhlcm1hbBgDIAEoCzIhLm1pcmFidWYuUGh5c2ljYWxNYXRlcmlh",
-            "bC5UaGVybWFsEjgKCm1lY2hhbmljYWwYBCABKAsyJC5taXJhYnVmLlBoeXNp",
-            "Y2FsTWF0ZXJpYWwuTWVjaGFuaWNhbBI0CghzdHJlbmd0aBgFIAEoCzIiLm1p",
-            "cmFidWYuUGh5c2ljYWxNYXRlcmlhbC5TdHJlbmd0aBIYChBkeW5hbWljX2Zy",
-            "aWN0aW9uGAYgASgCEhcKD3N0YXRpY19mcmljdGlvbhgHIAEoAhITCgtyZXN0",
-            "aXR1dGlvbhgIIAEoAhISCgpkZWZvcm1hYmxlGAkgASgIEjQKBHR5cGUYCiAB",
-            "KA4yJi5taXJhYnVmLlBoeXNpY2FsTWF0ZXJpYWwuTWF0ZXJpYWxUeXBlGmUK",
-            "B1RoZXJtYWwSHAoUdGhlcm1hbF9jb25kdWN0aXZpdHkYASABKAISFQoNc3Bl",
-            "Y2lmaWNfaGVhdBgCIAEoAhIlCh10aGVybWFsX2V4cGFuc2lvbl9jb2VmZmlj",
-            "aWVudBgDIAEoAhp3CgpNZWNoYW5pY2FsEhEKCXlvdW5nX21vZBgBIAEoAhIV",
-            "Cg1wb2lzc29uX3JhdGlvGAIgASgCEhEKCXNoZWFyX21vZBgDIAEoAhIPCgdk",
-            "ZW5zaXR5GAQgASgCEhsKE2RhbXBpbmdfY29lZmZpY2llbnQYBSABKAIaVwoI",
-            "U3RyZW5ndGgSFgoOeWllbGRfc3RyZW5ndGgYASABKAISGAoQdGVuc2lsZV9z",
-            "dHJlbmd0aBgCIAEoAhIZChF0aGVybWFsX3RyZWF0bWVudBgDIAEoCCImCgxN",
-            "YXRlcmlhbFR5cGUSCQoFTUVUQUwQABILCgdQTEFTVElDEAFiBnByb3RvMw=="));
+            "Cg5tYXRlcmlhbC5wcm90bxIQbWlyYWJ1Zi5tYXRlcmlhbBoLdHlwZXMucHJv",
+            "dG8i6gIKCU1hdGVyaWFscxIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZv",
+            "Ek0KEXBoeXNpY2FsTWF0ZXJpYWxzGAIgAygLMjIubWlyYWJ1Zi5tYXRlcmlh",
+            "bC5NYXRlcmlhbHMuUGh5c2ljYWxNYXRlcmlhbHNFbnRyeRJBCgthcHBlYXJh",
+            "bmNlcxgDIAMoCzIsLm1pcmFidWYubWF0ZXJpYWwuTWF0ZXJpYWxzLkFwcGVh",
+            "cmFuY2VzRW50cnkaXAoWUGh5c2ljYWxNYXRlcmlhbHNFbnRyeRILCgNrZXkY",
+            "ASABKAkSMQoFdmFsdWUYAiABKAsyIi5taXJhYnVmLm1hdGVyaWFsLlBoeXNp",
+            "Y2FsTWF0ZXJpYWw6AjgBGlAKEEFwcGVhcmFuY2VzRW50cnkSCwoDa2V5GAEg",
+            "ASgJEisKBXZhbHVlGAIgASgLMhwubWlyYWJ1Zi5tYXRlcmlhbC5BcHBlYXJh",
+            "bmNlOgI4ASKAAQoKQXBwZWFyYW5jZRIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1",
+            "Zi5JbmZvEh4KBmFsYmVkbxgCIAEoCzIOLm1pcmFidWYuQ29sb3ISEQoJcm91",
+            "Z2huZXNzGAMgASgBEhAKCG1ldGFsbGljGAQgASgBEhAKCHNwZWN1bGFyGAUg",
+            "ASgBIoIGChBQaHlzaWNhbE1hdGVyaWFsEhsKBGluZm8YASABKAsyDS5taXJh",
+            "YnVmLkluZm8SEwoLZGVzY3JpcHRpb24YAiABKAkSOwoHdGhlcm1hbBgDIAEo",
+            "CzIqLm1pcmFidWYubWF0ZXJpYWwuUGh5c2ljYWxNYXRlcmlhbC5UaGVybWFs",
+            "EkEKCm1lY2hhbmljYWwYBCABKAsyLS5taXJhYnVmLm1hdGVyaWFsLlBoeXNp",
+            "Y2FsTWF0ZXJpYWwuTWVjaGFuaWNhbBI9CghzdHJlbmd0aBgFIAEoCzIrLm1p",
+            "cmFidWYubWF0ZXJpYWwuUGh5c2ljYWxNYXRlcmlhbC5TdHJlbmd0aBIYChBk",
+            "eW5hbWljX2ZyaWN0aW9uGAYgASgCEhcKD3N0YXRpY19mcmljdGlvbhgHIAEo",
+            "AhITCgtyZXN0aXR1dGlvbhgIIAEoAhISCgpkZWZvcm1hYmxlGAkgASgIEkAK",
+            "B21hdFR5cGUYCiABKA4yLy5taXJhYnVmLm1hdGVyaWFsLlBoeXNpY2FsTWF0",
+            "ZXJpYWwuTWF0ZXJpYWxUeXBlGmUKB1RoZXJtYWwSHAoUdGhlcm1hbF9jb25k",
+            "dWN0aXZpdHkYASABKAISFQoNc3BlY2lmaWNfaGVhdBgCIAEoAhIlCh10aGVy",
+            "bWFsX2V4cGFuc2lvbl9jb2VmZmljaWVudBgDIAEoAhp3CgpNZWNoYW5pY2Fs",
+            "EhEKCXlvdW5nX21vZBgBIAEoAhIVCg1wb2lzc29uX3JhdGlvGAIgASgCEhEK",
+            "CXNoZWFyX21vZBgDIAEoAhIPCgdkZW5zaXR5GAQgASgCEhsKE2RhbXBpbmdf",
+            "Y29lZmZpY2llbnQYBSABKAIaVwoIU3RyZW5ndGgSFgoOeWllbGRfc3RyZW5n",
+            "dGgYASABKAISGAoQdGVuc2lsZV9zdHJlbmd0aBgCIAEoAhIZChF0aGVybWFs",
+            "X3RyZWF0bWVudBgDIAEoCCImCgxNYXRlcmlhbFR5cGUSCQoFTUVUQUwQABIL",
+            "CgdQTEFTVElDEAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Mirabuf.TypesReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Materials), global::Mirabuf.Materials.Parser, new[]{ "Info", "Materials_" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material), global::Mirabuf.Material.Parser, new[]{ "Info", "Appearance", "PhysicalMaterial" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Appearance), global::Mirabuf.Appearance.Parser, new[]{ "Albedo", "Roughness", "Metallic", "Specular" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PhysicalMaterial), global::Mirabuf.PhysicalMaterial.Parser, new[]{ "Name", "Description", "Thermal", "Mechanical", "Strength", "DynamicFriction", "StaticFriction", "Restitution", "Deformable", "Type" }, null, new[]{ typeof(global::Mirabuf.PhysicalMaterial.Types.MaterialType) }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PhysicalMaterial.Types.Thermal), global::Mirabuf.PhysicalMaterial.Types.Thermal.Parser, new[]{ "ThermalConductivity", "SpecificHeat", "ThermalExpansionCoefficient" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PhysicalMaterial.Types.Mechanical), global::Mirabuf.PhysicalMaterial.Types.Mechanical.Parser, new[]{ "YoungMod", "PoissonRatio", "ShearMod", "Density", "DampingCoefficient" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.PhysicalMaterial.Types.Strength), global::Mirabuf.PhysicalMaterial.Types.Strength.Parser, new[]{ "YieldStrength", "TensileStrength", "ThermalTreatment" }, null, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.Materials), global::Mirabuf.Material.Materials.Parser, new[]{ "Info", "PhysicalMaterials", "Appearances" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.Appearance), global::Mirabuf.Material.Appearance.Parser, new[]{ "Info", "Albedo", "Roughness", "Metallic", "Specular" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.PhysicalMaterial), global::Mirabuf.Material.PhysicalMaterial.Parser, new[]{ "Info", "Description", "Thermal", "Mechanical", "Strength", "DynamicFriction", "StaticFriction", "Restitution", "Deformable", "MatType" }, null, new[]{ typeof(global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType) }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.PhysicalMaterial.Types.Thermal), global::Mirabuf.Material.PhysicalMaterial.Types.Thermal.Parser, new[]{ "ThermalConductivity", "SpecificHeat", "ThermalExpansionCoefficient" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical), global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical.Parser, new[]{ "YoungMod", "PoissonRatio", "ShearMod", "Density", "DampingCoefficient" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Material.PhysicalMaterial.Types.Strength), global::Mirabuf.Material.PhysicalMaterial.Types.Strength.Parser, new[]{ "YieldStrength", "TensileStrength", "ThermalTreatment" }, null, null, null, null)})
           }));
     }
     #endregion
@@ -85,7 +88,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.MaterialReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Mirabuf.Material.MaterialReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -106,7 +109,8 @@ namespace Mirabuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Materials(Materials other) : this() {
       info_ = other.info_ != null ? other.info_.Clone() : null;
-      materials_ = other.materials_.Clone();
+      physicalMaterials_ = other.physicalMaterials_.Clone();
+      appearances_ = other.appearances_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -120,7 +124,7 @@ namespace Mirabuf {
     public const int InfoFieldNumber = 1;
     private global::Mirabuf.Info info_;
     /// <summary>
-    /// file info
+    //// Identifiable information (id, name, version)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -131,15 +135,32 @@ namespace Mirabuf {
       }
     }
 
-    /// <summary>Field number for the "materials" field.</summary>
-    public const int Materials_FieldNumber = 2;
-    private static readonly pbc::MapField<string, global::Mirabuf.Material>.Codec _map_materials_codec
-        = new pbc::MapField<string, global::Mirabuf.Material>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Material.Parser), 18);
-    private readonly pbc::MapField<string, global::Mirabuf.Material> materials_ = new pbc::MapField<string, global::Mirabuf.Material>();
+    /// <summary>Field number for the "physicalMaterials" field.</summary>
+    public const int PhysicalMaterialsFieldNumber = 2;
+    private static readonly pbc::MapField<string, global::Mirabuf.Material.PhysicalMaterial>.Codec _map_physicalMaterials_codec
+        = new pbc::MapField<string, global::Mirabuf.Material.PhysicalMaterial>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Material.PhysicalMaterial.Parser), 18);
+    private readonly pbc::MapField<string, global::Mirabuf.Material.PhysicalMaterial> physicalMaterials_ = new pbc::MapField<string, global::Mirabuf.Material.PhysicalMaterial>();
+    /// <summary>
+    //// Map of Physical Materials
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::MapField<string, global::Mirabuf.Material> Materials_ {
-      get { return materials_; }
+    public pbc::MapField<string, global::Mirabuf.Material.PhysicalMaterial> PhysicalMaterials {
+      get { return physicalMaterials_; }
+    }
+
+    /// <summary>Field number for the "appearances" field.</summary>
+    public const int AppearancesFieldNumber = 3;
+    private static readonly pbc::MapField<string, global::Mirabuf.Material.Appearance>.Codec _map_appearances_codec
+        = new pbc::MapField<string, global::Mirabuf.Material.Appearance>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Material.Appearance.Parser), 26);
+    private readonly pbc::MapField<string, global::Mirabuf.Material.Appearance> appearances_ = new pbc::MapField<string, global::Mirabuf.Material.Appearance>();
+    /// <summary>
+    //// Map of Appearances that are purely visual
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::MapField<string, global::Mirabuf.Material.Appearance> Appearances {
+      get { return appearances_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -158,7 +179,8 @@ namespace Mirabuf {
         return true;
       }
       if (!object.Equals(Info, other.Info)) return false;
-      if (!Materials_.Equals(other.Materials_)) return false;
+      if (!PhysicalMaterials.Equals(other.PhysicalMaterials)) return false;
+      if (!Appearances.Equals(other.Appearances)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -167,7 +189,8 @@ namespace Mirabuf {
     public override int GetHashCode() {
       int hash = 1;
       if (info_ != null) hash ^= Info.GetHashCode();
-      hash ^= Materials_.GetHashCode();
+      hash ^= PhysicalMaterials.GetHashCode();
+      hash ^= Appearances.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -190,7 +213,8 @@ namespace Mirabuf {
         output.WriteRawTag(10);
         output.WriteMessage(Info);
       }
-      materials_.WriteTo(output, _map_materials_codec);
+      physicalMaterials_.WriteTo(output, _map_physicalMaterials_codec);
+      appearances_.WriteTo(output, _map_appearances_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -205,7 +229,8 @@ namespace Mirabuf {
         output.WriteRawTag(10);
         output.WriteMessage(Info);
       }
-      materials_.WriteTo(ref output, _map_materials_codec);
+      physicalMaterials_.WriteTo(ref output, _map_physicalMaterials_codec);
+      appearances_.WriteTo(ref output, _map_appearances_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -219,7 +244,8 @@ namespace Mirabuf {
       if (info_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Info);
       }
-      size += materials_.CalculateSize(_map_materials_codec);
+      size += physicalMaterials_.CalculateSize(_map_physicalMaterials_codec);
+      size += appearances_.CalculateSize(_map_appearances_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -238,7 +264,8 @@ namespace Mirabuf {
         }
         Info.MergeFrom(other.Info);
       }
-      materials_.Add(other.materials_);
+      physicalMaterials_.Add(other.physicalMaterials_);
+      appearances_.Add(other.appearances_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -262,7 +289,11 @@ namespace Mirabuf {
             break;
           }
           case 18: {
-            materials_.AddEntriesFrom(input, _map_materials_codec);
+            physicalMaterials_.AddEntriesFrom(input, _map_physicalMaterials_codec);
+            break;
+          }
+          case 26: {
+            appearances_.AddEntriesFrom(input, _map_appearances_codec);
             break;
           }
         }
@@ -288,301 +319,11 @@ namespace Mirabuf {
             break;
           }
           case 18: {
-            materials_.AddEntriesFrom(ref input, _map_materials_codec);
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  /// <summary>
-  ///*
-  /// Contains the information regarding the appearance and physical properties
-  /// </summary>
-  public sealed partial class Material : pb::IMessage<Material>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<Material> _parser = new pb::MessageParser<Material>(() => new Material());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Material> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.MaterialReflection.Descriptor.MessageTypes[1]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Material() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Material(Material other) : this() {
-      info_ = other.info_ != null ? other.info_.Clone() : null;
-      appearance_ = other.appearance_ != null ? other.appearance_.Clone() : null;
-      physicalMaterial_ = other.physicalMaterial_ != null ? other.physicalMaterial_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Material Clone() {
-      return new Material(this);
-    }
-
-    /// <summary>Field number for the "info" field.</summary>
-    public const int InfoFieldNumber = 1;
-    private global::Mirabuf.Info info_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.Info Info {
-      get { return info_; }
-      set {
-        info_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "appearance" field.</summary>
-    public const int AppearanceFieldNumber = 2;
-    private global::Mirabuf.Appearance appearance_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.Appearance Appearance {
-      get { return appearance_; }
-      set {
-        appearance_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "physicalMaterial" field.</summary>
-    public const int PhysicalMaterialFieldNumber = 3;
-    private global::Mirabuf.PhysicalMaterial physicalMaterial_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.PhysicalMaterial PhysicalMaterial {
-      get { return physicalMaterial_; }
-      set {
-        physicalMaterial_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as Material);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Material other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (!object.Equals(Info, other.Info)) return false;
-      if (!object.Equals(Appearance, other.Appearance)) return false;
-      if (!object.Equals(PhysicalMaterial, other.PhysicalMaterial)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (info_ != null) hash ^= Info.GetHashCode();
-      if (appearance_ != null) hash ^= Appearance.GetHashCode();
-      if (physicalMaterial_ != null) hash ^= PhysicalMaterial.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (info_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Info);
-      }
-      if (appearance_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Appearance);
-      }
-      if (physicalMaterial_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(PhysicalMaterial);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (info_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Info);
-      }
-      if (appearance_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Appearance);
-      }
-      if (physicalMaterial_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(PhysicalMaterial);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (info_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Info);
-      }
-      if (appearance_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Appearance);
-      }
-      if (physicalMaterial_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PhysicalMaterial);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Material other) {
-      if (other == null) {
-        return;
-      }
-      if (other.info_ != null) {
-        if (info_ == null) {
-          Info = new global::Mirabuf.Info();
-        }
-        Info.MergeFrom(other.Info);
-      }
-      if (other.appearance_ != null) {
-        if (appearance_ == null) {
-          Appearance = new global::Mirabuf.Appearance();
-        }
-        Appearance.MergeFrom(other.Appearance);
-      }
-      if (other.physicalMaterial_ != null) {
-        if (physicalMaterial_ == null) {
-          PhysicalMaterial = new global::Mirabuf.PhysicalMaterial();
-        }
-        PhysicalMaterial.MergeFrom(other.PhysicalMaterial);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            if (info_ == null) {
-              Info = new global::Mirabuf.Info();
-            }
-            input.ReadMessage(Info);
-            break;
-          }
-          case 18: {
-            if (appearance_ == null) {
-              Appearance = new global::Mirabuf.Appearance();
-            }
-            input.ReadMessage(Appearance);
+            physicalMaterials_.AddEntriesFrom(ref input, _map_physicalMaterials_codec);
             break;
           }
           case 26: {
-            if (physicalMaterial_ == null) {
-              PhysicalMaterial = new global::Mirabuf.PhysicalMaterial();
-            }
-            input.ReadMessage(PhysicalMaterial);
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            if (info_ == null) {
-              Info = new global::Mirabuf.Info();
-            }
-            input.ReadMessage(Info);
-            break;
-          }
-          case 18: {
-            if (appearance_ == null) {
-              Appearance = new global::Mirabuf.Appearance();
-            }
-            input.ReadMessage(Appearance);
-            break;
-          }
-          case 26: {
-            if (physicalMaterial_ == null) {
-              PhysicalMaterial = new global::Mirabuf.PhysicalMaterial();
-            }
-            input.ReadMessage(PhysicalMaterial);
+            appearances_.AddEntriesFrom(ref input, _map_appearances_codec);
             break;
           }
         }
@@ -611,7 +352,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.MaterialReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Mirabuf.Material.MaterialReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -631,6 +372,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Appearance(Appearance other) : this() {
+      info_ = other.info_ != null ? other.info_.Clone() : null;
       albedo_ = other.albedo_ != null ? other.albedo_.Clone() : null;
       roughness_ = other.roughness_;
       metallic_ = other.metallic_;
@@ -644,9 +386,27 @@ namespace Mirabuf {
       return new Appearance(this);
     }
 
+    /// <summary>Field number for the "info" field.</summary>
+    public const int InfoFieldNumber = 1;
+    private global::Mirabuf.Info info_;
+    /// <summary>
+    //// Identfiable information (id, name, version)
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Mirabuf.Info Info {
+      get { return info_; }
+      set {
+        info_ = value;
+      }
+    }
+
     /// <summary>Field number for the "albedo" field.</summary>
-    public const int AlbedoFieldNumber = 1;
+    public const int AlbedoFieldNumber = 2;
     private global::Mirabuf.Color albedo_;
+    /// <summary>
+    //// albedo map RGBA 0-255
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Mirabuf.Color Albedo {
@@ -657,11 +417,14 @@ namespace Mirabuf {
     }
 
     /// <summary>Field number for the "roughness" field.</summary>
-    public const int RoughnessFieldNumber = 2;
-    private float roughness_;
+    public const int RoughnessFieldNumber = 3;
+    private double roughness_;
+    /// <summary>
+    //// roughness value 0-1
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Roughness {
+    public double Roughness {
       get { return roughness_; }
       set {
         roughness_ = value;
@@ -669,11 +432,14 @@ namespace Mirabuf {
     }
 
     /// <summary>Field number for the "metallic" field.</summary>
-    public const int MetallicFieldNumber = 3;
-    private float metallic_;
+    public const int MetallicFieldNumber = 4;
+    private double metallic_;
+    /// <summary>
+    //// metallic value 0-1
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Metallic {
+    public double Metallic {
       get { return metallic_; }
       set {
         metallic_ = value;
@@ -681,11 +447,14 @@ namespace Mirabuf {
     }
 
     /// <summary>Field number for the "specular" field.</summary>
-    public const int SpecularFieldNumber = 4;
-    private float specular_;
+    public const int SpecularFieldNumber = 5;
+    private double specular_;
+    /// <summary>
+    //// specular value 0-1
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float Specular {
+    public double Specular {
       get { return specular_; }
       set {
         specular_ = value;
@@ -707,10 +476,11 @@ namespace Mirabuf {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (!object.Equals(Info, other.Info)) return false;
       if (!object.Equals(Albedo, other.Albedo)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Roughness, other.Roughness)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Metallic, other.Metallic)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Specular, other.Specular)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Roughness, other.Roughness)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Metallic, other.Metallic)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Specular, other.Specular)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -718,10 +488,11 @@ namespace Mirabuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (info_ != null) hash ^= Info.GetHashCode();
       if (albedo_ != null) hash ^= Albedo.GetHashCode();
-      if (Roughness != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Roughness);
-      if (Metallic != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Metallic);
-      if (Specular != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Specular);
+      if (Roughness != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Roughness);
+      if (Metallic != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Metallic);
+      if (Specular != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Specular);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -740,21 +511,25 @@ namespace Mirabuf {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (albedo_ != null) {
+      if (info_ != null) {
         output.WriteRawTag(10);
+        output.WriteMessage(Info);
+      }
+      if (albedo_ != null) {
+        output.WriteRawTag(18);
         output.WriteMessage(Albedo);
       }
-      if (Roughness != 0F) {
-        output.WriteRawTag(21);
-        output.WriteFloat(Roughness);
+      if (Roughness != 0D) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Roughness);
       }
-      if (Metallic != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(Metallic);
+      if (Metallic != 0D) {
+        output.WriteRawTag(33);
+        output.WriteDouble(Metallic);
       }
-      if (Specular != 0F) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Specular);
+      if (Specular != 0D) {
+        output.WriteRawTag(41);
+        output.WriteDouble(Specular);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -766,21 +541,25 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (albedo_ != null) {
+      if (info_ != null) {
         output.WriteRawTag(10);
+        output.WriteMessage(Info);
+      }
+      if (albedo_ != null) {
+        output.WriteRawTag(18);
         output.WriteMessage(Albedo);
       }
-      if (Roughness != 0F) {
-        output.WriteRawTag(21);
-        output.WriteFloat(Roughness);
+      if (Roughness != 0D) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Roughness);
       }
-      if (Metallic != 0F) {
-        output.WriteRawTag(29);
-        output.WriteFloat(Metallic);
+      if (Metallic != 0D) {
+        output.WriteRawTag(33);
+        output.WriteDouble(Metallic);
       }
-      if (Specular != 0F) {
-        output.WriteRawTag(37);
-        output.WriteFloat(Specular);
+      if (Specular != 0D) {
+        output.WriteRawTag(41);
+        output.WriteDouble(Specular);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -792,17 +571,20 @@ namespace Mirabuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (info_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Info);
+      }
       if (albedo_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Albedo);
       }
-      if (Roughness != 0F) {
-        size += 1 + 4;
+      if (Roughness != 0D) {
+        size += 1 + 8;
       }
-      if (Metallic != 0F) {
-        size += 1 + 4;
+      if (Metallic != 0D) {
+        size += 1 + 8;
       }
-      if (Specular != 0F) {
-        size += 1 + 4;
+      if (Specular != 0D) {
+        size += 1 + 8;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -816,19 +598,25 @@ namespace Mirabuf {
       if (other == null) {
         return;
       }
+      if (other.info_ != null) {
+        if (info_ == null) {
+          Info = new global::Mirabuf.Info();
+        }
+        Info.MergeFrom(other.Info);
+      }
       if (other.albedo_ != null) {
         if (albedo_ == null) {
           Albedo = new global::Mirabuf.Color();
         }
         Albedo.MergeFrom(other.Albedo);
       }
-      if (other.Roughness != 0F) {
+      if (other.Roughness != 0D) {
         Roughness = other.Roughness;
       }
-      if (other.Metallic != 0F) {
+      if (other.Metallic != 0D) {
         Metallic = other.Metallic;
       }
-      if (other.Specular != 0F) {
+      if (other.Specular != 0D) {
         Specular = other.Specular;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -847,22 +635,29 @@ namespace Mirabuf {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
+            if (info_ == null) {
+              Info = new global::Mirabuf.Info();
+            }
+            input.ReadMessage(Info);
+            break;
+          }
+          case 18: {
             if (albedo_ == null) {
               Albedo = new global::Mirabuf.Color();
             }
             input.ReadMessage(Albedo);
             break;
           }
-          case 21: {
-            Roughness = input.ReadFloat();
+          case 25: {
+            Roughness = input.ReadDouble();
             break;
           }
-          case 29: {
-            Metallic = input.ReadFloat();
+          case 33: {
+            Metallic = input.ReadDouble();
             break;
           }
-          case 37: {
-            Specular = input.ReadFloat();
+          case 41: {
+            Specular = input.ReadDouble();
             break;
           }
         }
@@ -881,22 +676,29 @@ namespace Mirabuf {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
+            if (info_ == null) {
+              Info = new global::Mirabuf.Info();
+            }
+            input.ReadMessage(Info);
+            break;
+          }
+          case 18: {
             if (albedo_ == null) {
               Albedo = new global::Mirabuf.Color();
             }
             input.ReadMessage(Albedo);
             break;
           }
-          case 21: {
-            Roughness = input.ReadFloat();
+          case 25: {
+            Roughness = input.ReadDouble();
             break;
           }
-          case 29: {
-            Metallic = input.ReadFloat();
+          case 33: {
+            Metallic = input.ReadDouble();
             break;
           }
-          case 37: {
-            Specular = input.ReadFloat();
+          case 41: {
+            Specular = input.ReadDouble();
             break;
           }
         }
@@ -924,7 +726,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.MaterialReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Mirabuf.Material.MaterialReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -944,7 +746,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PhysicalMaterial(PhysicalMaterial other) : this() {
-      name_ = other.name_;
+      info_ = other.info_ != null ? other.info_.Clone() : null;
       description_ = other.description_;
       thermal_ = other.thermal_ != null ? other.thermal_.Clone() : null;
       mechanical_ = other.mechanical_ != null ? other.mechanical_.Clone() : null;
@@ -953,7 +755,7 @@ namespace Mirabuf {
       staticFriction_ = other.staticFriction_;
       restitution_ = other.restitution_;
       deformable_ = other.deformable_;
-      type_ = other.type_;
+      matType_ = other.matType_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -963,21 +765,27 @@ namespace Mirabuf {
       return new PhysicalMaterial(this);
     }
 
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
+    /// <summary>Field number for the "info" field.</summary>
+    public const int InfoFieldNumber = 1;
+    private global::Mirabuf.Info info_;
+    /// <summary>
+    //// Identifiable information (id, name, version, etc)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
+    public global::Mirabuf.Info Info {
+      get { return info_; }
       set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        info_ = value;
       }
     }
 
     /// <summary>Field number for the "description" field.</summary>
     public const int DescriptionFieldNumber = 2;
     private string description_ = "";
+    /// <summary>
+    //// short description of physical material
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Description {
@@ -989,13 +797,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "thermal" field.</summary>
     public const int ThermalFieldNumber = 3;
-    private global::Mirabuf.PhysicalMaterial.Types.Thermal thermal_;
+    private global::Mirabuf.Material.PhysicalMaterial.Types.Thermal thermal_;
     /// <summary>
-    //// Thermal Physical properties of the model
+    //// Thermal Physical properties of the model OPTIONAL
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.PhysicalMaterial.Types.Thermal Thermal {
+    public global::Mirabuf.Material.PhysicalMaterial.Types.Thermal Thermal {
       get { return thermal_; }
       set {
         thermal_ = value;
@@ -1004,13 +812,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "mechanical" field.</summary>
     public const int MechanicalFieldNumber = 4;
-    private global::Mirabuf.PhysicalMaterial.Types.Mechanical mechanical_;
+    private global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical mechanical_;
     /// <summary>
-    //// Mechanical properties of the model
+    //// Mechanical properties of the model OPTIONAL
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.PhysicalMaterial.Types.Mechanical Mechanical {
+    public global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical Mechanical {
       get { return mechanical_; }
       set {
         mechanical_ = value;
@@ -1019,13 +827,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "strength" field.</summary>
     public const int StrengthFieldNumber = 5;
-    private global::Mirabuf.PhysicalMaterial.Types.Strength strength_;
+    private global::Mirabuf.Material.PhysicalMaterial.Types.Strength strength_;
     /// <summary>
-    //// Physical Strength properties of the model=
+    //// Physical Strength properties of the model OPTIONAL
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.PhysicalMaterial.Types.Strength Strength {
+    public global::Mirabuf.Material.PhysicalMaterial.Types.Strength Strength {
       get { return strength_; }
       set {
         strength_ = value;
@@ -1092,18 +900,18 @@ namespace Mirabuf {
       }
     }
 
-    /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 10;
-    private global::Mirabuf.PhysicalMaterial.Types.MaterialType type_ = global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal;
+    /// <summary>Field number for the "matType" field.</summary>
+    public const int MatTypeFieldNumber = 10;
+    private global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType matType_ = global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal;
     /// <summary>
     //// generic type to assign some default params
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.PhysicalMaterial.Types.MaterialType Type {
-      get { return type_; }
+    public global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType MatType {
+      get { return matType_; }
       set {
-        type_ = value;
+        matType_ = value;
       }
     }
 
@@ -1122,7 +930,7 @@ namespace Mirabuf {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Name != other.Name) return false;
+      if (!object.Equals(Info, other.Info)) return false;
       if (Description != other.Description) return false;
       if (!object.Equals(Thermal, other.Thermal)) return false;
       if (!object.Equals(Mechanical, other.Mechanical)) return false;
@@ -1131,7 +939,7 @@ namespace Mirabuf {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(StaticFriction, other.StaticFriction)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Restitution, other.Restitution)) return false;
       if (Deformable != other.Deformable) return false;
-      if (Type != other.Type) return false;
+      if (MatType != other.MatType) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1139,7 +947,7 @@ namespace Mirabuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (info_ != null) hash ^= Info.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (thermal_ != null) hash ^= Thermal.GetHashCode();
       if (mechanical_ != null) hash ^= Mechanical.GetHashCode();
@@ -1148,7 +956,7 @@ namespace Mirabuf {
       if (StaticFriction != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(StaticFriction);
       if (Restitution != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Restitution);
       if (Deformable != false) hash ^= Deformable.GetHashCode();
-      if (Type != global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal) hash ^= Type.GetHashCode();
+      if (MatType != global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal) hash ^= MatType.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1167,9 +975,9 @@ namespace Mirabuf {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Name.Length != 0) {
+      if (info_ != null) {
         output.WriteRawTag(10);
-        output.WriteString(Name);
+        output.WriteMessage(Info);
       }
       if (Description.Length != 0) {
         output.WriteRawTag(18);
@@ -1203,9 +1011,9 @@ namespace Mirabuf {
         output.WriteRawTag(72);
         output.WriteBool(Deformable);
       }
-      if (Type != global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal) {
+      if (MatType != global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal) {
         output.WriteRawTag(80);
-        output.WriteEnum((int) Type);
+        output.WriteEnum((int) MatType);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -1217,9 +1025,9 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
+      if (info_ != null) {
         output.WriteRawTag(10);
-        output.WriteString(Name);
+        output.WriteMessage(Info);
       }
       if (Description.Length != 0) {
         output.WriteRawTag(18);
@@ -1253,9 +1061,9 @@ namespace Mirabuf {
         output.WriteRawTag(72);
         output.WriteBool(Deformable);
       }
-      if (Type != global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal) {
+      if (MatType != global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal) {
         output.WriteRawTag(80);
-        output.WriteEnum((int) Type);
+        output.WriteEnum((int) MatType);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -1267,8 +1075,8 @@ namespace Mirabuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      if (info_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Info);
       }
       if (Description.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Description);
@@ -1294,8 +1102,8 @@ namespace Mirabuf {
       if (Deformable != false) {
         size += 1 + 1;
       }
-      if (Type != global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      if (MatType != global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) MatType);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1309,27 +1117,30 @@ namespace Mirabuf {
       if (other == null) {
         return;
       }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
+      if (other.info_ != null) {
+        if (info_ == null) {
+          Info = new global::Mirabuf.Info();
+        }
+        Info.MergeFrom(other.Info);
       }
       if (other.Description.Length != 0) {
         Description = other.Description;
       }
       if (other.thermal_ != null) {
         if (thermal_ == null) {
-          Thermal = new global::Mirabuf.PhysicalMaterial.Types.Thermal();
+          Thermal = new global::Mirabuf.Material.PhysicalMaterial.Types.Thermal();
         }
         Thermal.MergeFrom(other.Thermal);
       }
       if (other.mechanical_ != null) {
         if (mechanical_ == null) {
-          Mechanical = new global::Mirabuf.PhysicalMaterial.Types.Mechanical();
+          Mechanical = new global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical();
         }
         Mechanical.MergeFrom(other.Mechanical);
       }
       if (other.strength_ != null) {
         if (strength_ == null) {
-          Strength = new global::Mirabuf.PhysicalMaterial.Types.Strength();
+          Strength = new global::Mirabuf.Material.PhysicalMaterial.Types.Strength();
         }
         Strength.MergeFrom(other.Strength);
       }
@@ -1345,8 +1156,8 @@ namespace Mirabuf {
       if (other.Deformable != false) {
         Deformable = other.Deformable;
       }
-      if (other.Type != global::Mirabuf.PhysicalMaterial.Types.MaterialType.Metal) {
-        Type = other.Type;
+      if (other.MatType != global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType.Metal) {
+        MatType = other.MatType;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1364,7 +1175,10 @@ namespace Mirabuf {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Name = input.ReadString();
+            if (info_ == null) {
+              Info = new global::Mirabuf.Info();
+            }
+            input.ReadMessage(Info);
             break;
           }
           case 18: {
@@ -1373,21 +1187,21 @@ namespace Mirabuf {
           }
           case 26: {
             if (thermal_ == null) {
-              Thermal = new global::Mirabuf.PhysicalMaterial.Types.Thermal();
+              Thermal = new global::Mirabuf.Material.PhysicalMaterial.Types.Thermal();
             }
             input.ReadMessage(Thermal);
             break;
           }
           case 34: {
             if (mechanical_ == null) {
-              Mechanical = new global::Mirabuf.PhysicalMaterial.Types.Mechanical();
+              Mechanical = new global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical();
             }
             input.ReadMessage(Mechanical);
             break;
           }
           case 42: {
             if (strength_ == null) {
-              Strength = new global::Mirabuf.PhysicalMaterial.Types.Strength();
+              Strength = new global::Mirabuf.Material.PhysicalMaterial.Types.Strength();
             }
             input.ReadMessage(Strength);
             break;
@@ -1409,7 +1223,7 @@ namespace Mirabuf {
             break;
           }
           case 80: {
-            Type = (global::Mirabuf.PhysicalMaterial.Types.MaterialType) input.ReadEnum();
+            MatType = (global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType) input.ReadEnum();
             break;
           }
         }
@@ -1428,7 +1242,10 @@ namespace Mirabuf {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            Name = input.ReadString();
+            if (info_ == null) {
+              Info = new global::Mirabuf.Info();
+            }
+            input.ReadMessage(Info);
             break;
           }
           case 18: {
@@ -1437,21 +1254,21 @@ namespace Mirabuf {
           }
           case 26: {
             if (thermal_ == null) {
-              Thermal = new global::Mirabuf.PhysicalMaterial.Types.Thermal();
+              Thermal = new global::Mirabuf.Material.PhysicalMaterial.Types.Thermal();
             }
             input.ReadMessage(Thermal);
             break;
           }
           case 34: {
             if (mechanical_ == null) {
-              Mechanical = new global::Mirabuf.PhysicalMaterial.Types.Mechanical();
+              Mechanical = new global::Mirabuf.Material.PhysicalMaterial.Types.Mechanical();
             }
             input.ReadMessage(Mechanical);
             break;
           }
           case 42: {
             if (strength_ == null) {
-              Strength = new global::Mirabuf.PhysicalMaterial.Types.Strength();
+              Strength = new global::Mirabuf.Material.PhysicalMaterial.Types.Strength();
             }
             input.ReadMessage(Strength);
             break;
@@ -1473,7 +1290,7 @@ namespace Mirabuf {
             break;
           }
           case 80: {
-            Type = (global::Mirabuf.PhysicalMaterial.Types.MaterialType) input.ReadEnum();
+            MatType = (global::Mirabuf.Material.PhysicalMaterial.Types.MaterialType) input.ReadEnum();
             break;
           }
         }
@@ -1491,6 +1308,10 @@ namespace Mirabuf {
         [pbr::OriginalName("PLASTIC")] Plastic = 1,
       }
 
+      /// <summary>
+      ///*
+      /// Thermal Properties Set Definition for Simulation.
+      /// </summary>
       public sealed partial class Thermal : pb::IMessage<Thermal>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -1505,7 +1326,7 @@ namespace Mirabuf {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::Mirabuf.PhysicalMaterial.Descriptor.NestedTypes[0]; }
+          get { return global::Mirabuf.Material.PhysicalMaterial.Descriptor.NestedTypes[0]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1763,6 +1584,10 @@ namespace Mirabuf {
 
       }
 
+      /// <summary>
+      ///*
+      /// Mechanical Properties Set Definition for Simulation.
+      /// </summary>
       public sealed partial class Mechanical : pb::IMessage<Mechanical>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -1777,7 +1602,7 @@ namespace Mirabuf {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::Mirabuf.PhysicalMaterial.Descriptor.NestedTypes[1]; }
+          get { return global::Mirabuf.Material.PhysicalMaterial.Descriptor.NestedTypes[1]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1875,7 +1700,7 @@ namespace Mirabuf {
         public const int DampingCoefficientFieldNumber = 5;
         private float dampingCoefficient_;
         /// <summary>
-        /// ?
+        //// ?
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -2115,6 +1940,10 @@ namespace Mirabuf {
 
       }
 
+      /// <summary>
+      ///*
+      /// Strength Properties Set Definition for Simulation.
+      /// </summary>
       public sealed partial class Strength : pb::IMessage<Strength>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -2129,7 +1958,7 @@ namespace Mirabuf {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::Mirabuf.PhysicalMaterial.Descriptor.NestedTypes[2]; }
+          get { return global::Mirabuf.Material.PhysicalMaterial.Descriptor.NestedTypes[2]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

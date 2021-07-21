@@ -11,7 +11,7 @@ using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using ProtoBuf;
-
+using System.Collections.Concurrent;
 
 
 namespace SynthesisAPI.Utilities
@@ -26,7 +26,10 @@ namespace SynthesisAPI.Utilities
             public readonly object clientsLock = new object();
 
             private List<ClientHandler> clients;
-            public Dictionary<string, UpdateMessage.Types.ModifiedFields> _packets;
+            // public Dictionary<string, UpdateMessage.Types.ModifiedFields> _packets;
+            // maybe make queue in RobotManager
+            // public Queue<KeyValuePair<string, Dictionary<string, UpdateSignal>>> _packets;
+            public ConcurrentQueue<UpdateSignals> _packets;
             public TcpListener listener;
             public Thread listenerThread;
             public Thread clientManagerThread;
@@ -55,7 +58,7 @@ namespace SynthesisAPI.Utilities
 
             private class ClientHandler
             {
-                public Task<UpdateMessage?> inputData;
+                public Task<UpdateSignals?> inputData;
                 public MemoryStream stream;
                 public TcpClient client;
             }
@@ -65,7 +68,9 @@ namespace SynthesisAPI.Utilities
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                _packets = new Dictionary<string, UpdateMessage.Types.ModifiedFields>();
+                //_packets = new Dictionary<string, UpdateMessage.Types.ModifiedFields>();
+                //_packets = new Queue<KeyValuePair<string, Dictionary<string, UpdateSignal>>>();
+                _packets = new ConcurrentQueue<UpdateSignals>();
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
             }
 
@@ -119,7 +124,9 @@ namespace SynthesisAPI.Utilities
                                         packetsLock.EnterWriteLock();
                                         try
                                         {
-                                            _packets[clients[i].inputData.Result.Id] = clients[i].inputData.Result.Fields;
+                                            //_packets[clients[i].inputData.Result.Name] = clients[i].inputData.Result.Fields;
+                                            _packets.Enqueue(clients[i].inputData.Result);
+                                            
                                         }
                                         finally
                                         {
@@ -144,29 +151,29 @@ namespace SynthesisAPI.Utilities
                 
             }
             
-            public async Task<UpdateMessage?> ReadUpdateMessageAsync(MemoryStream stream)
+            public async Task<UpdateSignals?> ReadUpdateMessageAsync(MemoryStream stream)
             {
                 if (stream.Position >= stream.Length)
                 {
                     return null;
                 }
-                UpdateMessage message = new UpdateMessage();
+                UpdateSignals signals = new UpdateSignals();
                 byte[] sizeBytes = new byte[sizeof(int)];
                 await stream.ReadAsync(sizeBytes, 0, sizeBytes.Length);
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(sizeBytes);
 
                 int size = BitConverter.ToInt32(sizeBytes, 0);
-                byte[] messageBytes = new byte[size];
-                await stream.ReadAsync(messageBytes, 0, messageBytes.Length);
-                message.MergeFrom(messageBytes);
-                return message;
+                byte[] signalBytes = new byte[size];
+                await stream.ReadAsync(signalBytes, 0, signalBytes.Length);
+                signals.MergeFrom(signalBytes);
+                return signals;
             }
         }
 
 
         // Make sure to use the PacketsLock when reading/writing to Packets
-        public static Dictionary<string, UpdateMessage.Types.ModifiedFields> Packets
+        public static ConcurrentQueue<UpdateSignals> Packets
         {
             get
             {

@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Mirabuf {
+namespace Mirabuf.Joint {
 
   /// <summary>Holder for reflection information generated from joint.proto</summary>
   public static partial class JointReflection {
@@ -24,39 +24,40 @@ namespace Mirabuf {
     static JointReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cgtqb2ludC5wcm90bxIHbWlyYWJ1ZhoLdHlwZXMucHJvdG8ikQEKBkpvaW50",
-            "cxIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEisKBmpvaW50cxgCIAMo",
-            "CzIbLm1pcmFidWYuSm9pbnRzLkpvaW50c0VudHJ5Gj0KC0pvaW50c0VudHJ5",
-            "EgsKA2tleRgBIAEoCRIdCgV2YWx1ZRgCIAEoCzIOLm1pcmFidWYuSm9pbnQ6",
-            "AjgBIpMDCgVKb2ludBINCgVQYXJ0MRgBIAEoCRINCgVQYXJ0MhgCIAEoCRIb",
-            "CgRpbmZvGAMgASgLMg0ubWlyYWJ1Zi5JbmZvEiAKBm9yaWdpbhgEIAEoCzIQ",
-            "Lm1pcmFidWYuVmVjdG9yMxIOCgZPZmZzZXQYBSABKAESDQoFQW5nbGUYBiAB",
-            "KAESLQoPSm9pbnRNb3Rpb25UeXBlGAcgASgOMhQubWlyYWJ1Zi5Kb2ludE1v",
-            "dGlvbhIUCgxNYXhpbXVtVmFsdWUYCCABKAESFAoMTWluaW11bVZhbHVlGAkg",
-            "ASgBEhEKCVJlc3RWYWx1ZRgKIAEoARIyCg5SZXZvbHV0ZU1vdGlvbhgLIAEo",
-            "CzIYLm1pcmFidWYuUm90YXRpb25hbEpvaW50SAASKwoLU2xpZGVNb3Rpb24Y",
-            "DCABKAsyFC5taXJhYnVmLlNsaWRlckpvaW50SAASKgoLUmlnaWRNb3Rpb24Y",
-            "DSABKAsyEy5taXJhYnVmLlJpZ2lkSm9pbnRIAEITChFNb3Rpb25EZXNjcmlw",
-            "dGlvbiKWAQoPUm90YXRpb25hbEpvaW50EiMKDFJvdGF0aW9uQXhpcxgBIAEo",
-            "DjINLm1pcmFidWYuQXhpcxIkCgpBeGlzVmVjdG9yGAIgASgLMhAubWlyYWJ1",
-            "Zi5WZWN0b3IzEhAKCE1heFZhbHVlGAMgASgBEhAKCE1pblZhbHVlGAQgASgB",
-            "EhQKDEN1cnJlbnRWYWx1ZRgFIAEoASKPAQoLU2xpZGVySm9pbnQSIAoJU2xp",
-            "ZGVBeGlzGAEgASgOMg0ubWlyYWJ1Zi5BeGlzEiQKCkF4aXNWZWN0b3IYAiAB",
-            "KAsyEC5taXJhYnVmLlZlY3RvcjMSEAoITWF4VmFsdWUYAyABKAESEAoITWlu",
-            "VmFsdWUYBCABKAESFAoMQ3VycmVudFZhbHVlGAUgASgBIgwKClJpZ2lkSm9p",
-            "bnQiLwoKUmlnaWRHcm91cBIMCgRuYW1lGAEgASgJEhMKC29jY3VycmVuY2Vz",
-            "GAIgAygJKmsKC0pvaW50TW90aW9uEgkKBVJpZ2lkEAASDAoIUmV2b2x1dGUQ",
-            "ARIKCgZTbGlkZXIQAhIPCgtDeWxpbmRyaWNhbBADEgsKB1BpblNsb3QQBBIK",
-            "CgZQbGFuYXIQBRINCglCYWxsSm9pbnQQBmIGcHJvdG8z"));
+            "Cgtqb2ludC5wcm90bxINbWlyYWJ1Zi5qb2ludBoLdHlwZXMucHJvdG8inQEK",
+            "BkpvaW50cxIbCgRpbmZvGAEgASgLMg0ubWlyYWJ1Zi5JbmZvEjEKBmpvaW50",
+            "cxgCIAMoCzIhLm1pcmFidWYuam9pbnQuSm9pbnRzLkpvaW50c0VudHJ5GkMK",
+            "C0pvaW50c0VudHJ5EgsKA2tleRgBIAEoCRIjCgV2YWx1ZRgCIAEoCzIULm1p",
+            "cmFidWYuam9pbnQuSm9pbnQ6AjgBIqsDCgVKb2ludBINCgVQYXJ0MRgBIAEo",
+            "CRINCgVQYXJ0MhgCIAEoCRIbCgRpbmZvGAMgASgLMg0ubWlyYWJ1Zi5JbmZv",
+            "EiAKBm9yaWdpbhgEIAEoCzIQLm1pcmFidWYuVmVjdG9yMxIOCgZPZmZzZXQY",
+            "BSABKAESDQoFQW5nbGUYBiABKAESMwoPSm9pbnRNb3Rpb25UeXBlGAcgASgO",
+            "MhoubWlyYWJ1Zi5qb2ludC5Kb2ludE1vdGlvbhIUCgxNYXhpbXVtVmFsdWUY",
+            "CCABKAESFAoMTWluaW11bVZhbHVlGAkgASgBEhEKCVJlc3RWYWx1ZRgKIAEo",
+            "ARI4Cg5SZXZvbHV0ZU1vdGlvbhgLIAEoCzIeLm1pcmFidWYuam9pbnQuUm90",
+            "YXRpb25hbEpvaW50SAASMQoLU2xpZGVNb3Rpb24YDCABKAsyGi5taXJhYnVm",
+            "LmpvaW50LlNsaWRlckpvaW50SAASMAoLUmlnaWRNb3Rpb24YDSABKAsyGS5t",
+            "aXJhYnVmLmpvaW50LlJpZ2lkSm9pbnRIAEITChFNb3Rpb25EZXNjcmlwdGlv",
+            "biKWAQoPUm90YXRpb25hbEpvaW50EiMKDFJvdGF0aW9uQXhpcxgBIAEoDjIN",
+            "Lm1pcmFidWYuQXhpcxIkCgpBeGlzVmVjdG9yGAIgASgLMhAubWlyYWJ1Zi5W",
+            "ZWN0b3IzEhAKCE1heFZhbHVlGAMgASgBEhAKCE1pblZhbHVlGAQgASgBEhQK",
+            "DEN1cnJlbnRWYWx1ZRgFIAEoASKPAQoLU2xpZGVySm9pbnQSIAoJU2xpZGVB",
+            "eGlzGAEgASgOMg0ubWlyYWJ1Zi5BeGlzEiQKCkF4aXNWZWN0b3IYAiABKAsy",
+            "EC5taXJhYnVmLlZlY3RvcjMSEAoITWF4VmFsdWUYAyABKAESEAoITWluVmFs",
+            "dWUYBCABKAESFAoMQ3VycmVudFZhbHVlGAUgASgBIgwKClJpZ2lkSm9pbnQi",
+            "LwoKUmlnaWRHcm91cBIMCgRuYW1lGAEgASgJEhMKC29jY3VycmVuY2VzGAIg",
+            "AygJKmsKC0pvaW50TW90aW9uEgkKBVJpZ2lkEAASDAoIUmV2b2x1dGUQARIK",
+            "CgZTbGlkZXIQAhIPCgtDeWxpbmRyaWNhbBADEgsKB1BpblNsb3QQBBIKCgZQ",
+            "bGFuYXIQBRINCglCYWxsSm9pbnQQBmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Mirabuf.TypesReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Mirabuf.JointMotion), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joints), global::Mirabuf.Joints.Parser, new[]{ "Info", "Joints_" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint), global::Mirabuf.Joint.Parser, new[]{ "Part1", "Part2", "Info", "Origin", "Offset", "Angle", "JointMotionType", "MaximumValue", "MinimumValue", "RestValue", "RevoluteMotion", "SlideMotion", "RigidMotion" }, new[]{ "MotionDescription" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.RotationalJoint), global::Mirabuf.RotationalJoint.Parser, new[]{ "RotationAxis", "AxisVector", "MaxValue", "MinValue", "CurrentValue" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.SliderJoint), global::Mirabuf.SliderJoint.Parser, new[]{ "SlideAxis", "AxisVector", "MaxValue", "MinValue", "CurrentValue" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.RigidJoint), global::Mirabuf.RigidJoint.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.RigidGroup), global::Mirabuf.RigidGroup.Parser, new[]{ "Name", "Occurrences" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Mirabuf.Joint.JointMotion), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.Joints), global::Mirabuf.Joint.Joints.Parser, new[]{ "Info", "Joints_" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.Joint), global::Mirabuf.Joint.Joint.Parser, new[]{ "Part1", "Part2", "Info", "Origin", "Offset", "Angle", "JointMotionType", "MaximumValue", "MinimumValue", "RestValue", "RevoluteMotion", "SlideMotion", "RigidMotion" }, new[]{ "MotionDescription" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.RotationalJoint), global::Mirabuf.Joint.RotationalJoint.Parser, new[]{ "RotationAxis", "AxisVector", "MaxValue", "MinValue", "CurrentValue" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.SliderJoint), global::Mirabuf.Joint.SliderJoint.Parser, new[]{ "SlideAxis", "AxisVector", "MaxValue", "MinValue", "CurrentValue" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.RigidJoint), global::Mirabuf.Joint.RigidJoint.Parser, null, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Mirabuf.Joint.RigidGroup), global::Mirabuf.Joint.RigidGroup.Parser, new[]{ "Name", "Occurrences" }, null, null, null, null)
           }));
     }
     #endregion
@@ -96,7 +97,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -141,12 +142,12 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "joints" field.</summary>
     public const int Joints_FieldNumber = 2;
-    private static readonly pbc::MapField<string, global::Mirabuf.Joint>.Codec _map_joints_codec
-        = new pbc::MapField<string, global::Mirabuf.Joint>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Joint.Parser), 18);
-    private readonly pbc::MapField<string, global::Mirabuf.Joint> joints_ = new pbc::MapField<string, global::Mirabuf.Joint>();
+    private static readonly pbc::MapField<string, global::Mirabuf.Joint.Joint>.Codec _map_joints_codec
+        = new pbc::MapField<string, global::Mirabuf.Joint.Joint>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::Mirabuf.Joint.Joint.Parser), 18);
+    private readonly pbc::MapField<string, global::Mirabuf.Joint.Joint> joints_ = new pbc::MapField<string, global::Mirabuf.Joint.Joint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::MapField<string, global::Mirabuf.Joint> Joints_ {
+    public pbc::MapField<string, global::Mirabuf.Joint.Joint> Joints_ {
       get { return joints_; }
     }
 
@@ -323,7 +324,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -454,13 +455,13 @@ namespace Mirabuf {
 
     /// <summary>Field number for the "JointMotionType" field.</summary>
     public const int JointMotionTypeFieldNumber = 7;
-    private global::Mirabuf.JointMotion jointMotionType_ = global::Mirabuf.JointMotion.Rigid;
+    private global::Mirabuf.Joint.JointMotion jointMotionType_ = global::Mirabuf.Joint.JointMotion.Rigid;
     /// <summary>
     /// type of motion described by the joint
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.JointMotion JointMotionType {
+    public global::Mirabuf.Joint.JointMotion JointMotionType {
       get { return jointMotionType_; }
       set {
         jointMotionType_ = value;
@@ -510,8 +511,8 @@ namespace Mirabuf {
     public const int RevoluteMotionFieldNumber = 11;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.RotationalJoint RevoluteMotion {
-      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.RevoluteMotion ? (global::Mirabuf.RotationalJoint) motionDescription_ : null; }
+    public global::Mirabuf.Joint.RotationalJoint RevoluteMotion {
+      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.RevoluteMotion ? (global::Mirabuf.Joint.RotationalJoint) motionDescription_ : null; }
       set {
         motionDescription_ = value;
         motionDescriptionCase_ = value == null ? MotionDescriptionOneofCase.None : MotionDescriptionOneofCase.RevoluteMotion;
@@ -522,8 +523,8 @@ namespace Mirabuf {
     public const int SlideMotionFieldNumber = 12;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.SliderJoint SlideMotion {
-      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.SlideMotion ? (global::Mirabuf.SliderJoint) motionDescription_ : null; }
+    public global::Mirabuf.Joint.SliderJoint SlideMotion {
+      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.SlideMotion ? (global::Mirabuf.Joint.SliderJoint) motionDescription_ : null; }
       set {
         motionDescription_ = value;
         motionDescriptionCase_ = value == null ? MotionDescriptionOneofCase.None : MotionDescriptionOneofCase.SlideMotion;
@@ -534,8 +535,8 @@ namespace Mirabuf {
     public const int RigidMotionFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Mirabuf.RigidJoint RigidMotion {
-      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.RigidMotion ? (global::Mirabuf.RigidJoint) motionDescription_ : null; }
+    public global::Mirabuf.Joint.RigidJoint RigidMotion {
+      get { return motionDescriptionCase_ == MotionDescriptionOneofCase.RigidMotion ? (global::Mirabuf.Joint.RigidJoint) motionDescription_ : null; }
       set {
         motionDescription_ = value;
         motionDescriptionCase_ = value == null ? MotionDescriptionOneofCase.None : MotionDescriptionOneofCase.RigidMotion;
@@ -606,7 +607,7 @@ namespace Mirabuf {
       if (origin_ != null) hash ^= Origin.GetHashCode();
       if (Offset != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Offset);
       if (Angle != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Angle);
-      if (JointMotionType != global::Mirabuf.JointMotion.Rigid) hash ^= JointMotionType.GetHashCode();
+      if (JointMotionType != global::Mirabuf.Joint.JointMotion.Rigid) hash ^= JointMotionType.GetHashCode();
       if (MaximumValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(MaximumValue);
       if (MinimumValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(MinimumValue);
       if (RestValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(RestValue);
@@ -656,7 +657,7 @@ namespace Mirabuf {
         output.WriteRawTag(49);
         output.WriteDouble(Angle);
       }
-      if (JointMotionType != global::Mirabuf.JointMotion.Rigid) {
+      if (JointMotionType != global::Mirabuf.Joint.JointMotion.Rigid) {
         output.WriteRawTag(56);
         output.WriteEnum((int) JointMotionType);
       }
@@ -718,7 +719,7 @@ namespace Mirabuf {
         output.WriteRawTag(49);
         output.WriteDouble(Angle);
       }
-      if (JointMotionType != global::Mirabuf.JointMotion.Rigid) {
+      if (JointMotionType != global::Mirabuf.Joint.JointMotion.Rigid) {
         output.WriteRawTag(56);
         output.WriteEnum((int) JointMotionType);
       }
@@ -774,7 +775,7 @@ namespace Mirabuf {
       if (Angle != 0D) {
         size += 1 + 8;
       }
-      if (JointMotionType != global::Mirabuf.JointMotion.Rigid) {
+      if (JointMotionType != global::Mirabuf.Joint.JointMotion.Rigid) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) JointMotionType);
       }
       if (MaximumValue != 0D) {
@@ -831,7 +832,7 @@ namespace Mirabuf {
       if (other.Angle != 0D) {
         Angle = other.Angle;
       }
-      if (other.JointMotionType != global::Mirabuf.JointMotion.Rigid) {
+      if (other.JointMotionType != global::Mirabuf.Joint.JointMotion.Rigid) {
         JointMotionType = other.JointMotionType;
       }
       if (other.MaximumValue != 0D) {
@@ -846,19 +847,19 @@ namespace Mirabuf {
       switch (other.MotionDescriptionCase) {
         case MotionDescriptionOneofCase.RevoluteMotion:
           if (RevoluteMotion == null) {
-            RevoluteMotion = new global::Mirabuf.RotationalJoint();
+            RevoluteMotion = new global::Mirabuf.Joint.RotationalJoint();
           }
           RevoluteMotion.MergeFrom(other.RevoluteMotion);
           break;
         case MotionDescriptionOneofCase.SlideMotion:
           if (SlideMotion == null) {
-            SlideMotion = new global::Mirabuf.SliderJoint();
+            SlideMotion = new global::Mirabuf.Joint.SliderJoint();
           }
           SlideMotion.MergeFrom(other.SlideMotion);
           break;
         case MotionDescriptionOneofCase.RigidMotion:
           if (RigidMotion == null) {
-            RigidMotion = new global::Mirabuf.RigidJoint();
+            RigidMotion = new global::Mirabuf.Joint.RigidJoint();
           }
           RigidMotion.MergeFrom(other.RigidMotion);
           break;
@@ -910,7 +911,7 @@ namespace Mirabuf {
             break;
           }
           case 56: {
-            JointMotionType = (global::Mirabuf.JointMotion) input.ReadEnum();
+            JointMotionType = (global::Mirabuf.Joint.JointMotion) input.ReadEnum();
             break;
           }
           case 65: {
@@ -926,7 +927,7 @@ namespace Mirabuf {
             break;
           }
           case 90: {
-            global::Mirabuf.RotationalJoint subBuilder = new global::Mirabuf.RotationalJoint();
+            global::Mirabuf.Joint.RotationalJoint subBuilder = new global::Mirabuf.Joint.RotationalJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.RevoluteMotion) {
               subBuilder.MergeFrom(RevoluteMotion);
             }
@@ -935,7 +936,7 @@ namespace Mirabuf {
             break;
           }
           case 98: {
-            global::Mirabuf.SliderJoint subBuilder = new global::Mirabuf.SliderJoint();
+            global::Mirabuf.Joint.SliderJoint subBuilder = new global::Mirabuf.Joint.SliderJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.SlideMotion) {
               subBuilder.MergeFrom(SlideMotion);
             }
@@ -944,7 +945,7 @@ namespace Mirabuf {
             break;
           }
           case 106: {
-            global::Mirabuf.RigidJoint subBuilder = new global::Mirabuf.RigidJoint();
+            global::Mirabuf.Joint.RigidJoint subBuilder = new global::Mirabuf.Joint.RigidJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.RigidMotion) {
               subBuilder.MergeFrom(RigidMotion);
             }
@@ -998,7 +999,7 @@ namespace Mirabuf {
             break;
           }
           case 56: {
-            JointMotionType = (global::Mirabuf.JointMotion) input.ReadEnum();
+            JointMotionType = (global::Mirabuf.Joint.JointMotion) input.ReadEnum();
             break;
           }
           case 65: {
@@ -1014,7 +1015,7 @@ namespace Mirabuf {
             break;
           }
           case 90: {
-            global::Mirabuf.RotationalJoint subBuilder = new global::Mirabuf.RotationalJoint();
+            global::Mirabuf.Joint.RotationalJoint subBuilder = new global::Mirabuf.Joint.RotationalJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.RevoluteMotion) {
               subBuilder.MergeFrom(RevoluteMotion);
             }
@@ -1023,7 +1024,7 @@ namespace Mirabuf {
             break;
           }
           case 98: {
-            global::Mirabuf.SliderJoint subBuilder = new global::Mirabuf.SliderJoint();
+            global::Mirabuf.Joint.SliderJoint subBuilder = new global::Mirabuf.Joint.SliderJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.SlideMotion) {
               subBuilder.MergeFrom(SlideMotion);
             }
@@ -1032,7 +1033,7 @@ namespace Mirabuf {
             break;
           }
           case 106: {
-            global::Mirabuf.RigidJoint subBuilder = new global::Mirabuf.RigidJoint();
+            global::Mirabuf.Joint.RigidJoint subBuilder = new global::Mirabuf.Joint.RigidJoint();
             if (motionDescriptionCase_ == MotionDescriptionOneofCase.RigidMotion) {
               subBuilder.MergeFrom(RigidMotion);
             }
@@ -1064,7 +1065,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1422,7 +1423,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1768,7 +1769,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1920,7 +1921,7 @@ namespace Mirabuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Mirabuf.JointReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Mirabuf.Joint.JointReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

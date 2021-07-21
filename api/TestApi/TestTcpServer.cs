@@ -14,7 +14,7 @@ using Google.Protobuf;
 
 namespace TestApi {
     
-    /*
+    
     [TestFixture]
     public static class TestTcpServer
     {
@@ -27,18 +27,18 @@ namespace TestApi {
             // Assert.IsTrue([condition]) or Assert.IsFalse([condition])
             // Loads more, check with intellisense
 
-            
-            DigitalOutput testDigitalOutput1 = new DigitalOutput()
+
+            UpdateSignal testDigitalOutput1 = new UpdateSignal()
             {
-                Name = "Out1",
-                Type = "PWM",
+                Io = IOType.Output,
+                Class = "PWM",
                 Value = Value.ForNumber(4.2)
             };
 
-            List<DigitalOutput> outputList1 = new List<DigitalOutput>();
+            List<UpdateSignal> outputList1 = new List<UpdateSignal>();
             outputList1.Add(testDigitalOutput1);
 
-            Dictionary<string, DigitalOutput> dos = new Dictionary<string, DigitalOutput>();
+            Dictionary<string, UpdateSignal> dos = new Dictionary<string, DigitalOutput>();
             dos.Add("DigitalOutput1", testDigitalOutput1);
 
             UpdateMessage testPacket1 = new UpdateMessage()
@@ -66,9 +66,9 @@ namespace TestApi {
 
             TcpServerManager.Stop();
 
-            foreach (KeyValuePair<string, UpdateMessage.Types.ModifiedFields> kvp in TcpServerManager.Packets)
+            foreach (UpdateSignals s in TcpServerManager.Packets.ToArray())
             {
-                System.Diagnostics.Debug.WriteLine(kvp.Key);
+                System.Diagnostics.Debug.WriteLine(s.Name);
             }
 
 
@@ -77,7 +77,7 @@ namespace TestApi {
  
         }
 
-        public static void SendData(string server, UpdateMessage message)
+        public static void SendData(string server, UpdateSignal message)
         {
             int port = 13000;
             TcpClient client = new TcpClient(server, port);
@@ -108,5 +108,5 @@ namespace TestApi {
         }
 
     }
-    */
+    
 }
