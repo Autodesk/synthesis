@@ -21,9 +21,6 @@ namespace Synthesis.Configuration
         private ArrowType activeArrow;
         private bool bufferPassed;
 
-        private Plane groundPlane;
-        private Plane markerPlane;
-
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
         /// is changed, the "SetActiveArrow" message is broadcasted to all
@@ -138,10 +135,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R))//Reset
-            {
-                transform.parent.rotation = Quaternion.identity;
-            }
+
             if (activeArrow == ArrowType.None)
                 return;
 
@@ -152,16 +146,8 @@ namespace Synthesis.Configuration
                 return;
             }
 
-            if (activeArrow == ArrowType.P)
-            {
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                float rayLength;
-                DrawPlane(markerPlane.normal, transform.parent.position);
-                //if mouse ray doesn't intersect plane, set default ray length
-                if (!markerPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position);
-                transform.parent.position = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
-            }
-            else if (activeArrow <= ArrowType.XY)
+
+            if (activeArrow <= ArrowType.XY)
             {
                 Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
                 Vector3 currentArrowPoint;
@@ -201,22 +187,75 @@ namespace Synthesis.Configuration
             }
             else
             {
-                //Project a ray from mouse
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);                
+                /*
+                MathNet.Spatial.Euclidean.UnitVector3D RotationAxisDirection = MathNet.Spatial.Euclidean.UnitVector3D.Create(ArrowDirection.x,ArrowDirection.y,ArrowDirection.z);//FIX THESE
+                MathNet.Spatial.Euclidean.UnitVector3D SpriteUpDirection = MathNet.Spatial.Euclidean.UnitVector3D.Create(transform.up.x, transform.up.y, transform.up.z);
+                float xMod = Camera.main.ScreenToViewportPoint(Input.mousePosition).x*100;//FIX THESE: MOUSE
+                float yMod = Camera.main.ScreenToViewportPoint(Input.mousePosition).y*100;
+
+                //copy cameracontroller??? for the instance method
+               var horizontalDir = MathNet.Spatial.Euclidean.UnitVector3D.YAxis.CrossProduct(MathNet.Spatial.Euclidean.UnitVector3D.Create(Camera.main.transform.forward.x, Camera.main.transform.forward.y, Camera.main.transform.forward.z)); // Side to side direction of mouse movement
+                var mouseDir = new MathNet.Spatial.Euclidean.Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+
+                var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
+
+                var deltaDir = mouseDir.ProjectOn(rotateDirVector);
+                if (deltaDir.Length > float.Epsilon)
+                {
+                    var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
+
+                    var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
+
+                    SynthesisAPI.EnvironmentManager.Components.Transform targetTransform = new SynthesisAPI.EnvironmentManager.Components.Transform();
+               
+                    //RotationAxisDirection: UnitVector3D
+                    //FIGURE OUT REFERENCE??
+
+                    targetTransform.Rotate(RotationAxisDirection, sign * magnitude);
+                    Debug.Log(targetTransform.Forward);
+                    transform.parent.forward = new Vector3((float)targetTransform.Forward.X, (float)targetTransform.Forward.Y, (float)targetTransform.Forward.Z);
+                    
+                }
+
+
+                */
+
+
+
+
+                //EITHER: convert all to Vector3 NOPE
+                //OR: utilize only UnitVector3D
+                //OR: Convert back only in the end <= try this for now
+
+                Plane groundPlane = new Plane(ArrowDirection, transform.parent.position);//create the plane immediately on mousedown
+
+                DrawPlane(ArrowDirection, transform.parent.position);
+
+                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                Vector3 pointToLook;
                 float rayLength;
+                //HOW TO SOLVE: FIX DISTANCE RAY CAST: DRAW MORE PLANES
+                //FOR PLANES: THE GROUND PLANE IS RELATIVE TO THE ROTATION OF THE OBJECT
+                //PROJECT RAY CASTS TO THAT PLANE, ROTATE IT (CORRESPOND WITH AXIS)
+                //TO PREVENT JUMPING, MAKE SURE THE ARROWS ARE POINTING IN THE PROPER FORWARD DIRECTION
+                //CANT TAKE MINIMUM: IF IT DOESNT HIT, DEFAULT VALUE IS 0!!!! HAVE TO ACCOUNT FOR THAT
 
-                //if mouse ray doesn't intersect plane, set default ray length
-                if (!groundPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position)*10;
+                if(!groundPlane.Raycast(cameraRay, out rayLength))
+                {
+                    rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position)*10;
+                }
+                    //distantPlane.Raycast(cameraRay, out rayLength2);
 
-                //get intersection point; if none, find closest point to default length
-                Vector3 pointToLook = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+                    //float rayLength = Mathf.Min(rayLength1, rayLength2);
+                    pointToLook = cameraRay.GetPoint(rayLength);
+                    Debug.DrawLine(cameraRay.origin, pointToLook, Color.cyan);
+                
+                //BREAK UP: QUARTERNION, ADD DEGREES AND ROUNDING
 
-                //Correct parent's forward depending on rotation axis. Y-axis does not need corrections
-                Vector3 t;
-                if (ActiveArrow == ArrowType.RZ) t = transform.parent.right;
-                else if (ActiveArrow == ArrowType.RX) t = transform.parent.up;
-                else t = transform.parent.forward;
-                transform.parent.RotateAround(transform.parent.position, groundPlane.normal, -1 * RoundTo(Vector3.SignedAngle(pointToLook - transform.parent.position, t, groundPlane.normal), 15f));
+                transform.parent.rotation = Quaternion.LookRotation(new Vector3(pointToLook.x, pointToLook.y, pointToLook.z), Vector3.up);
+                return;
+                
 
             }
 
@@ -237,6 +276,26 @@ namespace Synthesis.Configuration
             gameObject.transform.parent = gameObject.transform.parent;
             gameObject.transform.localScale = scaleTmp;
         }
+        /*
+        public override void MoveEntityTransform(Transform targetTransform, float xMod, float yMod)
+        {
+
+            var horizontalDir = MathNet.Spatial.Euclidean.UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
+            var mouseDir = new MathNet.Spatial.Euclidean.Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+
+            var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
+
+            var deltaDir = mouseDir.ProjectOn(rotateDirVector);
+            if (deltaDir.Length > float.Epsilon)
+            {
+                var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
+
+                var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
+
+                targetTransform.Rotate(RotationAxisDirection, sign * magnitude, true);
+                Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
+            }
+        }*/
         void DrawPlane(Vector3 normal, Vector3 position)
         {
 
@@ -279,16 +338,11 @@ namespace Synthesis.Configuration
 /// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
 /// </summary>
 /// <param name="arrowType"></param>
-        private void OnArrowSelected(ArrowType arrowType)
+private void OnArrowSelected(ArrowType arrowType)
         {
             ActiveArrow = arrowType;
             lastArrowPoint = Vector3.zero;
             bufferPassed = false;
-
-            if(arrowType==ArrowType.P)
-                markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), transform.parent.position);
-            else if (arrowType >= ArrowType.RX)
-                groundPlane = new Plane(ArrowDirection, transform.parent.position);
 
             OnClick?.Invoke();
         }
@@ -366,9 +420,22 @@ namespace Synthesis.Configuration
 
             return true;
         }
-        float RoundTo(float value, float multipleOf)//used for snapping the gizmo to the nearest value
+
+        float AngleBetweenTwoPoints(Vector2 a, Vector2 b, Vector2 convergence)
+        {
+            return Vector3.SignedAngle(a - convergence, b - convergence,Vector3.forward);
+        }
+        float RoundTo(float value, float multipleOf)
         {
             return Mathf.Round(value / multipleOf) * multipleOf;
+        }
+        Vector3 RotatePointAroundPoint(Vector3 point1, Vector3 point2, float angle)
+        {
+            angle *= Mathf.Deg2Rad;
+            var x = Mathf.Cos(angle) * (point1.z - point2.z) - Mathf.Sin(angle) * (point1.x - point2.x) + point2.z;
+            var y = Mathf.Sin(angle) * (point1.z - point2.z) + Mathf.Cos(angle) * (point1.x - point2.x) + point2.x;
+            //Debug.Log($"c:{point1},parent:{point2},x:{y},y:{x}");
+            return new Vector3(y, point1.y,x);
         }
 
     }

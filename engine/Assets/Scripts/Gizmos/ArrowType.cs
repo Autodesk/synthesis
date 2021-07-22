@@ -6,6 +6,7 @@ namespace Synthesis.Configuration
     public enum ArrowType
     {
         None,
+        P,
         X,
         Y,
         Z,
@@ -15,5 +16,6 @@ namespace Synthesis.Configuration
         RX,
         RY,
         RZ
+        
     }
 }

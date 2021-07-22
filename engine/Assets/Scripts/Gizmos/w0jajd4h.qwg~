@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-
 namespace Synthesis.Configuration
 {
     public class MoveArrow : MonoBehaviour
@@ -20,9 +19,6 @@ namespace Synthesis.Configuration
         private Vector3 lastArrowPoint;
         private ArrowType activeArrow;
         private bool bufferPassed;
-
-        private Plane groundPlane;
-        private Plane markerPlane;
 
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
@@ -138,10 +134,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R))//Reset
-            {
-                transform.parent.rotation = Quaternion.identity;
-            }
+
             if (activeArrow == ArrowType.None)
                 return;
 
@@ -152,16 +145,8 @@ namespace Synthesis.Configuration
                 return;
             }
 
-            if (activeArrow == ArrowType.P)
-            {
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                float rayLength;
-                DrawPlane(markerPlane.normal, transform.parent.position);
-                //if mouse ray doesn't intersect plane, set default ray length
-                if (!markerPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position);
-                transform.parent.position = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
-            }
-            else if (activeArrow <= ArrowType.XY)
+
+            if (activeArrow <= ArrowType.XY)
             {
                 Ray mouseRay = UnityEngine.Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
                 Vector3 currentArrowPoint;
@@ -201,22 +186,36 @@ namespace Synthesis.Configuration
             }
             else
             {
-                //Project a ray from mouse
-                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);                
+                
+                Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Plane groundPlane = new Plane(Vector3.up, transform.parent.position);
+                Plane distantPlane = new Plane(Vector3.Normalize(Camera.main.transform.position-transform.parent.position), transform.position);
+                DrawPlane(Vector3.Normalize(Camera.main.transform.position - transform.parent.position), transform.position);
+                DrawPlane(Vector3.up, transform.parent.position);
                 float rayLength;
 
-                //if mouse ray doesn't intersect plane, set default ray length
-                if (!groundPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position)*10;
+                Vector3 pointToLook;
+                if (!groundPlane.Raycast(cameraRay, out rayLength))
+                {
+                    distantPlane.Raycast(cameraRay, out rayLength);
+                }
 
-                //get intersection point; if none, find closest point to default length
-                Vector3 pointToLook = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
-
-                //Correct parent's forward depending on rotation axis. Y-axis does not need corrections
-                Vector3 t;
-                if (ActiveArrow == ArrowType.RZ) t = transform.parent.right;
-                else if (ActiveArrow == ArrowType.RX) t = transform.parent.up;
-                else t = transform.parent.forward;
-                transform.parent.RotateAround(transform.parent.position, groundPlane.normal, -1 * RoundTo(Vector3.SignedAngle(pointToLook - transform.parent.position, t, groundPlane.normal), 15f));
+                pointToLook = cameraRay.GetPoint(rayLength);
+                Debug.DrawLine(cameraRay.origin, pointToLook, Color.cyan);
+                switch (ActiveArrow)
+                {       
+                    case ArrowType.RX:
+                        transform.parent.LookAt(new Vector3(transform.position.x, pointToLook.y, pointToLook.z));//ARROWS ARE NOT POINTING IN FORWARD DIRECTION
+                        break;
+                    case ArrowType.RY:
+                        transform.parent.LookAt(new Vector3(pointToLook.x, transform.parent.position.y, pointToLook.z));
+                        break;
+                    case ArrowType.RZ:
+                        transform.parent.LookAt(new Vector3(pointToLook.x, pointToLook.y, transform.position.z));
+                        break;
+                    default:
+                        break;
+                }
 
             }
 
@@ -237,6 +236,26 @@ namespace Synthesis.Configuration
             gameObject.transform.parent = gameObject.transform.parent;
             gameObject.transform.localScale = scaleTmp;
         }
+        /*
+        public override void MoveEntityTransform(Transform targetTransform, float xMod, float yMod)
+        {
+
+            var horizontalDir = MathNet.Spatial.Euclidean.UnitVector3D.YAxis.CrossProduct(CameraController.Instance.cameraTransform.Forward); // Side to side direction of mouse movement
+            var mouseDir = new MathNet.Spatial.Euclidean.Vector3D(0, yMod, 0) + horizontalDir.ScaleBy(xMod); // yMod is always up and down, and xMod is side to side
+
+            var rotateDirVector = RotationAxisDirection.CrossProduct(SpriteUpDirection); // Get vector perpendicular to forward and sprite up
+
+            var deltaDir = mouseDir.ProjectOn(rotateDirVector);
+            if (deltaDir.Length > float.Epsilon)
+            {
+                var magnitude = (System.Math.Abs(xMod) + System.Math.Abs(yMod)) * 3;
+
+                var sign = deltaDir.AngleTo(rotateDirVector).Degrees < 180 ? 1 : -1; // Get rotation direction
+
+                targetTransform.Rotate(RotationAxisDirection, sign * magnitude, true);
+                Transform.Rotate(RotationAxisDirection, sign * magnitude, true);
+            }
+        }*/
         void DrawPlane(Vector3 normal, Vector3 position)
         {
 
@@ -279,16 +298,11 @@ namespace Synthesis.Configuration
 /// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
 /// </summary>
 /// <param name="arrowType"></param>
-        private void OnArrowSelected(ArrowType arrowType)
+private void OnArrowSelected(ArrowType arrowType)
         {
             ActiveArrow = arrowType;
             lastArrowPoint = Vector3.zero;
             bufferPassed = false;
-
-            if(arrowType==ArrowType.P)
-                markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), transform.parent.position);
-            else if (arrowType >= ArrowType.RX)
-                groundPlane = new Plane(ArrowDirection, transform.parent.position);
 
             OnClick?.Invoke();
         }
@@ -366,9 +380,22 @@ namespace Synthesis.Configuration
 
             return true;
         }
-        float RoundTo(float value, float multipleOf)//used for snapping the gizmo to the nearest value
+
+        float AngleBetweenTwoPoints(Vector2 a, Vector2 b, Vector2 convergence)
+        {
+            return Vector3.SignedAngle(a - convergence, b - convergence,Vector3.forward);
+        }
+        float RoundTo(float value, float multipleOf)
         {
             return Mathf.Round(value / multipleOf) * multipleOf;
+        }
+        Vector3 RotatePointAroundPoint(Vector3 point1, Vector3 point2, float angle)
+        {
+            angle *= Mathf.Deg2Rad;
+            var x = Mathf.Cos(angle) * (point1.z - point2.z) - Mathf.Sin(angle) * (point1.x - point2.x) + point2.z;
+            var y = Mathf.Sin(angle) * (point1.z - point2.z) + Mathf.Cos(angle) * (point1.x - point2.x) + point2.x;
+            //Debug.Log($"c:{point1},parent:{point2},x:{y},y:{x}");
+            return new Vector3(y, point1.y,x);
         }
 
     }
