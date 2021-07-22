@@ -20,9 +20,17 @@ namespace Synthesis.Configuration
         private Vector3 lastArrowPoint;
         private ArrowType activeArrow;
         private bool bufferPassed;
+        private bool snapEnabled;
 
-        private Plane groundPlane;
+        private Plane axisPlane;
         private Plane markerPlane;
+
+        private Transform parent;
+
+
+        [SerializeField, Range(1f, 30.0f)] public float snapRotationToDegree;
+        [SerializeField, Range(0.1f, 2f)] public float snapTransformToUnit;
+
 
         /// <summary>
         /// Gets or sets the active selected arrow. When <see cref="ActiveArrow"/>
@@ -86,14 +94,12 @@ namespace Synthesis.Configuration
         /// </summary>
         public Action OnRelease { get; set; }
 
-        public Collider rotationCollider;
 
         /// <summary>
         /// Sets the initial position and rotation.
         /// </summary>
         private void Awake()
         {
-            rotationCollider = GameObject.Find("RY").GetComponent<Collider>();
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
 
@@ -137,10 +143,18 @@ namespace Synthesis.Configuration
         /// Updates the robot's position when the arrows are dragged.
         /// </summary>
         private void Update()
-        {
+        {            
             if (Input.GetKeyDown(KeyCode.R))//Reset
             {
-                transform.parent.rotation = Quaternion.identity;
+                parent.rotation = Quaternion.identity;
+            }
+            if(Input.GetKey(KeyCode.LeftControl)|| Input.GetKey(KeyCode.RightControl))
+            {
+                snapEnabled = true;
+            }
+            else
+            {
+                snapEnabled = false;
             }
             if (activeArrow == ArrowType.None)
                 return;
@@ -156,10 +170,9 @@ namespace Synthesis.Configuration
             {
                 Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
                 float rayLength;
-                DrawPlane(markerPlane.normal, transform.parent.position);
                 //if mouse ray doesn't intersect plane, set default ray length
-                if (!markerPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position);
-                transform.parent.position = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+                if (!markerPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, parent.position);
+                parent.position = markerPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
             }
             else if (activeArrow <= ArrowType.XY)
             {
@@ -172,7 +185,7 @@ namespace Synthesis.Configuration
                     ClosestPointsOnTwoLines(out closestPointScreenRay, out currentArrowPoint,
                      mouseRay.origin, mouseRay.direction, transform.position, ArrowDirection);
 
-                }
+                }//TO DO: SET LIMITS
                 else
                 {
                     Plane plane = new Plane(ArrowDirection, transform.position);
@@ -182,8 +195,10 @@ namespace Synthesis.Configuration
 
                     currentArrowPoint = mouseRay.GetPoint(enter);
                 }
+                //snapping
 
-                //prevents move arrows from going below field
+                //FIX THIS SCRIPT: its bad; use it to set limits
+                //prevents move arrows from going below field 
                 if (GameObject.Find("Plane") != null)
                 {
                     if (currentArrowPoint.y < GameObject.Find("Plane").transform.position.y) 
@@ -194,10 +209,15 @@ namespace Synthesis.Configuration
 
                 if (lastArrowPoint != Vector3.zero)
                 {
-                    //Translate?.Invoke(currentArrowPoint - lastArrowPoint);
-                    gameObject.transform.parent.position += currentArrowPoint - lastArrowPoint;
+                    if(snapEnabled && activeArrow <= ArrowType.Z)//snaps to configurable amount when control is held down. does this by settings current arrow point to rounded distance
+                    currentArrowPoint = LerpByDistance(lastArrowPoint, currentArrowPoint,
+                        RoundTo(Vector3.Distance(lastArrowPoint, currentArrowPoint), snapTransformToUnit));
+
+                    parent.position += currentArrowPoint - lastArrowPoint;
                 }
+
                 lastArrowPoint = currentArrowPoint;
+
             }
             else
             {
@@ -206,19 +226,22 @@ namespace Synthesis.Configuration
                 float rayLength;
 
                 //if mouse ray doesn't intersect plane, set default ray length
-                if (!groundPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, transform.parent.position)*10;
+                if (!axisPlane.Raycast(cameraRay, out rayLength)) rayLength = Vector3.Distance(Camera.main.transform.position, parent.position)*10;
 
                 //get intersection point; if none, find closest point to default length
-                Vector3 pointToLook = groundPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
+                Vector3 pointToLook = axisPlane.ClosestPointOnPlane(cameraRay.GetPoint(rayLength));
 
                 //Correct parent's forward depending on rotation axis. Y-axis does not need corrections
                 Vector3 t;
-                if (ActiveArrow == ArrowType.RZ) t = transform.parent.right;
-                else if (ActiveArrow == ArrowType.RX) t = transform.parent.up;
-                else t = transform.parent.forward;
-                transform.parent.RotateAround(transform.parent.position, groundPlane.normal, -1 * RoundTo(Vector3.SignedAngle(pointToLook - transform.parent.position, t, groundPlane.normal), 15f));
-
+                if (ActiveArrow == ArrowType.RZ) t = parent.right;
+                else if (ActiveArrow == ArrowType.RX) t = parent.up;
+                else t = parent.forward;
+                parent.RotateAround(parent.position, axisPlane.normal, //defines point and axis plane
+                    -1 * RoundTo(Vector3.SignedAngle(pointToLook - parent.position, t, axisPlane.normal), //rounds degrees of rotation axis forward to mouse ray intersection
+                    snapEnabled?snapRotationToDegree:0f)); //if control is pressed, snap to configurable value, otherwise, don't snap
             }
+
+            transform.parent = parent;
 
         }
 
@@ -227,17 +250,17 @@ namespace Synthesis.Configuration
         /// </summary>
         private void LateUpdate()
         {
-            Plane plane = new UnityEngine.Plane(UnityEngine.Camera.main.transform.forward, UnityEngine.Camera.main.transform.position);
+            Plane plane = new Plane(Camera.main.transform.forward, Camera.main.transform.position);
             float dist = plane.GetDistanceToPoint(transform.position);
             transform.localScale = initialScale * Scale * dist;
             Vector3 scaleTmp = gameObject.transform.localScale;
-            scaleTmp.x /= gameObject.transform.parent.localScale.x;
-            scaleTmp.y /= gameObject.transform.parent.localScale.y;
-            scaleTmp.z /= gameObject.transform.parent.localScale.z;
-            gameObject.transform.parent = gameObject.transform.parent;
+            scaleTmp.x /= parent.localScale.x;
+            scaleTmp.y /= parent.localScale.y;
+            scaleTmp.z /= parent.localScale.z;
             gameObject.transform.localScale = scaleTmp;
+
         }
-        void DrawPlane(Vector3 normal, Vector3 position)
+        void DrawPlane(Vector3 normal, Vector3 position)//for debug only, can be removed
         {
 
             Vector3 v3;
@@ -262,23 +285,11 @@ namespace Synthesis.Configuration
             Debug.DrawLine(corner3, corner0, Color.green);
             Debug.DrawRay(position, normal, Color.red);
         }
-        private float xDeg()
-        {
-            return transform.parent.eulerAngles.x;
-        }
-        private float yDeg()
-        {
-            return transform.parent.eulerAngles.y;
-        }
-        private float zDeg()
-        {
-            return transform.parent.eulerAngles.z;
-        }
 
-/// <summary>
-/// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
-/// </summary>
-/// <param name="arrowType"></param>
+        /// <summary>
+        /// Sets the active arrow when a <see cref="SelectableArrow"/> is selected.
+        /// </summary>
+        /// <param name="arrowType"></param>
         private void OnArrowSelected(ArrowType arrowType)
         {
             ActiveArrow = arrowType;
@@ -286,9 +297,9 @@ namespace Synthesis.Configuration
             bufferPassed = false;
 
             if(arrowType==ArrowType.P)
-                markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), transform.parent.position);
+                markerPlane = new Plane(Vector3.Normalize(Camera.main.transform.forward), parent.position);
             else if (arrowType >= ArrowType.RX)
-                groundPlane = new Plane(ArrowDirection, transform.parent.position);
+                axisPlane = new Plane(ArrowDirection, parent.position);
 
             OnClick?.Invoke();
         }
@@ -309,10 +320,14 @@ namespace Synthesis.Configuration
         /// detection.
         /// </summary>
         /// <param name="enabled"></param>
-        private void SetOtherCollidersEnabled(bool enabled)
+        private void SetOtherCollidersEnabled(bool enabled)//CLEAN THIS UP
         {
+            parent = transform.parent;
+
             foreach (Collider c in GetComponentsInParent<Collider>(true))
                 c.enabled = enabled;
+            foreach (Rigidbody r in GetComponentsInParent<Rigidbody>(true))
+                r.isKinematic = !enabled;
 
             if (transform.parent == null)
                 return;
@@ -324,6 +339,9 @@ namespace Synthesis.Configuration
 
                 foreach (Collider c in child.GetComponentsInChildren<Collider>(true))
                     c.enabled = enabled;
+                foreach (Rigidbody r in child.GetComponentsInChildren<Rigidbody>(true))
+                    r.isKinematic = !enabled;
+
             }
         }
 
@@ -368,8 +386,20 @@ namespace Synthesis.Configuration
         }
         float RoundTo(float value, float multipleOf)//used for snapping the gizmo to the nearest value
         {
-            return Mathf.Round(value / multipleOf) * multipleOf;
+            if (multipleOf != 0)
+                return Mathf.Round(value / multipleOf) * multipleOf;
+            else
+                return value;
         }
+        /// <summary>
+        /// Finds the Vector3 point a distance of x away from Point A and on line AB
+        /// </summary>
+        public Vector3 LerpByDistance(Vector3 A, Vector3 B, float x) // for snapping transformations
+        {
+            Vector3 P = x * Vector3.Normalize(B - A) + A;
+            return P;
+        }
+
 
     }
 }
