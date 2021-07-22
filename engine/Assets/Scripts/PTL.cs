@@ -9,6 +9,7 @@ using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
 using SynthesisAPI.Translation;
 
+// adjust the PTL for the script, add robot to a list of gameobjects when its spawned
 
 // using Zippo = System.IO.Compression.Z
 
@@ -20,6 +21,7 @@ public class PTL : MonoBehaviour {
     private string SYNTHEPARK;
     private string DESTINATION_DEEP_SPACE;
     private string POWER_UP;
+    private List<GameObject> j;
 
     private void Start() {
         DOZER = ParsePath("$appdata/Autodesk/Synthesis/Robots/Dozer");
@@ -52,6 +54,11 @@ public class PTL : MonoBehaviour {
         SpawnRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
     }
 
+    public void RemoveRobot(String botPath)
+    {
+        RemoveRobot(botPath, Vector3.up * 2, Importer.SourceType.PROTOBUF_ROBOT, Translator.TranslationType.BXDJ_TO_PROTO_ROBOT);
+    }
+
     public void SpawnRobot(string botPath, Vector3 pos, Importer.SourceType srcType, Translator.TranslationType transType = default) {
         if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
         var robot = Importer.Import(botPath, srcType);
@@ -74,6 +81,13 @@ public class PTL : MonoBehaviour {
         ModelManager.AddModel(dynoMeta.Name, model);
 
         Camera.main.GetComponent<CameraController>().FollowTransform = robot.transform.GetChild(0);
+        j.Add(robot);
+    }
+
+    public void RemoveRobot(int index)
+    {
+        ModelManager.Remove(j[index]);
+        // just use ModelManager to destroy
     }
 
     public void Update() {
