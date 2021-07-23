@@ -7,20 +7,22 @@ using Mirabuf.Signal;
 
 namespace SynthesisAPI.Utilities
 {
-    class RobotManager
+    
+    public sealed class RobotManager
     {
-        //uncomment translator/translator util/test/RobotField/ProtoRobot
+        
 
         private Thread queueThread;
-        private bool IsRunning
+        private bool _isRunning = false;
+        public bool IsRunning
         {
             get
             {
-                return IsRunning; 
+                return _isRunning; 
             }
-            set
+            private set
             {
-                IsRunning = value;
+                _isRunning = value;
                 if (!value)
                 {
                     if (queueThread != null && queueThread.IsAlive)
@@ -30,6 +32,7 @@ namespace SynthesisAPI.Utilities
                 }
             }
         }
+
         public Dictionary<string, ControllableState> Robots { get; private set; }
         public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
 
@@ -37,7 +40,8 @@ namespace SynthesisAPI.Utilities
         public static RobotManager Instance { get { return lazy.Value; } }
         private RobotManager()
         {
-            Robots.Clear();
+            Robots = new Dictionary<string, ControllableState>();
+            UpdateQueue = new ConcurrentQueue<UpdateSignals>();
         }
 
         public void Start()
@@ -62,10 +66,10 @@ namespace SynthesisAPI.Utilities
 
         public void AddSignalLayout(Signals signalLayout)
         {
-            Robots.Add(signalLayout.Info.Name, new ControllableState
+            Robots[signalLayout.Info.Name] = new ControllableState()
             {
                 CurrentSignalLayout = signalLayout
-            });
+            };
         }
     }
 }

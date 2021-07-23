@@ -7,7 +7,7 @@ using Mirabuf;
 
 namespace SynthesisAPI.Utilities
 {
-    class ControllableState
+    public class ControllableState
     {
         private Signals? _currentSignalLayout;
         public Signals? CurrentSignalLayout
@@ -30,7 +30,7 @@ namespace SynthesisAPI.Utilities
         }
 
         public Info CurrentInfo { get; private set; }
-        public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; }
+        public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; } = new Dictionary<string, UpdateSignal>();
         
         public void Update(UpdateSignals updateSignals)
         {

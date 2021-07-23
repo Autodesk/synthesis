@@ -53,8 +53,6 @@ namespace TestApi {
             
             TcpServerManager.Start();
 
-            //Thread.Sleep(500);
-            
 
             SendData("127.0.0.1", testPacket1);
 

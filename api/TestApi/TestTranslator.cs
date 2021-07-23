@@ -1,4 +1,4 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.IO;
 using System.Text;
@@ -120,4 +120,4 @@ namespace TestApi {
             Assert.IsTrue(Translator.TempFileHash(buf).ToHexString() == "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069");
         }
     }
-}*/
+}

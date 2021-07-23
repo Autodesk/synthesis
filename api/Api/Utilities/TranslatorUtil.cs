@@ -8,7 +8,7 @@ using SynthesisAPI.Proto;
 /// <summary>
 /// Utility class defined in the main scope
 /// </summary>
-/*
+
 [assembly: InternalsVisibleTo(assemblyName: "TranslatorTest")]
 
 internal static class TranslatorUtil {
@@ -110,4 +110,3 @@ internal static class TranslatorUtil {
         }
     }
 }
-*/

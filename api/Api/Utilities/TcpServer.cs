@@ -21,10 +21,6 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
-            // may not even need locks
-            //public ReaderWriterLockSlim packetsLock = new ReaderWriterLockSlim();
-            //public readonly object clientsLock = new object();
-
             private List<ClientHandler> clients;
             public ConcurrentQueue<UpdateSignals> _packets;
             public TcpListener listener;
@@ -104,41 +100,26 @@ namespace SynthesisAPI.Utilities
                 {
                     while (IsRunning || clients.Any())
                     {
-                        //lock (clientsLock)
-                            for (int i = clients.Count - 1; i >= 0; i--)
+                        for (int i = clients.Count - 1; i >= 0; i--)
+                        {
+                            if (clients[i].inputData.IsCompleted)
                             {
-                                if (clients[i].inputData.IsCompleted)
+                                if (clients[i].inputData.Result == null)
                                 {
-                                    if (clients[i].inputData.Result == null)
-                                    {
-                                        clients[i].client.Close();
-                                        clients.RemoveAt(i);
-                                    }
-                                    else
-                                    {
-                                        //packetsLock.EnterWriteLock();
-                                        //try
-                                        //{
-                                            _packets.Enqueue(clients[i].inputData.Result);
-                                            
-                                        //}
-                                        //finally
-                                        //{
-                                        //    packetsLock.ExitWriteLock();
-                                        //}
-                                        clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
-
-
-                                    }
+                                    clients[i].client.Close();
+                                    clients.RemoveAt(i);
                                 }
+                                else
+                                {
+                                    _packets.Enqueue(clients[i].inputData.Result);
+                                    clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
 
+
+                                }
                             }
-
+                        }
                     }
-                })
-                {
-                    
-                };
+                });
 
                 listenerThread.Start();
                 clientManagerThread.Start();
@@ -169,27 +150,9 @@ namespace SynthesisAPI.Utilities
         {
             get
             {
-                //Server.Instance.packetsLock.EnterReadLock();
-                //try
-                //{
                 return Server.Instance._packets;
-                //}
-                //finally
-                //{
-                //    Server.Instance.packetsLock.ExitReadLock();
-                //}
             }
         }
-
-        /*
-        public static ReaderWriterLockSlim PacketsLock
-        {
-            get
-            {
-                return Server.Instance.packetsLock;
-            }
-        }
-        */
 
         public static void Start()
         {
@@ -202,7 +165,7 @@ namespace SynthesisAPI.Utilities
             Server.Instance.IsRunning = false;
         }
 
-        public static void SetQueue(ConcurrentQueue<UpdateSignals> target)
+        public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
         {
             Server.Instance._packets = target;
         }
