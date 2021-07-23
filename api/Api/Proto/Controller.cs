@@ -23,16 +23,16 @@ public static partial class ControllerReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "Ch1wcm90b2NvbHMvdjEvY29udHJvbGxlci5wcm90bxocZ29vZ2xlL3Byb3Rv",
-          "YnVmL3N0cnVjdC5wcm90byJZCgxVcGRhdGVTaWduYWwSEwoCaW8YASABKA4y",
-          "By5JT1R5cGUSDQoFY2xhc3MYAiABKAkSJQoFdmFsdWUYAyABKAsyFi5nb29n",
-          "bGUucHJvdG9idWYuVmFsdWUikAEKDVVwZGF0ZVNpZ25hbHMSDAoEbmFtZRgB",
-          "IAEoCRIwCglzaWduYWxNYXAYAiADKAsyHS5VcGRhdGVTaWduYWxzLlNpZ25h",
-          "bE1hcEVudHJ5Gj8KDlNpZ25hbE1hcEVudHJ5EgsKA2tleRgBIAEoCRIcCgV2",
-          "YWx1ZRgCIAEoCzINLlVwZGF0ZVNpZ25hbDoCOAEqHwoGSU9UeXBlEgkKBUlO",
-          "UFVUEAASCgoGT1VUUFVUEAFiBnByb3RvMw=="));
+          "YnVmL3N0cnVjdC5wcm90byJfCgxVcGRhdGVTaWduYWwSGQoCaW8YASABKA4y",
+          "DS5VcGRhdGVJT1R5cGUSDQoFY2xhc3MYAiABKAkSJQoFdmFsdWUYAyABKAsy",
+          "Fi5nb29nbGUucHJvdG9idWYuVmFsdWUikAEKDVVwZGF0ZVNpZ25hbHMSDAoE",
+          "bmFtZRgBIAEoCRIwCglzaWduYWxNYXAYAiADKAsyHS5VcGRhdGVTaWduYWxz",
+          "LlNpZ25hbE1hcEVudHJ5Gj8KDlNpZ25hbE1hcEVudHJ5EgsKA2tleRgBIAEo",
+          "CRIcCgV2YWx1ZRgCIAEoCzINLlVwZGF0ZVNpZ25hbDoCOAEqJQoMVXBkYXRl",
+          "SU9UeXBlEgkKBUlOUFVUEAASCgoGT1VUUFVUEAFiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.StructReflection.Descriptor, },
-        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::IOType), }, null, new pbr::GeneratedClrTypeInfo[] {
+        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::UpdateIOType), }, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::UpdateSignal), global::UpdateSignal.Parser, new[]{ "Io", "Class", "Value" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::UpdateSignals), global::UpdateSignals.Parser, new[]{ "Name", "SignalMap" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
         }));
@@ -43,10 +43,10 @@ public static partial class ControllerReflection {
 #region Enums
 /// <summary>
 ///*
-/// IOType is a way to specify Input or Output.
+/// UpdateIOType is a way to specify Input or Output.
 /// 
 /// </summary>
-public enum IOType {
+public enum UpdateIOType {
   /// <summary>
   //// Input Signal
   /// </summary>
@@ -108,13 +108,13 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
 
   /// <summary>Field number for the "io" field.</summary>
   public const int IoFieldNumber = 1;
-  private global::IOType io_ = global::IOType.Input;
+  private global::UpdateIOType io_ = global::UpdateIOType.Input;
   /// <summary>
   //// Is this a Input or Output
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::IOType Io {
+  public global::UpdateIOType Io {
     get { return io_; }
     set {
       io_ = value;
@@ -139,9 +139,6 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
   /// <summary>Field number for the "value" field.</summary>
   public const int ValueFieldNumber = 3;
   private global::Google.Protobuf.WellKnownTypes.Value value_;
-  /// <summary>
-  //// 
-  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public global::Google.Protobuf.WellKnownTypes.Value Value {
@@ -176,7 +173,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (Io != global::IOType.Input) hash ^= Io.GetHashCode();
+    if (Io != global::UpdateIOType.Input) hash ^= Io.GetHashCode();
     if (Class.Length != 0) hash ^= Class.GetHashCode();
     if (value_ != null) hash ^= Value.GetHashCode();
     if (_unknownFields != null) {
@@ -197,7 +194,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (Io != global::IOType.Input) {
+    if (Io != global::UpdateIOType.Input) {
       output.WriteRawTag(8);
       output.WriteEnum((int) Io);
     }
@@ -219,7 +216,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (Io != global::IOType.Input) {
+    if (Io != global::UpdateIOType.Input) {
       output.WriteRawTag(8);
       output.WriteEnum((int) Io);
     }
@@ -241,7 +238,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (Io != global::IOType.Input) {
+    if (Io != global::UpdateIOType.Input) {
       size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Io);
     }
     if (Class.Length != 0) {
@@ -262,7 +259,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
     if (other == null) {
       return;
     }
-    if (other.Io != global::IOType.Input) {
+    if (other.Io != global::UpdateIOType.Input) {
       Io = other.Io;
     }
     if (other.Class.Length != 0) {
@@ -290,7 +287,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 8: {
-          Io = (global::IOType) input.ReadEnum();
+          Io = (global::UpdateIOType) input.ReadEnum();
           break;
         }
         case 18: {
@@ -320,7 +317,7 @@ public sealed partial class UpdateSignal : pb::IMessage<UpdateSignal>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 8: {
-          Io = (global::IOType) input.ReadEnum();
+          Io = (global::UpdateIOType) input.ReadEnum();
           break;
         }
         case 18: {

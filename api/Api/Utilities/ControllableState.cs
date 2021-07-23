@@ -2,76 +2,42 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Mirabuf.Signal;
 using Mirabuf;
 
 namespace SynthesisAPI.Utilities
 {
     class ControllableState
     {
-        
-        private Layout? _currentLayout;
-        private Signal? _currentSignal;
-        public Layout? CurrentLayout
+        private Signals? _currentSignalLayout;
+        public Signals? CurrentSignalLayout
         {
-            get => _currentLayout;
-            /*set
-            {
-                _currentLayout = value;
-                Fields.DOs.Clear();
-                Fields.DIs.Clear();
-                Fields.AOs.Clear();
-                Fields.AIs.Clear();
-                foreach (var entry in value.Fields.DOEntries)
-                {
-                    Fields.DOs[entry.Key] = new DigitalOutput()
-                    {
-                        Name = entry.Value.Name,
-                        Type = entry.Value.Type
-                    };
-                }
-                foreach (var entry in value.Fields.DIEntries)
-                {
-                    Fields.DIs[entry.Key] = new DigitalInput()
-                    {
-                        Name = entry.Value.Name,
-                        Type = entry.Value.Type
-                    };
-                }
-                foreach (var entry in value.Fields.AOEntries)
-                {
-                    Fields.AOs[entry.Key] = new AnalogOutput()
-                    {
-                        Name = entry.Value.Name,
-                        Type = entry.Value.Type
-                    };
-                }
-                foreach (var entry in value.Fields.AIEntries)
-                {
-                    Fields.AIs[entry.Key] = new AnalogInput()
-                    {
-                        Name = entry.Value.Name,
-                        Type = entry.Value.Type
-                    };
-                }
-            }
-        }
-         */
+            get => _currentSignalLayout;
             set
             {
-                _currentLayout = value;
-                Fields.DOs.Clear();
-                Fields.DIs.Clear();
-                Fields.AOs.Clear();
-                Fields.AIs.Clear();
-                foreach (var signal in value.signal_map)
+                _currentSignalLayout = value;
+                CurrentSignals.Clear();
+                CurrentInfo = value.Info;
+                foreach (var kvp in value.SignalMap)
                 {
-
+                    CurrentSignals[kvp.Key] = new UpdateSignal
+                    {
+                        Io = kvp.Value.Io == IOType.Input ? UpdateIOType.Input : UpdateIOType.Output,
+                        Class = kvp.Value.Class
+                    };
                 }
             }
         }
 
+        public Info CurrentInfo { get; private set; }
+        public Dictionary<string, UpdateSignal> CurrentSignals { get; private set; }
         
-        public UpdateMessage.Types.ModifiedFields Fields { get; set; }
-
+        public void Update(UpdateSignals updateSignals)
+        {
+            foreach (var kvp in updateSignals.SignalMap)
+            {
+                CurrentSignals[kvp.Key] = kvp.Value;
+            }
+        }
     }
 }

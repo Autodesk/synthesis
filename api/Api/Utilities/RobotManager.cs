@@ -1,14 +1,37 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Mirabuf.Signal;
 
 namespace SynthesisAPI.Utilities
 {
     class RobotManager
     {
-        
-        public Dictionary<string, ControllableState> Robots { get; set; }
+        //uncomment translator/translator util/test/RobotField/ProtoRobot
+
+        private Thread queueThread;
+        private bool IsRunning
+        {
+            get
+            {
+                return IsRunning; 
+            }
+            set
+            {
+                IsRunning = value;
+                if (!value)
+                {
+                    if (queueThread != null && queueThread.IsAlive)
+                    {
+                        queueThread.Join();
+                    }
+                }
+            }
+        }
+        public Dictionary<string, ControllableState> Robots { get; private set; }
+        public ConcurrentQueue<UpdateSignals> UpdateQueue { get; private set; }
 
         private static readonly Lazy<RobotManager> lazy = new Lazy<RobotManager>(() => new RobotManager());
         public static RobotManager Instance { get { return lazy.Value; } }
@@ -17,38 +40,32 @@ namespace SynthesisAPI.Utilities
             Robots.Clear();
         }
 
-        /*
-        public void Update(Dictionary<string, UpdateMessage.Types.ModifiedFields> packets, ReaderWriterLockSlim packetLock) 
+        public void Start()
         {
-            packetLock.EnterWriteLock();
-            try
+            if (RobotManager.Instance.IsRunning) return;
+            RobotManager.Instance.IsRunning = true;
+            queueThread = new Thread(() =>
             {
-                foreach (var kvp in packets)
+                while (IsRunning)
                 {
-                    foreach (var digitalOutput in kvp.Value.DOs)
-                    {
-                        Robots[kvp.Key].Fields.DOs[digitalOutput.Key] = digitalOutput.Value;
-                    }
-                    foreach (var digitalInput in kvp.Value.DIs)
-                    {
-                        Robots[kvp.Key].Fields.DIs[digitalInput.Key] = digitalInput.Value;
-                    }
-                    foreach (var AnalogOutput in kvp.Value.AOs)
-                    {
-                        Robots[kvp.Key].Fields.AOs[AnalogOutput.Key] = AnalogOutput.Value;
-                    }
-                    foreach (var AnalogInput in kvp.Value.AIs)
-                    {
-                        Robots[kvp.Key].Fields.AIs[AnalogInput.Key] = AnalogInput.Value;
-                    }
-                    
+                    if (UpdateQueue.TryDequeue(out UpdateSignals tmp))
+                        Robots[tmp.Name].Update(tmp);
                 }
-            }
-            finally
+            });
+            queueThread.Start();
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
+        }
+
+        public void AddSignalLayout(Signals signalLayout)
+        {
+            Robots.Add(signalLayout.Info.Name, new ControllableState
             {
-                packetLock.ExitWriteLock();
-            }
-            */
+                CurrentSignalLayout = signalLayout
+            });
         }
     }
 }
