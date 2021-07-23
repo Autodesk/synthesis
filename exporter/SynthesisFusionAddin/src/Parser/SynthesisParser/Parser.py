@@ -78,7 +78,7 @@ class Parser:
                 progressDialog,
                 self.parseOptions,
                 assembly_out.data.parts,
-                assembly_out.data.materials.materials,
+                assembly_out.data.materials.appearances,
                 rootNode
             )
 
@@ -101,7 +101,7 @@ class Parser:
             parts = assembly_out.data.parts.part_instances
 
             gm.ui.messageBox(
-                f"Materials: {len(assembly_out.data.materials.materials)}\nPart-Definitions: {len(part_defs)}\nParts: {len(parts)}"
+                f"Materials: {len(assembly_out.data.materials.appearances)}\nPart-Definitions: {len(part_defs)}\nParts: {len(parts)}"
             )
 
         except:

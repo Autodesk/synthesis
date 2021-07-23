@@ -50,10 +50,10 @@ def _MapAllComponents(
 
 
                 # this should be appearance
-                if body.appearance.id in materials.materials:
-                    part_body.material = body.appearance.id
+                if body.appearance.id in materials.appearances:
+                    part_body.appearance_override = body.appearance.id
                 else:
-                    part_body.material = "default"
+                    part_body.appearance_override = "default"
 
 
 def _ParseComponentRoot(
@@ -79,6 +79,9 @@ def _ParseComponentRoot(
     fill_info(part, component)
 
     def_map = partsData.part_definitions
+
+    if component.material:
+        part.appearance = component.material.id
 
     if mapConstant in def_map:
         part.part_definition_reference = mapConstant
@@ -128,6 +131,10 @@ def __parseChildOccurrence(
     node.value = mapConstant
 
     fill_info(part, occurrence)
+
+    if occurrence.component.material:
+        part.appearance = occurrence.component.material.id
+        # TODO: Add phyical_material parser
 
     def_map = partsData.part_definitions
 

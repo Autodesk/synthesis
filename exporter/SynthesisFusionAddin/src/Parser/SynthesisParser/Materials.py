@@ -15,16 +15,16 @@ def _MapAllAppearances(
 
     # in case there are no appearances on a body
     # this is just a color tho
-    setDefaultAppearance(materials.materials["default"])
+    setDefaultAppearance(materials.appearances["default"])
 
     fill_info(materials, None)
 
     for appearance in appearances:
-        material = materials.materials[appearance.id]
+        material = materials.appearances[appearance.id]
         getMaterialAppearance(appearance, options, material)
 
 
-def setDefaultAppearance(material: material_pb2.Material) -> None:
+def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
     """Get a default color for the appearance
 
     Returns:
@@ -32,9 +32,8 @@ def setDefaultAppearance(material: material_pb2.Material) -> None:
     """
 
     # add info
-    construct_info("default", material)
+    construct_info("default", appearance)
 
-    appearance = material.appearance
     appearance.roughness = 0.5
     appearance.metallic = 0.5
     appearance.specular = 0.5
@@ -49,16 +48,15 @@ def setDefaultAppearance(material: material_pb2.Material) -> None:
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
     options: ParseOptions,
-    material: material_pb2.Material,
+    appearance: material_pb2.Appearance,
 ) -> None:
     """Takes in a Fusion 360 Mesh and converts it to a usable unity mesh
 
     Args:
         fusionAppearance (adsk.core.Appearance): Fusion 360 appearance material
     """
-    construct_info("", material, fus_object=fusionAppearance)
+    construct_info("", appearance, fus_object=fusionAppearance)
 
-    appearance = material.appearance
     appearance.roughness = 0.5
     appearance.metallic = 0.5
     appearance.specular = 0.5
