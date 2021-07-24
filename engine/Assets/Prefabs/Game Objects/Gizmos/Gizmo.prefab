@@ -1310,7 +1310,7 @@ GameObject:
   - component: {fileID: 4602686676069116}
   - component: {fileID: 114632750974120752}
   m_Layer: 3
-  m_Name: MoveArrows
+  m_Name: Gizmo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
