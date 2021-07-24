@@ -20,6 +20,7 @@ namespace Synthesis.Configuration
         /// </summary>
         private void Start()
         {
+
             if (!Enum.TryParse(name, out arrowType))
                 arrowType = ArrowType.None;
 
@@ -35,13 +36,30 @@ namespace Synthesis.Configuration
             }
             else if (arrowType <= ArrowType.Z)//keeps axis arrows looking at the camera
             {
-                transform.RotateAround(transform.position,transform.up, CalcSignedCentralAngle(transform.forward, Vector3.Normalize(Camera.main.transform.position - transform.position), transform.up) * Mathf.Rad2Deg);
+                Vector3 difference = Camera.main.transform.position - transform.position;
+
+                transform.RotateAround(transform.position,transform.up, - Vector3.SignedAngle(Vector3.Normalize(Camera.main.transform.position - transform.position), transform.forward, transform.up));
+                return;
+                switch (arrowType)
+                {
+                    case ArrowType.X:
+                        //float rotationX = Mathf.Atan2(difference.z, difference.y) * Mathf.Rad2Deg;
+                        //transform.localRotation = Quaternion.Euler(rotationX + 90.0f, 0.0f, -90.0f);
+                        break;
+                    case ArrowType.Y:
+                        float rotationY = Mathf.Atan2(difference.x, difference.z) * Mathf.Rad2Deg;
+                        transform.localRotation = Quaternion.Euler(0, rotationY, 0);
+
+                        break;
+                    case ArrowType.Z:
+                        float rotationZ = Mathf.Atan2(difference.x, difference.y) * Mathf.Rad2Deg;
+                        transform.localRotation = Quaternion.Euler(rotationZ + 90.0f, 90.0f, 90.0f); //z axis rotation kind of messed up but this works
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-        
-        private float CalcSignedCentralAngle(Vector3 dir1, Vector3 dir2, Vector3 normal) //calculates signed angle projected to a plane
-          => Mathf.Atan2(Vector3.Dot(Vector3.Cross(dir1, dir2), normal), Vector3.Dot(dir1, dir2));
-
         /// <summary>
         /// Sends a message upwards when this <see cref="SelectableArrow"/>
         /// is selected.
