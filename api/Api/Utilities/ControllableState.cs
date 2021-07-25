@@ -7,6 +7,12 @@ using Mirabuf;
 
 namespace SynthesisAPI.Utilities
 {
+    /*
+     * ControllableState stores a Signals object from mirabuf called CurrentSignalLayout.
+     * Whenever the CurrentSignalLayout is set, it will fill the CurrentSignals dictionary with UpdateSignal
+     * objects according to the CurrentSignalLayout. The Update method is used to update the CurrentSignals in 
+     * the Controllable state and will throw an exception if you try to change an UpdateSignal not in CurrentSignals
+     */
     public class ControllableState
     {
         private Signals? _currentSignalLayout;
@@ -36,7 +42,14 @@ namespace SynthesisAPI.Utilities
         {
             foreach (var kvp in updateSignals.SignalMap)
             {
-                CurrentSignals[kvp.Key] = kvp.Value;
+                if (CurrentSignals.ContainsKey(kvp.Key))
+                {
+                    CurrentSignals[kvp.Key] = kvp.Value;
+                }
+                else
+                {
+                    throw new SynthesisException("Layout does not contain key: " + kvp.Key);
+                }    
             }
         }
     }
