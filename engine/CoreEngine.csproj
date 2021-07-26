@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{660E7428-284B-EED1-7FFD-CA276D12197B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -79,6 +80,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
+    <Compile Include="Assets\Scripts\RemoveItem.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\ObjectLedger.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Motor.cs" />
     <Compile Include="Assets\Scripts\UtilExtensions.cs" />
@@ -135,12 +137,14 @@
     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-    <Compile Include="Assets\Scripts\RemoveItem.cs" />
+    <Compile Include="Assets\Scripts\RobotButtons.cs" />
+    <Compile Include="Assets\Scripts\ButtonPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Users\t_khund\Desktop\2020.3.12f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

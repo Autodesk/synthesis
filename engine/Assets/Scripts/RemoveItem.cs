@@ -67,7 +67,7 @@ public class RemoveItem : MonoBehaviour
     {
         //ModelManager.AddModel(_fullPath);//importer
         Debug.Log("TEST REMOVE MODEL");
-        p.GetComponent<PTL>().RemoveRobot(_fullPath);
+       // p.GetComponent<PTL>().RemoveRobot(_fullPath);
         _parentPanel.Close();
     }
 

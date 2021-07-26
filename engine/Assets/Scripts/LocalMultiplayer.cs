@@ -2,9 +2,13 @@ using UnityEditor.Animations;
 using UnityEditorInternal;
 using UnityEngine;
 
+
+// the logic here should be to increment the Robot counter, and if the count that the gameObject is in becomes full then make the button active
+
 public class LocalMultiplayer : MonoBehaviour
 {
     private GameObject canvas;
+    private GameObject button;
 
     private GameObject multiplayerWindow;
     private GameObject addRobotWindow;
