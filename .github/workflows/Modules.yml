@@ -15,7 +15,7 @@ jobs:
     - name: Genereate code for squzy-storage protofile
       uses: PxyUp/protoc-actions@v3.0.0
       with:
-          path: -I./ --csharp_out=../api/Api/Proto/ v1/ProtoBot.proto
+          path: -I./ --csharp_opt=paths=source_relative --csharp_out=../api/Api/Proto/ v1/ProtoBot.proto
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
