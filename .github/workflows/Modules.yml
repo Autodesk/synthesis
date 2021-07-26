@@ -11,9 +11,18 @@ jobs:
     name: Build API
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout Repository & Submodules
     - uses: actions/checkout@v2
-    - name: Genereate code for squzy-storage protofile
+      with:
+        submodules: recursive
+    - name: Genereate Mirabuf
       uses: PxyUp/protoc-actions@v3.0.0
+      with:
+          path: -I./ --csharp_out=./api/Api/Proto/ mirabuf/*.proto
+    - name: Generate ProtoBot Protobuf
+      with:
+          path: -I./ --csharp_out=./api/Api/Proto/ protocols/v1/ProtoBot.proto
+    - name: Generate Controller Protobuf
       with:
           path: -I./ --csharp_out=./api/Api/Proto/ api/protocols/v1/controller.proto
     - name: Setup .NET Core
