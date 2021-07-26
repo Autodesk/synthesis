@@ -8,6 +8,7 @@ from types import FunctionType
 
 # hard coded to bypass errors for now
 PROTOBUF = True
+DEBUG = True
 
 try:
     from .strings import *
