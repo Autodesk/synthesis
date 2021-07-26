@@ -12,13 +12,14 @@ using ProtoBuf;
 using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf;
 
-namespace TestApi {
+namespace TestApi 
+{
     
     
     [TestFixture]
     public static class TestTcpServer
     {
-
+        /*
         [Test]
         public static void TestReceivingData()
         {
@@ -99,6 +100,7 @@ namespace TestApi {
 
             client.Close();
         }
+        */
 
     }
     
