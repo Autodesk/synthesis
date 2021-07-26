@@ -18,6 +18,10 @@ jobs:
         dotnet-version: 3.1.101
     - name: Install API Dependencies
       run: dotnet restore api/api.sln
+    - name: Genereate code for squzy-storage protofile
+      uses: PxyUp/protoc-actions@v3.0.0
+      with:
+        path: -I./ --csharp_out=../api/Api/Proto/ v1/ProtoBot.proto
     - name: Build API Solution
       run: dotnet build api/api.sln --configuration Release --no-restore
     - name: Test API Solution
