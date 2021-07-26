@@ -18,7 +18,7 @@ jobs:
     - name: Genereate Mirabuf
       uses: PxyUp/protoc-actions@v3.0.0
       with:
-          path: -I./ --csharp_out=./api/Api/Proto/ mirabuf/*.proto
+          path: -./mirabuf --csharp_out=./api/Api/Proto/ mirabuf/*.proto
     - name: Generate ProtoBot Protobuf
       uses: PxyUp/protoc-actions@v3.0.0
       with:
