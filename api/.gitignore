@@ -1,4 +1,10 @@
 */bin
 */obj
 
-Api/Proto/*
+Api/Proto/Assembly.cs
+Api/Proto/Controller.cs
+Api/Proto/Material.cs
+Api/Proto/ProtoBot.cs
+Api/Proto/Signal.cs
+Api/Proto/Types.cs
+
