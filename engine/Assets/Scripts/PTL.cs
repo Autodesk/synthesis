@@ -4,7 +4,7 @@ using UnityEngine;
 using Synthesis.Import;
 using System.IO;
 using System;
-using Synthesis.Entitys;
+using Synthesis.Entity;
 using Synthesis.ModelManager;
 using Synthesis.ModelManager.Models;
 using SynthesisAPI.Translation;
