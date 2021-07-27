@@ -11,14 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApi", "TestApi\TestApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BenchmarkApi", "BenchmarkApi\BenchmarkApi.csproj", "{AC669A38-8C1C-4A3B-AFB8-368620018AA1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "protocols", "protocols", "{CC445C8C-A587-4F2A-8CEE-74CDC763AE77}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v1", "v1", "{69881A44-F158-4ED6-921C-E52C51D6441C}"
-	ProjectSection(SolutionItems) = preProject
-		controller.proto = controller.proto
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aardvark", "Aardvark\Aardvark.csproj", "{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aardvark", "Aardvark\Aardvark.csproj", "{AEAC8A7A-4215-4E1E-AC6B-A4E310906466}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,9 +42,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{69881A44-F158-4ED6-921C-E52C51D6441C} = {CC445C8C-A587-4F2A-8CEE-74CDC763AE77}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A781181B-A288-442E-85C4-17066647FF59}

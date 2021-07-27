@@ -11,7 +11,22 @@ jobs:
     name: Build API
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Repository & Submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Genereate Mirabuf
+      uses: PxyUp/protoc-actions@v3.0.0
+      with:
+          path: -I=mirabuf/ --csharp_out=./api/Api/Proto/ mirabuf/*.proto
+    - name: Generate ProtoBot Protobuf
+      uses: PxyUp/protoc-actions@v3.0.0
+      with:
+          path: -I./ --csharp_out=./api/Api/Proto/ protocols/v1/ProtoBot.proto
+    - name: Generate Controller Protobuf
+      uses: PxyUp/protoc-actions@v3.0.0
+      with:
+          path: -I./ --csharp_out=./api/Api/Proto/ protocols/v1/controller.proto
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:

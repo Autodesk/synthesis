@@ -12,13 +12,14 @@ using ProtoBuf;
 using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf;
 
-namespace TestApi {
+namespace TestApi 
+{
     
-    /*
+    
     [TestFixture]
     public static class TestTcpServer
     {
-
+        /*
         [Test]
         public static void TestReceivingData()
         {
@@ -27,28 +28,24 @@ namespace TestApi {
             // Assert.IsTrue([condition]) or Assert.IsFalse([condition])
             // Loads more, check with intellisense
 
-            
-            DigitalOutput testDigitalOutput1 = new DigitalOutput()
+
+            UpdateSignal testDigitalOutput1 = new UpdateSignal()
             {
-                Name = "Out1",
-                Type = "PWM",
+                Io = UpdateIOType.Output,
+                Class = "PWM",
                 Value = Value.ForNumber(4.2)
             };
 
-            List<DigitalOutput> outputList1 = new List<DigitalOutput>();
+            List<UpdateSignal> outputList1 = new List<UpdateSignal>();
             outputList1.Add(testDigitalOutput1);
 
-            Dictionary<string, DigitalOutput> dos = new Dictionary<string, DigitalOutput>();
-            dos.Add("DigitalOutput1", testDigitalOutput1);
-
-            UpdateMessage testPacket1 = new UpdateMessage()
+            UpdateSignals testPacket1 = new UpdateSignals()
             {
-                Id = "test1",
-                Fields = new UpdateMessage.Types.ModifiedFields()
+                Name = "test1"
             };
-            testPacket1.Fields.DOs.Add(dos);
+            testPacket1.SignalMap["DigitalOutput1"] = testDigitalOutput1;
 
-            List<UpdateMessage> msgs = new List<UpdateMessage>()
+            List<UpdateSignals> msgs = new List<UpdateSignals>()
             {
                 testPacket1
             };
@@ -57,8 +54,6 @@ namespace TestApi {
             
             TcpServerManager.Start();
 
-            //Thread.Sleep(500);
-            
 
             SendData("127.0.0.1", testPacket1);
 
@@ -66,18 +61,17 @@ namespace TestApi {
 
             TcpServerManager.Stop();
 
-            foreach (KeyValuePair<string, UpdateMessage.Types.ModifiedFields> kvp in TcpServerManager.Packets)
+            foreach (UpdateSignals s in TcpServerManager.Packets.ToArray())
             {
-                System.Diagnostics.Debug.WriteLine(kvp.Key);
+                System.Diagnostics.Debug.WriteLine(s.Name);
             }
 
-
-            Assert.IsTrue(TcpServerManager.Packets.ContainsKey("test1"));
-            Assert.IsFalse(TcpServerManager.Packets.ContainsKey("test420"));
- 
+            TcpServerManager.Packets.TryPeek(out UpdateSignals tmp);
+            System.Diagnostics.Debug.WriteLine("----------", tmp.Name);
+            Assert.IsTrue(tmp.Equals(testPacket1));
         }
 
-        public static void SendData(string server, UpdateMessage message)
+        public static void SendData(string server, UpdateSignals message)
         {
             int port = 13000;
             TcpClient client = new TcpClient(server, port);
@@ -106,6 +100,8 @@ namespace TestApi {
 
             client.Close();
         }
+        */
 
-    }*/
+    }
+    
 }

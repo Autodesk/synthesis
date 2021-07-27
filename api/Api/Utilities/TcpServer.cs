@@ -11,7 +11,7 @@ using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using ProtoBuf;
-
+using System.Collections.Concurrent;
 
 
 namespace SynthesisAPI.Utilities
@@ -21,11 +21,8 @@ namespace SynthesisAPI.Utilities
     {
         private sealed class Server
         {
-            public readonly object packetsLock = new object();
-            public readonly object clientsLock = new object();
-
             private List<ClientHandler> clients;
-            public Dictionary<string, UpdateMessage.Types.ModifiedFields> _packets;
+            public ConcurrentQueue<UpdateSignals> _packets;
             public TcpListener listener;
             public Thread listenerThread;
             public Thread clientManagerThread;
@@ -42,6 +39,7 @@ namespace SynthesisAPI.Utilities
                         {
                             clientManagerThread.Join();
                             listener.Stop();
+                            listenerThread.Join();
                         }
                     }
                     if (value)
@@ -51,9 +49,10 @@ namespace SynthesisAPI.Utilities
                 }
             }
 
+
             private class ClientHandler
             {
-                public Task<UpdateMessage?> inputData;
+                public Task<UpdateSignals?> inputData;
                 public MemoryStream stream;
                 public TcpClient client;
             }
@@ -63,7 +62,7 @@ namespace SynthesisAPI.Utilities
             public static Server Instance { get { return lazy.Value; } }
             private Server()
             {
-                _packets = new Dictionary<string, UpdateMessage.Types.ModifiedFields>();
+                _packets = new ConcurrentQueue<UpdateSignals>(); //Default queue if no queue is set
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
             }
 
@@ -83,7 +82,6 @@ namespace SynthesisAPI.Utilities
                             cli.GetStream().CopyTo(ms);
                             ms.Seek(0, SeekOrigin.Begin);
 
-                            System.Diagnostics.Debug.WriteLine(ms.Capacity);
                             clients.Add(new ClientHandler
                             {
                                 client = cli,
@@ -102,76 +100,63 @@ namespace SynthesisAPI.Utilities
                 {
                     while (IsRunning || clients.Any())
                     {
-                        lock (clientsLock)
-                            for (int i = clients.Count - 1; i >= 0; i--)
+                        for (int i = clients.Count - 1; i >= 0; i--)
+                        {
+                            if (clients[i].inputData.IsCompleted)
                             {
-                                if (clients[i].inputData.IsCompleted)
+                                if (clients[i].inputData.Result == null)
                                 {
-                                    if (clients[i].inputData.Result == null)
-                                    {
-                                        clients[i].client.Close();
-                                        clients.RemoveAt(i);
-                                    }
-                                    else
-                                    {
-                                        lock (packetsLock)
-                                        {
-                                            _packets[clients[i].inputData.Result.Id] = clients[i].inputData.Result.Fields;
-                                        }
-                                        clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
-
-
-                                    }
+                                    clients[i].client.Close();
+                                    clients.RemoveAt(i);
                                 }
+                                else
+                                {
+                                    _packets.Enqueue(clients[i].inputData.Result);
+                                    clients[i].inputData = ReadUpdateMessageAsync(clients[i].stream);
 
+
+                                }
                             }
-
+                        }
                     }
-                })
-                {
-                    
-                };
+                });
 
                 listenerThread.Start();
                 clientManagerThread.Start();
                 
             }
             
-            public async Task<UpdateMessage?> ReadUpdateMessageAsync(MemoryStream stream)
+            public async Task<UpdateSignals?> ReadUpdateMessageAsync(MemoryStream stream)
             {
                 if (stream.Position >= stream.Length)
                 {
                     return null;
                 }
-                UpdateMessage message = new UpdateMessage();
+                UpdateSignals signals = new UpdateSignals();
                 byte[] sizeBytes = new byte[sizeof(int)];
                 await stream.ReadAsync(sizeBytes, 0, sizeBytes.Length);
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(sizeBytes);
 
                 int size = BitConverter.ToInt32(sizeBytes, 0);
-                byte[] messageBytes = new byte[size];
-                await stream.ReadAsync(messageBytes, 0, messageBytes.Length);
-                message.MergeFrom(messageBytes);
-                return message;
+                byte[] signalBytes = new byte[size];
+                await stream.ReadAsync(signalBytes, 0, signalBytes.Length);
+                signals.MergeFrom(signalBytes);
+                return signals;
             }
         }
 
-
-        
-        public static Dictionary<string, UpdateMessage.Types.ModifiedFields> Packets
+        public static ConcurrentQueue<UpdateSignals> Packets
         {
             get
             {
-                lock (Server.Instance.packetsLock)
-                {
-                    return Server.Instance._packets;
-                }
+                return Server.Instance._packets;
             }
         }
 
         public static void Start()
         {
+            if (Server.Instance.IsRunning) return;
             Server.Instance.IsRunning = true;
         }
 
@@ -179,7 +164,11 @@ namespace SynthesisAPI.Utilities
         {
             Server.Instance.IsRunning = false;
         }
-        
+
+        public static void SetTargetQueue(ConcurrentQueue<UpdateSignals> target)
+        {
+            Server.Instance._packets = target;
+        }
         
     }
 
