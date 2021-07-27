@@ -24,10 +24,12 @@ namespace SynthesisAPI.InputManager.InputEvents
     public class DigitalEvent : IInputEvent
     {
         public string Name { get; private set; }
+        public float Value { get; private set; }
         public DigitalState State { get; private set; }
-        public DigitalEvent(string name, DigitalState state)
+        public DigitalEvent(string name, float value, DigitalState state)
         {
             Name = name;
+            Value = value;
             State = state;
         }
     }
@@ -35,7 +37,7 @@ namespace SynthesisAPI.InputManager.InputEvents
     public class MouseDownEvent : DigitalEvent
     {
         public Vector2D MousePosition { get; private set; }
-        public MouseDownEvent(string name, DigitalState state, Vector2D mousePosition) : base(name, state)
+        public MouseDownEvent(string name, float value, DigitalState state, Vector2D mousePosition) : base(name, value, state)
         {
             MousePosition = mousePosition;
         }
