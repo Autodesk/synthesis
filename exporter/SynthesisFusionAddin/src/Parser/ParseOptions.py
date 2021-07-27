@@ -118,8 +118,8 @@ class ParseOptions:
         physicalDepth=PhysicalDepth.AllOccurrence,
         materials=1,
         mode=Mode.Synthesis,
-        #wheels=List[_Wheel],
-        #joints=List[_Joint] # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
+        wheels=List[_Wheel],
+        joints=List[_Joint] # [{Occurrence, wheeltype} , {entitytoken, wheeltype}]
         ):
         """Generates the Parser Options for the given export
 
