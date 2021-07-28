@@ -16,7 +16,6 @@ class GlobalManager(object):
 
             if self.app:
                 self.ui = self.app.userInterface
-                self.design = adsk.fusion.Design.cast(self.app.activeProduct)
 
             self.connected = False
             """ Is unity currently connected """
