@@ -39,7 +39,7 @@ class _Wheel:
 @dataclass
 class _Joint:
     joint_token: str
-    parent: Union[adsk.fusion.Joint, JointParentType] # str can be root
+    parent: Union[str, JointParentType] # str can be root
 
 
 class PhysicalDepth:

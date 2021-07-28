@@ -118,14 +118,14 @@ def _addJointInstance(joint: adsk.fusion.Joint, joint_instance: joint_pb2.JointI
 
     # assign part id values - bug with entity tokens
     try:
-        joint_instance.parent = joint.occurrenceOne.entityToken
+        joint_instance.parent_part = joint.occurrenceOne.entityToken
     except:
-        joint_instance.parent = joint.occurrenceOne.name
+        joint_instance.parent_part = joint.occurrenceOne.name
 
     try:
-        joint_instance.child = joint.occurrenceTwo.entityToken
+        joint_instance.child_part = joint.occurrenceTwo.entityToken
     except:
-        joint_instance.child = joint.occurrenceTwo.name
+        joint_instance.child_part = joint.occurrenceTwo.name
 
     # fill info for what parts are contained within this joint
 
