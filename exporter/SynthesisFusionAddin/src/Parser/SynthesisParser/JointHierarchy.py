@@ -1,6 +1,10 @@
 from ...general_imports import *
 import adsk.core, adsk.fusion, traceback, logging, enum
 from typing import *
+from .. import ParseOptions
+from proto.proto_out import types_pb2, joint_pb2
+
+
 
 # ____________________________ DATA TYPES __________________
 
@@ -441,3 +445,65 @@ def searchForGrounded(occ: adsk.fusion.Occurrence) -> Union[adsk.fusion.Occurren
             return searched
 
     return None
+
+# ________________________ Build implementation ______________________ #
+
+def BuildJointPartHierarchy (
+    design: adsk.fusion.Design,
+    joints: joint_pb2.Joints,
+    options: ParseOptions
+):
+    try:
+        jointParser = JointParser(design)
+        rootSimNode = jointParser.groundSimNode
+    except Warning:
+        return False
+    except:
+        logging.getLogger(f"{INTERNAL_ID}.JointHierarchy").error("Failed:\n{}".format(traceback.format_exc()))
+        # A_EP.send_exception()
+
+def createBodyObject(
+    self,
+    dynNode: DynamicOccurrenceNode,
+    relationship: OccurrenceRelationship,
+    previous: list, # this was originally for gameobjects in unity - somehow convert it?
+    previous_occ=None,
+):
+    """Creates the Body Game Object Hierarchy
+
+    Args:
+        dynOccNode (DynamicOccurrenceNode): DynamicOccurrenceNode
+        previous (Transform): Previous Node
+    """
+    if relationship is None:
+        # Make Part here for the given body
+        # bodyGameObjectTransform = self.createGameObject(
+        #    previous_occ,
+        #    dynNode.data.name,
+        #    occurrence_component=dynNode.data,
+        #    previous_occurrence=previous_occ,
+        #)
+
+        for edge in dynNode.edges:
+            # if edge.relationship == OccurrenceRelationship.CONNECTION:
+            self.createBodyObject(
+                edge.node,
+                edge.relationship,
+                bodyGameObjectTransform,
+                previous_occ=bodyGameObjectTransform,
+            )
+            return # why is this here im confused
+
+    if relationship == OccurrenceRelationship.TRANSFORM:
+        pass # Make part connection here
+    elif relationship == OccurrenceRelationship.CONNECTION:
+        pass # Make part connection here
+    for edge in dynNode.edges:
+        # if edge.relationship == OccurrenceRelationship.CONNECTION:
+        self.createBodyObject(
+            edge.node,
+            edge.relationship,
+            bodyGameObjectTransform,
+            previous_occ=previous_occ,
+            )
+

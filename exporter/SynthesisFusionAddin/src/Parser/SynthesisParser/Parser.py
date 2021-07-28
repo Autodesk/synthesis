@@ -100,29 +100,35 @@ class Parser:
 
             progressDialog.hide()
 
-            part_defs = assembly_out.data.parts.part_definitions
-            parts = assembly_out.data.parts.part_instances
-            joints = assembly_out.data.joints.joint_definitions
+            if DEBUG:
+                part_defs = assembly_out.data.parts.part_definitions
+                parts = assembly_out.data.parts.part_instances
+                joints = assembly_out.data.joints.joint_definitions
 
-            joint_hierarchy_out = "Joint Hierarchy :\n"
+                joint_hierarchy_out = "Joint Hierarchy :\n"
 
-            for node in assembly_out.joint_hierarchy.nodes:
-                if node.value == "ground":
-                    joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
-                else:
-                    joint_hierarchy_out = f"{joint_hierarchy_out}  |- {assembly_out.data.joints.joint_instances[node.value].info.name}\n"
-
-                for child in node.children:
-                    if child.value == "ground":
-                        joint_hierarchy_out = f"{joint_hierarchy_out} |--- ground\n"
+                # This is just for testing
+                for node in assembly_out.joint_hierarchy.nodes:
+                    if node.value == "ground":
+                        joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
                     else:
-                        joint_hierarchy_out = f"{joint_hierarchy_out}  |--- {assembly_out.data.joints.joint_instances[child.value].info.name}\n"
+                        newnode = assembly_out.data.joints.joint_instances[node.value]
+                        jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                        joint_hierarchy_out = f"{joint_hierarchy_out}  |- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
 
-            joint_hierarchy_out += "\n\n"
+                    for child in node.children:
+                        if child.value == "ground":
+                            joint_hierarchy_out = f"{joint_hierarchy_out} |--- ground\n"
+                        else:
+                            newnode = assembly_out.data.joints.joint_instances[child.value]
+                            jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                            joint_hierarchy_out = f"{joint_hierarchy_out}  |--- {jointdefinition.info.name} type: {jointdefinition.joint_motion_type}\n"
 
-            gm.ui.messageBox(
-                f"Materials: {len(assembly_out.data.materials.appearances)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
-            )
+                joint_hierarchy_out += "\n\n"
+
+                gm.ui.messageBox(
+                    f"Materials: {len(assembly_out.data.materials.appearances)} \nPart-Definitions: {len(part_defs)} \nParts: {len(parts)} \nJoints: {len(joints)}\n {joint_hierarchy_out}"
+                )
 
         except:
             self.logger.error("Failed:\n{}".format(traceback.format_exc()))
