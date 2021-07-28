@@ -87,7 +87,7 @@ class Parser:
                 self.parseOptions
             )
 
-            JointHierarchy.createJointHierarchy(
+            Joints.createJointGraph(
                 self.parseOptions.joints,
                 assembly_out.joint_hierarchy
             )
