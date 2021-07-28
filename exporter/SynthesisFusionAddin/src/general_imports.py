@@ -43,7 +43,7 @@ try:
 
     # Setup the global state
     gm = GlobalManager()
-    my_addin_path = os.path.dirname(os.path.realpath(__file__))
+    my_addin_path = os.path.dirname(os.pah.rtealpath(__file__))
 except:
     # should also log this
     logging.getLogger(f"{INTERNAL_ID}.import_manager").error(
