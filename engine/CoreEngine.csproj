@@ -139,6 +139,7 @@
     <Compile Include="Assets\Scripts\Gizmos\GizmoTester.cs" />
     <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
     <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
+    <Compile Include="Assets\Scripts\UI\Bars\NavigationBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
