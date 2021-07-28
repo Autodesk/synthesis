@@ -56,7 +56,6 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\UI\Bars\Tabs.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleException.cs" />
@@ -74,11 +73,9 @@
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\IOHandler.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\JointsAdapter.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\DeflateStreamWrapper.cs" />
-    <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
@@ -129,7 +126,6 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
     <Compile Include="Assets\Scripts\EntityManager\Entity.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
     <Compile Include="Assets\Scripts\MyTest.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\LayerAdapter.cs" />
@@ -137,8 +133,12 @@
     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
     <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
     <Compile Include="Assets\Scripts\Gizmos\GizmoTester.cs" />
+    <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />
