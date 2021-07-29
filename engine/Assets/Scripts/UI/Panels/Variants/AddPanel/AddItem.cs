@@ -16,7 +16,7 @@ public class AddItem : MonoBehaviour
     public void AddModel()
     {
         //ModelManager.AddModel(_fullPath);//importer
-        Debug.Log("TEST ADD MODEL");
+        // Debug.Log("TEST ADD MODEL");
         p.GetComponent<PTL>().SpawnRobot(_fullPath);
         _parentPanel.Close();
     }
