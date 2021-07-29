@@ -20,8 +20,10 @@ public class PTL : MonoBehaviour {
     private string SYNTHEPARK;
     private string DESTINATION_DEEP_SPACE;
     private string POWER_UP;
+    private GameObject Game;
 
     private void Start() {
+        Game = GameObject.Find("Game");//Finds the parent to spawn objects under
         DOZER = ParsePath("$appdata/Autodesk/Synthesis/Robots/Dozer");
         MEAN_MACHINE = ParsePath("$appdata/Autodesk/Synthesis/Robots/2018 - 2471 Mean Machine");
         AERIAL_ASSIST = ParsePath("$appdata/Autodesk/Synthesis/Fields/2014 Aerial Assist");
@@ -45,7 +47,8 @@ public class PTL : MonoBehaviour {
     {
         if (Directory.Exists(fieldPath)) fieldPath = Translator.Translate(fieldPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Fields"));
         var field = Importer.Import(fieldPath, srcType);
-        field.transform.position = pos;
+        field.transform.parent = Game.transform;
+        field.transform.position = pos;        
     }
     public void SpawnRobot(string botPath)//overloaded
     {
@@ -56,13 +59,9 @@ public class PTL : MonoBehaviour {
         if(Directory.Exists(botPath)) botPath = Translator.Translate(botPath, transType, ParsePath("$appdata/Autodesk/Synthesis/Robots"));
         var robot = Importer.Import(botPath, srcType);
 
-        //var robot = Importer.Import(botPath, srcType, transType, true);
+        robot.transform.parent = Game.transform;
         robot.transform.position = pos;
         var dynoMeta = robot.GetComponent<DynamicObjectMeta>();
-        // var robotEntity = robot.AddComponent<RobotEntity>();
-        // robotEntity.Init(dynoMeta);
-        // var robotEntity = new Robot(robot, dynoMeta);
-        // EntityManager.RegisterEntity(robotEntity);
 
         var model = new Model();
         model.GameObject = robot;

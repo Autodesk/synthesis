@@ -16,6 +16,7 @@ public class CameraController : MonoBehaviour {
     [SerializeField, Range(0.005f, 1.0f)] public float OrbitalAcceleration;
     [SerializeField, Range(0.005f, 1.0f)] public float ZoomAcceleration;
     [SerializeField] public Transform FollowTransform;
+    public static bool isOverGizmo = false;
 
     private float _targetZoom = 5.0f;
     private float _targetPitch = 10.0f;
@@ -40,19 +41,23 @@ public class CameraController : MonoBehaviour {
         float z = 0.0f;
         
         bool isOverUI = EventSystem.current.IsPointerOverGameObject();
-        if (!isOverUI) {
+        bool enableOrbit = !isOverUI && !isOverGizmo;
+        if (enableOrbit) {
             z = ZoomSensitivity * -Input.mouseScrollDelta.y;
+
+            //UNCOMMENT OUT TO ENABLE CURSOR-LOCKING WHEN ORBITING
+            /*
             if (Input.GetKeyDown(KeyCode.Mouse0)) {
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             } else if (Input.GetKeyUp(KeyCode.Mouse0)) {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
-            }
+            }*/
         }
 
         if (!Input.GetKey(KeyCode.Mouse0)) {
-            _useOrbit = !isOverUI;
+            _useOrbit = enableOrbit;
         } else {
             if (_useOrbit) {
                 p = -PitchSensitivity * Input.GetAxis("Mouse Y");
