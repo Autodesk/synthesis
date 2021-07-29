@@ -56,7 +56,7 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\UI\Bars\Tabs.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\DrivetrainSubPanel.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleException.cs" />
     <Compile Include="Assets\Scripts\TestAnalytics.cs" />
@@ -67,15 +67,17 @@
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Api.cs" />
     <Compile Include="Assets\Scripts\Interactable3DDetector.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Controllables\Controllable.cs" />
-    <Compile Include="Assets\Scripts\UI\Bars\Bar.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextMenu.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Parse.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshCollider2DAdapter.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\Hierarchy.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Gearboxes\JointItem.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\IOHandler.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\JointsAdapter.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\DeflateStreamWrapper.cs" />
+    <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Settings\SettingsPanel.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
     <Compile Include="Assets\Scripts\Util\SynthesisUtil.cs" />
@@ -93,12 +95,14 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\Configuration\Drivetrain\ArcadePanel.cs" />
     <Compile Include="Assets\Scripts\MouseTracker.cs" />
     <Compile Include="Assets\Scripts\UI\ContextMenu\ContextItem.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\GizmoTester.cs" />
     <Compile Include="Assets\Scripts\Attributes\ContextMenuOptionAttribute.cs" />
     <Compile Include="Assets\Scripts\Engine\ToastLogger.cs" />
     <Compile Include="Assets\Scripts\UI\InteractableObject.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\Panel.cs" />
     <Compile Include="Assets\Scripts\ModelManager\Models\Model.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyRootItem.cs" />
+    <Compile Include="Assets\Scripts\UI\Bars\NavigationBar.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\SystemAdapter.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\ModuleLoader.cs" />
     <Compile Include="Assets\Scripts\Engine\Utilities\IEnumerableExtensions.cs" />
@@ -106,7 +110,7 @@
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\MeshAdapter.cs" />
     <Compile Include="Assets\Scripts\ModelManager\ModelManager.cs" />
     <Compile Include="Assets\Scripts\PreferenceManager\PreferenceManager.cs" />
-    <Compile Include="Assets\Scripts\UI\PanelManager.cs" />
+    <Compile Include="Assets\Scripts\UI\LayoutManager.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyFolderItem.cs" />
     <Compile Include="Assets\Scripts\FileSystem\FileSystem.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\LoadModuleEvent.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="Assets\Scripts\UI\Panels\Variants\AddPanel\AddPanel.cs" />
     <Compile Include="Assets\Scripts\EntityManager\Entity.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\ComponentAdapter.cs" />
+    <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
     <Compile Include="Assets\Scripts\MyTest.cs" />
     <Compile Include="Assets\Scripts\UI\Hierarchy\HierarchyItems\HierarchyModelItem.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\LayerAdapter.cs" />
@@ -133,13 +138,6 @@
     <Compile Include="Assets\Scripts\Importer\GamepieceTag.cs" />
     <Compile Include="Assets\Scripts\Engine\ModuleLoader\Adapters\AudioSourceAdapter.cs" />
     <Compile Include="Assets\Scripts\Importer\Importer.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\SelectableArrow.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\ArrowType.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\GizmoManager.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\GizmoTester.cs" />
-    <Compile Include="Assets\Scripts\Camera\GizmoCamera.cs" />
-    <Compile Include="Assets\Scripts\Gizmos\MoveArrow.cs" />
-    <Compile Include="Assets\Scripts\UI\Bars\NavigationBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\CoreEngine.asmdef" />

@@ -1,20 +1,27 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NavigationBar : MonoBehaviour
+namespace Synthesis.UI.Bars
 {
-
-    void Start()
+    public class NavigationBar : MonoBehaviour
     {
-        
+        public GameObject homeTab;
+        private void Start()
+        {
+            OpenTab(homeTab);
+        }
+        public void OpenPanel(GameObject prefab)
+        {
+            LayoutManager.OpenPanel(prefab, true);
+        }
+        public void CloseAllPanels()
+        {
+            LayoutManager.ClosePanel();
+        }
+        public void OpenTab(GameObject tab)
+        {
+            LayoutManager.OpenTab(tab);
+        }
     }
-
-
-    //tab switching and instantiation
-    //have instantiation process be inside of the panel manager, which needs to be renamed
-
-    //panel manager calls
-
-
 }

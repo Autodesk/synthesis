@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PanelManager
+public static class LayoutManager
 {
 
+
+    //PANEL MANAGER
     private static Panel _currentPanel = null;
     public static Panel CurrentPanel
     {
@@ -28,6 +30,26 @@ public static class PanelManager
     {
         if (_currentPanel != null)
             _currentPanel.Close();
+    }
+
+
+    //TAB MANAGER
+    private static GameObject _currentTab = null;
+    public static GameObject CurrentTab
+    {
+        get => _currentTab;
+    }
+
+    public static bool OpenTab(GameObject t, bool forceClose = true)
+    {
+        if (_currentTab != null)
+            if (forceClose)
+                Object.Destroy(_currentTab);
+            else
+                return false;
+
+        _currentTab = Object.Instantiate(t, GameObject.Find("Bottom-Tabs").transform);//set transform    
+        return true;
     }
 
 }
