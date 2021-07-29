@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using SynthesisAPI.AssetManager;
 using SynthesisAPI.VirtualFileSystem;
 using System.Threading.Tasks;
@@ -12,7 +13,10 @@ namespace SynthesisAPI.PreferenceManager
     {
         public static bool UnsavedChanges { get; private set; }
         private static Dictionary<string, Dictionary<string, object>> _preferences = new Dictionary<string, Dictionary<string, object>>();
-
+        public static IReadOnlyDictionary<string, Dictionary<string, object>> Preferences {
+            get => new ReadOnlyDictionary<string, Dictionary<string, object>>(_preferences);
+        }
+        
         private static readonly (string Directory, string Name) VirtualFilePath = ("/modules", "preferences.json");
 
         private static JsonAsset? _asset;

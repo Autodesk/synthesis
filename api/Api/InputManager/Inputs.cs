@@ -8,6 +8,7 @@ namespace SynthesisAPI.InputManager.Inputs
     public interface Input
     {
         string Name { get; }
+        float Value { get; }
         bool Update();
     }
 
@@ -25,43 +26,37 @@ namespace SynthesisAPI.InputManager.Inputs
             BaseValue = baseValue;
         }
 
-        public bool Update()
+        public virtual bool Update()
         {
             Value = UnityEngine.Input.GetAxis(Name);
             Value = Inverted ? Value *= -1 : Value;
             return Value != BaseValue;
         }
     }
-    public class Digital : Input
+    public class Digital : Analog
     {
         public string Name { get; private set; }
+        public float Value { get; private set; }
         public DigitalState State { get; private set; }
-        public Digital(string name)
+        public Digital(string name) : base(name)
         {
             Name = name;
-            State = DigitalState.None;
+            Value = 0.0f;
+            State = DigitalState.Up;
         }
 
-        public virtual bool Update()
-        {
-            if (UnityEngine.Input.GetKey(Name))
-            {
-                if (State == DigitalState.None)
-                    State = DigitalState.Down;
-                else State = DigitalState.Held;
-            }
+        public override bool Update() {
+            if (UnityEngine.Input.GetKeyDown(Name))
+                State = DigitalState.Down;
+            else if (UnityEngine.Input.GetKey(Name))
+                State = DigitalState.Held;
+            else if (UnityEngine.Input.GetKeyUp(Name))
+                State = DigitalState.Up;
             else
-            {
-                if (State == DigitalState.Down || State == DigitalState.Held)
-                    State = DigitalState.Up;
-                else State = DigitalState.None;
-            }
+                State = DigitalState.None;
+            Value = State > 0 ? 1 : 0;
             return State != DigitalState.None;
         }
-    }
-    public enum DigitalState
-    {
-        None = 0, Down = 1, Held = 2, Up = 3
     }
 
     public class MouseDown: Digital
@@ -74,5 +69,13 @@ namespace SynthesisAPI.InputManager.Inputs
             MousePosition = ((UnityEngine.Vector2)UnityEngine.Input.mousePosition).Map();
             return r;
         }
+
+        public static readonly MouseDown LeftMouseButton = new MouseDown("Mouse 0");
+        public static readonly MouseDown RightMouseButton = new MouseDown("Mouse 1");
+        public static readonly MouseDown MiddleMouseButton = new MouseDown("Mouse 2");
+    }
+
+    public enum DigitalState {
+        Down = 1, Up = -1, Held = 2, None = 0
     }
 }
