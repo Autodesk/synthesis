@@ -34,9 +34,11 @@ jobs:
     - name: Install API Dependencies
       run: dotnet restore api/api.sln
     - name: Build API Solution
-      run: dotnet build api/api.sln --configuration Release --no-restore
+      run: dotnet build api/api.sln --configuration Release --no-restore /p:ContinuousIntegrationBuild=true
     - name: Test API Solution
-      run: dotnet test api/api.sln --no-restore --verbosity normal
+      run: dotnet test api/api.sln --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Codecov
+      uses: codecov/codecov-action@v1
       
 #    - name: Install Module Dependencies
 #      run: dotnet restore modules/modules.sln
