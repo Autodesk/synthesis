@@ -32,6 +32,11 @@ For support contact frc@autodesk.com</PackageReleaseNotes>
 
     <ItemGroup>
 
+      <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+
       <PackageReference Include="Google.Protobuf" Version="3.17.3" />
       <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
       <PackageReference Include="MathNet.Spatial" Version="0.6.0" />
