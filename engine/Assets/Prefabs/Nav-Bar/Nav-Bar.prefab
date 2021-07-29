@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8276093422804859664}
   m_Layer: 5
-  m_Name: Bottom-Tabs
+  m_Name: Tabs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,6 +127,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   homeTab: {fileID: 4017167953594092808, guid: 4ebf1221f9ad12d449d3f2dc6b3b17f4, type: 3}
+  homeButton: {fileID: 8276093423157737640}
+  artifaktRegular: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
+  artifaktBold: {fileID: 11400000, guid: 98cce4828f4b4e04997da22ea07c56cf, type: 2}
 --- !u!1 &8276093423605415263
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,7 +409,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8276093423831739771}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4539348305775465477}
+        m_TargetAssemblyTypeName: Synthesis.UI.Bars.NavigationBar, CoreEngine
+        m_MethodName: OpenPanel
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2702697856074163897, guid: 618a18333c8fe39498077267e2f9f2b4, type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8276093423958291367
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +580,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+--- !u!1 &8276093423157737640 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3914696059960629130, guid: a053f96b701f5a048b27506d329f970f, type: 3}
+  m_PrefabInstance: {fileID: 4938579956445769506}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8276093423157737641 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3914696059960629131, guid: a053f96b701f5a048b27506d329f970f, type: 3}

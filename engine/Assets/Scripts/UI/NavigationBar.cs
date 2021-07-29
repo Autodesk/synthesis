@@ -15,39 +15,58 @@ namespace Synthesis.UI.Bars
         public TMP_FontAsset artifaktRegular;
         public TMP_FontAsset artifaktBold;
 
-        private GameObject _currentButton = null;
+        private GameObject _currentTabButton = null;
+        private GameObject _currentPanelButton = null;
 
         private void Start()
         {
             OpenTab(homeTab);
         }
+
+
         public void OpenPanel(GameObject prefab)
         {
             LayoutManager.OpenPanel(prefab, true);
+            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
+
+            //set current panel button to the button clicked
+            _currentPanelButton = EventSystem.current.currentSelectedGameObject;
+            changePanelButton(artifaktBold,new Color(0.8705882f,0.8705882f,0.8705882f,1));
         }
         public void CloseAllPanels()
         {
             LayoutManager.ClosePanel();
+            if(_currentPanelButton!=null) changePanelButton(artifaktRegular,new Color(1,1,1,1));
         }
+        private void changePanelButton(TMP_FontAsset f, Color c){ //changes color and font of the clicked button       
+            //set font
+            TextMeshProUGUI text = _currentPanelButton.transform.parent.GetComponentInChildren<TextMeshProUGUI>();
+            if(text!=null)text.font = f;
+
+            Image img = _currentPanelButton.GetComponent<Image>();
+            img.color = c;//color
+            
+        }
+
         public void OpenTab(GameObject tab)
         {
             LayoutManager.OpenTab(tab);
             //revert previous button's font and underline
-            if(_currentButton!=null){
+            if(_currentTabButton!=null){
                 changeTabButton(artifaktRegular,1,new Color(0.8f,0.8f,0.8f,1));
             }
-            _currentButton = EventSystem.current.currentSelectedGameObject;
-            if(_currentButton == null) _currentButton = homeButton; //On the first call, there is no button pressed
+            _currentTabButton = EventSystem.current.currentSelectedGameObject;
+            if(_currentTabButton == null) _currentTabButton = homeButton; //On the first call, there is no button pressed
             changeTabButton(artifaktBold,2,new Color(0.02352941f,0.5882353f,0.8431373f,1));
         }
 
         private void changeTabButton(TMP_FontAsset f, float underlineHeight, Color c){
             //set font
-            TextMeshProUGUI text = _currentButton.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI text = _currentTabButton.GetComponent<TextMeshProUGUI>();
             text.font = f;
 
             //set underline
-            Transform underline = _currentButton.transform.GetChild(0);
+            Transform underline = _currentTabButton.transform.GetChild(0);
             RectTransform rt = underline.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2 (rt.sizeDelta.x, underlineHeight);//height
             Image img = underline.GetComponent<Image>();
