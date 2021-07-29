@@ -36,7 +36,7 @@ jobs:
     - name: Build API Solution
       run: dotnet build api/api.sln --configuration Release --no-restore
     - name: Test API Solution
-      run: dotnet test api/api.sln --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      run: dotnet test api/api.sln --no-restore --verbosity normal
     - name: Codecov
       uses: codecov/codecov-action@v1
       
