@@ -48,7 +48,7 @@ public static class LayoutManager
             else
                 return false;
 
-        _currentTab = Object.Instantiate(t, GameObject.Find("Bottom-Tabs").transform);//set transform    
+        _currentTab = Object.Instantiate(t, GameObject.Find("Tabs").transform);//set transform    
         return true;
     }
 

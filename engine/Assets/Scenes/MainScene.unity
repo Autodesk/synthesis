@@ -1266,6 +1266,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 287867056}
     m_Modifications:
+    - target: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: homeButton
+      value: 
+      objectReference: {fileID: 1494114424}
+    - target: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: artifaktBold
+      value: 
+      objectReference: {fileID: 11400000, guid: 98cce4828f4b4e04997da22ea07c56cf, type: 2}
+    - target: {fileID: 4539348305775465477, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: artifaktRegular
+      value: 
+      objectReference: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
+    - target: {fileID: 4938579954587822591, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579954976714812, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579955969888530, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938579956092097941, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422804859679, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Name
+      value: Tabs
+      objectReference: {fileID: 0}
     - target: {fileID: 8276093422936841946, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
       propertyPath: m_Name
       value: Nav-Bar
@@ -1354,6 +1386,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8276093422990563913, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422990563914, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.b
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422990563914, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093422990563914, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_Color.r
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093423157737641, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276093423157737642, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
+    - target: {fileID: 8276093423157737642, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7508162858481735423, guid: d773a0b9b3212ab4fb694b91237f4660, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
 --- !u!224 &1467358338 stripped
@@ -1365,6 +1425,11 @@ RectTransform:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 380650966121337187, guid: d570cb8b34b8a409ca7071fce3187a60, type: 3}
   m_PrefabInstance: {fileID: 683168457}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1494114424 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8276093423157737640, guid: 35209b2992d8df54b95c13d7e28f7a61, type: 3}
+  m_PrefabInstance: {fileID: 1467358337}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1633767031
 GameObject:
